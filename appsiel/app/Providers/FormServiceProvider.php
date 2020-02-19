@@ -15,14 +15,15 @@ class FormServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         // Register the form components
         Form::component('bsLabel', 'components.form.label', ['name', 'value', 'lbl', 'attributes']);
         Form::component('bsText', 'components.form.text', ['name', 'value', 'lbl', 'attributes']);
+        Form::component('bsEmail', 'components.form.email', ['name', 'value', 'lbl', 'attributes']);
         Form::component('bsNumber', 'components.form.number', ['name', 'value', 'lbl', 'attributes']);
         Form::component('bsTextArea', 'components.form.text_area', ['name', 'value', 'lbl', 'attributes']);
 		Form::component('bsPassword', 'components.form.password', ['name', 'value', 'lbl', 'attributes']);
-		
-        
+
         Form::component('bsSelect', 'components.form.select', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsSelectCreate', 'components.form.select_create', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsSelectName', 'components.form.select_name', ['name', 'value', 'lbl', 'opciones', 'attributes']);
@@ -58,15 +59,23 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsTableHeader', 'components.design.table_header', ['headers']);
         Form::component('bsMigaPan', 'components.design.miga_pan', ['vec']);
 
-
         Form::component('NombreMes', 'components.design.nombre_mes', ['mes']);
-
         Form::component('TextoMoneda', 'components.design.texto_moneda', ['valor']);
-
         Form::component('Spin', 'components.design.spin', ['tamaño']);
         Form::component('btnInfo', 'components.design.btn_info', ['title']);
 
         //Form::component('HrefDocEncabezado', 'components.design.btn_info', ['title']);
+
+        self::webComponent();
+
+    }
+
+
+
+    public function webComponent(){
+        //componentes utilizado en el diseñador de la pagina web
+        Form::component('navegacion','components.web.navegacion',['nav']);
+        Form::component('slider','components.web.slider',[]);
     }
 
     /**
@@ -78,4 +87,5 @@ class FormServiceProvider extends ServiceProvider
     {
         //
     }
+
 }
