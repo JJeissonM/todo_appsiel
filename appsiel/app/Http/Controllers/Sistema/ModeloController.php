@@ -142,7 +142,13 @@ class ModeloController extends Controller
         if ( method_exists( app( $this->modelo->name_space ), 'get_campos_adicionales_create' ) )
         {
             $lista_campos = app( $this->modelo->name_space )->get_campos_adicionales_create( $lista_campos );
-        }        
+        }
+        if( Input::get('id_transaccion') != '' )
+        {
+            $tipo_transaccion = TipoTransaccion::find( Input::get('id_transaccion') );
+            $cantidad_campos = count( $lista_campos );
+            $lista_campos = $this->personalizar_campos( Input::get('id_transaccion'), $tipo_transaccion,$lista_campos,$cantidad_campos,'create');
+        }
 
         // Se crear un array para generar el formulario
         // Este array se envía a la vista layouts.create, que carga la plantilla principal del formulario CREAR

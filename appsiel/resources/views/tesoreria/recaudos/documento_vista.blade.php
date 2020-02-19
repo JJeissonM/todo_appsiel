@@ -3,7 +3,12 @@
     $i=0;
     $vec_motivos;
 ?>
+@if(isset($nombre))
+    <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Detalles del traslado
+    </div>
+@else
 <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Detalles del recaudo </div>
+@endif
 <table class="table table-bordered">
     {{ Form::bsTableHeader(['Medio de pago','Caja/Cta. Bancaria','Valor']) }}
     <tbody>
