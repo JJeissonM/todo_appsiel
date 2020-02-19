@@ -42,7 +42,13 @@ Route::get('teso_anular_pago/{id}', 'Tesoreria\PagoController@anular_pago');
 Route::resource('tesoreria/pagos', 'Tesoreria\PagoController');
 
 Route::resource('tesoreria/arqueo_caja', 'Tesoreria\ArqueoCajaController');
+Route::get('tesoreria/imprimir/{id}', 'Tesoreria\ArqueoCajaController@imprimir');
 
+//TRASLADOS
+Route::resource('tesoreria/traslado_efectivo', 'Tesoreria\TrasladoEfectivosController');
+Route::get('tesoreria/traslado_efectivo/prueba/ajax_get_fila', 'Tesoreria\TrasladoEfectivosController@ajax_get_fila');
+Route::get('tesoreria/traslado_efectivo/anular/{id}', 'Tesoreria\TrasladoEfectivosController@anular_traslado');
+Route::get('tesoreria/traslado_efectivo/traslado/imprimir/{id}', 'Tesoreria\TrasladoEfectivosController@imprimir');
 
 // RECAUDOS DE CXC
 Route::get('tesoreria/get_documentos_pendientes_cxc', 'Tesoreria\RecaudoCxcController@get_documentos_pendientes_cxc');
