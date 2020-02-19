@@ -1,0 +1,1 @@
+<a class="btn btn-warning btn-xs" href="{{ url($url) }}"><i class="fa fa-btn fa-edit"></i> {{$etiqueta}}</a>

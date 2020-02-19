@@ -1,0 +1,1 @@
+<img src="{{ $src }}" class="{{ $clase_html }}" style="{{ $estilo_css }}">

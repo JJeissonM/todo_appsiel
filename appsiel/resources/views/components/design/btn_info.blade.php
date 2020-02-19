@@ -1,0 +1,1 @@
+<a href="#" data-toggle="tooltip" data-placement="right" title="{{ $title }}"> <i class="glyphicon glyphicon-info-sign"></i>  </a>

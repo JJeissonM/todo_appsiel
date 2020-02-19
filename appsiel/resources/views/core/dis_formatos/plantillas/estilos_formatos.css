@@ -1,0 +1,53 @@
+img {
+	padding-left:30px;
+}
+
+
+.page-break {
+	page-break-after: always;
+}
+
+@page { margin: 100px 25px; }
+header { 
+	position: fixed; 
+	top: -60px; 
+	left: 0px; 
+	right: 0px; 
+	background-color: lightblue; 
+	height: 50px; 
+}
+
+footer { 
+	position: fixed; 
+	bottom: -70px; 
+	left: 0px; 
+	right: 0px; 
+	background-color: lightblue; 
+	height: 40px;
+	text-align: center;
+}
+
+p { page-break-after: always; }
+p:last-child { page-break-after: never; }
+
+#watermark-letter {
+    position: fixed;
+    top: 7%;/**/
+    width: 100%;
+    text-align: center;
+    opacity: .3;
+    /*transform: rotate(10deg);*/
+    transform-origin: 50% 50%;
+    z-index: -1000;
+  }
+
+#watermark-legal {
+    position: fixed;
+    top: 15%;/**/
+    width: 100%;
+    text-align: center;
+    opacity: .3;
+    /*transform: rotate(10deg);*/
+    transform-origin: 50% 50%;
+    z-index: -1000;
+  }
