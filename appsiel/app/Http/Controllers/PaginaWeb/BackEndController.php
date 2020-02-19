@@ -2,14 +2,9 @@
 
 namespace App\Http\Controllers\PaginaWeb;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use \Illuminate\Support\Facades\Input;
 
-use Input;
-
-use App\Sistema\Modelo;
 
 class BackEndController extends Controller
 {
@@ -20,9 +15,20 @@ class BackEndController extends Controller
 
     public function index()
     {
-    	$modelo = Modelo::where( 'modelo', 'pw_paginas'  )->get()->first();
+    	//$modelo = Modelo::where( 'modelo', 'pw_paginas'  )->get()->first();
 
-        return redirect( 'web?id='.Input::get('id').'&id_modelo='.$modelo->id );
+        $miga_pan = [
+            [
+                'url' => 'pagina_web'.'?id='. Input::get('id'),
+                'etiqueta' => 'Web'
+            ],
+            [
+                'url' => 'NO',
+                'etiqueta' => 'Setup'
+            ]
+        ];
+
+        return view('web.setup',compact('miga_pan'));
     }
 
 }

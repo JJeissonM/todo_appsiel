@@ -230,4 +230,4 @@ include __DIR__.'/sga_routes.php';
 // Esta línea debe ir de última porque ya hay rutas específicas para /{slug}
 // Ejemplo, /inicio, /ventas, /configuracion, etc. 
 // Cada ruta de estas llama a sus propios controladores
-Route::get('/{slug}', 'PaginaWeb\FrontEndController@mostrar_enlace');
+Route::get('/{slug}', 'web\PaginaController@showPage');
