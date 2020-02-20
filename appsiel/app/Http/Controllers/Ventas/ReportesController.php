@@ -30,34 +30,33 @@ class ReportesController extends Controller
 
     public static function grafica_ventas_diarias($fecha_inicial, $fecha_final)
     {
-        $registros = VtasMovimiento::whereBetween('fecha',[$fecha_inicial, $fecha_final])
-                                        ->select(DB::raw('SUM(base_impuesto_total) as total_ventas'),'fecha')
-                                        ->groupBy('fecha')
-                                        ->orderBy('fecha')
-                                        ->get();
+        $registros = VtasMovimiento::whereBetween('fecha', [$fecha_inicial, $fecha_final])
+            ->select(DB::raw('SUM(base_impuesto_total) as total_ventas'), 'fecha')
+            ->groupBy('fecha')
+            ->orderBy('fecha')
+            ->get();
 
         // Gráfica de rendimiento académico
         $stocksTable1 = Lava::DataTable();
-      
+
         $stocksTable1->addStringColumn('Ventas')
-                    ->addNumberColumn('Fecha');
+            ->addNumberColumn('Fecha');
 
         $i = 0;
         $tabla = [];
-        foreach ($registros as $linea) 
-        {
-            $stocksTable1->addRow( [ $linea->fecha, (float)$linea->total_ventas ]);
+        foreach ($registros as $linea) {
+            $stocksTable1->addRow([$linea->fecha, (float) $linea->total_ventas]);
 
             $tabla[$i]['fecha'] = $linea->fecha;
-            $tabla[$i]['valor'] = (float)$linea->total_ventas;
+            $tabla[$i]['valor'] = (float) $linea->total_ventas;
             $i++;
         }
 
         // Se almacena la gráfica en ventas_diarias, luego se llama en la vista [ como mágia :) ]
-        Lava::BarChart('ventas_diarias', $stocksTable1,[
-                                                          'is3D' => True,
-                                                          'orientation' => 'horizontal',
-                                                      ]);
+        Lava::BarChart('ventas_diarias', $stocksTable1, [
+            'is3D' => True,
+            'orientation' => 'horizontal',
+        ]);
 
         return $tabla;
     }
@@ -65,36 +64,120 @@ class ReportesController extends Controller
     public function precio_venta_por_producto(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
-        $fecha_hasta  = $request->fecha_hasta; 
-        
+        $fecha_hasta  = $request->fecha_hasta;
+
         $inv_producto_id = $request->inv_producto_id;
         $operador1 = '=';
-        
+
         $cliente_id = $request->cliente_id;
         $operador2 = '=';
 
-        if ( $request->inv_producto_id == '' )
-        {
+        if ($request->inv_producto_id == '') {
             $operador1 = 'LIKE';
-            $inv_producto_id = '%'.$request->inv_producto_id.'%';
+            $inv_producto_id = '%' . $request->inv_producto_id . '%';
         }
 
-        if ( $request->cliente_id == '' )
-        {
+        if ($request->cliente_id == '') {
             $operador2 = 'LIKE';
-            $cliente_id = '%'.$request->cliente_id.'%';
+            $cliente_id = '%' . $request->cliente_id . '%';
         }
 
-        $movimiento = VtasMovimiento::get_precios_ventas( $fecha_desde, $fecha_hasta, $inv_producto_id, $operador1, $cliente_id, $operador2 );
+        $movimiento = VtasMovimiento::get_precios_ventas($fecha_desde, $fecha_hasta, $inv_producto_id, $operador1, $cliente_id, $operador2);
 
         //dd( $fecha_desde . ' * ' .  $fecha_hasta . ' * ' .  $inv_producto_id . ' * ' .  $operador1 . ' * ' .  $cliente_id . ' * ' .  $operador2 );
 
         //dd( $movimiento );
 
-        $vista = View::make('ventas.reportes.precio_venta', compact('movimiento') )->render();
+        $vista = View::make('ventas.reportes.precio_venta', compact('movimiento'))->render();
 
-        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
+    }
+
+    /*
+    Reporte de pedidos de venta vencidos
+    */
+    public static function pedidos_vencidos()
+    {
+        $parametros = config('ventas');
+        $hoy = getdate();
+        $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_vencimiento', '<', $fecha], ['estado', 'Pendiente']])->get();
+        $pedidos = null;
+        if (count($pedidos_db) > 0) {
+            foreach ($pedidos_db as $o) {
+                $pedidos[] = ReportesController::prepara_datos($o);
+            }
+        }
+        return $pedidos;
+    }
+
+    /*
+    Reporte de pedidos de ventas futuros
+    */
+    public static function pedidos_futuros()
+    {
+        $parametros = config('ventas');
+        $hoy = getdate();
+        $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_vencimiento', '>', $fecha], ['estado', 'Pendiente']])->get();
+        $pedidos = null;
+        if (count($pedidos_db) > 0) {
+            foreach ($pedidos_db as $o) {
+                $pedidos[] = ReportesController::prepara_datos($o);
+            }
+        }
+        return $pedidos;
+    }
+
+    /*
+    Reporte de pendientes de la semana
+    */
+    public static function pedidos_semana()
+    {
+        $hoy = getdate();
+        $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
+        $date2 = strtotime($fecha);
+        $inicio0 = strtotime('sunday this week -1 week', $date2);
+        $inicio = date('Y-m-d', $inicio0);
+        $fechas = null;
+        for ($i = 1; $i <= 7; $i++) {
+            $fechas[] = date("Y-m-d", strtotime("$inicio +$i day"));
+        }
+        $data = null;
+        $parametros = config('ventas');
+        foreach ($fechas as $f) {
+            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_vencimiento', '=', $f], ['estado', 'Pendiente']])->get();
+            $pedidos = null;
+            if (count($pedidos_db) > 0) {
+                foreach ($pedidos_db as $o) {
+                    $pedidos[] = ReportesController::prepara_datos($o);
+                }
+            }
+            $data[] = [
+                'fecha' => $f,
+                'data' => $pedidos
+            ];
+        }
+        return $data;
+    }
+
+    //Prepara los datos a mostrar del pedido de venta
+    public static function prepara_datos($o)
+    {
+        $p = Cliente::find($o->cliente_id);
+        $tercero = Tercero::find($p->core_tercero_id);
+        $cliente = $tercero->razon_social;
+        if ($cliente == "") {
+            $cliente = $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2;
+        }
+        $orden = [
+            'id' => $o->id,
+            'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " - " . $o->consecutivo,
+            'cliente' => $cliente,
+            'fecha_vencimiento' => $o->fecha_vencimiento
+        ];
+        return $orden;
     }
 }

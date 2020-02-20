@@ -104,6 +104,28 @@
 
 				</div>
 
+
+				<h4> Parámetros por defecto para Pedidos  </h4>
+				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsSelect('pv_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id'], 'Documento para pedidos', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+
+				<br>
 				<h4> Parámetros de precios  </h4>
 				<hr>
 				<div class="row">
