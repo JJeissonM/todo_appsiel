@@ -13,13 +13,13 @@
 
 	@include('layouts.mensajes')
 	<div class="table-responsive" id="table_content">
-		<table class="table table-bordered table-striped" id="myTable">
+		<table class="table table-bordered table-striped">
 			{{ Form::bsTableHeader($encabezado_tabla) }}
 			<tbody>
 
 				@foreach ($registros as $fila)
 					<tr>
-						<?php for($i=1;$i<count($fila);$i++){ ?>
+						<?php for($i=1;$i<count($fila->toArray());$i++){ ?>
 							<td class="table-text">
 								{{ $fila['campo'.$i] }}
 							</td>
@@ -66,5 +66,6 @@
 				@endforeach
 			</tbody>
 		</table>
+		{{$registros->render()}}
 	</div>
 @endsection
