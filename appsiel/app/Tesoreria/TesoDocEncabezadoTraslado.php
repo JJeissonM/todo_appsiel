@@ -53,7 +53,7 @@ class TesoDocEncabezadoTraslado extends Model
     {
         //dd([$datos],[$registro]);
         $registros = json_decode($datos['lineas_registros']);
-        $total=0;
+        $total = 0;
         foreach ($registros as $item) {
             $motivo = explode('-', $item->teso_motivo_id);
             $aux = TesoMotivo::where([['teso_tipo_motivo', 'Traslado'], ['movimiento', $motivo[0]]])->first();
@@ -77,10 +77,26 @@ class TesoDocEncabezadoTraslado extends Model
             $teso_registro->valor = $valor[1];
             $teso_registro->estado = 'Activo';
             $teso_registro->detalle_operacion = 0;
-            $total = $total+abs($teso_registro->valor);
-            $teso_registro->save();
+            $total = $total + abs($teso_registro->valor);
+            $result = $teso_registro->save();
+            if ($result) {
+                $movimiento = new TesoMovimiento();
+                $movimiento->fecha = $registro->fecha;
+                $movimiento->core_empresa_id = $registro->core_empresa_id;
+                $movimiento->core_tercero_id = $registro->core_tercero_id;
+                $movimiento->core_tipo_transaccion_id = $registro->core_tipo_transaccion_id;
+                $movimiento->core_tipo_doc_app_id = $registro->core_tipo_doc_app_id;
+                $movimiento->teso_motivo_id = $teso_registro->teso_motivo_id;
+                $movimiento->teso_caja_id = $teso_registro->teso_caja_id;
+                $movimiento->teso_cuenta_bancaria_id = $teso_registro->teso_cuenta_bancaria_id;
+                $movimiento->valor_movimiento = $teso_registro->valor;
+                $movimiento->consecutivo = $registro->consecutivo;
+                $movimiento->estado = 'Activo';
+                $movimiento->creado_por = $registro->creado_por;
+                $movimiento->save();
+            }
         }
-        $registro->valor_total = $total/2;
+        $registro->valor_total = $total / 2;
         $registro->estado = 'Activo';
         $registro->save();
         return redirect('web' . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro CREADO correctamente.');
