@@ -23,8 +23,6 @@ class ContabDocRegistro extends Model
     											['&nbsp;','10px']
     										]; // 6 campos
 
-
-
     public static function get_registros_impresion( $doc_encabezado_id )
     {
         return ContabDocRegistro::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_doc_registros.contab_cuenta_id')

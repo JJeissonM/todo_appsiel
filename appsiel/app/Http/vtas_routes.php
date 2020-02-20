@@ -15,6 +15,8 @@ Route::resource('ventas', 'Ventas\VentaController');
 Route::get('vtas_pedidos_enviar_por_email/{id}', 'Ventas\PedidoController@enviar_por_email');
 Route::get('vtas_pedidos_imprimir/{id}', 'Ventas\PedidoController@imprimir');
 Route::resource('vtas_pedidos', 'Ventas\PedidoController');
+Route::post('vtas_pedidos_remision', 'Ventas\PedidoController@remision')->name('pedido.remision');
+Route::get('vtas_pedidos_anular/{id}', 'Ventas\PedidoController@anular_pedido');
 
 
 // NOTAS CREDITO

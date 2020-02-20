@@ -18,8 +18,8 @@ class Widget extends Migration
             $table->enum('estado',['ACTIVO','INACTIVO']);
             $table->unsignedInteger('pagina_id');
             $table->unsignedInteger('seccion_id');
-            $table->foreign('pagina_id')->references('id')->on('pw_paginas');
-            $table->foreign('seccion_id')->references('id')->on('pw_seccion');
+            $table->foreign('pagina_id')->references('id')->on('pw_paginas')->onDelete('CASCADE');
+            $table->foreign('seccion_id')->references('id')->on('pw_seccion')->onDelete('CASCADE');
             $table->timestamps();
         });
     }

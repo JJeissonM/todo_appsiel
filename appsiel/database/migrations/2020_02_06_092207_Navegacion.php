@@ -18,8 +18,6 @@ class Navegacion extends Migration
             $table->string('color');
             $table->integer('heigth_logo');
             $table->integer('width_logo');
-            $table->unsignedInteger('widget_id');
-            $table->foreign('widget_id')->references('id')->on('pw_widget');
             $table->timestamps();
         });
     }

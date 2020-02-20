@@ -94,7 +94,6 @@ class Tercero extends Model
         return $vec;
     }
 
-
     public function validar_eliminacion($id)
     {
         $tablas_relacionadas = '{

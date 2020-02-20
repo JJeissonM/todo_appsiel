@@ -19,7 +19,7 @@ class Menunavegacion extends Migration
             $table->string('icono');
             $table->string('enlace');
             $table->unsignedInteger('navegacion_id');
-            $table->foreign('navegacion_id')->references('id')->on('pw_navegacion');
+            $table->foreign('navegacion_id')->references('id')->on('pw_navegacion')->onDelete('CASCADE');
             $table->unsignedInteger('parent_id')->default('0');
             $table->enum('estado',['ACTIVO','INACTIVO']);
             $table->timestamps();

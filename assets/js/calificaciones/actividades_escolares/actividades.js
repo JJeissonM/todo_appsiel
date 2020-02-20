@@ -83,7 +83,6 @@
 		});/**/
 	}
 
-
 	/*
 	  * Se deben restringir los selects de cursos y asignaturas de acuerdo al usuario
 	  */

@@ -18,7 +18,7 @@ class VideoYouTube
     public $parametros = '{"0":{"name":"url_video", "descripcion":"URL Video","tipo":"bsText","opciones":"","value":"null","atributos":"","definicion":"","requerido":1,"editable":1,"unico":0},"1":{"name":"altura","descripcion":"Altura(px)","tipo":"bsText","opciones":"","value":"null","atributos":"","definicion":"","requerido":0,"editable":1,"unico":0},"2":{"name":"autoplay","descripcion":"Reproducir automáticamente","tipo":"select","opciones":{"No":"No","Si":"Si"},"value":"null","atributos":"","definicion":"","requerido":0,"editable":1,"unico":0},"3":{"name":"controls","descripcion":"Mostrar controles","tipo":"select","opciones":{"No":"No","Si":"Si"},"value":"null","atributos":"","definicion":"","requerido":0,"editable":1,"unico":0}}';
 
     // Ubicación archivo index de la vista principal del módulo
-    public $ruta_ubicacion = 'web.front_end.modulos.video_youtube';
+    public $ruta_ubicacion = 'pagina_web.front_end.modulos.video_youtube';
 
 
     // Asignar variables al módulo según los datos almacenados en la base de datos

@@ -117,7 +117,6 @@ class CompraController extends TransaccionController
         $ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
         
         $lineas_registros = json_decode($request->lineas_registros);
-
         // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
 
         $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
@@ -730,7 +729,6 @@ class CompraController extends TransaccionController
 
         // 1. Actualizar total del encabezado de la factura
         $nuevo_total_encabezado = $doc_encabezado->valor_total - $linea_registro->precio_total + $precio_total;
-
         $doc_encabezado->update(
                                     ['valor_total' => $nuevo_total_encabezado]
                                 );

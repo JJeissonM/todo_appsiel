@@ -51,8 +51,6 @@
 
 @section('content')
 
-    {{ Form::bsMigaPan($miga_pan) }}
-
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap" >
             <div id="wrapper">
@@ -74,9 +72,14 @@
                     <div class="card" id="seccion_{{$seccion->id}}">
                         <div class="card-body">
                             <img src="{{asset($seccion->preview)}}" alt="...">
-                            <div class="descripcion d-flex justify-content-between">
-                                <p>{{$seccion->descripcion}}</p>
-                                <button class="btn btn-info" onclick="addSeccion('{{$seccion->id}}','{{$pagina}}')">Añadir</button>
+                            <div class="descripcion ">
+                                <form action="{{url('pagina/nuevaSeccion').$variables_url}}" method="post" class="d-flex justify-content-between">
+                                    <p>{{$seccion->descripcion}}</p>
+                                    <input type="hidden" name="_token" value="{{csrf_token()}}">
+                                    <input type="hidden" name="seccion_id" value="{{$seccion->id}}">
+                                    <<input type="hidden" name="pagina_id" value="{{$pagina}}">
+                                    <button class="btn btn-info">Añadir</button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -97,10 +100,6 @@
            }
            let seccion = document.getElementById('seccion_'+id);
            seccion.style.display = 'block';
-        }
-
-        function addSeccion(id,pagina){
-            console.log(pagina);
         }
 
     </script>

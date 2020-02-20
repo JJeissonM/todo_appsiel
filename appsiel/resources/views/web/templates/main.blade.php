@@ -75,6 +75,10 @@
         </nav>
     @endif
 
+    {{ Form::bsMigaPan($miga_pan) }}
+
+    @include('web.templates.messages')
+
     @yield('content')
 
 </main>
@@ -90,49 +94,15 @@
 <script type="text/javascript" src="{{asset('assets/web/js/slick.min.js')}}"></script>
 <!-- Progress Bar -->
 <script src="https://unpkg.com/circlebars@1.0.3/dist/circle.js"></script>
-<!-- Filterable Gallery js -->
-<script type="text/javascript" src="{{asset('assets/web/js/jquery.filterizr.min.js')}}"></script>
+
 <!-- Gallery Lightbox -->
 <script type="text/javascript" src="{{asset('assets/web/js/jquery.magnific-popup.min.js')}}"></script>
-<!-- Counter js -->
-<script type="text/javascript" src="{{asset('assets/web/js/counter.js')}}"></script>
+
 <!-- Ajax contact form  -->
 <script type="text/javascript" src="{{asset('assets/web/js/app.js')}}"></script>
 
-<!-- Custom js -->
-<script type="text/javascript" src="{{asset('assets/web/js/custom.js')}}"></script>
 
 <!-- About us Skills Circle progress  -->
-<script>
-    // First circle
-    new Circlebar({
-        element : "#circle-1",
-        type : "progress",
-        maxValue:  "90"
-    });
-
-    // Second circle
-    new Circlebar({
-        element : "#circle-2",
-        type : "progress",
-        maxValue:  "84"
-    });
-
-    // Third circle
-    new Circlebar({
-        element : "#circle-3",
-        type : "progress",
-        maxValue:  "60"
-    });
-
-    // Fourth circle
-    new Circlebar({
-        element : "#circle-4",
-        type : "progress",
-        maxValue:  "74"
-    });
-
-</script>
 
 @yield('script')
 

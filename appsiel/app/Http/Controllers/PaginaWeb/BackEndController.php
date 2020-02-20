@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use \Illuminate\Support\Facades\Input;
 
 
-
 class BackEndController extends Controller
 {
     public function __construct()

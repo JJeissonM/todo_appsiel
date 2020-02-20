@@ -38,16 +38,21 @@
 </a>
 <!-- END SCROLL TOP BUTTON -->
 
+<main>
+
 <!-- Start Header -->
-{{Form::navegacion('logo')}}
+@foreach($view as $item)
+   {!! $item !!}
+@endforeach
+
 <!-- End Header -->
 
 <!-- Start slider area -->
-{{Form::slider()}}
+{{Form::slider("")}}
 <!-- End Slider area -->
 
 <!-- Start main content -->
-<main>
+
     <!-- Start About -->
     <section id="mu-about">
         <div class="container">
@@ -129,7 +134,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Start Service Content -->
+                        <!-- Start services Content -->
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="mu-service-content">
@@ -204,7 +209,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- End Service Content -->
+                        <!-- End services Content -->
                     </div>
                 </div>
             </div>

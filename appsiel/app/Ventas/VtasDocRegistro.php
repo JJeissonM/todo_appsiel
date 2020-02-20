@@ -58,7 +58,8 @@ class VtasDocRegistro extends Model
                                 'vtas_doc_registros.valor_impuesto',
                                 'vtas_doc_registros.base_impuesto_total',
                                 'vtas_doc_registros.cantidad_devuelta',
-                                'inv_motivos.descripcion as inv_motivo_descripcion'
+                                'inv_motivos.descripcion as inv_motivo_descripcion',
+                                'vtas_doc_registros.vtas_motivo_id'
                             )
                     ->get();
     }

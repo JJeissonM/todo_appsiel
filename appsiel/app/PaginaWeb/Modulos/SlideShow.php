@@ -18,7 +18,7 @@ class SlideShow
     public $parametros = '{"0":{"name":"carousel_id","descripcion":"Albúm","tipo":"select","opciones":"model_App\\\PaginaWeb\\\Carousel","value":"null","atributos":"","definicion":"","requerido":1,"editable":1,"unico":0}}';
 
     // Ubicación archivo index de la vista principal del módulo
-    public $ruta_ubicacion = 'web.front_end.modulos.carousel';
+    public $ruta_ubicacion = 'pagina_web.front_end.modulos.carousel';
 
 
     // Asignar variables al módulo según los datos almacenados en la base de datos

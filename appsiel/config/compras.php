@@ -8,5 +8,6 @@
   'dvc_tipo_transaccion_id' => '37',
   'dvc_tipo_doc_app_id' => '37',
   'url_id_modelo' => '0',
+  'oc_tipo_doc_app_id' => '1'
 ) ;
  

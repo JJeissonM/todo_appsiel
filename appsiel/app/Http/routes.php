@@ -15,8 +15,8 @@
 /*
 		PRUEBAS UNIFICAR DB - LOCAL - REMOTA
 */
+
 Route::get('/', 'PaginaWeb\FrontEndController@inicio');
-Route::resource('navegacion', 'PaginaWeb\NavegacionController');
 
 Route::get('pagina_no_encontrada/{url}', 'PaginaWeb\FrontEndController@pagina_no_encontrada');
 
@@ -219,7 +219,7 @@ include __DIR__.'/cxp_routes.php';
 include __DIR__.'/nomina_routes.php';
 
 // Aplicación PÁGINA WEB
-include __DIR__ . '/pagina_web_routes.php';
+include __DIR__.'/pagina_web_routes.php';
 
 // Aplicación CONSULTORIO MÉDICO
 include __DIR__.'/consultorio_medico_routes.php';
@@ -230,4 +230,4 @@ include __DIR__.'/sga_routes.php';
 // Esta línea debe ir de última porque ya hay rutas específicas para /{slug}
 // Ejemplo, /inicio, /ventas, /configuracion, etc. 
 // Cada ruta de estas llama a sus propios controladores
-Route::get('/{slug}', 'PaginaWeb\FrontEndController@mostrar_enlace');
+Route::get('/{slug}', 'web\PaginaController@showPage');

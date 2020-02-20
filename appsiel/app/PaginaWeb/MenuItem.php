@@ -15,7 +15,7 @@ class MenuItem extends Model
     protected $fillable = [ 'menu_id', 'item_padre_id', 'orden', 'descripcion', 'tipo_enlace', 'pagina_id', 'slug_id', 'url_externa', 'target', 'estado'];
 
     // El archivo js debe estar en la carpeta public
-    public $archivo_js = 'assets/js/web/items_menu.js';
+    public $archivo_js = 'assets/js/pagina_web/items_menu.js';
 
 	public $encabezado_tabla = ['Menú', 'Descripción', 'Enlace', 'Estado', 'Acción'];
     

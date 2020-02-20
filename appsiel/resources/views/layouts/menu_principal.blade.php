@@ -37,7 +37,6 @@
                 <a class="navbar-brand" href="{{ url('/inicio') }}" style="height: 60px; padding-top: 0px;">
     				<img src="{{ asset('assets/img/logo_appsiel.png') }}" height="50px">
     			</a>
-
             </div>
 
             <div class="collapse navbar-collapse" id="app-navbar-collapse">

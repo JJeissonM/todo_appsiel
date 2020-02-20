@@ -7,8 +7,6 @@
 
 @section('content')
 
-    {{ Form::bsMigaPan($miga_pan) }}
-
      <div class="container">
         <div class="card">
             <div class="card-header d-flex justify-content-between ">

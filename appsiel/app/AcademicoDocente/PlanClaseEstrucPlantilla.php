@@ -5,7 +5,6 @@ namespace App\AcademicoDocente;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Matriculas\PeriodoLectivo;
-use PhpParser\Builder;
 
 class PlanClaseEstrucPlantilla extends Model
 {

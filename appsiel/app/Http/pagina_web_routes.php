@@ -6,6 +6,19 @@ Route::resource('paginas','web\PaginaController');
 Route::get('pagina/secciones/{id}','web\PaginaController@secciones');
 Route::get('pagina/administrar','web\PaginaController@admin');
 Route::get('pagina/addSeccion/{id}','web\PaginaController@addSeccion');
+Route::post('pagina/nuevaSeccion','web\PaginaController@nuevaSeccion');
+
+//navegacion
+Route::resource('navegacion', 'web\NavegacionController');
+
+Route::resource('menuItem','web\MenuNavegacionController');
+Route::post('menuItem/update/{id}','web\MenuNavegacionController@update')->name('itemUpdate');
+Route::get('item/delete/{id}','web\MenuNavegacionController@destroy');
+
+
+Route::get('seccion/{widget}','web\SeccionController@orquestador');
+
+Route::get('slider/create/{widget}','web\SliderController@create');
 
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 

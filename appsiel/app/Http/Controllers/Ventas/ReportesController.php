@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Ventas;
 
+use App\Core\Tercero;
+use App\Core\TipoDocApp;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
+use App\Ventas\Cliente;
 use Input;
 use DB;
 use Auth;
@@ -16,6 +18,7 @@ use Cache;
 use Lava;
 
 use App\Ventas\VtasMovimiento;
+use App\Ventas\VtasPedido;
 
 class ReportesController extends Controller
 {

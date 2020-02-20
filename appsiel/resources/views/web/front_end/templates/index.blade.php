@@ -221,7 +221,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Start Service Content -->
+                        <!-- Start services Content -->
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="mu-service-content">
@@ -296,7 +296,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- End Service Content -->
+                        <!-- End services Content -->
                     </div>
                 </div>
             </div>

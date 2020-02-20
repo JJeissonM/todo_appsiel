@@ -120,7 +120,6 @@ class AcademicoEstudianteController extends Controller
         return view('academico_estudiante.calificaciones',compact('miga_pan','periodos','estudiante','curso','codigo_matricula') );
     }
     
-
     public function ajax_calificaciones(Request $request)
     {
     	$select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS campo4';
@@ -175,7 +174,6 @@ class AcademicoEstudianteController extends Controller
 
         return view('calificaciones.actividades_escolares.index_estudiantes',compact('actividades','miga_pan'));
     }
-
 
 
     public function mi_plan_de_pagos($id_libreta)

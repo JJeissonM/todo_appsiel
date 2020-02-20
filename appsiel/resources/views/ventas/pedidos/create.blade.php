@@ -33,6 +33,7 @@
 			<h4>Nuevo registro</h4>
 			<hr>
 			{{ Form::open([ 'url' => $form_create['url'],'id'=>'form_create']) }}
+			<input type="hidden" name="estado" value="Pendiente"/>
 				<?php
 				  if (count($form_create['campos'])>0) {
 				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);

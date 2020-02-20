@@ -2,8 +2,6 @@
 
 @section('content')
 
-    {{ Form::bsMigaPan($miga_pan) }}
-
     <div class="container">
 
         <div class="card">
@@ -25,7 +23,7 @@
             <div class="card-footer text-muted">
                 <div class="card-header d-flex justify-content-between">
                     EN ESTA PÁGINA
-                    <a href="{{url('pagina/addSeccion/page').$variables_url}}" style="color: #0000FF;">+ Agreagar sección</a>
+                    <a href="" id="seccion" style="color: #0000FF;">+ Agreagar sección</a>
                 </div>
                 <div class="card-body">
                      <table class="table">
@@ -57,6 +55,12 @@
           function rellenarSelect(select){
               select = select.options[select.selectedIndex].value;
               const url = '{{url('')}}/'+'pagina/secciones/'+select;
+
+              /*add el id de la pagina selecionada para armar la url para agragarle una nueva sección
+               a la pania*/
+              let seccion =  document.getElementById('seccion');
+              seccion.setAttribute('href','{{url('pagina/addSeccion')}}/'+select+'{{$variables_url}}');
+
               axios.get(url)
                   .then(function (response) {
                       const data =  response.data;
@@ -65,18 +69,25 @@
                       let secciones = data.secciones;
                       $html = '';
                       secciones.forEach(function (item) {
-                          $html += ` <tr>
-                               <td>${item.seccion}</td>
-                               <td>
-                                   <a href="{{route('paginas.create')}}" title="Editar sección" class="btn bg-warning"><i class="fa fa-edit"></i></a>
-                                   <a href="{{url('')}}/" title="Mover sección" class="btn bg-info"><i class="fa fa-arrows-alt"></i></a>
-                                   <a href="{{url('')}}/" title="Duplicar sección" class="btn bg-primary"><i class="fa fa-venus-double"></i></a>
-                                   <a href="{{url('')}}/" title="Borrar sección" class="btn bg-danger"><i class="fa fa-trash"></i></a>
-                               </td>
-                           </tr>`;
+
+                          if(item.seccion !== 'navegacion' && item.seccion !==  'pie de pagina' ){
+                          $html += `<tr>
+                              <td>${item.seccion}</td>
+                              <td>
+                                  <a href="{{url('seccion')}}/${item.widget_id}{{$variables_url}}" title="Editar sección" class="btn bg-warning"><i class="fa fa-edit"></i></a>
+                                  <a href="{{url('')}}/" title="Mover sección" class="btn bg-info"><i class="fa fa-arrows-alt"></i></a>
+                                  <a href="{{url('')}}/" title="Duplicar sección" class="btn bg-primary"><i class="fa fa-venus-double"></i></a>
+                                  <a href="{{url('')}}/" title="Borrar sección" class="btn bg-danger"><i class="fa fa-trash"></i></a>
+                              </td>
+                              </tr>`;
+                          }else {
+                              $html += `<tr>
+                                            <td colspan="2">${item.seccion}</td>
+                                        </tr>`
+                          }
+
                       });
                       tbody.innerHTML = $html;
-                      console.log(tbody);
                   });
           }
 

@@ -1,0 +1,77 @@
+<?php
+
+  $empresa = App\Core\Empresa::find(1);
+  
+  function getChildren($data, $line)
+  {
+      $children = [];
+      foreach ($data as $linea) {
+          $line1 = (array)$linea;
+
+          if ($line['id'] == $line1['item_padre_id']) {
+              $children = array_merge($children, [ array_merge($line1, ['submenu' => getChildren($data, $line1) ]) ]);
+          }
+      }
+      return $children;
+  }
+
+  $menu_id = 1; // Debe ser automático
+
+  $data = DB::table('pw_menu_items')->where('menu_id', $menu_id)->orderBy('orden')->get();
+
+
+  $menuAll = [];
+  foreach ($data as $linea1) {
+    $line = (array)$linea1;
+    $item = [ array_merge($line, ['submenu' => getChildren($data, $line) ]) ];
+    $menuAll = array_merge($menuAll, $item);
+  }
+
+        $url_logo = asset( config('configuracion.url_instancia_cliente').'/storage/app/pagina_web/'.$pagina->logo).'?'.rand(1,1000); 
+        $numero_whatsapp = '3146561062';
+
+      $clase_fixed = 'navbar-fixed-top';//'navbar-fixed-bottom'
+      $mostar_logo = true;
+      $slogan = $empresa->descripcion;
+      $clase_alineacion_texto = 'navbar-right';
+    
+?>
+
+<div itemscope itemtype="http://schema.org/SiteNavigationElement">
+  <nav class="navbar navbar-default {{$clase_fixed}}">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+
+        @if($mostar_logo)
+          <a class="navbar-brand" href="{{url('/')}}">
+            
+            @if( $url_logo != '')
+              <img src="{{ $url_logo }}" alt="logo" width="32" style="display: inline;" class="logo" itemprop="logo">
+            @endif
+
+            @if($slogan != '')
+              <strong>{{ $slogan }}</strong>
+            @endif
+
+          </a>
+        @endif
+           
+      </div>
+      <div class="collapse navbar-collapse" id="myNavbar">
+        <ul class="nav navbar-nav {{$clase_alineacion_texto}}">
+          @foreach ($menuAll as $key => $item)
+              @if ($item['item_padre_id'] != 0)
+                  @break
+              @endif
+              @include('pagina_web.front_end.modulos.menu.menu-item', ['item' => $item])
+          @endforeach
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>

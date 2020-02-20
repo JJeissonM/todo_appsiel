@@ -28,7 +28,8 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 use App\Core\Empresa;
 use App\Sistema\TipoTransaccion;
 use App\Core\Tercero;
-
+use App\Http\Controllers\Inventarios\InventarioController;
+use App\Ventas\Cliente;
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
@@ -49,12 +50,12 @@ class PedidoController extends TransaccionController
 
         // Enviar valores predeterminados
         // WARNING!!!! Este motivo es de INVENTARIOS
-        $motivos = ['10-salida'=>'Ventas POS'];
+        $motivos = ['10-salida' => 'Ventas POS'];
 
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
-        $tabla = new TablaIngresoLineaRegistros( VtasTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
+        $tabla = new TablaIngresoLineaRegistros(VtasTransaccion::get_datos_tabla_ingreso_lineas_registros($this->transaccion, $motivos));
 
-        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'ventas.create', $tabla );
+        return $this->crear($this->app, $this->modelo, $this->transaccion, 'ventas.create', $tabla);
     }
 
     /**
@@ -67,22 +68,23 @@ class PedidoController extends TransaccionController
     {
 
         $lineas_registros = json_decode($request->lineas_registros);
+        $request['estado'] = "Pendiente";
 
         // 2do. Crear documento de Ventas
         $ventas_doc_encabezado_id = PedidoController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
-        return redirect('vtas_pedidos/'.$ventas_doc_encabezado_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+        return redirect('vtas_pedidos/' . $ventas_doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
     }
 
     /*
         Crea un documento completo: encabezados, registros, movimiento y contabilización
         Devuelve en ID del documento creado
     */
-    public static function crear_documento( Request $request, array $lineas_registros, $modelo_id )
+    public function crear_documento(Request $request, array $lineas_registros, $modelo_id)
     {
         $doc_encabezado = $this->crear_encabezado_documento($request, $modelo_id);
 
-        PedidoController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
+        PedidoController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
         return $doc_encabezado->id;
     }
@@ -92,7 +94,7 @@ class PedidoController extends TransaccionController
         Todas estas operaciones se crean juntas porque se almacenena en cada iteración de las lineas de registros
         No Devuelve nada
     */
-    public static function crear_registros_documento( Request $request, $doc_encabezado, array $lineas_registros )
+    public function crear_registros_documento(Request $request, $doc_encabezado, array $lineas_registros)
     {
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
         $datos = $request->all();
@@ -102,29 +104,27 @@ class PedidoController extends TransaccionController
         $total_documento = 0;
 
         $cantidad_registros = count($lineas_registros);
-        for ($i=0; $i < $cantidad_registros; $i++) 
-        {
-            $linea_datos = [ 'vtas_motivo_id' => $lineas_registros[$i]->inv_motivo_id ] +
-                                    [ 'inv_producto_id' => $lineas_registros[$i]->inv_producto_id ] +
-                                    [ 'precio_unitario' => $lineas_registros[$i]->precio_unitario ] +
-                                    [ 'cantidad' => $lineas_registros[$i]->cantidad ] +
-                                    [ 'precio_total' => $lineas_registros[$i]->precio_total ] +
-                                    [ 'base_impuesto' => $lineas_registros[$i]->base_impuesto ] +
-                                    [ 'tasa_impuesto' => $lineas_registros[$i]->tasa_impuesto ] +
-                                    [ 'valor_impuesto' => $lineas_registros[$i]->valor_impuesto ] +
-                                    [ 'base_impuesto_total' => $lineas_registros[$i]->base_impuesto_total ] +
-                                    [ 'creado_por' => Auth::user()->email ] +
-                                    [ 'estado' => 'Activo' ];
+        for ($i = 0; $i < $cantidad_registros; $i++) {
+            $linea_datos = ['vtas_motivo_id' => $lineas_registros[$i]->inv_motivo_id] +
+                ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
+                ['precio_unitario' => $lineas_registros[$i]->precio_unitario] +
+                ['cantidad' => $lineas_registros[$i]->cantidad] +
+                ['precio_total' => $lineas_registros[$i]->precio_total] +
+                ['base_impuesto' => $lineas_registros[$i]->base_impuesto] +
+                ['tasa_impuesto' => $lineas_registros[$i]->tasa_impuesto] +
+                ['valor_impuesto' => $lineas_registros[$i]->valor_impuesto] +
+                ['base_impuesto_total' => $lineas_registros[$i]->base_impuesto_total] +
+                ['creado_por' => Auth::user()->email] +
+                ['estado' => 'Activo'];
 
 
-            VtasDocRegistro::create( 
-                                    $datos + 
-                                    [ 'vtas_doc_encabezado_id' => $doc_encabezado->id ] +
-                                    $linea_datos
-                                );
+            VtasDocRegistro::create(
+                $datos +
+                    ['vtas_doc_encabezado_id' => $doc_encabezado->id] +
+                    $linea_datos
+            );
 
             $total_documento += $lineas_registros[$i]->precio_total;
-
         } // Fin por cada registro
 
     }
@@ -140,81 +140,81 @@ class PedidoController extends TransaccionController
     {
         $this->set_variables_globales();
 
-        $botones_anterior_siguiente = new BotonesAnteriorSiguiente( $this->transaccion, $id );
-
-        $documento_vista = $this->generar_documento_vista( $id, 'documento_vista' );
-
-        $id_transaccion = $this->transaccion->id;
+        $botones_anterior_siguiente = new BotonesAnteriorSiguiente($this->transaccion, $id);
+        $this->doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
+        $doc_registros = VtasDocRegistro::get_registros_impresion($this->doc_encabezado->id);
+        $this->empresa = Empresa::find($this->doc_encabezado->core_empresa_id);
+        $resolucion = '';
         $doc_encabezado = $this->doc_encabezado;
-
-        $registros_contabilidad = [];
-
         $empresa = $this->empresa;
-
+        //$documento_vista = $this->generar_documento_vista($id, 'documento_vista');
+        $documento_vista = "";
+        $id_transaccion = $this->transaccion->id;
+        $registros_contabilidad = [];
+        $cliente = Cliente::find($doc_encabezado->cliente_id);
         $miga_pan = [
-                ['url'=>'ventas?id='.Input::get('id'),'etiqueta'=>'Ventas'],
-                ['url'=>'vtas_pedidos?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $this->modelo->descripcion ],
-                ['url'=>'NO','etiqueta' => $this->doc_encabezado->documento_transaccion_prefijo_consecutivo ]
-            ];
-        
-        return view( 'ventas.pedidos.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','registros_contabilidad','empresa') );
+            ['url' => 'ventas?id=' . Input::get('id'), 'etiqueta' => 'Ventas'],
+            ['url' => 'web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'), 'etiqueta' => $this->modelo->descripcion],
+            ['url' => 'NO', 'etiqueta' => $this->doc_encabezado->documento_transaccion_prefijo_consecutivo]
+        ];
+
+        return view('ventas.pedidos.show', compact('id', 'cliente', 'doc_registros', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan', 'doc_encabezado', 'registros_contabilidad', 'empresa'));
     }
 
     /*
         Imprimir
     */
-    public function imprimir( $id )
+    public function imprimir($id)
     {
-        $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir' );
+        $documento_vista = $this->generar_documento_vista($id, 'documento_imprimir');
 
         // Se prepara el PDF
-        $orientacion='portrait';
-        $tam_hoja = array(0,0,50,800);//'A4';
+        $orientacion = 'portrait';
+        $tam_hoja = array(0, 0, 50, 800); //'A4';
 
         $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
+        $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;
-        return $pdf->stream( $this->doc_encabezado->documento_transaccion_descripcion.' - '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
-        
+        return $pdf->stream($this->doc_encabezado->documento_transaccion_descripcion . ' - ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf');
     }
 
     /*
         Enviar por email
     */
-    public function enviar_por_email( $id )
+    public function enviar_por_email($id)
     {
-        $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir' );
+        $documento_vista = $this->generar_documento_vista($id, 'documento_imprimir');
 
-        $tercero = Tercero::find( $this->doc_encabezado->core_tercero_id );
+        $tercero = Tercero::find($this->doc_encabezado->core_tercero_id);
 
-        $asunto = $this->doc_encabezado->documento_transaccion_descripcion.' No. '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo;
+        $asunto = $this->doc_encabezado->documento_transaccion_descripcion . ' No. ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo;
 
-        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto;
+        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su ' . $asunto;
 
-        $vec = EmailController::enviar_por_email_documento( $this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista );
+        $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista);
 
-        return redirect( 'vtas_pedidos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( $vec['tipo_mensaje'], $vec['texto_mensaje'] );
+        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with($vec['tipo_mensaje'], $vec['texto_mensaje']);
     }
 
 
     /*
         Generar la vista para los métodos show(), imprimir() o enviar_por_email()
     */
-    public function generar_documento_vista( $id, $nombre_vista )
+    public function generar_documento_vista($id, $nombre_vista)
     {
-        $this->doc_encabezado = VtasDocEncabezado::get_registro_impresion( $id );
-        
-        $doc_registros = VtasDocRegistro::get_registros_impresion( $this->doc_encabezado->id );
+        $this->doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
 
-        $this->empresa = Empresa::find( $this->doc_encabezado->core_empresa_id );
+        $doc_registros = VtasDocRegistro::get_registros_impresion($this->doc_encabezado->id);
+
+        $this->empresa = Empresa::find($this->doc_encabezado->core_empresa_id);
 
         $resolucion = '';
 
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 
-        return View::make( 'ventas.pedidos.'.$nombre_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion' ) )->render();
+        return View::make('ventas.pedidos.' . $nombre_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion'))->render();
     }
 
 
@@ -236,40 +236,40 @@ class PedidoController extends TransaccionController
         $registro = app($modelo->name_space)->find($id);
         $registros = VtasDocRegistro::get_registros_impresion($registro->id);
 
-        $lista_campos = $general->get_campos_modelo($modelo,$registro,'edit');
+        $lista_campos = $general->get_campos_modelo($modelo, $registro, 'edit');
 
         $cantidad_campos = count($lista_campos);
 
         $tipo_transaccion = TipoTransaccion::find($id_transaccion);
 
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create',null);
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, 'create', null);
 
         $tercero = Tercero::find($registro->core_tercero_id);
-        $registro->cliente_input = $tercero->apellido1." ".$tercero->apellido2." ".$tercero->nombre1." ".$tercero->otros_nombres;
+        $registro->cliente_input = $tercero->apellido1 . " " . $tercero->apellido2 . " " . $tercero->nombre1 . " " . $tercero->otros_nombres;
 
         $registro->inv_bodega_id = 1;
 
         $form_create = [
-                        'url' => $modelo->url_form_create,
-                        'campos' => $lista_campos
-                    ];
+            'url' => $modelo->url_form_create,
+            'campos' => $lista_campos
+        ];
 
 
-        $body = View::make('ventas.incluir.lineas_registros', compact('registro','registros') )->render();
+        $body = View::make('ventas.incluir.lineas_registros', compact('registro', 'registros'))->render();
 
         // Enviar valores predeterminados
         // WARNING!!!! Este motivo es de INVENTARIOS
-        $motivos = ['10-salida'=>'Ventas POS'];
+        $motivos = ['10-salida' => 'Ventas POS'];
 
         $miga_pan = [
-                ['url'=>'ventas?id='.Input::get('id'),'etiqueta'=>'Ventas'],
-                ['url'=>'NO','etiqueta'=>$tipo_transaccion->descripcion]
-            ];
+            ['url' => 'ventas?id=' . Input::get('id'), 'etiqueta' => 'Ventas'],
+            ['url' => 'NO', 'etiqueta' => $tipo_transaccion->descripcion]
+        ];
 
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
-        $tabla = new TablaIngresoLineaRegistros( VtasTransaccion::get_datos_tabla_ingreso_lineas_registros( $tipo_transaccion, $motivos, $body ) );
+        $tabla = new TablaIngresoLineaRegistros(VtasTransaccion::get_datos_tabla_ingreso_lineas_registros($tipo_transaccion, $motivos, $body));
 
-        return view('ventas.pedidos.edit', compact('form_create','id_transaccion','miga_pan','tabla','registro','registros'));
+        return view('ventas.pedidos.edit', compact('form_create', 'id_transaccion', 'miga_pan', 'tabla', 'registro', 'registros'));
     }
 
 
@@ -302,15 +302,44 @@ class PedidoController extends TransaccionController
             - se actualiza el estado a Anulado en vtas_doc_registros y vtas_doc_encabezados
     */
     public static function anular_pedido($id)
-    {        
-        $pedido = VtasDocEncabezado::find( $id );
+    {
+        $pedido = VtasDocEncabezado::find($id);
 
-        VtasDocRegistro::where('vtas_doc_encabezado_id',$pedido->id)->update(['estado'=>'Anulado']);
+        VtasDocRegistro::where('vtas_doc_encabezado_id', $pedido->id)->update(['estado' => 'Anulado']);
 
-        $pedido->update(['estado'=>'Anulado']);
+        $pedido->update(['estado' => 'Anulado']);
 
-        return redirect( 'vtas_pedidos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('flash_message','Pedido ANULADO correctamente.');
-        
+        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Pedido ANULADO correctamente.');
     }
 
+    //Crea remision a partir del pedido
+    public function remision(Request $request)
+    {
+        // Llamar a los parámetros del archivo de configuración
+        $parametros = config('ventas');
+
+        // Modelo del encabezado del documento
+        $rm_modelo_id = $parametros['rm_modelo_id'];
+        $rm_tipo_transaccion_id = $parametros['rm_tipo_transaccion_id'];
+        $rm_tipo_doc_app_id = $parametros['rm_tipo_doc_app_id'];
+
+        $lineas_registros = json_decode($request->lineas_registros);
+
+        // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
+        $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
+        $core_tipo_doc_app_id_original = $request['core_tipo_doc_app_id'];
+
+        $request['core_tipo_transaccion_id'] = $rm_tipo_transaccion_id;
+        $request['core_tipo_doc_app_id'] = $rm_tipo_doc_app_id;
+        $request['estado'] = 'Pendiente';
+        $request['consecutivo'] = "";
+        $hoy = getdate();
+        $request['fecha'] = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
+        $remision_creada_id = InventarioController::crear_documento($request, $lineas_registros, $rm_modelo_id);
+        $pedido = VtasDocEncabezado::get_registro_impresion($request->id);
+        $pedido->remision_doc_encabezado_id = $remision_creada_id;
+        $pedido->estado = "Cumplido";
+        $pedido->save();
+        return redirect('inventarios/' . $remision_creada_id . '?id=' . $request->url_id . '&id_modelo=' . $rm_modelo_id . '&id_transaccion=' . $rm_tipo_transaccion_id);
+    }
 }

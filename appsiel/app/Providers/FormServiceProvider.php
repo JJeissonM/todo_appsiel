@@ -59,23 +59,22 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsTableHeader', 'components.design.table_header', ['headers']);
         Form::component('bsMigaPan', 'components.design.miga_pan', ['vec']);
 
-
         Form::component('NombreMes', 'components.design.nombre_mes', ['mes']);
-
         Form::component('TextoMoneda', 'components.design.texto_moneda', ['valor']);
-
         Form::component('Spin', 'components.design.spin', ['tamaño']);
         Form::component('btnInfo', 'components.design.btn_info', ['title']);
 
+        //Form::component('HrefDocEncabezado', 'components.design.btn_info', ['title']);
+
         self::webComponent();
 
-        //Form::component('HrefDocEncabezado', 'components.design.btn_info', ['title']);
     }
+
 
 
     public function webComponent(){
         //componentes utilizado en el diseñador de la pagina web
-        Form::component('navegacion','components.web.navegacion',['name']);
+        Form::component('navegacion','components.web.navegacion',['nav']);
         Form::component('slider','components.web.slider',[]);
     }
 

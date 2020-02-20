@@ -20,7 +20,6 @@
 
 	{{ Form::close() }}
 	<!-- <button id="btn_ir">ir</button> -->
-
 @endsection
 
 

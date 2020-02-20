@@ -16,7 +16,6 @@ class Carousel extends Model
     protected $fillable = ['imagenes', 'altura_maxima', 'descripcion', 'activar_controles_laterales', 'estado'];
 
     public $encabezado_tabla = ['Descripción', 'Estado', 'Acción'];
-
     public static function consultar_registros()
     {
         $registros = Carousel::select('pw_mod_carousels.descripcion AS campo1', 'pw_mod_carousels.estado AS campo2', 'pw_mod_carousels.id AS campo3')

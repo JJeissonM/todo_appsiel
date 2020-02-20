@@ -13,33 +13,40 @@ class InvMovimiento extends Model
 {
     //protected $table = 'inv_movimientos';
 
-    protected $fillable = ['core_empresa_id','inv_doc_encabezado_id','core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','cantidad','costo_total','creado_por','modificado_por','codigo_referencia_tercero','core_tercero_id'];
+    protected $fillable = ['core_empresa_id', 'inv_doc_encabezado_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'costo_unitario', 'cantidad', 'costo_total', 'creado_por', 'modificado_por', 'codigo_referencia_tercero', 'core_tercero_id'];
 
-    public $encabezado_tabla = ['Fecha','Documento','Producto','Bodega','Motivo','Movimiento','Costo unit.','Cantidad','Costo total','ID','Acción'];
+    public $encabezado_tabla = ['Fecha', 'Documento', 'Producto', 'Bodega', 'Motivo', 'Movimiento', 'Costo unit.', 'Cantidad', 'Costo total', '&nbsp;', 'Acción'];
+
+    public $vistas = '{"index":"layouts.index3"}';
 
     public static function consultar_registros()
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo) AS campo2';
 
         $registros = InvMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_movimientos.core_tipo_doc_app_id')
-                    ->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_movimientos.inv_producto_id')
-                    ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_movimientos.inv_bodega_id')
-                    ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
-                    ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                    ->select(
-                                'inv_movimientos.fecha AS campo1',
-                                DB::raw($select_raw),
-                                DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'),
-                                'inv_bodegas.descripcion AS campo4',
-                                'inv_motivos.descripcion AS campo5',
-                                'inv_motivos.movimiento AS campo6',
-                                'inv_movimientos.costo_unitario AS campo7',
-                                'inv_movimientos.cantidad AS campo8',
-                                'inv_movimientos.costo_total AS campo9',
-                                'inv_movimientos.id AS campo10',
-                                'inv_movimientos.id AS campo11')
-                    ->get()
-                    ->toArray();
+            ->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_movimientos.inv_producto_id')
+            ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_movimientos.inv_bodega_id')
+            ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
+            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+            ->select('inv_movimientos.fecha AS campo1', DB::raw($select_raw), DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'), 'inv_bodegas.descripcion AS campo4', 'inv_motivos.descripcion AS campo5', 'inv_motivos.movimiento AS campo6', 'inv_movimientos.costo_unitario AS campo7', 'inv_movimientos.cantidad AS campo8', 'inv_movimientos.costo_total AS campo9', 'inv_movimientos.id AS campo10', 'inv_movimientos.id AS campo11')
+            ->get()
+            ->toArray();
+
+        return $registros;
+    }
+
+    public static function consultar_registros2()
+    {
+        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo) AS campo2';
+
+        $registros = InvMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_movimientos.inv_producto_id')
+            ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_movimientos.inv_bodega_id')
+            ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
+            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+            ->select('inv_movimientos.fecha AS campo1', DB::raw($select_raw), DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'), 'inv_bodegas.descripcion AS campo4', 'inv_motivos.descripcion AS campo5', 'inv_motivos.movimiento AS campo6', 'inv_movimientos.costo_unitario AS campo7', 'inv_movimientos.cantidad AS campo8', 'inv_movimientos.costo_total AS campo9', 'inv_movimientos.id AS campo10', 'inv_movimientos.id AS campo11')
+            ->orderBy('inv_movimientos.created_at', 'DESC')
+            ->paginate(100);
 
         return $registros;
     }
@@ -224,7 +231,7 @@ class InvMovimiento extends Model
         }
 
         //dd($vec_saldo);
-        return [null,null];
+        return [null, null];
     }
 
     // Valida que no haya saldos negativos en moviminetos posteriores para TODOS los registros de un documento de inventarios
