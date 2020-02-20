@@ -1,25 +1,17 @@
 <?php
 
-namespace App\Http\Controllers\web\services;
+namespace App\Http\Controllers\web;
 
+use Illuminate\Http\Request;
 
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 
-class SliderComponent implements IDrawComponent
+class SliderController extends Controller
 {
+    public function create($widget){
 
-    public function __construct($widget)
-    {
-        $this->widget = $widget;
-    }
-
-    function DrawComponent()
-    {
-       return false;
-    }
-
-    function viewComponent()
-    {
         $miga_pan = [
             [
                 'url' => 'pagina_web'.'?id='. Input::get('id'),
@@ -34,8 +26,9 @@ class SliderComponent implements IDrawComponent
                 'etiqueta' => 'Slider'
             ]
         ];
-        $widget = $this->widget;
+
         $variables_url = '?id='.Input::get('id');
-        return view('web.components.slider',compact('miga_pan','variables_url','widget'));
+        return view('web.components.slider.create',compact('miga_pan','variables_url','widget'));
     }
+
 }

@@ -4,12 +4,12 @@
     <style>
         .card-body {
             padding: 0 !important;
-            height: 72.5vh;
             overflow-y: hidden;
         }
         #wrapper {
             overflow-y: scroll;
             width: 30%;
+            height: 72.3vh;
             margin-right: 0;
         }
         .list-group-item {
@@ -33,49 +33,95 @@
         .widgets .card-body {
             position: relative;
         }
-        .descripcion {
-            position: absolute;
-            padding: 10px;
-            width: 100%;
-            bottom: 0;
-            background-color: #3d6983;
-        }
-        .descripcion p {
-            color: white;
-        }
         .activo{
 
         }
+
+        .contenido {
+            display: flex;
+            padding: 5px;
+            border: 1px solid #3d6983;
+            border-radius: 5px;
+        }
+
+        .contenido img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .descripcion {
+            padding: 5px;
+        }
+
+        .descripcion h5 {
+            color:black;
+            font-size: 16px;
+        }
+
+        .add {
+            margin-top : 20px;
+        }
+
+        .add a {
+            color:#1c85c4;
+        }
+
     </style>
+
 @endsection
 
 @section('content')
-
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap" >
             <div id="wrapper">
-                <ul class="list-group">
-
-                </ul>
+                <div class="contenido">
+                    <img src="{{asset('img/img-1.jpg')}}" alt="" class="imagen">
+                    <div class="descripcion">
+                        <h5 class="titulo">Maratón de programación</h5>
+                        <p>Lorem ipsum dolor sit amet.</p>
+                    </div>
+                    <a href="" class="btn"><i class="fa fa-edit"></i></a>
+                    <a href="" class="btn"><i class="fa fa-eraser"></i></a>
+                </div>
+                <div class="contenido">
+                    <img src="{{asset('img/img-2.jpg')}}" alt="" class="imagen">
+                    <div class="descripcion">
+                        <h5 class="titulo">Maratón de programación</h5>
+                        <p>Lorem ipsum dolor sit amet.</p>
+                    </div>
+                    <a href="" class="btn"><i class="fa fa-edit"></i></a>
+                    <a href="" class="btn"><i class="fa fa-eraser"></i></a>
+                </div>
+                <div class="contenido">
+                    <img src="{{asset('img/img-3.jpg')}}" alt="" class="imagen">
+                    <div class="descripcion">
+                        <h5 class="titulo">Maratón de programación</h5>
+                        <p>Lorem ipsum dolor sit amet.</p>
+                    </div>
+                    <a href="" class="btn"><i class="fa fa-edit"></i></a>
+                    <a href="" class="btn"><i class="fa fa-eraser"></i></a>
+                </div>
+                <div class="contenido">
+                    <img src="{{asset('img/img-2.jpg')}}" alt="" class="imagen">
+                    <div class="descripcion">
+                        <h5 class="titulo">Maratón de programación</h5>
+                        <p>Lorem ipsum dolor sit amet.</p>
+                    </div>
+                    <a href="" class="btn"><i class="fa fa-edit"></i></a>
+                    <a href="" class="btn"><i class="fa fa-eraser"></i></a>
+                </div>
+                <div class="add d-flex justify-content-end">
+                    <a href="{{url('slider/create').'/'.$widget.$variables_url}}"> Agregar Item</a>
+                </div>
             </div>
             <div class="widgets" id="widgets">
-
+                {!! Form::slider("") !!}
             </div>
         </div>
     </div>
 @endsection
 
 @section('script')
-    <script>
-        function selectSeccion(id){
-            let widgets = document.getElementById('widgets');
-            const secciones = widgets.children;
-            for(let i = 0; i < secciones.length;i++){
-                let item = secciones[i].getAttribute('id');
-                document.getElementById(item).style.display = 'none';
-            }
-            let seccion = document.getElementById('seccion_'+id);
-            seccion.style.display = 'block';
-        }
-    </script>
+
 @endsection
