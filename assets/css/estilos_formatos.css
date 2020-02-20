@@ -1,0 +1,136 @@
+@page { margin: 25px 25px; }
+
+.con_borde{
+    border: solid 1px collapse;
+    /*border-collapse: separate !important;*/
+    border-spacing: 0;
+    /*margin: 30px;*/
+    width: 100%;
+    line-height: 1.5;
+    /*height: 48%;
+    font-size: 15px;*/
+}
+
+.con_borde td{
+    border: solid 1px;
+}
+
+.tabla_registros {
+    border: solid 1px;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    /*margin: 30px;*/
+    width: 100%;
+    font-size: 13px;
+    /*line-height: 1.5;
+    height: 48%;*/
+}
+
+.tabla_registros td{
+    border: solid 1px;
+}
+
+.encabezado{
+    background-color: #C2C1CA;
+    text-align: center;
+    font-weight: bold;
+}
+
+.fila-1{
+    background-color: #FFFFFF;
+}
+
+.fila-2{
+    background-color: #DFDFE3;
+}
+
+header { 
+    position: fixed; 
+    top: -60px; 
+    left: 0px; 
+    right: 0px; 
+    background-color: lightblue; 
+    height: 50px; 
+}
+
+footer {
+    position: fixed; 
+    bottom: -70px; 
+    left: 0px; 
+    right: 0px; 
+    background-color: lightblue; 
+    height: 40px;
+    text-align: center;
+}
+
+.page-break {
+	page-break-after: always;
+}
+
+p { page-break-after: always; }
+p:last-child { page-break-after: never; }
+
+#watermark-letter {
+    position: fixed;
+    top: 7%;/**/
+    width: 100%;
+    text-align: center;
+    opacity: .3;
+    /*transform: rotate(10deg);*/
+    transform-origin: 50% 50%;
+    z-index: -1000;
+  }
+
+#watermark-legal {
+    position: fixed;
+    top: 15%;/**/
+    width: 100%;
+    text-align: center;
+    opacity: .3;
+    /*transform: rotate(10deg);*/
+    transform-origin: 50% 50%;
+    z-index: -1000;
+  }
+
+
+
+  table {
+                width: 100%;
+                color:black;
+                font-family:arial;
+                margin-top: 2em;
+            }
+                
+           thead {
+             background-color: #eeeeee;              
+           }
+            
+           tbody {
+             background-color: #ffffff;     
+           }
+            
+           th,td {
+             padding: 3pt;
+           } 
+
+           table.tabla_pdf {
+              border-collapse: collapse;
+             border-top: 1px solid black;
+             border-bottom: 1px solid black;
+           }
+           .celda_right{
+            border-right: 1px solid black;
+           }
+           .celda_left{
+            border-left: 1px solid black;
+           }
+           
+           table.tabla_pdf th {
+             border-top: 1px solid black;
+            border-bottom: 1px solid black;
+           }
+           
+           table.tabla_pdf td {
+             border: 1px solid gray;
+             
+           }

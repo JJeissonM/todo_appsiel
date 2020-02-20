@@ -1,0 +1,138 @@
+<?php
+
+namespace App\Matriculas;
+
+use Illuminate\Database\Eloquent\Model;
+
+use App\Core\Colegio;
+use App\Calificaciones\Periodo;
+
+use Auth;
+use DB;
+
+class PeriodoLectivo extends Model
+{
+    protected $table='sga_periodos_lectivos';
+
+    protected $fillable = ['id_colegio','descripcion','fecha_desde','fecha_hasta','estado','cerrado'];
+
+    public $encabezado_tabla = ['Descripcion','Fecha desde','Fecha hasta','Cerrado','Estado','Acción'];
+
+    public static function consultar_registros()
+    {
+    	$select_raw = 'IF(sga_periodos_lectivos.cerrado=0,REPLACE(sga_periodos_lectivos.cerrado,0,"No"),REPLACE(sga_periodos_lectivos.cerrado,1,"Si")) AS campo4';
+
+        $registros = PeriodoLectivo::select('sga_periodos_lectivos.descripcion AS campo1',
+                            'sga_periodos_lectivos.fecha_desde AS campo2',
+                            'sga_periodos_lectivos.fecha_hasta AS campo3',
+                            DB::raw($select_raw),
+                            'sga_periodos_lectivos.estado AS campo5',
+                            'sga_periodos_lectivos.id AS campo6')
+                    ->get()
+                    ->toArray();
+
+        return $registros;
+    }
+
+    // El archivo js debe estar en la carpeta public
+    //public $archivo_js = 'assets/js/calificaciones_periodos.js';
+
+    public static function opciones_campo_select()
+    {
+        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+
+        $opciones = PeriodoLectivo::where('id_colegio',$colegio->id)
+                                ->where('estado','Activo')
+                                ->where('cerrado',0)
+                                ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
+    public static function get_array_activos()
+    {
+        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+
+        $opciones = PeriodoLectivo::where('id_colegio',$colegio->id)
+                                ->where('estado','Activo')
+                                ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
+    public static function get_actual()
+    {
+        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
+
+        return PeriodoLectivo::where('id_colegio',$colegio->id)
+                            ->where('estado','Activo')
+                            ->where('cerrado',0)
+                            ->get()
+                            ->last();
+    }
+
+    public static function get_anio_actual()
+    {
+        return explode( '-', PeriodoLectivo::get_actual()->fecha_desde )[0];
+    }
+
+    public static function get_segun_periodo( $periodo_id )
+    {
+        return PeriodoLectivo::find( Periodo::find( $periodo_id )->periodo_lectivo_id );
+    }
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"sga_asignaciones_profesores",
+                                    "llave_foranea":"periodo_lectivo_id",
+                                    "mensaje":"Ya hay ingresada Carga Académica de profesores en ese año lectivo."
+                                },
+                            "1":{
+                                    "tabla":"sga_curso_tiene_asignaturas",
+                                    "llave_foranea":"periodo_lectivo_id",
+                                    "mensaje":"Ya hay Asignaturas asignadas a cursos en ese año lectivo."
+                                },
+                            "2":{
+                                    "tabla":"sga_escala_valoracion",
+                                    "llave_foranea":"periodo_lectivo_id",
+                                    "mensaje":"Ya hay escala de valoración creada en ese año lectivo."
+                                },
+                            "3":{
+                                    "tabla":"sga_matriculas",
+                                    "llave_foranea":"periodo_lectivo_id",
+                                    "mensaje":"Ya hay matrículas registradas en ese año lectivo."
+                                },
+                            "4":{
+                                    "tabla":"sga_periodos",
+                                    "llave_foranea":"periodo_lectivo_id",
+                                    "mensaje":"Ya hay periodos creados en ese año lectivo."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
+    } 
+}

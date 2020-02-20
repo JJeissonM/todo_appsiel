@@ -1,0 +1,1 @@
+<a class="btn btn-warning btn-xs btn-detail" href="{{ url($url) }}" title="Modificar"><i class="fa fa-btn fa-edit"></i>&nbsp;</a>

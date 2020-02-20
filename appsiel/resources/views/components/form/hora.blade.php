@@ -1,0 +1,2 @@
+{{ Form::label($name, $lbl, ['class' => 'col-md-3']) }}
+{{ Form::time($name, $value, array_merge(['class' => 'col-md-9','style'=>'border: none;border-color: transparent;border-bottom: 1px solid gray;'], $attributes)) }}
