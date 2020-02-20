@@ -45,7 +45,8 @@ class InvMovimiento extends Model
             ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
             ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
             ->select('inv_movimientos.fecha AS campo1', DB::raw($select_raw), DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'), 'inv_bodegas.descripcion AS campo4', 'inv_motivos.descripcion AS campo5', 'inv_motivos.movimiento AS campo6', 'inv_movimientos.costo_unitario AS campo7', 'inv_movimientos.cantidad AS campo8', 'inv_movimientos.costo_total AS campo9', 'inv_movimientos.id AS campo10', 'inv_movimientos.id AS campo11')
-            ->paginate(10);
+            ->orderBy('inv_movimientos.created_at', 'DESC')
+            ->paginate(100);
 
         return $registros;
     }

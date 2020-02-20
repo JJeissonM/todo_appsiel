@@ -13,7 +13,7 @@
 
 	@include('layouts.mensajes')
 	<div class="table-responsive" id="table_content">
-		<table class="table table-bordered table-striped">
+		<table class="table table-bordered table-striped" id="myTable">
 			{{ Form::bsTableHeader($encabezado_tabla) }}
 			<tbody>
 
