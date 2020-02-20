@@ -150,8 +150,15 @@ class ModeloController extends Controller
             Algunas Modelos necesitan campos formateados o compuestos de una manera única
             También se pueden personalizar los campos asignados al Modelo
         */
-        if (method_exists(app($this->modelo->name_space), 'get_campos_adicionales_create')) {
-            $lista_campos = app($this->modelo->name_space)->get_campos_adicionales_create($lista_campos);
+        if ( method_exists( app( $this->modelo->name_space ), 'get_campos_adicionales_create' ) )
+        {
+            $lista_campos = app( $this->modelo->name_space )->get_campos_adicionales_create( $lista_campos );
+        }
+        if( Input::get('id_transaccion') != '' )
+        {
+            $tipo_transaccion = TipoTransaccion::find( Input::get('id_transaccion') );
+            $cantidad_campos = count( $lista_campos );
+            $lista_campos = $this->personalizar_campos( Input::get('id_transaccion'), $tipo_transaccion,$lista_campos,$cantidad_campos,'create');
         }
 
         // Se crear un array para generar el formulario

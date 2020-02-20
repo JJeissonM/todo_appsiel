@@ -48,7 +48,7 @@
 <!-- End Header -->
 
 <!-- Start slider area -->
-{{Form::slider()}}
+{{Form::slider("")}}
 <!-- End Slider area -->
 
 <!-- Start main content -->

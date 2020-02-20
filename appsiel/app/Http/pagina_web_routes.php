@@ -18,6 +18,8 @@ Route::get('item/delete/{id}','web\MenuNavegacionController@destroy');
 
 Route::get('seccion/{widget}','web\SeccionController@orquestador');
 
+Route::get('slider/create/{widget}','web\SliderController@create');
+
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
 Route::get('categoria/{id?}', 'PaginaWeb\FrontEndController@show_categoria');

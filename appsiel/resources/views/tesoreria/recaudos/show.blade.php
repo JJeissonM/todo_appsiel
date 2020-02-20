@@ -5,7 +5,11 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
 @extends('transaccion.show')
 
 @section('botones_acciones')
-    {{ Form::bsBtnCreate( 'tesoreria/recaudos/create'.$variables_url ) }}
+    @if(isset($nombre))
+        {{ Form::bsBtnCreate( 'web/create'.$variables_url ) }}
+    @else
+        {{ Form::bsBtnCreate( 'tesoreria/recaudos/create'.$variables_url ) }}
+    @endif
     @if($doc_encabezado->estado != 'Anulado')
         <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-close"></i> Anular</button>
     @endif
@@ -19,7 +23,7 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
         Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>'POS'],null, [ 'id' =>'formato_impresion_id' ]) }}
         {{ Form::bsBtnPrint( 'tesoreria/recaudos_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
     @endif
-    @endsection
+@endsection
 
 @section('botones_anterior_siguiente')
     @if(isset($nombre))
@@ -62,9 +66,9 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
         Si realmente quiere anular el documento, haga click en el siguiente enlace: <small>
             @if(isset($nombre))
                 <a href="{{ url( 'tesoreria/traslado_efectivo/anular/'.$id.$variables_url ) }}"> Anular </a> </small>
-                @else
-                <a href="{{ url( 'tesoreria/recaudos_anular/'.$id.$variables_url ) }}"> Anular </a> </small>
-                @endif
+        @else
+            <a href="{{ url( 'tesoreria/recaudos_anular/'.$id.$variables_url ) }}"> Anular </a> </small>
+        @endif
     </div>
 @endsection
 
