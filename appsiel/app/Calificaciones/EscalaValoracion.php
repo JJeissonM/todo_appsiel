@@ -45,10 +45,17 @@ class EscalaValoracion extends Model
         return $vec;
     }
 
-    public static function get_escalas_periodo_lectivo_abierto()
+    public static function get_escalas_periodo_lectivo_abierto( $periodo_lectivo_id = null )
     {
+        $array_wheres = [ [ 'sga_periodos_lectivos.cerrado', 0 ] ];
+
+        if ( !is_null( $periodo_lectivo_id ) ) 
+        {
+            $array_wheres = array_merge($array_wheres, [ ['sga_escala_valoracion.periodo_lectivo_id', $periodo_lectivo_id] ]);          
+        }
+        //dd($array_wheres);
         return EscalaValoracion::leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_escala_valoracion.periodo_lectivo_id')
-                                    ->where('sga_periodos_lectivos.cerrado',0)
+                                    ->where( $array_wheres )
                                     ->select('sga_escala_valoracion.id','sga_escala_valoracion.nombre_escala','sga_escala_valoracion.calificacion_minima','sga_escala_valoracion.calificacion_maxima')
                                     ->orderBy('sga_escala_valoracion.calificacion_minima','DESC')
                                     ->get();
@@ -65,6 +72,11 @@ class EscalaValoracion extends Model
         $escala_valoracion = EscalaValoracion::where('periodo_lectivo_id', $periodo_lectivo_id )
                                             ->orderBy('calificacion_minima','ASC')
                                             ->get();
+                                            
+        if ( empty( $escala_valoracion->toArray() ) )
+        {
+            return [ 0, 0];
+        }
 
         return [ $escala_valoracion->first()->calificacion_minima, $escala_valoracion->last()->calificacion_maxima];
     }

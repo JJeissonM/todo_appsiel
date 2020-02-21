@@ -295,7 +295,8 @@ class InventarioController extends TransaccionController
 
 
             // Cuando es una transaferencia, se deben guardar los registros de la bodega destino
-            if ($request->core_tipo_transaccion_id == $tipo_transferencia) {
+            if ($request->core_tipo_transaccion_id == $tipo_transferencia) 
+            {
                 $motivo_entrada_transferencia = 9;
                 $cantidad = (float) $cantidad * -1;
                 $costo_total = (float) $costo_total * -1;
@@ -320,10 +321,10 @@ class InventarioController extends TransaccionController
                         $linea_datos
                 );
 
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, abs($costo_total + $valor_total_impuesto), 0);
+                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, abs($costo_total), 0);
 
                 // Para transferencias, la cuenta contrapartida es la misma de inventarios
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, 0, abs($costo_total + $valor_total_impuesto));
+                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, 0, abs($costo_total) );
 
                 // PARA LA BODEGA DESTINO
                 // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request

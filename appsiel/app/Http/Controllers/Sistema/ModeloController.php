@@ -122,7 +122,9 @@ class ModeloController extends Controller
         /*  Lo ideal es que las URLs se manejen desde cada modelo
         y no, desde la base de datos
                 */
-        $registros = null;
+        
+        $registros = app($this->modelo->name_space)->consultar_registros(); //->take(20);
+
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
         if (!is_null($vistas)) {
             if (!is_null($vistas->index)) {
@@ -130,8 +132,6 @@ class ModeloController extends Controller
                 $registros = app($this->modelo->name_space)->consultar_registros2(); //->take(20);
                 $registros->setPath('?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion);
             }
-        } else {
-            $registros = app($this->modelo->name_space)->consultar_registros(); //->take(20);
         }
 
         // ¿Cómo saber qué métodos estan llamando a la vista layouts.index?

@@ -14,8 +14,8 @@
                     <td> {{ $linea->cuenta }} </td>
                     <td> {{ number_format( $linea->numero_identificacion, 0, ',', '.') }} / {{ $linea->tercero }} </td>
                     <td> {{ $linea->detalle_operacion }} </td>
-                    <td style="text-align: right;"> {{ '$ '.number_format( $linea->valor_debito, 2, ',', '.') }} </td>
-                    <td style="text-align: right;"> {{ number_format( $linea->valor_credito, 2, ',', '.') }} </td>
+                    <td style="text-align: right;"> $ {{ number_format( $linea->valor_debito, 2, ',', '.') }} </td>
+                    <td style="text-align: right;"> $ {{ number_format( $linea->valor_credito, 2, ',', '.') }} </td>
                 </tr>
                 <?php 
                     $total_debito+=$linea->valor_debito;
@@ -26,8 +26,8 @@
         <tfoot>
             <tr>
                 <td colspan="3"> &nbsp; </td>
-                <td style="text-align: right;"> {{ number_format($total_debito, 2, ',', '.') }} </td>
-                <td style="text-align: right;"> {{ number_format($total_credito, 2, ',', '.') }} </td>
+                <td style="text-align: right;"> $ {{ number_format($total_debito, 2, ',', '.') }} </td>
+                <td style="text-align: right;"> $ {{ number_format($total_credito, 2, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>

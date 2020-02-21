@@ -93,15 +93,14 @@ class AcademicoEstudianteController extends Controller
     {
         $estudiante = $this->estudiante;
 
-        $opciones = Periodo::where('id_colegio','=', $this->colegio->id)
-            ->where('estado','=','Activo')
-            ->where('cerrado','=',0)
-            ->get();
+        $opciones = Periodo::get_activos_periodo_lectivo();
+
+        //dd($opciones);
 
         $vec['']='';
-        foreach ($opciones as $opcion){
-            $anio = explode("-",$opcion->fecha_desde)[0];
-            $vec[$opcion->id]=$anio.' > '.$opcion->descripcion;
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->periodo_lectivo_descripcion . ' > ' . $opcion->descripcion;
         }
 
         $periodos = $vec;

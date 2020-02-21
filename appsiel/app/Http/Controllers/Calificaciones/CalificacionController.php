@@ -419,7 +419,9 @@ class CalificacionController extends Controller
     // LLenar select dependiente
     public function get_select_escala_valoracion( $periodo_id, $curso_id, $asignatura_id )
     {
-        $escalas = EscalaValoracion::get_escalas_periodo_lectivo_abierto();
+        $periodo_lectivo = PeriodoLectivo::get_segun_periodo( $periodo_id );
+        
+        $escalas = EscalaValoracion::get_escalas_periodo_lectivo_abierto( $periodo_lectivo->id );
 
         $logros = Logro::get_logros_periodo_curso_asignatura( $periodo_id, $curso_id, $asignatura_id)->pluck('escala_valoracion_id')->toArray();
 
