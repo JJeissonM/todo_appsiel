@@ -39,7 +39,7 @@ class Modelo extends Model
     */
     public static function get_tabla($registro_modelo_padre,$registros_asignados)
     {
-        $encabezado_tabla = ['Orden','ID','Tipo','Name','Descripción','Opciones','Valor','Atributos','Requerido','Editable','Único','Acción'];
+        $encabezado_tabla = ['Orden','ID','Tipo','Name','Descripción','Opciones','Valor','Atributos','Requerido','Editable','Único','Acción']; // 12 campos
 
         $registros = [];
         $i = 0;
@@ -61,7 +61,7 @@ class Modelo extends Model
                                         $fila['requerido'],
                                         $fila['editable'],
                                         $fila['unico']
-                                    ]);
+                                    ]); // 11 campos
             $i++;
         }
 

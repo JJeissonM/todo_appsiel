@@ -105,7 +105,6 @@
 				i++;
 			});
 			
-			console.log(vec_cursos);
 
 			// Se rrecorren las opciones del select cursos y si la opción no está en el array vec_cursos (curso no está asignado al usuario), se elimina
 			$.each( $('#curso_id option'), function(op){ 

@@ -20,16 +20,15 @@
 
 	{{ Form::close() }}
 	<!-- <button id="btn_ir">ir</button> -->
-
 @endsection
 
 
 @section('contenido')
 		<div class="col-md-12 marco_formulario">
 			<br/>
-			<div class="row" id="spin" style="display: none;">
-                <img src="{{asset('assets/img/spinning-wheel.gif')}}" width="32px" height="32px">
-            </div>
+
+            {{ Form::Spin(48) }}
+
             {{ Form::bsBtnExcel('existencias_inventario') }}
 			{{ Form::bsBtnPdf('existencias_inventario') }}
 			<div id="resultado_consulta">
@@ -81,7 +80,8 @@
 					return false;
 				}
 
-				$('#spin').show();
+				$('#resultado_consulta').html('');
+				$('#div_spin').show();
 
 				// Preparar datos de los controles para enviar formulario
 				var form_consulta = $('#form_consulta');
@@ -89,7 +89,7 @@
 				var datos = form_consulta.serialize();
 				// Enviar formulario de ingreso de productos vía POST
 				$.post(url,datos,function(respuesta){
-					$('#spin').hide();
+					$('#div_spin').hide();
 					$('#btn_excel').show();
 					$('#resultado_consulta').html(respuesta);
 				});

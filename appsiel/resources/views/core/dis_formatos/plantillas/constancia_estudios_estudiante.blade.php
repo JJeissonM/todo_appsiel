@@ -70,6 +70,7 @@
 	}
 ?>    
 
+@if($matriculado)
 	<div style="font-size: 17px;">
 		<div class="watermark-{{$tam_hoja}} escudo">
 		    <img src="{{ $url }}"/>
@@ -132,7 +133,9 @@
 	<br>
 	{{ $firma_autorizada_1->tercero_titulo }} 
 
-
+@else
+	<h2>Estudiante no tiene matrículas para este Año Lectivo: {{ $periodo_lectivo->descripcion }}</h2>
+@endif
 
 <?php
 	function get_mensaje_valor_matricula_pension($detalla_valores_matricula_pension, $libreta_pago)

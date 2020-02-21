@@ -106,14 +106,20 @@ class Matricula extends Model
                     ->get();
     }
 
-    public static function get_matriculas_un_estudiante( $estudiante_id )
+    public static function get_matriculas_un_estudiante( $estudiante_id, $estado = null )
     {
+        $array_wheres = [ ['sga_matriculas.id_estudiante',$estudiante_id] ];
+
+        if ( $estado != null ) {
+            $array_wheres = array_merge( $array_wheres, ['sga_matriculas.estado' => $estado ] );
+        }
+
         return Matricula::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
                     ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
                     ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
                     ->leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_matriculas.periodo_lectivo_id')
-                    ->where('sga_matriculas.id_estudiante',$estudiante_id)
+                    ->where( $array_wheres )
                     ->select('sga_matriculas.codigo',
                             'sga_matriculas.id_estudiante',
                             'sga_matriculas.periodo_lectivo_id',
@@ -123,6 +129,7 @@ class Matricula extends Model
                             'sga_matriculas.cedula_acudiente',
                             'sga_matriculas.acudiente',
                             'sga_cursos.descripcion AS nombre_curso',
+                            'sga_cursos.id AS curso_id',
                             'sga_matriculas.estado',
                             'sga_matriculas.requisitos',
                             'sga_matriculas.id')
@@ -131,8 +138,14 @@ class Matricula extends Model
 
     public static function get_matricula_activa_un_estudiante( $estudiante_id )
     {
+        return Matricula::get_matriculas_un_estudiante( $estudiante_id, 'Activo' )->last();
+    }
+
+    public static function get_matricula_periodo_lectivo_un_estudiante( $estudiante_id, $periodo_lectivo_id )
+    {
         $array_wheres = [];
 
+        $array_wheres = array_merge($array_wheres, ['periodo_lectivo_id' => $periodo_lectivo_id ]);
         $array_wheres = array_merge($array_wheres, ['id_estudiante' => $estudiante_id ]);
         $array_wheres = array_merge($array_wheres, ['estado' => 'Activo' ]);
 

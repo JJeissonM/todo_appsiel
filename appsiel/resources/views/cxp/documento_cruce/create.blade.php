@@ -257,7 +257,8 @@
 				console.log(saldo_pendiente);
 
 
-				if( valor > 0  && valor <= saldo_pendiente) {
+				if( valor > 0  && valor <= (saldo_pendiente + 1) )
+				{
 					celda.attr('style','background-color:white;');
 					ok = true;
 				}else{

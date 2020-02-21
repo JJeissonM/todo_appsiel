@@ -436,8 +436,11 @@ class MatriculaController extends ModeloController
     public function eliminar($id)
     {
         $registro = Matricula::find( $id );
+
         $estudiante = Estudiante::find( $registro->id_estudiante );
         $user = User::find( $estudiante->user_id );
+
+        $todas_las_matriculas = Matricula::where( 'id_estudiante', $registro->id_estudiante )->get();
 
         // Verificación 1: Libreta de pagos
         $cantidad = TesoLibretasPago::where('matricula_id', $id)->count();
@@ -466,18 +469,22 @@ class MatriculaController extends ModeloController
         if($cant_calificaciones != 0){
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Matrícula NO puede ser eliminada. El estudiante tiene OBSERVACIONES de boletín resgistradas.');
         }
-
         
 
-        //Borrar User
-        if( !is_null($user) )
+        // Si hay SOLO una (1) matrícula, se elimina al usuario y al estudiante
+        if ( count( $todas_las_matriculas->toArray() ) == 1 )
         {
-            $user->roles()->sync( [ ] ); // borrar todos los roles y asignar los del array (en este caso vacío)
-            $user->delete();
+            //Borrar User
+            if( !is_null($user) )
+            {
+                $user->roles()->sync( [ ] ); // borrar todos los roles y asignar los del array (en este caso vacío)
+                $user->delete();
+            }
+                
+            //Borrar Estudiante
+            $estudiante->delete();
         }
             
-        //Borrar Estudiante
-        $estudiante->delete();
 
         //Borrar Matrícula
         $registro->delete();

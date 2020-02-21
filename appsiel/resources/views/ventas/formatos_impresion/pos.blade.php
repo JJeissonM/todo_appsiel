@@ -1,18 +1,23 @@
 @extends('transaccion.formatos_impresion.pos')
 
 @section('encabezado_2')
-    <table style="width: 100%;">
-        <tr>
-            <td style="border: solid 1px #ddd; text-align: center; font-family: Courier New; font-style: italic;">
-                <b> ATENCIÓN, CALIDAD Y PRECIO.
-                <br> UNA EXPERIENCIA AGRADABLE. </b> 
-            </td>
-        </tr>
-    </table>
+    @if( $etiquetas['encabezado'] != '')
+        <table style="width: 100%;">
+            <tr>
+                <td style="border: solid 1px #ddd; text-align: center; font-family: Courier New; font-style: italic;">
+                    <b> {!! $etiquetas['encabezado'] !!} </b> 
+                </td>
+            </tr>
+        </table>
+    @endif
 @endsection
 
 @section('documento_transaccion_prefijo_consecutivo')
-    {{ $resolucion->prefijo }} {{ $doc_encabezado->documento_transaccion_consecutivo }}
+    @if( !is_null( $resolucion ) )
+        {{ $resolucion->prefijo }} {{ $doc_encabezado->documento_transaccion_consecutivo }}
+    @else
+        {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
+    @endif
 @endsection
 
 @section('lbl_tercero')
@@ -145,12 +150,13 @@
 @endsection
 
 @section('firma_fila_adicional')
-    <tr>
-        <td style="border: solid 1px #ddd; text-align: center; font-style: italic;">
-            <b> JESUCRISTO ES EL MISMO AYER Y HOY Y POR LOS SIGLOS.
-            <br> GRACIAS POR PREFERIRNOS. </b>
-        </td>
-    </tr>
+    @if( $etiquetas['pie_pagina'] != '')
+        <tr>
+            <td style="border: solid 1px #ddd; text-align: center; font-style: italic;">
+                <b> {!! $etiquetas['pie_pagina'] !!} </b>
+            </td>
+        </tr>
+    @endif    
 @endsection
 
 </body>

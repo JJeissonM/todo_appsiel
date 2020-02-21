@@ -1,8 +1,9 @@
 $(document).ready( function(){
 	
 	var sumas_iguales = 0;
-	var LineaNum = 0;
 	var debito, credito;
+
+	var direccion = location.href;
 
 	$('#core_tipo_doc_app_id').change(function(){
 		$('#fecha').focus();
@@ -35,10 +36,17 @@ $(document).ready( function(){
     });
 
     function nueva_linea_ingreso_datos(){
-    	LineaNum ++;
+    	
     	$('#div_cargando').fadeIn();
 		
-		var url = '../contab_get_fila/' + LineaNum;
+		var url = '../contab_get_fila/' + 0;
+
+		// Si se está en la url de editar 
+		if( direccion.search("edit") >= 0 ) 
+		{
+			var url = '../../contab_get_fila/' + 0;
+		}
+
 		$.get( url, function( datos ) {
 	        $('#div_cargando').hide();
 
@@ -61,9 +69,11 @@ $(document).ready( function(){
 
 	$(document).on('click', '.btn_confirmar', function(event) {
 		event.preventDefault();
+		
 		var fila = $(this).closest("tr");
 		var ok = validar_linea();
 		if( ok ) {
+			LineaNum ++;
 			var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='glyphicon glyphicon-trash'></i></button>";
 	        var cuenta = '<span style="color:white;">' + $('#combobox_cuentas').val() + '-</span>' + $( "#combobox_cuentas option:selected" ).text();
 	        var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#combobox_terceros option:selected" ).text();
@@ -79,12 +89,16 @@ $(document).ready( function(){
 	        	credito = 0;
 	        }
 
+	        var celda_debito = '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + debito + '</div> </div>';
+	        var celda_credito = '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + credito + '</div> </div>';
+	        var celda_detalle = '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + detalle + '</div> </div>';
+
 	        $('#ingreso_registros').find('tbody:last').append('<tr id="fila_'+LineaNum+'" >' +
 															'<td id="cuenta_'+LineaNum+'">' + cuenta + '</td>'+
 															'<td id="tercero_'+LineaNum+'">' + tercero + '</td>'+
-															'<td id="detalle_'+LineaNum+'">' + detalle + '</td>'+
-															'<td id="debito_'+LineaNum+'"  class="debito">$' + debito + '</td>'+
-															'<td id="credito_'+LineaNum+'"  class="credito">$' + credito + '</td>'+
+															'<td id="detalle_'+LineaNum+'">' + celda_detalle + '</td>'+
+															'<td id="debito_'+LineaNum+'"  class="debito">$' + celda_debito + '</td>'+
+															'<td id="credito_'+LineaNum+'"  class="credito">$' + celda_credito + '</td>'+
 															'<td>'+btn_borrar+'</td>'+
 															'</tr>');
 	       	
@@ -104,6 +118,7 @@ $(document).ready( function(){
 		event.preventDefault();
 		var fila = $(this).closest("tr");
 		fila.remove();
+		LineaNum --;
 		$('#btn_nuevo').show();
 		calcular_totales();
 	});
@@ -113,54 +128,47 @@ $(document).ready( function(){
 	$('#btn_guardar').click(function(event){
 		event.preventDefault();
 
+		if ( LineaNum <= 0 )
+		{
+			alert('No se han ingresado registros.')
+			return false;
+		}
+		
+
 		//$('#core_tercero_id').val( $('#ph_propiedad_id').val() );
 		$('#codigo_referencia_tercero').val( 0 );
 		
 		$('#valor_total').val( $('#total_debito').text().substring(1) )
 
-		// Se obtienen todos los datos del formulario y se envían
-		// Se validan nuevamente los campos requeridos
-		var control = 1;
-		$( "*[required]" ).each(function() {
-			if ( $(this).val() == "" ) {
-			  $(this).focus();
-			  control = 0;
-			  alert('Este campo es requerido. '+ $(this).attr('name') 	);
-			  return false;
-			}else{
-			  control = 1;
-			}
-		});
-
-		if (control==1)
+		if ( !validar_requeridos() )
 		{
-			if ( $('#sumas_iguales').text( ) == 0 )
-			{
-				// Desactivar el click del botón
-				$( this ).off( event );
+			return false;
+		}
 
-				// Eliminar fila de ingreso de registro vacia
-				var object = $('#combobox_cuentas').val();	
-				if( typeof object == typeof undefined){
-					// Si no hay linea de ingreso de registros
-					// Todo bien
-					//alert('Todo bien.');
-				}else{
-					var fila = $('#combobox_cuentas').closest("tr");
-					fila.remove();
-				}
+		if ( $('#sumas_iguales').text( ) == 0 )
+		{
+			// Desactivar el click del botón
+			$( this ).off( event );
 
-				// Se asigna la tabla de ingreso de registros a un campo hidden
-				var tabla_registros_documento = $('#ingreso_registros').tableToJSON();
-				$('#tabla_registros_documento').val( JSON.stringify(tabla_registros_documento) );
-
-				// Enviar formulario
-				$('#form_create').submit();
+			// Eliminar fila de ingreso de registro vacia
+			var object = $('#combobox_cuentas').val();	
+			if( typeof object == typeof undefined){
+				// Si no hay linea de ingreso de registros
+				// Todo bien
+				//alert('Todo bien.');
 			}else{
-				alert('El asiento contable está descuadrado.')
-			}			
+				var fila = $('#combobox_cuentas').closest("tr");
+				fila.remove();
+			}
+
+			// Se asigna la tabla de ingreso de registros a un campo hidden
+			var tabla_registros_documento = $('#ingreso_registros').tableToJSON();
+			$('#tabla_registros_documento').val( JSON.stringify(tabla_registros_documento) );
+
+			// Enviar formulario
+			$('#form_create').submit();
 		}else{
-			alert('Faltan campos por llenar.');
+			alert('El asiento contable está descuadrado.')
 		}
 			
 	});
@@ -235,21 +243,68 @@ $(document).ready( function(){
 
 
 		sumas_iguales = sumas_iguales - sum;
-		$('#sumas_iguales').text( sumas_iguales );
+		$('#sumas_iguales').text( sumas_iguales.toFixed(0) );
 	}
 
-	function validar_requeridos(){
-		$( "*[required]" ).each(function() {
-					if ( $(this).val() == "" ) {
-					  $(this).focus();
-					  control = false;
-					  alert('Este campo es requerido.');
-					  return false;
-					}else{
-					  control = true;
-					}
-				});
-		return control;
-	}
+
+		var valor_actual, elemento_modificar, elemento_padre;
+			
+		// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
+		$(document).on('dblclick','.elemento_modificar',function(){
+			
+			elemento_modificar = $(this);
+
+			elemento_padre = elemento_modificar.parent();
+
+			valor_actual = $(this).html();
+
+			elemento_modificar.hide();
+
+			elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+
+			document.getElementById('valor_nuevo').value = valor_actual;
+			document.getElementById('valor_nuevo').select();
+
+		});
+
+		// Si la caja de texto pierde el foco
+		$(document).on('blur','#valor_nuevo',function(){
+			guardar_valor_nuevo();
+		});
+
+		// Al presiona teclas en la caja de texto
+		$(document).on('keyup','#valor_nuevo',function(){
+
+			var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+			// Abortar la edición
+			if( x == 27 ) // 27 = ESC
+			{
+				elemento_padre.find('#valor_nuevo').remove();
+	        	elemento_modificar.show();
+	        	return false;
+			}
+
+			// Guardar
+			if( x == 13 ) // 13 = ENTER
+			{
+	        	guardar_valor_nuevo();
+			}
+		});
+
+		function guardar_valor_nuevo()
+		{
+			var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+			// Si no cambió el valor_nuevo, no pasa nada
+			if ( valor_nuevo == valor_actual) { return false; }
+
+			elemento_modificar.html( valor_nuevo );
+			elemento_modificar.show();
+
+			elemento_padre.find('#valor_nuevo').remove();
+
+			calcular_totales();
+		}
 
 } );

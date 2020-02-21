@@ -93,4 +93,207 @@ class Tercero extends Model
 
         return $vec;
     }
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"compras_compradores",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Compradores de compras."
+                                },
+                            "1":{
+                                    "tabla":"compras_doc_encabezados",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Documento de compras."
+                                },
+                            "2":{
+                                    "tabla":"compras_movimientos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimiento de compras."
+                                },
+                            "3":{
+                                    "tabla":"compras_proveedores",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en tabla de Proveedores."
+                                },
+                            "4":{
+                                    "tabla":"contab_doc_encabezados",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Documentos de Contabilidad."
+                                },
+                            "5":{
+                                    "tabla":"contab_doc_registros",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Registros de documentos de Contabilidad."
+                                },
+                            "6":{
+                                    "tabla":"contab_movimientos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimiento de Contabilidad."
+                                },
+                            "7":{
+                                    "tabla":"core_firmas_autorizadas",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Firmas autorizadas."
+                                },
+                            "8":{
+                                    "tabla":"cxc_abonos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Abonos de CxC."
+                                },
+                            "9":{
+                                    "tabla":"cxc_doc_encabezados",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Documentos de CxC."
+                                },
+                            "10":{
+                                    "tabla":"cxc_intereses_mora",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Intereses de mora de CxC."
+                                },
+                            "11":{
+                                    "tabla":"cxc_movimientos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimientos de CxC."
+                                },
+                            "12":{
+                                    "tabla":"cxp_abonos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Abonos de CxP."
+                                },
+                            "13":{
+                                    "tabla":"cxp_doc_encabezados",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Documentos de CxP."
+                                },
+                            "14":{
+                                    "tabla":"cxp_movimientos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimientos de CxP."
+                                },
+                            "15":{
+                                    "tabla":"inv_doc_encabezados",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Documentos de Inventarios."
+                                },
+                            "16":{
+                                    "tabla":"inv_doc_registros",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Registros de Documentos de Inventarios."
+                                },
+                            "17":{
+                                    "tabla":"inv_movimientos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimientos de Inventarios."
+                                },
+                            "18":{
+                                    "tabla":"nom_contratos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Contratos de Nómina."
+                                },
+                            "19":{
+                                    "tabla":"nom_cuotas",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimientos de Cuotas de Nómina."
+                                },
+                            "20":{
+                                    "tabla":"nom_doc_registros",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Registros de Documentos de Liquidación de Nómina."
+                                },
+                            "21":{
+                                    "tabla":"nom_entidades",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Entidades de Nómina."
+                                },
+                            "22":{
+                                    "tabla":"nom_equivalencias_contables",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Equivalencias Contables de Nómina."
+                                },
+                            "23":{
+                                    "tabla":"nom_movimientos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimientos de Nómina."
+                                },
+                            "24":{
+                                    "tabla":"nom_prestamos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimientos de Préstamos de Nómina."
+                                },
+                            "25":{
+                                    "tabla":"ph_propiedades",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Inmuebles de Propiedad Horizontal."
+                                },
+                            "26":{
+                                    "tabla":"salud_pacientes",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en tablas de Pacientes."
+                                },
+                            "27":{
+                                    "tabla":"salud_profesionales",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en tabla de Profesionales de la Salus."
+                                },
+                            "28":{
+                                    "tabla":"sga_estudiantes",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en tabla de Estudiantes."
+                                },
+                            "29":{
+                                    "tabla":"sga_inscripciones",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en tabla de Inscripciones de Estudiantes."
+                                },
+                            "30":{
+                                    "tabla":"teso_doc_encabezados",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Documentos de Tesorería."
+                                },
+                            "31":{
+                                    "tabla":"teso_doc_registros",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Registros de Documentos de Tesorería."
+                                },
+                            "32":{
+                                    "tabla":"teso_movimientos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimientos de Tesorería."
+                                },
+                            "33":{
+                                    "tabla":"vtas_clientes",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en tabla de Clientes."
+                                },
+                            "34":{
+                                    "tabla":"vtas_doc_encabezados",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Documentos de Ventas."
+                                },
+                            "35":{
+                                    "tabla":"vtas_movimientos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en Movimientos de Ventas."
+                                },
+                            "36":{
+                                    "tabla":"vtas_vendedores",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en tabla de Vendedores."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
+    }
 }

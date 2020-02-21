@@ -20,7 +20,7 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
-				<h5> Configuraciones generales </h5>
+				<h4> Configuraciones generales </h4>
 				<hr>
 				<div class="row">
 
@@ -54,7 +54,27 @@
 
 				</div>
 
-				<h5> Cuentas contables por defecto </h5>
+				<br>
+				<h4> Configuraciones de empresa </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsSelect('liquidacion_impuestos', $parametros['liquidacion_impuestos'], 'Liquida impuestos', ['0' => 'No liquida','1' => 'Si liquida'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+				<h4> Cuentas contables por defecto </h4>
 				<hr>
 				<div class="row">
 

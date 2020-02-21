@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Contabilidad;
 use App\Http\Controllers\Sistema\ModeloController;
+use App\Http\Controllers\Core\TransaccionController;
 
 use Illuminate\Http\Request;
 
@@ -26,78 +27,28 @@ use App\Contabilidad\ContabDocEncabezado;
 use App\Contabilidad\ContabDocRegistro;
 use App\Contabilidad\ContabMovimiento;
 
-class ContabilidadController extends Controller
+class ContabilidadController extends TransaccionController
 {
     protected $datos = [];
     protected $grupos_cuentas = [];
 
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    /* El método index() está en TransaccionController */
 
-    public function index()
-    {
-    	// BOTÓN CREAR CON EL LISTADO DE TRANSACCIONES DEL MODULO
-        $tipos_transacciones = Aplicacion::find( Input::get('id') )->tipos_transacciones()->where('sys_tipos_transacciones.estado', 'Activo')->get();
 
-        $id_modelo = 47; // 47 = Documentos contables
-
-        $select_crear = '<div class="dropdown">
-            &nbsp;&nbsp;&nbsp;<button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="menu1" data-toggle="dropdown"><i class="fa fa-plus"></i> Crear
-            <span class="caret"></span></button>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">';
-            foreach($tipos_transacciones as $fila) { 
-                $select_crear.='<li role="presentation"><a role="menuitem" tabindex="-1" href="'.url('contabilidad/create'.'?id='.Input::get('id').'&id_modelo='.$id_modelo.'&id_transaccion='.$fila->id).'">'.$fila->descripcion.'</a></li>';
-            }
-        $select_crear.='</ul>
-          </div>';
-
-        $miga_pan = [
-                ['url'=>'NO','etiqueta'=>'Contabilidad']
-            ];
-
-        return view( 'contabilidad.index', compact( 'miga_pan','select_crear' ) );
-    }
-
-    // FORMULARIO PARA CREAR UN NUEVO REGISTRO
     public function create()
-    {   
-        // SE REPITE TODO LO DE ModeloController@create
+    {
+        $this->set_variables_globales();
 
-        $id_transaccion = Input::get('id_transaccion');
-
-        // Se obtiene el modelo según la variable modelo_id  de la url
-        $modelo = Modelo::find(Input::get('id_modelo'));
-
-        $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
-        $cantidad_campos = count($lista_campos);
-
-        $tipo_transaccion = TipoTransaccion::find($id_transaccion);
-
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create');
-
-        $form_create = [
-                        'url' => $modelo->url_form_create,
-                        'campos' => $lista_campos
-                    ];
-
-        $miga_pan = [
-                ['url'=>'contabilidad?id='.Input::get('id'),'etiqueta'=>'Contabilidad'],
-                ['url'=>'NO','etiqueta'=>$tipo_transaccion->descripcion]
-            ];
-
-        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
-        $tabla = '';
-
-        return view( 'contabilidad.create', compact( 'form_create','id_transaccion','miga_pan', 'tabla' ) );
+        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'contabilidad.create' );
     }
 
 
-    //     A L M A C E N A R  LOS REGISTROS (Ya se llenó el encabezado), esta función se llama desde el método store del ModeloController
-    public function store(Request $request,$registro_encabezado_doc)
+
+
+    public function store( Request $request )
     {
-        // Ya se llenó la tabla *_doc_encabezados* en el ModeloController
+
+        $registro_encabezado_doc = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
 
@@ -109,12 +60,14 @@ class ContabilidadController extends Controller
             $contab_cuenta_id = $vec_1[0];
 
             $vec_2 = explode("-", $tabla_registros_documento[$i]->Tercero);
-            $core_tercero_id = $vec_2[0];
-            if ($core_tercero_id == '') {
-                $core_tercero_id = $request->core_tercero_id;
-            }
 
-            //dd($core_tercero_id);
+
+            $core_tercero_id = (int)$vec_2[0];
+            
+            if ( $core_tercero_id == 0 )
+            {
+                $core_tercero_id = (int)$request->core_tercero_id;
+            }
 
             $detalle_operacion = $tabla_registros_documento[$i]->Detalle;
 
@@ -126,7 +79,7 @@ class ContabilidadController extends Controller
             ContabDocRegistro::create(
                             [ 'contab_doc_encabezado_id' => $registro_encabezado_doc->id ] + 
                             [ 'contab_cuenta_id' => (int)$contab_cuenta_id ] + 
-                            [ 'core_tercero_id' => (int)$core_tercero_id ] + 
+                            [ 'core_tercero_id' => $core_tercero_id ] + 
                             [ 'detalle_operacion' => $detalle_operacion] + 
                             [ 'valor_debito' => (float)$valor_debito] + 
                             [ 'valor_credito' => (float)$valor_credito]
@@ -146,39 +99,144 @@ class ContabilidadController extends Controller
 
         }
 
-        // se llama la vista de RecaudoController@show
-        return redirect( 'contabilidad/'.$registro_encabezado_doc->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo );
+        return redirect( 'contabilidad/'.$registro_encabezado_doc->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
 
-    // FOMRULARIO PARA EDITAR UN REGISTRO
+    /**
+     * Editar documento
+     */
     public function edit($id)
     {
-        //
+        $this->set_variables_globales();
+
+        // Se obtiene el registro a modificar del modelo
+        $registro = app($this->modelo->name_space)->find($id);
+
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro,'edit');
+
+        $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
+        $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
+
+        $tercero_encabezado_numero_identificacion = $doc_encabezado->numero_identificacion; 
+        $lineas_documento = View::make( 'contabilidad.incluir.lineas_documento', compact('doc_registros', 'tercero_encabezado_numero_identificacion') )->render();//'';//
+        $linea_num = count( $doc_registros->toArray() );
+
+        $url_action = 'web/'.$id.$this->variables_url;
+        
+        if ($this->modelo->url_form_create != '') {
+            $url_action = $this->modelo->url_form_create.'/'.$id.$this->variables_url;
+        }
+
+        $form_create = [
+                        'url' => $url_action,
+                        'campos' => $lista_campos
+                    ];
+
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Modificar: '.$doc_encabezado->documento_transaccion_prefijo_consecutivo );
+
+        $archivo_js = app($this->modelo->name_space)->archivo_js;
+
+        return view( 'contabilidad.edit', compact( 'form_create', 'miga_pan', 'registro', 'archivo_js', 'lineas_documento', 'linea_num') );
     }
+
+
+
 
     //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
     public function update(Request $request, $id)
     {
-        //
+        $modelo = Modelo::find( $request->url_id_modelo );
+
+        $registro_encabezado_doc = app( $modelo->name_space )->find($id);
+
+        // Borrar registros viejos del documento
+        $registros_doc = ContabDocRegistro::where( 'contab_doc_encabezado_id', $id )->delete();
+        $registros_doc = ContabMovimiento::where( 'core_tipo_transaccion_id', $registro_encabezado_doc->core_tipo_transaccion_id )
+                                            ->where( 'core_tipo_doc_app_id', $registro_encabezado_doc->core_tipo_doc_app_id )
+                                            ->where( 'consecutivo', $registro_encabezado_doc->consecutivo )
+                                            ->delete();
+
+
+        $request['core_tipo_transaccion_id'] = $registro_encabezado_doc->core_tipo_transaccion_id;
+        $request['core_tipo_doc_app_id'] = $registro_encabezado_doc->core_tipo_doc_app_id;
+        $request['consecutivo'] = $registro_encabezado_doc->consecutivo;
+
+        // Contabilizar nuevos registros
+        $tabla_registros_documento = json_decode($request->tabla_registros_documento);
+        // 1ro. se guardan los registros asociados al encabezado del documento
+        // Se recorre la tabla enviada en el request, descartando las DOS últimas filas
+        for ($i=0; $i < count($tabla_registros_documento)-2; $i++)
+        {
+            // Se obtienen las id de los campos que se van a almacenar. Los campos vienen separados por "-" en cada columna de la tabla 
+            $vec_1 = explode("-", $tabla_registros_documento[$i]->Cuenta);
+            $contab_cuenta_id = $vec_1[0];
+
+            $vec_2 = explode("-", $tabla_registros_documento[$i]->Tercero);
+
+
+            $core_tercero_id = (int)$vec_2[0];            
+            if ( $core_tercero_id == 0 )
+            {
+                $core_tercero_id = (int)$request->core_tercero_id;
+            }
+
+            $detalle_operacion = $tabla_registros_documento[$i]->Detalle;
+
+            // Se les quita la etiqueta de signo peso a los textos monetarios recibidos
+            // en la tabla de movimiento
+            $valor_debito = substr($tabla_registros_documento[$i]->debito, 1);
+            $valor_credito = substr($tabla_registros_documento[$i]->credito, 1);
+
+            ContabDocRegistro::create(
+                            [ 'contab_doc_encabezado_id' => $registro_encabezado_doc->id ] + 
+                            [ 'contab_cuenta_id' => (int)$contab_cuenta_id ] + 
+                            [ 'core_tercero_id' => $core_tercero_id ] + 
+                            [ 'detalle_operacion' => $detalle_operacion] + 
+                            [ 'valor_debito' => (float)$valor_debito] + 
+                            [ 'valor_credito' => (float)$valor_credito]
+                        );
+
+
+            // 1.1. Para cada registro del documento, también se va actualizando el movimiento de contabilidad
+            
+            // Para el movimiento contable se guarda en detalle_operacion el detalle del encabezado del documento
+            if ($detalle_operacion == '')
+            {
+                $detalle_operacion = $request->descripcion;
+            }
+
+            $this->datos = array_merge( $request->all(), ['core_tercero_id' => $core_tercero_id , 'consecutivo' => $registro_encabezado_doc->consecutivo] );
+
+            ContabilidadController::contabilizar_registro( $this->datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+        }
+
+        $registro_encabezado_doc->fill( $request->all() );
+        $registro_encabezado_doc->save();
+
+        return redirect( 'contabilidad/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
     // VISTA PARA MOSTRAR UN DOCUMENTO DE TRANSACCION
     public function show($id)
     {
+        $this->set_variables_globales();
+
         $reg_anterior = ContabDocEncabezado::where('id', '<', $id)->where('core_empresa_id', Auth::user()->empresa_id)->max('id');
         $reg_siguiente = ContabDocEncabezado::where('id', '>', $id)->where('core_empresa_id', Auth::user()->empresa_id)->min('id');
 
-        $view_pdf = ContabilidadController::vista_preliminar($id,'show');
+        $doc_encabezado = ContabDocEncabezado::get_registro_impresion( $id );
+        $doc_registros = ContabDocRegistro::get_registros_impresion( $doc_encabezado->id );
+        $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
-        $miga_pan = [
-                ['url'=>'contabilidad?id='.Input::get('id'),'etiqueta'=>'Contabilidad'],
-                ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta' => 'Documentos contables' ],
-                ['url'=>'NO','etiqueta' => 'Consulta' ]
-            ];
+        //$view_pdf = ContabilidadController::vista_preliminar($id,'show');
+        $view_pdf = View::make('contabilidad.incluir.tabla_registros_documento', compact( 'doc_encabezado', 'doc_registros') )->render();
 
-        return view( 'contabilidad.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') ); 
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo );
+
+        return view( 'contabilidad.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id', 'empresa','doc_encabezado') ); 
     }
+
 
     // VISTA PARA MOSTRAR UN DOCUMENTO DE TRANSACCION
     public function imprimir($id)
@@ -194,118 +252,52 @@ class ContabilidadController extends Controller
         $pdf->loadHTML( $view_pdf )->setPaper($tam_hoja,$orientacion);
 
         //echo $view_pdf;
-        return $pdf->download('documento.pdf');
+        return $pdf->stream('documento.pdf');
     }
+
 
     // Generar vista para SOHW  o IMPRIMIR
     public static function vista_preliminar($id,$vista)
     {
-        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",contab_doc_encabezados.consecutivo) AS documento';
 
-        $select_raw2 = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero';
+        $doc_encabezado = ContabDocEncabezado::get_registro_impresion( $id );
 
-        $encabezado_doc = ContabDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_doc_encabezados.core_tipo_doc_app_id')
-                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_doc_encabezados.core_tercero_id')
-                    ->where('contab_doc_encabezados.id', $id)
-                    ->select(DB::raw($select_raw),'contab_doc_encabezados.fecha',DB::raw($select_raw2),'contab_doc_encabezados.descripcion AS detalle','contab_doc_encabezados.documento_soporte','contab_doc_encabezados.core_tipo_transaccion_id','contab_doc_encabezados.core_tipo_doc_app_id','contab_doc_encabezados.id','contab_doc_encabezados.creado_por','contab_doc_encabezados.consecutivo','contab_doc_encabezados.core_empresa_id','contab_doc_encabezados.valor_total','core_terceros.numero_identificacion')
-                    ->get()[0];
+        $doc_registros = ContabDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
-        $tipo_transaccion = TipoTransaccion::find($encabezado_doc->core_tipo_transaccion_id);
+        $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
-        //$core_app = $tipo_transaccion->core_app;
+        $registros_contabilidad = '';
 
-        $tipo_doc_app = TipoDocApp::find($encabezado_doc->core_tipo_doc_app_id);
+        $documento_vista = View::make( 'contabilidad.formatos_impresion.estandar', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad' ) )->render();
 
-        $descripcion_transaccion = $tipo_doc_app->descripcion;
-
-        $select_raw3 = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero';
-
-        $select_raw4 = 'CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS cuenta';
-
-        // Se crea una tabla con los registros de medios de recaudos
-        $registros = ContabDocRegistro::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_doc_registros.contab_cuenta_id')
-                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_doc_registros.core_tercero_id')
-                            ->where('contab_doc_registros.contab_doc_encabezado_id',$encabezado_doc->id)
-                            ->select(DB::raw($select_raw3),DB::raw($select_raw4),'contab_doc_registros.valor_debito','contab_doc_registros.valor_credito','contab_doc_registros.detalle_operacion')
-                            ->get();
-
-        $total_debito=0;
-        $total_credito=0;
-        $i=0;
-        $tabla2 = '<table  class="tabla_registros" style="margin-top: -4px;">
-                        <tr>
-                            <td colspan="5" align="center">
-                               <b>Movimiento contable</b>
-                            </td>
-                        </tr>
-                        <tr class="encabezado">
-                            <td>
-                               Cuenta
-                            </td>
-                            <td>
-                               Tercero
-                            </td>
-                            <td>
-                               Detalle
-                            </td>
-                            <td>
-                               Débito
-                            </td>
-                            <td>
-                               Crédito
-                            </td>
-                        </tr>';
-        foreach ($registros as $registro) {
-            $tabla2.='<tr  class="fila-'.$i.'" >
-                            <td>
-                               '.$registro->cuenta.'
-                            </td>
-                            <td>
-                               '.$registro->tercero.'
-                            </td>
-                            <td>
-                               '.$registro->detalle_operacion.'
-                            </td>
-                            <td>
-                               $'.number_format($registro->valor_debito, 2, ',', '.').'
-                            </td>
-                            <td>
-                               $'.number_format($registro->valor_credito, 2, ',', '.').'
-                            </td>
-                        </tr>';
-            $i++;
-            if ($i==3) {
-                $i=1;
-            }
-            $total_debito+=$registro->valor_debito;
-            $total_credito+=$registro->valor_credito;
-        }
-        $tabla2.='<tr  class="fila-'.$i.'" >
-                            <td colspan="3">
-                               &nbsp;
-                            </td>
-                            <td>
-                               $'.number_format($total_debito, 2, ',', '.').'
-                            </td>
-                            <td>
-                               $'.number_format($total_credito, 2, ',', '.').'
-                            </td>
-                        </tr>';
-        $tabla2.='</table>';
-
-
-        $elaboro = $encabezado_doc->creado_por;
-        $empresa = Empresa::find($encabezado_doc->core_empresa_id);
-
-        $view_1 = View::make('contabilidad.incluir.encabezado_transaccion',compact('encabezado_doc','descripcion_transaccion','empresa','vista') )->render();
-
-        $view_2 = View::make('contabilidad.incluir.firmas',compact('elaboro') )->render();
-
-
-        $view_pdf = '<link rel="stylesheet" type="text/css" href="'.asset('assets/css/estilos_formatos.css').'" media="screen" /> '.$view_1.$tabla2.$view_2;
-
-        return $view_pdf;         
+        return $documento_vista;         
     }
+
+    // Generar vista para SOHW  o IMPRIMIR
+    public function contab_anular_documento( $id )
+    {
+        $this->set_variables_globales();
+
+        $doc_encabezado = ContabDocEncabezado::find( $id );
+        $modificado_por = Auth::user()->email;
+
+        $array_wheres = ['core_empresa_id'=>$doc_encabezado->core_empresa_id, 
+                            'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+                            'consecutivo' => $doc_encabezado->consecutivo];
+
+        // Se elimina el movimiento
+        ContabMovimiento::where( $array_wheres )->delete();
+
+        // Se marcan como anulados los registros del documento
+        ContabDocRegistro::where( 'contab_doc_encabezado_id', $doc_encabezado->id )->update( [ 'estado' => 'Anulado' ] );
+
+        // Se marca como anulado el documento
+        $doc_encabezado->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por ] );
+        
+        return redirect( 'contabilidad/'.$id.$this->variables_url );       
+    }
+
 
     //
     // AJAX: enviar fila para el ingreso de registros al elaborar documento contable

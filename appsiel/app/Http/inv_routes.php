@@ -44,6 +44,8 @@ Route::get('inv_anular_documento/{id}', 'Inventarios\InventarioController@anular
 Route::get('inv_movimiento', 'Inventarios\ReporteController@inv_movimiento');
 Route::post('ajax_movimiento', 'Inventarios\ReporteController@ajax_movimiento');
 Route::get('inv_existencias', 'Inventarios\ReporteController@inv_existencias');
+Route::post('inv_etiquetas_codigos_barra', 'Inventarios\ReporteController@inv_etiquetas_codigos_barra');
+Route::post('inv_existencias_corte', 'Inventarios\ReporteController@inv_existencias_corte');
 
 
 // inv_consultar_existencias desde el index para cada bodega

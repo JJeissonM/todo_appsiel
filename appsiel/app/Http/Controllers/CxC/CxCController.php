@@ -833,7 +833,7 @@ public static function get_cartera_inmueble($ph_propiedad_id, $fecha, $vista = n
         }
 
 
-        $opciones = DB::table('core_terceros')->leftJoin('ph_propiedades','ph_propiedades.core_tercero_id','=','core_terceros.id')->where('core_terceros.core_empresa_id',Auth::user()->empresa_id)->select('core_terceros.id as core_tercero_id','ph_propiedades.id','ph_propiedades.codigo','core_terceros.descripcion')->orderBy('ph_propiedades.codigo','ASC')->get();
+        $opciones = DB::table('core_terceros')->where('core_terceros.core_empresa_id',Auth::user()->empresa_id)->select('core_terceros.id as core_tercero_id','core_terceros.descripcion')->get();
 
         $terceros[''] = '';
         foreach ($opciones as $opcion)

@@ -21,7 +21,7 @@ class InvProducto extends Model
 
     public static function consultar_registros()
     {
-    	$registros = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+        $registros = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                     ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
                     ->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
                     ->select('inv_productos.id AS campo1','inv_productos.descripcion AS campo2','inv_productos.unidad_medida1 AS campo3','inv_grupos.descripcion AS campo4','inv_productos.precio_compra AS campo5','inv_productos.precio_venta AS campo6','contab_impuestos.tasa_impuesto AS campo7','inv_productos.tipo AS campo8','inv_productos.estado AS campo9','inv_productos.id AS campo10')
@@ -29,6 +29,36 @@ class InvProducto extends Model
                     ->toArray();
 
         return $registros;
+    }
+
+
+    public static function get_datos_basicos($grupo_inventario_id, $estado)
+    {
+
+        if ( $grupo_inventario_id == '') {
+          $grupo_inventario_id = '%'.$grupo_inventario_id.'%';
+          $operador1 = 'LIKE';
+        }else{
+          $operador1 = '=';
+        }
+
+        return InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+                    ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
+                    ->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
+                    ->where('inv_productos.inv_grupo_id', $operador1, $grupo_inventario_id)
+                    ->where('inv_productos.estado', $estado)
+                    ->select(
+                                'inv_productos.id',
+                                'inv_productos.descripcion',
+                                'inv_productos.unidad_medida1',
+                                'inv_grupos.descripcion AS grupo_descripcion',
+                                'inv_productos.precio_compra',
+                                'inv_productos.precio_venta',
+                                'contab_impuestos.tasa_impuesto',
+                                'inv_productos.tipo',
+                                'inv_productos.estado',
+                                'inv_productos.codigo_barras')
+                    ->get();
     }
     
 
@@ -92,6 +122,11 @@ class InvProducto extends Model
     {
         $impuesto_id = InvProducto::where( 'id', $producto_id )->value( 'impuesto_id' );
         
+        if($impuesto_id == 0)
+        {
+            return 0;
+        }
+
         return Impuesto::where( 'id', $impuesto_id )->value( 'tasa_impuesto' );
     }
 

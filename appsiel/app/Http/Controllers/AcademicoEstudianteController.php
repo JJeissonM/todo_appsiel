@@ -18,6 +18,7 @@ use App\Matriculas\Estudiante;
 use App\Matriculas\Matricula;
 use App\Matriculas\Curso;
 use App\Calificaciones\Periodo;
+use App\Calificaciones\CalificacionAuxiliar;
 use App\Calificaciones\Logro;
 use App\Calificaciones\EncabezadoCalificacion;
 
@@ -28,6 +29,8 @@ use App\Cuestionarios\ActividadEscolar;
 
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoCarteraEstudiante;
+
+use App\AcademicoDocente\EstudianteTieneActividadEscolar;
 
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
@@ -69,6 +72,8 @@ class AcademicoEstudianteController extends Controller
         }
     }
     
+    
+
     public function horario()
     {
     	$miga_pan = [
@@ -76,8 +81,13 @@ class AcademicoEstudianteController extends Controller
                 ['url'=>'NO','etiqueta'=>'Horario']
             ];
 
-    	return view('academico_estudiante.horario',compact('miga_pan'));
+        $matricula = Matricula::get_matricula_activa_un_estudiante( $this->estudiante->id );
+        $curso = Curso::find( $matricula->curso_id );
+
+    	return view('academico_estudiante.horario',compact('miga_pan', 'curso'));
     }
+
+
     
     public function calificaciones()
     {
@@ -121,6 +131,8 @@ class AcademicoEstudianteController extends Controller
 
         return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla', compact('registros','periodo_id','curso_id'))->render();
     }
+
+
     
     public function observador_show($estudiante_id)
     {
@@ -134,6 +146,8 @@ class AcademicoEstudianteController extends Controller
     	return view('academico_estudiante.observador_show',compact('miga_pan','view_pdf','estudiante_id'));
     }
     
+
+
     public function agenda()
     {
     	$miga_pan = [
@@ -143,14 +157,15 @@ class AcademicoEstudianteController extends Controller
 
     	return view('academico_estudiante.agenda',compact('miga_pan'));
     }
+
+
     
     public function actividades_escolares()
     {
-        $actividades = DB::table('estudiante_tiene_actividades_escolares')
-                        ->leftJoin('actividades_escolares','actividades_escolares.id','=','estudiante_tiene_actividades_escolares.actividad_escolar_id')
-                        ->where('estudiante_id',$this->estudiante->id)
-                        ->where('actividades_escolares.estado','Activo')
-                        ->get();
+        $actividades = EstudianteTieneActividadEscolar::leftJoin('sga_actividades_escolares','sga_actividades_escolares.id','=','sga_estudiante_tiene_actividad_escolar.actividad_escolar_id')
+                                        ->where('sga_estudiante_tiene_actividad_escolar.estudiante_id',$this->estudiante->id)
+                                        ->where('sga_actividades_escolares.estado','Activo')
+                                        ->get();
 
         $miga_pan = [
                 ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
@@ -183,4 +198,5 @@ class AcademicoEstudianteController extends Controller
 
         return view('academico_estudiante.mi_plan_de_pagos',compact('libreta','estudiante','cartera','miga_pan','codigo_matricula','curso'));
     }
+    
 }

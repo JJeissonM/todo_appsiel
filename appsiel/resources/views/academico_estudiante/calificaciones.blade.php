@@ -7,7 +7,11 @@
 		<div class="col-md-10 col-md-offset-1">
 			
 			<h3>{{ $estudiante->nombre_completo }}</h3>
-			<h4>Matrícula: {{ $codigo_matricula }} /  Curso: {{ $curso->descripcion }}</h4>
+			<h4>
+				Matrícula actual: {{ $codigo_matricula }}
+				<br>
+				Curso actual: {{ $curso->descripcion }}
+			</h4>
 
 			{{ Form::open(['url'=>'academico_estudiante/ajax_calificaciones','id'=>'form_consulta']) }}
 				<div class="row">

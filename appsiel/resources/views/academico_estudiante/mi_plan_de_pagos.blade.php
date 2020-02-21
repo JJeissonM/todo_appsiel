@@ -11,6 +11,8 @@
 			<h2>{{ $estudiante->nombre_completo }}</h2>
 			<h4>Matrícula: {{ $codigo_matricula }} /  Curso: {{ $curso->descripcion }}</h4>
 
+			<p style="color: red;">Nota: Solo se muestra la última libreta de pagos.</p>
+
 			@if( !is_null($libreta) )
 				<h3>
 					Libreta de pagos

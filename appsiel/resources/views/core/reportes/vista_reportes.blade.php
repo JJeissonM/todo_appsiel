@@ -8,18 +8,28 @@
 	{{ Form::open(['url'=> $reporte->url_form_action,'id'=>'form_consulta']) }}
 
 		@foreach( $lista_campos as $campo)
-			{{ Form::label( $campo['name'], $campo['descripcion'] ) }}
-			@if( is_array($campo['opciones']) )
-				{{ Form::{$campo['tipo']}( $campo['name'], $campo['opciones'], null, $campo['atributos'] ) }}
-			@else
-				{{ Form::{$campo['tipo']}( $campo['name'], null, $campo['atributos'] ) }}
-			@endif
-			<br>
+
+			<?php 
+				$requerido = '';
+				if ( $campo['requerido'] )
+				{
+					$requerido = '*';
+				}
+			?>
+			<div class="form-group">
+				{{ Form::label( $campo['name'], $requerido.$campo['descripcion'] ) }}
+				@if( is_array($campo['opciones']) )
+					{{ Form::{$campo['tipo']}( $campo['name'], $campo['opciones'], null, $campo['atributos'] ) }}
+				@else
+					{{ Form::{$campo['tipo']}( $campo['name'], null, $campo['atributos'] ) }}
+				@endif
+			</div>
 		@endforeach
 
 		{{ Form::label( 'tam_hoja', 'Tamaño hoja' ) }}
 		{{ Form::select('tam_hoja',['letter'=>'Carta','folio'=>'Oficio'],null,['id'=>'tam_hoja']) }}
 
+		<br>
 		{{ Form::label( 'orientacion', 'Orientación' ) }}
 		{{ Form::select('orientacion',['Portrait'=>'Vertical','Landscape'=>'Horizontal'],null,['id'=>'orientacion']) }}
 
@@ -45,9 +55,11 @@
 			{{ Form::Spin( 42 ) }}
 			{{ Form::hidden( 'reporte_id', $reporte->id, ['id'=>'reporte_id'] ) }}
 			
-			<div id="resultado_consulta">
+			<div class="table-responsive" id="table_content">
+				<div id="resultado_consulta">
 
-			</div>	
+				</div>
+			</div>
 		</div>
 @endsection
 
@@ -76,8 +88,8 @@
 
 				$('#btn_pdf').attr('href', url_pdf_ori);
 
-				if(!valida_campos()){
-					alert('Los campos marcados con asterisco son requeridos.');
+				if( !validar_requeridos() )
+				{
 					return false;
 				}
 
@@ -109,20 +121,7 @@
 				});
 			});
 
-			function valida_campos(){
-				var valida = true;
-				$("#form_consulta > [required='required']").each(function(){
-					if( $(this).val() == ''  )
-					{
-						valida = false;
-						return;
-					}	
-				});
-				
-				return valida;
-			}
-
-			// Para algunos reportes de calificaiones
+			// Para algunos reportes de calificaciones
 			$('#periodo_lectivo_id').on('change',function()
 			{
 				$('#periodo_id').html('<option value=""></option>');
@@ -143,6 +142,31 @@
 	    				
 	    				$('#periodo_id').html( datos );
 						$('#periodo_id').focus();
+			        }
+			    });
+			});
+
+			// Para algunos reportes de calificaciones
+			$('#curso_id').on('change',function()
+			{
+
+				$('#estudiante_id').html('<option value=""></option>');
+
+				if ( $(this).val() == '') { return false; }
+
+	    		$('#div_cargando').show();
+
+				var url = "{{ url('get_estudiantes_matriculados') }}" + "/" + $('#periodo_lectivo_id').val() + "/" + $('#curso_id').val();
+
+				$.ajax({
+		        	url: url,
+		        	type: 'get',
+		        	success: function(datos){
+
+		        		$('#div_cargando').hide();
+	    				
+	    				$('#estudiante_id').html( datos );
+						$('#estudiante_id').focus();
 			        }
 			    });
 			});

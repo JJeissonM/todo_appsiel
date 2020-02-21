@@ -28,7 +28,7 @@
         </tr>
         <tr>
             <td>Concepto: {{ strtoupper($concepto) }}</td>
-            <td>Mes: {{ nombre_mes($id) }}</td>
+            <td>Mes: {{ nombre_mes($fecha_vencimiento) }}</td>
         </tr>
     </table>
 

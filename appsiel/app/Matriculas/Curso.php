@@ -17,7 +17,7 @@ class Curso extends Model
 {
     protected $table = 'sga_cursos';
     
-    protected $fillable = ['id_colegio','nivel_grado','sga_grado_id','codigo','descripcion','maneja_calificacion','estado'];
+    protected $fillable = [ 'id_colegio', 'nivel_grado', 'sga_grado_id', 'codigo', 'descripcion', 'maneja_calificacion', 'imagen', 'estado'];
 
     public $encabezado_tabla = ['ID','Nivel','Grado','Descripcion','Código','Maneja Calificacion (0=No, 1=Si)','Estado','Acción'];
 

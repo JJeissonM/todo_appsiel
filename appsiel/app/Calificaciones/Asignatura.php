@@ -68,8 +68,11 @@ class Asignatura extends Model
                         ->get();
     }
 
+<<<<<<< HEAD
+=======
         
 
+>>>>>>> fb0374952b86cefd9534446459798e324d7e80e9
     public static function get_registros_estado_activo()
     {
         return Asignatura::where('estado', 'Activo')->get();

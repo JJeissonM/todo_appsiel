@@ -19,8 +19,6 @@ class ContabMovimiento extends Model
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS campo1';
 
-        $select_raw3 = 'CONCAT(ph_propiedades.codigo," ",ph_propiedades.nomenclatura) AS campo5';
-
         $registros = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_movimientos.core_tercero_id')
                     ->leftJoin('inv_productos', 'inv_productos.id', '=', 'contab_movimientos.inv_producto_id')

@@ -47,12 +47,17 @@
 	            </a>
 			</div>
 
-			<?php 
-				$libreta_id = App\Tesoreria\TesoLibretasPago::where('id_estudiante',$estudiante->id)->value('id');
 
-				if ( is_null($libreta_id) )
+			<?php 
+
+
+				$libreta = App\Tesoreria\TesoLibretasPago::where( 'id_estudiante', $estudiante->id )->get()->last();
+
+				if ( is_null($libreta ) )
 				{
 					$libreta_id = 0;
+				}else{
+					$libreta_id = $libreta->id;
 				}
 			?>
 

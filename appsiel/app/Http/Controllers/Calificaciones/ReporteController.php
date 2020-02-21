@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 
+use App\Http\Controllers\Core\ConfiguracionController;
+
 use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Curso;
@@ -20,6 +22,7 @@ use App\Calificaciones\EscalaValoracion;
 use App\Calificaciones\Area;
 
 use App\Core\Colegio;
+use App\Core\FirmaAutorizada;
 
 use Input;
 use DB;
@@ -287,4 +290,42 @@ class ReporteController extends Controller
         return $vista;
     }
 
+
+    public function certificado_notas( Request $request )
+    {
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, null );
+        
+        if( $request->estudiante_id != '' )
+        {
+            $estudiantes = $estudiantes->where('id_estudiante', (int)$request->estudiante_id)->all();
+        }
+
+        // Seleccionar asignaturas del grado
+        $asignaturas = CursoTieneAsignatura::asignaturas_del_curso( $request->curso_id, null, $request->periodo_lectivo_id);
+
+        $curso = Curso::find( $request->curso_id );
+
+        $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
+
+        $periodo_id = $request->periodo_id;
+        $observacion_adicional = $request->observacion_adicional;
+        $tam_hoja = $request->tam_hoja;
+
+        $array_fecha = [ date('d'), ConfiguracionController::nombre_mes( date('m') ), date('Y') ];
+
+        if ( $request->fecha_expedicion != '' )
+        {
+            $fecha = explode('-', $request->fecha_expedicion );
+            $array_fecha = [ $fecha[2], ConfiguracionController::nombre_mes( $fecha[1] ), $fecha[0] ];            
+        }
+
+        $firma_autorizada_1 = FirmaAutorizada::get_datos( $request->firma_autorizada_1 );
+        $firma_autorizada_2 = FirmaAutorizada::get_datos( $request->firma_autorizada_2 );
+
+        $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja' )  )->render();
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        return $vista;
+    }
 }
