@@ -33,9 +33,7 @@ class PlanClaseRegistro extends Model
 
         return $vec;
     }
-
-
-    
+   
     public static function get_registros_impresion( $plan_clase_encabezado_id )
     {
         return PlanClaseRegistro::leftJoin('sga_plan_clases_struc_elementos', 'sga_plan_clases_struc_elementos.id', '=', 'sga_plan_clases_registros.plan_clase_estruc_elemento_id')

@@ -19,21 +19,34 @@ class InvDocEncabezado extends Model
     public $encabezado_tabla = ['Fecha','Documento','Bodega','Tercero','Detalle','Estado','Acción'];
 
     public static function consultar_registros()
-    {
-    	$select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2';
+    {   
+        /*
+            Tipos de transacciones de inventarios
+            1 = Entrada Almacén
+            2 = Transferencia   
+            3 = Salida de inventario
+            4 = Fabricación
+            28 = Ajuste de inventarios
+            10 = Saldos iniciales (Contabilidad)
+            Hay otras transacciones de inventarios elaboradas desde otras aplicaciones. Por tanto no se visualizan aquí.
+        */
+        $core_tipos_transacciones_ids = [ 1, 2, 3, 4, 28, 10 ];
 
-        $select_raw2 = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo4';
-
-        $registros = InvDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
+    	return InvDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')
                     ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_doc_encabezados.inv_bodega_id')
                     ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-                    ->whereIn('inv_doc_encabezados.core_tipo_transaccion_id',[ 1, 2, 3, 4, 28 ])
-                    ->select('inv_doc_encabezados.fecha AS campo1',DB::raw($select_raw),'inv_bodegas.descripcion AS campo3',DB::raw($select_raw2),'inv_doc_encabezados.descripcion AS campo5','inv_doc_encabezados.estado AS campo6','inv_doc_encabezados.id AS campo7')
+                    ->whereIn('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipos_transacciones_ids)
+                    ->select(
+                                'inv_doc_encabezados.fecha AS campo1',
+                                DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2' ),
+                                'inv_bodegas.descripcion AS campo3',
+                                DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo4' ),
+                                'inv_doc_encabezados.descripcion AS campo5',
+                                'inv_doc_encabezados.estado AS campo6',
+                                'inv_doc_encabezados.id AS campo7')
                     ->get()
                     ->toArray();
-
-        return $registros;
     }
 
     public function movimientos()

@@ -13,10 +13,16 @@ class ModeloEavValor extends Model
 
     public static function consultar_registros()
     {
-    	$registros = ModeloEavValor::leftJoin('sys_modelos','sys_modelos.id','=','core_eav_valores.modelo_entidad_id')->leftJoin('sys_campos','sys_campos.id','=','core_eav_valores.core_campo_id')->select('core_eav_valores.modelo_padre_id AS campo1','core_eav_valores.registro_modelo_padre_id AS campo2','sys_modelos.descripcion AS campo3','sys_campos.descripcion AS campo4','core_eav_valores.valor AS campo5','core_eav_valores.id AS campo6')
+    	return ModeloEavValor::leftJoin('sys_modelos','sys_modelos.id','=','core_eav_valores.modelo_entidad_id')
+                                ->leftJoin('sys_campos','sys_campos.id','=','core_eav_valores.core_campo_id')
+                                ->select(
+                                            'core_eav_valores.modelo_padre_id AS campo1',
+                                            'core_eav_valores.registro_modelo_padre_id AS campo2',
+                                            'sys_modelos.descripcion AS campo3',
+                                            'sys_campos.descripcion AS campo4',
+                                            'core_eav_valores.valor AS campo5',
+                                            'core_eav_valores.id AS campo6')
             ->get()
             ->toArray();
-
-        return $registros;
     }
 }

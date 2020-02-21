@@ -13,11 +13,15 @@ Route::resource('matriculas/inscripcion','Matriculas\InscripcionController');
 Route::get('get_cursos_del_grado/{grado_id}', 'Matriculas\ReportesController@get_cursos_del_grado');
 
 
+Route::post('matri_constancia_estudios','Matriculas\ReportesController@matri_constancia_estudios');
+
+
 //Estudiantes
 Route::get('matriculas/estudiantes/nuevo/{documento?}/{matriculando?}', 'Matriculas\EstudianteController@create');
 Route::get('matriculas/estudiantes/modificar/{id}', 'Matriculas\EstudianteController@modificar'); 
 Route::get('matriculas/estudiantes/listar', 'Matriculas\EstudianteController@listar');
 Route::get('matriculas/estudiantes/show/{estudiante_id}', 'Matriculas\EstudianteController@show');
+Route::get('get_estudiantes_matriculados/{periodo_lectivo_id}/{curso_id}', 'Matriculas\EstudianteController@get_estudiantes_matriculados');
 
 // Importar de Excel
 Route::get('matriculas/estudiantes/importar_excel', 'Matriculas\EstudianteController@importar_excel');

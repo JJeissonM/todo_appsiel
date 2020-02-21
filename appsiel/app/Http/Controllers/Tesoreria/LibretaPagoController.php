@@ -46,10 +46,6 @@ class LibretaPagoController extends ModeloController
     protected $saldo = 0;
     protected $j;
 
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
 
     public function actualizar_estado_cartera(){
         // 1ro. PROCESO QUE ACTUALIZA LAS CARTERAS, asignando EL ESTADO Vencida
@@ -343,7 +339,7 @@ class LibretaPagoController extends ModeloController
                         'campos' => $lista_campos
                     ];
 
-        $miga_pan = ModeloController::get_miga_pan($modelo,$registro->descripcion);
+        $miga_pan = $this->get_miga_pan($modelo,$registro->descripcion);
 
         $url_action = 'web/'.$id;
         if ($modelo->url_form_create != '') {

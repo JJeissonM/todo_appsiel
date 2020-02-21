@@ -680,7 +680,7 @@
 				fila.find('.inv_motivo_id').html( mov[0] );
 
 				// Asignar descripción del producto al TextInput
-                $('#inv_producto_id').val( item_sugerencia.attr('data-producto_id') + " " + item_sugerencia.attr('data-descripcion') );
+                $('#inv_producto_id').val( item_sugerencia.html() );
                 //Hacemos desaparecer el resto de sugerencias
                 $('#suggestions').html('');
                 $('#suggestions').hide();

@@ -27,12 +27,6 @@
 						{{ Form::select('contab_cuenta_id',$cuentas,null,['class'=>'combobox','id'=>'contab_cuenta_id']) }}
 					</div>
 					<div class="col-sm-3">
-						@if($propiedades != 'NO')
-							{{ Form::label('codigo_referencia_tercero','Inmueble') }}
-							<br/>
-							{{ Form::select('codigo_referencia_tercero',$propiedades,null,['class'=>'combobox','id'=>'codigo_referencia_tercero']) }}
-							<br/>
-					    @endif
 						{{ Form::label('core_tercero_id','Tercero') }}
 						<br/>
 						{{ Form::select('core_tercero_id',$terceros,null,['class'=>'combobox','id'=>'core_terecero_id']) }}

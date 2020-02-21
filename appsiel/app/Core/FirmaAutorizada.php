@@ -28,17 +28,38 @@ class FirmaAutorizada extends Model
         return $registros;
     }
 
+    public static function opciones_campo_select()
+    {
+        $opciones = FirmaAutorizada::leftJoin('core_terceros', 'core_terceros.id', '=', 'core_firmas_autorizadas.core_tercero_id')
+                                    ->where('core_firmas_autorizadas.estado','=','Activo')
+                                    ->select(
+                                                'core_terceros.descripcion AS tercero_nombre',
+                                                'core_firmas_autorizadas.titulo_tercero',
+                                                'core_firmas_autorizadas.id')
+                                    ->orderBy('descripcion')
+                                    ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->tercero_nombre.' ('.$opcion->titulo_tercero.')';
+        }
+        
+        return $vec;
+    }
+
     public static function get_datos($id)
     {
-        $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre';
-
-        $registros = FirmaAutorizada::leftJoin('core_terceros', 'core_terceros.id', '=', 'core_firmas_autorizadas.core_tercero_id')
+        return FirmaAutorizada::leftJoin('core_terceros', 'core_terceros.id', '=', 'core_firmas_autorizadas.core_tercero_id')
+                    ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
                     ->where('core_firmas_autorizadas.id',$id)
-                    ->select(DB::raw($select_raw),'core_firmas_autorizadas.titulo_tercero','core_terceros.numero_identificacion')
+                    ->select(
+                                'core_terceros.descripcion AS tercero_nombre',
+                                'core_firmas_autorizadas.titulo_tercero AS tercero_titulo',
+                                'core_terceros.numero_identificacion AS tercero_numero_identificacion',
+                                'core_tipos_docs_id.abreviatura AS tercero_tipo_doc_identidad')
                     ->get()
-                    ->toArray();
-
-        return $registros[0];
+                    ->first();
     }
 
     public static function get_firma_tercero( $core_tercero_id )

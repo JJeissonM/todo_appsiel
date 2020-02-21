@@ -16,7 +16,6 @@ class RemoveColumnToTablePwPaginas extends Migration
         {
             $table->dropColumn(['logo','email_interno','meta_description']);
             $table->string('slug');
-            $table->text('favicon');
         });
     }
 

@@ -203,9 +203,10 @@ class PaginaController extends Controller
     }
 
     public function showPage($slug){
-
        $pagina = Pagina::where('slug',$slug)->first();
        $widgets = $pagina->widgets;
+       $widgets->sortBy('orden');
+       //dd($widgets);
        $view = [];
 
        foreach ($widgets as $widget){
@@ -214,6 +215,7 @@ class PaginaController extends Controller
            if($componente=== false) continue;
            $view[] = $componente->DrawComponent();
        }
+        dd($view);
 
        return view('web.index',compact('view'));
 

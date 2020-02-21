@@ -5,6 +5,7 @@ Route::get('contab_consultar_cuentas', 'Contabilidad\ContabilidadController@cons
 
 Route::get('contabilidad_print/{id_transaccion}','Contabilidad\ContabilidadController@imprimir');
 Route::get('contab_get_fila/{id_fila}','Contabilidad\ContabilidadController@contab_get_fila');
+Route::get('contab_anular_documento/{id_fila}','Contabilidad\ContabilidadController@contab_anular_documento');
 Route::resource('contabilidad','Contabilidad\ContabilidadController');
 
 
@@ -14,10 +15,8 @@ Route::resource('contabilidad/mov','Contabilidad\ContabMovimientoController');
 
 Route::get('contab_get_grupos_cuentas/{clase_id}','Contabilidad\ContabilidadController@contab_get_grupos_cuentas');
 
-
 // REPORTES
 Route::get('contab_reporte_prueba', 'Contabilidad\ContabReportesController@reporte_prueba');
-
 
 Route::post('contab_ajax_auxiliar_por_cuenta', 'Contabilidad\ContabReportesController@contab_ajax_auxiliar_por_cuenta');
 Route::get('contab_auxiliar_por_cuenta','Contabilidad\ContabReportesController@contab_auxiliar_por_cuenta');

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 
+use App\Http\Controllers\Sistema\ModeloController;
+
 use Auth;
 use View;
 use Input;
@@ -22,13 +24,8 @@ use App\Matriculas\Curso;
 use App\Core\FirmaAutorizada;
 use App\Calificaciones\Periodo;
 
-class GestionDocumentalController extends Controller
+class GestionDocumentalController extends ModeloController
 {
-    
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
 
     /**
      * Display a listing of the resource.
@@ -37,7 +34,10 @@ class GestionDocumentalController extends Controller
      */
     public function index()
     {
-        return redirect('gestion_documental/imprimir_formato?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'));
+
+        $miga_pan = [[ 'url' => 'NO', 'etiqueta' => 'Gestión Documental']];
+
+        return view('gestion_documental.index', compact('miga_pan') );
     }
 
     /**

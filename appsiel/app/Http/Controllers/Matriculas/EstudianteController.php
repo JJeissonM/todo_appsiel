@@ -336,69 +336,16 @@ class EstudianteController extends ModeloController
 		return $nombre_acudiente;
     }
 
-
-        /**   
-     * 
-     *			PENDIENTE POR BORRAR - 21-ene-2020
-     * Mostrar lista de USUARIOS Estudiantes
-     *
-    public function usuarios_estudiantes()
+    public static function get_estudiantes_matriculados( $periodo_lectivo_id, $curso_id)
     {
-		$colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get();
-        $colegio = $colegio[0];
+        $registros = Matricula::estudiantes_matriculados( $curso_id, $periodo_lectivo_id, null );
 
-        $registros = DB::table('user_has_roles')
-            ->join('users', 'users.id', '=', 'user_has_roles.user_id')
-            ->join('roles', 'roles.id', '=', 'user_has_roles.role_id')
-            ->where(['roles.name'=>'Estudiante'])
-            ->select('users.*','roles.name AS role')
-            ->get();
-
-        $miga_pan = [
-            ['url'=>'matriculas?id='.Input::get('id'),'etiqueta'=>'Matrículas'],
-            ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=>'Estudiantes'],
-            ['url'=>'NO','etiqueta'=>'Usuarios']
-        ];
-
-        return view('academico_estudiante.usuarios_estudiantes', compact('registros','miga_pan'));
-    }
-
-    public function modificar_usuario_estudiante($id)
-    {
-    	$registro = User::find($id);
-
-    	$miga_pan = [
-            ['url'=>'matriculas?id='.Input::get('id'),'etiqueta'=>'Matrículas'],
-            ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=>'Estudiantes'],
-            ['url'=>'NO','etiqueta'=>'Modificar Usuario']
-        ];
-
-        return view('academico_estudiante.modificar_usuario_estudiante', compact('registro','miga_pan'));
-    }
-
-    public function actualizar_usuario_estudiante(Request $request, $id)
-    {
-    	//Validate name and email
-        $this->validate($request, [
-            'name'=>'required|max:120',
-            'email'=>'required|email|unique:users,email,'.$id
-        ]);         
-
-        $registro = User::where('id',$id)->first();
-
-        // Si se cambió el correo, se debe modificar en las tablas core_terceros y sga_inscripciones
-        if ( $registro->email != $request->email ) 
+        $opciones = '<option value="">Seleccionar...</option>';
+        foreach ($registros as $opcion)
         {
-        	DB::table('core_terceros')->where('email',"=",$registro->email)->update(['email' => $request->email]);
-
-        	DB::table('sga_inscripciones')->where('email',"=",$registro->email)->update(['email' => $request->email]);
+            $opciones .= '<option value="'.$opcion->id.'">'.$opcion->nombre_completo.'</option>';
         }
 
-        $registro->fill($request->all())->save();
-
-
-        return redirect('academico_estudiante/usuarios_estudiantes?id='.$request->app_id.'&id_modelo='.$request->modelo_id)->with('flash_message','Usuario Estudiante MODIFICADO correctamente.');
-
+        return $opciones;
     }
-	*/
 }

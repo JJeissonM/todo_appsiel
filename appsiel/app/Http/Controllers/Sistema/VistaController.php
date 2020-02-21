@@ -142,6 +142,9 @@ class VistaController extends Controller
             case 'bsText':
                 $control = Form::bsText($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
                 break;
+            case 'bsEmail':
+                $control = Form::bsEmail($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
+                break;
             case 'bsNumber':
                 $control = Form::bsNumber($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
                 break;

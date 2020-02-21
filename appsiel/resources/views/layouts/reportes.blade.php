@@ -8,20 +8,22 @@
 	<style>
 		.sidebar {
 		  /*
-		  top: 51px;*/
-		  width: 200px;
-		  z-index: 1;
+		  top: 51px;
 		  height: 100%;
 		  position: fixed;
+		  width: 200px;
+		  z-index: 1;
 		  left: 0;
+		  padding: 10px;*/
 		  background-color: #f5f5f5;
-		  overflow-x: hidden;
-		  padding: 10px;
+		  overflow-x: scroll;
 		}
 
 		.contenido {
 			margin-left: 200px; /* Same as the width of the sidenav */
   			padding: 0px 10px;
+		  	float: left;
+		  	width: 100%;
 		}
 	</style>
 @endsection
@@ -31,18 +33,25 @@
 		{{ Form::bsMigaPan($miga_pan) }}
 		<hr>
 
+		<div class="container-fluid">
 
-		<div class="sidebar">
-			@yield('sidebar')	
+			<div class="row">
+				
+				<div class="col-md-2 sidebar">
+					@yield('sidebar')
+				</div>
+
+				<div class="col-md-10">
+					
+					@include('layouts.mensajes')
+
+					@yield('contenido')
+
+				</div>
+
+			</div>
+
 		</div>
-
-		<div class="contenido">
-			
-			@include('layouts.mensajes')
-
-			@yield('contenido')	
-		</div>
-		
 
 @endsection
 

@@ -62,4 +62,58 @@ class ContabCuenta extends Model
         return $vec;
     }
 
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"contab_doc_registros",
+                                    "llave_foranea":"contab_cuenta_id",
+                                    "mensaje":"Cuenta tiene registros en documentos de contabilidad."
+                                },
+                            "1":{
+                                    "tabla":"contab_movimientos",
+                                    "llave_foranea":"contab_cuenta_id",
+                                    "mensaje":"Tiene movimientos contables."
+                                },
+                            "2":{
+                                    "tabla":"cxc_servicios",
+                                    "llave_foranea":"contab_cuenta_id",
+                                    "mensaje":"Cuenta está asociada a servicios de CxC."
+                                },
+                            "3":{
+                                    "tabla":"nom_equivalencias_contables",
+                                    "llave_foranea":"contab_cuenta_id",
+                                    "mensaje":"Está asociada a Equivalencias contables de nómina."
+                                },
+                            "4":{
+                                    "tabla":"teso_cajas",
+                                    "llave_foranea":"contab_cuenta_id",
+                                    "mensaje":"Está asociada a una Caja en Tesorería."
+                                },
+                            "5":{
+                                    "tabla":"teso_cuentas_bancarias",
+                                    "llave_foranea":"contab_cuenta_id",
+                                    "mensaje":"Está asociada a una Cuenta bancaria en Tesorería."
+                                },
+                            "6":{
+                                    "tabla":"teso_motivos",
+                                    "llave_foranea":"contab_cuenta_id",
+                                    "mensaje":"Está asociada a un Motivo de Tesorería."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
+    }
+
 }

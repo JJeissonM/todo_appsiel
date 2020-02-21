@@ -60,12 +60,26 @@ class CxcEstadoCartera extends Model
     $sql_movimiento_cxc = CxcEstadoCartera::leftJoin('cxc_movimientos','cxc_movimientos.id','=','cxc_estados_cartera.cxc_movimiento_id')
           ->leftJoin('core_terceros','core_terceros.id','=','cxc_movimientos.core_tercero_id')
           ->leftJoin('core_tipos_docs_apps','core_tipos_docs_apps.id','=','cxc_movimientos.core_tipo_doc_app_id')
-          ->leftJoin('ph_propiedades','ph_propiedades.id','=','cxc_movimientos.codigo_referencia_tercero')
           ->where('cxc_movimientos.codigo_referencia_tercero', $codigo_referencia_tercero)
           ->where('cxc_estados_cartera.fecha_registro', '<=', $fecha_consulta)
           ->where('cxc_estados_cartera.estado', 'Pendiente')
           ->orderBy('cxc_estados_cartera.fecha_registro','ASC')
-          ->select('cxc_estados_cartera.fecha_registro', 'cxc_estados_cartera.valor_pagado', 'cxc_estados_cartera.saldo_pendiente', 'cxc_estados_cartera.estado','cxc_estados_cartera.cxc_movimiento_id', 'cxc_movimientos.valor_cartera','cxc_movimientos.core_tipo_doc_app_id','cxc_movimientos.consecutivo','core_terceros.descripcion AS tercero',DB::raw($select_raw),'cxc_movimientos.fecha','cxc_movimientos.fecha_vencimiento','cxc_movimientos.core_tipo_transaccion_id','cxc_movimientos.codigo_referencia_tercero','cxc_movimientos.detalle_operacion','ph_propiedades.codigo','ph_propiedades.tipo_propiedad','ph_propiedades.nombre_arrendatario','ph_propiedades.telefono_arrendatario','ph_propiedades.email_arrendatario','ph_propiedades.nomenclatura','ph_propiedades.fecha_entrega','ph_propiedades.parqueadero_asignado','ph_propiedades.deposito_asignado','ph_propiedades.numero_matricula_inmobiliaria','ph_propiedades.coeficiente_copropiedad')
+          ->select(
+                    'cxc_estados_cartera.fecha_registro',
+                    'cxc_estados_cartera.valor_pagado',
+                    'cxc_estados_cartera.saldo_pendiente',
+                    'cxc_estados_cartera.estado',
+                    'cxc_estados_cartera.cxc_movimiento_id',
+                    'cxc_movimientos.valor_cartera',
+                    'cxc_movimientos.core_tipo_doc_app_id',
+                    'cxc_movimientos.consecutivo',
+                    'core_terceros.descripcion AS tercero',
+                    DB::raw($select_raw),
+                    'cxc_movimientos.fecha',
+                    'cxc_movimientos.fecha_vencimiento',
+                    'cxc_movimientos.core_tipo_transaccion_id',
+                    'cxc_movimientos.codigo_referencia_tercero',
+                    'cxc_movimientos.detalle_operacion')
           ->unique();
 
     // Se crea un array y se concatenan los datos del documento de cartera según su origen

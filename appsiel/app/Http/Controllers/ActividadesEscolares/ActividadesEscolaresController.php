@@ -45,6 +45,14 @@ class ActividadesEscolaresController extends ModeloController
 {
 	protected $colegio;
 
+
+    /*
+
+        NOTA: Cuando el usuario no tiene role de profesor, no le está asignacdo bien los curso. Revisar function ajustar_opciones_select() en actividades.js
+
+    */
+
+
     /**
      * Store a newly created resource in storage.
      *

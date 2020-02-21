@@ -543,12 +543,10 @@ class ReporteController extends TesoreriaController
                 $titulo = 'Resumen de recaudos de matrículas y pensiones';
                 $lbl_total = '';
                 break;
-
             case '1':
                 $titulo = 'Cartera Vencida Mes a Mes';
                 $lbl_total = 'Total';
                 break;
-
             default:
                 # code...
                 break;
@@ -579,118 +577,163 @@ class ReporteController extends TesoreriaController
                             </thead>
                                 <tbody>';
 
-        $fila = 1;
+        $fila=1;
 
-        $tabla .= '';
-        foreach ($todas_las_matriculas_del_curso as $una_matricula) {
+        $tabla.='';
+
+        $total_columna = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        foreach ( $todas_las_matriculas_del_curso as $una_matricula) 
+        {
             $total_linea = 0;
-
+            $num_columna = 0;
+            
             // PRIMERAS DOS COLUMNAS DE LA TABLA
-            $tabla .= '<tr>
-                        <td>' . $fila . '</td>
-                        <td>' . $una_matricula->nombre_completo . ' (' . $una_matricula->codigo . ')' . '</td>';
+            $tabla.='<tr>
+                        <td>'.$fila.'</td>
+                        <td>'.$una_matricula->nombre_completo.' ('.$una_matricula->codigo.')'.'</td>';
 
             // Se obtiene la libreta Activa de ese estudiante para el año de la matríula activa
-            $libreta_pagos = TesoLibretasPago::where('estado', 'Activo')->where('id_estudiante', $una_matricula->id_estudiante)->where('fecha_inicio', 'LIKE', $una_matricula->anio . '-%')->get();
+            $libreta_pagos = TesoLibretasPago::where('estado','Activo')
+            									->where('matricula_id', $una_matricula->matricula_id )
+            									->get()
+            									->first();
+
+
 
             // Se obtiene la cartera de ese estudiante para el año de la matríula activa
-            if (count($libreta_pagos) > 0) {
+            if ( !is_null($libreta_pagos) ) 
+            {
 
                 //Matrícula
-                $cartera_matricula = TesoCarteraEstudiante::where('id_libreta', $libreta_pagos[0]->id)->where('concepto', 'Matrícula')->get();
+                $cartera_matricula = TesoCarteraEstudiante::where('id_libreta', $libreta_pagos->id)
+                											->where('concepto','Matrícula')
+                											->get();
 
-                if (count($cartera_matricula) > 0) {
+                if ( count($cartera_matricula) > 0 ) 
+                {
                     $linea_cartera = $cartera_matricula[0];
 
                     switch ($tipo_reporte) {
                         case '0':
-                            $subtabla = $this->get_tabla_anidada($linea_cartera->id, $linea_cartera->saldo_pendiente, $linea_cartera->valor_cartera, $linea_cartera->concepto);
+                        	$saldo_pendiente = $linea_cartera->saldo_pendiente;
+                            $subtabla = $this->get_tabla_anidada($linea_cartera->id, $saldo_pendiente, $linea_cartera->valor_cartera, $linea_cartera->concepto);
 
                             break;
-
+                        
                         case '1':
-                            if ($linea_cartera->estado == 'Vencida') {
+                            if ( $linea_cartera->estado == 'Vencida') 
+                            {
                                 $saldo_pendiente = $linea_cartera->saldo_pendiente;
-                                $total_linea += $saldo_pendiente;
-                            } else {
+                                $total_linea+=$saldo_pendiente;
+                            }else{
                                 $saldo_pendiente = 0;
                             }
-
-                            $subtabla = '$' . number_format($saldo_pendiente, 0, ',', '.');
+                            
+                            $subtabla = '$'.number_format( $saldo_pendiente, 0, ',', '.');
                             break;
-
+                        
                         default:
                             # code...
                             break;
                     }
 
-                    if ($subtabla == '$0') {
-                        $subtabla = '';
-                    }
-
-                    $tabla .= '<td align="center">' . $subtabla . '</td>';
+                    if ( $subtabla == '$0') {
+                                   $subtabla = '';
+                               } 
+                      
+                    $tabla.='<td align="center">'.$subtabla.'</td>';
+                    $total_columna[$num_columna] += $saldo_pendiente;
+                    $num_columna++;
                 }
 
                 //Pensión
-                $cartera_pension = TesoCarteraEstudiante::where('id_libreta', $libreta_pagos[0]->id)->where('concepto', 'Pensión')->orderBy('fecha_vencimiento', 'ASC')->get();
+                $cartera_pension = TesoCarteraEstudiante::where('id_libreta',$libreta_pagos->id)->where('concepto','Pensión')->orderBy('fecha_vencimiento','ASC')->get();
 
-                for ($i = 2; $i < 12; $i++) {
+                for ($i=2; $i < 12; $i++) 
+                { 
                     $aplico_mes = false;
-                    $mes_columna = str_repeat(0, 2 - strlen($i)) . $i;
-                    foreach ($cartera_pension as $linea_cartera) {
-                        $mes_libreta = explode("-", $linea_cartera->fecha_vencimiento)[1];
+                    $mes_columna = str_repeat(0, 2-strlen($i) ).$i;
+                    foreach ($cartera_pension as $linea_cartera) 
+                    {
+                        $mes_libreta =explode("-", $linea_cartera->fecha_vencimiento)[1];
 
-                        if ($mes_columna == $mes_libreta) {
+                        if ( $mes_columna == $mes_libreta ) 
+                        {
                             switch ($tipo_reporte) {
                                 case '0':
-                                    $subtabla = $this->get_tabla_anidada($linea_cartera->id, $linea_cartera->saldo_pendiente, $linea_cartera->valor_cartera, $linea_cartera->concepto);
+                                	$saldo_pendiente = $linea_cartera->saldo_pendiente;
+                                    $subtabla = $this->get_tabla_anidada($linea_cartera->id, $saldo_pendiente, $linea_cartera->valor_cartera, $linea_cartera->concepto);
 
                                     break;
-
+                                
                                 case '1':
-                                    if ($linea_cartera->estado == 'Vencida') {
+                                    if ( $linea_cartera->estado == 'Vencida') 
+                                    {
                                         $saldo_pendiente = $linea_cartera->saldo_pendiente;
-                                        $total_linea += $saldo_pendiente;
-                                    } else {
+                                        $total_linea+=$saldo_pendiente;
+                                    }else{
                                         $saldo_pendiente = 0;
                                     }
-                                    $subtabla = '$' . number_format($saldo_pendiente, 0, ',', '.');
+                                    $subtabla = '$'.number_format( $saldo_pendiente, 0, ',', '.');
                                     break;
-
+                                
                                 default:
                                     # code...
                                     break;
                             }
+                            
+                            if ( $subtabla == '$0') {
+                                   $subtabla = '';
+                               }   
 
-                            if ($subtabla == '$0') {
-                                $subtabla = '';
-                            }
-
-                            $tabla .= '<td align="center">' . $subtabla . '</td>';
+                            $tabla.='<td align="center">'.$subtabla.'</td>';
                             $aplico_mes = true;
+
+		                    $total_columna[$num_columna] += $saldo_pendiente;
+		                    $num_columna++;
                         }
                     }
 
-                    if (!$aplico_mes) {
-                        $tabla .= '<td align="center">&nbsp;</td>';
+                    if ( !$aplico_mes) 
+                    {
+                        $tabla.='<td align="center">&nbsp;</td>';
                     }
                 }
-            } else {
-                $tabla .= '<td colspan="11">El estudiante no tiene libreta de pagos Activa.</td>';
+
+            }else{
+                $tabla.='<td colspan="11">El estudiante no tiene libreta de pagos Activa.</td>';
             }
 
-            if ($total_linea == 0) {
+            if ( $total_linea == 0) 
+            {
                 $total_linea = '';
-            } else {
-                $total_linea = '$' . number_format($total_linea, 0, ',', '.');
+            }else{
+                $total_linea = '$'.number_format( $total_linea, 0, ',', '.');
             }
 
-            $tabla .= '<td>' . $total_linea . '</td></tr>';
+            $tabla.='<td>'.$total_linea.'</td></tr>';
             $fila++;
         }
 
-        $tabla .= '</tbody>
-                    </table>';
+        $tabla.='</tbody>
+        			<tfoot>
+        			<tr>
+        				<td colspan="2">
+        				</td>
+        			';
+
+        $gran_total = 0;
+        for ($i=0; $i < 11; $i++)
+        { 
+        	$tabla.='<td>$'.number_format( $total_columna[$i], 0, ',', '.').'</td>';
+        	$gran_total += $total_columna[$i];
+        }
+
+        $tabla.='<td>$'.number_format( $gran_total, 0, ',', '.').'</td>
+        			</tr>
+        				</tfoot>
+                    		</table>';
 
         return $tabla;
     }
@@ -709,30 +752,34 @@ class ReporteController extends TesoreriaController
         // --------------------
         $key_cartera = 0;
 
-        $recaudos_libreta = TesoRecaudosLibreta::where('id_cartera', $id_cartera)->where('concepto', $concepto)->groupBy('id_cartera')->select(DB::raw('sum(valor_recaudo) AS valor_recaudo'), 'teso_medio_recaudo_id', 'fecha_recaudo')->get();
+        $recaudos_libreta = TesoRecaudosLibreta::where('id_cartera',$id_cartera)->where('concepto',$concepto)->groupBy('id_cartera')->select(DB::raw('sum(valor_recaudo) AS valor_recaudo'),'teso_medio_recaudo_id','fecha_recaudo')->get();
 
         // se hizo recaudo para el concepto de la cartera del estudiante
-        if (count($recaudos_libreta) > 0) {
+        if ( count($recaudos_libreta) > 0 ) 
+        {
             $medio_recaudo = TesoMedioRecaudo::find($recaudos_libreta[0]->teso_medio_recaudo_id);
 
             $fecha_recaudo = $recaudos_libreta[0]->fecha_recaudo;
 
             // Si pagó completo o no
-            if ($saldo_pendiente == 0) {
+            if ( $saldo_pendiente == 0) 
+            {
                 $color_f = '#33FFC1';
-            } else {
+            }else{
                 $color_f = '#F7CE13';
             }
 
             // Si pago en banco o en efectivo
-            if ($medio_recaudo->comportamiento == 'Tarjeta bancaria') {
+            if ( $medio_recaudo->comportamiento == 'Tarjeta bancaria') 
+            {
                 $color_b = '#33FFC1';
                 $color_c = '#FFFFFF';
-            } else {
+            }else{
                 $color_b = '#FFFFFF';
                 $color_c = '#33FFC1';
             }
-        } else {
+
+        }else{
             // Si no pagó
             $fecha_recaudo = ' - ';
             $color_b = '#FFFFFF';
@@ -758,13 +805,13 @@ class ReporteController extends TesoreriaController
 
     public function get_saldo_pendiente($id_cartera, $saldo_pendiente, $valor_cartera, $concepto)
     {
-        return number_format(TesoRecaudosLibreta::where('id_cartera', $id_cartera)->where('concepto', $concepto)->sum('saldo_pendiente'), 0, ',', '.');
+        return number_format( TesoRecaudosLibreta::where('id_cartera',$id_cartera)->where('concepto',$concepto)->sum('saldo_pendiente'), 0, ',', '.');
     }
 
 
     public function get_tabla_movimiento()
     {
-        $movimiento = TesoMovimiento::movimiento_por_tipo_motivo(Input::get('movimiento'), Input::get('fecha_desde'), Input::get('fecha_hasta'), Input::get('teso_caja_id'));
+        $movimiento = TesoMovimiento::movimiento_por_tipo_motivo( Input::get('movimiento'), Input::get('fecha_desde'), Input::get('fecha_hasta'), Input::get('teso_caja_id') );
 
         $total_valor_movimiento = 0;
         foreach ($movimiento as $linea) {

@@ -68,12 +68,7 @@ class VentaController extends TransaccionController
 
     /* El método index() está en TransaccionController */
 
-    /**
-     * Show the form for creating a new resource.
-     * Este método create() es llamado desde un botón-select en el index de ventas
-     *
-     * @return \Illuminate\Http\Response
-     */
+    
     public function create()
     {
         $this->set_variables_globales();
@@ -99,14 +94,17 @@ class VentaController extends TransaccionController
 
         $lineas_registros = json_decode($request->lineas_registros);
 
-        // 1ro. Crear documento de salida de inventarios (REMISIÓN)
+        // TRES TRANSACCIONES
+
+        // 1ra. Crear documento de salida de inventarios (REMISIÓN)
         // WARNING. HECHO MANUALMENTE
         $remision_doc_encabezado_id = $this->crear_remision_ventas( $request );
 
-        // 2do. Crear documento de Ventas
+        // 2da. Crear documento de Ventas
         $request['remision_doc_encabezado_id'] = $remision_doc_encabezado_id;
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
+        // 3ra. Crear Registro del documento de ventas
         $request['creado_por'] = Auth::user()->email;
         VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
@@ -381,9 +379,11 @@ class VentaController extends TransaccionController
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 
-        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->first();
+        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->last();
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion' ) )->render();
+        $etiquetas = $this->get_etiquetas();
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas' ) )->render();
     }
 
     /**
@@ -673,6 +673,12 @@ class VentaController extends TransaccionController
             $tasa_impuesto = (float)$producto['tasa_impuesto'];
 
             if ( is_null($tasa_impuesto) ) 
+            {
+                $tasa_impuesto = 0;
+            }
+
+            // SI LA EMPRESA NO LIQUIDA IMPUESTOS
+            if ( !config('configuracion')['liquidacion_impuestos'] )
             {
                 $tasa_impuesto = 0;
             }
@@ -1138,6 +1144,49 @@ class VentaController extends TransaccionController
         VentaController::crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
 
         return true;
+    }
+
+
+    public function get_etiquetas()
+    {
+        $parametros = config('ventas');
+
+        $encabezado = '';
+
+        if ($parametros['encabezado_linea_1'] != '')
+        {
+            $encabezado .= $parametros['encabezado_linea_1'];
+        }
+
+        if ($parametros['encabezado_linea_2'] != '')
+        {
+            $encabezado .= '<br>'.$parametros['encabezado_linea_2'];
+        }
+
+        if ($parametros['encabezado_linea_3'] != '')
+        {
+            $encabezado .= '<br>'.$parametros['encabezado_linea_3'];
+        }
+
+
+        $pie_pagina = '';
+
+        if ($parametros['pie_pagina_linea_1'] != '')
+        {
+            $pie_pagina .= $parametros['pie_pagina_linea_1'];
+        }
+
+        if ($parametros['pie_pagina_linea_2'] != '')
+        {
+            $pie_pagina .= '<br>'.$parametros['pie_pagina_linea_2'];
+        }
+
+        if ($parametros['pie_pagina_linea_3'] != '')
+        {
+            $pie_pagina .= '<br>'.$parametros['pie_pagina_linea_3'];
+        }
+
+        return [ 'encabezado' => $encabezado, 'pie_pagina' => $pie_pagina ];
     }
 
 }

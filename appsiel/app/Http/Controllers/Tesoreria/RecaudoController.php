@@ -273,7 +273,34 @@ class RecaudoController extends TransaccionController
 
     public function imprimir($id)
     {
-        $view_pdf = RecaudoController::vista_preliminar_recaudos($id,'imprimir');
+        $modelo = Modelo::find(Input::get('id_modelo'));
+
+        $reg_anterior = TesoDocEncabezado::where('id', '<', $id)->where('core_empresa_id', Auth::user()->empresa_id)->max('id');
+        $reg_siguiente = TesoDocEncabezado::where('id', '>', $id)->where('core_empresa_id', Auth::user()->empresa_id)->min('id');
+
+        $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
+
+        $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
+
+        //dd( $doc_pagados );
+
+        $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
+
+        $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
+
+        $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad' ) )->render();
+       
+        // Se prepara el PDF
+        $orientacion='portrait';
+        $tam_hoja='Letter';
+
+        $pdf = \App::make('dompdf.wrapper');
+        //$pdf->set_option('isRemoteEnabled', TRUE);
+        $pdf->loadHTML( $documento_vista )->setPaper($tam_hoja,$orientacion);
+
+        return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
+
+        /*$view_pdf = RecaudoController::vista_preliminar_recaudos($id,'imprimir');
        
         // Se prepara el PDF
         $orientacion='portrait';
@@ -285,6 +312,7 @@ class RecaudoController extends TransaccionController
 
         //echo $view_pdf;
         return $pdf->download('recibo_de_caja.pdf');
+        */
     }
 
 

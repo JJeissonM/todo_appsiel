@@ -104,6 +104,28 @@
 
 				</div>
 
+
+				<h4> Parámetros por defecto para Pedidos  </h4>
+				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsSelect('pv_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id'], 'Documento para pedidos', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+
+				<br>
 				<h4> Parámetros de precios  </h4>
 				<hr>
 				<div class="row">
@@ -111,6 +133,74 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							{{ Form::bsSelect('modo_liquidacion_precio', $parametros['modo_liquidacion_precio'], 'Modo de liquidación del precio de ventas', ['ultimo_precio'=>'Último precio vendido','lista_de_precios'=>'Lista de precios del cliente'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+				<h4> Etiquetas para formatos de impresión  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsText('encabezado_linea_1', $parametros['encabezado_linea_1'], 'Encabezado línea 1', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsText('encabezado_linea_2', $parametros['encabezado_linea_2'], 'Encabezado línea 2', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsText('encabezado_linea_3', $parametros['encabezado_linea_3'], 'Encabezado línea 3', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsText('pie_pagina_linea_1', $parametros['pie_pagina_linea_1'], 'Pie de página línea 1', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsText('pie_pagina_linea_2', $parametros['pie_pagina_linea_2'], 'Pie de página línea 2', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsText('pie_pagina_linea_3', $parametros['pie_pagina_linea_3'], 'Pie de página línea 3', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

@@ -15,7 +15,6 @@ class FormServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
         // Register the form components
         Form::component('bsLabel', 'components.form.label', ['name', 'value', 'lbl', 'attributes']);
         Form::component('bsText', 'components.form.text', ['name', 'value', 'lbl', 'attributes']);
@@ -23,7 +22,8 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsNumber', 'components.form.number', ['name', 'value', 'lbl', 'attributes']);
         Form::component('bsTextArea', 'components.form.text_area', ['name', 'value', 'lbl', 'attributes']);
 		Form::component('bsPassword', 'components.form.password', ['name', 'value', 'lbl', 'attributes']);
-
+		
+        
         Form::component('bsSelect', 'components.form.select', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsSelectCreate', 'components.form.select_create', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsSelectName', 'components.form.select_name', ['name', 'value', 'lbl', 'opciones', 'attributes']);
@@ -76,6 +76,7 @@ class FormServiceProvider extends ServiceProvider
         //componentes utilizado en el diseñador de la pagina web
         Form::component('navegacion','components.web.navegacion',['nav']);
         Form::component('slider','components.web.slider',[]);
+        Form::component('aboutus','components.web.aboutus',['aboutus']);
     }
 
     /**
@@ -87,5 +88,4 @@ class FormServiceProvider extends ServiceProvider
     {
         //
     }
-
 }

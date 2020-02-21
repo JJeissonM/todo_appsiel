@@ -29,7 +29,7 @@ class TesoDocRegistro extends Model
                                     'teso_motivos.id AS motivo_id',
                                     'teso_cajas.descripcion AS caja',
                                     'teso_cuentas_bancarias.descripcion AS cuenta_bancaria',
-                            		'teso_doc_registros.detalle_operacion AS detalle_operacion',
+                            		'teso_doc_registros.detalle_operacion',
                             		'teso_doc_registros.valor AS valor')
                             ->get();
     }

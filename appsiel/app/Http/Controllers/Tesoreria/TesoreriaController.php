@@ -94,34 +94,13 @@ class TesoreriaController extends TransaccionController
     }
 
 
-    public function imprimir_cartera($concepto,$tipo,$id)
+    public function imprimir_cartera($concepto,$tipo,$fecha_vencimiento)
     {
 
         switch ($tipo) {
             case 'mes':
-                $cadena="%-".$id."-%";
 
-                if ( Input::get('curso_id') == '') 
-                {
-                    $curso_id = '%%';
-                }else{
-                    $curso_id = Input::get('curso_id');
-                }
-
-                $select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS nombre_completo';
-
-                $carteras = TesoCarteraEstudiante::leftJoin('sga_estudiantes','sga_estudiantes.id','=','teso_cartera_estudiantes.id_estudiante')
-                        ->leftJoin('matriculas','matriculas.id_estudiante','=','sga_estudiantes.id')
-                        ->leftJoin('sga_cursos','sga_cursos.id','=','matriculas.curso_id')
-                        ->where('matriculas.curso_id','LIKE',$curso_id)
-                ->where('teso_cartera_estudiantes.fecha_vencimiento','LIKE',$cadena)
-                        ->where('teso_cartera_estudiantes.concepto','=',$concepto)
-                        ->where('teso_cartera_estudiantes.estado','=','Vencida')
-                        ->where('teso_cartera_estudiantes.saldo_pendiente','<>',0)
-                        ->select(DB::raw($select_raw),'sga_estudiantes.doc_identidad', 'sga_estudiantes.apellido1', 'teso_cartera_estudiantes.valor_cartera','teso_cartera_estudiantes.valor_pagado','matriculas.codigo AS codigo_matricula','sga_cursos.descripcion AS nom_curso','sga_cursos.codigo AS codigo_curso')
-                        ->orderBy('sga_cursos.codigo','ASC')
-                        ->orderBy('sga_estudiantes.apellido1','ASC')
-                        ->get();
+                $carteras = TesoCarteraEstudiante::get_cartera_estudiantes_curso( Input::get('curso_id'), $fecha_vencimiento, $concepto);
                 break;
             case 'estudiante':
                 # code...
@@ -137,7 +116,7 @@ class TesoreriaController extends TransaccionController
 
         $empresa = Empresa::find(Auth::user()->empresa_id);
 
-        $view =  View::make('tesoreria.pdf_cartera_2', compact('carteras','colegio','concepto','id','empresa'))->render();
+        $view =  View::make('tesoreria.pdf_cartera_2', compact('carteras','colegio','concepto','fecha_vencimiento','empresa'))->render();
         $tam_hoja = 'Letter';
         $orientacion='portrait';
 
@@ -146,7 +125,6 @@ class TesoreriaController extends TransaccionController
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
         //return $pdf->stream();
         return $pdf->download('cartera.pdf');
-        //print_r($carteras);
     }
 
     //   GET CAJAS

@@ -1,6 +1,6 @@
 <?php
 
-    switch ($vista) {
+    /*switch ($vista) {
     	case 'imprimir':
     		// Viceversa a lo anterior, sale en imprimir pero no en SHOW
 			$url = '../storage/app/logos_empresas/'.$empresa->imagen; 
@@ -13,7 +13,9 @@
     	default:
     		# code...
     		break;
-    }	 
+    }*/
+
+    $url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen; 	 
 
     $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
 ?>

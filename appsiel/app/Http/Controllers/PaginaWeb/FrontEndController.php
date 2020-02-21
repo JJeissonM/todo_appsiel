@@ -166,9 +166,7 @@ class FrontEndController extends Controller
 
         
     }
-
-
-
+    
     // Llama al index de blog
     public function blog( $slug = null )
     {        

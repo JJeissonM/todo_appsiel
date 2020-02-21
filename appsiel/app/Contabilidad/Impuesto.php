@@ -24,7 +24,7 @@ class Impuesto extends Model
                     ->select('contab_impuestos.id','contab_impuestos.descripcion')
                     ->get();
 
-        $vec['']='';
+        //$vec['']='';
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

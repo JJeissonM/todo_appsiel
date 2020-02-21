@@ -20,6 +20,10 @@ Route::get('seccion/{widget}','web\SeccionController@orquestador');
 Route::get('slider/create/{widget}','web\SliderController@create');
 Route::resource('slide','web/SliderController');
 
+Route::get('aboutus/create/{widget}', 'web\AboutusController@create');
+Route::post('aboutus/store','web\AboutusController@store')->name('aboutus.store');
+Route::put('aboutus/updated/{id}','web\AboutusController@updated')->name('aboutus.updated');
+
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
 Route::get('categoria/{id?}', 'PaginaWeb\FrontEndController@show_categoria');

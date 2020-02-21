@@ -9,12 +9,23 @@
 	<hr>
 
 	@include('layouts.mensajes')
-	
-	<div class="container col-sm-8 col-sm-offset-2">
 
-		<div id='calendar'></div>
-		
+
+	<div class="container-fluid">
+		<div class="marco_formulario">
+		    
+		    <!-- <div id='calendar'></div> -->
+		    <br>
+		     <p style="padding: 10px;">Horario Curso : <b>{{ $curso->descripcion }}</b></p> 
+		    <hr>
+		    <div style="margin:20px;">
+		    	<img style="width: 100%; object-fit: cover;" src="{{ config('configuracion.url_instancia_cliente')."/storage/app/calificaciones/horarios_cursos".$curso->imagen }}" class="" />
+		    </div>
+
+		</div>
 	</div>
+	<br/><br/>
+
 @endsection
 
 @section('scripts')

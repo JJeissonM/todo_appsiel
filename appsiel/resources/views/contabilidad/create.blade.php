@@ -35,7 +35,7 @@
 		<div class="marco_formulario">
 		    <h4>Nuevo registro</h4>
 		    <hr>
-			{{ Form::open(['url'=>'web','id'=>'form_create']) }}
+			{{ Form::open( [ 'url' => $form_create['url'], 'id' => 'form_create' ] ) }}
 				<?php
 				  if (count($form_create['campos'])>0) {
 				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
@@ -49,6 +49,8 @@
 
 				{{ Form::hidden('url_id',Input::get('id'))}}
 				{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
+				{{ Form::hidden('url_id_transaccion',Input::get('id_transaccion'))}}
+
 				{{ Form::hidden('inv_bodega_id_aux',null,['id'=>'inv_bodega_id_aux'])}}
 				
 				<div style="display: none;"> 
@@ -108,6 +110,9 @@
 	<script src="{{asset('assets/js/contabilidad.js')}}"></script>
 
 	<script type="text/javascript">
+
+		var LineaNum = 0;
+
 		$(document).ready(function(){
 			var today = new Date();
 			var dd = today.getDate();

@@ -20,12 +20,10 @@ class CxpMovimiento extends Model
     // Se consultan los documentos con saldo_pendiente
     $documentos_cxc = CxpMovimiento::leftJoin('core_terceros','core_terceros.id','=','cxp_movimientos.core_tercero_id')
         ->leftJoin('core_tipos_docs_apps','core_tipos_docs_apps.id','=','cxp_movimientos.core_tipo_doc_app_id')
-        ->leftJoin('ph_propiedades','ph_propiedades.id','=','cxp_movimientos.codigo_referencia_tercero')
         ->where('cxp_movimientos.core_empresa_id',Auth::user()->empresa_id)
-        ->where('cxp_movimientos.codigo_referencia_tercero',$ph_propiedad_id)
         ->where('cxp_movimientos.fecha', $operador, $fecha_consulta)
         ->where('cxp_movimientos.saldo_pendiente', '<>', 0)
-        ->select('cxp_movimientos.saldo_pendiente','cxp_movimientos.valor_pagado','cxp_movimientos.valor_cartera','cxp_movimientos.id','cxp_movimientos.core_tipo_doc_app_id','cxp_movimientos.consecutivo','core_terceros.descripcion AS tercero',DB::raw($select_raw),'cxp_movimientos.fecha','cxp_movimientos.fecha_vencimiento','cxp_movimientos.core_tipo_transaccion_id','cxp_movimientos.codigo_referencia_tercero','cxp_movimientos.detalle_operacion','ph_propiedades.codigo','ph_propiedades.tipo_propiedad','ph_propiedades.nombre_arrendatario','ph_propiedades.telefono_arrendatario','ph_propiedades.email_arrendatario','ph_propiedades.nomenclatura','ph_propiedades.fecha_entrega','ph_propiedades.parqueadero_asignado','ph_propiedades.deposito_asignado','ph_propiedades.numero_matricula_inmobiliaria','ph_propiedades.coeficiente_copropiedad')
+        ->select('cxp_movimientos.saldo_pendiente','cxp_movimientos.valor_pagado','cxp_movimientos.valor_cartera','cxp_movimientos.id','cxp_movimientos.core_tipo_doc_app_id','cxp_movimientos.consecutivo','core_terceros.descripcion AS tercero',DB::raw($select_raw),'cxp_movimientos.fecha','cxp_movimientos.fecha_vencimiento','cxp_movimientos.core_tipo_transaccion_id','cxp_movimientos.codigo_referencia_tercero','cxp_movimientos.detalle_operacion')
         ->get()->toArray(); 
 
     return $documentos_cxc;

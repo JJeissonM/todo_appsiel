@@ -80,11 +80,7 @@ class InscripcionController extends ModeloController
 
         $view_pdf = InscripcionController::vista_preliminar($id,'show');
 
-        $miga_pan = [
-                ['url'=>'matriculas/inscripcion?id='.Input::get('id'),'etiqueta'=>'Matrículas'],
-                ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta' => 'Inscripciones' ],
-                ['url'=>'NO','etiqueta' => 'Consulta' ]
-            ];
+        $miga_pan = $this->get_miga_pan( $this->modelo, 'Consulta');
 
         return view( 'matriculas.show_inscripcion',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') );
     }
@@ -193,7 +189,7 @@ class InscripcionController extends ModeloController
 
             $url_action = $modelo->url_form_create.'/'.$id;
 
-            $miga_pan = $this->get_miga_pan($modelo,$registro->descripcion);
+            $miga_pan = $this->get_miga_pan( $modelo, $registro->descripcion);
 
             // Si el modelo tiene un archivo js particular
             $archivo_js = app($modelo->name_space)->archivo_js;

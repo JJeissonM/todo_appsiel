@@ -117,7 +117,6 @@ class CompraController extends TransaccionController
         $ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
         
         $lineas_registros = json_decode($request->lineas_registros);
-        dd($lineas_registros);
         // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
 
         $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
@@ -151,8 +150,6 @@ class CompraController extends TransaccionController
         // lineas_registros solo tiene el ID del documentos de inventario
         // entrada_almacen_id también puede ser el ID de una devolución en compras o varias separadas por coma
         $lineas_registros = [(object)[ 'id_doc' => $doc_encabezado->entrada_almacen_id ]];
-
-        //dd( $lineas_registros );
 
         CompraController::crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros );
 
@@ -356,8 +353,6 @@ class CompraController extends TransaccionController
 
         // Datos de Notas Crédito aplicadas a la factura
         $notas_credito = NotaCredito::get_notas_aplicadas_factura( $doc_encabezado->id );
-
-        //dd( $notas_credito );
 
         $documento_vista = '';
 
@@ -734,7 +729,6 @@ class CompraController extends TransaccionController
 
         // 1. Actualizar total del encabezado de la factura
         $nuevo_total_encabezado = $doc_encabezado->valor_total - $linea_registro->precio_total + $precio_total;
-        //dd( $nuevo_total_encabezado );
         $doc_encabezado->update(
                                     ['valor_total' => $nuevo_total_encabezado]
                                 );
@@ -826,7 +820,7 @@ class CompraController extends TransaccionController
                     ->where('cantidad',$linea_registro->cantidad)
                     ->get()
                     ->first();
-        //dd( $inv_doc_registro );
+                    
         $inv_doc_registro->update( [ 
                                 'costo_unitario' => $costo_unitario,
                                 'cantidad' => $cantidad,

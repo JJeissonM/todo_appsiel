@@ -31,7 +31,7 @@ Route::post('calificaciones/promedio_acumulado_periodos','Calificaciones\Reporte
 Route::post('calificaciones/promedio_proyectado_asignaturas','Calificaciones\ReporteController@promedio_proyectado_asignaturas');
 Route::post('calificaciones/promedio_consolidado_asignaturas','Calificaciones\ReporteController@promedio_consolidado_asignaturas');
 
-
+Route::post('cali_repo_certificado_notas','Calificaciones\ReporteController@certificado_notas');
 
 //Boletines
 // Formulario de revisar

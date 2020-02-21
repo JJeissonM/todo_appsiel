@@ -126,8 +126,12 @@ class TransaccionController extends Controller
     }
 
     // FORMULARIO PARA CREAR UN NUEVO REGISTRO
-    public function crear( $app, $modelo, $transaccion, $vista, $tabla )
+    public function crear( $app, $modelo, $transaccion, $vista, $tabla = null )
     {   
+        if ( is_null($tabla) )
+        {
+            $tabla = '';
+        }
         
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
         $cantidad_campos = count($lista_campos);

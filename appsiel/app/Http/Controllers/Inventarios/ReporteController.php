@@ -42,15 +42,8 @@ class ReporteController extends Controller
     {
         $fecha_corte = Input::get('fecha_corte');
 
-        $productos = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
-                                ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
-                                ->where('inv_productos.tipo','=','producto')
-                                ->where('inv_movimientos.inv_bodega_id','=',$id)
-                                ->where('inv_doc_encabezados.fecha','<=',$fecha_corte)
-                                ->select('inv_productos.id','inv_productos.descripcion','inv_productos.unidad_medida1',DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),DB::raw('sum(inv_movimientos.costo_total) as Costo'))
-                                ->groupBy('inv_movimientos.inv_producto_id')
-                                ->get()
-                                ->toArray();
+        $productos = InvMovimiento::get_movimiento_corte( $fecha_corte, '=', $id, 'LIKE', '%%');
+      
 
         $bodega = InvBodega::find($id);
 
@@ -63,8 +56,7 @@ class ReporteController extends Controller
     }
 
 
-    // EXISTENCIAS
-    // EXISTENCIAS
+    // MOSTAR FORMULARIO REPORTE DE EXISTENCIAS
     public function inv_existencias()
     {
         $bodegas = InvBodega::opciones_campo_select();
@@ -358,4 +350,60 @@ class ReporteController extends Controller
         echo 'Se actualizaron '.$i.' registros las tablas de inv_doc_registros e inv_movimientos.';
 
     }
+
+
+    public function inv_etiquetas_codigos_barra(Request $request)
+    {
+        $grupo_inventario_id = $request->grupo_inventario_id;
+        $mostrar_descripcion = $request->mostrar_descripcion;
+        $numero_columnas = $request->numero_columnas;
+        $estado = $request->estado;
+        $etiqueta = $request->etiqueta;
+                
+        $items = InvProducto::get_datos_basicos($grupo_inventario_id, $estado);
+
+        $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta') )->render();
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+   
+        return $vista;
+
+    }
+
+
+    public function inv_existencias_corte(Request $request)
+    {
+        $fecha_corte = $request->fecha;
+        $grupo_inventario_id = $request->grupo_inventario_id;
+        $talla = $request->unidad_medida2;
+        $inv_bodega_id = $request->inv_bodega_id;
+
+        $array_wheres = [ ['inv_movimientos.fecha' ,'<=', $fecha_corte] ];
+
+        if ( $grupo_inventario_id != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, ['inv_grupos.id' => $grupo_inventario_id] );
+        }
+
+        if ( $talla != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, ['inv_productos.unidad_medida2' => $talla] );
+        }
+
+        if ( $inv_bodega_id != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, ['inv_movimientos.inv_bodega_id' => $inv_bodega_id] );
+        }
+
+        $productos = InvMovimiento::get_existencia_corte( $array_wheres );
+      
+        $vista = View::make( 'inventarios.incluir.existencias_tabla_con_talla', compact('productos') )->render();
+        
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+   
+        return $vista;
+
+    }
+
+    
 }

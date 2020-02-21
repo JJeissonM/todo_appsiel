@@ -295,7 +295,8 @@ class InventarioController extends TransaccionController
 
 
             // Cuando es una transaferencia, se deben guardar los registros de la bodega destino
-            if ($request->core_tipo_transaccion_id == $tipo_transferencia) {
+            if ($request->core_tipo_transaccion_id == $tipo_transferencia) 
+            {
                 $motivo_entrada_transferencia = 9;
                 $cantidad = (float) $cantidad * -1;
                 $costo_total = (float) $costo_total * -1;
@@ -320,10 +321,10 @@ class InventarioController extends TransaccionController
                         $linea_datos
                 );
 
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, abs($costo_total + $valor_total_impuesto), 0);
+                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, abs($costo_total), 0);
 
                 // Para transferencias, la cuenta contrapartida es la misma de inventarios
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, 0, abs($costo_total + $valor_total_impuesto));
+                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, 0, abs($costo_total) );
 
                 // PARA LA BODEGA DESTINO
                 // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
@@ -495,7 +496,7 @@ class InventarioController extends TransaccionController
                 break;
             case 'descripcion':
                 $operador = 'LIKE';
-                $texto_busqueda = '%' . Input::get('texto_busqueda') . '%';
+                $texto_busqueda = '%' . str_replace( " ", "%", Input::get('texto_busqueda') ) . '%';
                 break;
             case 'id':
                 $operador = 'LIKE';
@@ -507,7 +508,32 @@ class InventarioController extends TransaccionController
                 break;
         }
 
-        $producto = InvProducto::where('estado', 'Activo')->where($campo_busqueda, $operador, $texto_busqueda)->get()->take(7);
+        //$producto = InvProducto::where('estado', 'Activo')->where($campo_busqueda, $operador, $texto_busqueda)->get()->take(7);
+
+
+        if ( $campo_busqueda == 'descripcion')
+        {
+            $producto = InvProducto::where('estado', 'Activo')
+                                ->having('nueva_cadena', $operador, $texto_busqueda)
+                                ->select( 
+                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", unidad_medida2) AS nueva_cadena'),
+                                            'id',
+                                            'categoria_id',
+                                            'unidad_medida2' )
+                                ->get()
+                                ->take(7);
+        }else{
+            $producto = InvProducto::where('estado', 'Activo')
+                                    ->where($campo_busqueda, $operador, $texto_busqueda)
+                                    ->select( 
+                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", unidad_medida2) AS nueva_cadena'),
+                                            'id',
+                                            'categoria_id',
+                                            'unidad_medida2' )
+                                    ->get()
+                                    ->take(7);
+        }/**/
+            
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
@@ -518,12 +544,16 @@ class InventarioController extends TransaccionController
                 $es_el_primero = false;
             }
 
-            $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->descripcion . '" data-producto_id="' . $linea->id . '">' . $linea->id . ' ' . $linea->descripcion . '</a>';
+            //$html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->descripcion . '" data-producto_id="' . $linea->id . '">' . $linea->id . ' ' . $linea->descripcion . '</a>';
+
+            $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->nueva_cadena . '" data-producto_id="' . $linea->id . '">' . $linea->id . ' ' . $linea->nueva_cadena  . '</a>';
         }
         $html .= '</div>';
 
         return $html;
     }
+
+
 
     // Parámetro enviados por GET
     public function consultar_existencia_producto()
