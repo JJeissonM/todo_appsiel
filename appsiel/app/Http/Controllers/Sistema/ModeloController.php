@@ -127,7 +127,7 @@ class ModeloController extends Controller
 
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
         if (!is_null($vistas)) {
-            if (!is_null($vistas->index)) {
+            if (isset($vistas->index)) {
                 $vista = $vistas->index;
                 $registros = app($this->modelo->name_space)->consultar_registros2(); //->take(20);
                 $registros->setPath('?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion);
