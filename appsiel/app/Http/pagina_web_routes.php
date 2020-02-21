@@ -17,12 +17,19 @@ Route::get('item/delete/{id}','web\MenuNavegacionController@destroy');
 
 Route::get('seccion/{widget}','web\SeccionController@orquestador');
 
+//SLIDER
 Route::get('slider/create/{widget}','web\SliderController@create');
 Route::resource('slide','web/SliderController');
 
+//ABOUT US
 Route::get('aboutus/create/{widget}', 'web\AboutusController@create');
 Route::post('aboutus/store','web\AboutusController@store')->name('aboutus.store');
 Route::put('aboutus/updated/{id}','web\AboutusController@updated')->name('aboutus.updated');
+
+//GALERIA
+Route::get('galeria/create/{widget}', 'web\GaleriaController@create');
+Route::post('galeria/store','web\GaleriaController@store')->name('galeria.store');
+Route::put('galeria/updated/{id}','web\GaleriaController@updated')->name('galeria.updated');
 
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 

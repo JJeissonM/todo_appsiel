@@ -82,7 +82,7 @@
             <div id="wrapper">
                 <?php if($aboutus != null): ?>
                     <div class="contenido">
-                        <img src="<?php echo e($aboutus->imagen); ?>" alt="" class="imagen">
+                        <img src="<?php echo e(url($aboutus->imagen)); ?>" alt="" class="imagen">
                         <div class="descripcion">
                             <h5 class="titulo"><?php echo e($aboutus->titulo); ?></h5>
                             <p><?php echo e($aboutus->descripcion); ?></p>

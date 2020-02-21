@@ -45,7 +45,7 @@ class AboutusController extends Controller
             $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
 
             if ($flag !== false) {
-                $aboutus->fill(['imagen' => url($filename)]);
+                $aboutus->fill(['imagen' => $filename]);
             } else {
                 $message = 'Error inesperado al intentar guardar la imagen, por favor intente nuevamente mas tarde';
                 return redirect()->back()->withInput($request->input())

@@ -75,33 +75,32 @@
         }
 
     </style>
-
 @endsection
 
 @section('content')
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
-                @if($aboutus != null)
-                    <div class="contenido">
-                        <img src="{{url($aboutus->imagen)}}" alt="" class="imagen">
-                        <div class="descripcion">
-                            <h5 class="titulo">{{$aboutus->titulo}}</h5>
-                            <p>{{$aboutus->descripcion}}</p>
+                @if($galeria != null)
+                    @foreach($galeria->albums as $album)
+                        <div class="contenido">
+                            <img src="{{asset('img/img-1.jpg')}}" alt="" class="imagen">
+                            <div class="descripcion">
+                                <h5 class="titulo">{{$album->nombre}}</h5>
+                                <p>{{$album->descripcion}}</p>
+                            </div>
+                            <a href="" class="btn"><i class="fa fa-edit"></i></a>
+                            <a href="" class="btn"><i class="fa fa-eraser"></i></a>
                         </div>
-                    </div>
-                    <div class="add d-flex justify-content-end">
-                        <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}"> Editar</a>
-                    </div>
-                @else
-                    <div class="add d-flex justify-content-end">
-                        <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}"> Agregar</a>
-                    </div>
+                    @endforeach
                 @endif
+                <div class="add d-flex justify-content-end">
+                    <a href="{{url('galeria/create').'/'.$widget.$variables_url}}"> Agregar Nuevo Album</a>
+                </div>
             </div>
             <div class="widgets" id="widgets">
-                @if($aboutus != null)
-                    {!! Form::aboutus($aboutus)!!}
+                @if($galeria != null)
+                    {!! Form::galeria($galeria)!!}
                 @endif
             </div>
         </div>

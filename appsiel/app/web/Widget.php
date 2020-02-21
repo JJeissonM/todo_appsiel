@@ -25,4 +25,8 @@ class Widget extends Model
         return $this->hasMany(Aboutus::class);
     }
 
+    public function galerias()
+    {
+        return $this->hasMany(Galeria::class);
+    }
 }
