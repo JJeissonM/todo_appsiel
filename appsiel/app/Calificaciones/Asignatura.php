@@ -68,11 +68,6 @@ class Asignatura extends Model
                         ->get();
     }
 
-<<<<<<< HEAD
-=======
-        
-
->>>>>>> fb0374952b86cefd9534446459798e324d7e80e9
     public static function get_registros_estado_activo()
     {
         return Asignatura::where('estado', 'Activo')->get();
@@ -113,9 +108,10 @@ class Asignatura extends Model
         */
         $tablas_relacionadas = '{
                             "0":{
-                                    "tabla":"sga_actividades_escolares",
-                                    "llave_foranea":"asignatura_id",
-                                    "mensaje":"Tiene actividades escolares relacionadas."
+                                    
+                                    "tabla":"sga_calificaciones_auxiliares",
+                                    "llave_foranea":"id_asignatura",
+                                    "mensaje":"Ya Tiene calificaciones."
                                 },
                             "1":{
                                     "tabla":"sga_asignaciones_profesores",
@@ -138,9 +134,9 @@ class Asignatura extends Model
                                     "mensaje":"Ya Tiene calificaciones."
                                 },
                             "5":{
-                                    "tabla":"sga_calificaciones_auxiliares",
-                                    "llave_foranea":"id_asignatura",
-                                    "mensaje":"Ya Tiene calificaciones."
+                                    "tabla":"sga_actividades_escolares",
+                                    "llave_foranea":"asignatura_id",
+                                    "mensaje":"Tiene actividades escolares relacionadas."
                                 },
                             "6":{
                                     "tabla":"sga_logros",

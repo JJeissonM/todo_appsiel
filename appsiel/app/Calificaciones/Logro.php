@@ -23,7 +23,7 @@ class Logro extends Model
 
     // [index, create, edit, show, ]
     public $vistas = '{ 
-                        "index":null,
+                        "index":layouts.index,
                         "create":"layouts.create",
                         "edit":null,
                         "show":null
@@ -47,7 +47,6 @@ class Logro extends Model
                                 'sga_logros.descripcion AS campo7',
                                 'sga_logros.estado AS campo8',
                                 'sga_logros.id AS campo9')
-                        ->orderBy('sga_logros.codigo','DESC')
                         ->get()
                         ->toArray();
 
