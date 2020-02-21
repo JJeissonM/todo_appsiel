@@ -1,10 +1,3 @@
-<style>
-    img{
-        object-fit: cover;
-    }
-</style>
-
-
 <div class="aboutus">
     <div class="container">
         <div class="row">
@@ -23,7 +16,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mu-about-left">
-                                <img class="" src="<?php echo e($aboutus->imagen); ?>" alt="img">
+                                <img class="" src="<?php echo e($aboutus->imagen); ?>" alt="img" width="568" height="460">
                             </div>
                         </div>
                         <div class="col-md-6">
