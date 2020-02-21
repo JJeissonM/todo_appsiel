@@ -27,7 +27,6 @@
                             @endif
                         @endif
                     @endforeach
-
                 </ul>
             </div>
         </nav>
