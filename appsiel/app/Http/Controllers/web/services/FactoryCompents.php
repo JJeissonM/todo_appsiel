@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\web\services;
 
+use App\Http\Controllers\web\GaleriaController;
+
 class FactoryCompents
 {
 
@@ -23,6 +25,9 @@ class FactoryCompents
                 break;
             case "About us":
                 $component = new AboutComponent($this->widget);
+                break;
+            case "galeria":
+                $component = new GaleriaComponent($this->widget);
                 break;
             default :
                 $component = false;
