@@ -252,8 +252,19 @@ class CompraController extends TransaccionController
             ContabilidadController::contabilizar_registro( $datos, $cta_impuesto_compras_id, $detalle_operacion, abs( $datos['valor_impuesto'] ), 0);
         }
 
-        // Reversar cuenta por legalizar (completar DB), en la transacción inventarios, se liquidó el costo_total
-        $cta_contrapartida_id = InvMotivo::find( $datos['inv_motivo_id'] )->cta_contrapartida_id;
+        $producto = InvProducto::find( $datos['inv_producto_id'] );
+        $motivo = InvMotivo::find( $datos['inv_motivo_id'] );
+
+        if ( $producto->tipo == 'producto')
+        {
+            // Se toma la cuenta del motivo
+            $cta_contrapartida_id = $motivo->cta_contrapartida_id;
+        }else{
+            // Se toma la cuenta del Grupo de Inventarios
+            $cta_contrapartida_id = InvProducto::get_cuenta_inventarios( $producto->id );
+        }
+
+            
         ContabilidadController::contabilizar_registro( $datos, $cta_contrapartida_id, $detalle_operacion, abs( $datos['base_impuesto'] ), 0);
     }
 
@@ -501,6 +512,13 @@ class CompraController extends TransaccionController
         if ( !Input::get('liquida_impuestos') )
         {
             $producto['tasa_impuesto'] = 0;
+        }
+
+
+        // SI LA EMPRESA NO LIQUIDA IMPUESTOS
+        if ( !config('configuracion')['liquidacion_impuestos'] )
+        {
+            $tasa_impuesto = 0;
         }
 
         // $producto es un array
@@ -779,8 +797,19 @@ class CompraController extends TransaccionController
                                 ] );
         }
 
-        // Reversar cuenta por legalizar (completar DB), en la transacción inventarios, se liquidó el costo_total
-        $cta_contrapartida_id = InvMotivo::find( $linea_registro->inv_motivo_id )->cta_contrapartida_id;
+
+        $producto = InvProducto::find( $linea_registro->inv_producto_id );
+        $motivo = InvMotivo::find( $linea_registro->inv_motivo_id );
+
+        if ( $producto->tipo == 'producto')
+        {
+            // Se toma la cuenta del motivo
+            $cta_contrapartida_id = $motivo->cta_contrapartida_id;
+        }else{
+            // Se toma la cuenta del Grupo de Inventarios
+            $cta_contrapartida_id = InvProducto::get_cuenta_inventarios( $producto->id );
+        }
+
         ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                     ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                     ->where('consecutivo',$doc_encabezado->consecutivo)
@@ -861,10 +890,18 @@ class CompraController extends TransaccionController
                                 'cantidad' => $cantidad
                             ] );
 
-        // Cta. Contrapartida (CR) Dada por el motivo de inventarios de la transaccion 
-        // Motivos de inventarios y ventas: Costo de ventas
-        // Moivos de compras: Cuentas por legalizar
-        $cta_contrapartida_id = InvMotivo::find( $inv_doc_registro->inv_motivo_id )->cta_contrapartida_id;
+
+        $motivo = InvMotivo::find( $inv_doc_registro->inv_motivo_id );
+
+        if ( $producto->tipo == 'producto')
+        {
+            // Se toma la cuenta del motivo
+            $cta_contrapartida_id = $motivo->cta_contrapartida_id;
+        }else{
+            // Se toma la cuenta del Grupo de Inventarios
+            $cta_contrapartida_id = InvProducto::get_cuenta_inventarios( $producto->id );
+        }
+
         ContabMovimiento::where('core_tipo_transaccion_id',$inv_doc_encabezado->core_tipo_transaccion_id)
                     ->where('core_tipo_doc_app_id',$inv_doc_encabezado->core_tipo_doc_app_id)
                     ->where('consecutivo',$inv_doc_encabezado->consecutivo)

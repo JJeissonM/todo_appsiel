@@ -30,7 +30,7 @@ use App\Sistema\Html\TablaIngresoLineaRegistros;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 
 // Modelos
-use App\Core\Modelo;
+use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Core\Tercero;
 
