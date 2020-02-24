@@ -74,10 +74,10 @@
                           $html += `<tr>
                               <td>${item.seccion}</td>
                               <td>
-                                  <a href="{{url('seccion')}}/${item.widget_id}{{$variables_url}}" title="Editar sección" class="btn bg-warning"><i class="fa fa-edit"></i></a>
-                                  <a href="{{url('')}}/" title="Mover sección" class="btn bg-info"><i class="fa fa-arrows-alt"></i></a>
-                                  <a href="{{url('')}}/" title="Duplicar sección" class="btn bg-primary"><i class="fa fa-venus-double"></i></a>
-                                  <a href="{{url('')}}/" title="Borrar sección" class="btn bg-danger"><i class="fa fa-trash"></i></a>
+                                  <a href="{{url('seccion')}}/${item.widget_id}{{$variables_url}}" style="color:white;" title="Editar sección" class="btn bg-warning"><i class="fa fa-edit"></i></a>
+                                  <a href="{{url('')}}/" title="Mover sección" style="color:white;" class="btn bg-info"><i class="fa fa-arrows-alt"></i></a>
+                                  <a href="{{url('')}}/" title="Duplicar sección" style="color:white;" class="btn bg-primary"><i class="fa fa-venus-double"></i></a>
+                                  <a href="{{url('')}}/" title="Borrar sección" style="color:white;" class="btn bg-danger"><i class="fa fa-trash"></i></a>
                               </td>
                               </tr>`;
                           }else {

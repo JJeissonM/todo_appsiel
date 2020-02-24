@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFotosTable extends Migration
+class CreateSliderTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,10 @@ class CreateFotosTable extends Migration
      */
     public function up()
     {
-        Schema::create('pw_fotos', function (Blueprint $table) {
+        Schema::create('pw_slider',function(Blueprint $table){
             $table->bigIncrements('id');
-            $table->string('nombre');
-            $table->unsignedBigInteger('album_id');
-            $table->foreign('album_id')->references('id')->on('pw_albums')->onDelete('CASCADE');
+            $table->unsignedInteger('widget_id');
+            $table->foreign('widget_id')->references('id')->on('pw_widget')->onDelete('CASCADE');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateFotosTable extends Migration
      */
     public function down()
     {
-        Schema::drop('pw_fotos');
+        Schema::drop('pw_slider');
     }
 }

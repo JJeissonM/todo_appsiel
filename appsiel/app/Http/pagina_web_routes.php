@@ -18,8 +18,8 @@ Route::get('item/delete/{id}','web\MenuNavegacionController@destroy');
 Route::get('seccion/{widget}','web\SeccionController@orquestador');
 
 //SLIDER
-Route::get('slider/create/{widget}','web\SliderController@create');
-Route::resource('slide','web/SliderController');
+Route::get('slider/{widget}','web\SliderController@create');
+Route::resource('slider','web\SliderController');
 
 //ABOUT US
 Route::get('aboutus/create/{widget}', 'web\AboutusController@create');
