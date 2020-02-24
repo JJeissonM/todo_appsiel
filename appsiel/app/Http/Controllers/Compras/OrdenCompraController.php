@@ -35,6 +35,8 @@ use App\Inventarios\InvDocEncabezado;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 
+use App\Contabilidad\Impuesto;
+
 class OrdenCompraController extends TransaccionController
 {
     /**
@@ -82,11 +84,14 @@ class OrdenCompraController extends TransaccionController
         $total_documento = 0;
         // Por cada entrada de almacén pendiente
         $cantidad_registros = count($lineas_registros);
-        for ($i = 0; $i < $cantidad_registros; $i++) {
+        for ($i = 0; $i < $cantidad_registros; $i++)
+        {
             $cantidad = (float) $lineas_registros[$i]->cantidad;
             $total_base_impuesto = (float) $lineas_registros[$i]->costo_total;
 
-            $precio_unitario = InvProducto::get_valor_mas_iva((int) $lineas_registros[$i]->inv_producto_id, (float) $lineas_registros[$i]->costo_unitario);
+            $tasa_impuesto = Impuesto::get_tasa( (int) $lineas_registros[$i]->inv_producto_id, $request->proveedor_id, 0 );
+
+            $precio_unitario = (float) $lineas_registros[$i]->costo_unitario * ( 1 + $tasa_impuesto  / 100 );
 
             $precio_total = $precio_unitario * $cantidad;
 
@@ -97,7 +102,7 @@ class OrdenCompraController extends TransaccionController
                 ['cantidad' => $cantidad] +
                 ['precio_total' => $precio_total] +
                 ['base_impuesto' =>  $total_base_impuesto] +
-                ['tasa_impuesto' => InvProducto::get_tasa_impuesto((int) $lineas_registros[$i]->inv_producto_id)] +
+                ['tasa_impuesto' => $tasa_impuesto ] +
                 ['valor_impuesto' => (abs($precio_total) - $total_base_impuesto)] +
                 ['creado_por' => Auth::user()->email] +
                 ['estado' => 'Activo'];
@@ -114,6 +119,8 @@ class OrdenCompraController extends TransaccionController
         $doc_encabezado->valor_total = $total_documento;
         $doc_encabezado->save();
     } 
+
+
 
     public function show($id)
     {

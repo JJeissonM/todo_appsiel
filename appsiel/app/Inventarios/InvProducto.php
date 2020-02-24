@@ -130,9 +130,4 @@ class InvProducto extends Model
         return Impuesto::where( 'id', $impuesto_id )->value( 'tasa_impuesto' );
     }
 
-
-    public static function get_valor_mas_iva( $producto_id, $valor )
-    {
-        return $valor * ( 1 + InvProducto::get_tasa_impuesto( $producto_id ) / 100 );
-    }
 }
