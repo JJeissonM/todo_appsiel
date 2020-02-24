@@ -27,7 +27,6 @@
                             <?php endif; ?>
                         <?php endif; ?>
                     <?php endforeach; ?>
-
                 </ul>
             </div>
         </nav>

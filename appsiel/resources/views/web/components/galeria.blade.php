@@ -84,13 +84,13 @@
                 @if($galeria != null)
                     @foreach($galeria->albums as $album)
                         <div class="contenido">
-                            <img src="{{asset('img/img-1.jpg')}}" alt="" class="imagen">
+                            <img src="{{url($album->fotos->first()->nombre)}}" alt="" class="imagen">
                             <div class="descripcion">
-                                <h5 class="titulo">{{$album->nombre}}</h5>
+                                <h5 class="titulo">{{$album->titulo}}</h5>
                                 <p>{{$album->descripcion}}</p>
                             </div>
-                            <a href="" class="btn"><i class="fa fa-edit"></i></a>
-                            <a href="" class="btn"><i class="fa fa-eraser"></i></a>
+                            <a href="{{url('galeria/edit').'/'.$album->id.$variables_url}}" class="btn" title="Editar Álbum"><i class="fa fa-edit"></i></a>
+                            <a href="{{url('galeria/destroy/album').'/'.$album->id.$variables_url}}" class="btn" title="Eliminar Álbum"><i class="fa fa-eraser"></i></a>
                         </div>
                     @endforeach
                 @endif
