@@ -67,6 +67,11 @@ class PedidoController extends TransaccionController
     public function store(Request $request)
     {
 
+
+        //dd( $request->all() );
+
+        $request['fecha_entrega'] = $request['fecha_entrega'] . ' ' . $request['hora_entrega'] . ':00';
+
         $lineas_registros = json_decode($request->lineas_registros);
         $request['estado'] = "Pendiente";
 
