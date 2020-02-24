@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 // Página Web - FRONT END
@@ -28,8 +28,11 @@ Route::put('aboutus/updated/{id}', 'web\AboutusController@updated')->name('about
 
 //GALERIA
 Route::get('galeria/create/{widget}', 'web\GaleriaController@create');
-Route::post('galeria/store','web\GaleriaController@store')->name('galeria.store');
-Route::put('galeria/updated/{id}','web\GaleriaController@updated')->name('galeria.updated');
+Route::get('galeria/edit/{album}', 'web\GaleriaController@edit');
+Route::get('galeria/delete/foto/{imagen}','web\GaleriaController@destroyImg')->name('galeria.deleteimagen');
+Route::get('galeria/destroy/album/{album}','web\GaleriaController@destroyAlbum');
+Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store');
+Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 

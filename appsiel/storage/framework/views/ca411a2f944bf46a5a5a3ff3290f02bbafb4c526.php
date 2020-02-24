@@ -31,6 +31,21 @@
     <!-- Google Fonts Open sans -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800" rel="stylesheet">
 
+    <!-- Google Fonts Raleway -->
+    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,400i,500,500i,600,700" rel="stylesheet">
+    <!-- Google Fonts Open sans -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800" rel="stylesheet">
+
+    <link href="<?php echo e(asset('css/animate.min.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('css/owl.carousel.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('css/owl.transitions.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('css/prettyPhoto.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('css/main.css')); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('css/responsive.css')); ?>" rel="stylesheet">
+<!--[if lt IE 9]>
+    <script src="<?php echo e(asset('js/html5shiv.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/respond.min.js')); ?>"></script>
+-->
     <?php echo $__env->yieldContent('style'); ?>
 
 </head>
@@ -111,6 +126,17 @@
 
     <!-- Ajax contact form  -->
     <script type="text/javascript" src="<?php echo e(asset('assets/web/js/app.js')); ?>"></script>
+
+<script src="<?php echo e(asset('js/jquery.js')); ?>"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+<script src="<?php echo e(asset('js/owl.carousel.min.js')); ?>"></script>
+<script src="<?php echo e(asset('js/mousescroll.js')); ?>"></script>
+<script src="<?php echo e(asset('js/smoothscroll.js')); ?>"></script>
+<script src="<?php echo e(asset('js/jquery.prettyPhoto.js')); ?>"></script>
+<script src="<?php echo e(asset('js/jquery.isotope.min.js')); ?>"></script>
+<script src="<?php echo e(asset('js/jquery.inview.min.js')); ?>"></script>
+<script src="<?php echo e(asset('js/wow.min.js')); ?>"></script>
+<script src="<?php echo e(asset('js/main.js')); ?>"></script>
 
 
     <!-- About us Skills Circle progress  -->
