@@ -19,7 +19,7 @@ Route::get('seccion/{widget}','web\SeccionController@orquestador');
 
 //SLIDER
 Route::get('slider/create/{widget}','web\SliderController@create');
-Route::resource('slide','web/SliderController');
+Route::resource('slide','web\SliderController');
 
 //ABOUT US
 Route::get('aboutus/create/{widget}', 'web\AboutusController@create');
