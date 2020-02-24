@@ -75,7 +75,67 @@
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap" >
             <div id="wrapper">
+               {!! Form::open(['ruta' => 'slide.create','method'=>'POST','file'=>'true','style' => 'margin:10px;']) !!}
+                <input type="hidden" name="widget_id" value="{{$widget}}">
+                  <div class="form-group">
+                      <label for="">Titulo</label>
+                      <input type="text" class="form-control" placeholder="" name="titulo">
+                  </div>
+                  <div class="form-group">
+                      <label for="">Descripción</label>
+                      <textarea name="descripcion" id="" cols="30" rows="10" class="form-control"></textarea>
+                  </div>
 
+                <div class="form-group">
+                    <label for="">Imagen</label>
+                    <input type="file" class="form-control-file" name="imagen">
+                </div>
+
+                <div class="col-md-12">
+                    <h5>Enlazar a</h5>
+                    <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="pagina">
+                    <div class="form-group">
+                        <label for="">Titulo del Enlace</label>
+                        <input type="text" class="form-control" name="image">
+                    </div>
+                    <nav>
+                        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página</a>
+                            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                            <div class="form-group" style="display: inline-block; width: 40%;">
+                                <label for="">Página</label>
+                                <select class="form-control" id="paginas" onchange="buscarSecciones(event)" name="pagina">
+                                    @foreach($paginas as $pagina)
+                                        <option value="{{$pagina->id}}">{{$pagina->titulo}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group" style="display: inline-block;width: 58%;">
+                                <label for="">Sección en una página</label>
+                                <select class="form-control" id="secciones" name="seccion">
+                                    <option value="">Principio de la Página</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                            <div class="form-group">
+                                <label for="formGroupExampleInput">URL de sitio web (se abre en una pestaña nueva)</label>
+                                <input type="text" class="form-control"  placeholder="https://" name="url">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="buttons d-flex justify-content-end">
+                        <a href="" class="btn btn-info mx-1">Guardar</a>
+                        <a href="" class="btn btn-danger mx-1">Cancelar</a>
+                        <button type="reset" class="btn btn-warning mx-1">limpiar</button>
+                    </div>
+                </div>
+
+               {!! Form::close() !!}
             </div>
             <div class="widgets" id="widgets">
                 {!! Form::slider("") !!}
@@ -86,4 +146,43 @@
 
 @section('script')
 
+    <script src="{{asset('assets/js/axios.min.js')}}"></script>
+    <script>
+
+        $(function(){
+            const select =  document.getElementById('paginas');
+            rellenarSelect(select);
+        });
+
+        function buscarSecciones(event){
+            let select = event.target;
+            rellenarSelect(select);
+        }
+
+        function rellenarSelect(select){
+
+            select = select.options[select.selectedIndex].value;
+            const url = '{{url('')}}/'+'pagina/secciones/'+select;
+
+            axios.get(url)
+                .then(function (response) {
+                    const data =  response.data;
+                    let tbody = document.getElementById('secciones');
+                    let secciones = data.secciones;
+                    $html = `<option value="principio">Principio de la página</option>`;
+                    secciones.forEach(function (item) {
+                        console.log(item);
+                        $html +=`<option value="${item.widget_id}">${item.seccion}</option>`;
+                    });
+                    tbody.innerHTML = $html;
+                });
+        }
+
+        function select(opcion) {
+            let tipo = document.getElementById('tipo_enlace');
+            tipo.value = opcion;
+        }
+
+
+    </script>
 @endsection

@@ -1,51 +1,52 @@
-<style>
-    img{
-        object-fit: cover;
-    }
-</style>
-
-
 <div class="aboutus">
     <div class="container">
+        <div class="section-header">
+            <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->titulo}}</h2>
+            <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->descripcion}}<br> et dolore magna aliqua. Ut enim ad minim veniam</p>
+        </div>
         <div class="row">
-            <div class="col-md-12">
-                <div class="mu-about-area">
-                    <!-- Title -->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="mu-title">
-                                <h2>{{$aboutus->titulo}}</h2>
-                                <p>{{$aboutus->descripcion}}</p>
-                            </div>
-                        </div>
+            <div class="col-sm-6 wow fadeInLeft animated" style="visibility: visible; animation-name: fadeInLeft;">
+                <img class="img-responsive" src="{{url($aboutus->imagen)}}" alt="">
+            </div>
+            <div class="col-sm-6">
+                <div class="media service-box wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">
+                    <div class="pull-left">
+                        <i class="fa fa-line-chart"></i>
                     </div>
-                    <!-- Start Feature Content -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mu-about-left">
-                                <img class="" src="{{$aboutus->imagen}}" alt="img">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mu-about-right">
-                                <ul>
-                                    <li>
-                                        <h3>Misión</h3>
-                                        <p>{{$aboutus->mision}}</p>
-                                    </li>
-                                    <li>
-                                        <h3>Visión</h3>
-                                        <p>{{$aboutus->vision}}</p>
-                                    </li>
-                                    <li>
-                                        <h3>Valores</h3>
-                                        <p>{{$aboutus->valores}}</p>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Misión</h4>
+                        <p>{{$aboutus->mision}}</p>
                     </div>
-                    <!-- End Feature Content -->
+                </div>
+
+                <div class="media service-box wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">
+                    <div class="pull-left">
+                        <i class="fa fa-cubes"></i>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Visión</h4>
+                        <p>{{$aboutus->vision}}</p>
+                    </div>
+                </div>
+
+                <div class="media service-box wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">
+                    <div class="pull-left">
+                        <i class="fa fa-pie-chart"></i>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Valores</h4>
+                        <p>{{$aboutus->valores}}</p>
+                    </div>
+                </div>
+
+                <div class="media service-box wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">
+                    <div class="pull-left">
+                        <i class="fa fa-pie-chart"></i>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">SEO Services</h4>
+                        <p>Backed by some of the biggest names in the industry, Firefox OS is an open platform that fosters greater</p>
+                    </div>
                 </div>
             </div>
         </div>

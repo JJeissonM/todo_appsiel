@@ -84,7 +84,7 @@
             <div id="wrapper">
                 @if($aboutus != null)
                     <div class="contenido">
-                        <img src="{{$aboutus->imagen}}" alt="" class="imagen">
+                        <img src="{{url($aboutus->imagen)}}" alt="" class="imagen">
                         <div class="descripcion">
                             <h5 class="titulo">{{$aboutus->titulo}}</h5>
                             <p>{{$aboutus->descripcion}}</p>

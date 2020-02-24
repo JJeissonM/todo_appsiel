@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\web;
 
+use App\web\Pagina;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -27,8 +28,13 @@ class SliderController extends Controller
             ]
         ];
 
+        $paginas = Pagina::all();
         $variables_url = '?id='.Input::get('id');
-        return view('web.components.slider.create',compact('miga_pan','variables_url','widget'));
+        return view('web.components.slider.create',compact('miga_pan','variables_url','widget','paginas'));
+    }
+
+    public function store(Request $request){
+       dd($request);
     }
 
 }

@@ -253,45 +253,48 @@ class InventarioController extends TransaccionController
             );
 
             $tipo_producto = InvProducto::find($lineas_registros[$i]->inv_producto_id)->tipo;
-            if ($tipo_producto != 'servicio') {
+            if ($tipo_producto == 'producto')
+            {
                 $datos['consecutivo'] = $doc_encabezado->consecutivo;
                 InvMovimiento::create(
                     $datos +
                         ['inv_doc_encabezado_id' => $doc_encabezado->id] +
                         $linea_datos
                 );
+            }else{
+                // Si no es un producto, saltar la contabilización de abajo.
+                continue;
             }
 
 
             // Contabilizar
 
             $detalle_operacion = '';
+            
+            // 1. Determinar las cuentas
+            // 1.1. Dada por el Grupo de Inventarios
+            $cta_inventarios_id = InvProducto::get_cuenta_inventarios($lineas_registros[$i]->inv_producto_id);
+            
+            // 1.2. Dada por el Motivo de Inventarios
+            $cta_contrapartida_id = $motivo->cta_contrapartida_id;
 
-            // Si el movimiento es de ENTRADA de inventarios, se DEBITA la cta. de inventarios vs la cta. contrapartida
+            // 2. Determinar la anturaleza del registro
+            // 2.1. Si el movimiento es de ENTRADA de inventarios, se DEBITA la cta. de inventarios vs la cta. contrapartida
             if ($motivo->movimiento == 'entrada') {
-                // Inventarios (DB)
-                $cta_inventarios_id = InvProducto::get_cuenta_inventarios($lineas_registros[$i]->inv_producto_id);
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, abs($costo_total), 0);
-
-                // Cta. Contrapartida (CR) Dada por el motivo de inventarios de la transaccion 
-                // Motivos de inventarios y ventas: Costo de ventas
-                // Moivos de compras: Cuentas por legalizar
-                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_contrapartida_id, $detalle_operacion, 0, abs($costo_total));
+                $valor_debito = abs($costo_total);
+                $valor_credito = 0;
             }
 
-            // Si el movimiento es de SALIDA de inventarios, se ACREDITA la cta. de inventarios vs la cta. contrapartida
+            // 2.2. Si el movimiento es de SALIDA de inventarios, se ACREDITA la cta. de inventarios vs la cta. contrapartida
             if ($motivo->movimiento == 'salida') {
-                // Inventarios (CR)
-                $cta_inventarios_id = InvProducto::get_cuenta_inventarios($lineas_registros[$i]->inv_producto_id);
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, 0, abs($costo_total));
-
-                // Cta. Contrapartida (DB) Dada por el motivo de inventarios de la transaccion 
-                // Motivos de inventarios y ventas: Costo de ventas
-                // Moivos de compras: Cuentas por legalizar
-                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_contrapartida_id, $detalle_operacion, abs($costo_total), 0);
+                $valor_debito = 0;
+                $valor_credito = abs($costo_total);
             }
+
+            // 3. Contabilizar DB
+            ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, $valor_debito, $valor_credito);
+            // 4. Contabilizar CR
+            ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_contrapartida_id, $detalle_operacion, $valor_credito, $valor_debito);
 
 
             // Cuando es una transaferencia, se deben guardar los registros de la bodega destino
@@ -581,12 +584,6 @@ class InventarioController extends TransaccionController
                 }
             }
 
-            /*
-                PENDIENTE: VALIDACIONES DE FECHA
-
-
-            */
-
             // Obtener existencia actual
             $existencia_actual = InvMovimiento::get_existencia_actual($producto['id'], $bodega_id, Input::get('fecha'));
 
@@ -608,12 +605,6 @@ class InventarioController extends TransaccionController
             $producto = array_merge($producto, ['precio_compra' => $costo_prom]);
         }
 
-
-        /*
-            PENDIENTE: VALIDACIONES DE FECHA
-
-
-        */
 
         // Obtener existencia actual
         $existencia_actual = InvMovimiento::get_existencia_actual($request->inv_producto_id, $request->id_bodega, $request->fecha_aux);
@@ -803,6 +794,8 @@ class InventarioController extends TransaccionController
         return $formulario;
     }
 
+
+
     // Modificar una línea de un documento
     public function doc_registro_guardar(Request $request)
     {
@@ -824,92 +817,97 @@ class InventarioController extends TransaccionController
 
         $costo_total = $costo_unitario * $cantidad;
 
-        // 1. Actualiza movimiento de inventarios
-        InvMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-            ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-            ->where('consecutivo', $doc_encabezado->consecutivo)
-            ->where('inv_producto_id', $linea_registro->inv_producto_id)
-            ->where('cantidad', $linea_registro->cantidad)
-            ->update([
-                'costo_unitario' => $costo_unitario,
-                'cantidad' => $cantidad,
-                'costo_total' => $costo_total
-            ]);
+        $producto = InvProducto::find( $linea_registro->inv_producto_id );
 
-        // 2. Si es un motivo de entrada, se calcula el costo promedio
-        if ($motivo->movimiento == 'entrada') {
-            // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
-            $costo_prom = TransaccionController::calcular_costo_promedio($linea_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_unitario, $doc_encabezado->fecha);
-
-            // Actualizo/Almaceno el costo promedio
-            TransaccionController::set_costo_promedio($linea_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_prom);
-
-
-            // Si el motivo es de entrada SE DEBITA EL INVENTARIO
-            // 3. Actualizar movimiento contable del registro del documento de inventario
-            // Inventarios (DB)
-            $cta_inventarios_id = InvProducto::get_cuenta_inventarios($linea_registro->inv_producto_id);
-            ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+        if ( $producto->tipo == 'producto')
+        {
+            // 1. Actualiza movimiento de inventarios
+            InvMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
                 ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
                 ->where('consecutivo', $doc_encabezado->consecutivo)
                 ->where('inv_producto_id', $linea_registro->inv_producto_id)
                 ->where('cantidad', $linea_registro->cantidad)
-                ->where('contab_cuenta_id', $cta_inventarios_id)
                 ->update([
-                    'valor_debito' => abs($costo_total),
-                    'valor_saldo' => abs($costo_total),
-                    'cantidad' => $cantidad
+                    'costo_unitario' => $costo_unitario,
+                    'cantidad' => $cantidad,
+                    'costo_total' => $costo_total
                 ]);
 
-            // Cta. Contrapartida (CR) Dada por el motivo de inventarios de la transaccion 
-            // Motivos de inventarios y ventas: Costo de ventas
-            // Moivos de compras: Cuentas por legalizar
-            $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-            ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                ->where('consecutivo', $doc_encabezado->consecutivo)
-                ->where('inv_producto_id', $linea_registro->inv_producto_id)
-                ->where('cantidad', $linea_registro->cantidad)
-                ->where('contab_cuenta_id', $cta_contrapartida_id)
-                ->update([
-                    'valor_credito' => abs($costo_total) * -1,
-                    'valor_saldo' => abs($costo_total) * -1,
-                    'cantidad' => $cantidad
-                ]);
-        } else {
+            // 2. Si es un motivo de entrada, se calcula el costo promedio
+            if ($motivo->movimiento == 'entrada') {
+                // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
+                $costo_prom = TransaccionController::calcular_costo_promedio($linea_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_unitario, $doc_encabezado->fecha);
 
-            // Si el motivo es de SALIDA se ACREDITA EL INVENTARIO
-            // 3. Actualizar movimiento contable del registro del documento de inventario
-            // Inventarios (CR)
-            $cta_inventarios_id = InvProducto::get_cuenta_inventarios($linea_registro->inv_producto_id);
-            ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                ->where('consecutivo', $doc_encabezado->consecutivo)
-                ->where('inv_producto_id', $linea_registro->inv_producto_id)
-                ->where('cantidad', $linea_registro->cantidad)
-                ->where('contab_cuenta_id', $cta_inventarios_id)
-                ->update([
-                    'valor_credito' => abs($costo_total) * -1,
-                    'valor_saldo' => abs($costo_total) * -1,
-                    'cantidad' => $cantidad
-                ]);
+                // Actualizo/Almaceno el costo promedio
+                TransaccionController::set_costo_promedio($linea_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_prom);
 
-            // Cta. Contrapartida (DB) Dada por el motivo de inventarios de la transaccion 
-            // Motivos de inventarios y ventas: Costo de ventas
-            // Moivos de compras: Cuentas por legalizar
-            $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-            ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                ->where('consecutivo', $doc_encabezado->consecutivo)
-                ->where('inv_producto_id', $linea_registro->inv_producto_id)
-                ->where('cantidad', $linea_registro->cantidad)
-                ->where('contab_cuenta_id', $cta_contrapartida_id)
-                ->update([
-                    'valor_debito' => abs($costo_total),
-                    'valor_saldo' => abs($costo_total),
-                    'cantidad' => $cantidad
-                ]);
-        }
+
+                // Si el motivo es de entrada SE DEBITA EL INVENTARIO
+                // 3. Actualizar movimiento contable del registro del documento de inventario
+                // Inventarios (DB)
+                $cta_inventarios_id = InvProducto::get_cuenta_inventarios($linea_registro->inv_producto_id);
+                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+                    ->where('consecutivo', $doc_encabezado->consecutivo)
+                    ->where('inv_producto_id', $linea_registro->inv_producto_id)
+                    ->where('cantidad', $linea_registro->cantidad)
+                    ->where('contab_cuenta_id', $cta_inventarios_id)
+                    ->update([
+                        'valor_debito' => abs($costo_total),
+                        'valor_saldo' => abs($costo_total),
+                        'cantidad' => $cantidad
+                    ]);
+
+                // Cta. Contrapartida (CR) Dada por el motivo de inventarios de la transaccion 
+                // Motivos de inventarios y ventas: Costo de ventas
+                // Moivos de compras: Cuentas por legalizar
+                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
+                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+                    ->where('consecutivo', $doc_encabezado->consecutivo)
+                    ->where('inv_producto_id', $linea_registro->inv_producto_id)
+                    ->where('cantidad', $linea_registro->cantidad)
+                    ->where('contab_cuenta_id', $cta_contrapartida_id)
+                    ->update([
+                        'valor_credito' => abs($costo_total) * -1,
+                        'valor_saldo' => abs($costo_total) * -1,
+                        'cantidad' => $cantidad
+                    ]);
+            } else {
+
+                // Si el motivo es de SALIDA se ACREDITA EL INVENTARIO
+                // 3. Actualizar movimiento contable del registro del documento de inventario
+                // Inventarios (CR)
+                $cta_inventarios_id = InvProducto::get_cuenta_inventarios($linea_registro->inv_producto_id);
+                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+                    ->where('consecutivo', $doc_encabezado->consecutivo)
+                    ->where('inv_producto_id', $linea_registro->inv_producto_id)
+                    ->where('cantidad', $linea_registro->cantidad)
+                    ->where('contab_cuenta_id', $cta_inventarios_id)
+                    ->update([
+                        'valor_credito' => abs($costo_total) * -1,
+                        'valor_saldo' => abs($costo_total) * -1,
+                        'cantidad' => $cantidad
+                    ]);
+
+                // Cta. Contrapartida (DB) Dada por el motivo de inventarios de la transaccion 
+                // Motivos de inventarios y ventas: Costo de ventas
+                // Moivos de compras: Cuentas por legalizar
+                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
+                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+                    ->where('consecutivo', $doc_encabezado->consecutivo)
+                    ->where('inv_producto_id', $linea_registro->inv_producto_id)
+                    ->where('cantidad', $linea_registro->cantidad)
+                    ->where('contab_cuenta_id', $cta_contrapartida_id)
+                    ->update([
+                        'valor_debito' => abs($costo_total),
+                        'valor_saldo' => abs($costo_total),
+                        'cantidad' => $cantidad
+                    ]);
+            }
+        } // Fin Si es producto
 
         // 4. Actualizar el registro del documento de factura
         $linea_registro->update([
@@ -921,6 +919,10 @@ class InventarioController extends TransaccionController
 
         return redirect('inventarios/' . $doc_encabezado->id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'El registro del documento fue MODIFICADO correctamente.');
     }
+
+
+
+
 
     public function get_validacion_saldo_movimientos_posteriores($bodega_id, $producto_id, $fecha, $cantidad_nueva, $saldo_a_la_fecha, $movimiento)
     {

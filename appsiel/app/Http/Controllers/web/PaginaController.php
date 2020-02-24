@@ -215,7 +215,6 @@ class PaginaController extends Controller
            if($componente=== false) continue;
            $view[] = $componente->DrawComponent();
        }
-        dd($view);
 
        return view('web.index',compact('view'));
 
