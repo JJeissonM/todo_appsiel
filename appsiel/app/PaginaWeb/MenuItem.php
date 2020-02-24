@@ -4,8 +4,6 @@ namespace App\PaginaWeb;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\PaginaWeb\PaginaTieneSeccion;
-use App\PaginaWeb\Pagina;
 
 class MenuItem extends Model
 {

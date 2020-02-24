@@ -8,8 +8,8 @@
         }
         #wrapper {
             overflow-y: scroll;
+            height: 558px;
             width: 30%;
-            height: 72.3vh;
             margin-right: 0;
         }
         .list-group-item {
@@ -68,27 +68,27 @@
         }
 
     </style>
-
 @endsection
 
 @section('content')
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap" >
             <div id="wrapper">
-               {!! Form::open(['ruta' => 'slide.create','method'=>'POST','file'=>'true','style' => 'margin:10px;']) !!}
+               {!! Form::open(['route' => 'slider.store','method'=>'POST','files'=>'true','style' => 'margin:10px;']) !!}
+                <input type="hidden" name="variables_url" value="{{$variables_url}}">
                 <input type="hidden" name="widget_id" value="{{$widget}}">
                   <div class="form-group">
                       <label for="">Titulo</label>
-                      <input type="text" class="form-control" placeholder="" name="titulo">
+                      <input type="text" class="form-control" placeholder="" name="titulo" required>
                   </div>
                   <div class="form-group">
                       <label for="">Descripción</label>
-                      <textarea name="descripcion" id="" cols="30" rows="10" class="form-control"></textarea>
+                      <textarea name="descripcion" id="" cols="30" rows="10" class="form-control" required></textarea>
                   </div>
 
                 <div class="form-group">
                     <label for="">Imagen</label>
-                    <input type="file" class="form-control-file" name="imagen">
+                    <input type="file" class="form-control" name="imagen" required>
                 </div>
 
                 <div class="col-md-12">
@@ -96,7 +96,7 @@
                     <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="pagina">
                     <div class="form-group">
                         <label for="">Titulo del Enlace</label>
-                        <input type="text" class="form-control" name="image">
+                        <input type="text" class="form-control" name="button" required>
                     </div>
                     <nav>
                         <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
@@ -129,8 +129,8 @@
                         </div>
                     </div>
                     <div class="buttons d-flex justify-content-end">
-                        <a href="" class="btn btn-info mx-1">Guardar</a>
-                        <a href="" class="btn btn-danger mx-1">Cancelar</a>
+                        <button type="submit" class="btn btn-info mx-1">Guardar</button>
+                        <a href="{{url('seccion/'.$widget).$variables_url}}" class="btn btn-danger mx-1">Cancelar</a>
                         <button type="reset" class="btn btn-warning mx-1">limpiar</button>
                     </div>
                 </div>

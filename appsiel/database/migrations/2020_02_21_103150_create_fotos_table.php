@@ -28,6 +28,6 @@ class CreateFotosTable extends Migration
      */
     public function down()
     {
-        Schema::drop('fotos');
+        Schema::drop('pw_fotos');
     }
 }
