@@ -10,7 +10,6 @@
         #wrapper {
             overflow-y: scroll;
             width: 30%;
-            height: 72.3vh;
             margin-right: 0;
         }
 
@@ -32,7 +31,6 @@
         .widgets img {
             width: 100%;
             object-fit: cover;
-            height: 72.5vh;
             max-width: 100%;
         }
 
@@ -87,7 +85,7 @@
                             <img src="{{url($album->fotos->first()->nombre)}}" alt="" class="imagen">
                             <div class="descripcion">
                                 <h5 class="titulo">{{$album->titulo}}</h5>
-                                <p>{{$album->descripcion}}</p>
+                                <p>{{str_limit($album->descripcion,30)}}</p>
                             </div>
                             <a href="{{url('galeria/edit').'/'.$album->id.$variables_url}}" class="btn" title="Editar Álbum"><i class="fa fa-edit"></i></a>
                             <a href="{{url('galeria/destroy/album').'/'.$album->id.$variables_url}}" class="btn" title="Eliminar Álbum"><i class="fa fa-eraser"></i></a>

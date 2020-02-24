@@ -48,7 +48,7 @@
                         {!! Form::textarea('descripcion',null,['class'=>'form-control col-md-12 col-xs-12','required']) !!}
                     </div>
                     <div class="form-group">
-                        <label>Imagen</label>
+                        <label>Añadir Imagenes (Las imagenes deben ser de 600px de alto por 400px de ancho)</label>
                         <input name="imagen[]" multiple type="file" placeholder="Agregar una imagen" required="required"
                                class="form-control">
                     </div>
