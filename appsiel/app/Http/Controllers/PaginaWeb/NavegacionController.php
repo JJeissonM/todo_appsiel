@@ -9,13 +9,9 @@ use Illuminate\Support\Facades\Input;
 
 class NavegacionController extends Controller
 {
-    const navegacionPordefault = 1;
     public function create(){
-
         $miga_pan = self::migapan();
-
         return view('web.navegacion.navegacion',compact('miga_pan'));
-
     }
 
     public function migapan() {

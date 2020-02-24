@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <!-- Required meta tags -->
@@ -53,6 +53,16 @@
 <body style="padding:0;">
 
 <!-- END SCROLL TOP BUTTON -->
+
+<main>
+
+<!-- Start Header -->
+@foreach($view as $item)
+   {!! $item !!}
+@endforeach
+
+<!-- End Header -->
+
 
 <!-- Start main content -->
 <main>

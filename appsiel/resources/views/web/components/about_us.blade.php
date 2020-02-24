@@ -4,13 +4,14 @@
     <style>
         .card-body {
             padding: 0 !important;
-            overflow-y: hidden;
+            overflow: hidden;
         }
 
         #wrapper {
             overflow-y: scroll;
+            overflow-x:hidden;
             width: 30%;
-            height: 72.3vh;
+            height: 558px;
             margin-right: 0;
         }
 
@@ -87,7 +88,7 @@
                         <img src="{{url($aboutus->imagen)}}" alt="" class="imagen">
                         <div class="descripcion">
                             <h5 class="titulo">{{$aboutus->titulo}}</h5>
-                            <p>{{$aboutus->descripcion}}</p>
+                            <p>{{str_limit($aboutus->descripcion,30)}}</p>
                         </div>
                     </div>
                     <div class="add d-flex justify-content-end">

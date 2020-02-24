@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\web\services;
 
 
+use App\web\ItemSlider;
+use App\web\Slider;
+use App\web\Widget;
 use Illuminate\Support\Facades\Input;
+use Symfony\Component\DomCrawler\Form;
 
 class SliderComponent implements IDrawComponent
 {
@@ -15,7 +19,9 @@ class SliderComponent implements IDrawComponent
 
     function DrawComponent()
     {
-       return false;
+       $widget = Widget::find($this->widget);
+       $slider = Slider::where('widget_id',$widget->id)->first();
+       return Form::slider($slider);
     }
 
     function viewComponent()
@@ -34,8 +40,10 @@ class SliderComponent implements IDrawComponent
                 'etiqueta' => 'Slider'
             ]
         ];
+
         $widget = $this->widget;
+        $slider = Slider::where('widget_id',$widget)->first();
         $variables_url = '?id='.Input::get('id');
-        return view('web.components.slider',compact('miga_pan','variables_url','widget'));
+        return view('web.components.slider',compact('miga_pan','variables_url','widget','slider'));
     }
 }
