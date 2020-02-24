@@ -85,7 +85,7 @@
                         <img src="<?php echo e(url($aboutus->imagen)); ?>" alt="" class="imagen">
                         <div class="descripcion">
                             <h5 class="titulo"><?php echo e($aboutus->titulo); ?></h5>
-                            <p><?php echo e($aboutus->descripcion); ?></p>
+                            <p><?php echo e(str_limit($aboutus->descripcion,30)); ?></p>
                         </div>
                     </div>
                     <div class="add d-flex justify-content-end">

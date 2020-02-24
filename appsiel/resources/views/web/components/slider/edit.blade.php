@@ -74,17 +74,17 @@
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap" >
             <div id="wrapper">
-               {!! Form::open(['route' => 'slider.store','method'=>'POST','files'=>'true','style' => 'margin:10px;']) !!}
+                {!! Form::open(['route' => 'slider.store','method'=>'POST','files'=>'true','style' => 'margin:10px;']) !!}
                 <input type="hidden" name="variables_url" value="{{$variables_url}}">
                 <input type="hidden" name="widget_id" value="{{$widget}}">
-                  <div class="form-group">
-                      <label for="">Titulo</label>
-                      <input type="text" class="form-control" placeholder="" name="titulo" required>
-                  </div>
-                  <div class="form-group">
-                      <label for="">Descripción</label>
-                      <textarea name="descripcion" id="" cols="30" rows="10" class="form-control" required></textarea>
-                  </div>
+                <div class="form-group">
+                    <label for="">Titulo</label>
+                    <input type="text" class="form-control" placeholder="" name="titulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="">Descripción</label>
+                    <textarea name="descripcion" id="" cols="30" rows="10" class="form-control" required></textarea>
+                </div>
 
                 <div class="form-group">
                     <label for="">Imagen</label>
@@ -135,7 +135,7 @@
                     </div>
                 </div>
 
-               {!! Form::close() !!}
+                {!! Form::close() !!}
             </div>
             <div class="widgets" id="widgets">
                 {!! Form::slider("") !!}
@@ -182,7 +182,6 @@
             let tipo = document.getElementById('tipo_enlace');
             tipo.value = opcion;
         }
-
 
     </script>
 @endsection

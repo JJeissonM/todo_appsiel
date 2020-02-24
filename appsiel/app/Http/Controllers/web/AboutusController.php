@@ -24,7 +24,7 @@ class AboutusController extends Controller
             ],
             [
                 'url' => 'NO',
-                'etiqueta' => 'Slider'
+                'etiqueta' => 'About Us'
             ]
         ];
         $variables_url = '?id=' . Input::get('id');

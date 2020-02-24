@@ -15,7 +15,7 @@ class CreateAlbumsTable extends Migration
         Schema::create('pw_albums', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('titulo');
-            $table->string('descripcion');
+            $table->text('descripcion');
             $table->unsignedInteger('galeria_id');
             $table->foreign('galeria_id')->references('id')->on('pw_galerias')->onDelete('CASCADE');
             $table->timestamps();
@@ -29,6 +29,6 @@ class CreateAlbumsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('albums');
+        Schema::drop('pw_albums');
     }
 }

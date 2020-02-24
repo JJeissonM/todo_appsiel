@@ -80,7 +80,7 @@ class NavegacionController extends Controller
        $flag = $menu->save();
 
        if($flag){
-           $message = 'item almacenada correctamente';
+           $message = 'item almacenado correctamente';
            $variables_url = '?id='.Input::get('id');
            return redirect(url('navegacion/create').$variables_url)->with('flash_message',$message);
        }else {

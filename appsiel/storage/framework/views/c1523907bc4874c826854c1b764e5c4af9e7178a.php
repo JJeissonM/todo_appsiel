@@ -53,6 +53,7 @@
 <body style="padding:0;">
 
 <!-- END SCROLL TOP BUTTON -->
+<<<<<<< HEAD
 
 <main>
 
@@ -65,6 +66,9 @@
 <!-- End Header -->
 
 
+=======
+
+>>>>>>> 7473b5de67490bda10d7087c281601c3ce4d462e
 <!-- Start main content -->
 <main>
 
@@ -137,6 +141,7 @@
                             </div>
                         </div>
                     </div>
+<<<<<<< HEAD
                 </div>
             </div><!--/.item-->
         </div><!--/.owl-carousel-->
@@ -153,6 +158,24 @@
                         but also the leap into electronic typesetting, remaining essentially unchanged.
                     </p>
                 </div>
+=======
+                </div>
+            </div><!--/.item-->
+        </div><!--/.owl-carousel-->
+    </section><!--/#main-slider-->
+
+    <section id="cta" class="wow fadeIn">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-9">
+                    <h2>Premium quality free onepage template</h2>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+                        the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
+                        of type and scrambled it to make a type specimen book. It has survived not only five centuries,
+                        but also the leap into electronic typesetting, remaining essentially unchanged.
+                    </p>
+                </div>
+>>>>>>> 7473b5de67490bda10d7087c281601c3ce4d462e
                 <div class="col-sm-3 text-right">
                     <a class="btn btn-primary btn-lg" href="#">Download Now!</a>
                 </div>
@@ -486,9 +509,15 @@
                             </ul>
                         </div>
                     </div>
+<<<<<<< HEAD
 
                     <a class="btn btn-primary" href="#">Learn More</a>
 
+=======
+
+                    <a class="btn btn-primary" href="#">Learn More</a>
+
+>>>>>>> 7473b5de67490bda10d7087c281601c3ce4d462e
                 </div>
             </div>
         </div>
