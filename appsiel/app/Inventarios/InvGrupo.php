@@ -13,7 +13,7 @@ class InvGrupo extends Model
 
     protected $fillable = ['core_empresa_id','descripcion','nivel_padre','tipo_nivel','orden','cta_inventarios_id', 'cta_ingresos_id','estado','imagen','mostrar_en_pagina_web'];
 
-    public $encabezado_tabla = ['ID','Descripción','Nivel padre','Tipo nivel','Orden','Cta. DB Compras','Cta. CR Ventas','Estado','Acción'];
+    public $encabezado_tabla = ['ID','Descripción','Nivel padre','Tipo nivel','Orden','Cta. Inventarios/Gastos','Cta. Ingresos','Estado','Acción'];
 
     public static function consultar_registros()
     {

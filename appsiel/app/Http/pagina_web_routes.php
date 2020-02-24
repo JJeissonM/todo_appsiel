@@ -23,8 +23,8 @@ Route::resource('slider','web\SliderController');
 
 //ABOUT US
 Route::get('aboutus/create/{widget}', 'web\AboutusController@create');
-Route::post('aboutus/store','web\AboutusController@store')->name('aboutus.store');
-Route::put('aboutus/updated/{id}','web\AboutusController@updated')->name('aboutus.updated');
+Route::post('aboutus/store', 'web\AboutusController@store')->name('aboutus.store');
+Route::put('aboutus/updated/{id}', 'web\AboutusController@updated')->name('aboutus.updated');
 
 //GALERIA
 Route::get('galeria/create/{widget}', 'web\GaleriaController@create');
@@ -60,3 +60,6 @@ Route::get('generar_slug/{cadena}', 'PaginaWeb\SlugController@generar_slug');
 
 // MÓDULOS
 Route::resource('pagina_web/carousel', 'PaginaWeb\CarouselController');
+
+//iconos
+Route::get('pagina_web/icons/view', 'web\IconsController@view')->name('icons.view');

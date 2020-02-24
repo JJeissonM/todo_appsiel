@@ -112,6 +112,7 @@ class ReportesController extends Controller
         if ( !is_null($matricula) )
         {
             $libreta_pago = TesoLibretasPago::where( 'matricula_id', $matricula->id )->get()->first();
+        }else{
             $matriculado = false;
         }
         

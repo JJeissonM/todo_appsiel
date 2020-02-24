@@ -39,7 +39,7 @@ $semana = ReportesController::pedidos_semana();
 							<tr>
 								<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
 								<td>{{$v['cliente']}}</td>
-								<td>{{$v['fecha_vencimiento']}}</td>
+								<td>{{$v['fecha_entrega']}}</td>
 							</tr>
 							@endforeach
 						</tbody>
@@ -64,7 +64,7 @@ $semana = ReportesController::pedidos_semana();
 							<tr>
 								<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
 								<td>{{$v['cliente']}}</td>
-								<td>{{$v['fecha_vencimiento']}}</td>
+								<td>{{$v['fecha_entrega']}}</td>
 							</tr>
 							@endforeach
 						</tbody>
@@ -101,7 +101,7 @@ $semana = ReportesController::pedidos_semana();
 											@foreach($s['data'] as $d)
 											<li>
 												<a target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$d['documento']}}</a>
-												- {{$d['cliente']." - ".$d['fecha_vencimiento']}}
+												- {{$d['cliente']." - ".$d['fecha_entrega']}}
 											</li>
 											@endforeach
 										</ol>
