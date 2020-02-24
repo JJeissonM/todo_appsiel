@@ -21,8 +21,8 @@ Route::get('seccion/{widget}', 'web\SeccionController@orquestador');
 Route::get('slider/create/{widget}', 'web\SliderController@create');
 
 Route::get('aboutus/create/{widget}', 'web\AboutusController@create');
-Route::post('aboutus/store','web\AboutusController@store')->name('aboutus.store');
-Route::put('aboutus/updated/{id}','web\AboutusController@updated')->name('aboutus.updated');
+Route::post('aboutus/store', 'web\AboutusController@store')->name('aboutus.store');
+Route::put('aboutus/updated/{id}', 'web\AboutusController@updated')->name('aboutus.updated');
 
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
@@ -53,3 +53,6 @@ Route::get('generar_slug/{cadena}', 'PaginaWeb\SlugController@generar_slug');
 
 // MÓDULOS
 Route::resource('pagina_web/carousel', 'PaginaWeb\CarouselController');
+
+//iconos
+Route::get('pagina_web/icons/view', 'web\IconsController@view')->name('icons.view');

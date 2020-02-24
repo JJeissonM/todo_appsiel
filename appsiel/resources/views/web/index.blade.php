@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <!-- Required meta tags -->
@@ -47,9 +47,6 @@
 
 <!-- End Header -->
 
-<!-- Start slider area -->
-{{Form::slider("")}}
-<!-- End Slider area -->
 
 <!-- Start main content -->
 
