@@ -103,7 +103,7 @@ class ReportesController extends Controller
         $parametros = config('ventas');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_vencimiento', '<', $fecha], ['estado', 'Pendiente']])->get();
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '<', $fecha], ['estado', 'Pendiente']])->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -121,7 +121,7 @@ class ReportesController extends Controller
         $parametros = config('ventas');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_vencimiento', '>', $fecha], ['estado', 'Pendiente']])->get();
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $fecha], ['estado', 'Pendiente']])->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -148,7 +148,7 @@ class ReportesController extends Controller
         $data = null;
         $parametros = config('ventas');
         foreach ($fechas as $f) {
-            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_vencimiento', '=', $f], ['estado', 'Pendiente']])->get();
+            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '=', $f], ['estado', 'Pendiente']])->get();
             $pedidos = null;
             if (count($pedidos_db) > 0) {
                 foreach ($pedidos_db as $o) {
@@ -176,7 +176,7 @@ class ReportesController extends Controller
             'id' => $o->id,
             'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " - " . $o->consecutivo,
             'cliente' => $cliente,
-            'fecha_vencimiento' => $o->fecha_vencimiento
+            'fecha_entrega' => $o->fecha_entrega
         ];
         return $orden;
     }

@@ -129,7 +129,7 @@ class ReportesController extends Controller
         $parametros = config('compras');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $ordenes_db = OrdenCompra::where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_vencimiento', '<', $fecha], ['estado', 'Pendiente']])->get();
+        $ordenes_db = OrdenCompra::where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_recepcion', '<', $fecha], ['estado', 'Pendiente']])->get();
         $ordenes = null;
         if (count($ordenes_db) > 0) {
             foreach ($ordenes_db as $o) {
@@ -147,7 +147,7 @@ class ReportesController extends Controller
         $parametros = config('compras');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $ordenes_db = OrdenCompra::where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_vencimiento', '>', $fecha], ['estado', 'Pendiente']])->get();
+        $ordenes_db = OrdenCompra::where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_recepcion', '>', $fecha], ['estado', 'Pendiente']])->get();
         $ordenes = null;
         if (count($ordenes_db) > 0) {
             foreach ($ordenes_db as $o) {
@@ -174,7 +174,7 @@ class ReportesController extends Controller
         $data = null;
         $parametros = config('compras');
         foreach ($fechas as $f) {
-            $ordenes_db = OrdenCompra::where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_vencimiento', '=', $f], ['estado', 'Pendiente']])->get();
+            $ordenes_db = OrdenCompra::where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_recepcion', '=', $f], ['estado', 'Pendiente']])->get();
             $ordenes = null;
             if (count($ordenes_db) > 0) {
                 foreach ($ordenes_db as $o) {
@@ -202,7 +202,7 @@ class ReportesController extends Controller
             'id' => $o->id,
             'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " - " . $o->consecutivo,
             'proveedor' => $proveedor,
-            'fecha_vencimiento' => $o->fecha_vencimiento
+            'fecha_recepcion' => $o->fecha_recepcion
         ];
         return $orden;
     }
