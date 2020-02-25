@@ -2,6 +2,7 @@
 
 namespace App\web;
 
+use App\Articlesetup;
 use App\web\Aboutus;
 use Illuminate\Database\Eloquent\Model;
 
@@ -33,5 +34,10 @@ class Widget extends Model
     public function servicios()
     {
         return $this->hasMany(Servicio::class);
+    }
+
+    public function articlesetups()
+    {
+        return $this->hasMany(Articlesetup::class);
     }
 }
