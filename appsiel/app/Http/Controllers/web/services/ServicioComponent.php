@@ -3,24 +3,25 @@
 
 namespace App\Http\Controllers\web\services;
 
-use App\web\Articlesetup;
+
+use App\web\Servicio;
 use Form;
 use Illuminate\Support\Facades\Input;
 
-class ArticleComponent implements IDrawComponent
+class ServicioComponent implements IDrawComponent
 {
     public function __construct($widget)
     {
         $this->widget = $widget;
     }
 
-    function DrawComponent()
+    public function DrawComponent()
     {
-        $articlesetup = Articlesetup::where('widget_id', $this->widget)->first();
-        return Form::articles($articlesetup);
+        $servicio = Servicio::where('widget_id', $this->widget)->first();
+        return Form::servicios($servicio);
     }
 
-    function viewComponent()
+    public function viewComponent()
     {
         $miga_pan = [
             [
@@ -33,12 +34,13 @@ class ArticleComponent implements IDrawComponent
             ],
             [
                 'url' => 'NO',
-                'etiqueta' => 'Artículos'
+                'etiqueta' => 'Servicios'
             ]
         ];
+
         $widget = $this->widget;
         $variables_url = '?id=' . Input::get('id');
-        $articles = Articlesetup::where('widget_id', $widget)->first();
-        return view('web.components.articles', compact('miga_pan', 'variables_url', 'widget', 'articles'));
+        $servicios = Servicio::where('widget_id', $widget)->first();
+        return view('web.components.servicios', compact('miga_pan', 'variables_url', 'widget', 'servicios'));
     }
 }

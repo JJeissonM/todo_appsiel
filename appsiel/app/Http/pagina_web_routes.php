@@ -2,25 +2,25 @@
 
 
 // Página Web - FRONT END
-Route::resource('paginas','web\PaginaController');
-Route::get('pagina/secciones/{id}','web\PaginaController@secciones');
-Route::get('pagina/administrar','web\PaginaController@admin');
-Route::get('pagina/addSeccion/{id}','web\PaginaController@addSeccion');
-Route::post('pagina/nuevaSeccion','web\PaginaController@nuevaSeccion');
+Route::resource('paginas', 'web\PaginaController');
+Route::get('pagina/secciones/{id}', 'web\PaginaController@secciones');
+Route::get('pagina/administrar', 'web\PaginaController@admin');
+Route::get('pagina/addSeccion/{id}', 'web\PaginaController@addSeccion');
+Route::post('pagina/nuevaSeccion', 'web\PaginaController@nuevaSeccion');
 
 //navegacion
 Route::resource('navegacion', 'web\NavegacionController');
 
-Route::resource('menuItem','web\MenuNavegacionController');
-Route::post('menuItem/update/{id}','web\MenuNavegacionController@update')->name('itemUpdate');
-Route::get('item/delete/{id}','web\MenuNavegacionController@destroy');
+Route::resource('menuItem', 'web\MenuNavegacionController');
+Route::post('menuItem/update/{id}', 'web\MenuNavegacionController@update')->name('itemUpdate');
+Route::get('item/delete/{id}', 'web\MenuNavegacionController@destroy');
 
-Route::get('seccion/{widget}','web\SeccionController@orquestador');
+Route::get('seccion/{widget}', 'web\SeccionController@orquestador');
 
 //SLIDER
-Route::get('slider/{widget}','web\SliderController@create');
-Route::get('slider/item/{item}','web\SliderController@destroyItem');
-Route::resource('slider','web\SliderController');
+Route::get('slider/{widget}', 'web\SliderController@create');
+Route::get('slider/item/{item}', 'web\SliderController@destroyItem');
+Route::resource('slider', 'web\SliderController');
 
 //ABOUT US
 Route::get('aboutus/create/{widget}', 'web\AboutusController@create');
@@ -30,18 +30,26 @@ Route::put('aboutus/updated/{id}', 'web\AboutusController@updated')->name('about
 //GALERIA
 Route::get('galeria/create/{widget}', 'web\GaleriaController@create');
 Route::get('galeria/edit/{album}', 'web\GaleriaController@edit');
-Route::get('galeria/delete/foto/{imagen}','web\GaleriaController@destroyImg')->name('galeria.deleteimagen');
-Route::get('galeria/destroy/album/{album}','web\GaleriaController@destroyAlbum');
+Route::get('galeria/delete/foto/{imagen}', 'web\GaleriaController@destroyImg')->name('galeria.deleteimagen');
+Route::get('galeria/destroy/album/{album}', 'web\GaleriaController@destroyAlbum');
 Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store');
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 
 Route::resource('sociales','web\RedesSocialesController');
+
+//SERVICIOS
+Route::get('servicios/create/{widget}', 'web\ServicioController@create');
+Route::post('servicios/store', 'web\ServicioController@store')->name('servicios.store');
+Route::put('servicios/updated/{id}', 'web\ServicioController@updated')->name('servicios.updated');
 
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
 Route::get('categoria/{id?}', 'PaginaWeb\FrontEndController@show_categoria');
 Route::get('blog/{articulo?}', 'PaginaWeb\FrontEndController@blog');
 Route::get('ajax_galeria_imagenes/{carousel_id}', 'PaginaWeb\FrontEndController@ajax_galeria_imagenes');
+
+//ARTICLES
+Route::post('articles/store', 'web\ArticleController@store');
 
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');

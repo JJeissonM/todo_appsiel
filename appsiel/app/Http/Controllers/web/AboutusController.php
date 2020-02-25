@@ -56,11 +56,11 @@ class AboutusController extends Controller
         $result = $aboutus->save();
         if ($result) {
             $message = 'About us almacenado correctamente.';
-            $variables_url = '?id=' . Input::get('id');
+            $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         }else{
             $message = 'About us no fue almacenado correctamente, intente mas tarde.';
-            $variables_url = '?id=' . Input::get('id');
+            $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         }
 
@@ -91,11 +91,11 @@ class AboutusController extends Controller
         $result = $aboutus->save();
         if($result){
             $message = 'About us modificado correctamente.';
-            $variables_url = '?id=' . Input::get('id');
+            $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         }else{
             $message = 'About us no pudo se modificado de forma correcta, intente mas tarde.';
-            $variables_url = '?id=' . Input::get('id');
+            $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         }
 
