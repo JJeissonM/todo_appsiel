@@ -134,6 +134,7 @@
                                         <label>Titulo</label>
                                         <input name="titulo" type="text" placeholder="Titulo" class="form-control">
                                     </div>
+                                    <!---->
                                     <div class="form-group">
                                         <label>Descripción</label>
                                         <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
