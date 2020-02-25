@@ -70,7 +70,7 @@
                       $html = '';
                       secciones.forEach(function (item) {
 
-                          if(item.seccion !== 'navegacion' && item.seccion !==  'pie de pagina' ){
+                          if(item.seccion !== 'Navegacion' && item.seccion !==  'pie de pagina' ){
                           $html += `<tr>
                               <td>${item.seccion}</td>
                               <td>

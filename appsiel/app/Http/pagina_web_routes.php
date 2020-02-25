@@ -35,6 +35,8 @@ Route::get('galeria/destroy/album/{album}','web\GaleriaController@destroyAlbum')
 Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store');
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 
+Route::resource('sociales','web\RedesSocialesController');
+
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
 Route::get('categoria/{id?}', 'PaginaWeb\FrontEndController@show_categoria');
