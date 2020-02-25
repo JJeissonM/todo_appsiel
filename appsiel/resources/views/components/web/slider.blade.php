@@ -1,24 +1,24 @@
-<section id="main-slider">
-    @if($slider != null)
+<section id="main-slider" >
+    @if($slider != null && $slider->items->count() > 0)
             <div class="owl-carousel">
                 @foreach($slider->items as $item)
                     <div class="item" style="background-image: url('{{asset($item->imagen)}}');">
-                    <div class="slider-inner">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="carousel-content">
-                                        <h2>{{$item->titulo}}</h2>
-                                        <p>{{$item->descripcion}}</p>
-                                        <a class="btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}}</a>
+                        <div class="slider-inner">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <div class="carousel-content">
+                                            <h2>{{$item->titulo}}</h2>
+                                            <p>{{$item->descripcion}}</p>
+                                            <a class="btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}}</a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div><!--/.item-->
                 @endforeach
-            </div><!--/.owl-carousel-->
+            </div><!--/.item-->
     @else
         <div class="owl-carousel">
             <div class="item" style="background-image: url('{{asset('images/slider/bg1.jpg')}}');">

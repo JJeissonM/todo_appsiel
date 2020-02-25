@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2020-02-19 08:41:34] local.ERROR: InvalidArgumentException: Please provide a valid cache path. in C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\View\Compilers\Compiler.php:36
 Stack trace:
 #0 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\View\ViewServiceProvider.php(77): Illuminate\View\Compilers\Compiler->__construct(Object(Illuminate\Filesystem\Filesystem), false)
@@ -7971,3 +7972,5 @@ Stack trace:
 #57 C:\xampp\htdocs\Appsiel\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #58 C:\xampp\htdocs\Appsiel\todo_appsiel\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #59 {main}  
+=======
+>>>>>>> 8803524aebb8117de0e8356e5cbd40b173b7d4b8

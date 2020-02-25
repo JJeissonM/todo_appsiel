@@ -167,7 +167,7 @@ class RecaudoCxcController extends Controller
                                                 ->where('valor_credito',0)
                                                 ->value('contab_cuenta_id');
 
-            ContabilidadController::contabilizar_registro( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cta_x_cobrar_id, $detalle_operacion, 0, $abono);
+            ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cta_x_cobrar_id, $detalle_operacion, 0, $abono);
 
 
             // Se diminuye el saldo_pendiente en el documento pendiente, si saldo_pendiente == 0 se marca como pagado
@@ -216,7 +216,7 @@ class RecaudoCxcController extends Controller
                     );
 
         // MOVIMIENTO CREDITO (CAJA/BANCO)
-        ContabilidadController::contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_total, 0);
+        ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $valor_total, 0);
 
         // se llama la vista de RecaudoCxcController@show
         return redirect( 'tesoreria/recaudos_cxc/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );

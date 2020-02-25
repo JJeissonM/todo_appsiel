@@ -113,8 +113,7 @@ class PagoController extends TransaccionController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        
+    {        
         $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
@@ -419,18 +418,6 @@ class PagoController extends TransaccionController
         return $opciones;
     }
 
-    function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
-    {
-        ContabMovimiento::create( $this->datos + 
-                            [ 'contab_cuenta_id' => $contab_cuenta_id ] +
-                            [ 'detalle_operacion' => $detalle_operacion] + 
-                            [ 'valor_debito' => $valor_debito] + 
-                            [ 'valor_credito' => ($valor_credito * -1) ] + 
-                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ] + 
-                            [ 'teso_caja_id' => $teso_caja_id] + 
-                            [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id]
-                        );
-    }
     /**
      Anular un Pago (distinto a Pago de cxp)
      */

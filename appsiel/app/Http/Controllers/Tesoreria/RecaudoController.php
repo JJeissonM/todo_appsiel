@@ -117,8 +117,6 @@ class RecaudoController extends TransaccionController
      */
     public function store(Request $request)
     {
-        //dd( $request->all() );
-
         $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $this->datos = array_merge( $request->all(), 
@@ -213,7 +211,6 @@ class RecaudoController extends TransaccionController
             $motivo = TesoMotivo::find( $teso_motivo_id );
             $contab_cuenta_id = $motivo->contab_cuenta_id;
 
-            $detalle_operacion = $request->descripcion;
             $valor_debito = 0;
             $valor_credito = $valor;
 
@@ -237,6 +234,7 @@ class RecaudoController extends TransaccionController
         // se llama la vista de RecaudoController@show
         return redirect( 'tesoreria/recaudos/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
+
 
 
     /**
@@ -559,18 +557,6 @@ class RecaudoController extends TransaccionController
         return $vec_m;
     }
 
-    function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
-    {
-        ContabMovimiento::create( $this->datos + 
-                            [ 'contab_cuenta_id' => $contab_cuenta_id ] +
-                            [ 'detalle_operacion' => $detalle_operacion] + 
-                            [ 'valor_debito' => $valor_debito] + 
-                            [ 'valor_credito' => ($valor_credito * -1) ] + 
-                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ] + 
-                            [ 'teso_caja_id' => $teso_caja_id] + 
-                            [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id]
-                        );
-    }
     /**
      Anular un recaudo (distinto a recaudo de cxc)
      */

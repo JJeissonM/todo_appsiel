@@ -44,6 +44,7 @@ use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\Cliente;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Contabilidad\Impuesto;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
@@ -168,9 +169,9 @@ class NotaCreditoDirectaController extends TransaccionController
                 // Los precios se deben traer de la lista de precios del cliente
                 $precio_unitario = ListaPrecioDetalle::get_precio_producto( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id );
 
-                $tasa_impuesto = InvProducto::get_tasa_impuesto( $un_registro->inv_producto_id );
-
                 $precio_total = $precio_unitario * $cantidad;
+
+                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, 0, $nota_credito->cliente_id );
 
                 $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
 
@@ -294,9 +295,9 @@ class NotaCreditoDirectaController extends TransaccionController
                 // Los precios se deben traer de la lista de precios del cliente
                 $precio_unitario = ListaPrecioDetalle::get_precio_producto( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id );
 
-                $tasa_impuesto = InvProducto::get_tasa_impuesto( $un_registro->inv_producto_id );
-
                 $precio_total = $precio_unitario * $cantidad;
+                
+                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, 0, $nota_credito->cliente_id );
 
                 $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
 

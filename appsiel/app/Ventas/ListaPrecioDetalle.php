@@ -40,4 +40,5 @@ class ListaPrecioDetalle extends Model
 			return $registro->precio;
 		}
 	}
+	
 }

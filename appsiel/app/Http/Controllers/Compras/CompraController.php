@@ -53,6 +53,8 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
 
+use App\Contabilidad\Impuesto;
+
 
 class CompraController extends TransaccionController
 {
@@ -176,7 +178,9 @@ class CompraController extends TransaccionController
                 $cantidad = $un_registro->cantidad;
                 $total_base_impuesto = $un_registro->costo_total;
 
-                $precio_unitario = InvProducto::get_valor_mas_iva( $un_registro->inv_producto_id, $un_registro->costo_unitario );
+                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $doc_encabezado->proveedor_id, 0 );
+
+                $precio_unitario = $un_registro->costo_unitario * ( 1 + $tasa_impuesto  / 100 );
 
                 $precio_total = $precio_unitario * $cantidad;
 
@@ -187,7 +191,7 @@ class CompraController extends TransaccionController
                                 [ 'cantidad' => $cantidad ] +
                                 [ 'precio_total' => $precio_total ] +
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
-                                [ 'tasa_impuesto' => InvProducto::get_tasa_impuesto( $un_registro->inv_producto_id ) ] +
+                                [ 'tasa_impuesto' => $tasa_impuesto ] +
                                 [ 'valor_impuesto' => ( $precio_total - $total_base_impuesto ) ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
@@ -249,7 +253,7 @@ class CompraController extends TransaccionController
         if ( isset( $datos['tasa_impuesto'] ) && $datos['tasa_impuesto'] > 0 )
         {
             $cta_impuesto_compras_id = InvProducto::get_cuenta_impuesto_compras( $datos['inv_producto_id'] );
-            ContabilidadController::contabilizar_registro( $datos, $cta_impuesto_compras_id, $detalle_operacion, abs( $datos['valor_impuesto'] ), 0);
+            ContabilidadController::contabilizar_registro2( $datos, $cta_impuesto_compras_id, $detalle_operacion, abs( $datos['valor_impuesto'] ), 0);
         }
 
         $producto = InvProducto::find( $datos['inv_producto_id'] );
@@ -265,7 +269,7 @@ class CompraController extends TransaccionController
         }
 
             
-        ContabilidadController::contabilizar_registro( $datos, $cta_contrapartida_id, $detalle_operacion, abs( $datos['base_impuesto'] ), 0);
+        ContabilidadController::contabilizar_registro2( $datos, $cta_contrapartida_id, $detalle_operacion, abs( $datos['base_impuesto'] ), 0);
     }
 
     public static function contabilizar_movimiento_credito( $forma_pago, $datos, $total_documento, $detalle_operacion )
@@ -288,7 +292,7 @@ class CompraController extends TransaccionController
             $datos['inv_bodega_id'] = 0;
 
             $cxp_id = Proveedor::get_cuenta_por_pagar( $datos['proveedor_id'] );
-            ContabilidadController::contabilizar_registro( $datos, $cxp_id, $detalle_operacion, 0, abs($total_documento) );
+            ContabilidadController::contabilizar_registro2( $datos, $cxp_id, $detalle_operacion, 0, abs($total_documento) );
         }
         
         if ( $forma_pago == 'contado')
@@ -298,7 +302,7 @@ class CompraController extends TransaccionController
             // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
             $caja = TesoCaja::get()->first();
             $cta_caja_id = $caja->contab_cuenta_id;
-            ContabilidadController::contabilizar_registro( $datos, $cta_caja_id, $detalle_operacion, 0, abs($total_documento) );
+            ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, 0, abs($total_documento) );
         }
     }
 
@@ -498,7 +502,16 @@ class CompraController extends TransaccionController
         $proveedor_id = (int)Input::get('proveedor_id');
         $producto_id = (int)Input::get('producto_id');
         
-        $producto = InvProducto::leftJoin('contab_impuestos','contab_impuestos.id','=','inv_productos.impuesto_id')->where('inv_productos.id',$producto_id )->select('inv_productos.id','inv_productos.tipo','inv_productos.descripcion','inv_productos.precio_compra','inv_productos.precio_venta','contab_impuestos.tasa_impuesto')->get()->first();
+        $producto = InvProducto::where('inv_productos.id',$producto_id )
+                                ->select(
+                                            'inv_productos.id',
+                                            'inv_productos.tipo',
+                                            'inv_productos.descripcion',
+                                            'inv_productos.precio_compra',
+                                            'inv_productos.precio_venta'
+                                        )
+                                ->get()
+                                ->first();
 
         
         // Se convierte en array para manipular facilmente sus campos
@@ -508,18 +521,6 @@ class CompraController extends TransaccionController
             $producto = [];
         }
 
-        // Si el proveedor NO liquida impuestos, se coloca la tasa a cero
-        if ( !Input::get('liquida_impuestos') )
-        {
-            $producto['tasa_impuesto'] = 0;
-        }
-
-
-        // SI LA EMPRESA NO LIQUIDA IMPUESTOS
-        if ( !config('configuracion')['liquidacion_impuestos'] )
-        {
-            $tasa_impuesto = 0;
-        }
 
         // $producto es un array
         if( !empty($producto) )
@@ -540,8 +541,10 @@ class CompraController extends TransaccionController
             // Precios traido del movimiento de compras. El último precio liquidado al proveedor para ese producto.
             $precio_unitario = ComprasMovimiento::get_ultimo_precio_producto( $proveedor_id, $producto_id );
 
-            $tasa_impuesto = (float)$producto['tasa_impuesto'];
             // Los impuestos en compras se obtinen del precio_compra
+
+            $tasa_impuesto = Impuesto::get_tasa( $producto_id, $proveedor_id, 0 );
+
             $base_impuesto = ( (float)$producto['precio_compra'] ) / ( 1 + $tasa_impuesto / 100 );
             $valor_impuesto = (float)$producto['precio_compra'] - $base_impuesto;
 

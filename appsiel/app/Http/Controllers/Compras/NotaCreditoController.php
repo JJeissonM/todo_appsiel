@@ -43,6 +43,8 @@ use App\Contabilidad\ContabMovimiento;
 use App\CxP\CxpMovimiento;
 use App\CxP\CxpAbono;
 
+use App\Contabilidad\Impuesto;
+
 class NotaCreditoController extends TransaccionController
 {
     /**
@@ -271,7 +273,9 @@ class NotaCreditoController extends TransaccionController
                 $cantidad = $un_registro->cantidad;
                 $total_base_impuesto = abs($un_registro->costo_total);
 
-                $precio_unitario = InvProducto::get_valor_mas_iva( $un_registro->inv_producto_id, $un_registro->costo_unitario );
+                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $factura->proveedor_id, 0 );
+
+                $precio_unitario = $un_registro->costo_unitario * ( 1 + $tasa_impuesto  / 100 );
 
                 $precio_total = $precio_unitario * $cantidad;
 
@@ -282,7 +286,7 @@ class NotaCreditoController extends TransaccionController
                                 [ 'cantidad' => $cantidad ] +
                                 [ 'precio_total' => $precio_total ] +
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
-                                [ 'tasa_impuesto' => InvProducto::get_tasa_impuesto( $un_registro->inv_producto_id ) ] +
+                                [ 'tasa_impuesto' => $tasa_impuesto ] +
                                 [ 'valor_impuesto' => ( abs($precio_total) - $total_base_impuesto ) ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
@@ -350,12 +354,12 @@ class NotaCreditoController extends TransaccionController
         if ( isset( $datos['tasa_impuesto'] ) && $datos['tasa_impuesto'] > 0 )
         {
             $cta_impuesto_compras_id = InvProducto::get_cuenta_impuesto_devolucion_compras( $datos['inv_producto_id'] );
-            ContabilidadController::contabilizar_registro( $datos, $cta_impuesto_compras_id, $detalle_operacion, 0, abs( $datos['valor_impuesto'] ));
+            ContabilidadController::contabilizar_registro2( $datos, $cta_impuesto_compras_id, $detalle_operacion, 0, abs( $datos['valor_impuesto'] ));
         }
 
         // Reversar cuenta por legalizar (completar CR), en la transacción inventarios, se liquidó el costo_total
         $cta_contrapartida_id = InvMotivo::find( $datos['inv_motivo_id'] )->cta_contrapartida_id;
-        ContabilidadController::contabilizar_registro( $datos, $cta_contrapartida_id, $detalle_operacion, 0, abs( $datos['base_impuesto'] ));
+        ContabilidadController::contabilizar_registro2( $datos, $cta_contrapartida_id, $detalle_operacion, 0, abs( $datos['base_impuesto'] ));
     }
 
     public static function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion, $factura = null )
@@ -382,7 +386,7 @@ class NotaCreditoController extends TransaccionController
             $cxp_id = Proveedor::get_cuenta_por_pagar( $factura->proveedor_id );
         }
         
-        ContabilidadController::contabilizar_registro( $datos, $cxp_id, $detalle_operacion, abs($total_documento), 0 );
+        ContabilidadController::contabilizar_registro2( $datos, $cxp_id, $detalle_operacion, abs($total_documento), 0 );
     }
 
     public static function actualizar_registro_pago( $total_nota, $factura, $nota, $accion )

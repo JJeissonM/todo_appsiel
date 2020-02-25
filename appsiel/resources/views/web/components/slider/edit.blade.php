@@ -74,38 +74,38 @@
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap" >
             <div id="wrapper">
-                {!! Form::open(['route' => 'slider.store','method'=>'POST','files'=>'true','style' => 'margin:10px;']) !!}
+                {!! Form::model($item,['route' => ['slider.update',$item],'method'=>'PUT','files'=>'true','style' => 'margin:10px;']) !!}
                 <input type="hidden" name="variables_url" value="{{$variables_url}}">
                 <input type="hidden" name="widget_id" value="{{$widget}}">
                 <div class="form-group">
                     <label for="">Titulo</label>
-                    <input type="text" class="form-control" placeholder="" name="titulo" required>
+                    <input type="text" class="form-control" placeholder="" name="titulo" required value="{{$item->titulo}}">
                 </div>
                 <div class="form-group">
                     <label for="">Descripción</label>
-                    <textarea name="descripcion" id="" cols="30" rows="10" class="form-control" required></textarea>
+                    <textarea name="descripcion" id="" cols="30" rows="10" class="form-control" required>{{$item->descripcion}}</textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="">Imagen</label>
-                    <input type="file" class="form-control" name="imagen" required>
+                    <input type="file" class="form-control" name="imagen">
                 </div>
 
                 <div class="col-md-12">
                     <h5>Enlazar a</h5>
-                    <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="pagina">
+                    <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="enlace">
                     <div class="form-group">
                         <label for="">Titulo del Enlace</label>
-                        <input type="text" class="form-control" name="button" required>
+                        <input type="text" class="form-control" name="button" required value="{{$item->button}}">
                     </div>
                     <nav>
                         <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                            <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página</a>
-                            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web</a>
+                            <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página</a>
+                            <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web</a>
                         </div>
                     </nav>
                     <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
-                        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div class="tab-pane fade " id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
                             <div class="form-group" style="display: inline-block; width: 40%;">
                                 <label for="">Página</label>
                                 <select class="form-control" id="paginas" onchange="buscarSecciones(event)" name="pagina">
@@ -121,10 +121,10 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div class="tab-pane fade show active" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
                             <div class="form-group">
                                 <label for="formGroupExampleInput">URL de sitio web (se abre en una pestaña nueva)</label>
-                                <input type="text" class="form-control"  placeholder="https://" name="url">
+                                <input type="text" class="form-control"  placeholder="https://" name="url" value="{{$item->enlace}}">
                             </div>
                         </div>
                     </div>
