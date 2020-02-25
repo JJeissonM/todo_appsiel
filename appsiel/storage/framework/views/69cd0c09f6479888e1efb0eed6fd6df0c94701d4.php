@@ -1,4 +1,4 @@
-<header id="mu-hero">
+<header id="mu-hero" style="background-color: #0A7195;">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light mu-navbar">
             <!-- Text based logo -->
@@ -10,7 +10,6 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto mu-navbar-nav">
-
                     <?php foreach($nav->menus as $item): ?>
                         <?php if($item->parent_id == 0): ?>
                             <?php if($item->subMenus()->count()>0): ?>

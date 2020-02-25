@@ -9,7 +9,7 @@
 
         #wrapper {
             overflow-y: scroll;
-            overflow-x:hidden;
+            overflow-x: hidden;
             width: 30%;
             height: 558px;
             margin-right: 0;
@@ -84,31 +84,115 @@
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
                 @if($servicios != null)
-                    <div class="contenido">
-{{--                        <img src="{{url($aboutus->imagen)}}" alt="" class="imagen">--}}
-                        <div class="descripcion">
-                            <h5 class="titulo">{{$servicio->titulo}}</h5>
-                            <p>{{str_limit($servicio->descripcion,30)}}</p>
-                        </div>
+                    <div class="descripcion" style="text-align: center; margin-top: 20px;">
+                        <h5 class="titulo">{{$servicios->titulo}}</h5>
+                        <p>{{str_limit($servicios->descripcion,30)}}</p>
                     </div>
-                    <div class="add d-flex justify-content-end">
-                        <a href="{{url('servicios/edit').'/'.$widget.$variables_url}}"> Editar</a>
+                    @if(count($servicios->itemservicios)>0)
+                        @foreach($servicios->itemservicios as $item)
+                            <div class="contenido">
+                                {{--                        <img src="{{url($aboutus->imagen)}}" alt="" class="imagen">--}}
+                                <div class="descripcion">
+                                    <h5 class="titulo">{{$item->titulo}}</h5>
+                                    <p>{{str_limit($item->descripcion,30)}}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                    @endif
+                    <div class="col-md-12 add d-flex">
+                        <div style="margin-right: 100px">
+                            <a href="{{url('servicios/create').'/'.$widget.$variables_url}}"> Agregar Servicios </a>
+                        </div>
+                        <div class="justify-content-end">
+                            <a data-toggle="modal" data-target="#Modaledit"> Editar Sección </a>
+                        </div>
                     </div>
                 @else
                     <div class="add d-flex justify-content-end">
-                        <a href="{{url('servicios/create').'/'.$widget.$variables_url}}"> Agregar</a>
+                        <a data-toggle="modal" data-target="#exampleModal"> Agregar Sección </a>
                     </div>
                 @endif
             </div>
             <div class="widgets" id="widgets">
                 @if($servicios != null)
-                    {!! Form::aboutus($servicios)!!}
+                    {!! Form::servicios($servicios)!!}
                 @endif
             </div>
         </div>
     </div>
 @endsection
 
+<div class="modal" id="exampleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Sección</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    {!! Form::open(['route'=>'servicios.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    <input type="hidden" name="widget_id" value="{{$widget}}">
+                    <div class="form-group">
+                        <label>Titulo</label>
+                        <input name="titulo" type="text" placeholder="Titulo" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <br/><br/><a href="{{url('seccion/'.$widget).$variables_url}}"
+                                     class="btn btn-danger">Cancelar</a>
+                        <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                        {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="Modaledit" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Sección</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    {!! Form::model($servicios,['route'=>['servicios.updated',$servicios],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
+                    <input type="hidden" name="widget_id" value="{{$widget}}">
+                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                    <input type="hidden" name="servicio" value="{{$servicios->id}}">
+                    <div class="form-group">
+                        <label>Titulo</label>
+                        <input name="titulo" type="text" placeholder="Titulo" value="{{$servicios->titulo}}"
+                               class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input name="descripcion" type="text" placeholder="Descripción"
+                               value="{{$servicios->descripcion}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <br/><br/><a href="{{url('seccion/'.$widget).$variables_url}}"
+                                     class="btn btn-danger">Cancelar</a>
+                        <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                        {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @section('script')
 
 @endsection

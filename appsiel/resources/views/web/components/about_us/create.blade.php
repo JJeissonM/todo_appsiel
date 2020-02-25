@@ -40,6 +40,7 @@
                 @if($aboutus != null)
                     {!! Form::model($aboutus,['route'=>['aboutus.updated',$aboutus],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
+                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
                         <input name="titulo" type="text" placeholder="Titulo" value="{{$aboutus->titulo}}" class="form-control">
@@ -74,6 +75,7 @@
                 @else
                     {!! Form::open(['route'=>'aboutus.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
+                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
                         <input name="titulo" type="text" placeholder="Titulo" class="form-control">

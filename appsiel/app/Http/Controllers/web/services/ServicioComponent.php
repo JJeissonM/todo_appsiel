@@ -5,6 +5,7 @@ namespace App\Http\Controllers\web\services;
 
 
 use App\web\Servicio;
+use Form;
 use Illuminate\Support\Facades\Input;
 
 class ServicioComponent implements IDrawComponent
@@ -17,7 +18,7 @@ class ServicioComponent implements IDrawComponent
     public function DrawComponent()
     {
         $servicio = Servicio::where('widget_id', $this->widget)->first();
-        return Form::galeria($servicio);
+        return Form::servicios($servicio);
     }
 
     public function viewComponent()
@@ -39,7 +40,7 @@ class ServicioComponent implements IDrawComponent
 
         $widget = $this->widget;
         $variables_url = '?id=' . Input::get('id');
-        $servicio = Servicio::where('widget_id', $widget)->first();
-        return view('web.components.servicios', compact('miga_pan', 'variables_url', 'widget', 'servicio'));
+        $servicios = Servicio::where('widget_id', $widget)->first();
+        return view('web.components.servicios', compact('miga_pan', 'variables_url', 'widget', 'servicios'));
     }
 }
