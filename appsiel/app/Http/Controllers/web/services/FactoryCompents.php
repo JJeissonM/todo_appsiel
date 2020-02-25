@@ -29,6 +29,9 @@ class FactoryCompents
             case "galeria":
                 $component = new GaleriaComponent($this->widget);
                 break;
+            case "servicios":
+                $component = new ServicioComponent($this->widget);
+                break;
             default :
                 $component = false;
         }
