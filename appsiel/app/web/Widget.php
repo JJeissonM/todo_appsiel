@@ -2,6 +2,7 @@
 
 namespace App\web;
 
+use App\Articlesetup;
 use App\web\Aboutus;
 use Illuminate\Database\Eloquent\Model;
 
@@ -28,5 +29,10 @@ class Widget extends Model
     public function galerias()
     {
         return $this->hasMany(Galeria::class);
+    }
+
+    public function articlesetups()
+    {
+        return $this->hasMany(Articlesetup::class);
     }
 }

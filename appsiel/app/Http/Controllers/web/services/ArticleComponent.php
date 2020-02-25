@@ -3,12 +3,11 @@
 
 namespace App\Http\Controllers\web\services;
 
-
-use App\web\Aboutus;
+use App\web\Articlesetup;
 use Form;
 use Illuminate\Support\Facades\Input;
 
-class AboutComponent implements IDrawComponent
+class ArticleComponent implements IDrawComponent
 {
     public function __construct($widget)
     {
@@ -17,8 +16,8 @@ class AboutComponent implements IDrawComponent
 
     function DrawComponent()
     {
-        $aboutus = Aboutus::where('widget_id', $this->widget)->first();
-        return Form::aboutus($aboutus);
+        $articlesetup = Articlesetup::where('widget_id', $this->widget)->first();
+        return Form::articles($articlesetup);
     }
 
     function viewComponent()
@@ -34,13 +33,12 @@ class AboutComponent implements IDrawComponent
             ],
             [
                 'url' => 'NO',
-                'etiqueta' => 'About Us'
+                'etiqueta' => 'Artículos'
             ]
         ];
         $widget = $this->widget;
         $variables_url = '?id=' . Input::get('id');
-        $aboutus = Aboutus::where('widget_id', $widget)->first();
-        return view('web.components.about_us', compact('miga_pan', 'variables_url', 'widget', 'aboutus'));
+        $articlesetup = Articlesetup::where('widget_id', $widget)->first();
+        return view('web.components.articles', compact('miga_pan', 'variables_url', 'widget', 'articlesetup'));
     }
-
 }

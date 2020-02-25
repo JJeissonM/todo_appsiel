@@ -17,10 +17,10 @@ class FactoryCompents
     {
 
         switch ($this->seccion) {
-            case "navegacion" :
+            case "navegacion":
                 $component = new NavegacionComponent($this->widget);
                 break;
-            case "slider" :
+            case "slider":
                 $component = new SliderComponent($this->widget);
                 break;
             case "About us":
@@ -29,11 +29,13 @@ class FactoryCompents
             case "galeria":
                 $component = new GaleriaComponent($this->widget);
                 break;
-            default :
+            case "Artículos":
+                $component = new ArticleComponent($this->widget);
+                break;
+            default:
                 $component = false;
         }
 
         return $component;
     }
-
 }
