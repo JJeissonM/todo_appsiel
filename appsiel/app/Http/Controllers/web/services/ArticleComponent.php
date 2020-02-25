@@ -38,7 +38,7 @@ class ArticleComponent implements IDrawComponent
         ];
         $widget = $this->widget;
         $variables_url = '?id=' . Input::get('id');
-        $articlesetup = Articlesetup::where('widget_id', $widget)->first();
-        return view('web.components.articles', compact('miga_pan', 'variables_url', 'widget', 'articlesetup'));
+        $articles = Articlesetup::where('widget_id', $widget)->first();
+        return view('web.components.articles', compact('miga_pan', 'variables_url', 'widget', 'articles'));
     }
 }

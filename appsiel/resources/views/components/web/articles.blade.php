@@ -1,8 +1,8 @@
 <div class="aboutus">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->titulo}}</h2>
-            <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->descripcion}}<br> et dolore magna aliqua. Ut enim ad minim veniam</p>
+            <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">Título</h2>
+            <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">Descripcion<br> et dolore magna aliqua. Ut enim ad minim veniam</p>
         </div>
         <div class="row">
             <div class="col-sm-6 wow fadeInLeft animated" style="visibility: visible; animation-name: fadeInLeft;">
@@ -15,7 +15,7 @@
                     </div>
                     <div class="media-body">
                         <h4 class="media-heading">Misión</h4>
-                        <p>{{$aboutus->mision}}</p>
+                        <p>misionnnnnn</p>
                     </div>
                 </div>
 
@@ -25,7 +25,7 @@
                     </div>
                     <div class="media-body">
                         <h4 class="media-heading">Visión</h4>
-                        <p>{{$aboutus->vision}}</p>
+                        <p>visionnnnn</p>
                     </div>
                 </div>
 
@@ -35,7 +35,7 @@
                     </div>
                     <div class="media-body">
                         <h4 class="media-heading">Valores</h4>
-                        <p>{{$aboutus->valores}}</p>
+                        <p>valoresssss</p>
                     </div>
                 </div>
 
