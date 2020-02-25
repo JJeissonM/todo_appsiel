@@ -95,7 +95,7 @@ class ContabilidadController extends TransaccionController
 
             $this->datos = array_merge( $request->all(), ['core_tercero_id' => $core_tercero_id , 'consecutivo' => $registro_encabezado_doc->consecutivo] );
 
-            ContabilidadController::contabilizar_registro( $this->datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+            $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
 
         }
 
@@ -208,7 +208,7 @@ class ContabilidadController extends TransaccionController
 
             $this->datos = array_merge( $request->all(), ['core_tercero_id' => $core_tercero_id , 'consecutivo' => $registro_encabezado_doc->consecutivo] );
 
-            ContabilidadController::contabilizar_registro( $this->datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+            $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
         }
 
         $registro_encabezado_doc->fill( $request->all() );
@@ -369,20 +369,6 @@ class ContabilidadController extends TransaccionController
                 ->toArray()[0]['valor_saldo'] + $saldo_inicial;
     }
 
-    // los valores de $valor_debito y $valor_credito deben venir en valor absoluto
-    public static function contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
-    {
-        ContabMovimiento::create( $datos + 
-                            [ 'contab_cuenta_id' => $contab_cuenta_id ] +
-                            [ 'detalle_operacion' => $detalle_operacion] + 
-                            [ 'valor_debito' => $valor_debito] + 
-                            [ 'valor_credito' => ($valor_credito * -1) ] + 
-                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ] + 
-                            [ 'teso_caja_id' => $teso_caja_id] + 
-                            [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id]
-                        );
-    }
-
     public function contab_get_grupos_cuentas($clase_id)
     {
         $registros_c = DB::table('contab_cuenta_grupos')
@@ -468,5 +454,17 @@ class ContabilidadController extends TransaccionController
         }
 
         echo '<br>Se actualizaron '.($i-1).' registros.';
+    }
+
+
+    public static function contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito )
+    {
+        ContabMovimiento::create( $datos + 
+                            [ 'contab_cuenta_id' => $contab_cuenta_id ] +
+                            [ 'detalle_operacion' => $detalle_operacion] + 
+                            [ 'valor_debito' => $valor_debito] + 
+                            [ 'valor_credito' => ($valor_credito * -1) ] + 
+                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
+                        );
     }
 }

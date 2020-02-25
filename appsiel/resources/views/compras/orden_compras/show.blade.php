@@ -19,7 +19,7 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 @endsection
 
 @section('botones_anterior_siguiente')
-{!! $botones_anterior_siguiente->dibujar( 'compras/', $variables_url ) !!}
+{!! $botones_anterior_siguiente->dibujar( 'orden_compra/', $variables_url ) !!}
 @endsection
 
 @section('filas_adicionales_encabezado')

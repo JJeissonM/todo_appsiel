@@ -7,7 +7,8 @@ use App\web\ItemSlider;
 use App\web\Slider;
 use App\web\Widget;
 use Illuminate\Support\Facades\Input;
-use Symfony\Component\DomCrawler\Form;
+use Form;
+
 
 class SliderComponent implements IDrawComponent
 {

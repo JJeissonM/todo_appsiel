@@ -7,6 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Tesoreria\TesoMotivo;
+use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
+
+use App\Contabilidad\ContabMovimiento;
+
 class TesoDocEncabezadoTraslado extends Model
 {
     // Apunta a la misma tabla del modelo de Recaudos
@@ -51,7 +57,7 @@ class TesoDocEncabezadoTraslado extends Model
 
     public function store_adicional($datos, $registro)
     {
-        //dd([$datos],[$registro]);
+
         $registros = json_decode($datos['lineas_registros']);
         $total = 0;
         foreach ($registros as $item) {
@@ -95,10 +101,57 @@ class TesoDocEncabezadoTraslado extends Model
                 $movimiento->creado_por = $registro->creado_por;
                 $movimiento->save();
             }
+
+
+
+            /*
+                **  Determinar la cuenta contable DB (CAJA O BANCOS)
+            */
+            if ($teso_registro->teso_caja_id != 0) {
+                $sql_contab_cuenta_id = TesoCaja::find($teso_registro->teso_caja_id);
+                $contab_cuenta_id = $sql_contab_cuenta_id->contab_cuenta_id;
+            }
+            if ( $teso_registro->teso_cuenta_bancaria_id != 0) {
+                $sql_contab_cuenta_id = TesoCuentaBancaria::find( $teso_registro->teso_cuenta_bancaria_id);
+                $contab_cuenta_id = $sql_contab_cuenta_id->contab_cuenta_id;
+            }
+
+            $detalle_operacion = $datos['descripcion'];
+            $valor_debito = $teso_registro->valor;
+            $valor_credito = 0;
+
+            $this->contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_registro->teso_caja_id, $teso_registro->teso_cuenta_bancaria_id);
+
+            // Como los motivos se ingresaron al momento de registrar cada medio de pago,
+            // Si es un Anticipo u Otro Recaudo se contabiliza la contrapartida de cada motivo Inmediatamente
+            /*
+                **  Determinar la cuenta contable desde el motivo
+            */
+            $motivo = TesoMotivo::find( $teso_registro->teso_motivo_id );
+            $contab_cuenta_id = $motivo->contab_cuenta_id;
+
+            $valor_debito = 0;
+            $valor_credito = $teso_registro->valor;
+
+            $this->contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+
         }
         $registro->valor_total = $total / 2;
         $registro->estado = 'Activo';
         $registro->save();
         return redirect('web' . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro CREADO correctamente.');
+    }
+
+    public function contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
+    {
+        ContabMovimiento::create( $datos + 
+                            [ 'contab_cuenta_id' => $contab_cuenta_id ] +
+                            [ 'detalle_operacion' => $detalle_operacion] + 
+                            [ 'valor_debito' => $valor_debito] + 
+                            [ 'valor_credito' => ($valor_credito * -1) ] + 
+                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ] + 
+                            [ 'teso_caja_id' => $teso_caja_id] + 
+                            [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id]
+                        );
     }
 }

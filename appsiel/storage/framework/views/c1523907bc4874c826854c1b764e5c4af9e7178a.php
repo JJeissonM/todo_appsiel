@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <!-- Required meta tags -->
@@ -53,6 +53,17 @@
 <body style="padding:0;">
 
 <!-- END SCROLL TOP BUTTON -->
+
+<main>
+
+<!-- Start Header -->
+<?php foreach($view as $item): ?>
+   <?php echo $item; ?>
+
+<?php endforeach; ?>
+
+<!-- End Header -->
+
 
 <!-- Start main content -->
 <main>

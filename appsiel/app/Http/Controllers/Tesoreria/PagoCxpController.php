@@ -164,7 +164,7 @@ class PagoCxpController extends TransaccionController
                                             ->where('valor_debito',0)
                                             ->value('contab_cuenta_id');
 
-            ContabilidadController::contabilizar_registro( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cuenta_cxp_id, $detalle_operacion, $lineas_registros[$i]->abono, 0);
+            ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cuenta_cxp_id, $detalle_operacion, $lineas_registros[$i]->abono, 0);
 
 
             // Se diminuye el saldo_pendiente en el documento pendiente, si saldo_pendiente == 0 se elimina el registro
@@ -220,7 +220,7 @@ class PagoCxpController extends TransaccionController
                     );
 
         // MOVIMIENTO CREDITO (CAJA/BANCO)
-        ContabilidadController::contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, 0, $valor_total);
+        ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, 0, $valor_total);
 
         // se llama la vista de PagoCxpController@show
         return redirect( 'tesoreria/pagos_cxp/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );

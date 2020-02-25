@@ -292,9 +292,9 @@ class InventarioController extends TransaccionController
             }
 
             // 3. Contabilizar DB
-            ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, $valor_debito, $valor_credito);
+            InventarioController::contabilizar_registro_inv($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, $valor_debito, $valor_credito);
             // 4. Contabilizar CR
-            ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_contrapartida_id, $detalle_operacion, $valor_credito, $valor_debito);
+            InventarioController::contabilizar_registro_inv($datos + $linea_datos, $cta_contrapartida_id, $detalle_operacion, $valor_credito, $valor_debito);
 
 
             // Cuando es una transaferencia, se deben guardar los registros de la bodega destino
@@ -324,10 +324,10 @@ class InventarioController extends TransaccionController
                         $linea_datos
                 );
 
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, abs($costo_total), 0);
+                InventarioController::contabilizar_registro_inv($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, abs($costo_total), 0);
 
                 // Para transferencias, la cuenta contrapartida es la misma de inventarios
-                ContabilidadController::contabilizar_registro($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, 0, abs($costo_total) );
+                InventarioController::contabilizar_registro_inv($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, 0, abs($costo_total) );
 
                 // PARA LA BODEGA DESTINO
                 // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
@@ -952,4 +952,17 @@ class InventarioController extends TransaccionController
         $productos = InvProducto::opciones_campo_select();
         return view('inventarios.recosteo_form', compact('miga_pan', 'productos'));
     }
+
+
+    public static function contabilizar_registro_inv( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito )
+    {
+        ContabMovimiento::create( $datos + 
+                            [ 'contab_cuenta_id' => $contab_cuenta_id ] +
+                            [ 'detalle_operacion' => $detalle_operacion] + 
+                            [ 'valor_debito' => $valor_debito] + 
+                            [ 'valor_credito' => ($valor_credito * -1) ] + 
+                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
+                        );
+    }
+
 }
