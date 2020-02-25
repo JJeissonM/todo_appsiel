@@ -124,7 +124,6 @@
                                 </button>
                             </h5>
                         </div>
-
                         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                             <div class="card-body">
                                 <div class="col-md-12">
