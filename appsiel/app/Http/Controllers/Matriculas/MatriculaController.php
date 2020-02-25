@@ -208,6 +208,7 @@ class MatriculaController extends ModeloController
                             ['user_id'=> $user->id ] );
 
             $estudiante = Estudiante::create( $datos );
+
         }else{
             //echo "true";
             // Si ya existe, obtengo el registro según el tercero asociado

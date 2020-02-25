@@ -43,6 +43,8 @@ use App\Contabilidad\ContabMovimiento;
 use App\CxP\CxpMovimiento;
 use App\CxP\CxpAbono;
 
+use App\Contabilidad\Impuesto;
+
 class NotaCreditoDirectaController extends TransaccionController
 {
     /**
@@ -160,7 +162,9 @@ class NotaCreditoDirectaController extends TransaccionController
                 $cantidad = $un_registro->cantidad;
                 $total_base_impuesto = abs($un_registro->costo_total);
 
-                $precio_unitario = InvProducto::get_valor_mas_iva( $un_registro->inv_producto_id, $un_registro->costo_unitario );
+                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $nota_credito->proveedor_id, 0 );
+
+                $precio_unitario = $un_registro->costo_unitario * ( 1 + $tasa_impuesto  / 100 );
 
                 $precio_total = $precio_unitario * $cantidad;
 
@@ -171,7 +175,7 @@ class NotaCreditoDirectaController extends TransaccionController
                                 [ 'cantidad' => $cantidad ] +
                                 [ 'precio_total' => $precio_total ] +
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
-                                [ 'tasa_impuesto' => InvProducto::get_tasa_impuesto( $un_registro->inv_producto_id ) ] +
+                                [ 'tasa_impuesto' => $tasa_impuesto ] +
                                 [ 'valor_impuesto' => ( abs($precio_total) - $total_base_impuesto ) ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];

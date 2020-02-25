@@ -58,11 +58,11 @@ class RegistroCxpController extends Controller
         
         // Cuenta Contrapartida (DB)
 
-        ContabilidadController::contabilizar_registro( array_merge( $request->all(), [ 'consecutivo' => $registro->consecutivo ] ), $request->cta_contrapartida_id, $detalle_operacion, $request->saldo_pendiente, 0);
+        ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $registro->consecutivo ] ), $request->cta_contrapartida_id, $detalle_operacion, $request->saldo_pendiente, 0);
 
         // Cta. Por Pagar (CR)
         $cxp_id = Proveedor::get_cuenta_por_pagar( $request->proveedor_id );
-        ContabilidadController::contabilizar_registro( array_merge( $request->all(), [ 'consecutivo' => $registro->consecutivo ] ), $cxp_id, $detalle_operacion, 0, $request->saldo_pendiente);
+        ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $registro->consecutivo ] ), $cxp_id, $detalle_operacion, 0, $request->saldo_pendiente);
 
         return redirect( 'web/create?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with( 'flash_message','Registro CREADO correctamente.' );
     }

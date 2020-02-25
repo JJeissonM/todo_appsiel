@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 
+use App\Inventarios\InvProducto;
+use App\Compras\Proveedor;
+use App\Ventas\Cliente;
+
 class Impuesto extends Model
 {
     protected $table = 'contab_impuestos';
@@ -18,6 +22,7 @@ class Impuesto extends Model
 	    ->toArray();
 	    return $registros;
 	}
+
 	public static function opciones_campo_select()
     {
         $opciones = Impuesto::where('contab_impuestos.estado','Activo')
@@ -31,5 +36,47 @@ class Impuesto extends Model
         }
 
         return $vec;
+    }
+
+
+    public static function get_tasa( $producto_id, $proveedor_id, $cliente_id )
+    {
+        $tasa_impuesto = 0;
+
+        // SI LA EMPRESA NO LIQUIDA IMPUESTOS
+        if ( !config('configuracion')['liquidacion_impuestos'] )
+        {
+            return 0;
+        }
+
+        // SI EL PRODUCTO NO LIQUIDA IMPUESTOS
+        $tasa_impuesto = InvProducto::get_tasa_impuesto( $producto_id );
+        if ( $tasa_impuesto == 0 )
+        {
+            return 0;
+        }
+
+
+        if ( $proveedor_id != 0)
+        {
+            $liquida_impuestos = Proveedor::find( $proveedor_id )->liquida_impuestos;
+            if ( !$liquida_impuestos )
+            {
+                return 0;
+            }
+        }
+
+        
+        if ( $cliente_id != 0)
+        {
+            $liquida_impuestos = Cliente::find( $cliente_id )->liquida_impuestos;
+            if ( !$liquida_impuestos )
+            {
+                return 0;
+            }
+        }
+            
+
+        return $tasa_impuesto;
     }
 }

@@ -10,6 +10,10 @@ use Auth;
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvDocRegistro;
 
+use App\Contabilidad\Impuesto;
+use App\Ventas\Cliente;
+use App\Compras\Proveedor;
+
 class InvDocEncabezado extends Model
 {
     //protected $table = 'inv_doc_encabezados'; 
@@ -138,13 +142,35 @@ class InvDocEncabezado extends Model
                                             )
                                     ->get();
 
+
+        $cliente = Cliente::where( 'core_tercero_id', $core_tercero_id )->get()->first();
+        if ( is_null($cliente) )
+        {
+            $cliente_id = 0;
+        }else{
+            $cliente_id = $cliente->id;
+        }
+
+        $proveedor = Proveedor::where( 'core_tercero_id', $core_tercero_id )->get()->first();
+        if ( is_null($proveedor) )
+        {
+            $proveedor_id = 0;
+        }else{
+            $proveedor_id = $proveedor->id;
+        }
+
+
         foreach ($documentos as $un_documento)
         {
             $registros = InvDocRegistro::where('inv_doc_encabezado_id', $un_documento->id)->get();
             $total_documento_mas_iva = 0;
             foreach ($registros as $un_registro)
             {
-                $total_documento_mas_iva += InvProducto::get_valor_mas_iva( $un_registro->inv_producto_id, $un_registro->costo_total );
+                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $proveedor_id, $cliente_id );
+
+                $precio_total = $un_registro->costo_total * ( 1 + $tasa_impuesto  / 100 );
+
+                $total_documento_mas_iva += $precio_total;
             }
 
             $un_documento->total_documento = $registros->sum('costo_total');

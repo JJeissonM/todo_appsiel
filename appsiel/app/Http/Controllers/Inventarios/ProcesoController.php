@@ -60,11 +60,11 @@ class ProcesoController extends Controller
             {
                 // Inventarios (DB)
                 $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea->inv_producto_id );
-                ContabilidadController::contabilizar_registro( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, abs($linea->costo_total), 0);
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, abs($linea->costo_total), 0);
                 
                 // Cta. Contrapartida (CR)
                 $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-                ContabilidadController::contabilizar_registro( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, 0, abs($linea->costo_total) );
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, 0, abs($linea->costo_total) );
             }
 
             // Si el movimiento es de SALIDA de inventarios, se ACREDITA la cta. de inventarios vs la cta. contrapartida
@@ -72,11 +72,11 @@ class ProcesoController extends Controller
             {
                 // Inventarios (CR)
                 $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea->inv_producto_id );
-                ContabilidadController::contabilizar_registro( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, 0, abs($linea->costo_total));
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, 0, abs($linea->costo_total));
                 
                 // Cta. Contrapartida (DB)
                 $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-                ContabilidadController::contabilizar_registro( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, abs($linea->costo_total), 0 );
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, abs($linea->costo_total), 0 );
             }
                 
         }

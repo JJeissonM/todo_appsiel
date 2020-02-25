@@ -60,6 +60,7 @@ use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Contabilidad\Impuesto;
 
 
 class VentaController extends TransaccionController
@@ -223,7 +224,7 @@ class VentaController extends TransaccionController
 
             // La cuenta de CARTERA se toma de la clase del cliente
             $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $datos['cliente_id'] );
-            ContabilidadController::contabilizar_registro( $datos, $cta_x_cobrar_id, $detalle_operacion, $total_documento, 0);
+            ContabilidadController::contabilizar_registro2( $datos, $cta_x_cobrar_id, $detalle_operacion, $total_documento, 0);
         }
         
         // Agregar el movimiento a tesorería
@@ -233,7 +234,7 @@ class VentaController extends TransaccionController
             // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
             $caja = TesoCaja::get()->first();
             $cta_caja_id = $caja->contab_cuenta_id;
-            ContabilidadController::contabilizar_registro( $datos, $cta_caja_id, $detalle_operacion, $total_documento, 0);
+            ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, $total_documento, 0);
         }
     }
 
@@ -248,13 +249,13 @@ class VentaController extends TransaccionController
             $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_ventas( $una_linea_registro['inv_producto_id'] );
             $valor_total_impuesto = abs( $una_linea_registro['valor_impuesto'] * $una_linea_registro['cantidad'] );
 
-            ContabilidadController::contabilizar_registro( $una_linea_registro, $cta_impuesto_ventas_id, $detalle_operacion, 0, abs($valor_total_impuesto) );
+            ContabilidadController::contabilizar_registro2( $una_linea_registro, $cta_impuesto_ventas_id, $detalle_operacion, 0, abs($valor_total_impuesto) );
         }
 
         // Contabilizar Ingresos (CR)
         // La cuenta de ingresos se toma del grupo de inventarios
         $cta_ingresos_id = InvProducto::get_cuenta_ingresos( $una_linea_registro['inv_producto_id'] );
-        ContabilidadController::contabilizar_registro( $una_linea_registro, $cta_ingresos_id, $detalle_operacion, 0, $una_linea_registro['base_impuesto_total']);
+        ContabilidadController::contabilizar_registro2( $una_linea_registro, $cta_ingresos_id, $detalle_operacion, 0, $una_linea_registro['base_impuesto_total']);
     }
 
     public static function crear_registro_pago( $forma_pago, $datos, $total_documento, $detalle_operacion )
@@ -627,9 +628,13 @@ class VentaController extends TransaccionController
         $lista_precios_id = (int)Input::get('lista_precios_id');
         $producto_id = (int)Input::get('producto_id');
         
-        $producto = InvProducto::leftJoin('contab_impuestos','contab_impuestos.id','=','inv_productos.impuesto_id')
-                                ->where('inv_productos.id', $producto_id)
-                                ->select('inv_productos.id','inv_productos.tipo','inv_productos.descripcion','inv_productos.precio_compra','inv_productos.precio_venta','contab_impuestos.tasa_impuesto')
+        $producto = InvProducto::where('inv_productos.id', $producto_id)
+                                ->select(
+                                            'inv_productos.id',
+                                            'inv_productos.tipo',
+                                            'inv_productos.descripcion',
+                                            'inv_productos.precio_compra',
+                                            'inv_productos.precio_venta')
                                 ->get()
                                 ->first();
 
@@ -670,27 +675,12 @@ class VentaController extends TransaccionController
             }
            
 
-            $tasa_impuesto = (float)$producto['tasa_impuesto'];
+            $tasa_impuesto = Impuesto::get_tasa( $producto_id, 0, $cliente_id );
 
-            if ( is_null($tasa_impuesto) ) 
-            {
-                $tasa_impuesto = 0;
-            }
-
-            // SI LA EMPRESA NO LIQUIDA IMPUESTOS
-            if ( !config('configuracion')['liquidacion_impuestos'] )
-            {
-                $tasa_impuesto = 0;
-            }
             
             $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
             $valor_impuesto = $precio_unitario - $base_impuesto;
 
-            /*
-                PENDIENTE: VALIDACIONES DE FECHA
-
-
-            */
 
             // Obtener existencia actual
             $existencia_actual = InvMovimiento::get_existencia_actual( $producto['id'], $bodega_id, $fecha );
@@ -1015,6 +1005,8 @@ class VentaController extends TransaccionController
     {
         $remisiones = InvDocEncabezado::get_documentos_por_transaccion( Input::get('inv_transaccion_id'), Input::get('core_tercero_id'), 'Pendiente' );
 
+        $cliente = Cliente::where( 'core_tercero_id', Input::get('core_tercero_id') )->get()->first();
+
         $todos_los_productos = [];
         $i=0;
         foreach ($remisiones as $remision)
@@ -1024,13 +1016,14 @@ class VentaController extends TransaccionController
             foreach ($registros_rm as $un_registro)
             {
                 $cantidad = $un_registro->cantidad * -1; // se cambia signo de la cantidad
+                
                 // El precio se trae de la lista de precios del cliente
                 $precio_unitario = ListaPrecioDetalle::get_precio_producto( Input::get('lista_precios_id'), Input::get('fecha'), $un_registro->producto_id );
 
                 $todos_los_productos[$i]['producto_descripcion'] = $un_registro->producto_id.' - '.$un_registro->producto_descripcion;
                 $todos_los_productos[$i]['costo_unitario'] = $un_registro->costo_unitario;
                 $todos_los_productos[$i]['precio_unitario'] = $precio_unitario;
-                $todos_los_productos[$i]['tasa_impuesto'] = InvProducto::get_tasa_impuesto($un_registro->producto_id).'%';
+                $todos_los_productos[$i]['tasa_impuesto'] = Impuesto::get_tasa( $un_registro->producto_id, 0, $cliente->id ).'%';
                 $todos_los_productos[$i]['cantidad'] = $cantidad;
                 $todos_los_productos[$i]['precio_total'] = $precio_unitario * $cantidad;
                 $i++;
@@ -1077,7 +1070,9 @@ class VentaController extends TransaccionController
                 // Los precios se deben traer de la lista de precios del cliente
                 $precio_unitario = ListaPrecioDetalle::get_precio_producto( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id );
 
-                $tasa_impuesto = InvProducto::get_tasa_impuesto( $un_registro->inv_producto_id );
+                $cliente = Cliente::where( 'core_tercero_id', $un_registro->core_tercero_id )->get()->first();
+
+                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, 0, $cliente->id );
 
                 $precio_total = $precio_unitario * $cantidad;
 

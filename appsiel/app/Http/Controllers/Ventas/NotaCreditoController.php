@@ -38,6 +38,7 @@ use App\Ventas\VtasMovimiento;
 use App\Ventas\Cliente;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Contabilidad\Impuesto;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
@@ -350,12 +351,12 @@ class NotaCreditoController extends TransaccionController
         if ( isset( $datos['tasa_impuesto'] ) && $datos['tasa_impuesto'] > 0 )
         {
             $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_devolucion_ventas( $datos['inv_producto_id'] );
-            ContabilidadController::contabilizar_registro( $datos, $cta_impuesto_ventas_id, $detalle_operacion, abs( $datos['valor_impuesto'] ), 0);
+            ContabilidadController::contabilizar_registro2( $datos, $cta_impuesto_ventas_id, $detalle_operacion, abs( $datos['valor_impuesto'] ), 0);
         }
 
         // La cuenta de ingresos se toma del grupo de inventarios
         $cta_ingresos_id = InvProducto::get_cuenta_ingresos( $datos['inv_producto_id'] );
-        ContabilidadController::contabilizar_registro( $datos, $cta_ingresos_id, $detalle_operacion, $datos['base_impuesto_total'], 0);
+        ContabilidadController::contabilizar_registro2( $datos, $cta_ingresos_id, $detalle_operacion, $datos['base_impuesto_total'], 0);
     }
 
     public static function contabilizar_movimiento_credito( $datos, $total_documento, $detalle_operacion, $factura = null )
@@ -379,7 +380,7 @@ class NotaCreditoController extends TransaccionController
             $cxc_id = Cliente::get_cuenta_cartera( $factura->cliente_id );
         }
         
-        ContabilidadController::contabilizar_registro( $datos, $cxc_id, $detalle_operacion, 0, abs($total_documento) );
+        ContabilidadController::contabilizar_registro2( $datos, $cxc_id, $detalle_operacion, 0, abs($total_documento) );
     }
 
     public static function actualizar_registro_pago( $total_nota, $factura, $nota, $accion )
