@@ -23,11 +23,7 @@
         .widgets {
             width: 70%;
         }
-        .widgets img {
-            width: 100%;
-            object-fit: cover;
-            max-width: 100%;
-        }
+
         .widgets .card-body {
             position: relative;
         }
@@ -73,8 +69,8 @@
                                 <h5 class="titulo">{{$item->titulo}}</h5>
                                 <p>{{str_limit($item->descripcion,20)}}</p>
                             </div>
-                            <a href="" class="btn"><i class="fa fa-edit"></i></a>
-                            <a href="" class="btn"><i class="fa fa-eraser"></i></a>
+                            <a href="{{route('slider.edit',$item->id).$variables_url}}" class="btn"><i class="fa fa-edit"></i></a>
+                            <a href="{{url('slider/item/'.$item->id).$variables_url}}" class="btn"><i class="fa fa-eraser"></i></a>
                         </div>
                     @endforeach
                 @endif
