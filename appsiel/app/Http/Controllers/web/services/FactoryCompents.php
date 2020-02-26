@@ -32,8 +32,11 @@ class FactoryCompents
             case "servicios":
                 $component = new ServicioComponent($this->widget);
                 break;
-            case "Artículos":
+            case "Articulos":
                 $component = new ArticleComponent($this->widget);
+                break;
+            case "Pie de pagina":
+                 $component = new FooterComponent($this->widget);
                 break;
             default:
                 $component = false;

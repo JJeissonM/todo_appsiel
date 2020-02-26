@@ -36,6 +36,8 @@ Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 
 Route::resource('sociales','web\RedesSocialesController');
+Route::resource('footer','web\FooterController');
+
 
 //SERVICIOS
 Route::get('servicios/create/{widget}', 'web\ServicioController@create');

@@ -70,7 +70,7 @@
                       $html = '';
                       secciones.forEach(function (item) {
 
-                          if(item.seccion !== 'Navegacion' && item.seccion !==  'pie de página' ){
+                          if(item.tipo !== 'ESTANDAR'){
                           $html += `<tr>
                               <td style="cursor:pointer;">${item.seccion}</td>
                               <td>

@@ -1,4 +1,4 @@
-@extends('web.templates.main')
+ @extends('web.templates.main')
 
 @section('style')
 <style>
