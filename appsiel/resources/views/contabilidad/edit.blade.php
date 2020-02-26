@@ -120,6 +120,7 @@
 			{
 			    var cadena = $(this).text();
 			    sum += parseFloat( cadena.substring(1) );
+			    console.log( sum );
 			});
 			$('#total_debito').text("$"+sum.toFixed(2));
 			sumas_iguales = sum;

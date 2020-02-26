@@ -23,7 +23,7 @@
             <div class="card-footer text-muted">
                 <div class="card-header d-flex justify-content-between">
                     EN ESTA PÁGINA
-                    <a href="" id="seccion" style="color: #0000FF;">+ Agreagar sección</a>
+                    <a href="" id="seccion" style="color: #0000FF;">+ Agregar sección</a>
                 </div>
                 <div class="card-body">
                      <table class="table">

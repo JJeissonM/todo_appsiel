@@ -11,7 +11,7 @@
 	    <h4>Importar datos</h4>
 	    <hr>
 
-		{{ Form::open(['url' => 'importar/formulario','files' => true]) }}
+		{{ Form::open(['url' => 'importar/formulario','files' => true, 'id'=>'form_create']) }}
 			<?php			  
 			  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
 			  	echo '<div class="row" style="margin: 5px;">'.Form::bsButtonsForm($url).'</div>';
@@ -129,7 +129,7 @@
 						$('.btn-primary').show(500);
 						break;
 
-					case '70': // Movimiento contable
+					case '79': // Movimiento contable
 						$('.cuentas').removeAttr('required');
 						$('#lbl_cuentas_terceros').hide(500);
 
@@ -246,6 +246,20 @@
 						break;
 				}
 
+			});
+
+			$('#bs_boton_guardar').on('click',function(event){
+				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+
+				// Desactivar el click del botón
+				$( this ).off( event );
+
+				$('#form_create').submit();
 			});
 			
 		});
