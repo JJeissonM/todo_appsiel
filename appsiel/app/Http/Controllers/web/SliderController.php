@@ -205,7 +205,7 @@ class SliderController extends Controller
                 ->with('mensaje_error',"Error inesperado, por favor intente más tarde.");
         }
 
-
     }
+
 
 }

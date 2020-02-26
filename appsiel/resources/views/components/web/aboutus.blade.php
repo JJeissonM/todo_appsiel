@@ -1,4 +1,4 @@
-<div class="aboutus">
+<div class="aboutus" style="margin-top:60px;">
     <div class="container">
         <div class="section-header">
             <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->titulo}}</h2>

@@ -35,6 +35,8 @@ Route::get('galeria/destroy/album/{album}', 'web\GaleriaController@destroyAlbum'
 Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store');
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 
+Route::resource('sociales','web\RedesSocialesController');
+
 //SERVICIOS
 Route::get('servicios/create/{widget}', 'web\ServicioController@create');
 Route::post('servicios/store', 'web\ServicioController@store')->name('servicios.store');
@@ -52,7 +54,8 @@ Route::get('blog/{articulo?}', 'PaginaWeb\FrontEndController@blog');
 Route::get('ajax_galeria_imagenes/{carousel_id}', 'PaginaWeb\FrontEndController@ajax_galeria_imagenes');
 
 //ARTICLES
-Route::post('articles/store', 'web\ArticleController@store');
+Route::post('articles/store', 'web\ArticleController@store')->name('article.store');
+Route::resource('articles', 'web\ArticleController');
 
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');

@@ -20,7 +20,7 @@ class FactoryCompents
             case "Navegacion":
                 $component = new NavegacionComponent($this->widget);
                 break;
-            case "slider":
+            case "Slider" :
                 $component = new SliderComponent($this->widget);
                 break;
             case "About us":

@@ -73,6 +73,10 @@
         color: #1c85c4;
     }
 
+    .btn-link {
+        cursor: pointer;
+    }
+
     .panel {
         background-color: #fff;
         border: 1px solid transparent;
@@ -106,14 +110,14 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-            <h3>.:: En ésta Sección: Artículos ::.</h3>
+            <h4>.:: En ésta Sección: Artículos ::.</h4>
         </div>
     </div>
 </div>
 <div class="card">
     <div class="card-body d-flex justify-content-between flex-wrap">
         <div id="wrapper">
-            <h3 class="column-title" style="padding: 10px;">MENÚ ARTÍCULOS</h3>
+            <h4 class="column-title" style="padding: 10px;">Menú Artículos</h4>
             <div class="col-md-12">
                 <div id="accordion">
                     <div class="card">
@@ -127,23 +131,65 @@
                         <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                             <div class="card-body">
                                 <div class="col-md-12">
-                                    {!! Form::open(['route'=>'aboutus.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                                    @if($articles!=null)
+                                    <!-- EDITAR -->
+                                    {!! Form::model($articles,['route'=>['articles.update',$articles],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
                                     <input type="hidden" name="widget_id" value="{{$widget}}">
+                                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
                                     <div class="form-group">
-                                        <label>Titulo</label>
-                                        <input name="titulo" type="text" placeholder="Titulo" class="form-control">
+                                        <label>Formato</label>
+                                        <select class="form-control" name="formato">
+                                            @if($articles->formato=='LISTA')
+                                            <option selected value="LISTA">ARTÍCULOS EN FORMATO DE LISTA</option>
+                                            <option value="BLOG">ARTÍCULOS EN FORMATO DE BLOG</option>
+                                            @else
+                                            <option value="LISTA">ARTÍCULOS EN FORMATO DE LISTA</option>
+                                            <option selected value="BLOG">ARTÍCULOS EN FORMATO DE BLOG</option>
+                                            @endif
+                                        </select>
                                     </div>
                                     <!---->
                                     <div class="form-group">
-                                        <label>Descripción</label>
-                                        <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
+                                        <label>Órden</label>
+                                        <select class="form-control" name="orden">
+                                            @if($articles->orden=='ASC')
+                                            <option selected value="ASC">MOSTRAR ANTIGUOS PRIMERO</option>
+                                            <option value="DESC">MOSTRAR LOS MAS RECIENTES PRIMERO</option>
+                                            @else
+                                            <option value="ASC">MOSTRAR ANTIGUOS PRIMERO</option>
+                                            <option selected value="DESC">MOSTRAR LOS MAS RECIENTES PRIMERO</option>
+                                            @endif
+                                        </select>
                                     </div>
                                     <div class="form-group">
-                                        <br /><br /><a href="{{url('seccion/'.$widget).$variables_url}}" class="btn btn-danger">Cancelar</a>
-                                        <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
-                                        {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                                        {!! Form::submit('Guardar',['class'=>'btn btn-primary waves-effect btn-block btn-sm']) !!}
                                     </div>
                                     {!! Form::close() !!}
+                                    @else
+                                    <!-- CREAR -->
+                                    {!! Form::open(['route'=>'article.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                                    <input type="hidden" name="widget_id" value="{{$widget}}">
+                                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                                    <div class="form-group">
+                                        <label>Formato</label>
+                                        <select class="form-control" name="formato">
+                                            <option value="LISTA">ARTÍCULOS EN FORMATO DE LISTA</option>
+                                            <option value="BLOG">ARTÍCULOS EN FORMATO DE BLOG</option>
+                                        </select>
+                                    </div>
+                                    <!---->
+                                    <div class="form-group">
+                                        <label>Órden</label>
+                                        <select class="form-control" name="orden">
+                                            <option value="ASC">MOSTRAR ANTIGUOS PRIMERO</option>
+                                            <option value="DESC">MOSTRAR LOS MAS RECIENTES PRIMERO</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        {!! Form::submit('Guardar',['class'=>'btn btn-primary waves-effect btn-block btn-sm']) !!}
+                                    </div>
+                                    {!! Form::close() !!}
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -158,7 +204,16 @@
                         </div>
                         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
                             <div class="card-body">
-                                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                                <div class="col-md-12">
+                                    @if($articles != null)
+                                    <!-- Formulario crear -->
+                                    <div class="col-md-12" style="padding: 15px;">
+                                        <button onclick="editor()" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary waves-effect btn-block btn-sm">Abrir Editor</button>
+                                    </div>
+                                    @else
+                                    <p style="color: red;"> <i class="fa fa-warning"></i> Antes de añadir artículos debe configurar la sección.</p>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -172,17 +227,23 @@
                         </div>
                         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
                             <div class="card-body">
-                                @if($articles != null)
-                                @foreach($articles->articles as $a)
-                                <div class="contenido">
-                                    <div class="descripcion">
-                                        <h5 class="titulo">titulo</h5>
-                                        <p>descripcion</p>
-                                        <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}"> Editar</a>
+                                <div class="col-md-12">
+                                    @if($articles != null)
+                                    @if(count($articles->articles)>0)
+                                    @foreach($articles->articles as $a)
+                                    <div class="contenido">
+                                        <div class="descripcion">
+                                            <h5 class="titulo">titulo</h5>
+                                            <p>descripcion</p>
+                                            <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}"> Editar</a>
+                                        </div>
                                     </div>
+                                    @endforeach
+                                    @else
+                                    <p style="color: red;"> <i class="fa fa-warning"></i> No hay artículos publicados en ésta sección...</p>
+                                    @endif
+                                    @endif
                                 </div>
-                                @endforeach
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -190,15 +251,59 @@
             </div>
         </div>
         <div class="widgets" id="widgets">
-            <h3 class="column-title" style="padding: 10px;">VISTA PREVIA</h3>
+            <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
             @if($articles != null)
-            {!! Form::aboutus($articles)!!}
+            {!! Form::articles($articles)!!}
             @endif
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Crear Artículo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div> 
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Recipient:</label>
+                        <input type="text" class="form-control" id="recipient-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="col-form-label">Message:</label>
+                        <textarea name="editor" class="form-control editor" id="message-text"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Guardar</button>
+            </div>
         </div>
     </div>
 </div>
 @endsection
 
 @section('script')
+
+<script type="text/javascript">
+    $(function() {
+
+    });
+
+    function editor() {
+        CKEDITOR.replace('editor', {
+            height: 200,
+            // By default, some basic text styles buttons are removed in the Standard preset.
+            // The code below resets the default config.removeButtons setting.
+            removeButtons: ''
+        });
+    }
+</script>
 
 @endsection
