@@ -146,6 +146,8 @@
 <script src="<?php echo e(asset('js/main.js')); ?>"></script>
 
 
+<script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
+
 <!-- About us Skills Circle progress  -->
 
 <?php echo $__env->yieldContent('script'); ?>

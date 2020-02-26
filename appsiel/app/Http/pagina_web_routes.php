@@ -42,7 +42,8 @@ Route::get('blog/{articulo?}', 'PaginaWeb\FrontEndController@blog');
 Route::get('ajax_galeria_imagenes/{carousel_id}', 'PaginaWeb\FrontEndController@ajax_galeria_imagenes');
 
 //ARTICLES
-Route::post('articles/store', 'web\ArticleController@store');
+Route::post('articles/store', 'web\ArticleController@store')->name('article.store');
+Route::resource('articles', 'web\ArticleController');
 
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
