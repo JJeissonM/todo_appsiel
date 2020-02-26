@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\web\Article;
 use App\web\Articlesetup;
 use Illuminate\Support\Facades\Input;
 
@@ -104,5 +105,48 @@ class ArticleController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function articlestore(Request $request)
+    {
+        $a = new Article($request->all());
+        $result = $a->save();
+        $variables_url = $request->variables_url;
+        if ($result) {
+            $message = 'El artículo fue almacenado correctamente.';
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        } else {
+            $message = 'El artículo no pudo ser almacenado, intente mas tarde.';
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function articleupdate(Request $request)
+    {
+        $a = Article::find($request->article_id);
+        $a->titulo = $request->titulo;
+        $a->estado = $request->estado;
+        $a->contenido = $request->contenido;
+        $result = $a->save();
+        $variables_url = $request->variables_url;
+        if ($result) {
+            $message = 'El artículo fue modificado correctamente.';
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        } else {
+            $message = 'El artículo no pudo ser modificado, intente mas tarde.';
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }
     }
 }
