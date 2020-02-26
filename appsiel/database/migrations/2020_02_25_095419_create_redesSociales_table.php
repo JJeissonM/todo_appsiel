@@ -17,6 +17,7 @@ class CreateRedesSocialesTable extends Migration
             $table->string('icono',20);
             $table->string('nombre',30);
             $table->string('enlace');
+            $table->timestamps();
         });
     }
 

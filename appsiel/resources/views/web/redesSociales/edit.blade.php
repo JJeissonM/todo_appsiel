@@ -13,25 +13,25 @@
                 Red Social
             </div>
             <div class="card-body">
-                <form action="{{route('sociales.store').$variables_url}}" method="post">
-                    <input type="hidden" name="_token" value="{{csrf_token()}}">
+                {!! Form::model($red,['route' => ['sociales.update',$red], 'method' => 'PUT']) !!}
+                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="">Nombre</label>
-                                <input type="text" name="nombre" class="form-control" placeholder="About us">
+                                <input type="text" name="nombre" class="form-control" placeholder="About us" value="{{$red->nombre}}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="">enlace</label>
-                                <input type="text" maxlength="158" name="enlace" class="form-control" placeholder="https://">
+                                <input type="text" maxlength="158" name="enlace" class="form-control" placeholder="https://" value="{{$red->enlace}}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Icono</label>
-                                <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
+                                <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control" value="{{$red->icono}}">
                             </div>
                         </div>
                         <div class="col-md-12 d-flex flex-row-reverse">
@@ -40,7 +40,7 @@
                             <button type="reset" class="btn btn-warning" style="color: white;">Limpiar</button>
                         </div>
                     </div>
-                </form>
+                {!! Form::close() !!}
             </div>
         </div>
     </div>

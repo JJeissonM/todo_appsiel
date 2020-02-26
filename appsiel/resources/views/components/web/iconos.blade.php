@@ -154,6 +154,7 @@
             html = html + "<div class='col-md-3 icon'id='"+i.icono+"' onclick='seticon(this.id)'><i class='fa fa-" + i.icono + "'></i>" +
                 "<p id='icono'>" + i.icono + "</p></div>";
         });
+
         $("#txt").html(html);
     }
 </script>

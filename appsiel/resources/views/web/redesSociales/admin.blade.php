@@ -20,7 +20,16 @@
                     <th>Acción</th>
                     </thead>
                     <tbody id="paginas">
-
+                      @foreach($redes as $item)
+                         <tr>
+                             <td><a href="" class="btn btn-info" style="border-radius: 50%; line-height: 10px;"><i class="fa fa-{{$item->icono}}"></i></a>{{' '.$item->nombre}}</td>
+                             <td><a href="{{$item->enlace}}">{{$item->enlace}}</a></td>
+                             <td>
+                                 <a href="{{route('sociales.edit',$item->id).$variables_url}}" title="Configuración de red social" class="btn bg-warning"><i class="fa fa-edit"></i></a>
+                                 <a href="{{url('')}}/" title="Eliminar página" class="btn bg-danger" onclick="eliminar(event,{{$item->id}})"><i class="fa fa-trash"></i></a>
+                             </td>
+                         </tr>
+                      @endforeach
                     </tbody>
                 </table>
             </div>
@@ -35,7 +44,7 @@
 
     <script>
 
-        function eliminarPagina(event,id){
+        function eliminar(event,id){
 
             event.preventDefault();
 
@@ -49,7 +58,7 @@
                 confirmButtonText: 'Sí, bórralo!'
             }).then((result) => {
                 if (result.value) {
-                    const url = '{{url('')}}/'+'paginas/'+id;
+                    const url = '{{url('')}}/'+'sociales/'+id;
                     axios.delete(url)
                         .then(function (response) {
 
