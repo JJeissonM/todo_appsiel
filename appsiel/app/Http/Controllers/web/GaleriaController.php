@@ -101,7 +101,6 @@ class GaleriaController extends Controller
         $variables_url = '?id=' . Input::get('id');
         $widget = $album->galeria->widget_id;
         return view('web.components.galeria.edit', compact('miga_pan', 'variables_url', 'album', 'widget'));
-
     }
 
     public function updated(Request $request, $id)

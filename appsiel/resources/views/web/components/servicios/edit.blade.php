@@ -38,23 +38,21 @@
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
                 <div class="col-md-12">
-                    {!! Form::open(['route'=>'servicios.guardar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    {!! Form::model($item,['route'=>['servicios.editar',$item],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
-                    <input type="hidden" name="servicio_id" value="{{$servicios->id}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
-                        <input name="titulo" type="text" placeholder="Titulo" class="form-control">
+                        <input name="titulo" type="text" placeholder="Titulo" value="{{$item->titulo}}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
-                        <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
+                        <input name="descripcion" type="text" placeholder="Descripción" value="{{$item->descripcion}}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Icono</label>
-                        <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt"
+                        <input data-toggle="modal" data-target="#exampleModal" name="icono" value="{{$item->icono}}" type="text" id="iconotxt"
                                placeholder="Nombre del icono" class="form-control">
-
                     </div>
                     <div class="form-group">
                         <br/><br/><a href="{{url('seccion/'.$widget).$variables_url}}"
@@ -66,8 +64,8 @@
                 </div>
             </div>
             <div class="widgets" id="widgets">
-                @if($servicios != null)
-                    {!! Form::servicios($servicios)!!}
+                @if($item->servicio != null)
+                    {!! Form::servicios($item->servicio)!!}
                 @endif
             </div>
         </div>
