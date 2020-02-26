@@ -34,9 +34,17 @@
 @endsection
 
 @section('content')
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
+                <h4>.:: En ésta Sección: Servicios ::.</h4>
+            </div>
+        </div>
+    </div>
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
+                <h4 class="column-title" style="padding: 10px;">Crear Servicios</h4>
                 <div class="col-md-12">
                     {!! Form::open(['route'=>'servicios.guardar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
@@ -66,6 +74,7 @@
                 </div>
             </div>
             <div class="widgets" id="widgets">
+                <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
                 @if($servicios != null)
                     {!! Form::servicios($servicios)!!}
                 @endif

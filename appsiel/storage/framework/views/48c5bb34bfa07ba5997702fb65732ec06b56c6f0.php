@@ -8,8 +8,8 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="carousel-content">
-                                            <h2><?php echo e($item->titulo); ?></h2>
-                                            <p><?php echo e($item->descripcion); ?></p>
+                                            <h2 style="text-shadow: 1px 1px 2px black;"><?php echo e($item->titulo); ?></h2>
+                                            <p style="text-shadow: 1px 1px 2px black;"><?php echo e($item->descripcion); ?></p>
                                             <a class="btn btn-primary btn-lg" href="<?php echo e($item->enlace); ?>"><?php echo e($item->button); ?></a>
                                         </div>
                                     </div>

@@ -53,6 +53,7 @@
             display: flex;
             justify-content: space-between;
             padding: 5px;
+            margin-top: 10px;
             border: 1px solid #3d6983;
             border-radius: 5px;
         }
@@ -85,9 +86,17 @@
 @endsection
 
 @section('content')
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
+                <h4>.:: En ésta Sección: Servicios ::.</h4>
+            </div>
+        </div>
+    </div>
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
+                <h4 class="column-title" style="padding: 10px;">Menú Servicios</h4>
                 @if($servicios != null)
                     <div class="descripcion" style="text-align: center; margin-top: 20px;">
                         <h5 class="titulo">{{$servicios->titulo}}</h5>
@@ -96,40 +105,49 @@
                            title="Eliminar Seccion"><i class="fa fa-window-close"></i></a>
                     </div>
                     <div class="col-md-12 add d-flex">
-                        <div style="margin-right: 100px">
-                            <a href="{{url('servicios/create').'/'.$widget.$variables_url}}"> Agregar Servicios </a>
+                        <div class="col-md-6">
+                            <a href="{{url('servicios/create').'/'.$widget.$variables_url}}"
+                               class="btn btn-primary waves-effect btn-block btn-sm"
+                               style="color: white; font-weight: bold;"> Agregar Servicios </a>
                         </div>
-                        <div class="justify-content-end">
-                            <a data-toggle="modal" data-target="#Modaledit"> Editar Sección </a>
+                        <div class="col-md-6 justify-content-end">
+                            <a data-toggle="modal" data-target="#Modaledit"
+                               class="btn btn-primary waves-effect btn-block btn-sm"
+                               style="color: white; font-weight: bold;"> Editar Sección </a>
                         </div>
                     </div>
                     @if(count($servicios->itemservicios)>0)
                         @foreach($servicios->itemservicios as $item)
-                            <div class="contenido">
-                                <div class="media service-box wow fadeInRight animated"
-                                     style="visibility: visible; animation-name: fadeInRight;">
-                                    <div class="pull-left">
-                                        <i class="fa fa-{{$item->icono}}"></i>
+                            <div class="col-md-12">
+                                <div class="contenido">
+                                    <div class="media service-box wow fadeInRight animated"
+                                         style="visibility: visible; animation-name: fadeInRight;">
+                                        <div class="pull-left">
+                                            <i class="fa fa-{{$item->icono}}"></i>
+                                        </div>
                                     </div>
+                                    <div class="descripcion">
+                                        <h5 class="titulo">{{$item->titulo}}</h5>
+                                        <p>{{str_limit($item->descripcion,30)}}</p>
+                                    </div>
+                                    <a href="{{url('servicios/edit').'/'.$item->id.$variables_url}}" class="btn"
+                                       title="Editar Servicio"><i class="fa fa-edit"></i></a>
+                                    <a href="{{url('servicios/destroy/item').'/'.$item->id.$variables_url}}" class="btn"
+                                       title="Eliminar Servicio"><i class="fa fa-eraser"></i></a>
                                 </div>
-                                <div class="descripcion">
-                                    <h5 class="titulo">{{$item->titulo}}</h5>
-                                    <p>{{str_limit($item->descripcion,30)}}</p>
-                                </div>
-                                <a href="{{url('servicios/edit').'/'.$item->id.$variables_url}}" class="btn"
-                                   title="Editar Servicio"><i class="fa fa-edit"></i></a>
-                                <a href="{{url('servicios/destroy/item').'/'.$item->id.$variables_url}}" class="btn"
-                                   title="Eliminar Servicio"><i class="fa fa-eraser"></i></a>
                             </div>
                         @endforeach
                     @endif
                 @else
-                    <div class="add d-flex justify-content-end">
-                        <a data-toggle="modal" data-target="#exampleModal"> Agregar Sección </a>
+                    <div class="add d-flex justify-content-end col-md-12">
+                        <a data-toggle="modal" data-target="#exampleModal"
+                           class="btn btn-primary waves-effect btn-block btn-sm"
+                           style="color: white; font-weight: bold;"> Agregar Sección </a>
                     </div>
                 @endif
             </div>
             <div class="widgets" id="widgets">
+                <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
                 @if($servicios != null)
                     {!! Form::servicios($servicios)!!}
                 @endif
@@ -161,8 +179,7 @@
                         <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
                     </div>
                     <div class="form-group">
-                        <br/><br/><a href="{{url('seccion/'.$widget).$variables_url}}"
-                                     class="btn btn-danger">Cancelar</a>
+                        <br/><br/><button class="btn btn-danger" id="exampleModal" style="color: white" onclick="cerrar(this.id)">Cancelar</button>
                         <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
                         {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
                     </div>
@@ -200,8 +217,7 @@
                                    value="{{$servicios->descripcion}}" class="form-control">
                         </div>
                         <div class="form-group">
-                            <br/><br/><a href="{{url('seccion/'.$widget).$variables_url}}"
-                                         class="btn btn-danger">Cancelar</a>
+                            <br/><br/><a class="btn btn-danger" id="Modaledit" style="color: white" onclick="cerrar(this.id)">Cancelar</a>
                             <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
                             {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
                         </div>
@@ -213,5 +229,12 @@
     </div>
 </div>
 @section('script')
+<script type="text/javascript">
 
+    function cerrar(id) {
+        $("#"+id).modal('hide');
+        $("#"+id).removeClass('modal-open');
+        $('.'+id).remove();
+    }
+</script>
 @endsection
