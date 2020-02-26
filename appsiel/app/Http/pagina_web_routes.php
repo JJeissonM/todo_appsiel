@@ -40,7 +40,12 @@ Route::resource('sociales','web\RedesSocialesController');
 //SERVICIOS
 Route::get('servicios/create/{widget}', 'web\ServicioController@create');
 Route::post('servicios/store', 'web\ServicioController@store')->name('servicios.store');
+Route::get('servicios/edit/{itemservicio}', 'web\ServicioController@edit');
+Route::post('servicios/guardar/itemservicio', 'web\ServicioController@guardar')->name('servicios.guardar');
 Route::put('servicios/updated/{id}', 'web\ServicioController@updated')->name('servicios.updated');
+Route::put('servicios/updated/item/{id}', 'web\ServicioController@modificar')->name('servicios.editar');
+Route::get('servicios/destroy/item/{itemservicio}', 'web\ServicioController@destroy');
+Route::get('servicios/destroy/{servicio}', 'web\ServicioController@delete');
 
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 

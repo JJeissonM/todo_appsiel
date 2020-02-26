@@ -34,13 +34,22 @@
 @endsection
 
 @section('content')
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
+                <h4>.:: En ésta Sección: Servicios ::.</h4>
+            </div>
+        </div>
+    </div>
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
+                <h4 class="column-title" style="padding: 10px;">Crear Servicios</h4>
                 <div class="col-md-12">
-                    {!! Form::open(['route'=>'servicios.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    {!! Form::open(['route'=>'servicios.guardar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="servicio_id" value="{{$servicios->id}}">
+                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
                         <input name="titulo" type="text" placeholder="Titulo" class="form-control">
@@ -51,7 +60,8 @@
                     </div>
                     <div class="form-group">
                         <label>Icono</label>
-                        <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
+                        <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt"
+                               placeholder="Nombre del icono" class="form-control">
 
                     </div>
                     <div class="form-group">
@@ -64,6 +74,7 @@
                 </div>
             </div>
             <div class="widgets" id="widgets">
+                <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
                 @if($servicios != null)
                     {!! Form::servicios($servicios)!!}
                 @endif
@@ -90,9 +101,9 @@
     </div>
 </div>
 @section('script')
-<script type="text/javascript">
-    $(function () {
-        $('#iconos').load('web/icons/view.blade.php');
-    })
-</script>
+    <script type="text/javascript">
+        $(function () {
+            $('#iconos').load('web/icons/view.blade.php');
+        })
+    </script>
 @endsection

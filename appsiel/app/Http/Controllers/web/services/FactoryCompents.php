@@ -17,7 +17,7 @@ class FactoryCompents
     {
 
         switch ($this->seccion) {
-            case "Navegacion" :
+            case "Navegacion":
                 $component = new NavegacionComponent($this->widget);
                 break;
             case "Slider" :
@@ -29,7 +29,7 @@ class FactoryCompents
             case "Galeria":
                 $component = new GaleriaComponent($this->widget);
                 break;
-            case "servicios":
+            case "Servicios":
                 $component = new ServicioComponent($this->widget);
                 break;
             case "Artículos":

@@ -33,35 +33,33 @@
 
 @endsection
 
-@section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-                <h4>.:: En ésta Sección: Galeria ::.</h4>
-            </div>
+@section('content')<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
+            <h4>.:: En ésta Sección: Servicios ::.</h4>
         </div>
     </div>
+</div>
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
-                <h4 class="column-title" style="padding: 10px;">Editar Álbum</h4>
+                <h4 class="column-title" style="padding: 10px;">Editar Servicios</h4>
                 <div class="col-md-12">
-                    {!! Form::model($album,['route'=>['galeria.updated',$album->id],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
+                    {!! Form::model($item,['route'=>['servicios.editar',$item],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
-                        <input name="titulo" type="text" placeholder="Titulo del Álbum" required="required"
-                               value="{{$album->titulo}}" class="form-control">
+                        <input name="titulo" type="text" placeholder="Titulo" value="{{$item->titulo}}" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>Descripción del Álbum</label>
-                        {!! Form::textarea('descripcion',$album->descripcion,['class'=>'form-control col-md-12 col-xs-12','required']) !!}
+                        <label>Descripción</label>
+                        <input name="descripcion" type="text" placeholder="Descripción" value="{{$item->descripcion}}" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>Añadir Imagenes (Las imagenes deben ser de 600px de alto por 400px de ancho)</label>
-                        <input name="imagen[]" multiple type="file" placeholder="Agregar una imagen"
-                               class="form-control">
+                        <label>Icono</label>
+                        <input data-toggle="modal" data-target="#exampleModal" name="icono" value="{{$item->icono}}" type="text" id="iconotxt"
+                               placeholder="Nombre del icono" class="form-control">
                     </div>
                     <div class="form-group">
                         <br/><br/><a href="{{url('seccion/'.$widget).$variables_url}}"
@@ -74,19 +72,9 @@
             </div>
             <div class="widgets" id="widgets">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                <div class="col-md-12 d-flex flex-wrap">
-                    @foreach($album->fotos as $imagen)
-                        <div class="col-md-3">
-                            <img onclick="mostrar('{{url($imagen->nombre)}}')" data-toggle="modal"
-                                 data-target="#exampleModal" src="{{url($imagen->nombre)}}"
-                                 alt="{{$imagen->nombre}}" style="width: 100%; height: 150px; object-fit: cover;">
-                            <a href="{{ route('galeria.deleteimagen',$imagen->id).$variables_url}}"
-                               class="btn btn-danger btn-block"
-                               data-toggle="tooltip" data-placement="top" title="Eliminar Imagen"><i
-                                        class="fa fa-remove"></i> Eliminar Imagen</a>
-                        </div>
-                    @endforeach
-                </div>
+                @if($item->servicio != null)
+                    {!! Form::servicios($item->servicio)!!}
+                @endif
             </div>
         </div>
     </div>
@@ -96,22 +84,23 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Vista previa</h5>
+                <h5 class="modal-title">Seleccionar Icono</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <img id="imagen" style="width: 560px; height: 560px; object-fit: cover;">
+                <div class="col-md-12">
+                    {!! Form::iconos($iconos) !!}
+                </div>
             </div>
         </div>
     </div>
 </div>
 @section('script')
     <script type="text/javascript">
-        function mostrar(url) {
-            $('#imagen').removeAttr('src');
-            $('#imagen').attr('src', url);
-        }
+        $(function () {
+            $('#iconos').load('web/icons/view.blade.php');
+        })
     </script>
 @endsection
