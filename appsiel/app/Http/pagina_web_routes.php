@@ -42,7 +42,12 @@ Route::resource('footer','web\FooterController');
 //SERVICIOS
 Route::get('servicios/create/{widget}', 'web\ServicioController@create');
 Route::post('servicios/store', 'web\ServicioController@store')->name('servicios.store');
+Route::get('servicios/edit/{itemservicio}', 'web\ServicioController@edit');
+Route::post('servicios/guardar/itemservicio', 'web\ServicioController@guardar')->name('servicios.guardar');
 Route::put('servicios/updated/{id}', 'web\ServicioController@updated')->name('servicios.updated');
+Route::put('servicios/updated/item/{id}', 'web\ServicioController@modificar')->name('servicios.editar');
+Route::get('servicios/destroy/item/{itemservicio}', 'web\ServicioController@destroy');
+Route::get('servicios/destroy/{servicio}', 'web\ServicioController@delete');
 
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
@@ -53,6 +58,8 @@ Route::get('ajax_galeria_imagenes/{carousel_id}', 'PaginaWeb\FrontEndController@
 //ARTICLES
 Route::post('articles/store', 'web\ArticleController@store')->name('article.store');
 Route::resource('articles', 'web\ArticleController');
+Route::post('articles/article/store', 'web\ArticleController@articlestore')->name('article.articlestore');
+Route::post('articles/article/update', 'web\ArticleController@articleupdate')->name('article.articleupdate');
 
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');

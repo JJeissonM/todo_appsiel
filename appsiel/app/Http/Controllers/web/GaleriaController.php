@@ -15,22 +15,44 @@ class GaleriaController extends Controller
 {
     public function create($widget)
     {
-        $miga_pan = [
-            [
-                'url' => 'pagina_web' . '?id=' . Input::get('id'),
-                'etiqueta' => 'Web'
-            ],
-            [
-                'url' => 'paginas?id=' . Input::get('id'),
-                'etiqueta' => 'Paginas y secciones'
-            ],
-            [
-                'url' => 'NO',
-                'etiqueta' => 'Galeria de Imagenes'
-            ]
-        ];
-        $variables_url = '?id=' . Input::get('id');
+
         $galeria = Galeria::where('widget_id', $widget)->first();
+        if($galeria == null){
+            $miga_pan = [
+                [
+                    'url' => 'pagina_web' . '?id=' . Input::get('id'),
+                    'etiqueta' => 'Web'
+                ],
+                [
+                    'url' => 'paginas?id=' . Input::get('id'),
+                    'etiqueta' => 'Paginas y secciones'
+                ],
+                [
+                    'url' => 'NO',
+                    'etiqueta' => 'Galeria de Imagenes'
+                ]
+            ];
+        }else{
+            $miga_pan = [
+                [
+                    'url' => 'pagina_web' . '?id=' . Input::get('id'),
+                    'etiqueta' => 'Web'
+                ],
+                [
+                    'url' => 'paginas?id=' . Input::get('id'),
+                    'etiqueta' => 'Paginas y secciones'
+                ],
+                [
+                    'url' => 'seccion/' . $galeria->widget_id . '?id=' . Input::get('id'),
+                    'etiqueta' => 'Galeria de Imagenes'
+                ],
+                [
+                    'url' => 'NO',
+                    'etiqueta' => 'Crear Álbum'
+                ]
+            ];
+        }
+        $variables_url = '?id=' . Input::get('id');
         return view('web.components.galeria.create', compact('miga_pan', 'variables_url', 'galeria', 'widget'));
     }
 
@@ -101,7 +123,6 @@ class GaleriaController extends Controller
         $variables_url = '?id=' . Input::get('id');
         $widget = $album->galeria->widget_id;
         return view('web.components.galeria.edit', compact('miga_pan', 'variables_url', 'album', 'widget'));
-
     }
 
     public function updated(Request $request, $id)
