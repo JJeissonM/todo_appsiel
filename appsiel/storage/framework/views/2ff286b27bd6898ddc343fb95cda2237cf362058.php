@@ -2,13 +2,14 @@
     <style>
         .card-body {
             padding: 0 !important;
-            overflow-y: hidden;
+            overflow: hidden;
         }
 
         #wrapper {
             overflow-y: scroll;
+            overflow-x:hidden;
             width: 30%;
-            height: 72.3vh;
+            height: 558px;
             margin-right: 0;
         }
 

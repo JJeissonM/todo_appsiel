@@ -23,6 +23,7 @@
         }
         .widgets {
             width: 70%;
+            position: relative;
         }
         .widgets img {
             width: 100%;
@@ -30,12 +31,7 @@
             height: 72.5vh;
             max-width: 100%;
         }
-        .widgets .card-body {
-            position: relative;
-        }
-        .activo{
 
-        }
 
         .contenido {
             display: flex;
@@ -138,7 +134,9 @@
                {!! Form::close() !!}
             </div>
             <div class="widgets" id="widgets">
-                {!! Form::slider("") !!}
+                <div>
+                    {!! Form::slider('') !!}
+                </div>
             </div>
         </div>
     </div>

@@ -203,6 +203,7 @@ class PaginaController extends Controller
     }
 
     public function showPage($slug){
+
        $pagina = Pagina::where('slug',$slug)->first();
        $widgets = $pagina->widgets;
        $widgets->sortBy('orden');
@@ -305,6 +306,7 @@ class PaginaController extends Controller
     public function destroy($id){
 
        $pagina = Pagina::find($id);
+
        if($pagina->widgets->count() > 0){
            return response()->json([
                'status' => 'error',
