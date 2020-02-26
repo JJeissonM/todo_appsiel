@@ -23,7 +23,7 @@
             <div class="card-footer text-muted">
                 <div class="card-header d-flex justify-content-between">
                     EN ESTA PÁGINA
-                    <a href="" id="seccion" style="color: #0000FF;">+ Agreagar sección</a>
+                    <a href="" id="seccion" style="color: #0000FF;">+ Agregar sección</a>
                 </div>
                 <div class="card-body">
                      <table class="table">
@@ -70,9 +70,9 @@
                       $html = '';
                       secciones.forEach(function (item) {
 
-                          if(item.seccion !== 'navegacion' && item.seccion !==  'pie de pagina' ){
+                          if(item.seccion !== 'Navegacion' && item.seccion !==  'pie de página' ){
                           $html += `<tr>
-                              <td>${item.seccion}</td>
+                              <td style="cursor:pointer;">${item.seccion}</td>
                               <td>
                                   <a href="{{url('seccion')}}/${item.widget_id}{{$variables_url}}" style="color:white;" title="Editar sección" class="btn bg-warning"><i class="fa fa-edit"></i></a>
                                   <a href="{{url('')}}/" title="Mover sección" style="color:white;" class="btn bg-info"><i class="fa fa-arrows-alt"></i></a>
@@ -81,7 +81,7 @@
                               </td>
                               </tr>`;
                           }else {
-                              $html += `<tr>
+                              $html += `<tr style="cursor:pointer;">
                                             <td colspan="2">${item.seccion}</td>
                                         </tr>`
                           }

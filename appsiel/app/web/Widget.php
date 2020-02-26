@@ -31,6 +31,11 @@ class Widget extends Model
         return $this->hasMany(Galeria::class);
     }
 
+    public function servicios()
+    {
+        return $this->hasMany(Servicio::class);
+    }
+
     public function articlesetups()
     {
         return $this->hasMany(Articlesetup::class);

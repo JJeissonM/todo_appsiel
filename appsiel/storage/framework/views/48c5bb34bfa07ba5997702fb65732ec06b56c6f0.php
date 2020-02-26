@@ -1,27 +1,27 @@
 <section id="main-slider" >
-    @if($slider != null && $slider->items->count() > 0)
+    <?php if($slider != null && $slider->items->count() > 0): ?>
             <div class="owl-carousel">
-                @foreach($slider->items as $item)
-                    <div class="item" style="background-image: url('{{asset($item->imagen)}}');">
+                <?php foreach($slider->items as $item): ?>
+                    <div class="item" style="background-image: url('<?php echo e(asset($item->imagen)); ?>');">
                         <div class="slider-inner">
                             <div class="container">
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="carousel-content">
-                                            <h2 style="text-shadow: 1px 1px 2px black;">{{$item->titulo}}</h2>
-                                            <p style="text-shadow: 1px 1px 2px black;">{{$item->descripcion}}</p>
-                                            <a class="btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}}</a>
+                                            <h2><?php echo e($item->titulo); ?></h2>
+                                            <p><?php echo e($item->descripcion); ?></p>
+                                            <a class="btn btn-primary btn-lg" href="<?php echo e($item->enlace); ?>"><?php echo e($item->button); ?></a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; ?>
             </div><!--/.item-->
-    @else
+    <?php else: ?>
         <div class="owl-carousel">
-            <div class="item" style="background-image: url('{{asset('images/slider/bg1.jpg')}}');">
+            <div class="item" style="background-image: url('<?php echo e(asset('images/slider/bg1.jpg')); ?>');">
                 <div class="slider-inner">
                     <div class="container">
                         <div class="row">
@@ -37,7 +37,7 @@
                     </div>
                 </div>
             </div><!--/.item-->
-            <div class="item" style="background-image: url({{asset('images/slider/bg2.jpg')}});">
+            <div class="item" style="background-image: url(<?php echo e(asset('images/slider/bg2.jpg')); ?>);">
                 <div class="slider-inner">
                     <div class="container">
                         <div class="row">
@@ -54,5 +54,5 @@
                 </div>
             </div><!--/.item-->
         </div><!--/.owl-carousel-->
-    @endif
+    <?php endif; ?>
 </section><!--/#main-slider-->
