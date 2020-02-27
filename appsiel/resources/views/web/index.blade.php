@@ -52,15 +52,55 @@
 </head>
 <body style="padding:0;">
 
-<!-- END SCROLL TOP BUTTON -->
 <main>
 
-<main>
+    @foreach($view as $item)
+        {!! $item !!}
+    @endforeach
 
-   @foreach($view as $item)
-       {!! $item !!}
-   @endforeach
+    <div class="footerarea" style="background-color: black;">
+        <div class="container" >
+            <div class="row d-flex flex-wrap justify-content-between">
+                <div class="contenido col-md-3 col-sm-12" style="margin: 20px 0;">
+                    <h5 class="column-title" style="color: white; font-size: 20px; font-weight: bold;" >ACCESO RÁPIDO</h5>
+                    <aside class="">
+                            <ul id="menu-menu4" class="menu">
+                                <li id="" class="" style="list-style: none;" ><a style="color: white; font-size: 14px" href="">Grados Promoción 2019</a></li>
+                                <li id="" class="" style="list-style: none;"><a style="color: white;  font-size: 14px" href="">Zona Norte galardonada por el CPV</a></li>
+                                <li id="" class="" style="list-style: none;"><a style="color: white;  font-size: 14px" href="">Premiación La Gran Noche de los Mejores</a></li>
+                            </ul>
+                    </aside>
+                </div><!--end .widget-column-2-->
+                <div class="contenido col-md-3 col-sm-12" style="margin: 20px 0;">
+                    <h5 class="column-title" style="color: white; font-size: 20px; font-weight: bold;" >ACCESO RÁPIDO</h5>
+                    <aside class="">
+                            <ul id="menu-menu4" class="menu">
+                                <li id="" class="" style="list-style: none;" ><a style="color: white; font-size: 14px" href="">Grados Promoción 2019</a></li>
+                                <li id="" class="" style="list-style: none;"><a style="color: white;  font-size: 14px" href="">Zona Norte galardonada por el CPV</a></li>
+                                <li id="" class="" style="list-style: none;"><a style="color: white;  font-size: 14px" href="">Premiación La Gran Noche de los Mejores</a></li>
+                            </ul>
+                    </aside>
+                </div><!--end .widget-column-2-->
+                <div class="contenido col-md-3 col-sm-12" style="margin: 20px 0;">
+                    <h5 class="column-title" style="color: white; font-size: 20px; font-weight: bold;" >ACCESO RÁPIDO</h5>
+                    <aside class="">
+                            <ul id="menu-menu4" class="menu">
+                                <li id="" class="" style="list-style: none;" ><a style="color: white; font-size: 14px" href="">Grados Promoción 2019</a></li>
+                                <li id="" class="" style="list-style: none;"><a style="color: white;  font-size: 14px" href="">Zona Norte galardonada por el CPV</a></li>
+                                <li id="" class="" style="list-style: none;"><a style="color: white;  font-size: 14px" href="">Premiación La Gran Noche de los Mejores</a></li>
+                            </ul>
+                    </aside>
+                </div><!--end .widget-column-2-->
+                <div class="contenido col-md-3 col-sm-12" style="margin: 20px 0;">
+                    <h5 class="column-title" style="color: white; font-size: 20px; font-weight: bold;" >ENCUENTRANOS</h5>
+                    <aside class="">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7846.117142011713!2d-73.27527537090697!3d10.496049145296741!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e8ab8265d25f41b%3A0x9e1b4c8829b528ef!2sCorporaci%C3%B3n+Gimnasio+del+Norte!5e0!3m2!1ses-419!2sco!4v1560770872100!5m2!1ses-419!2sco" width="300" height="450" frameborder="0" style="border:0" allowfullscreen=""></iframe>
+                    </aside>
+                </div><!--end .widget-column-2-->
 
+            </div>
+        </div><!--end .container-->
+    </div>
 
 </main>
 

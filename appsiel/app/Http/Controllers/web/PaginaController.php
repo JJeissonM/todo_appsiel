@@ -132,15 +132,12 @@ class PaginaController extends Controller
     public function generar_slug( $cadena )
     {
         $slug_original = str_slug( $cadena );
-
         $slug_nuevo = $slug_original;
-
         $existe = true;
         $i = 2;
         while ( $existe )
         {
             $registro = Pagina::where('slug', $slug_nuevo)->get()->first();
-
             if ( !is_null( $registro ) )
             {
                 $slug_nuevo = $slug_original.'-'.$i;
@@ -149,12 +146,10 @@ class PaginaController extends Controller
                 $existe = false;
             }
         }
-
         return $slug_nuevo;
     }
 
     public function addSeccion($id){
-
         $miga_pan = [
             [
                 'url' => 'pagina_web'.'?id='. Input::get('id'),
@@ -169,12 +164,10 @@ class PaginaController extends Controller
                 'etiqueta' => 'Agregando nueva sección'
             ]
         ];
-
         $pagina =  $id;
         $secciones = Seccion::all();
         $variables_url = '?id='.Input::get('id');
         return view('web.paginas.secciones.addSeccion',compact('secciones','miga_pan','pagina','variables_url'));
-
     }
 
     public function nuevaSeccion(Request $request){
