@@ -109,8 +109,6 @@ class ArqueoCajaController extends ModeloController
         $registro->detalles_mov_entradas = json_decode($registro->detalles_mov_entradas);
         $registro->detalles_mov_salidas = json_decode($registro->detalles_mov_salidas);
 
-        dd( $registro );
-
         //return view( 'matriculas.show_matricula',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') );
         return view('tesoreria.arqueo_caja.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'empresa', 'doc_encabezado', 'user'));
 

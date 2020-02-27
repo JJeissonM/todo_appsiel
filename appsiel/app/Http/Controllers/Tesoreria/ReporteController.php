@@ -817,7 +817,7 @@ class ReporteController extends TesoreriaController
         foreach ($movimiento as $linea) {
             $total_valor_movimiento += $linea['valor_movimiento'];
         }
-        return [View::make('tesoreria.incluir.tabla_movimiento_por_motivo', compact('movimiento'))->render(), $total_valor_movimiento];
+        return [View::make('tesoreria.incluir.tabla_movimiento_por_motivo', compact('movimiento'))->render(), $total_valor_movimiento,$movimiento];
     }
 
     /*

@@ -35,6 +35,9 @@ class FactoryCompents
             case "Artículos":
                 $component = new ArticleComponent($this->widget);
                 break;
+            case "Contáctenos":
+                $component = new ContactenosComponent($this->widget);
+                break;
             default:
                 $component = false;
         }

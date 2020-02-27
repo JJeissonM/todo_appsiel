@@ -40,4 +40,9 @@ class Widget extends Model
     {
         return $this->hasMany(Articlesetup::class);
     }
+
+    public function contactenoss()
+    {
+        return $this->hasMany(Contactenos::class);
+    }
 }
