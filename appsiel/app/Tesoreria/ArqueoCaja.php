@@ -50,9 +50,27 @@ class ArqueoCaja extends Model
         $arqueocaja->estado = 'ACTIVO';
         $result = $arqueocaja->save();
         if ($result) {
-            return redirect('web' . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro CREADO correctamente.');
+            return redirect('tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro CREADO correctamente.');
         } else {
-            return redirect('web' . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro NO FUE CREADO correctamente.');
+            return redirect('tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro NO FUE CREADO correctamente.');
+        }
+    }
+
+    public function update_adicional($datos, $doc_encabezado_id)
+    {        
+        $arqueocaja = ArqueoCaja::find( $doc_encabezado_id );
+
+        $arqueocaja->billetes_contados = json_encode($datos['billetes']);
+        $arqueocaja->monedas_contadas = json_encode($datos['monedas']);
+        $arqueocaja->detalles_mov_entradas = $datos['movimientos_entradas'];
+        $arqueocaja->detalles_mov_salidas = $datos['movimientos_salidas'];
+        $arqueocaja->estado = 'ACTIVO';
+        $result = $arqueocaja->save();
+        
+        if ($result) {
+            return redirect('tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro ACTUALIZADO correctamente.');
+        } else {
+            return redirect('tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('mensaje_error', 'Registro NO FUE ACTUALIZADO correctamente.');
         }
     }
 }

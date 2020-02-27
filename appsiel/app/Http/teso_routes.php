@@ -29,6 +29,13 @@ Route::get('tesoreria/get_cajas_cuentas_bancarias/{empresa_id}','Tesoreria\Tesor
 Route::get('tesoreria/get_cajas/{empresa_id}','Tesoreria\TesoreriaController@get_cajas');
 Route::get('tesoreria/get_cuentas_bancarias/{empresa_id}','Tesoreria\TesoreriaController@get_cuentas_bancarias');
 
+
+
+Route::get('tesoreria/get_cajas_to_select','Tesoreria\TesoreriaController@get_cajas_to_select');
+Route::get('tesoreria/get_ctas_bancarias_to_select','Tesoreria\TesoreriaController@get_ctas_bancarias_to_select');
+
+
+
 Route::get('tesoreria/ajax_get_motivos/{teso_tipo_motivo}', 'Tesoreria\TesoreriaController@ajax_get_motivos');
 
 Route::get('tesoreria/recaudos_imprimir/{id}', 'Tesoreria\RecaudoController@imprimir');
@@ -85,6 +92,8 @@ Route::get('tesoreria/get_tabla_movimiento','Tesoreria\ReporteController@get_tab
 Route::get('tesoreria/cartera_vencida_estudiantes','Tesoreria\ReporteController@cartera_vencida_estudiantes');
 Route::get('tesoreria/flujo_de_efectivo','Tesoreria\ReporteController@flujo_de_efectivo');
 Route::post('tesoreria/ajax_flujo_de_efectivo','Tesoreria\ReporteController@ajax_flujo_de_efectivo');
+
+Route::post('teso_movimiento_caja_bancos','Tesoreria\ReporteController@teso_movimiento_caja_bancos');
 
 Route::get('tesoreria/reporte_cartera_por_curso','Tesoreria\ReporteController@reporte_cartera_por_curso');
 Route::post('tesoreria/ajax_reporte_cartera_por_curso','Tesoreria\ReporteController@ajax_reporte_cartera_por_curso');

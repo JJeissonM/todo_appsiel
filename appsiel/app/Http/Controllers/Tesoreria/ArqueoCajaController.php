@@ -35,20 +35,6 @@ class ArqueoCajaController extends ModeloController
         return redirect('web/create?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&vista=tesoreria.arqueo_caja.create');
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     * // Este método es llamado desde ModeloController@store
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $general = new ModeloController();
-
-        dd($general->store($request));
-    }
-
     // Generar vista para SHOW  o IMPRIMIR
     public function vista_preliminar($id)
     {
@@ -109,6 +95,8 @@ class ArqueoCajaController extends ModeloController
         $registro->detalles_mov_entradas = json_decode($registro->detalles_mov_entradas);
         $registro->detalles_mov_salidas = json_decode($registro->detalles_mov_salidas);
 
+        //dd( $registro );
+
         //return view( 'matriculas.show_matricula',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') );
         return view('tesoreria.arqueo_caja.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'empresa', 'doc_encabezado', 'user'));
 
@@ -153,29 +141,5 @@ class ArqueoCajaController extends ModeloController
         //dd($arqueocaja);
         return view('tesoreria.arqueo_caja.edit', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action'));
     }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
 
 }

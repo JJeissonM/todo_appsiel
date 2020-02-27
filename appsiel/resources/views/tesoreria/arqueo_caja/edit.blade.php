@@ -185,11 +185,13 @@
             <input type="hidden" id="total_sistema" name="lbl_total_sistema" value="{{$registro->lbl_total_sistema}}">
         </div>
 
-        <div class="well">
-            <h1>Diferencia:
-                <div id="lbl_total_saldo" style="display: inline;"> ${{$registro->total_saldo}}</div>
-            </h1>
-            <input type="hidden" id="total_saldo" name="total_saldo" value="{{$registro->total_saldo}}">
+        <div style="display: none;">
+            <div class="well">
+                <h1>Diferencia:
+                    <div id="lbl_total_saldo" style="display: inline;"> ${{$registro->total_saldo}}</div>
+                </h1>
+                <input type="hidden" id="total_saldo" name="total_saldo" value="{{$registro->total_saldo}}">
+            </div>
         </div>
     </div>
 @endsection

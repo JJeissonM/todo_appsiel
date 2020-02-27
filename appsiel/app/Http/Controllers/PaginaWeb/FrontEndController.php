@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 
+use App\Http\Controllers\web\PaginaController;
 use Input;
 use View;
 use DB;
@@ -38,8 +39,6 @@ class FrontEndController extends Controller
             return redirect('inicio');
         }
 
-        
-
         // Se continua si la aplicación página web está activa
 
         // Obtener la página que está marcada como pagina_inicio (se debe validar que en la creación de páginas solo haya una)
@@ -51,105 +50,16 @@ class FrontEndController extends Controller
             $pagina = Pagina::find( Input::get('pagina_id') );
         }
         
+
         
         // Return temporal para mostrar página estática de información
-        return View::make( 'pagina_web.front_end.templates.demo.index', compact('pagina') )->render();
+        //return View::make( 'pagina_web.front_end.templates.demo.index', compact('pagina') )->render();
 
-        
+        $page = new PaginaController();
+ 
+        return $page->showPage( str_slug( $pagina->titulo ) );
 
-        /*
-          * SECCIONES
-        */
-        $secciones_pagina = $pagina->secciones()->where('estado','Activo')->orderBy('orden')->get();
-        
-        $cadena_secciones = '';
-        foreach ($secciones_pagina as $una_seccion) 
-        {
-            if ($una_seccion->padre_id == 0) 
-            {
-                $datos_seccion = Seccion::get_datos_basicos( $una_seccion->id );
-
-                $titulo = '<span class="titulo_seccion">'.$una_seccion->titulo.'</span>';
-                if ( !$una_seccion->mostrar_titulo ) 
-                {
-                    $titulo = '';
-                }
-                
-                $cadena_secciones .= '<div class="seccion_padre" id="'.$datos_seccion->slug.'"> '.$titulo.'_seccion_'.$una_seccion->id.'_contenido </div>';
-            }
-
-            $hijas = Seccion::where('padre_id',$una_seccion->id)->get();
-
-            if ( !empty( $hijas->toArray() ) ) 
-            {
-
-                $cantidad_hijas = count( $hijas->toArray() );
-                
-                // Restringir a solo 4 hijas. Esto no se debe hacer de este modo. Mejorar el modelo Seccion
-                if ( $cantidad_hijas > 4 )
-                {
-                    $cantidad_hijas = 4;
-                }
-                
-                $numero_columnas = 12 / $cantidad_hijas;
-
-                $secciones_hijas = '';
-                foreach ($hijas as $una_hija) 
-                {
-                    $datos_seccion = Seccion::get_datos_basicos( $una_hija->id );
-
-                    $titulo = '<span class="titulo_seccion">'.$una_hija->titulo.'</span>';
-                    if ( !$una_hija->mostrar_titulo ) 
-                    {
-                        $titulo = '';
-                    }
-                    
-                    $secciones_hijas .= '<div class="seccion_hija col-md-'.$numero_columnas.'" id="'.$datos_seccion->slug.'"> '.$titulo.'_seccion_'.$una_hija->id.'_contenido </div>';
-                }
-
-                $cadena_secciones = str_replace( '_seccion_'.$una_seccion->id.'_contenido', '<div class="row">'.$secciones_hijas.'</div>' , $cadena_secciones);            
-            }
-        }
-
-
-        /*
-          * MODULOS: son los fragmentos de código HTML que forman el contenidos de la página
-          * Se obtienen los módulos 
-        */
-        $modulos = Modulo::get_datos_basicos(); 
-
-        // Se crea un array con la lista de módulos
-        foreach ($modulos as $un_modulo) 
-        {
-            $titulo = '<span class="titulo_modulo">'.$un_modulo->descripcion.'</span>';
-            if ( !$un_modulo->mostrar_titulo ) 
-            {
-                $titulo = '';
-            }
-
-            // Se llena el contenido del módulo con el campo "contenido" de la tabla pw_modulos
-            $contenido_modulo = '<div class="modulo" id="modulo_'.$un_modulo->id.'"> '.$titulo.$un_modulo->contenido.' </div>';
-
-            // Si el tipo de módulo maneja Clase (campo modelo), se reemplaza el contenido con el contenido generado por esa clase, se sobreescribe la variable $contenido_modulo
-            if ( $un_modulo->modelo != '') 
-            {
-                // Se crea un nuevo objeto para el tipo de módulo
-                $obj_modulo = new $un_modulo->modelo();
-
-                $obj_modulo->asignar_parametros( $un_modulo->parametros ); // WARNING: TODOS las clase de módulos deben manejar los mismos métodos, se debe utilizar una interface para esto
-
-                $contenido_modulo = '<div class="modulo" id="modulo_'.$un_modulo->id.'"> '.$titulo.$obj_modulo->dibujar_modulo()->render().' </div>';
-
-            }
-            
-            $cadena_secciones = str_replace( '_seccion_'.$un_modulo->seccion_id.'_contenido', $contenido_modulo, $cadena_secciones);
-
-        }
-
-
-        $pagina_plantilla = 'default';
-
-        return view( 'pagina_web.front_end.templates.'.$pagina_plantilla.'.index', compact( 'pagina', 'cadena_secciones' ) );
+        //return view( 'pagina_web.front_end.templates.'.$pagina_plantilla.'.index', compact( 'pagina', 'cadena_secciones' ) );
         
     }
 

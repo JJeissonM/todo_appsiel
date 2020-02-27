@@ -17,7 +17,7 @@ Route::get('item/delete/{id}', 'web\MenuNavegacionController@destroy');
 
 Route::get('seccion/{widget}', 'web\SeccionController@orquestador');
 
-//SLIDER
+//SLIDER A
 Route::get('slider/{widget}', 'web\SliderController@create');
 Route::get('slider/item/{item}', 'web\SliderController@destroyItem');
 Route::resource('slider', 'web\SliderController');
@@ -61,6 +61,8 @@ Route::get('ajax_galeria_imagenes/{carousel_id}', 'PaginaWeb\FrontEndController@
 //ARTICLES
 Route::post('articles/store', 'web\ArticleController@store')->name('article.store');
 Route::resource('articles', 'web\ArticleController');
+Route::post('articles/article/store', 'web\ArticleController@articlestore')->name('article.articlestore');
+Route::post('articles/article/update', 'web\ArticleController@articleupdate')->name('article.articleupdate');
 
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');

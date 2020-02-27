@@ -171,6 +171,53 @@
 			    });
 			});
 
+			// Para algunos reportes de calificaciones
+			$('#teso_medio_recaudo_id').on('change',function()
+			{
+				$('#resultado_consulta').html('');
+				$('#teso_caja_id').html('<option value=""></option>');
+				$('#teso_cuenta_bancaria_id').html('<option value=""></option>');
+
+				if ( $(this).val() == '') { return false; }
+
+	    		$('#div_cargando').show();
+
+	    		if ( $(this).val() == 1 )
+	    		{
+	    			//Efectivo
+	    			var url = "{{ url('tesoreria/get_cajas_to_select') }}";
+	    			$.ajax({
+			        	url: url,
+			        	type: 'get',
+			        	success: function(datos){
+
+			        		$('#div_cargando').hide();
+		    				
+		    				$('#teso_caja_id').html( datos );
+		    				$('#teso_caja_id').attr( 'required', 'required' );
+		    				$('#teso_cuenta_bancaria_id').removeAttr( 'required' );
+							$('#teso_caja_id').focus();
+				        }
+				    });
+	    		}else{
+	    			var url = "{{ url('tesoreria/get_ctas_bancarias_to_select') }}";
+	    			$.ajax({
+			        	url: url,
+			        	type: 'get',
+			        	success: function(datos){
+
+			        		$('#div_cargando').hide();
+		    				
+		    				$('#teso_cuenta_bancaria_id').html( datos );
+		    				$('#teso_cuenta_bancaria_id').attr( 'required', 'required' );
+		    				$('#teso_caja_id').removeAttr( 'required' );
+							$('#teso_cuenta_bancaria_id').focus();
+				        }
+				    });
+	    		}
+				
+			});
+
 		});
 
 		
