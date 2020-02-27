@@ -6,7 +6,7 @@
         </div>
         <div class="row">
             <div class="col-sm-6 wow fadeInLeft animated" style="visibility: visible; animation-name: fadeInLeft;">
-                <img class="img-responsive" src="{{url($aboutus->imagen)}}" alt="">
+                <img class="img-responsive" src="" alt="">
             </div>
             <div class="col-sm-6">
                 <div class="media service-box wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">

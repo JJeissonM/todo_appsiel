@@ -34,14 +34,24 @@
 @endsection
 
 @section('content')
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
+                <h4>.:: En ésta Sección: Galeria ::.</h4>
+            </div>
+        </div>
+    </div>
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
+                <h4 class="column-title" style="padding: 10px;">Crear Álbum</h4>
+                <div class="col-md-12">
                     {!! Form::open(['route'=>'galeria.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <div class="form-group">
                         <label>Titulo</label>
-                        <input name="titulo" type="text" placeholder="Titulo del Álbum" required="required" class="form-control">
+                        <input name="titulo" type="text" placeholder="Titulo del Álbum" required="required"
+                               class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Descripción del Álbum</label>
@@ -59,8 +69,10 @@
                         {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
                     </div>
                     {!! Form::close() !!}
+                </div>
             </div>
             <div class="widgets" id="widgets">
+                <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
                 @if($galeria != null)
                     {!! Form::galeria($galeria)!!}
                 @endif

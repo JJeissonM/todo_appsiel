@@ -45,6 +45,7 @@
         .contenido {
             display: flex;
             padding: 5px;
+            margin-top: 10px;
             border: 1px solid #3d6983;
             border-radius: 5px;
         }
@@ -76,27 +77,40 @@
 @endsection
 
 @section('content')
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
+                <h4>.:: En ésta Sección: Galeria ::.</h4>
+            </div>
+        </div>
+    </div>
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
+                <h4 class="column-title" style="padding: 10px;">Menú Galeria</h4>
                 @if($galeria != null)
-                    @foreach($galeria->albums as $album)
-                        <div class="contenido">
-                            <img src="{{url($album->fotos->first()->nombre)}}" alt="" class="imagen">
-                            <div class="descripcion">
-                                <h5 class="titulo">{{$album->titulo}}</h5>
-                                <p>{{str_limit($album->descripcion,30)}}</p>
+                    <div class="col-md-12">
+                        @foreach($galeria->albums as $album)
+                            <div class="contenido">
+                                <img src="{{url($album->fotos->first()->nombre)}}" alt="" class="imagen">
+                                <div class="descripcion">
+                                    <h5 class="titulo">{{$album->titulo}}</h5>
+                                    <p>{{str_limit($album->descripcion,30)}}</p>
+                                </div>
+                                <a href="{{url('galeria/edit').'/'.$album->id.$variables_url}}" class="btn"
+                                   title="Editar Álbum"><i class="fa fa-edit"></i></a>
+                                <a href="{{url('galeria/destroy/album').'/'.$album->id.$variables_url}}" class="btn"
+                                   title="Eliminar Álbum"><i class="fa fa-eraser"></i></a>
                             </div>
-                            <a href="{{url('galeria/edit').'/'.$album->id.$variables_url}}" class="btn" title="Editar Álbum"><i class="fa fa-edit"></i></a>
-                            <a href="{{url('galeria/destroy/album').'/'.$album->id.$variables_url}}" class="btn" title="Eliminar Álbum"><i class="fa fa-eraser"></i></a>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 @endif
-                <div class="add d-flex justify-content-end">
-                    <a href="{{url('galeria/create').'/'.$widget.$variables_url}}"> Agregar Nuevo Album</a>
+                <div class="col-md-12 add d-flex justify-content-end">
+                    <a href="{{url('galeria/create').'/'.$widget.$variables_url}}" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold;"> Agregar Nuevo Album</a>
                 </div>
             </div>
             <div class="widgets" id="widgets">
+                <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
                 @if($galeria != null)
                     {!! Form::galeria($galeria)!!}
                 @endif
