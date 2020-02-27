@@ -136,6 +136,44 @@ class TesoreriaController extends TransaccionController
         return $vec_m;
     }
 
+
+    //   GET CAJAS
+    public function get_cajas_to_select( )
+    {
+        $registros = TesoCaja::where('estado','Activo')->get();
+
+        $opciones = '<option value="">Seleccionar...</option>';
+        foreach ($registros as $fila)
+        {
+            $opciones .= '<option value="'.$fila->id.'">'.$fila->descripcion.'</option>';
+        }
+
+        return $opciones;
+    }
+
+
+    //   GET CAJAS
+    public function get_ctas_bancarias_to_select( )
+    {
+        $registros = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
+                            ->where('teso_cuentas_bancarias.estado','Activo')
+                            ->select( 
+                                        'teso_cuentas_bancarias.id',
+                                        'teso_cuentas_bancarias.descripcion',
+                                        'teso_entidades_financieras.descripcion AS entidad_financiera')
+                            ->get();
+
+        $opciones = '<option value="">Seleccionar...</option>';
+        foreach ($registros as $fila)
+        {
+            $opciones .= '<option value="'.$fila->id.'">'.$fila->entidad_financiera.': '.$fila->descripcion.'</option>';
+        }
+
+        return $opciones;
+    }
+
+
+
     //   GET CUENTAS BANCARIAS
     public function get_cuentas_bancarias($empresa_id){
         $registros = TesoCuentaBancaria::where('core_empresa_id',$empresa_id)->get();
