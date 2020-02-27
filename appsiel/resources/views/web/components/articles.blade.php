@@ -153,6 +153,14 @@
                                     <input type="hidden" name="widget_id" value="{{$widget}}">
                                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                                     <div class="form-group">
+                                        <label>Título</label>
+                                        <input type="text" class="form-control" value="{{$articles->titulo}}" required name="titulo">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Descripción</label>
+                                        <input type="text" class="form-control" value="{{$articles->descripcion}}" name="descripcion">
+                                    </div>
+                                    <div class="form-group">
                                         <label>Formato</label>
                                         <select class="form-control" name="formato">
                                             @if($articles->formato=='LISTA')
@@ -164,7 +172,6 @@
                                             @endif
                                         </select>
                                     </div>
-                                    <!---->
                                     <div class="form-group">
                                         <label>Órden</label>
                                         <select class="form-control" name="orden">
@@ -187,13 +194,20 @@
                                     <input type="hidden" name="widget_id" value="{{$widget}}">
                                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                                     <div class="form-group">
+                                        <label>Título</label>
+                                        <input type="text" class="form-control" required name="titulo">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Descripción</label>
+                                        <input type="text" class="form-control" name="descripcion">
+                                    </div>
+                                    <div class="form-group">
                                         <label>Formato</label>
                                         <select class="form-control" name="formato">
                                             <option value="LISTA">ARTÍCULOS EN FORMATO DE LISTA</option>
                                             <option value="BLOG">ARTÍCULOS EN FORMATO DE BLOG</option>
                                         </select>
                                     </div>
-                                    <!---->
                                     <div class="form-group">
                                         <label>Órden</label>
                                         <select class="form-control" name="orden">
@@ -259,10 +273,12 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--/.col-md-4-->@endforeach
+                                    @endforeach
                                     @else
                                     <p style="color: red;"> <i class="fa fa-warning"></i> No hay artículos publicados en ésta sección...</p>
                                     @endif
+                                    @else
+                                    <p style="color: red;"> <i class="fa fa-warning"></i> No hay artículos publicados en ésta sección...</p>
                                     @endif
                                 </div>
                             </div>
@@ -275,6 +291,8 @@
             <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
             @if($articles != null)
             {!! Form::articles($articles)!!}
+            @else
+            <p style="color: red;"> <i class="fa fa-warning"></i> La sección no ha sido configurada!</p>
             @endif
         </div>
     </div>
@@ -373,7 +391,11 @@
 
     });
 
-    var articulosArray = <?php echo json_encode($articles->articles) ?>;
+    var asetup = <?php echo json_encode($articles); ?>;
+    var articulosArray = null;
+    if (asetup != null) {
+        articulosArray = asetup.articles;
+    }
 
     function submit() {
         $("#form-article").submit();
