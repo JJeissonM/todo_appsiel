@@ -6,6 +6,7 @@ use App\Http\Controllers\web\services\FactoryCompents;
 use App\web\Pagina;
 
 use App\Http\Controllers\Controller;
+use App\web\RedesSociales;
 use App\web\Seccion;
 use App\web\Widget;
 use Illuminate\Support\Facades\DB;
@@ -198,6 +199,7 @@ class PaginaController extends Controller
     public function showPage($slug){
 
        $pagina = Pagina::where('slug',$slug)->first();
+       $redes = RedesSociales::all();
        $widgets = $pagina->widgets()->orderBy('orden')->get();
        //$widgets->sortBy('orden');
        //dd($widgets);
@@ -210,7 +212,7 @@ class PaginaController extends Controller
            $view[] = $componente->DrawComponent();
        }
 
-       return view('web.index',compact('view','pagina'));
+       return view('web.index',compact('view','pagina','redes'));
 
     }
 
