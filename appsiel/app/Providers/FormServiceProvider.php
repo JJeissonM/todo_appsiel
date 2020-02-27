@@ -78,7 +78,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('slider', 'components.web.slider', ['slider']);
         Form::component('aboutus', 'components.web.aboutus', ['aboutus']);
         Form::component('galeria', 'components.web.galeria', ['galeria']);
-        Form::component('articles', 'components.web.articles', ['articles']);
+        Form::component('articles', 'components.web.articles', ['articles', 'setup']);
         Form::component('servicios', 'components.web.servicios', ['servicios']);
         Form::component('iconos', 'components.web.iconos', ['iconos']);
     }
