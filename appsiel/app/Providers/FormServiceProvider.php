@@ -21,9 +21,9 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsEmail', 'components.form.email', ['name', 'value', 'lbl', 'attributes']);
         Form::component('bsNumber', 'components.form.number', ['name', 'value', 'lbl', 'attributes']);
         Form::component('bsTextArea', 'components.form.text_area', ['name', 'value', 'lbl', 'attributes']);
-		Form::component('bsPassword', 'components.form.password', ['name', 'value', 'lbl', 'attributes']);
-		
-        
+        Form::component('bsPassword', 'components.form.password', ['name', 'value', 'lbl', 'attributes']);
+
+
         Form::component('bsSelect', 'components.form.select', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsSelectCreate', 'components.form.select_create', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsSelectName', 'components.form.select_name', ['name', 'value', 'lbl', 'opciones', 'attributes']);
@@ -39,7 +39,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsButtonsForm2', 'components.form.buttons_form2', ['url_cancelar']);
         Form::component('bsBtnEdit', 'components.form.btn_edit', ['url']);
         Form::component('bsBtnEliminar', 'components.form.btn_eliminar', ['url']);
-        Form::component('bsBtnEdit2', 'components.form.btn_edit2', ['url','etiqueta']);
+        Form::component('bsBtnEdit2', 'components.form.btn_edit2', ['url', 'etiqueta']);
         Form::component('bsBtnCreate', 'components.form.btn_create', ['url']);
         Form::component('bsBtnVolver', 'components.form.btn_volver', ['url']);
         Form::component('bsBtnPrint', 'components.form.btn_print', ['url']);
@@ -50,11 +50,11 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsBtnEstado', 'components.form.btn_estado', ['url']);
         Form::component('bsBtnExcel', 'components.form.btn_excel', ['nombre_listado']);
         Form::component('bsBtnPdf', 'components.form.btn_pdf', ['nombre_listado']);
-        Form::component('bsBtnDropdown', 'components.form.btn_dropdown', ['etiqueta','clase','icono','urls']);
+        Form::component('bsBtnDropdown', 'components.form.btn_dropdown', ['etiqueta', 'clase', 'icono', 'urls']);
 
-        Form::component('bsBtnPrevNext', 'components.form.btn_prev_next', ['etiqueta','clase','icono','urls']);
+        Form::component('bsBtnPrevNext', 'components.form.btn_prev_next', ['etiqueta', 'clase', 'icono', 'urls']);
 
-        Form::component('formEliminar', 'components.form.form_eliminar', ['url','recurso_id']);
+        Form::component('formEliminar', 'components.form.form_eliminar', ['url', 'recurso_id']);
 
         Form::component('bsTableHeader', 'components.design.table_header', ['headers']);
         Form::component('bsMigaPan', 'components.design.miga_pan', ['vec']);
@@ -67,20 +67,20 @@ class FormServiceProvider extends ServiceProvider
         //Form::component('HrefDocEncabezado', 'components.design.btn_info', ['title']);
 
         self::webComponent();
-
     }
 
 
 
-    public function webComponent(){
+    public function webComponent()
+    {
         //componentes utilizado en el diseñador de la pagina web
-        Form::component('navegacion','components.web.navegacion',['nav']);
-        Form::component('slider','components.web.slider',['slider']);
-        Form::component('aboutus','components.web.aboutus',['aboutus']);
-        Form::component('galeria','components.web.galeria',['galeria']);
-        Form::component('articles','components.web.articles',['articles']);
-        Form::component('servicios','components.web.servicios',['servicios']);
-        Form::component('iconos','components.web.iconos',['iconos']);
+        Form::component('navegacion', 'components.web.navegacion', ['nav']);
+        Form::component('slider', 'components.web.slider', ['slider']);
+        Form::component('aboutus', 'components.web.aboutus', ['aboutus']);
+        Form::component('galeria', 'components.web.galeria', ['galeria']);
+        Form::component('articles', 'components.web.articles', ['articles']);
+        Form::component('servicios', 'components.web.servicios', ['servicios']);
+        Form::component('iconos', 'components.web.iconos', ['iconos']);
     }
 
     /**

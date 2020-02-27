@@ -14,6 +14,8 @@ class CreateArticlesetupsTable extends Migration
     {
         Schema::create('pw_articlesetups', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('titulo');
+            $table->string('descripcion')->nullable();
             $table->string('formato', 50)->default('LISTA'); //LISTA, BLOG
             $table->string('orden', 50)->default('ASC'); //ASC: Antiguos primero, DESC: Mas recientes primero
             $table->unsignedInteger('widget_id');
