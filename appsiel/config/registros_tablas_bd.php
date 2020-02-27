@@ -2832,10 +2832,10 @@
       'url' => 'web',
       'parent' => 0,
       'orden' => 3,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2019-04-21 23:14:25',
-      'updated_at' => '2019-04-22 19:36:29',
+      'updated_at' => '2020-02-24 20:12:07',
     ),
     189 => 
     array (
@@ -2847,10 +2847,10 @@
       'url' => 'web',
       'parent' => 0,
       'orden' => 5,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2019-04-21 23:14:25',
-      'updated_at' => '0000-00-00 00:00:00',
+      'updated_at' => '2020-02-24 20:09:50',
     ),
     190 => 
     array (
@@ -3327,10 +3327,10 @@
       'url' => 'web',
       'parent' => 0,
       'orden' => 1,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2019-06-22 16:24:30',
-      'updated_at' => '2019-06-22 16:24:30',
+      'updated_at' => '2020-02-24 20:13:37',
     ),
     222 => 
     array (
@@ -3342,10 +3342,10 @@
       'url' => 'web',
       'parent' => 247,
       'orden' => 1,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2019-06-22 16:24:30',
-      'updated_at' => '2019-06-22 16:46:15',
+      'updated_at' => '2020-02-24 20:11:44',
     ),
     223 => 
     array (
@@ -3432,10 +3432,10 @@
       'url' => 'web',
       'parent' => 0,
       'orden' => 2,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2019-07-04 16:24:30',
-      'updated_at' => '2019-07-04 16:24:30',
+      'updated_at' => '2020-02-24 20:11:21',
     ),
     229 => 
     array (
@@ -3447,10 +3447,10 @@
       'url' => 'web',
       'parent' => 0,
       'orden' => 3,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '0000-00-00 00:00:00',
-      'updated_at' => '2019-08-13 18:59:53',
+      'updated_at' => '2020-02-24 20:12:22',
     ),
     230 => 
     array (
@@ -3492,10 +3492,10 @@
       'url' => 'web',
       'parent' => 0,
       'orden' => 1,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2019-07-12 16:24:30',
-      'updated_at' => '2019-07-12 16:24:30',
+      'updated_at' => '2020-02-24 20:13:59',
     ),
     233 => 
     array (
@@ -3642,10 +3642,10 @@
       'url' => 'web',
       'parent' => 0,
       'orden' => 3,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2019-08-13 19:26:48',
-      'updated_at' => '2019-08-13 19:26:48',
+      'updated_at' => '2020-02-24 20:10:15',
     ),
     243 => 
     array (
@@ -4846,6 +4846,21 @@
       'fa_icon' => '',
       'created_at' => '2020-02-21 08:16:43',
       'updated_at' => '2020-02-21 08:18:21',
+    ),
+    323 => 
+    array (
+      'id' => 349,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_redes_sociales',
+      'descripcion' => 'Redes sociales',
+      'url' => 'sociales',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-02-26 08:56:57',
+      'updated_at' => '2020-02-26 08:57:31',
     ),
   ),
   'roles' => 
@@ -11052,6 +11067,12 @@
       'orden' => 0,
       'permission_id' => 348,
       'role_id' => 3,
+    ),
+    1017 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 349,
+      'role_id' => 1,
     ),
   ),
   'sys_campos' => 

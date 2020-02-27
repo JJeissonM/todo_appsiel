@@ -116,7 +116,7 @@ class PaginaController extends Controller
            $file = $request->file('favicon');
            $name = time().$file->getClientOriginalName();
 
-           $filename = storage_path("app/public/iconos/").$name;
+           $filename = "img/".$name;
            $flag = file_put_contents($filename,file_get_contents($file->getRealPath()),LOCK_EX);
            if($flag !== false){
                 $pagina->fill(['favicon' =>$filename])->save();
@@ -205,8 +205,8 @@ class PaginaController extends Controller
     public function showPage($slug){
 
        $pagina = Pagina::where('slug',$slug)->first();
-       $widgets = $pagina->widgets;
-       $widgets->sortBy('orden');
+       $widgets = $pagina->widgets()->orderBy('orden')->get();
+       //$widgets->sortBy('orden');
        //dd($widgets);
        $view = [];
 
@@ -217,7 +217,7 @@ class PaginaController extends Controller
            $view[] = $componente->DrawComponent();
        }
 
-       return view('web.index',compact('view'));
+       return view('web.index',compact('view','pagina'));
 
     }
 
@@ -282,7 +282,7 @@ class PaginaController extends Controller
                     $file = $request->file('favicon');
                     $name = time().$file->getClientOriginalName();
 
-                    $filename = storage_path("app/public/iconos/").$name;
+                    $filename = "img/".$name;
                     $flag = file_put_contents($filename,file_get_contents($file->getRealPath()),LOCK_EX);
 
                     if($flag !== false){

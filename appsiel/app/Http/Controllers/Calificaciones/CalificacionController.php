@@ -208,6 +208,11 @@ class CalificacionController extends Controller
         $periodo_lectivo = PeriodoLectivo::find( $periodo->periodo_lectivo_id );
 
         // Se obtienen los estudiantes con matriculas activas en el curso y el periodo lectivo
+        /*
+            WARNING!!!
+            Si se envía estado 'Activo' NO muestra los estudiante cuando se van a calificar periodos lectivos anteriores.
+            Si se envía estado null, muestra repetido a los estudiantes con matriculas en el mismo curso, por ejemplo cuando se equivocan en la matrícula y la hacen nuevamente en el mismo curso y periodo lectivo.
+        */
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, null  );
 
         // Warning!!! No usar funciones de Eloquent en el controller (acoplamiento al framework) 

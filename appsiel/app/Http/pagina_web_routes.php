@@ -17,7 +17,7 @@ Route::get('item/delete/{id}', 'web\MenuNavegacionController@destroy');
 
 Route::get('seccion/{widget}', 'web\SeccionController@orquestador');
 
-//SLIDER
+//SLIDER A
 Route::get('slider/{widget}', 'web\SliderController@create');
 Route::get('slider/item/{item}', 'web\SliderController@destroyItem');
 Route::resource('slider', 'web\SliderController');

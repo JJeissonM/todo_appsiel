@@ -4,7 +4,7 @@
 @section('content')
     <div class='col-lg-4 col-lg-offset-4'>
         <h1><center>401<br>
-        ACCESO DENENEGADO</center></h1>
+        ACCESO DENEGADO</center></h1>
         <br>
         Consulte con el adminitrador del sistema.
     </div>

@@ -81,14 +81,14 @@ Route::get('core/validar_email/{email}', 'Core\TerceroController@validar_email')
     Route::resource('core/usuarios', 'UserController');
 	Route::resource('core/roles', 'Core\RoleController');
 	//Route::resource('/core/permisos', 'Core\PermissionController');
-	Route::get('/core/colegios/create', 'Core\ColegioController@create');
+	Route::get('core/colegios/create', 'Core\ColegioController@create');
 //});
 
-Route::resource('/core/colegios', 'Core\ColegioController', ['except' => ['create']]);
+Route::resource('core/colegios', 'Core\ColegioController', ['except' => ['create']]);
 
 // Los usuarios administradores pueden cambiar la contraseña de cualquier usuario
-Route::get('/core/usuario/cambiarpasswd/{user_id}', 'UserController@form_cambiarpasswd');
-Route::post('/core/usuario/cambiarpasswd', 'UserController@cambiarpasswd');
+Route::get('core/usuario/cambiarpasswd/{user_id}', 'UserController@form_cambiarpasswd');
+Route::post('core/usuario/cambiarpasswd', 'UserController@cambiarpasswd');
 
 // Perfil del usuario
 Route::get('core/usuario/perfil', 'UserController@perfil');
@@ -110,9 +110,9 @@ Route::get('importar/importar_manualmente/inmuebles', 'Core\ImportarDatosControl
 
 
 // MODULO DISEÑADOR DE FORMATOS
-Route::get('/core/dis_formatos/secciones_formato/{id_formato}','Core\DisFormatosController@secciones_formato');
-Route::post('/core/dis_formatos/guardar_asignacion','Core\DisFormatosController@guardar_asignacion');
-Route::post('/core/dis_formatos/eliminar_asignacion','Core\DisFormatosController@eliminar_asignacion');
+Route::get('core/dis_formatos/secciones_formato/{id_formato}','Core\DisFormatosController@secciones_formato');
+Route::post('core/dis_formatos/guardar_asignacion','Core\DisFormatosController@guardar_asignacion');
+Route::post('core/dis_formatos/eliminar_asignacion','Core\DisFormatosController@eliminar_asignacion');
 
 
 Route::resource('get_eventos','Core\EventoController@get_eventos');
