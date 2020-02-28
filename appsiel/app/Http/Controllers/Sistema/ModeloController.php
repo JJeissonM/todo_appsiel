@@ -212,7 +212,6 @@ class ModeloController extends Controller
     public function store(Request $request)
     {
         $datos = $request->all(); // Datos originales
-
         // Se crea un nuevo registro para el ID del modelo enviado en el request 
         $registro = $this->crear_nuevo_registro($request);
 

@@ -179,7 +179,7 @@
                         <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
                     </div>
                     <div class="form-group">
-                        <br/><br/><button class="btn btn-danger" id="exampleModal" style="color: white" onclick="cerrar(this.id)">Cancelar</button>
+                        <br/><br/><a class="btn btn-danger" id="exampleModal" style="color: white" onclick="cerrar(this.id)">Cancelar</a>
                         <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
                         {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
                     </div>
