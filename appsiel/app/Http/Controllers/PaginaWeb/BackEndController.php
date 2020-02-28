@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PaginaWeb;
 
 use App\Http\Controllers\Controller;
+use App\web\Formcontactenos;
 use \Illuminate\Support\Facades\Input;
 
 
@@ -15,11 +16,11 @@ class BackEndController extends Controller
 
     public function index()
     {
-    	//$modelo = Modelo::where( 'modelo', 'pw_paginas'  )->get()->first();
+        //$modelo = Modelo::where( 'modelo', 'pw_paginas'  )->get()->first();
 
         $miga_pan = [
             [
-                'url' => 'pagina_web'.'?id='. Input::get('id'),
+                'url' => 'pagina_web' . '?id=' . Input::get('id'),
                 'etiqueta' => 'Web'
             ],
             [
@@ -28,7 +29,7 @@ class BackEndController extends Controller
             ]
         ];
 
-        return view('web.setup',compact('miga_pan'));
+        $contacts = Formcontactenos::all();
+        return view('web.setup', compact('miga_pan', 'contacts'));
     }
-
 }
