@@ -1,32 +1,38 @@
 <section id="blog">
     <div class="container">
-        @if($articles!=null)
+        @if($setup!=null)
         <div class="section-header">
-            <h2 class="section-title text-center wow fadeInDown">{{$articles->titulo}}</h2>
-            <p class="text-center wow fadeInDown">{{$articles->descripcion}}</p>
+            <h2 class="section-title text-center wow fadeInDown">{{$setup->titulo}}</h2>
+            <p class="text-center wow fadeInDown">{{$setup->descripcion}}</p>
         </div>
 
         <div class="row col-md-12 wow fadeInDown">
-            @if($articles->formato=='LISTA')
-            @foreach($articles->articles as $a)
+            @if($setup->formato=='LISTA')
+            @foreach($articles as $a)
             <div class="col-md-12 article-ls" style="line-height: 5px; margin-bottom: 20px;">
                 <div class="media service-box" style="margin: 10px !important; font-size: 14px;">
                     <div class="pull-left">
                         <i style="cursor: pointer;" class="fa fa-edit"></i>
                     </div>
                     <div class="media-body">
-                        <h6 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h6>
-                        <p>{!! str_limit($a->contenido, $limit = 100, $end = '...') !!}</p>
-                        <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$a->updated_at}}</a></span>
-                        <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$articles->titulo}}</a></span>
-                        <i class="fa fa-plus"></i> <a href="#" class="entry-category">Leer más...</a>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h6 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h6>
+                                <p>{!! str_limit($a->contenido, $limit = 100, $end = '...') !!}</p>
+                            </div>
+                            <div class="col-md-4" style="padding: 5px; text-align: right;">
+                                <p><span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$a->updated_at}}</a></span></p>
+                                <p><span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$setup->titulo}}</a></span></p>
+                                <p><a target="_blank" href="{{route('article.show',$a->id)}}" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             @endforeach
             @endif
-            @if($articles->formato=='BLOG')
-            @foreach($articles->articles as $a)
+            @if($setup->formato=='BLOG')
+            @foreach($articles as $a)
             <div class="col-md-6">
                 <div class="blog-post blog-media">
                     <article class="media clearfix">
@@ -41,12 +47,12 @@
 
                             <div class="entry-content">
                                 <P>{!! str_limit($a->contenido, $limit = 100, $end = '...') !!}</P>
-                                <a class="btn btn-primary" href="#">Leer más...</a>
+                                <a class="btn btn-primary" target="_blank" href="{{route('article.show',$a->id)}}">Leer más...</a>
                             </div>
 
                             <footer class="entry-meta">
                                 <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$a->updated_at}}</a></span>
-                                <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$articles->titulo}}</a></span>
+                                <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$setup->titulo}}</a></span>
                             </footer>
                         </div>
                     </article>
@@ -54,6 +60,9 @@
             </div>
             @endforeach
             @endif
+            <div class="col-md-12">
+                {{$articles->render()}}
+            </div>
         </div>
         @else
         <div class="section-header">

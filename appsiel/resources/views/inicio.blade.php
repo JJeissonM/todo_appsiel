@@ -25,14 +25,11 @@
 		<br/><br/>
 		<div id="myDIV">
 			<?php
-
 				//echo __DIR__;
 				/*
 					Se muestran las aplicaciones a las que el usuario tiene permiso.
 					El nombre del permiso (permissions.name) debe coincidir con el nombre de la aplicación (sys_aplicaciones.descripcion) para poder ser mostrada.
 				*/
-
-					
 				$cant_cols=4;
 				$tam_iconos = '90px';
 				$i=$cant_cols;
@@ -63,7 +60,6 @@
 		        @endforeach
 		</div>
 	</div>
-
 	<br/><br/>
 @endsection
 

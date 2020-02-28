@@ -2,23 +2,22 @@
 <html lang="es">
 
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>B-Hero : Home</title>
-    <!-- Favicon -->
-    <link rel="shortcut icon" type="image/icon" href="{{asset( $pagina->favicon )}}"/>
-    <!-- Font Awesome -->
-    <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-    <!-- Slick slider -->
-    <link href="{{asset('assets/css/slick.css')}}" rel="stylesheet">
-    <!-- Gallery Lightbox -->
-    <link href="{{asset('assets/css/magnific-popup.css')}}" rel="stylesheet">
-    <!-- Skills Circle CSS  -->
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/circlebars@1.0.3/dist/circle.css">
+      <!-- Required meta tags -->
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <title>B-Hero : Home</title>
+      <!-- Favicon -->
+      <link rel="shortcut icon" type="image/icon" href="" />
+      <!-- Font Awesome -->
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+      <!-- Slick slider -->
+      <link href="{{asset('assets/css/slick.css')}}" rel="stylesheet">
+      <!-- Gallery Lightbox -->
+      <link href="{{asset('assets/css/magnific-popup.css')}}" rel="stylesheet">
+      <!-- Skills Circle CSS  -->
+      <link rel="stylesheet" type="text/css" href="https://unpkg.com/circlebars@1.0.3/dist/circle.css">
 
       <!-- Main Style -->
       <link href="{{asset('assets/style.css')}}" rel="stylesheet">
@@ -130,17 +129,55 @@
                   background-color: #fff;
                   border-color: #ddd;
             }
+
+            .light-txt {
+                  padding: 60px !important;
+            }
+
+            .content-txt {
+                  padding: 40px;
+                  -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.75);
+                  -moz-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.75);
+                  box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.75);
+            }
       </style>
 </head>
 
 <body style="padding:0;">
 
-<main>
+      <!-- END SCROLL TOP BUTTON -->
+      <main>
 
-    @foreach($view as $item)
-        {!! $item !!}
-    @endforeach
+            <main>
+                  <div class="row">
+                        <div class="col-md-12 light-txt">
+                              <div class="col-md-12" style="text-align: right; padding: 40px; color:#FFF;">
+                                    <a style="cursor: pointer;" class="btn btn-primary" onclick="cerrar()">Volver</a>
+                              </div>
+                              <div class="content-txt">
+                                    <div class="blog-post blog-media">
+                                          <article class="media clearfix">
+                                                <div class="media-body">
+                                                      <header class="entry-header">
+                                                            <h2 class="entry-title"><a href="#">{{$a->titulo}}</a></h2>
+                                                            <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">Publicado: {{$a->created_at}}</a></span>
+                                                            <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">Sección: {{$a->articlesetup->titulo}}</a></span>
+                                                      </header>
 
+                                                      <div class="entry-content">
+                                                            <P>{!! $a->contenido !!}</P>
+                                                      </div>
+
+                                                      <footer class="entry-meta">
+                                                            <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$a->updated_at}}</a></span>
+                                                            <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$a->articlesetup->titulo}}</a></span>
+                                                      </footer>
+                                                </div>
+                                          </article>
+                                    </div>
+                              </div>
+                        </div>
+                  </div>
 
             </main>
 
@@ -172,6 +209,11 @@
             <script src="{{asset('js/jquery.inview.min.js')}}"></script>
             <script src="{{asset('js/wow.min.js')}}"></script>
             <script src="{{asset('js/main.js')}}"></script>
+            <script type="text/javascript">
+                  function cerrar() {
+                        window.close();
+                  }
+            </script>
 
 </body>
 
