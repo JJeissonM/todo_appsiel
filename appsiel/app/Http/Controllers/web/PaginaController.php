@@ -6,6 +6,7 @@ use App\Http\Controllers\web\services\FactoryCompents;
 use App\web\Pagina;
 
 use App\Http\Controllers\Controller;
+use App\web\RedesSociales;
 use App\web\Seccion;
 use App\web\Widget;
 use Illuminate\Support\Facades\DB;
@@ -132,15 +133,12 @@ class PaginaController extends Controller
     public function generar_slug( $cadena )
     {
         $slug_original = str_slug( $cadena );
-
         $slug_nuevo = $slug_original;
-
         $existe = true;
         $i = 2;
         while ( $existe )
         {
             $registro = Pagina::where('slug', $slug_nuevo)->get()->first();
-
             if ( !is_null( $registro ) )
             {
                 $slug_nuevo = $slug_original.'-'.$i;
@@ -149,12 +147,10 @@ class PaginaController extends Controller
                 $existe = false;
             }
         }
-
         return $slug_nuevo;
     }
 
     public function addSeccion($id){
-
         $miga_pan = [
             [
                 'url' => 'pagina_web'.'?id='. Input::get('id'),
@@ -169,12 +165,10 @@ class PaginaController extends Controller
                 'etiqueta' => 'Agregando nueva sección'
             ]
         ];
-
         $pagina =  $id;
         $secciones = Seccion::all();
         $variables_url = '?id='.Input::get('id');
         return view('web.paginas.secciones.addSeccion',compact('secciones','miga_pan','pagina','variables_url'));
-
     }
 
     public function nuevaSeccion(Request $request){
@@ -205,6 +199,7 @@ class PaginaController extends Controller
     public function showPage($slug){
 
        $pagina = Pagina::where('slug',$slug)->first();
+       $redes = RedesSociales::all();
        $widgets = $pagina->widgets()->orderBy('orden')->get();
        //$widgets->sortBy('orden');
        //dd($widgets);
@@ -217,7 +212,7 @@ class PaginaController extends Controller
            $view[] = $componente->DrawComponent();
        }
 
-       return view('web.index',compact('view','pagina'));
+       return view('web.index',compact('view','pagina','redes'));
 
     }
 
