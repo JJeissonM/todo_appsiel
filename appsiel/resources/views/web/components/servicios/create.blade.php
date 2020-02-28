@@ -62,7 +62,6 @@
                         <label>Icono</label>
                         <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt"
                                placeholder="Nombre del icono" class="form-control">
-
                     </div>
                     <div class="form-group">
                         <br/><br/><a href="{{url('seccion/'.$widget).$variables_url}}"

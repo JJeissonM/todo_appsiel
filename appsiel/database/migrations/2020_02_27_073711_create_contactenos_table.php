@@ -32,6 +32,6 @@ class CreateContactenosTable extends Migration
      */
     public function down()
     {
-        Schema::drop('contactenos');
+        Schema::drop('pw_contactenos');
     }
 }

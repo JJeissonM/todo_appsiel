@@ -45,4 +45,9 @@ class Widget extends Model
     {
         return $this->hasMany(Contactenos::class);
     }
+
+    public function clientes()
+    {
+        return $this->hasMany(Cliente::class);
+    }
 }

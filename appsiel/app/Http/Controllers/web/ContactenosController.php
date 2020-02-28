@@ -43,4 +43,18 @@ class ContactenosController extends Controller
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
         }
     }
+
+    public function updated(Request $request,$id){
+        $contactenos = Contactenos::find($id);
+        $contactenos->fill($request->all());
+        $variables_url=$request->variables_url;
+        $result = $contactenos->save();
+        if($result){
+            $message = 'El formulario fue modificado correctamente.';
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }else{
+            $message = 'El formulario no fue modificado de forma correcta.';
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }
+    }
 }
