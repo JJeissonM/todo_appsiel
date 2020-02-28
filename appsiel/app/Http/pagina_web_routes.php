@@ -35,8 +35,8 @@ Route::get('galeria/destroy/album/{album}', 'web\GaleriaController@destroyAlbum'
 Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store');
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 
-Route::resource('sociales','web\RedesSocialesController');
-Route::resource('footer','web\FooterController');
+Route::resource('sociales', 'web\RedesSocialesController');
+Route::resource('footer', 'web\FooterController');
 
 
 //SERVICIOS
@@ -93,3 +93,5 @@ Route::resource('pagina_web/carousel', 'PaginaWeb\CarouselController');
 
 //iconos
 Route::get('pagina_web/icons/view', 'web\IconsController@view')->name('icons.view');
+//leer contactenos
+Route::get('configuracion/contactenos/{id}/leer', 'web\ContactenosController@leer');
