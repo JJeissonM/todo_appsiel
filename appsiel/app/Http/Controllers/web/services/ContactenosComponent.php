@@ -5,8 +5,8 @@ namespace App\Http\Controllers\web\services;
 
 
 use App\web\Contactenos;
+use Form;
 use Illuminate\Support\Facades\Input;
-use Symfony\Component\DomCrawler\Form;
 
 class ContactenosComponent implements IDrawComponent
 {

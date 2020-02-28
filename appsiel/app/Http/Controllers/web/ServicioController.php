@@ -49,7 +49,6 @@ class ServicioController extends Controller
         if ($result) {
             $message = 'La sección fue almacenada correctamente.';
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
-
         } else {
             $message = 'La sección no fue almacenada de forma correcta.';
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);

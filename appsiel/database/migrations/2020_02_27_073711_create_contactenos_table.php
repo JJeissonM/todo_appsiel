@@ -20,7 +20,7 @@ class CreateContactenosTable extends Migration
             $table->string('correo');
             $table->string('direccion');
             $table->unsignedInteger('widget_id');
-            $table->foreign('widget_id')->references('id')->on('pw_widgets')->onDelete('CASCADE');
+            $table->foreign('widget_id')->references('id')->on('pw_widget')->onDelete('CASCADE');
             $table->timestamps();
         });
     }
