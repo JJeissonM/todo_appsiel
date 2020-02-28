@@ -60,7 +60,9 @@ class ArticleController extends Controller
      */
     public function show($id)
     {
-        //
+        $a = Article::find($id);
+        return view('web.components.viewfinder.viewfinder')
+            ->with('a', $a);
     }
 
     /**

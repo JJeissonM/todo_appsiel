@@ -23,6 +23,7 @@
 
     <!-- Main Style -->
     <link href="{{asset('assets/style.css')}}" rel="stylesheet">
+    <link href="{{asset('css/main.css')}}" rel="stylesheet">
 
     <!-- Fonts -->
 

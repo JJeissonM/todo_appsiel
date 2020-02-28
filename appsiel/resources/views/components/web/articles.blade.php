@@ -23,7 +23,7 @@
                             <div class="col-md-4" style="padding: 5px; text-align: right;">
                                 <p><span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$a->updated_at}}</a></span></p>
                                 <p><span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$setup->titulo}}</a></span></p>
-                                <p><a href="#" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>
+                                <p><a target="_blank" href="{{route('article.show',$a->id)}}" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>
                             </div>
                         </div>
                     </div>
@@ -47,7 +47,7 @@
 
                             <div class="entry-content">
                                 <P>{!! str_limit($a->contenido, $limit = 100, $end = '...') !!}</P>
-                                <a class="btn btn-primary" href="#">Leer más...</a>
+                                <a class="btn btn-primary" target="_blank" href="{{route('article.show',$a->id)}}">Leer más...</a>
                             </div>
 
                             <footer class="entry-meta">
