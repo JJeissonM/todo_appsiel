@@ -27,6 +27,6 @@ class CreateGaleriasTable extends Migration
      */
     public function down()
     {
-        Schema::drop('galerias');
+        Schema::drop('pw_galerias');
     }
 }

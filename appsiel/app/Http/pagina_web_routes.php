@@ -49,6 +49,11 @@ Route::put('servicios/updated/item/{id}', 'web\ServicioController@modificar')->n
 Route::get('servicios/destroy/item/{itemservicio}', 'web\ServicioController@destroy');
 Route::get('servicios/destroy/{servicio}', 'web\ServicioController@delete');
 
+//CONTACTENOS
+Route::get('contactenos/create/{widget}', 'web\ContactenosController@create');
+Route::post('contactenos/store', 'web\ContactenosController@store')->name('contactenos.store');
+Route::put('contactenos/updated/{id}', 'web\ContactenosController@updated')->name('contactenos.updated');
+
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
 Route::get('categoria/{id?}', 'PaginaWeb\FrontEndController@show_categoria');
@@ -60,6 +65,7 @@ Route::post('articles/store', 'web\ArticleController@store')->name('article.stor
 Route::resource('articles', 'web\ArticleController');
 Route::post('articles/article/store', 'web\ArticleController@articlestore')->name('article.articlestore');
 Route::post('articles/article/update', 'web\ArticleController@articleupdate')->name('article.articleupdate');
+Route::get('articles/article/{id}/viewfinder', 'web\ArticleController@show')->name('article.show');
 
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
