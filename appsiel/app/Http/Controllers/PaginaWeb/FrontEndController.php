@@ -42,14 +42,7 @@ class FrontEndController extends Controller
         // Se continua si la aplicación página web está activa
 
         // Obtener la página que está marcada como pagina_inicio (se debe validar que en la creación de páginas solo haya una)
-        $pagina = Pagina::where('pagina_inicio',1)->get()->first();
-
-        // Si se envía el ID de una página, por url
-        if ( !is_null( Input::get('pagina_id') ) )
-        {
-            $pagina = Pagina::find( Input::get('pagina_id') );
-        }
-        
+        $pagina = Pagina::where('pagina_inicio',1)->get()->first();        
 
         
         // Return temporal para mostrar página estática de información

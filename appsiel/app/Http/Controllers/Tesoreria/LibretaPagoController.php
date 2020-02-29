@@ -515,14 +515,14 @@ class LibretaPagoController extends ModeloController
         /**/
     }
 
-    public function hacer_recaudo_cartera($id_cartera){
+    public function hacer_recaudo_cartera($id_cartera)
+    {        
         $cartera = TesoCarteraEstudiante::find($id_cartera);
         $libreta = TesoLibretasPago::find($cartera->id_libreta);
         $estudiante = Estudiante::find($libreta->id_estudiante);
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get();
-        $colegio = $colegio[0];
+        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
 
-        $matricula = Matricula::where('estado','Activo')->where('id_estudiante',$estudiante->id)->get()[0];
+        $matricula = Matricula::find( $libreta->matricula_id );
 
         $curso = Curso::find($matricula->curso_id);
 

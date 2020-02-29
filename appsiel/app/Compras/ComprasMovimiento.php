@@ -11,6 +11,7 @@ use App\Inventarios\InvProducto;
 class ComprasMovimiento extends Model
 {
 
+    // valor_impuesto es UNITARIO
     // base_impuesto = valor_impuesto * cantidad => Equivale al total de la compra SIN IVA
     // precio_total = precio_unitario * cantidad => Equivale al total de la compra IVA incluido
     protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'estado', 'creado_por', 'modificado_por', 'cotizacion_id', 'compras_doc_encabezado_id', 'entrada_almacen_id', 'proveedor_id', 'comprador_id', 'fecha_recepcion', 'clase_proveedor_id', 'forma_pago', 'fecha_vencimiento', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'codigo_referencia_tercero', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto'];
@@ -51,7 +52,7 @@ class ComprasMovimiento extends Model
             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
             ->where('compras_movimientos.inv_producto_id', $operador1, $producto_id)
             ->where('compras_movimientos.proveedor_id', $operador2, $proveedor_id)
-            ->select('compras_movimientos.inv_producto_id', DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'), 'core_terceros.descripcion AS proveedor', DB::raw('SUM(compras_movimientos.cantidad) AS cantidad'), DB::raw('SUM(compras_movimientos.base_impuesto) AS base_impuesto'))
+            ->select('compras_movimientos.inv_producto_id', DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'), 'core_terceros.descripcion AS proveedor', DB::raw('SUM(compras_movimientos.cantidad) AS cantidad'), DB::raw('SUM(compras_movimientos.precio_total) AS precio_total'))
             ->groupBy('compras_movimientos.inv_producto_id')
             ->groupBy('compras_movimientos.proveedor_id')
             ->get();

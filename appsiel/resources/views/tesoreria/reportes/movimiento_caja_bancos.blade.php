@@ -1,5 +1,6 @@
 {{ Form::bsBtnExcel('movimiento_tesoreria') }}
 <h3>Movimiento de Cajas / Bancos</h3>
+<h4>{{ $mensaje }}</h4>
 <table class="table table-striped table-bordered tabla_pdf">
     <thead>
         <tr>
@@ -39,11 +40,11 @@
                 $salida = 0;
                 if ( $fila->valor_movimiento >= 0 )
                 {
-                    $entrada = $fila->valor_movimiento;
-                    $salida = 0;
+                    $entrada = '$'.number_format( $fila->valor_movimiento, 0, ',','.');
+                    $salida = '';
                 }else{
-                    $entrada = 0;
-                    $salida = $fila->valor_movimiento * -1;
+                    $entrada = '';
+                    $salida = '$'.number_format( $fila->valor_movimiento * -1, 0, ',','.');
                 }
 
                 $saldo += $fila->valor_movimiento;
@@ -53,8 +54,8 @@
                 <td> {{ $fila->fecha }}</td>
                 <td> {{ $fila->documento_transaccion_prefijo_consecutivo }} </td>
                 <td> {{ $fila->motivo_descripcion }} </td>
-                <td> ${{ number_format( $entrada, 0, ',','.') }} </td>
-                <td> ${{ number_format( $salida, 0, ',','.') }} </td>
+                <td> {{ $entrada }} </td>
+                <td> {{ $salida}} </td>
                 <td> ${{ number_format( $saldo, 0, ',','.') }} </td>
             </tr>
         <?php } ?>

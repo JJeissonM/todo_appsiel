@@ -22,6 +22,8 @@ use App\Core\Tercero;
 use App\Core\TipoDocApp;
 use App\CxP\DocumentosPendientes;
 
+use App\Contabilidad\Impuesto;
+
 
 class ReportesController extends Controller
 {
@@ -88,13 +90,24 @@ class ReportesController extends Controller
     public function precio_compra_por_producto(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
-        $fecha_hasta  = $request->fecha_hasta; 
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $detalla_proveedores  = $request->detalla_proveedores;
+        $iva_incluido  = $request->iva_incluido;
         
         $inv_producto_id = $request->inv_producto_id;
         $operador1 = '=';
         
         $proveedor_id = $request->proveedor_id;
         $operador2 = '=';
+
+
+        $porcentaje_proyeccion_1 = (float)$request->porcentaje_proyeccion_1;
+        $porcentaje_proyeccion_2 = (float)$request->porcentaje_proyeccion_2;
+        $porcentaje_proyeccion_3 = (float)$request->porcentaje_proyeccion_3;
+        $porcentaje_proyeccion_4 = (float)$request->porcentaje_proyeccion_4;
+
+
 
         if ( $request->inv_producto_id == '' )
         {
@@ -110,11 +123,23 @@ class ReportesController extends Controller
 
         $movimiento = ComprasMovimiento::get_precios_compras( $fecha_desde, $fecha_hasta, $inv_producto_id, $operador1, $proveedor_id, $operador2 );
 
-        //dd( $fecha_desde . ' * ' .  $fecha_hasta . ' * ' .  $inv_producto_id . ' * ' .  $operador1 . ' * ' .  $proveedor_id . ' * ' .  $operador2 );
+        // En el movimiento se trae el precio_total con IVA incluido
+        $mensaje = 'IVA Incluido en precio.';
+        
+        if ( !$iva_incluido )
+        {
+            $mensaje = 'IVA <b>NO</b> incluido en precio.';            
+            foreach ($movimiento as $linea )
+            {
+                $tasa_impuesto = Impuesto::get_tasa( $linea->inv_producto_id, 0, 0 );
+                $precio_unitario = $linea->precio_total / ( 1 + $tasa_impuesto  / 100 );
+                $linea->precio_total = $precio_unitario;
+            }
+        }
 
         //dd( $movimiento );
 
-        $vista = View::make('compras.reportes.precio_compra', compact('movimiento') )->render();
+        $vista = View::make('compras.reportes.precio_compra', compact('movimiento','detalla_proveedores', 'mensaje', 'porcentaje_proyeccion_1', 'porcentaje_proyeccion_2', 'porcentaje_proyeccion_3', 'porcentaje_proyeccion_4' ) )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

@@ -261,10 +261,13 @@ class PaginaController extends Controller
 
         if($pagina){
 
-            if($request->pagina_inicio){
+            $old_image = $pagina->favicon;
 
+            if($request->pagina_inicio)
+            {
                 $principal = Pagina::where('pagina_inicio',true)->get()->first();
-                if($principal){
+                if( $principal && $principal->id != $id)
+                {
                     $principal->pagina_inicio = !$principal->pagina_inicio;
                     $principal->save();
                 }
@@ -275,9 +278,11 @@ class PaginaController extends Controller
             $pagina->slug = self::generar_slug($request->titulo);
             $flag = $pagina->save();
 
-            if($flag){
+            if($flag)
+            {
 
-                if($request->hasFile('favicon')){
+                if($request->hasFile('favicon'))
+                {
 
                     $file = $request->file('favicon');
                     $name = time().$file->getClientOriginalName();
@@ -285,7 +290,9 @@ class PaginaController extends Controller
                     $filename = "img/".$name;
                     $flag = file_put_contents($filename,file_get_contents($file->getRealPath()),LOCK_EX);
 
-                    if($flag !== false){
+                    if($flag !== false)
+                    {
+                        unlink( $old_image );
                         $pagina->fill(['favicon' =>$filename])->save();
                     }
 
