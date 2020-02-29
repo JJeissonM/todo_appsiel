@@ -9,12 +9,11 @@
         Web - APPSIEL
     </title>
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/icon" href="{{asset('assets/images/favicon.ico')}}"/>
+    <link rel="shortcut icon" type="image/icon" href="{{asset('assets/images/favicon.ico')}}" />
     <!-- Font Awesome -->
     <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <!-- Slick slider -->
     <link href="{{asset('assets/css/slick.css')}}" rel="stylesheet">
     <!-- Gallery Lightbox -->
@@ -43,31 +42,104 @@
     <link href="{{asset('css/prettyPhoto.css')}}" rel="stylesheet">
     <link href="{{asset('css/main.css')}}" rel="stylesheet">
     <link href="{{asset('css/responsive.css')}}" rel="stylesheet">
-<!--[if lt IE 9]>
+    <!--[if lt IE 9]>
     <script src="{{asset('js/html5shiv.js')}}"></script>
     <script src="{{asset('js/respond.min.js')}}"></script>
 -->
     @yield('style')
 
+    <style type="text/css">
+        .pagination {
+            display: inline-block;
+            padding-left: 0;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .pagination>li {
+            display: inline;
+        }
+
+        .pagination>li>a,
+        .pagination>li>span {
+            position: relative;
+            float: left;
+            padding: 6px 12px;
+            margin-left: -1px;
+            line-height: 1.428571429;
+            color: #428bca;
+            text-decoration: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
+        .pagination>li:first-child>a,
+        .pagination>li:first-child>span {
+            margin-left: 0;
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .pagination>li:last-child>a,
+        .pagination>li:last-child>span {
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+
+        .pagination>li>a:hover,
+        .pagination>li>span:hover,
+        .pagination>li>a:focus,
+        .pagination>li>span:focus {
+            color: #2a6496;
+            background-color: #eee;
+            border-color: #ddd;
+        }
+
+        .pagination>.active>a,
+        .pagination>.active>span,
+        .pagination>.active>a:hover,
+        .pagination>.active>span:hover,
+        .pagination>.active>a:focus,
+        .pagination>.active>span:focus {
+            z-index: 2;
+            color: #fff;
+            cursor: default;
+            background-color: #428bca;
+            border-color: #428bca;
+        }
+
+        .pagination>.disabled>span,
+        .pagination>.disabled>span:hover,
+        .pagination>.disabled>span:focus,
+        .pagination>.disabled>a,
+        .pagination>.disabled>a:hover,
+        .pagination>.disabled>a:focus {
+            color: #999;
+            cursor: not-allowed;
+            background-color: #fff;
+            border-color: #ddd;
+        }
+    </style>
+
 </head>
 
 <body>
 
-<!-- END SCROLL TOP BUTTON -->
+    <!-- END SCROLL TOP BUTTON -->
 
-<!-- Start main content -->
-<main>
+    <!-- Start main content -->
+    <main>
 
-    <?php
+        <?php
 
-    use App\Core\Menu;
-    use Illuminate\Support\Facades\Input;
+        use App\Core\Menu;
+        use Illuminate\Support\Facades\Input;
 
-    $id = Input::get('id');
-    $menus = Menu::menus($id);
-    ?>
+        $id = Input::get('id');
+        $menus = Menu::menus($id);
+        ?>
 
-    @if (!Auth::guest())
+        @if (!Auth::guest())
 
         <nav class="navbar navbar-inverse navbar-static-top" style="background-color: #3d6983;">
             <div class="container-fluid">
@@ -79,19 +151,17 @@
                     </a>
                     <!-- image based logo -->
                     <!-- <a class="navbar-brand mu-logo" href="index.html"><img src="assets/images/logo.png" alt="logo"></a> -->
-                    <button class="navbar-toggler" type="button" data-toggle="collapse"
-                            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                            aria-expanded="false" aria-label="Toggle navigation">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="fa fa-bars"></span>
                     </button>
 
                     <div class="collapse navbar-collapse" id="navbarSupportedContent" style="margin-left: 150px;">
                         <ul class="navbar-nav mr-auto mu-navbar-nav">
                             @foreach ($menus as $key => $item)
-                                @if ($item['parent'] != 0)
-                                    @break
-                                @endif
-                                @include('web.templates.menu', ['item' => $item])
+                            @if ($item['parent'] != 0)
+                            @break
+                            @endif
+                            @include('web.templates.menu', ['item' => $item])
                             @endforeach
                             <li class="nav-item">
                                 <a href="{{url('pagina_web/icons/view?id='.$id)}}">Íconos</a>
@@ -101,55 +171,72 @@
                 </nav>
             </div>
         </nav>
-    @endif
+        @endif
 
-    {{ Form::bsMigaPan($miga_pan) }}
+        {{ Form::bsMigaPan($miga_pan) }}
 
-    @include('web.templates.messages')
+        @include('web.templates.messages')
 
-    @yield('content')
+        @yield('content')
 
-</main>
+    </main>
 
-<!-- End main content -->
+    <!-- End main content -->
 
-<!-- JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="{{asset('js/jquery.js')}}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
-        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
-        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
-        crossorigin="anonymous"></script>
-<!-- Slick slider -->
-<script type="text/javascript" src="{{asset('assets/web/js/slick.min.js')}}"></script>
-<!-- Progress Bar -->
-<script src="https://unpkg.com/circlebars@1.0.3/dist/circle.js"></script>
+    <!-- JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="{{asset('js/jquery.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <!-- Slick slider -->
+    <script type="text/javascript" src="{{asset('assets/web/js/slick.min.js')}}"></script>
+    <!-- Progress Bar -->
+    <script src="https://unpkg.com/circlebars@1.0.3/dist/circle.js"></script>
 
-<!-- Gallery Lightbox -->
-<script type="text/javascript" src="{{asset('assets/web/js/jquery.magnific-popup.min.js')}}"></script>
+    <!-- Gallery Lightbox -->
+    <script type="text/javascript" src="{{asset('assets/web/js/jquery.magnific-popup.min.js')}}"></script>
 
-<!-- Ajax contact form  -->
-<script type="text/javascript" src="{{asset('assets/web/js/app.js')}}"></script>
+    <!-- Ajax contact form  -->
+    <script type="text/javascript" src="{{asset('assets/web/js/app.js')}}"></script>
 
 
-<script src="http://maps.google.com/maps/api/js?sensor=true"></script>
-<script src="{{asset('js/owl.carousel.min.js')}}"></script>
-<script src="{{asset('js/mousescroll.js')}}"></script>
-<script src="{{asset('js/smoothscroll.js')}}"></script>
-<script src="{{asset('js/jquery.prettyPhoto.js')}}"></script>
-<script src="{{asset('js/jquery.isotope.min.js')}}"></script>
-<script src="{{asset('js/jquery.inview.min.js')}}"></script>
-<script src="{{asset('js/wow.min.js')}}"></script>
-<script src="{{asset('js/main.js')}}"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script src="{{asset('js/owl.carousel.min.js')}}"></script>
+    <script src="{{asset('js/mousescroll.js')}}"></script>
+    <script src="{{asset('js/smoothscroll.js')}}"></script>
+    <script src="{{asset('js/jquery.prettyPhoto.js')}}"></script>
+    <script src="{{asset('js/jquery.isotope.min.js')}}"></script>
+    <script src="{{asset('js/jquery.inview.min.js')}}"></script>
+    <script src="{{asset('js/wow.min.js')}}"></script>
+    <script src="{{asset('js/main.js')}}"></script>
+    <!-- DataTable -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
 
 
-<script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
 
-<!-- About us Skills Circle progress  -->
+    <!-- About us Skills Circle progress  -->
 
-@yield('script')
+    @yield('script')
+
+    <script type="text/javascript">
+        $(function() {
+            $('#myTable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [],
+                order: [
+                    [0, 'desc']
+                ]
+            });
+        });
+    </script>
 
 </body>
 

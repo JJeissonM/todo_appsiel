@@ -13,186 +13,186 @@
             </div>
         </div>
         <br><br>
-            <h2><i class="fa fa-money"></i>Conteo de efectivo y equivalentes</h2>
-            <hr>
-            <div class="row">
-                <div class="col-md-6">
-                    <h3 style="text-align: center;">Billetes</h3>
-                    <?php
-                    $array_billetes = [100000, 50000, 20000, 10000, 5000, 2000, 1000];
-                    ?>
-                    <table class="table table-striped table-bordered table-hover table-condensed">
-                        <thead>
+        <h2><i class="fa fa-money"></i>Conteo de efectivo y equivalentes</h2>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
+                <h3 style="text-align: center;">Billetes</h3>
+                <?php
+                $array_billetes = [100000, 50000, 20000, 10000, 5000, 2000, 1000];
+                ?>
+                <table class="table table-striped table-bordered table-hover table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Denominación</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($array_billetes as $key => $value)
                         <tr>
-                            <th>Denominación</th>
-                            <th>Cantidad</th>
-                            <th>Total</th>
+                            <td class="col-md-2">
+                                ${{ number_format($value,'0',',','.') }}
+                                <input type="hidden" class="denominacion_b" value="{{$value}}">
+                            </td>
+                            <td class="col-md-4">
+                                <input type="number" min="0" class="form-control cantidad_b" id="billete_{{$value}}"
+                                       autocomplete="off" name="billetes[{{$value}}]">
+                            </td>
+                            <td class="col-md-6">
+                                <div class="lbl_total_b"> $0</div>
+                                <input type="hidden" class="total_b" name="total_bi" value="0">
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($array_billetes as $key => $value)
+                    @endforeach
+                    </tbody>
+                    <tfoot>
+                    <tr class="success">
+                        <td colspan="2"> Total Billetes</td>
+                        <td>
+                            <div id="lbl_total_billetes"> $0</div>
+                            <input type="hidden" id="total_billetes" name="total_billetes" value="0">
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+                <h3 style="text-align: center;">Monedas</h3>
+                <?php
+                $array_monedas = [1000, 500, 200, 100, 50, '', ''];
+                ?>
+
+                <table class="table table-striped table-bordered table-hover table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Denominación</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($array_monedas as $key => $value)
+                        @if($value == '')
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td><input type="number" min="0" class="form-control" disabled="disabled"></td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        @else
                             <tr>
                                 <td class="col-md-2">
                                     ${{ number_format($value,'0',',','.') }}
-                                    <input type="hidden" class="denominacion_b" value="{{$value}}">
+                                    <input type="hidden" class="denominacion_m" value="{{$value}}">
                                 </td>
                                 <td class="col-md-4">
-                                    <input type="number" min="0" class="form-control cantidad_b" id="billete_{{$value}}"
-                                           autocomplete="off" name="billetes[{{$value}}]">
+                                    <input type="number" min="0" class="form-control cantidad_m"
+                                           id="billete_{{$value}}" autocomplete="off" name="monedas[{{$value}}]">
                                 </td>
                                 <td class="col-md-6">
-                                    <div class="lbl_total_b"> $0</div>
-                                    <input type="hidden" class="total_b" name="total_bi" value="0">
+                                    <div class="lbl_total_m"> $0</div>
+                                    <input type="hidden" class="total_m" name="total_mo" value="0">
                                 </td>
                             </tr>
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                        <tr class="success">
-                            <td colspan="2"> Total Billetes</td>
-                            <td>
-                                <div id="lbl_total_billetes"> $0</div>
-                                <input type="hidden" id="total_billetes" name="total_billetes" value="0">
-                            </td>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
-
-                <div class="col-md-6">
-                    <h3 style="text-align: center;">Monedas</h3>
-                    <?php
-                    $array_monedas = [1000, 500, 200, 100, 50, '', ''];
-                    ?>
-
-                    <table class="table table-striped table-bordered table-hover table-condensed">
-                        <thead>
-                        <tr>
-                            <th>Denominación</th>
-                            <th>Cantidad</th>
-                            <th>Total</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($array_monedas as $key => $value)
-                            @if($value == '')
-                                <tr>
-                                    <td>&nbsp;</td>
-                                    <td><input type="number" min="0" class="form-control" disabled="disabled"></td>
-                                    <td>&nbsp;</td>
-                                </tr>
-                            @else
-                                <tr>
-                                    <td class="col-md-2">
-                                        ${{ number_format($value,'0',',','.') }}
-                                        <input type="hidden" class="denominacion_m" value="{{$value}}">
-                                    </td>
-                                    <td class="col-md-4">
-                                        <input type="number" min="0" class="form-control cantidad_m"
-                                               id="billete_{{$value}}" autocomplete="off" name="monedas[{{$value}}]">
-                                    </td>
-                                    <td class="col-md-6">
-                                        <div class="lbl_total_m"> $0</div>
-                                        <input type="hidden" class="total_m" name="total_mo" value="0">
-                                    </td>
-                                </tr>
-                            @endif
-                        @endforeach
-                        </tbody>
-                        <tfoot>
-                        <tr class="success">
-                            <td colspan="2"> Total Monedas</td>
-                            <td>
-                                <div id="lbl_total_monedas"> $0</div>
-                                <input type="hidden" id="total_monedas" name="total_monedas" value="0">
-                            </td>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </div>
+                        @endif
+                    @endforeach
+                    </tbody>
+                    <tfoot>
+                    <tr class="success">
+                        <td colspan="2"> Total Monedas</td>
+                        <td>
+                            <div id="lbl_total_monedas"> $0</div>
+                            <input type="hidden" id="total_monedas" name="total_monedas" value="0">
+                        </td>
+                    </tr>
+                    </tfoot>
+                </table>
             </div>
+        </div>
 
-            <table class="table table-striped table-bordered table-hover table-condensed">
-                <thead>
-                <tr>
-                    <th colspan="2">Saldo en bonos, recibos, pagarés y otros documentos</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td class="col-md-6">
-                        <b>Saldo Total</b>
-                        <br>
-                        <input type="text" min="0" class="form-control otros_saldos" id="otros_saldos"
-                               autocomplete="off" name="otros_saldos" placeholder="$">
-                    </td>
-                    <td class="col-md-6">
-                        <b>Observaciones</b>
-                        <br>
-                        <textarea class="form-control" name="detalle_otros_saldos" id="detalle_otros_saldos">
+        <table class="table table-striped table-bordered table-hover table-condensed">
+            <thead>
+            <tr>
+                <th colspan="2">Saldo en bonos, recibos, pagarés y otros documentos</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="col-md-6">
+                    <b>Saldo Total</b>
+                    <br>
+                    <input type="text" min="0" class="form-control otros_saldos" id="otros_saldos"
+                           autocomplete="off" name="otros_saldos" placeholder="$">
+                </td>
+                <td class="col-md-6">
+                    <b>Observaciones</b>
+                    <br>
+                    <textarea class="form-control" name="detalle_otros_saldos" id="detalle_otros_saldos">
 							
 						</textarea>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+                </td>
+            </tr>
+            </tbody>
+        </table>
 
-            <div class="well">
-                <h1>Total efectivo físico:
-                    <div id="lbl_total_efectivo" style="display: inline;"> $0</div>
-                </h1>
-                <input type="hidden" id="total_efectivo" name="lbl_total_efectivo" value="0">
-            </div>
+        <div class="well">
+            <h1>Total efectivo físico:
+                <div id="lbl_total_efectivo" style="display: inline;"> $0</div>
+            </h1>
+            <input type="hidden" id="total_efectivo" name="lbl_total_efectivo" value="0">
+        </div>
 
-            <h2><i class="fa fa-money"></i>Movimientos del sistema </h2>
-            <hr>
-            <div class="row">
-                <div class="col-md-6">
+        <h2><i class="fa fa-money"></i>Movimientos del sistema </h2>
+        <hr>
+        <div class="row">
+            <div class="col-md-6">
 
-                    <div class="well">
-                        <h3 style="text-align: center;"> Mov. de entradas de efectivo <small> <a
-                                        class="btn btn-xs btn-primary" id="btn_get_mov_entrada"> Obtener </a> </small>
-                            <small> <a class="btn btn-xs btn-info" id="btn_reset_mov_entrada"> Reset </a> </small></h3>
-                        <div id="div_mov_entrada">
-
-                        </div>
-                        <input type="hidden" id="movimientos_entradas" value="0" name="movimientos_entradas">
-                        <input type="hidden" id="total_mov_entradas" value="0" name="total_mov_entradas">
-                    </div>
-
-                </div>
-
-                <div class="col-md-6">
-
-                    <div class="well">
-                        <h3 style="text-align: center;"> Mov. de salidas de efectivo <small> <a
-                                        class="btn btn-xs btn-primary" id="btn_get_mov_salida"> Obtener </a> </small>
-                            <small> <a class="btn btn-xs btn-info" id="btn_reset_mov_salida"> Reset </a> </small></h3>
-                        <div id="div_mov_salida">
-
-                        </div>
-                        <input type="hidden" id="movimientos_salidas" value="0" name="movimientos_salidas">
-                        <input type="hidden" id="total_mov_salidas" value="0" name="total_mov_salidas">
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="well">
-                <h1>Saldo en el sistema:
-                    <div id="lbl_total_sistema" style="display: inline;"> $0</div>
-                </h1>
-                <input type="hidden" id="total_sistema" name="lbl_total_sistema" value="0">
-            </div>
-
-            <div style="display: none;">
                 <div class="well">
-                    <h1>Diferencia:
-                        <div id="lbl_total_saldo" style="display: inline;"> $0</div>
-                    </h1>
-                    <input type="hidden" id="total_saldo" name="total_saldo" value="0">
+                    <h3 style="text-align: center;"> Mov. de entradas de efectivo <small> <a
+                                    class="btn btn-xs btn-primary" id="btn_get_mov_entrada"> Obtener </a> </small>
+                        <small> <a class="btn btn-xs btn-info" id="btn_reset_mov_entrada"> Reset </a> </small></h3>
+                    <div id="div_mov_entrada">
+
+                    </div>
+                    <input type="hidden" id="movimientos_entradas" value="0" name="movimientos_entradas">
+                    <input type="hidden" id="total_mov_entradas" value="0" name="total_mov_entradas">
                 </div>
+
             </div>
+
+            <div class="col-md-6">
+
+                <div class="well">
+                    <h3 style="text-align: center;"> Mov. de salidas de efectivo <small> <a
+                                    class="btn btn-xs btn-primary" id="btn_get_mov_salida"> Obtener </a> </small>
+                        <small> <a class="btn btn-xs btn-info" id="btn_reset_mov_salida"> Reset </a> </small></h3>
+                    <div id="div_mov_salida">
+
+                    </div>
+                    <input type="hidden" id="movimientos_salidas" value="0" name="movimientos_salidas">
+                    <input type="hidden" id="total_mov_salidas" value="0" name="total_mov_salidas">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="well">
+            <h1>Saldo en el sistema:
+                <div id="lbl_total_sistema" style="display: inline;"> $0</div>
+            </h1>
+            <input type="hidden" id="total_sistema" name="lbl_total_sistema" value="0">
+        </div>
+
+        <div style="display: none;">
+            <div class="well">
+                <h1>Diferencia:
+                    <div id="lbl_total_saldo" style="display: inline;"> $0</div>
+                </h1>
+                <input type="hidden" id="total_saldo" name="total_saldo" value="0">
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -283,7 +283,7 @@
                     otros_saldos = parseFloat($('#otros_saldos').val());
                 }
 
-                var total_efectivo = parseFloat($('#total_billetes').val())+ parseFloat($('#base').val()) + parseFloat($('#total_monedas').val()) + otros_saldos;
+                var total_efectivo = parseFloat($('#total_billetes').val()) + parseFloat($('#base').val()) + parseFloat($('#total_monedas').val()) + otros_saldos;
                 $('#total_efectivo').val(total_efectivo);
                 $('#lbl_total_efectivo').text('$' + new Intl.NumberFormat("de-DE").format(total_efectivo));
             }
@@ -430,8 +430,6 @@
 
                 $('#lbl_total_saldo').html('<span style=" background-color:' + color_fondo + '; color:' + color_letra + '">' + signo + new Intl.NumberFormat("de-DE").format(total_saldo) + '</span>');
             }
-
         });
-
     </script>
 @endsection

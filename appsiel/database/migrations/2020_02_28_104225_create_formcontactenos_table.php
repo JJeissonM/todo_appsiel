@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateGaleriasTable extends Migration
+class CreateFormcontactenosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,13 @@ class CreateGaleriasTable extends Migration
      */
     public function up()
     {
-        Schema::create('pw_galerias', function (Blueprint $table) {
+        Schema::create('pw_formcontactenos', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('widget_id');
-            $table->foreign('widget_id')->references('id')->on('pw_widget')->onDelete('CASCADE');
+            $table->string('names');
+            $table->string('email');
+            $table->string('subject');
+            $table->text('message');
+            $table->string('state', 50)->default('UNREAD'); //READ, UNREAD
             $table->timestamps();
         });
     }
@@ -27,6 +30,6 @@ class CreateGaleriasTable extends Migration
      */
     public function down()
     {
-        Schema::drop('pw_galerias');
+        Schema::drop('formcontactenos');
     }
 }

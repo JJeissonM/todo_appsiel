@@ -1,5 +1,6 @@
 <div class="aboutus" style="margin-top:60px;">
     <div class="container">
+        @if($aboutus!=null)
         <div class="section-header">
             <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->titulo}}</h2>
             <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->descripcion}}
@@ -40,5 +41,11 @@
                 </div>
             </div>
         </div>
+        @else
+        <div class="section-header">
+            <h2 class="section-title text-center wow fadeInDown">Sección</h2>
+            <p class="text-center wow fadeInDown">Sin configuración</p>
+        </div>
+        @endif
     </div>
 </div>

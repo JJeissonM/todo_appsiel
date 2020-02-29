@@ -27,15 +27,14 @@ use App\PropiedadHorizontal\PhAnuncio;
 
 class FrontEndController extends Controller
 {
-    
+
     // Llama al index de la plantilla default
     public function inicio()
     {
 
         // Se verifica que la Aplicación Página Web esté activao
-        $estado_pagina_web = Aplicacion::where('app','pagina_web')->value('estado');        
-        if ($estado_pagina_web == 'Inactivo')
-        {
+        $estado_pagina_web = Aplicacion::where('app', 'pagina_web')->value('estado');
+        if ($estado_pagina_web == 'Inactivo') {
             return redirect('inicio');
         }
 
@@ -44,117 +43,110 @@ class FrontEndController extends Controller
         // Obtener la página que está marcada como pagina_inicio (se debe validar que en la creación de páginas solo haya una)
         $pagina = Pagina::where('pagina_inicio',1)->get()->first();        
 
-        
+
+
         // Return temporal para mostrar página estática de información
         //return View::make( 'pagina_web.front_end.templates.demo.index', compact('pagina') )->render();
 
         $page = new PaginaController();
- 
-        return $page->showPage( str_slug( $pagina->titulo ) );
+        return $page->showPage($pagina->slug);
 
         //return view( 'pagina_web.front_end.templates.'.$pagina_plantilla.'.index', compact( 'pagina', 'cadena_secciones' ) );
-        
+
     }
 
-    
 
-    public function mostrar_enlace( $slug )
+
+    public function mostrar_enlace($slug)
     {
-        $articulo = Articulo::where('slug',$slug)->get()->first();
+        $articulo = Articulo::where('slug', $slug)->get()->first();
 
-        if ( is_null( $articulo ) )
-        {
-            return view('pagina_no_encontrada', compact('slug') );
+        if (is_null($articulo)) {
+            return view('pagina_no_encontrada', compact('slug'));
         }
-
-        
     }
-    
+
     // Llama al index de blog
-    public function blog( $slug = null )
-    {        
+    public function blog($slug = null)
+    {
         $pagina = Pagina::find(1);
         $empresa = Empresa::find(1);
 
-        if ( $slug == 'galeria_imagenes') 
-        {
+        if ($slug == 'galeria_imagenes') {
             $miga_pan = [
-                        ['url'=>'/', 'etiqueta'=>'Inicio'],
-                        ['url'=>'NO', 'etiqueta'=> 'Galería de imágenes']
-                    ];
-            
+                ['url' => '/', 'etiqueta' => 'Inicio'],
+                ['url' => 'NO', 'etiqueta' => 'Galería de imágenes']
+            ];
+
             $galeria_imagenes = true;
 
-            return view('pagina_web.front_end.templates.blog.index',compact('pagina', 'empresa','miga_pan','galeria_imagenes'));
+            return view('pagina_web.front_end.templates.blog.index', compact('pagina', 'empresa', 'miga_pan', 'galeria_imagenes'));
+        } else {
 
-        }else{
-
-            if ( $slug != null ) {
-                $el_articulo = Articulo::where('slug',$slug)->get()[0];
+            if ($slug != null) {
+                $el_articulo = Articulo::where('slug', $slug)->get()[0];
                 $categoria_id = $el_articulo->categoria_id;
-            }else{
+            } else {
                 $categoria_id = 1;
-                $el_articulo = Articulo::where('estado','Activo')->where('categoria_id',$categoria_id)->orderBy('id', 'desc')->take(1)->get()[0];
-            }            
+                $el_articulo = Articulo::where('estado', 'Activo')->where('categoria_id', $categoria_id)->orderBy('id', 'desc')->take(1)->get()[0];
+            }
 
-            $articulos = Articulo::where('estado','Activo')->where('categoria_id',$categoria_id)->orderBy('id', 'desc')->get();
+            $articulos = Articulo::where('estado', 'Activo')->where('categoria_id', $categoria_id)->orderBy('id', 'desc')->get();
 
             $miga_pan = [
-                        ['url'=>'/', 'etiqueta'=>'Inicio'],
-                        ['url'=>'NO', 'etiqueta'=>$el_articulo->titulo]
-                    ];
+                ['url' => '/', 'etiqueta' => 'Inicio'],
+                ['url' => 'NO', 'etiqueta' => $el_articulo->titulo]
+            ];
 
             $categoria = Categoria::find($categoria_id);
 
             $galeria_imagenes = false;
 
-            return view('pagina_web.front_end.templates.blog.index',compact('pagina', 'empresa','articulos','el_articulo','miga_pan','galeria_imagenes','categoria'));
+            return view('pagina_web.front_end.templates.blog.index', compact('pagina', 'empresa', 'articulos', 'el_articulo', 'miga_pan', 'galeria_imagenes', 'categoria'));
         }
-
     }
 
-    
+
 
     // Llama al index de blog
-    public function show_categoria( $categoria_id )
-    {        
+    public function show_categoria($categoria_id)
+    {
         $pagina = Pagina::find(1);
-        $empresa = Empresa::find(1); 
+        $empresa = Empresa::find(1);
 
-        $articulos = Articulo::where('estado','Activo')->where('categoria_id',$categoria_id)->orderBy('id', 'desc')->get();
-        
-        $el_articulo = Articulo::where('estado','Activo')->where('categoria_id',$categoria_id)->orderBy('id', 'desc')->take(1)->get()[0];
+        $articulos = Articulo::where('estado', 'Activo')->where('categoria_id', $categoria_id)->orderBy('id', 'desc')->get();
+
+        $el_articulo = Articulo::where('estado', 'Activo')->where('categoria_id', $categoria_id)->orderBy('id', 'desc')->take(1)->get()[0];
 
         $miga_pan = [
-                    ['url'=>'/', 'etiqueta'=>'Inicio'],
-                    ['url'=>'NO', 'etiqueta'=>$el_articulo->titulo]
-                ];
+            ['url' => '/', 'etiqueta' => 'Inicio'],
+            ['url' => 'NO', 'etiqueta' => $el_articulo->titulo]
+        ];
 
         $categoria = Categoria::find($categoria_id);
 
         $galeria_imagenes = false;
 
-        return view('pagina_web.front_end.templates.blog.index',compact('pagina', 'empresa','articulos','el_articulo','miga_pan','galeria_imagenes','categoria'));
-
+        return view('pagina_web.front_end.templates.blog.index', compact('pagina', 'empresa', 'articulos', 'el_articulo', 'miga_pan', 'galeria_imagenes', 'categoria'));
     }
 
 
-    public function contactenos( Request $request )
+    public function contactenos(Request $request)
     {
         $pagina = Pagina::find(1);
         $empresa = Empresa::find(1);
 
         // Email interno. Debe estar creado en Hostinger
-        $email_interno = 'info@'.substr( url('/'), 7);
-        
+        $email_interno = 'info@' . substr(url('/'), 7);
+
         // Datos requeridos por hostinger
-        $from = "Pagina Web <".$email_interno."> \r\n";
-        $headers = "From:" . $from." \r\n";
+        $from = "Pagina Web <" . $email_interno . "> \r\n";
+        $headers = "From:" . $from . " \r\n";
         $to = $empresa->email;
         $subject = "Comentario desde la pagina web";
-        
+
         // El mensaje
-        $cuerpo_mensaje = View::make('pagina_web.front_end.modulos.contactenos.cuerpo_mensaje',compact('request','empresa'))->render();
+        $cuerpo_mensaje = View::make('pagina_web.front_end.modulos.contactenos.cuerpo_mensaje', compact('request', 'empresa'))->render();
 
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: multipart/mixed; boundary=\"=A=G=R=O=\"\r\n\r\n";
@@ -165,10 +157,9 @@ class FrontEndController extends Controller
         $message .= "Content-type:text/html; charset=utf-8\r\n";
         $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
         $message .= $cuerpo_mensaje . "\r\n\r\n";
-         
+
         //if(true)
-        if (mail($to,$subject,$message, $headers))
-        {
+        if (mail($to, $subject, $message, $headers)) {
             $alerta = '<div class="alert alert-success alert-dismissible">
                             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                           <strong>¡El mensaje se ha enviado!</strong> Nos comunicaremos con usted los más pronto posible.
@@ -182,27 +173,27 @@ class FrontEndController extends Controller
 
         return $alerta;
     }
-    
+
 
     public function micrositio($id)
     {
         $registro = Micrositio::find($id);
 
-        $anuncios = PhAnuncio::where('core_empresa_id',$registro->core_empresa_id)->where('estado','Activo')->get();
+        $anuncios = PhAnuncio::where('core_empresa_id', $registro->core_empresa_id)->where('estado', 'Activo')->get();
 
-        if ( count($registro) > 0 ) {
-            return view('pagina_web_asiph675.micrositios.index', compact('registro','anuncios') );
-        }else{
+        if (count($registro) > 0) {
+            return view('pagina_web_asiph675.micrositios.index', compact('registro', 'anuncios'));
+        } else {
             echo "Micrositio no encontrado.<br/>";
-            print_r( $registro );
-            echo "<br/>".count($registro);
+            print_r($registro);
+            echo "<br/>" . count($registro);
         }
         // Pendiente si el micrositio o existe, pagina de alerta
     }
 
-    public function ajax_galeria_imagenes( $carousel_id ){
-        $datos_carousel = Carousel::get_array_datos( $carousel_id );
-        return '<h3>'.$datos_carousel['descripcion'].'</h3>'.View::make( 'pagina_web.front_end.modulos.carousel.index',['datos'=>$datos_carousel] );
+    public function ajax_galeria_imagenes($carousel_id)
+    {
+        $datos_carousel = Carousel::get_array_datos($carousel_id);
+        return '<h3>' . $datos_carousel['descripcion'] . '</h3>' . View::make('pagina_web.front_end.modulos.carousel.index', ['datos' => $datos_carousel]);
     }
-
 }

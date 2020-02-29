@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\web\services;
 
+use App\web\Article;
 use App\web\Articlesetup;
 use Form;
 use Illuminate\Support\Facades\Input;
@@ -16,8 +17,12 @@ class ArticleComponent implements IDrawComponent
 
     function DrawComponent()
     {
-        $articlesetup = Articlesetup::where('widget_id', $this->widget)->first();
-        return Form::articles($articlesetup);
+        $setup = Articlesetup::where('widget_id', $this->widget)->first();
+        $articles = null;
+        if ($setup != null) {
+            $articles = Article::where('articlesetup_id', $setup->id)->orderBy('created_at', $setup->orden)->paginate(4);
+        }
+        return Form::articles($articles, $setup);
     }
 
     function viewComponent()
@@ -38,7 +43,12 @@ class ArticleComponent implements IDrawComponent
         ];
         $widget = $this->widget;
         $variables_url = '?id=' . Input::get('id');
-        $articles = Articlesetup::where('widget_id', $widget)->first();
-        return view('web.components.articles', compact('miga_pan', 'variables_url', 'widget', 'articles'));
+        $setup = Articlesetup::where('widget_id', $widget)->first();
+        $articles = null;
+        if ($setup != null) {
+            $articles = Article::where('articlesetup_id', $setup->id)->orderBy('created_at', $setup->orden)->paginate(4);
+            $articles->setPath($variables_url);
+        }
+        return view('web.components.articles', compact('miga_pan', 'variables_url', 'widget', 'setup', 'articles'));
     }
 }
