@@ -39,7 +39,7 @@ class ClientesComponent implements IDrawComponent
         ];
         $widget = $this->widget;
         $variables_url = '?id=' . Input::get('id');
-        $clientes = Cliente::where('widget_id', $widget)->first();
-        return view('web.components.about_us', compact('miga_pan', 'variables_url', 'widget', 'clientes'));
+        $clientes = Cliente::where('widget_id', $widget)->get();
+        return view('web.components.clientes', compact('miga_pan', 'variables_url', 'widget', 'clientes'));
     }
 }

@@ -54,6 +54,12 @@ Route::get('contactenos/create/{widget}', 'web\ContactenosController@create');
 Route::post('contactenos/store', 'web\ContactenosController@store')->name('contactenos.store');
 Route::put('contactenos/updated/{id}', 'web\ContactenosController@updated')->name('contactenos.updated');
 
+//CLIENTES
+Route::get('clientes/create/{widget}', 'web\ClienteController@creaste');
+Route::post('clientes/store', 'web\ClienteController@store')->name('clientes.store');
+Route::get('clientes/destroy/{cliente}', 'web\ClienteController@destroy');
+Route::post('clientes/modificar/cliente/', 'web\ClienteController@updated')->name('clientes.modificar');
+
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
 Route::get('categoria/{id?}', 'PaginaWeb\FrontEndController@show_categoria');
