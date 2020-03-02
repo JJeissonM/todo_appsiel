@@ -67,6 +67,13 @@ Route::post('articles/article/store', 'web\ArticleController@articlestore')->nam
 Route::post('articles/article/update', 'web\ArticleController@articleupdate')->name('article.articleupdate');
 Route::get('articles/article/{id}/viewfinder', 'web\ArticleController@show')->name('article.show');
 
+//ARCHIVOS
+Route::post('archivos/store', 'web\ArchivoController@store')->name('archivos.store');
+Route::resource('archivos', 'web\ArchivoController');
+Route::post('archivos/archivo/store', 'web\ArchivoController@archivostore')->name('archivos.archivostore');
+Route::post('archivos/archivo/update', 'web\ArchivoController@archivoupdate')->name('archivos.archivoupdate');
+Route::post('archivos/archivo/delete', 'web\ArchivoController@destroy')->name('archivos.delete');
+
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
 
