@@ -1,5 +1,6 @@
 <section id="services">
     <div class="container">
+    @if($servicios!=null)
         <div class="section-header">
             <h2 class="section-title text-center wow fadeInDown animated"
                 style="visibility: visible; animation-name: fadeInDown;">{{$servicios->titulo}}</h2>
@@ -27,5 +28,11 @@
                 </div>
             @endif
         </div><!--/.row-->
+        @else
+        <div class="section-header">
+            <h2 class="section-title text-center wow fadeInDown">Sección</h2>
+            <p class="text-center wow fadeInDown">Sin configuración</p>
+        </div>
+        @endif
     </div><!--/.container-->
 </section>

@@ -571,15 +571,18 @@ class RecaudoController extends TransaccionController
             'consecutivo' => $documento->consecutivo];
 
         // >>> Validaciones inciales
-
-        // Está en un documento cruce de cartera?
-        $cantidad = CxcAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
+        $tabla_existe = DB::select( DB::raw( "SHOW TABLES LIKE 'cxc_abonos'" ) );
+        if ( !empty( $tabla_existe ) )
         {
-            return redirect( 'tesoreria/recaudos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Recaudo NO puede ser anulado. Está en documento cruce de cartera.');
+            // Está en un documento cruce de cartera?
+            $cantidad = CxcAbono::where($array_wheres)
+                                ->where('doc_cruce_transacc_id','<>',0)
+                                ->count();
+
+            if($cantidad != 0)
+            {
+                return redirect( 'tesoreria/recaudos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Recaudo NO puede ser anulado. Está en documento cruce de cartera.');
+            }
         }
 
         // >>> Eliminación

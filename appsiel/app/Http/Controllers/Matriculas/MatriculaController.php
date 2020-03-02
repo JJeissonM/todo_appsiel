@@ -438,16 +438,18 @@ class MatriculaController extends ModeloController
     {
         $registro = Matricula::find( $id );
 
-        $estudiante = Estudiante::find( $registro->id_estudiante );
-        $user = User::find( $estudiante->user_id );
-
         $todas_las_matriculas = Matricula::where( 'id_estudiante', $registro->id_estudiante )->get();
 
-        // Verificación 1: Libreta de pagos
-        $cantidad = TesoLibretasPago::where('matricula_id', $id)->count();
-        if($cantidad != 0){
-            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Matrícula NO puede ser eliminada. Tiene libreta de pago asociada.');
+        $tabla_existe = DB::select( DB::raw( "SHOW TABLES LIKE 'teso_libretas_pagos'" ) );
+        if ( !empty( $tabla_existe ) )
+        {
+            // Verificación 1: Libreta de pagos
+            $cantidad = TesoLibretasPago::where('matricula_id', $id)->count();
+            if($cantidad != 0){
+                return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Matrícula NO puede ser eliminada. Tiene libreta de pago asociada.');
+            }
         }
+            
 
         // Verificadion 2: Calificaciones y observaciones
         $cant_calificaciones = 0;
@@ -475,15 +477,23 @@ class MatriculaController extends ModeloController
         // Si hay SOLO una (1) matrícula, se elimina al usuario y al estudiante
         if ( count( $todas_las_matriculas->toArray() ) == 1 )
         {
-            //Borrar User
-            if( !is_null($user) )
+
+            $estudiante = Estudiante::find( $registro->id_estudiante );
+
+            if( !is_null($estudiante) )
             {
-                $user->roles()->sync( [ ] ); // borrar todos los roles y asignar los del array (en este caso vacío)
-                $user->delete();
+                $user = User::find( $estudiante->user_id );
+
+                //Borrar User
+                if( !is_null($user) )
+                {
+                    $user->roles()->sync( [ ] ); // borrar todos los roles y asignar los del array (en este caso vacío)
+                    $user->delete();
+                }
+                    
+                //Borrar Estudiante
+                $estudiante->delete();
             }
-                
-            //Borrar Estudiante
-            $estudiante->delete();
         }
             
 

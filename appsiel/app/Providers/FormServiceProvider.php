@@ -74,15 +74,15 @@ class FormServiceProvider extends ServiceProvider
     public function webComponent()
     {
         //componentes utilizado en el diseñador de la pagina web
-        Form::component('navegacion','components.web.navegacion',['nav']);
-        Form::component('slider','components.web.slider',['slider']);
-        Form::component('aboutus','components.web.aboutus',['aboutus']);
-        Form::component('galeria','components.web.galeria',['galeria']);
-        Form::component('articles','components.web.articles',['articles']);
-        Form::component('servicios','components.web.servicios',['servicios']);
-        Form::component('iconos','components.web.iconos',['iconos']);
-        Form::component('contactenos','components.web.contactenos',['contactenos']);
-        Form::component('clientes','components.web.clientes',['clientes']);
+        Form::component('navegacion', 'components.web.navegacion', ['nav']);
+        Form::component('slider', 'components.web.slider', ['slider']);
+        Form::component('aboutus', 'components.web.aboutus', ['aboutus']);
+        Form::component('galeria', 'components.web.galeria', ['galeria']);
+        Form::component('articles', 'components.web.articles', ['articles', 'setup']);
+        Form::component('servicios', 'components.web.servicios', ['servicios']);
+        Form::component('iconos', 'components.web.iconos', ['iconos']);
+        Form::component('contactenos', 'components.web.contactenos', ['contactenos']);
+        Form::component('clientes', 'components.web.clientes', ['clientes']);
     }
 
     /**

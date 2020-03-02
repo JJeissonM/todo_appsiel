@@ -433,14 +433,18 @@ class PagoController extends TransaccionController
 
         // >>> Validaciones inciales
 
-        // Está en un documento cruce de cxp?
-        $cantidad = CxpAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
+        $tabla_existe = DB::select( DB::raw( "SHOW TABLES LIKE 'cxp_abonos'" ) );
+        if ( !empty( $tabla_existe ) )
         {
-            return redirect( 'tesoreria/pagos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Pago NO puede ser anulado. Está en documento cruce de CxP.');
+            // Está en un documento cruce de cxp?
+            $cantidad = CxpAbono::where($array_wheres)
+                                ->where('doc_cruce_transacc_id','<>',0)
+                                ->count();
+
+            if($cantidad != 0)
+            {
+                return redirect( 'tesoreria/pagos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Pago NO puede ser anulado. Está en documento cruce de CxP.');
+            }
         }
 
         // >>> Eliminación
