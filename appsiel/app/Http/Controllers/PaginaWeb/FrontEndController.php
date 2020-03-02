@@ -44,7 +44,6 @@ class FrontEndController extends Controller
         $pagina = Pagina::where('pagina_inicio',1)->get()->first();        
 
 
-
         // Return temporal para mostrar página estática de información
         //return View::make( 'pagina_web.front_end.templates.demo.index', compact('pagina') )->render();
 

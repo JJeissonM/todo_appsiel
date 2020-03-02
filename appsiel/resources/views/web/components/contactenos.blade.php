@@ -190,7 +190,7 @@
             <div class="modal-body">
                 <div class="col-md-12">
                     @if($contactenos != null)
-                        {!! Form::model($contactenos,['route'=>['servicios.updated',$contactenos],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
+                        {!! Form::model($contactenos,['route'=>['contactenos.updated',$contactenos],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
                         <input type="hidden" name="widget_id" value="{{$widget}}">
                         <input type="hidden" name="variables_url" value="{{$variables_url}}">
                         <input type="hidden" name="servicio" value="{{$contactenos->id}}">

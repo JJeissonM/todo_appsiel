@@ -1,4 +1,4 @@
-@extends('calificaciones.calificaciones_form')
+@extends('calificaciones.calificaciones_form', ['titulo'=>'calificaciones'])
 
 @section('tabla')
 	

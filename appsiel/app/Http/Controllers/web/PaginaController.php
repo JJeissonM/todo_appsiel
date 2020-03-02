@@ -111,7 +111,7 @@ class PaginaController extends Controller
         }
 
         $pagina = Pagina::create($request->all());
-        $pagina->slug = "sitio" . self::generar_slug($request->titulo);
+        $pagina->slug = "sitio-" . self::generar_slug($request->titulo);
         $pagina->save();
 
         if ($request->hasFile('favicon')) {
@@ -269,7 +269,7 @@ class PaginaController extends Controller
             }
 
             $pagina->fill($request->all());
-            $pagina->slug = "sitio" . self::generar_slug($request->titulo);
+            $pagina->slug = "sitio-" . self::generar_slug($request->titulo);
             $flag = $pagina->save();
 
             if($flag)

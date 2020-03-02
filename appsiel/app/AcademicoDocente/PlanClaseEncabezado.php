@@ -148,7 +148,7 @@ class PlanClaseEncabezado extends Model
 
 
         /*
-            Agragar nuevos campos
+            Agregar nuevos campos
         */
         
         $plantilla_default = PlanClaseEstrucPlantilla::get_actual();
@@ -156,7 +156,7 @@ class PlanClaseEncabezado extends Model
         // Agregar al comienzo del documento
         array_unshift($lista_campos, [
                                             "id" => 999,
-                                            "descripcion" => "Planilla plan de",
+                                            "descripcion" => "Planilla plan de clases",
                                             "tipo" => "personalizado",
                                             "name" => "lbl_planilla",
                                             "opciones" => "",

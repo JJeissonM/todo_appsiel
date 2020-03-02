@@ -26,7 +26,7 @@
                     @foreach($paginas as $pagina)
                         <tr>
                             <td>{{$pagina->titulo}}</td>
-                            <td><a href="{{url('/'.str_slug($pagina->slug))}}">{{url('/'.$pagina->slug)}}</a></td>
+                            <td><a href="{{url('/'.str_slug($pagina->slug))}}" target="_blank">{{url('/'.$pagina->slug)}}</a></td>
                             <td>{{$pagina->estado}}</td>
                             <td>{{$pagina->pagina_inicio? 'Principal' : 'Default'}}</td>
                             <td>

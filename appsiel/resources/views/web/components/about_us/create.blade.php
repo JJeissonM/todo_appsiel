@@ -62,15 +62,15 @@
                         </div>
                         <div class="form-group">
                             <label>Misión</label>
-                            <textarea name="mision" class="form-control" rows="5">{{$aboutus->mision}}</textarea>
+                            <textarea name="mision" class="form-control contenido" rows="5">{{$aboutus->mision}}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Visión</label>
-                            <textarea name="vision" class="form-control" rows="5">{{$aboutus->vision}}</textarea>
+                            <textarea name="vision" class="form-control contenido" rows="5">{{$aboutus->vision}}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Valores</label>
-                            <textarea name="valores" class="form-control" rows="5">{{$aboutus->valores}}</textarea>
+                            <textarea name="valores" class="form-control contenido" rows="5">{{$aboutus->valores}}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Imagen</label>
@@ -100,15 +100,15 @@
                         </div>
                         <div class="form-group">
                             <label>Misión</label>
-                            <textarea name="mision" class="form-control" rows="5"></textarea>
+                            <textarea name="mision" class="form-control contenido" rows="5"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Visión</label>
-                            <textarea name="vision" class="form-control" rows="5"></textarea>
+                            <textarea name="vision" class="form-control contenido" rows="5"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Valores</label>
-                            <textarea name="valores" class="form-control" rows="5"></textarea>
+                            <textarea name="valores" class="form-control contenido" rows="5"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Imagen</label>
@@ -136,5 +136,31 @@
 @endsection
 
 @section('script')
+    <script type="text/javascript">
 
+        var original_name;
+
+
+        $('.contenido').on( 'focus', function(){
+
+            original_name = $(this).attr('name');
+
+            $(this).attr('name','contenido');
+
+            CKEDITOR.replace('contenido', {
+            height: 200,
+              // By default, some basic text styles buttons are removed in the Standard preset.
+              // The code below resets the default config.removeButtons setting.
+              removeButtons: ''
+            });
+
+        });
+
+        $('.contenido').on( 'blur', function(){
+
+            $(this).attr('name', original_name);
+
+        }); 
+            
+    </script>
 @endsection

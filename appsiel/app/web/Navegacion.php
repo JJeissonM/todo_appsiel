@@ -11,7 +11,7 @@ class Navegacion extends Model
     protected  $fillable = ['id', 'logo','color','width_logo','heigth_logo', 'created_at', 'updated_at'];
 
     public function menus(){
-        return $this->hasMany(Menunavegacion::class,'navegacion_id');
+        return $this->hasMany(Menunavegacion::class,'navegacion_id')->orderBy('orden');
     }
 
 }

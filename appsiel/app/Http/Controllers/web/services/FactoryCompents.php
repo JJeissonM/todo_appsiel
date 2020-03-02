@@ -32,7 +32,7 @@ class FactoryCompents
             case "Servicios":
                 $component = new ServicioComponent($this->widget);
                 break;
-            case "Artículos":
+            case "Articulos":
                 $component = new ArticleComponent($this->widget);
                 break;
             case "Pie de pagina":
