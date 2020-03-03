@@ -40,6 +40,7 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+
         $as = new Articlesetup($request->all());
         $result = $as->save();
         $variables_url = $request->variables_url;
@@ -119,6 +120,22 @@ class ArticleController extends Controller
     {
         $a = new Article($request->all());
         $result = $a->save();
+
+
+        if ($request->hasFile('imagen'))
+        {
+
+            $file = $request->file('imagen');
+
+            $name = str_slug( $file->getClientOriginalName() ) . '-' .time() . '.' . $file->clientExtension();
+
+            $filename = "img/articles/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $a->fill(['imagen' => $filename])->save();
+            }
+        }
+
         $variables_url = $request->variables_url;
         if ($result) {
             $message = 'El artículo fue almacenado correctamente.';
@@ -138,10 +155,37 @@ class ArticleController extends Controller
     public function articleupdate(Request $request)
     {
         $a = Article::find($request->article_id);
+
+        $old_image = $a->imagen;
+
         $a->titulo = $request->titulo;
         $a->estado = $request->estado;
         $a->contenido = $request->contenido;
+        $a->descripcion = $request->descripcion;
         $result = $a->save();
+
+
+        if($request->hasFile('imagen'))
+        {
+
+            $file = $request->file('imagen');
+            $name = str_slug( $file->getClientOriginalName() ) . '-' .time() . '.' . $file->clientExtension();
+
+            $filename = "img/articles/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+
+            if($flag !== false)
+            {
+                if( $old_image != '' )
+                {
+                    unlink( $old_image );
+                }
+
+                $a->fill(['imagen' =>$filename])->save();
+            }
+        }
+
+
         $variables_url = $request->variables_url;
         if ($result) {
             $message = 'El artículo fue modificado correctamente.';

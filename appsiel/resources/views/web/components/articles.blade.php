@@ -329,6 +329,20 @@
                             <input name="titulo" type="text" class="form-control" id="recipient-name">
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="col-form-label">Imágen</label>
+                            <input type="file" class="form-control" name="imagen" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="col-form-label">Descripción</label>
+                            <textarea class="form-control" name="descripcion" maxlength="250"></textarea>
+                        </div>
+                    </div>                                
+
                     <div class="form-group">
                         <label for="message-text" class="col-form-label">Contenido</label>
                         <textarea name="contenido" class="form-control editor" id="contenido"></textarea>
@@ -370,6 +384,21 @@
                             <input name="titulo" type="text" class="form-control" id="tituloe">
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="col-form-label">Descripción</label>
+                            <textarea class="form-control" name="descripcion" id="descripcione" maxlength="250"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="col-form-label">Imágen</label>
+                            <input type="file" class="form-control" name="imagen" accept="image/*">
+                        </div>
+                    </div>
+
                     <div class="form-group" id="textarea">
 
                     </div>
@@ -419,6 +448,7 @@
             if (i.id == id) {
                 //poner datos
                 $("#tituloe").val(i.titulo);
+                $("#descripcione").html(i.descripcion);
                 var htmlestado = "<label class='col-form-label'>Estado</label>" +
                     "<select class='form-control' name='estado' id='estadoe'>" +
                     "<option value='VISIBLE'>VISIBLE EN LA SECCIÓN</option>" +

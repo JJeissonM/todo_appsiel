@@ -9,9 +9,11 @@
                         <aside class="">
                             <ul id="menu-menu4" class="menu">
                                 @foreach($item->enlaces as $enlace)
-                                    <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                style="color: white; font-size: 14px" href="">{{$enlace->texto}}</a>
+
+                                    <li id="" class="" style="list-style: none; margin-top: 10px;"> 
+                                        <a style="color: white; font-size: 14px" href="{{ $enlace->enlace }}" target="_blank"> {{ $enlace->texto }} </a>
                                     </li>
+
                                 @endforeach
                             </ul>
                         </aside>
