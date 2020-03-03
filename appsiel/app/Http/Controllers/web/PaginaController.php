@@ -184,6 +184,7 @@ class PaginaController extends Controller
             return redirect()->back()->with('mensaje_error', $message)->withInput($request->input());
         }
 
+
         $widget =  new Widget();
         $widget->pagina_id = $request->pagina_id;
         $widget->seccion_id = $request->seccion_id;
@@ -191,7 +192,11 @@ class PaginaController extends Controller
         $widget->orden = $orden + 1;
         $widget->estado = 'ACTIVO';
 
-        $widget->save();
+        $flag = $widget->save();
+
+        if($flag){
+
+        }
 
         return redirect()->back()->withInput($request->input());
     }

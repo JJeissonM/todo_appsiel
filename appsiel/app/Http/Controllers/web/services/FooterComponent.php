@@ -32,7 +32,7 @@ class FooterComponent implements IDrawComponent
             ['pagina_id',$widget->pagina_id]
         ])->first();
         $contactenos = Contactenos::where('widget_id', $contacto->id)->first();
-        return Form::footer($footer,$redes,$contactenos);
+        return Form::footer($footer,$redes,$contactenos,'small');
     }
 
     function viewComponent()
