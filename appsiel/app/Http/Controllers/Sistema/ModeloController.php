@@ -45,7 +45,7 @@ use App\PropiedadHorizontal\Propiedad;
 
 class ModeloController extends Controller
 {
-    protected $app, $modelo, $datos;
+    protected $aplicacion, $modelo, $datos;
 
     public function __construct()
     {
@@ -123,7 +123,10 @@ class ModeloController extends Controller
         y no, desde la base de datos
                 */
         
-        $registros = app($this->modelo->name_space)->consultar_registros(); //->take(20);
+        if ( method_exists( app( $this->modelo->name_space ), 'consultar_registros' ) )
+        {
+            $registros = app($this->modelo->name_space)->consultar_registros();
+        }
 
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
         if (!is_null($vistas)) {
@@ -155,6 +158,8 @@ class ModeloController extends Controller
         {
             $lista_campos = app( $this->modelo->name_space )->get_campos_adicionales_create( $lista_campos );
         }
+
+
         if( Input::get('id_transaccion') != '' )
         {
             $tipo_transaccion = TipoTransaccion::find( Input::get('id_transaccion') );

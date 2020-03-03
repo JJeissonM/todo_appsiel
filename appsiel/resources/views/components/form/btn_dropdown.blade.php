@@ -10,7 +10,7 @@
 	    @for($i=0; $i < $cant; $i++)
 			<li>
 				<a href="{{ url( $urls[$i]['link'] ) }}"> 
-					{{ $urls[$i]['etiqueta'] }} 
+					{!! $urls[$i]['etiqueta'] !!} 
 				</a>
 			</li>
 		@endfor

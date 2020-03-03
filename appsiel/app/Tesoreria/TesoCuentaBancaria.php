@@ -50,4 +50,16 @@ class TesoCuentaBancaria extends Model
 
         return $registro[0];
     }
+
+    public static function get_datos_basicos( $id )
+    {
+        return TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
+                            ->where('teso_cuentas_bancarias.id', $id)
+                            ->select(
+                                        'teso_cuentas_bancarias.tipo_cuenta',
+                                        'teso_cuentas_bancarias.descripcion',
+                                        'teso_entidades_financieras.descripcion AS entidad_financiera')
+                            ->get()
+                            ->first();
+    }
 }

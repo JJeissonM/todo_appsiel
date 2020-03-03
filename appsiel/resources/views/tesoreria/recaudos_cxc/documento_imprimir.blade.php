@@ -93,7 +93,7 @@
                     ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                     ->where('consecutivo',$linea->doc_cxc_consecutivo)
                     ->get()->first();
-
+                    //dd( $el_documento );
                 ?>
 
                 <tr>

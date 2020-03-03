@@ -20,6 +20,12 @@ Route::post('calificaciones/asistencia_clases/continuar_creacion', 'Calificacion
 Route::resource('calificaciones/asistencia_clases', 'Calificaciones\AsistenciaClaseController');
 
 
+// PREINFORME ACADEMICO
+Route::post('cali_preinforme_academico_almacenar_anotacion','Calificaciones\PreinformeAcademicoController@almacenar_anotacion');
+Route::post('cali_preinforme_academico_crear', 'Calificaciones\PreinformeAcademicoController@crear');
+Route::resource('cali_preinforme_academico', 'Calificaciones\PreinformeAcademicoController');
+
+
 // Reportes, INFORMES Y LISTADOS
 Route::post('calificaciones/ajax_reporte_consolidado_por_curso','Calificaciones\ReporteController@ajax_reporte_consolidado_por_curso');
 Route::resource('calificaciones/informe_final', 'Calificaciones\InformeFinalController');

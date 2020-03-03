@@ -4673,14 +4673,14 @@
       'core_app_id' => 5,
       'modelo_id' => 183,
       'name' => 'sga_plan_clases_plantillas_elementos',
-      'descripcion' => 'Elementos de plantillas de planes de Clases',
+      'descripcion' => 'Secciones de planes de Clases',
       'url' => 'web',
       'parent' => 334,
       'orden' => 3,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-01-24 06:56:01',
-      'updated_at' => '2020-01-24 06:56:28',
+      'updated_at' => '2020-02-28 11:41:24',
     ),
     312 => 
     array (
@@ -4861,6 +4861,21 @@
       'fa_icon' => '',
       'created_at' => '2020-02-26 08:56:57',
       'updated_at' => '2020-02-26 08:57:31',
+    ),
+    324 => 
+    array (
+      'id' => 350,
+      'core_app_id' => 2,
+      'modelo_id' => 192,
+      'name' => 'cali_preinforme_academico',
+      'descripcion' => 'Preinforme Académico',
+      'url' => 'web',
+      'parent' => 86,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-01 13:18:41',
+      'updated_at' => '2020-03-01 09:43:32',
     ),
   ),
   'roles' => 
@@ -11073,6 +11088,18 @@
       'orden' => 0,
       'permission_id' => 349,
       'role_id' => 1,
+    ),
+    1018 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 350,
+      'role_id' => 1,
+    ),
+    1019 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 350,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -21236,6 +21263,134 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-02-23 13:18:33',
       'updated_at' => '2020-02-23 13:18:56',
     ),
+    630 => 
+    array (
+      'id' => 636,
+      'descripcion' => 'Detalla proveedores',
+      'tipo' => 'select',
+      'name' => 'detalla_proveedores',
+      'opciones' => '{"0":"No","1":"Si"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-02-28 04:58:44',
+      'updated_at' => '2020-02-28 04:59:06',
+    ),
+    631 => 
+    array (
+      'id' => 637,
+      'descripcion' => 'IVA Incluido',
+      'tipo' => 'select',
+      'name' => 'iva_incluido',
+      'opciones' => '{"0":"No","1":"Si"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-02-28 05:15:31',
+      'updated_at' => '2020-02-28 05:16:06',
+    ),
+    632 => 
+    array (
+      'id' => 638,
+      'descripcion' => '% proyección #1',
+      'tipo' => 'text',
+      'name' => 'porcentaje_proyeccion_1',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-02-28 10:10:15',
+      'updated_at' => '2020-02-28 10:10:15',
+    ),
+    633 => 
+    array (
+      'id' => 639,
+      'descripcion' => '% proyección #2',
+      'tipo' => 'text',
+      'name' => 'porcentaje_proyeccion_2',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-02-28 10:10:29',
+      'updated_at' => '2020-02-28 10:10:36',
+    ),
+    634 => 
+    array (
+      'id' => 640,
+      'descripcion' => '% proyección #3',
+      'tipo' => 'text',
+      'name' => 'porcentaje_proyeccion_3',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-02-28 10:10:43',
+      'updated_at' => '2020-02-28 10:10:50',
+    ),
+    635 => 
+    array (
+      'id' => 641,
+      'descripcion' => '% proyección #4',
+      'tipo' => 'text',
+      'name' => 'porcentaje_proyeccion_4',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-02-28 10:11:02',
+      'updated_at' => '2020-02-28 10:11:09',
+    ),
+    636 => 
+    array (
+      'id' => 642,
+      'descripcion' => 'Anotación',
+      'tipo' => 'bsTextArea',
+      'name' => 'anotacion',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-01 09:46:22',
+      'updated_at' => '2020-03-01 09:46:22',
+    ),
+    637 => 
+    array (
+      'id' => 643,
+      'descripcion' => 'Asignatura',
+      'tipo' => 'select',
+      'name' => 'id_asignatura',
+      'opciones' => '{"":""}',
+      'value' => 'null',
+      'atributos' => '{"class":"select_dependientes_hijo"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2020-03-01 05:58:03',
+      'updated_at' => '2020-03-01 05:58:07',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -24547,7 +24702,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'name_space' => 'App\\Tesoreria\\ArqueoCaja',
       'modelo_relacionado' => '',
       'url_crear' => 'tesoreria/arqueo_caja/create',
-      'url_edit' => 'tesoreria/arqueos_caja/id_fila/edit',
+      'url_edit' => 'tesoreria/arqueo_caja/id_fila/edit',
       'url_print' => '',
       'url_ver' => 'tesoreria/arqueo_caja/id_fila',
       'enlaces' => '',
@@ -24555,11 +24710,11 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_eliminar' => '',
       'controller_complementario' => '',
       'url_form_create' => '',
-      'home_miga_pan' => 'compras, Compras',
+      'home_miga_pan' => 'na',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2019-10-29 04:13:22',
-      'updated_at' => '2019-10-29 00:43:12',
+      'updated_at' => '2020-02-26 12:30:06',
     ),
     151 => 
     array (
@@ -25092,7 +25247,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     175 => 
     array (
       'id' => 183,
-      'descripcion' => 'Elementos de plantillas de planes de clases',
+      'descripcion' => 'Secciones de planes de clases',
       'modelo' => 'PlanClaseEstrucElemento',
       'name_space' => 'App\\AcademicoDocente\\PlanClaseEstrucElemento',
       'modelo_relacionado' => '',
@@ -25109,7 +25264,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-01-24 09:13:22',
-      'updated_at' => '2020-01-24 09:13:22',
+      'updated_at' => '2020-02-28 11:41:01',
     ),
     176 => 
     array (
@@ -25242,6 +25397,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-02-17 09:48:36',
       'updated_at' => '2020-02-20 10:24:17',
+    ),
+    182 => 
+    array (
+      'id' => 192,
+      'descripcion' => 'Preinformes Académicos',
+      'modelo' => 'sga_preinformes_academicos',
+      'name_space' => 'App\\Calificaciones\\PreinformeAcademico',
+      'modelo_relacionado' => '',
+      'url_crear' => 'cali_preinforme_academico/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'cali_preinforme_academico',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-01 09:13:22',
+      'updated_at' => '2020-03-01 05:39:31',
     ),
   ),
   'sys_modelos_relacionados' => 
@@ -35133,6 +35310,27 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 175,
       'core_campo_id' => 635,
     ),
+    1412 => 
+    array (
+      'id' => 1629,
+      'orden' => 2,
+      'core_modelo_id' => 192,
+      'core_campo_id' => 72,
+    ),
+    1413 => 
+    array (
+      'id' => 1631,
+      'orden' => 4,
+      'core_modelo_id' => 192,
+      'core_campo_id' => 311,
+    ),
+    1414 => 
+    array (
+      'id' => 1633,
+      'orden' => 6,
+      'core_modelo_id' => 192,
+      'core_campo_id' => 643,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -35346,6 +35544,16 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-02-19 04:50:06',
       'updated_at' => '2020-02-19 04:50:17',
     ),
+    21 => 
+    array (
+      'id' => 23,
+      'descripcion' => 'Movimiento de Caja/Bancos',
+      'core_app_id' => 3,
+      'url_form_action' => 'teso_movimiento_caja_bancos',
+      'estado' => 'Activo',
+      'created_at' => '2020-02-26 18:35:18',
+      'updated_at' => '2020-02-26 18:35:50',
+    ),
   ),
   'sys_reporte_tiene_campos' => 
   array (
@@ -35411,279 +35619,345 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     10 => 
     array (
+      'orden' => 3,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 248,
+    ),
+    11 => 
+    array (
+      'orden' => 5,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 249,
+    ),
+    12 => 
+    array (
+      'orden' => 7,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 250,
+    ),
+    13 => 
+    array (
       'orden' => 4,
       'core_reporte_id' => 20,
       'core_campo_id' => 287,
     ),
-    11 => 
+    14 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 7,
       'core_campo_id' => 293,
     ),
-    12 => 
+    15 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 9,
       'core_campo_id' => 293,
     ),
-    13 => 
+    16 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 10,
       'core_campo_id' => 293,
     ),
-    14 => 
+    17 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 16,
       'core_campo_id' => 293,
     ),
-    15 => 
+    18 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 17,
       'core_campo_id' => 293,
     ),
-    16 => 
+    19 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 18,
       'core_campo_id' => 293,
     ),
-    17 => 
+    20 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 1,
-      'core_campo_id' => 473,
-    ),
-    18 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 2,
-      'core_campo_id' => 473,
-    ),
-    19 => 
-    array (
-      'orden' => 3,
-      'core_reporte_id' => 5,
-      'core_campo_id' => 473,
-    ),
-    20 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 6,
       'core_campo_id' => 473,
     ),
     21 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 13,
+      'core_reporte_id' => 2,
       'core_campo_id' => 473,
     ),
     22 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 5,
+      'core_campo_id' => 473,
+    ),
+    23 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 6,
+      'core_campo_id' => 473,
+    ),
+    24 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 473,
+    ),
+    25 => 
     array (
       'orden' => 1,
       'core_reporte_id' => 15,
       'core_campo_id' => 473,
     ),
-    23 => 
+    26 => 
+    array (
+      'orden' => 1,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 473,
+    ),
+    27 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 1,
       'core_campo_id' => 474,
     ),
-    24 => 
+    28 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 2,
       'core_campo_id' => 474,
     ),
-    25 => 
+    29 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 5,
       'core_campo_id' => 474,
     ),
-    26 => 
+    30 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 13,
       'core_campo_id' => 474,
     ),
-    27 => 
+    31 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 15,
       'core_campo_id' => 474,
     ),
-    28 => 
+    32 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 474,
+    ),
+    33 => 
     array (
       'orden' => 9,
       'core_reporte_id' => 5,
       'core_campo_id' => 476,
     ),
-    29 => 
+    34 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 8,
       'core_campo_id' => 489,
     ),
-    30 => 
+    35 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 8,
       'core_campo_id' => 490,
     ),
-    31 => 
+    36 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 8,
       'core_campo_id' => 491,
     ),
-    32 => 
+    37 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 13,
       'core_campo_id' => 536,
     ),
-    33 => 
+    38 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 15,
       'core_campo_id' => 561,
     ),
-    34 => 
+    39 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 11,
       'core_campo_id' => 588,
     ),
-    35 => 
+    40 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 12,
       'core_campo_id' => 588,
     ),
-    36 => 
+    41 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 22,
       'core_campo_id' => 588,
     ),
-    37 => 
+    42 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 7,
       'core_campo_id' => 599,
     ),
-    38 => 
+    43 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 17,
       'core_campo_id' => 599,
     ),
-    39 => 
+    44 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 17,
       'core_campo_id' => 613,
     ),
-    40 => 
+    45 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 17,
       'core_campo_id' => 614,
     ),
-    41 => 
+    46 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 18,
       'core_campo_id' => 614,
     ),
-    42 => 
+    47 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 17,
       'core_campo_id' => 615,
     ),
-    43 => 
+    48 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 18,
       'core_campo_id' => 615,
     ),
-    44 => 
+    49 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 17,
       'core_campo_id' => 616,
     ),
-    45 => 
+    50 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 18,
       'core_campo_id' => 616,
     ),
-    46 => 
+    51 => 
     array (
       'orden' => 14,
       'core_reporte_id' => 17,
       'core_campo_id' => 617,
     ),
-    47 => 
+    52 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 17,
       'core_campo_id' => 618,
     ),
-    48 => 
+    53 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 18,
       'core_campo_id' => 619,
     ),
-    49 => 
+    54 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 20,
       'core_campo_id' => 622,
     ),
-    50 => 
+    55 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 622,
     ),
-    51 => 
+    56 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 20,
       'core_campo_id' => 623,
     ),
-    52 => 
+    57 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 20,
       'core_campo_id' => 629,
     ),
-    53 => 
+    58 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 21,
       'core_campo_id' => 630,
     ),
-    54 => 
+    59 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 21,
       'core_campo_id' => 632,
     ),
-    55 => 
+    60 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 633,
+    ),
+    61 => 
+    array (
+      'orden' => 10,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 636,
+    ),
+    62 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 637,
+    ),
+    63 => 
+    array (
+      'orden' => 15,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 638,
+    ),
+    64 => 
+    array (
+      'orden' => 16,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 639,
+    ),
+    65 => 
+    array (
+      'orden' => 17,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 640,
+    ),
+    66 => 
+    array (
+      'orden' => 18,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 641,
     ),
   ),
   'sys_tipos_transacciones' => 

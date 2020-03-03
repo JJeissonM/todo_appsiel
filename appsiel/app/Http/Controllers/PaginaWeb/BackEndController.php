@@ -28,8 +28,8 @@ class BackEndController extends Controller
                 'etiqueta' => 'Setup'
             ]
         ];
-
+        $variables_url = '?id=' . Input::get('id');
         $contacts = Formcontactenos::all();
-        return view('web.setup', compact('miga_pan', 'contacts'));
+        return view('web.setup', compact('miga_pan', 'contacts','variables_url'));
     }
 }

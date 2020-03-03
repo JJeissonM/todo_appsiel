@@ -207,6 +207,15 @@
     <script src="{{asset('js/jquery.inview.min.js')}}"></script>
     <script src="{{asset('js/wow.min.js')}}"></script>
     <script src="{{asset('js/main.js')}}"></script>
+    <!-- DataTable -->
+	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
+	<script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
 
 
     <script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
@@ -214,6 +223,18 @@
     <!-- About us Skills Circle progress  -->
 
     @yield('script')
+
+    <script type="text/javascript">
+        $(function() {
+            $('#myTable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [],
+                order: [
+                    [0, 'desc']
+                ]
+            });
+        });
+    </script>
 
 </body>
 

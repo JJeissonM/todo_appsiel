@@ -26,7 +26,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsText('url_instancia_cliente', $parametros['url_instancia_cliente'], 'Url Dominio y Directorio de la aplicacion)', ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['url_instancia_cliente'] ) )
+								{
+									$url_instancia_cliente = $parametros['url_instancia_cliente'];
+								}else{
+									$url_instancia_cliente = 'http://localhost/appsiel_2020/appsiel/';
+								}
+							?>
+							{{ Form::bsText('url_instancia_cliente', $url_instancia_cliente, 'Url Dominio y Directorio de la aplicacion)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -42,13 +50,29 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsText('alto_logo_formatos', $parametros['alto_logo_formatos'], 'Alto logo formatos (px)', ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['alto_logo_formatos'] ) )
+								{
+									$alto_logo_formatos = $parametros['alto_logo_formatos'];
+								}else{
+									$alto_logo_formatos = 110;
+								}
+							?>
+							{{ Form::bsText('alto_logo_formatos', $alto_logo_formatos, 'Alto logo formatos (px)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsText('ancho_logo_formatos', $parametros['ancho_logo_formatos'], 'Ancho logo formatos (px)', ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['ancho_logo_formatos'] ) )
+								{
+									$ancho_logo_formatos = $parametros['ancho_logo_formatos'];
+								}else{
+									$ancho_logo_formatos = 'Si';
+								}
+							?>
+							{{ Form::bsText('ancho_logo_formatos', $ancho_logo_formatos, 'Ancho logo formatos (px)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -61,7 +85,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('liquidacion_impuestos', $parametros['liquidacion_impuestos'], 'Liquida impuestos', ['0' => 'No liquida','1' => 'Si liquida'], ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['liquidacion_impuestos'] ) )
+								{
+									$liquidacion_impuestos = $parametros['liquidacion_impuestos'];
+								}else{
+									$liquidacion_impuestos = 0;
+								}
+							?>
+							{{ Form::bsSelect('liquidacion_impuestos', $liquidacion_impuestos, 'Liquida impuestos', ['0' => 'No liquida','1' => 'Si liquida'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -80,13 +112,29 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('cta_cartera_default', $parametros['cta_cartera_default'], 'Cta. Cartera (CxC)', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							<?php 
+								if( isset($parametros['cta_cartera_default'] ) )
+								{
+									$cta_cartera_default = $parametros['cta_cartera_default'];
+								}else{
+									$cta_cartera_default = 27;
+								}
+							?>
+							{{ Form::bsSelect('cta_cartera_default', $cta_cartera_default, 'Cta. Cartera (CxC)', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('cta_anticipo_clientes_default', $parametros['cta_anticipo_clientes_default'], 'Cta. Anticipo clientes', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							<?php 
+								if( isset($parametros['cta_anticipo_clientes_default'] ) )
+								{
+									$cta_anticipo_clientes_default = $parametros['cta_anticipo_clientes_default'];
+								}else{
+									$cta_anticipo_clientes_default = 219;
+								}
+							?>
+							{{ Form::bsSelect('cta_anticipo_clientes_default', $cta_anticipo_clientes_default, 'Cta. Anticipo clientes', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
 						</div>
 					</div>
 
@@ -96,13 +144,29 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('cta_por_pagar_default', $parametros['cta_por_pagar_default'], 'Cta. por pagar (CxP)', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							<?php 
+								if( isset($parametros['cta_por_pagar_default'] ) )
+								{
+									$cta_por_pagar_default = $parametros['cta_por_pagar_default'];
+								}else{
+									$cta_por_pagar_default = 131;
+								}
+							?>
+							{{ Form::bsSelect('cta_por_pagar_default', $cta_por_pagar_default, 'Cta. por pagar (CxP)', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('cta_anticipo_proveedores_default', $parametros['cta_anticipo_proveedores_default'], 'Cta. Anticipo proveedores', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							<?php 
+								if( isset($parametros['cta_anticipo_proveedores_default'] ) )
+								{
+									$cta_anticipo_proveedores_default = $parametros['cta_anticipo_proveedores_default'];
+								}else{
+									$cta_anticipo_proveedores_default = 29;
+								}
+							?>
+							{{ Form::bsSelect('cta_anticipo_proveedores_default', $cta_anticipo_proveedores_default, 'Cta. Anticipo proveedores', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
 						</div>
 					</div>
 
@@ -112,7 +176,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('cta_ingresos_default', $parametros['cta_ingresos_default'], 'Cta. ingresos (ventas)', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							<?php 
+								if( isset($parametros['cta_ingresos_default'] ) )
+								{
+									$cta_ingresos_default = $parametros['cta_ingresos_default'];
+								}else{
+									$cta_ingresos_default = 229;
+								}
+							?>
+							{{ Form::bsSelect('cta_ingresos_default', $cta_ingresos_default, 'Cta. ingresos (ventas)', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
 						</div>
 					</div>
 

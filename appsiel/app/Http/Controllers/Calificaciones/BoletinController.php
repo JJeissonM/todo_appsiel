@@ -108,13 +108,25 @@ class BoletinController extends Controller
 
 		$periodos_lectivos = PeriodoLectivo::get_array_activos();
 
+        $formatos = [
+                        'pdf_boletines_1' => 'Formato # 1 (estándar)',
+                        'pdf_boletines_2' => 'Formato # 2 (moderno)',
+                        'pdf_boletines_3' => 'Formato # 3 (visual)',
+                        'pdf_boletines_4' => 'Formato # 4 (metas)'
+                    ];
+
+        if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
+        {
+            $formatos[ 'pdf_preinforme_academico' ] = 'Preinforme Académico';
+        }
+
 		$miga_pan = [
                         ['url'=>'calificaciones?id='.Input::get('id'),'etiqueta'=>'Calificaciones'],
                         ['url'=>'NO','etiqueta'=>'Imprimir boletines']
                     ];
 
 
-        return view('calificaciones.boletines.form_imprimir',compact('cursos','periodos_lectivos','miga_pan'));
+        return view('calificaciones.boletines.form_imprimir',compact('cursos','periodos_lectivos', 'formatos', 'miga_pan'));
     }
 	
 	public function generarPDF(Request $request)

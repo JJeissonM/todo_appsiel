@@ -7,6 +7,7 @@
   'dvc_modelo_id' => '174',
   'dvc_tipo_transaccion_id' => '34',
   'dvc_tipo_doc_app_id' => '35',
+  'pv_tipo_doc_app_id' => '41',
   'modo_liquidacion_precio' => 'ultimo_precio',
   'encabezado_linea_1' => 'ATENCIÓN, CALIDAD Y PRECIO.',
   'encabezado_linea_2' => 'UNA EXPERIENCIA AGRADABLE.',
@@ -15,5 +16,4 @@
   'pie_pagina_linea_2' => 'GRACIAS POR PREFERIRNOS.',
   'pie_pagina_linea_3' => '',
   'url_id_modelo' => '0',
-  'pv_tipo_doc_app_id' => '41',
 ) ;

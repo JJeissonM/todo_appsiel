@@ -18,7 +18,7 @@ class CreateFormcontactenosTable extends Migration
             $table->string('email');
             $table->string('subject');
             $table->text('message');
-            $table->string('state', 50); //READ, UNREAD
+            $table->string('state', 50)->default('UNREAD'); //READ, UNREAD
             $table->timestamps();
         });
     }

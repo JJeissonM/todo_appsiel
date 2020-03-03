@@ -69,3 +69,15 @@
 		{{$registros->render()}}
 	</div>
 @endsection
+
+@section('scripts')
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$('input').focus( );			
+
+		});
+	</script>
+
+@endsection

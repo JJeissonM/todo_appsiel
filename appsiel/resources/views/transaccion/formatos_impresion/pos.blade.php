@@ -63,6 +63,9 @@
                     <b>Fecha:</b> {{ $doc_encabezado->fecha }}
                 </td>
             </tr>
+
+            @yield('fila_datos_adicionales')
+
     </table>
     
     @if($doc_encabezado->estado == 'Anulado')

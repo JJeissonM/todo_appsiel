@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\web\Formcontactenos;
 use Illuminate\Support\Facades\Input;
 
 class ContactenosController extends Controller
@@ -32,29 +33,43 @@ class ContactenosController extends Controller
         return view('web.components.contactenos.create', compact('miga_pan', 'variables_url', 'contactenos', 'widget'));
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $contactenos = new Contactenos($request->all());
-        $result=$contactenos->save();
-        if($result){
+        $result = $contactenos->save();
+        if ($result) {
             $message = 'El formulario fue creado de forma exitosa.';
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
-        }else{
+        } else {
             $message = 'El formulario fue creado de forma exitosa.';
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
         }
     }
 
-    public function updated(Request $request,$id){
+    public function updated(Request $request, $id)
+    {
         $contactenos = Contactenos::find($id);
         $contactenos->fill($request->all());
-        $variables_url=$request->variables_url;
+        $variables_url = $request->variables_url;
         $result = $contactenos->save();
-        if($result){
+        if ($result) {
             $message = 'El formulario fue modificado correctamente.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
-        }else{
+        } else {
             $message = 'El formulario no fue modificado de forma correcta.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }
+    }
+
+    //leer contactenos
+    public function leer($id)
+    {
+        $c = Formcontactenos::find($id);
+        $c->state = "READ";
+        if ($c->save()) {
+            return "OK";
+        } else {
+            return "ERROR";
         }
     }
 }
