@@ -17,10 +17,10 @@
                                 <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-width: 100%; height: 180px; object-fit: cover;">
                             </div>
                             <div class="col-md-8">
-                                <h6 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h6>
-                                <p>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</p>
-                            </div>
-                            <div class="col-md-4" style="padding: 5px; text-align: right;">
+                                <h3 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h3>
+                                
+                                <p>{!! $a->descripcion !!}</p>
+
                                 <p><span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$a->updated_at}}</a></span></p>
                                 <p><span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$setup->titulo}}</a></span></p>
                                 <p><a target="_blank" href="{{route('article.show',$a->id)}}" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>

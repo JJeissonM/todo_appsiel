@@ -89,7 +89,7 @@
                         </div>
                         <div class="form-group">
                             <label>Reseña Historica</label>
-                            <textarea name="resenia" class="form-control" rows="5">{{$aboutus->resenia}}</textarea>
+                            <textarea name="resenia" class="form-control contenido" rows="5">{{$aboutus->resenia}}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Icono Reseña</label>
@@ -136,7 +136,7 @@
                         </div>
                         <div class="form-group">
                             <label>Reseña</label>
-                            <textarea name="resenia" class="form-control" rows="5"></textarea>
+                            <textarea name="resenia" class="form-control contenido" rows="5"></textarea>
                         </div>
                         <div class="form-group">
                             <label>Imagen</label>
