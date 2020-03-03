@@ -17,8 +17,7 @@ class ContactenosComponent implements IDrawComponent
 
     public function DrawComponent()
     {
-        $contactenos = Contactenos::where('widget_id', $this->widget)->first();
-        return Form::contactenos($contactenos);
+        //
     }
 
     public function viewComponent()
