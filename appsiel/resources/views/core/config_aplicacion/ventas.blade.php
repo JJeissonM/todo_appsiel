@@ -42,13 +42,29 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('rm_modelo_id', $parametros['rm_modelo_id'], 'Modelo para remisiones', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['rm_modelo_id'] ) )
+								{
+									$rm_modelo_id = $parametros['rm_modelo_id'];
+								}else{
+									$rm_modelo_id = 164;
+								}
+							?>
+							{{ Form::bsSelect('rm_modelo_id', $rm_modelo_id, 'Modelo para remisiones', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('rm_tipo_transaccion_id', $parametros['rm_tipo_transaccion_id'], 'Tipo de transacción para remisiones', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['rm_tipo_transaccion_id'] ) )
+								{
+									$rm_tipo_transaccion_id = $parametros['rm_tipo_transaccion_id'];
+								}else{
+									$rm_tipo_transaccion_id = 24;
+								}
+							?>
+							{{ Form::bsSelect('rm_tipo_transaccion_id', $rm_tipo_transaccion_id, 'Tipo de transacción para remisiones', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -58,7 +74,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('rm_tipo_doc_app_id', $parametros['rm_tipo_doc_app_id'], 'Documento para remisiones', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['rm_tipo_doc_app_id'] ) )
+								{
+									$rm_tipo_doc_app_id = $parametros['rm_tipo_doc_app_id'];
+								}else{
+									$rm_tipo_doc_app_id = 7;
+								}
+							?>
+							{{ Form::bsSelect('rm_tipo_doc_app_id', $rm_tipo_doc_app_id, 'Documento para remisiones', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -76,13 +100,29 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('dvc_modelo_id', $parametros['dvc_modelo_id'], 'Modelo para devoluciones', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['dvc_modelo_id'] ) )
+								{
+									$dvc_modelo_id = $parametros['dvc_modelo_id'];
+								}else{
+									$dvc_modelo_id = 174;
+								}
+							?>
+							{{ Form::bsSelect('dvc_modelo_id', $dvc_modelo_id, 'Modelo para devoluciones', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('dvc_tipo_transaccion_id', $parametros['dvc_tipo_transaccion_id'], 'Tipo de transacción para devoluciones', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['dvc_tipo_transaccion_id'] ) )
+								{
+									$dvc_tipo_transaccion_id = $parametros['dvc_tipo_transaccion_id'];
+								}else{
+									$dvc_tipo_transaccion_id = 34;
+								}
+							?>
+							{{ Form::bsSelect('dvc_tipo_transaccion_id', $dvc_tipo_transaccion_id, 'Tipo de transacción para devoluciones', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -92,7 +132,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('dvc_tipo_doc_app_id', $parametros['dvc_tipo_doc_app_id'], 'Documento para devoluciones', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['dvc_tipo_doc_app_id'] ) )
+								{
+									$dvc_tipo_doc_app_id = $parametros['dvc_tipo_doc_app_id'];
+								}else{
+									$dvc_tipo_doc_app_id = 35;
+								}
+							?>
+							{{ Form::bsSelect('dvc_tipo_doc_app_id', $dvc_tipo_doc_app_id, 'Documento para devoluciones', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -112,7 +160,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('pv_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id'], 'Documento para pedidos', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['pv_tipo_doc_app_id'] ) )
+								{
+									$pv_tipo_doc_app_id = $parametros['pv_tipo_doc_app_id'];
+								}else{
+									$pv_tipo_doc_app_id = 41;
+								}
+							?>
+							{{ Form::bsSelect('pv_tipo_doc_app_id', $pv_tipo_doc_app_id, 'Documento para pedidos', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -132,7 +188,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('modo_liquidacion_precio', $parametros['modo_liquidacion_precio'], 'Modo de liquidación del precio de ventas', ['ultimo_precio'=>'Último precio vendido','lista_de_precios'=>'Lista de precios del cliente'], ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['modo_liquidacion_precio'] ) )
+								{
+									$modo_liquidacion_precio = $parametros['modo_liquidacion_precio'];
+								}else{
+									$modo_liquidacion_precio = 'ultimo_precio';
+								}
+							?>
+							{{ Form::bsSelect('modo_liquidacion_precio', $modo_liquidacion_precio, 'Modo de liquidación del precio de ventas', ['ultimo_precio'=>'Último precio vendido','lista_de_precios'=>'Lista de precios del cliente'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -151,13 +215,29 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsText('encabezado_linea_1', $parametros['encabezado_linea_1'], 'Encabezado línea 1', ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['encabezado_linea_1'] ) )
+								{
+									$encabezado_linea_1 = $parametros['encabezado_linea_1'];
+								}else{
+									$encabezado_linea_1 = 'GRACIAS POR SU COMPRA.';
+								}
+							?>
+							{{ Form::bsText('encabezado_linea_1', $encabezado_linea_1, 'Encabezado línea 1', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsText('encabezado_linea_2', $parametros['encabezado_linea_2'], 'Encabezado línea 2', ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['encabezado_linea_2'] ) )
+								{
+									$encabezado_linea_2 = $parametros['encabezado_linea_2'];
+								}else{
+									$encabezado_linea_2 = '';
+								}
+							?>
+							{{ Form::bsText('encabezado_linea_2', $encabezado_linea_2, 'Encabezado línea 2', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -167,7 +247,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsText('encabezado_linea_3', $parametros['encabezado_linea_3'], 'Encabezado línea 3', ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['encabezado_linea_3'] ) )
+								{
+									$encabezado_linea_3 = $parametros['encabezado_linea_3'];
+								}else{
+									$encabezado_linea_3 = '';
+								}
+							?>
+							{{ Form::bsText('encabezado_linea_3', $encabezado_linea_3, 'Encabezado línea 3', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -184,13 +272,29 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsText('pie_pagina_linea_1', $parametros['pie_pagina_linea_1'], 'Pie de página línea 1', ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['pie_pagina_linea_1'] ) )
+								{
+									$pie_pagina_linea_1 = $parametros['pie_pagina_linea_1'];
+								}else{
+									$pie_pagina_linea_1 = '';
+								}
+							?>
+							{{ Form::bsText('pie_pagina_linea_1', $pie_pagina_linea_1, 'Pie de página línea 1', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsText('pie_pagina_linea_2', $parametros['pie_pagina_linea_2'], 'Pie de página línea 2', ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['pie_pagina_linea_2'] ) )
+								{
+									$pie_pagina_linea_2 = $parametros['pie_pagina_linea_2'];
+								}else{
+									$pie_pagina_linea_2 = 0;
+								}
+							?>
+							{{ Form::bsText('pie_pagina_linea_2', $pie_pagina_linea_2, 'Pie de página línea 2', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -200,7 +304,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsText('pie_pagina_linea_3', $parametros['pie_pagina_linea_3'], 'Pie de página línea 3', ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['pie_pagina_linea_3'] ) )
+								{
+									$pie_pagina_linea_3 = $parametros['pie_pagina_linea_3'];
+								}else{
+									$pie_pagina_linea_3 = '';
+								}
+							?>
+							{{ Form::bsText('pie_pagina_linea_3', $pie_pagina_linea_3, 'Pie de página línea 3', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

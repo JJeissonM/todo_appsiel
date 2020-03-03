@@ -1,4 +1,17 @@
 <style>
+	
+	.table {
+	    border: 1px solid #ddd;
+	}
+
+	.table-bordered {
+	    border: 1px solid #ddd;
+	}
+
+	.table-striped>tbody>tr:nth-of-type(odd) {
+	    background-color: #f9f9f9;
+	}
+
 	.page-break {
 		page-break-after: always;
 	}

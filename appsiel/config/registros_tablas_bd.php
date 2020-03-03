@@ -4878,6 +4878,107 @@
       'updated_at' => '2020-03-01 09:43:32',
     ),
   ),
+  'roles' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'name' => 'SuperAdmin',
+      'created_at' => '2018-02-28 13:57:25',
+      'updated_at' => '2018-02-28 13:57:25',
+    ),
+    1 => 
+    array (
+      'id' => 2,
+      'name' => 'Profesor',
+      'created_at' => '2018-03-13 15:05:33',
+      'updated_at' => '2018-03-13 15:05:33',
+    ),
+    2 => 
+    array (
+      'id' => 3,
+      'name' => 'Administrador',
+      'created_at' => '2018-03-30 14:27:12',
+      'updated_at' => '2018-08-20 18:31:22',
+    ),
+    3 => 
+    array (
+      'id' => 4,
+      'name' => 'Estudiante',
+      'created_at' => '2018-08-10 15:54:50',
+      'updated_at' => '2018-08-10 15:54:50',
+    ),
+    4 => 
+    array (
+      'id' => 5,
+      'name' => 'Gerente',
+      'created_at' => '2018-08-20 18:32:02',
+      'updated_at' => '2018-08-20 18:32:02',
+    ),
+    5 => 
+    array (
+      'id' => 6,
+      'name' => 'Jefe de almacén',
+      'created_at' => '2018-10-05 00:58:28',
+      'updated_at' => '2018-10-05 00:58:28',
+    ),
+    6 => 
+    array (
+      'id' => 7,
+      'name' => 'Administrador PH',
+      'created_at' => '2018-10-29 03:56:14',
+      'updated_at' => '2018-10-29 03:56:14',
+    ),
+    7 => 
+    array (
+      'id' => 8,
+      'name' => 'Residente PH',
+      'created_at' => '2018-12-19 04:34:19',
+      'updated_at' => '2018-12-19 04:34:19',
+    ),
+    8 => 
+    array (
+      'id' => 9,
+      'name' => 'Admin Colegio',
+      'created_at' => '2019-01-03 09:05:08',
+      'updated_at' => '2019-01-03 09:05:08',
+    ),
+    9 => 
+    array (
+      'id' => 10,
+      'name' => 'Secretaria Colegio',
+      'created_at' => '2019-01-10 05:47:04',
+      'updated_at' => '2019-01-10 05:47:04',
+    ),
+    10 => 
+    array (
+      'id' => 11,
+      'name' => 'Coord financiero colegio',
+      'created_at' => '2019-01-14 08:29:14',
+      'updated_at' => '2019-01-14 08:29:14',
+    ),
+    11 => 
+    array (
+      'id' => 12,
+      'name' => 'Colegio - Vicerrector',
+      'created_at' => '2019-01-31 10:06:17',
+      'updated_at' => '2019-01-31 10:06:17',
+    ),
+    12 => 
+    array (
+      'id' => 13,
+      'name' => 'Director de grupo',
+      'created_at' => '2019-02-07 11:16:36',
+      'updated_at' => '2019-02-07 11:16:36',
+    ),
+    13 => 
+    array (
+      'id' => 14,
+      'name' => 'Profesional Salud',
+      'created_at' => '2019-06-13 05:01:40',
+      'updated_at' => '2019-06-13 05:01:40',
+    ),
+  ),
   'role_has_permissions' => 
   array (
     0 => 
@@ -25319,6 +25420,9 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-03-01 09:13:22',
       'updated_at' => '2020-03-01 05:39:31',
     ),
+  ),
+  'sys_modelos_relacionados' => 
+  array (
   ),
   'sys_modelo_tiene_campos' => 
   array (

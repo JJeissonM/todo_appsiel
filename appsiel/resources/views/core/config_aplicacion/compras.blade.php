@@ -36,17 +36,35 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
+
+				<h5> Para entradas de Almacén </h5>
 				<div class="row">
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('ea_modelo_id', $parametros['ea_modelo_id'], 'Modelo para entradas de almacén', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['ea_modelo_id'] ) )
+								{
+									$ea_modelo_id = $parametros['ea_modelo_id'];
+								}else{
+									$ea_modelo_id = 165;
+								}
+							?>
+							{{ Form::bsSelect('ea_modelo_id', $ea_modelo_id, 'Modelo para entradas de almacén', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('ea_tipo_transaccion_id', $parametros['ea_tipo_transaccion_id'], 'Tipo de transacción para entradas de almacén', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['ea_tipo_transaccion_id'] ) )
+								{
+									$ea_tipo_transaccion_id = $parametros['ea_tipo_transaccion_id'];
+								}else{
+									$ea_tipo_transaccion_id = 35;
+								}
+							?>
+							{{ Form::bsSelect('ea_tipo_transaccion_id', $ea_tipo_transaccion_id, 'Tipo de transacción para entradas de almacén', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -56,7 +74,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('ea_tipo_doc_app_id', $parametros['ea_tipo_doc_app_id'], 'Documento para entradas de almacén', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['ea_tipo_doc_app_id'] ) )
+								{
+									$ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
+								}else{
+									$ea_tipo_doc_app_id = 2;
+								}
+							?>
+							{{ Form::bsSelect('ea_tipo_doc_app_id', $ea_tipo_doc_app_id, 'Documento para entradas de almacén', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -68,18 +94,35 @@
 
 				</div>
 
+				<br>
 				<h5> Para Devoluciones en compras </h5>
 				<div class="row">
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('ea_modelo_id', $parametros['ea_modelo_id'], 'Modelo para devoluciones en compras', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['dvc_modelo_id'] ) )
+								{
+									$dvc_modelo_id = $parametros['dvc_modelo_id'];
+								}else{
+									$dvc_modelo_id = 171;
+								}
+							?>
+							{{ Form::bsSelect('dvc_modelo_id', $dvc_modelo_id, 'Modelo para devoluciones en compras', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('ea_tipo_transaccion_id', $parametros['ea_tipo_transaccion_id'], 'Tipo de transacción para devoluciones en compras', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['dvc_tipo_transaccion_id'] ) )
+								{
+									$dvc_tipo_transaccion_id = $parametros['dvc_tipo_transaccion_id'];
+								}else{
+									$dvc_tipo_transaccion_id = 37;
+								}
+							?>
+							{{ Form::bsSelect('dvc_tipo_transaccion_id', $dvc_tipo_transaccion_id, 'Tipo de transacción para devoluciones en compras', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -89,7 +132,41 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('ea_tipo_doc_app_id', $parametros['ea_tipo_doc_app_id'], 'Documento para devoluciones en compras', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['dvc_tipo_doc_app_id'] ) )
+								{
+									$dvc_tipo_doc_app_id = $parametros['dvc_tipo_doc_app_id'];
+								}else{
+									$dvc_tipo_doc_app_id = 37;
+								}
+							?>
+							{{ Form::bsSelect('dvc_tipo_doc_app_id', $dvc_tipo_doc_app_id, 'Documento para devoluciones en compras', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+				<h5> Para Órdenes de compras </h5>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['oc_tipo_doc_app_id'] ) )
+								{
+									$oc_tipo_doc_app_id = $parametros['oc_tipo_doc_app_id'];
+								}else{
+									$oc_tipo_doc_app_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('oc_tipo_doc_app_id', $oc_tipo_doc_app_id, 'Modelo para devoluciones en compras', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
