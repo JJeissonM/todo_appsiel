@@ -23,6 +23,7 @@
                     <div class="card-body">
                         <table class="table table-responsive" style="margin-top: 20px;">
                             <thead>
+                            <th>Orden</th>
                             <th>Nombre</th>
                             <th>Enlace</th>
                             <th>Acciones</th>
@@ -31,6 +32,7 @@
                                 @foreach($nav->menus as $item)
                                     @if($item->parent_id == 0)
                                         <tr>
+                                            <td>{{$item->orden}}</td>
                                             <td>{{$item->titulo}}</td>
                                             <td><a href="{{$item->enlace}}">{{$item->enlace}}</a></td>
                                             <td>
@@ -78,7 +80,16 @@
                                     <input type="text" required class="form-control" id="formGroupExampleInput" placeholder="" name="descripcion">
                                 </div>
                             </div>
-                            <div class="col-md-12">
+
+                        
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="formGroupExampleInput" for="orden">Orden</label>
+                                    <input type="text" class="form-control" id="orden" name="orden">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="customFile" for="customFile">Icono(opcional)</label>
                                     <input type="file" class="form-control" id="" name="icono">
