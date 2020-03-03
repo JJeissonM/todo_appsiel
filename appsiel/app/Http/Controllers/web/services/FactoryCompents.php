@@ -20,7 +20,7 @@ class FactoryCompents
             case "Navegacion":
                 $component = new NavegacionComponent($this->widget);
                 break;
-            case "Slider" :
+            case "Slider":
                 $component = new SliderComponent($this->widget);
                 break;
             case "About us":
@@ -44,11 +44,13 @@ class FactoryCompents
             case "Clientes":
                 $component = new ClientesComponent($this->widget);
                 break;
+            case "Archivos":
+                $component = new ArchivosComponent($this->widget);
+                break;
             default:
                 $component = false;
         }
 
         return $component;
     }
-
 }

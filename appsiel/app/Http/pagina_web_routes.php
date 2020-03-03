@@ -54,6 +54,12 @@ Route::get('contactenos/create/{widget}', 'web\ContactenosController@create');
 Route::post('contactenos/store', 'web\ContactenosController@store')->name('contactenos.store');
 Route::put('contactenos/updated/{id}', 'web\ContactenosController@updated')->name('contactenos.updated');
 
+//CLIENTES
+Route::get('clientes/create/{widget}', 'web\ClienteController@creaste');
+Route::post('clientes/store', 'web\ClienteController@store')->name('clientes.store');
+Route::get('clientes/destroy/{cliente}', 'web\ClienteController@destroy');
+Route::post('clientes/modificar/cliente/', 'web\ClienteController@updated')->name('clientes.modificar');
+
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
 Route::get('categoria/{id?}', 'PaginaWeb\FrontEndController@show_categoria');
@@ -66,6 +72,13 @@ Route::resource('articles', 'web\ArticleController');
 Route::post('articles/article/store', 'web\ArticleController@articlestore')->name('article.articlestore');
 Route::post('articles/article/update', 'web\ArticleController@articleupdate')->name('article.articleupdate');
 Route::get('articles/article/{id}/viewfinder', 'web\ArticleController@show')->name('article.show');
+
+//ARCHIVOS
+Route::post('archivos/store', 'web\ArchivoController@store')->name('archivos.store');
+Route::resource('archivos', 'web\ArchivoController');
+Route::post('archivos/archivo/store', 'web\ArchivoController@archivostore')->name('archivos.archivostore');
+Route::post('archivos/archivo/update', 'web\ArchivoController@archivoupdate')->name('archivos.archivoupdate');
+Route::post('archivos/archivo/delete', 'web\ArchivoController@destroy')->name('archivos.delete');
 
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
