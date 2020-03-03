@@ -72,4 +72,17 @@ class ContactenosController extends Controller
             return "ERROR";
         }
     }
+
+    //guardar contactenos
+    public function guardar_contactenos(Request $request){
+        $cont = new Formcontactenos($request->all());
+        $result = $cont->save();
+        if($result){
+            $message = 'Mensaje enviado.';
+            return redirect(url('/'))->with('flash_message', $message);
+        }else{
+            $message = 'Mensaje no enviado.';
+            return redirect(url('/'))->with('flash_message', $message);
+        }
+    }
 }

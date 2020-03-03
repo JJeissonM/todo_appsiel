@@ -5,6 +5,8 @@ namespace App\Http\Controllers\web\services;
 use App\web\Contactenos;
 use App\web\Footer;
 use App\web\RedesSociales;
+use App\web\Seccion;
+use App\web\Widget;
 use Form;
 
 class FooterComponent implements IDrawComponent
@@ -23,8 +25,14 @@ class FooterComponent implements IDrawComponent
     {
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
-        $contactenos = Contactenos::where('widget_id', $this->widget)->first();
-        return Form::footer($footer,$redes,$contactenos);
+        $widget =  Widget::find($this->widget);
+        $seccion =  Seccion::where('nombre','Contáctenos')->first();
+        $contacto = Widget::where([
+            ['seccion_id',$seccion->id],
+            ['pagina_id',$widget->pagina_id]
+        ])->first();
+        $contactenos = $contacto != null ? Contactenos::where('widget_id', $contacto->id)->first() : null;
+        return Form::footer($footer,$redes,$contactenos,'small');
     }
 
     function viewComponent()

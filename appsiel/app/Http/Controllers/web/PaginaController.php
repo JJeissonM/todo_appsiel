@@ -9,10 +9,8 @@ use App\Http\Controllers\Controller;
 use App\web\RedesSociales;
 use App\web\Seccion;
 use App\web\Widget;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
-use Symfony\Component\DomCrawler\Form;
 
 class PaginaController extends Controller
 {
@@ -173,7 +171,6 @@ class PaginaController extends Controller
 
     public function nuevaSeccion(Request $request)
     {
-
         $exist = Widget::where([
             ['pagina_id', $request->pagina_id],
             ['seccion_id', $request->seccion_id]
@@ -184,6 +181,7 @@ class PaginaController extends Controller
             return redirect()->back()->with('mensaje_error', $message)->withInput($request->input());
         }
 
+
         $widget =  new Widget();
         $widget->pagina_id = $request->pagina_id;
         $widget->seccion_id = $request->seccion_id;
@@ -191,29 +189,34 @@ class PaginaController extends Controller
         $widget->orden = $orden + 1;
         $widget->estado = 'ACTIVO';
 
-        $widget->save();
+        $flag = $widget->save();
+
+        if($flag){
+            $message = "Sección seleccionada correctamente.";
+            return redirect()->back()->with('flash_message', $message)->withInput($request->input());
+        }
 
         return redirect()->back()->withInput($request->input());
     }
 
     public function showPage($slug)
     {
-
         $pagina = Pagina::where('slug', $slug)->first();
         $redes = RedesSociales::all();
         $widget = $pagina->widgets;
         $view = [];
         if (count($widget) > 0) {
+
             $widgets = $pagina->widgets()->orderBy('orden')->get();
             //$widgets->sortBy('orden');
             //dd($widgets);
-
             foreach ($widgets as $widget) {
                 $factory = new FactoryCompents($widget->seccion->nombre, $widget->id);
                 $componente = $factory();
                 if ($componente === false) continue;
-                $view[] = $componente->DrawComponent();
+                $view[] = '<div id="'.str_slug($widget->seccion->nombre).'">'.$componente->DrawComponent().'</div>';
             }
+
         }
         return view('web.index', compact('view', 'pagina', 'redes'));
     }

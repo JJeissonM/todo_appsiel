@@ -11,15 +11,12 @@
             @foreach($articles as $a)
             <div class="col-md-12 article-ls" style="line-height: 5px; margin-bottom: 20px;">
                 <div class="media service-box" style="margin: 10px !important; font-size: 14px;">
-                    <div class="pull-left">
-                        <i style="cursor: pointer;" class="fa fa-edit"></i>
-                    </div>
                     <div class="media-body">
                         <div class="row">
+                            <div class="col-md-4" style="text-align: center;">
+                                <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-width: 100%; height: 180px; object-fit: cover;">
+                            </div>
                             <div class="col-md-8">
-                                <div style="text-align: center;">
-                                    <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-width: 100%; height: 180px; object-fit: cover;">
-                                </div>
                                 <h6 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h6>
                                 <p>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</p>
                             </div>
