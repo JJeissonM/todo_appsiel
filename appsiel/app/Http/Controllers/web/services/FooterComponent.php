@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Http\Controllers\web\services;
-
 
 use App\web\Contactenos;
 use App\web\Footer;
@@ -18,6 +16,7 @@ class FooterComponent implements IDrawComponent
      */
     public function __construct($widget)
     {
+        $this->widget = $widget;
     }
 
     function DrawComponent()
