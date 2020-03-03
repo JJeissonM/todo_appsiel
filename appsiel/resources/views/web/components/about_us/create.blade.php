@@ -65,12 +65,36 @@
                             <textarea name="mision" class="form-control" rows="5">{{$aboutus->mision}}</textarea>
                         </div>
                         <div class="form-group">
+                            <label>Icono Misión</label>
+                            <input data-toggle="modal" data-target="#exampleModal" name="mision_icono" value="{{$aboutus->mision_icono}}" type="text" id="iconotxt"
+                                   placeholder="Nombre del icono" class="form-control">
+                        </div>
+                        <div class="form-group">
                             <label>Visión</label>
                             <textarea name="vision" class="form-control" rows="5">{{$aboutus->vision}}</textarea>
                         </div>
                         <div class="form-group">
+                            <label>Icono Visión</label>
+                            <input data-toggle="modal" data-target="#exampleModal" name="vision_icono" value="{{$aboutus->vision_icono}}" type="text" id="iconotxt"
+                                   placeholder="Nombre del icono" class="form-control">
+                        </div>
+                        <div class="form-group">
                             <label>Valores</label>
                             <textarea name="valores" class="form-control" rows="5">{{$aboutus->valores}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Icono Valores</label>
+                            <input data-toggle="modal" data-target="#exampleModal" name="valor_icono" value="{{$aboutus->valor_icono}}" type="text" id="iconotxt"
+                                   placeholder="Nombre del icono" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Reseña Historica</label>
+                            <textarea name="resenia" class="form-control" rows="5">{{$aboutus->resenia}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Icono Reseña</label>
+                            <input data-toggle="modal" data-target="#exampleModal" name="resenia_icono" value="{{$aboutus->resenia_icono}}" type="text" id="iconotxt"
+                                   placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Imagen</label>
@@ -111,6 +135,10 @@
                             <textarea name="valores" class="form-control" rows="5"></textarea>
                         </div>
                         <div class="form-group">
+                            <label>Reseña</label>
+                            <textarea name="resenia" class="form-control" rows="5"></textarea>
+                        </div>
+                        <div class="form-group">
                             <label>Imagen</label>
                             <input name="imagen" type="file" placeholder="Agregar una imagen" required="required"
                                    class="form-control">
@@ -134,7 +162,27 @@
         </div>
     </div>
 @endsection
-
+<div class="modal" id="exampleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Seleccionar Icono</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    {!! Form::iconos($iconos) !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @section('script')
-
+    <script type="text/javascript">
+        $(function () {
+            $('#iconos').load('web/icons/view.blade.php');
+        })
+    </script>
 @endsection

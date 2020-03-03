@@ -17,7 +17,7 @@ class GaleriaController extends Controller
     {
 
         $galeria = Galeria::where('widget_id', $widget)->first();
-        if($galeria == null){
+        if ($galeria == null) {
             $miga_pan = [
                 [
                     'url' => 'pagina_web' . '?id=' . Input::get('id'),
@@ -32,7 +32,7 @@ class GaleriaController extends Controller
                     'etiqueta' => 'Galeria de Imagenes'
                 ]
             ];
-        }else{
+        } else {
             $miga_pan = [
                 [
                     'url' => 'pagina_web' . '?id=' . Input::get('id'),
@@ -202,15 +202,56 @@ class GaleriaController extends Controller
             }
         }
         $result = $album->delete();
-        if($result){
+        if ($result) {
             $message = 'El Álbum fue eliminado correctamente.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
-        }else{
+        } else {
             $message = 'El Álbum no fue eliminado de forma correcta.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
         }
+    }
+
+    //albums
+    public function albums($id)
+    {
+        $empresa = Galeria::find($id);
+        $data = "";
+        $data = "<section id='portfolio'><div class='container'><div class='text-center'>" . "<ul class='portfolio-filter'>";
+        if (count($empresa->albums) > 0) {
+            $data = $data . "<li><a href='#' data-filter='*' class='active'>TODOS</a></li>";
+            foreach ($empresa->albums as $n) {
+                $data = $data . "<li><a href='#' data-filter='." . str_slug($n->titulo) . "'>" . $n->titulo . "</a></li>";
+            }
+        }
+        $data = $data . "</ul></div>";
+        $data = $data . "<div class='portfolio-items isotope' style='position: relative; overflow: hidden; height: 260px;'>";
+        if (count($empresa->albums) > 0) {
+            foreach ($empresa->albums as $album) {
+                if (count($album->fotos) > 0) {
+                    foreach ($album->fotos as $foto) {
+                        $data = $data . "<div class='portfolio-item " . str_slug($album->titulo) . " isotope-item' style='position: absolute; left: 0px; top: 0px; transform: translate3d(0px, 0px, 0px);'>";
+                        $data = $data . "<div class='portfolio-item-inner'>
+                                    <img class='img-responsive' src='" . url($foto->nombre) . "' alt=''>
+                                    <div class='portfolio-info'>";
+                        $data = $data . " <h3>$album->titulo</h3>
+                                        $foto->nombre
+                                        <a class='preview' href='" . url($foto->nombre) . "' rel='prettyPhoto'><i class='fa fa-eye'></i></a>
+                                    </div>
+                                </div>
+                            </div>";
+                    }
+                }
+            }
+        }
+        $data = $data . "</div></div></section>";
+        return view('web.container')
+            ->with('e', $empresa)
+            ->with('data', $data)
+            ->with('title', 'GALERÍA')
+            ->with('slogan1', 'Nuestra labor y la ejecución de eventos que genera experiencias que queremos contarte.')
+            ->with('slogan2', 'Conoce la experiencia a través de fotos y videos.');
     }
 
 }

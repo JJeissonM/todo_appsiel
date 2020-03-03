@@ -19,6 +19,11 @@ class CreateAboutusesTable extends Migration
             $table->text('mision')->nullable();
             $table->text('vision')->nullable();
             $table->text('valores')->nullable();
+            $table->longText('resenia')->nullable();
+            $table->string('mision_icono',50)->nullable();
+            $table->string('vision_icono',50)->nullable();
+            $table->string('valor_icono',50)->nullable();
+            $table->string('resenia_icono',50)->nullable();
             $table->string('imagen');
             $table->unsignedInteger('widget_id');
             $table->foreign('widget_id')->references('id')->on('pw_widget')->onDelete('CASCADE');

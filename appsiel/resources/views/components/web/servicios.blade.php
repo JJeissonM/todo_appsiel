@@ -23,6 +23,7 @@
                                     <p>{{$item->descripcion}}</p>
                                 </div>
                             </div>
+                            <a class="btn btn-primary" href="{{route('servicios.leer_servicio',$item->id)}}">Leer más...</a>
                         </div><!--/.col-md-4-->
                     @endforeach
                 </div>

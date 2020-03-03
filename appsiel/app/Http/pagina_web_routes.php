@@ -26,6 +26,7 @@ Route::resource('slider', 'web\SliderController');
 Route::get('aboutus/create/{widget}', 'web\AboutusController@create');
 Route::post('aboutus/store', 'web\AboutusController@store')->name('aboutus.store');
 Route::put('aboutus/updated/{id}', 'web\AboutusController@updated')->name('aboutus.updated');
+Route::get('/aboutus/{id}/institucional/leer', 'web\AboutusController@leer_institucional')->name('aboutus.leer_institucional');
 
 //GALERIA
 Route::get('galeria/create/{widget}', 'web\GaleriaController@create');
@@ -34,6 +35,7 @@ Route::get('galeria/delete/foto/{imagen}', 'web\GaleriaController@destroyImg')->
 Route::get('galeria/destroy/album/{album}', 'web\GaleriaController@destroyAlbum');
 Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store');
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
+Route::get('/galeria/{id}/albums/index', 'web\GaleriaController@albums')->name('galeria.albums');
 
 Route::resource('sociales', 'web\RedesSocialesController');
 Route::resource('footer', 'web\FooterController');
@@ -48,11 +50,13 @@ Route::put('servicios/updated/{id}', 'web\ServicioController@updated')->name('se
 Route::put('servicios/updated/item/{id}', 'web\ServicioController@modificar')->name('servicios.editar');
 Route::get('servicios/destroy/item/{itemservicio}', 'web\ServicioController@destroy');
 Route::get('servicios/destroy/{servicio}', 'web\ServicioController@delete');
+Route::get('/servicios/{id}/index', 'web\ServicioController@leer_servicio')->name('servicios.leer_servicio');
 
 //CONTACTENOS
 Route::get('contactenos/create/{widget}', 'web\ContactenosController@create');
 Route::post('contactenos/store', 'web\ContactenosController@store')->name('contactenos.store');
 Route::put('contactenos/updated/{id}', 'web\ContactenosController@updated')->name('contactenos.updated');
+Route::post('contactenos/configuaracion/guardar', 'web\ContactenosController@guardar_contactenos')->name('contactenos.guardar');
 
 //CLIENTES
 Route::get('clientes/create/{widget}', 'web\ClienteController@creaste');
@@ -101,3 +105,4 @@ Route::resource('pagina_web/carousel', 'PaginaWeb\CarouselController');
 Route::get('pagina_web/icons/view', 'web\IconsController@view')->name('icons.view');
 //leer contactenos
 Route::get('configuracion/contactenos/{id}/leer', 'web\ContactenosController@leer');
+
