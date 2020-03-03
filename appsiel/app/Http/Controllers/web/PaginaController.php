@@ -85,11 +85,12 @@ class PaginaController extends Controller
     {
 
         $pagina = Pagina::find($id);
-        $widgets = $pagina->widgets;
+        $widgets = $pagina->widgets()->orderBy('orden')->get();
         $secciones = [];
         foreach ($widgets as $widget) {
             $secciones[] = [
                 'widget_id' => $widget->id,
+                'orden' => $widget->orden,
                 'seccion' => $widget->seccion->nombre,
                 'tipo' => $widget->seccion->tipo
             ];
@@ -111,7 +112,7 @@ class PaginaController extends Controller
         }
 
         $pagina = Pagina::create($request->all());
-        $pagina->slug = "sitio" . self::generar_slug($request->titulo);
+        $pagina->slug = "sitio-" . self::generar_slug($request->titulo);
         $pagina->save();
 
         if ($request->hasFile('favicon')) {
@@ -241,6 +242,7 @@ class PaginaController extends Controller
 
             $variables_url = '?id=' . Input::get('id');
             return view('web.paginas.edit', compact('variables_url', 'pagina', 'miga_pan'));
+
         } else {
 
             $message = 'El registro que intenta observar no se encuentra registrado, por favor verifique e intente nuevamente.';
@@ -269,7 +271,7 @@ class PaginaController extends Controller
             }
 
             $pagina->fill($request->all());
-            $pagina->slug = "sitio" . self::generar_slug($request->titulo);
+            $pagina->slug = "sitio-" . self::generar_slug($request->titulo);
             $flag = $pagina->save();
 
             if($flag)

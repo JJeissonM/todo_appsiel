@@ -100,7 +100,7 @@ class NominaController extends TransaccionController
                     ['creado_por' => $usuario->email] + 
                     ['modificado_por' => '']
                     );
-              }                
+              }
         }
 
         $this->actualizar_totales_documento($documento->id);
@@ -134,6 +134,7 @@ class NominaController extends TransaccionController
         //echo $view_pdf;
     }
 
+
     public function nomina_print($id)
     {
       $view_pdf = $this->vista_preliminar($id,'imprimir');
@@ -144,7 +145,6 @@ class NominaController extends TransaccionController
       $pdf->loadHTML(($view_pdf))->setPaper($tam_hoja,$orientacion);
       return $pdf->download('nomina'.$this->encabezado_doc->documento_app.'.pdf');
     }
-
 
 
     // Generar vista para SHOW o IMPRIMIR

@@ -37,7 +37,53 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('permitir_calificaciones_sin_logros', $parametros['permitir_calificaciones_sin_logros'], 'Permitir ingreso de calificaciones sin haber ingresado logros', ['Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
+							<?php 
+								if( isset($parametros['permitir_calificaciones_sin_logros'] ) )
+								{
+									$permitir_calificaciones_sin_logros = $parametros['permitir_calificaciones_sin_logros'];
+								}else{
+									$permitir_calificaciones_sin_logros = 'Si';
+								}
+							?>
+							{{ Form::bsSelect('permitir_calificaciones_sin_logros', $permitir_calificaciones_sin_logros, 'Permitir ingreso de calificaciones sin haber ingresado logros', ['Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['manejar_preinformes_academicos'] ) )
+								{
+									$manejar_preinformes_academicos = $parametros['manejar_preinformes_academicos'];
+								}else{
+									$manejar_preinformes_academicos = 'No';
+								}
+							?>
+							{{ Form::bsSelect('manejar_preinformes_academicos', $manejar_preinformes_academicos, 'Manejar pre-informes académicos', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['colegio_maneja_metas'] ) )
+								{
+									$colegio_maneja_metas = $parametros['colegio_maneja_metas'];
+								}else{
+									$colegio_maneja_metas = 'No';
+								}
+							?>
+							{{ Form::bsSelect('colegio_maneja_metas', $colegio_maneja_metas, 'Manejar metas en boletines', ['Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
 						</div>
 					</div>
 

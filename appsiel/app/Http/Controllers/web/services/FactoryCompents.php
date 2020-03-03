@@ -20,7 +20,7 @@ class FactoryCompents
             case "Navegacion":
                 $component = new NavegacionComponent($this->widget);
                 break;
-            case "Slider" :
+            case "Slider":
                 $component = new SliderComponent($this->widget);
                 break;
             case "About us":
@@ -32,10 +32,10 @@ class FactoryCompents
             case "Servicios":
                 $component = new ServicioComponent($this->widget);
                 break;
-            case "Artículos":
+            case "Articulos":
                 $component = new ArticleComponent($this->widget);
                 break;
-            case "Pie de pagina":
+            case "Pie de página":
                 $component = new FooterComponent($this->widget);
                 break;
             case "Contáctenos":
@@ -44,11 +44,13 @@ class FactoryCompents
             case "Clientes":
                 $component = new ClientesComponent($this->widget);
                 break;
+            case "Archivos":
+                $component = new ArchivosComponent($this->widget);
+                break;
             default:
                 $component = false;
         }
 
         return $component;
     }
-
 }

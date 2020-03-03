@@ -145,4 +145,10 @@ class VtasDocEncabezado extends Model
         }
         return [$lista,$mas_de_uno];
     }
+
+
+    public static function get_saldo_al_corte( $factura_id )
+    {
+        
+    }
 }

@@ -1,8 +1,11 @@
 <?php
 
-
 namespace App\Http\Controllers\web\services;
 
+use App\web\Contactenos;
+use App\web\Footer;
+use App\web\RedesSociales;
+use Form;
 
 class FooterComponent implements IDrawComponent
 {
@@ -13,11 +16,15 @@ class FooterComponent implements IDrawComponent
      */
     public function __construct($widget)
     {
+        $this->widget = $widget;
     }
 
     function DrawComponent()
     {
-        // TODO: Implement DrawComponent() method.
+        $footer = Footer::all()->first();
+        $redes = RedesSociales::all();
+        $contactenos = Contactenos::where('widget_id', $this->widget)->first();
+        return Form::footer($footer,$redes,$contactenos);
     }
 
     function viewComponent()

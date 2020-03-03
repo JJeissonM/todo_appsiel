@@ -128,7 +128,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-            <h4>.:: Bienvendio {{Auth::user()->name}} | Configuraciones Globales ::.</h4>
+            <h4>.:: Bienvenido {{Auth::user()->name}} | Configuraciones Globales ::.</h4>
         </div>
     </div>
 </div>

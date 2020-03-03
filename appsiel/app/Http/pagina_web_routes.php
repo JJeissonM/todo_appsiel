@@ -37,8 +37,14 @@ Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 Route::get('/galeria/{id}/albums/index', 'web\GaleriaController@albums')->name('galeria.albums');
 
-Route::resource('sociales', 'web\RedesSocialesController');
-Route::resource('footer', 'web\FooterController');
+Route::resource('sociales','web\RedesSocialesController');
+Route::resource('footer','web\FooterController');
+Route::post('footerstoreCategoria','web\FooterController@footerstoreCategoria')->name('footerstoreCategoria');
+Route::get('footer/{id}/categorias','web\FooterController@categorias');
+Route::put('footer/edit/categoria/{id}','web\FooterController@updateCategoria')->name('updateCategoria');
+Route::post('footer/categoria/enlace','web\FooterController@newEnlace')->name('newEnlace');
+Route::get('footer/eliminar/enlace/{id}','web\FooterController@eliminarEnlace');
+
 
 
 //SERVICIOS
@@ -76,6 +82,13 @@ Route::resource('articles', 'web\ArticleController');
 Route::post('articles/article/store', 'web\ArticleController@articlestore')->name('article.articlestore');
 Route::post('articles/article/update', 'web\ArticleController@articleupdate')->name('article.articleupdate');
 Route::get('articles/article/{id}/viewfinder', 'web\ArticleController@show')->name('article.show');
+
+//ARCHIVOS
+Route::post('archivos/store', 'web\ArchivoController@store')->name('archivos.store');
+Route::resource('archivos', 'web\ArchivoController');
+Route::post('archivos/archivo/store', 'web\ArchivoController@archivostore')->name('archivos.archivostore');
+Route::post('archivos/archivo/update', 'web\ArchivoController@archivoupdate')->name('archivos.archivoupdate');
+Route::post('archivos/archivo/delete', 'web\ArchivoController@destroy')->name('archivos.delete');
 
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');

@@ -143,8 +143,7 @@
 
         <nav class="navbar navbar-inverse navbar-static-top" style="background-color: #3d6983;">
             <div class="container-fluid">
-
-                <nav class="navbar navbar-expand-lg navbar-light mu-navbar ">
+                <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex">
                     <!-- Text based logo -->
                     <a class="navbar-brand" href="{{ url('/inicio') }}" style="height: 60px; padding-top: 0px;">
                         <img src="{{ asset('assets/img/logo_appsiel.png') }}" height="60px" width="100px">
@@ -200,7 +199,6 @@
     <script type="text/javascript" src="{{asset('assets/web/js/app.js')}}"></script>
 
 
-    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
     <script src="{{asset('js/owl.carousel.min.js')}}"></script>
     <script src="{{asset('js/mousescroll.js')}}"></script>
     <script src="{{asset('js/smoothscroll.js')}}"></script>

@@ -40,7 +40,7 @@
 						</div>
 
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('formato','','Formato',['pdf_boletines_1' => 'Formato # 1 (estándar)', 'pdf_boletines_2' => 'Formato # 2 (moderno)', 'pdf_boletines_3' => 'Formato # 3 (visual)', 'pdf_boletines_4' => 'Formato # 4 (metas)'],['required' => 'required']) }}
+							{{ Form::bsSelect('formato','','Formato', $formatos ,['required' => 'required']) }}
 
 							<!-- , 'pdf_boletines_5' => 'Formato # 5 (prescolar)' -->
 						</div>

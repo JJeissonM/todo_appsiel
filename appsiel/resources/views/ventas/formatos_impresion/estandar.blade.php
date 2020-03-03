@@ -1,5 +1,12 @@
 @extends('transaccion.formatos_impresion.estandar')
 
+@section('documento_datos_adicionales')
+    @if( $doc_encabezado->condicion_pago == 'credito' )
+        <br>
+        <b>Fecha vencimiento:</b> {{ $doc_encabezado->fecha_vencimiento }}
+    @endif
+@endsection
+
 @section('documento_transaccion_prefijo_consecutivo')
     @if( !is_null( $resolucion ) )
         {{ $resolucion->prefijo }} {{ $doc_encabezado->documento_transaccion_consecutivo }}

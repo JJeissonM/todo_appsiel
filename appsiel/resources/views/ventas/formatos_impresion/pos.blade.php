@@ -12,6 +12,16 @@
     @endif
 @endsection
 
+@section('fila_datos_adicionales')
+    @if( $doc_encabezado->condicion_pago == 'credito' )
+        <tr>
+            <td colspan="2">
+                <b>Fecha vencimiento:</b> {{ $doc_encabezado->fecha_vencimiento }}
+            </td>
+        </tr>        
+    @endif
+@endsection
+
 @section('documento_transaccion_prefijo_consecutivo')
     @if( !is_null( $resolucion ) )
         {{ $resolucion->prefijo }} {{ $doc_encabezado->documento_transaccion_consecutivo }}

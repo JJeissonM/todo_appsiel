@@ -15,8 +15,10 @@ class SeccionController extends Controller
 
         $widget = Widget::find($id);
 
+
         if($widget){
             $factory = new FactoryCompents($widget->seccion->nombre,$widget->id);
+
             $componente = $factory();
             if(!$componente){
                 return redirect()->back()->with('flash_message','el componente selecciónado no se encuentra registrado');

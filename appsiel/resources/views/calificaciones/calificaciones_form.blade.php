@@ -23,7 +23,7 @@
 <div class="container-fluid">
 	<div class="marco_formulario">
 	    <h4 style="text-align: center;">
-	    	Ingreso de calificaciones 
+	    	Ingreso de {{ $titulo }} 
 			<br> 
 			Año lectivo: {{ $periodo_lectivo->descripcion }}
 	    </h4>
@@ -101,7 +101,9 @@
 		<div style="text-align: center; width: 100%;">
 			<input class="btn btn-primary btn-xs" id="bs_boton_guardar" type="submit" value="Guardar" disabled="disabled">
 
-			<a href="{{ url()->previous() }}" class="btn btn-danger btn-xs" id="bs_boton_volver">Volver</a>
+			<button class="btn btn-danger btn-xs" id="bs_boton_volver">Volver</button>
+
+			<!-- <a href="{ { url()->previous() }}" class="btn btn-danger btn-xs" id="bs_boton_volver"></a> -->
 
 		</div>
 
@@ -123,8 +125,8 @@
 			var escala_min = parseFloat( $('#escala_min').val(), 10);
 			var escala_max = parseFloat( $('#escala_max').val(), 10);
 
-			// 16 = Shift
 	   		// 9 = Tab
+			// 16 = Shift
 	   		// 8 = Backspace
 	   		var teclas_especiales = [9,16];
 
@@ -207,9 +209,12 @@
 				guardar_calificaciones();
 			});
 
+			$('#bs_boton_volver').click(function(){
+				document.location.href = "{{ url()->previous() }}";
+			});
+
 			window.guardar_calificaciones=function(){
 
-				// DESCOMENTAR LA LINEA DE ABAJO EN PRODUCCION
 				$('#bs_boton_guardar').prop('disabled', true);
 				$('#bs_boton_volver').prop('disabled', true);
 
@@ -245,7 +250,6 @@
 					var data = $("#formulario").serialize();
 
 					$.post(url, data, function( respuesta ){
-
 						$(item).attr('data-id_calificacion',respuesta[0]);
 						$(item).attr('data-calificacion',respuesta[1]);
 						$(item).attr('data-id_calificacion_aux',respuesta[2]);
