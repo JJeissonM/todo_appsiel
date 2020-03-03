@@ -241,6 +241,7 @@ class PaginaController extends Controller
 
             $variables_url = '?id=' . Input::get('id');
             return view('web.paginas.edit', compact('variables_url', 'pagina', 'miga_pan'));
+
         } else {
 
             $message = 'El registro que intenta observar no se encuentra registrado, por favor verifique e intente nuevamente.';

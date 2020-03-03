@@ -37,7 +37,11 @@ Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galer
 
 Route::resource('sociales','web\RedesSocialesController');
 Route::resource('footer','web\FooterController');
-
+Route::post('footerstoreCategoria','web\FooterController@footerstoreCategoria')->name('footerstoreCategoria');
+Route::get('footer/{id}/categorias','web\FooterController@categorias');
+Route::put('footer/edit/categoria/{id}','web\FooterController@updateCategoria')->name('updateCategoria');
+Route::post('footer/categoria/enlace','web\FooterController@newEnlace')->name('newEnlace');
+Route::get('footer/eliminar/enlace/{id}','web\FooterController@eliminarEnlace');
 
 //SERVICIOS
 Route::get('servicios/create/{widget}', 'web\ServicioController@create');

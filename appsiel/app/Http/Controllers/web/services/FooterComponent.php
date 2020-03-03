@@ -4,6 +4,10 @@
 namespace App\Http\Controllers\web\services;
 
 
+use App\web\Footer;
+use App\web\RedesSociales;
+use Form;
+
 class FooterComponent implements IDrawComponent
 {
 
@@ -17,7 +21,9 @@ class FooterComponent implements IDrawComponent
 
     function DrawComponent()
     {
-        // TODO: Implement DrawComponent() method.
+        $footer = Footer::all()->first();
+        $redes = RedesSociales::all();
+        return Form::footer($footer,$redes);
     }
 
     function viewComponent()

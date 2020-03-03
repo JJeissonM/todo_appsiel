@@ -199,7 +199,6 @@
     <script type="text/javascript" src="{{asset('assets/web/js/app.js')}}"></script>
 
 
-    <script src="http://maps.google.com/maps/api/js?sensor=true"></script>
     <script src="{{asset('js/owl.carousel.min.js')}}"></script>
     <script src="{{asset('js/mousescroll.js')}}"></script>
     <script src="{{asset('js/smoothscroll.js')}}"></script>
