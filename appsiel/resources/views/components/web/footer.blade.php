@@ -1,7 +1,7 @@
 <div class="footerarea" style="background-color: black;">
     <div class="container">
         <div class="row">
-            <div class="col-md-9 col-sm-12 d-flex flex-wrap">
+            <div class="col-md-6 col-sm-12 d-flex flex-wrap">
                 @foreach($footer->categorias  as $item)
                     <div class="contenido col-md-4 col-sm-12" style="margin-top: 20px">
                         <h5 class="column-title"
@@ -18,6 +18,7 @@
                     </div><!--end .widget-column-2-->
                 @endforeach
 
+
                 <div class="contenido col-md-4 col-sm-12" style="margin-top: 20px">
                     <h5 class="column-title" style="color: white; font-size: 20px; font-weight: bold;">SÍGUENOS</h5>
                     @if($redes->count() > 0)
@@ -32,9 +33,15 @@
                 </div><!--end .widget-column-2-->
             </div>
             <div class="contenido col-md-3 col-sm-12" style="margin: 20px 0;">
+                <h5 class="column-title" style="color: white; font-size: 20px; font-weight: bold;">CONTACTANOS</h5>
+                <aside class="" style="width:300px; height:450px">
+                   {{Form::contactenos($contactenos)}}
+                </aside>
+            </div><!--end .widget-column-2-->
+            <div class="contenido col-md-3 col-sm-12" style="margin: 20px 0;">
                 <h5 class="column-title" style="color: white; font-size: 20px; font-weight: bold;">ENCUENTRANOS</h5>
                 <aside class="" style="width:300px; height:450px">
-                    {!! $footer->ubicacion !!}
+                    {!! str_replace('width="300"','width="200"',$footer->ubicacion)!!}
                 </aside>
             </div><!--end .widget-column-2-->
         </div>
