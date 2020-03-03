@@ -72,6 +72,7 @@
 
                           if(item.tipo !== 'ESTANDAR'){
                           $html += `<tr>
+                              <td style="cursor:pointer;">${item.orden}</td>
                               <td style="cursor:pointer;">${item.seccion}</td>
                               <td>
                                   <a href="{{url('seccion')}}/${item.widget_id}{{$variables_url}}" style="color:white;" title="Editar sección" class="btn bg-warning"><i class="fa fa-edit"></i></a>
@@ -82,6 +83,7 @@
                               </tr>`;
                           }else {
                               $html += `<tr style="cursor:pointer;">
+                                        <td style="cursor:pointer;">${item.orden}</td>
                                             <td colspan="2">${item.seccion}</td>
                                         </tr>`
                           }
