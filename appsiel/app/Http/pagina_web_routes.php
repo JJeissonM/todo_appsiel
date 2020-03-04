@@ -33,11 +33,15 @@ Route::get('/aboutus/{id}/institucional/leer', 'web\AboutusController@leer_insti
 //GALERIA
 Route::get('galeria/create/{widget}', 'web\GaleriaController@create');
 Route::get('galeria/edit/{album}', 'web\GaleriaController@edit');
+Route::post('galeria/guardar/seccion', 'web\GaleriaController@guardarseccion')->name('galeria.guardar');
+Route::put('galeria/modificar/seccion/{id}', 'web\GaleriaController@modificarseccion')->name('galeria.modificar');
+Route::get('galeria/eliminar/{galeria_id}','web\GaleriaController@destroy');
 Route::get('galeria/delete/foto/{imagen}', 'web\GaleriaController@destroyImg')->name('galeria.deleteimagen');
 Route::get('galeria/destroy/album/{album}', 'web\GaleriaController@destroyAlbum');
 Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store');
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 Route::get('/galeria/{id}/albums/index', 'web\GaleriaController@albums')->name('galeria.albums');
+Route::get('/galeria/crear/','web\GaleriaController@importar')->name('galeria.importar');
 
 Route::resource('sociales','web\RedesSocialesController');
 Route::resource('footer','web\FooterController');

@@ -3,7 +3,7 @@
         @if($galeria!=null)
             <div class="section-header">
                 <h2 class="section-title text-center wow fadeInDown animated"
-                    style="visibility: visible; animation-name: fadeInDown;">Galería de Imagenes</h2>
+                    style="visibility: visible; animation-name: fadeInDown;">{{$galeria->titulo}}</h2>
                 @if(count($galeria->albums)>0)
                     <center><a class="btn btn-primary btn-md text-center"
                                href="{{route('galeria.albums',$galeria->id)}}">Todos
