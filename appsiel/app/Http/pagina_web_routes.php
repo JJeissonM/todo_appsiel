@@ -7,6 +7,8 @@ Route::get('pagina/secciones/{id}', 'web\PaginaController@secciones');
 Route::get('pagina/administrar', 'web\PaginaController@admin');
 Route::get('pagina/addSeccion/{id}', 'web\PaginaController@addSeccion');
 Route::post('pagina/nuevaSeccion', 'web\PaginaController@nuevaSeccion');
+Route::delete('pagina/eliminarSeccion/{id}', 'web\PaginaController@eliminarSeccion');
+
 
 //navegacion
 Route::resource('navegacion', 'web\NavegacionController');

@@ -17,22 +17,22 @@ class FactoryCompents
     {
 
         switch ($this->seccion) {
-            case "Navegacion":
-                $component = new NavegacionComponent($this->widget);
-                break;
             case "Slider":
                 $component = new SliderComponent($this->widget);
                 break;
-            case "About us":
+            case "Navegación":
+                $component = new NavegacionComponent($this->widget);
+                break;
+            case "Quienes somos":
                 $component = new AboutComponent($this->widget);
                 break;
-            case "Galeria":
+            case "Galería":
                 $component = new GaleriaComponent($this->widget);
                 break;
             case "Servicios":
                 $component = new ServicioComponent($this->widget);
                 break;
-            case "Articulos":
+            case "Artículos":
                 $component = new ArticleComponent($this->widget);
                 break;
             case "Pie de página":
