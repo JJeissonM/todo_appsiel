@@ -1628,14 +1628,14 @@
       'core_app_id' => 10,
       'modelo_id' => 0,
       'name' => 'Página Web',
-      'descripcion' => 'Página Web',
+      'descripcion' => 'Vista previa',
       'url' => '/',
       'parent' => 0,
       'orden' => 400,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2018-10-11 02:39:31',
-      'updated_at' => '2018-10-11 02:39:31',
+      'updated_at' => '2020-03-03 11:42:22',
     ),
     109 => 
     array (
@@ -4876,6 +4876,21 @@
       'fa_icon' => '',
       'created_at' => '2020-03-01 13:18:41',
       'updated_at' => '2020-03-01 09:43:32',
+    ),
+    325 => 
+    array (
+      'id' => 351,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_pie_de_pagina',
+      'descripcion' => 'Pie de página',
+      'url' => 'footer',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-03 10:49:46',
+      'updated_at' => '2020-03-03 10:49:46',
     ),
   ),
   'roles' => 
@@ -11100,6 +11115,18 @@
       'orden' => 0,
       'permission_id' => 350,
       'role_id' => 9,
+    ),
+    1020 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 351,
+      'role_id' => 1,
+    ),
+    1021 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 351,
+      'role_id' => 3,
     ),
   ),
   'sys_campos' => 

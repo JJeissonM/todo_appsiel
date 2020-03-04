@@ -11,6 +11,9 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 
+use App\web\RedesSociales;
+use App\web\Footer;
+
 class ServicioController extends Controller
 {
     public function create($widget)
@@ -200,9 +203,16 @@ class ServicioController extends Controller
             . "</header><div class='entry-content'><p><h4>RESUMEN</h4> " . $empresa->descripcion . "</p><p>" . $empresa->empresa . "</p></div>"
             . "<footer class='entry-meta'><span class='entry-author'><i class='fa fa-user'></i> " . $empresa->servicio->titulo . "</span>"
             . "</footer></article></div></div></div></section>";
+
+
+        $redes = RedesSociales::all();
+        $footer = Footer::all()->first();
+        
         return view('web.container')
             ->with('e', $empresa)
             ->with('data', $data)
+            ->with('redes', $redes)
+            ->with('footer', $footer)
             ->with('title', 'SERVICIOS - LEER SERVICIO')
             ->with('slogan1', '')
             ->with('slogan2', '');

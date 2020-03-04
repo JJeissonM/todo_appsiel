@@ -66,7 +66,7 @@
                 <ul style="" class="d-flex justify-content-between">
                     @foreach($redes as $red)
                         <li style="list-style: none; margin-right: 10px;">
-                            <a href="" style="color:white; font-size: 30px;"><i class="fa fa-{{$red->icono}}"></i></a>
+                            <a href="{{$red->enlace}}" style="color:white; font-size: 30px;" target="_blank"><i class="fa fa-{{$red->icono}}"></i></a>
                         </li>
                     @endforeach
                 </ul>

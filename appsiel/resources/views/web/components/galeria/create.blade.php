@@ -55,7 +55,7 @@
                     </div>
                     <div class="form-group">
                         <label>Descripción del Álbum</label>
-                        {!! Form::textarea('descripcion',null,['class'=>'form-control col-md-12 col-xs-12','required']) !!}
+                        {!! Form::textarea('descripcion',null,['class'=>'form-control col-md-12 col-xs-12']) !!}
                     </div>
                     <div class="form-group">
                         <label>Añadir Imagenes (Las imagenes deben ser de 600px de alto por 400px de ancho)</label>

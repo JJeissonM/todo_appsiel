@@ -155,23 +155,23 @@
 <footer id="footer">
     <div class="container">
         <div class="row">
+            
             <div class="col-sm-6">
-                &copy; 2020 Empresa Desarrollado Por <a target="_blank" href="#" title="Appsiel">Appsiel</a>
+                &copy; {{$footer->texto.' '.$footer->copyright}}
             </div>
+
             <div class="col-sm-6">
                 <ul class="social-icons">
-                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                    <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
-                    <li><a href="#"><i class="fa fa-pinterest"></i></a></li>
-                    <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
-                    <li><a href="#"><i class="fa fa-behance"></i></a></li>
-                    <li><a href="#"><i class="fa fa-flickr"></i></a></li>
-                    <li><a href="#"><i class="fa fa-youtube"></i></a></li>
-                    <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
-                    <li><a href="#"><i class="fa fa-github"></i></a></li>
+                    @foreach($redes as $red)
+                        <li style="list-style: none; margin-right: 10px;">
+                            <div style="border-radius: 50%; border: 1px solid #ffffff; height: 45px; width: 45px; text-align: center;">
+                                <a href="{{$red->enlace}}" style="color:white; font-size: 30px;" target="_blank"><i class="fa fa-{{$red->icono}}"></i></a>
+                            </div> 
+                        </li>
+                    @endforeach
                 </ul>
             </div>
+
         </div>
     </div>
 </footer>

@@ -6,11 +6,11 @@
 
         <div class="card">
             <div class="card-header d-flex justify-content-between ">
-                SETUP
+                CONFIGURACIÓN
                 <a href="{{url('pagina/administrar').$variables_url}}" style="color: #0000FF;">Administrar Páginas</a>
             </div>
             <div class="card-body d-flex justify-content-between flex-wrap">
-                <h5 class="card-title">Página</h5>
+                <h5 class="card-title">Páginas</h5>
                 <a href="{{url('paginas/create').$variables_url}}" style="color: #0000FF;">+ Agregar página</a>
                 <div class="form-group" style="display: inline-block; width: 100%;">
                     <select class="form-control" id="paginas" onchange="buscarSecciones(event)">

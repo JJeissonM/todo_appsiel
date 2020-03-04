@@ -6,8 +6,8 @@
                     style="visibility: visible; animation-name: fadeInDown;">Galería de Imagenes</h2>
                 @if(count($galeria->albums)>0)
                     <center><a class="btn btn-primary btn-md text-center"
-                               href="{{route('galeria.albums',$galeria->id)}}">Todas
-                            los Albunes...</a></center>
+                               href="{{route('galeria.albums',$galeria->id)}}">Todos
+                            los Albumes...</a></center>
                 @endif
             </div>
 

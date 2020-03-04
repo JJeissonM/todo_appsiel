@@ -10,6 +10,9 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 
+use App\web\RedesSociales;
+use App\web\Footer;
+
 class AboutusController extends Controller
 {
     public function create($widget)
@@ -111,7 +114,6 @@ class AboutusController extends Controller
         if ($empresa->mision != null) {
             $data = $data . "<div class='col-sm-12'>"
                 . "<div class='media service-box wow fadeInRight'>"
-                . "<div class='pull-left'><i class='fa fa-newspaper-o'></i></div>"
                 . "<div class='media-body'><p>" . $empresa->mision . "</p></div>"
                 . "</div></div>";
         }
@@ -119,7 +121,6 @@ class AboutusController extends Controller
         if ($empresa->vision != null) {
             $data = $data . "<div class='col-sm-12'>"
                 . "<div class='media service-box wow fadeInRight'>"
-                . "<div class='pull-left'><i class='fa fa-newspaper-o'></i></div>"
                 . "<div class='media-body'><p>" . $empresa->vision . "</p></div>"
                 . "</div></div>";
         }
@@ -134,7 +135,6 @@ class AboutusController extends Controller
 //            $data = $data . "</ul></div></div></div>";
             $data = $data . "<div class='col-sm-12'>"
                 . "<div class='media service-box wow fadeInRight'>"
-                . "<div class='pull-left'><i class='fa fa-newspaper-o'></i></div>"
                 . "<div class='media-body'><p>" . $empresa->valores . "</p></div>"
                 . "</div></div>";
         }
@@ -143,7 +143,6 @@ class AboutusController extends Controller
         if ($empresa->resenia != null) {
             $data = $data . "<div class='col-sm-12'>"
                 . "<div class='media service-box wow fadeInRight'>"
-                . "<div class='pull-left'><i class='fa fa-newspaper-o'></i></div>"
                 . "<div class='media-body'><p>" . $empresa->resenia. "</p></div>"
                 . "</div></div>";
 //            $data = $data . "<div class='col-md-12 wow fadeInRight'><h2 class='section-title text-center wow fadeInDown'>" . $resenias[0]->titulo . "</h2>"
@@ -155,9 +154,16 @@ class AboutusController extends Controller
 ////            }
 //            $data = $data . "</div>";
         }
+
+
+        $redes = RedesSociales::all();
+        $footer = Footer::all()->first();
+
         return view('web.container')
             ->with('e', $empresa)
             ->with('data', $data)
+            ->with('redes', $redes)
+            ->with('footer', $footer)
             ->with('title', 'INSTITUCIONAL')
             ->with('slogan1', $empresa->descripcion)
             ->with('slogan2', '');
