@@ -133,9 +133,7 @@ class ArchivoController extends Controller
                 $date = getdate();
                 $a = new Archivoitem($request->all());
                 //$name = "Archivo_" . $date['year'] . $date['mon'] . $date['mday'] . $date['hours'] . $date['minutes'] . $date['seconds'] . "." . $f->getClientOriginalExtension();
-
-                $name = str_slug( $f->getClientOriginalName() ) . '-' .time() . '.' . $f->clientExtension();
-
+                $name = str_slug($f->getClientOriginalName()) . '-' . time() . '.' . $f->clientExtension();
                 $path = "docs/" . $name;
                 $flag = file_put_contents($path, file_get_contents($f->getRealPath()), LOCK_EX);
                 if ($flag !== false) {
