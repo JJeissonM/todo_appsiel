@@ -76,7 +76,6 @@
                     let secciones = data.secciones;
                     $html = '';
                     secciones.forEach(function (item) {
-
                         if (item.tipo !== 'ESTANDAR') {
                             $html += `<tr>
                               <td style="cursor:pointer;">${item.orden}</td>
@@ -95,7 +94,6 @@
                                         </td>
                                         </tr>`
                         }
-
                     });
                     tbody.innerHTML = $html;
                 });
