@@ -66,7 +66,7 @@
                         </div>
                         <div class="form-group">
                             <label>Icono Misión</label>
-                            <input data-toggle="modal" data-target="#exampleModal" name="mision_icono" value="{{$aboutus->mision_icono}}" type="text" id="iconotxt"
+                            <input data-toggle="modal" data-target="#exampleModal" name="mision_icono" onclick="cambiar(this.id)" value="{{$aboutus->mision_icono}}" type="text" id="icono_mision"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
@@ -75,7 +75,7 @@
                         </div>
                         <div class="form-group">
                             <label>Icono Visión</label>
-                            <input data-toggle="modal" data-target="#exampleModal" name="vision_icono" value="{{$aboutus->vision_icono}}" type="text" id="iconotxt"
+                            <input data-toggle="modal" data-target="#exampleModal" name="vision_icono" id="icono_vision" onclick="cambiar(this.id)" value="{{$aboutus->vision_icono}}" type="text"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
@@ -84,7 +84,7 @@
                         </div>
                         <div class="form-group">
                             <label>Icono Valores</label>
-                            <input data-toggle="modal" data-target="#exampleModal" name="valor_icono" value="{{$aboutus->valor_icono}}" type="text" id="iconotxt"
+                            <input data-toggle="modal" data-target="#exampleModal" id="icono_valor" name="valor_icono" onclick="cambiar(this.id)" value="{{$aboutus->valor_icono}}" type="text"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
@@ -93,7 +93,7 @@
                         </div>
                         <div class="form-group">
                             <label>Icono Reseña</label>
-                            <input data-toggle="modal" data-target="#exampleModal" name="resenia_icono" value="{{$aboutus->resenia_icono}}" type="text" id="iconotxt"
+                            <input data-toggle="modal" data-target="#exampleModal" id="icono_resenia" onclick="cambiar(this.id)" name="resenia_icono" value="{{$aboutus->resenia_icono}}" type="text"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
@@ -127,16 +127,36 @@
                             <textarea name="mision" class="form-control contenido" rows="5"></textarea>
                         </div>
                         <div class="form-group">
+                            <label>Icono Misión</label>
+                            <input data-toggle="modal" data-target="#exampleModal" name="mision_icono" onclick="cambiar(this.id)" value="{{$aboutus->mision_icono}}" type="text" id="icono_mision"
+                                   placeholder="Nombre del icono" class="form-control">
+                        </div>
+                        <div class="form-group">
                             <label>Visión</label>
                             <textarea name="vision" class="form-control contenido" rows="5"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Icono Visión</label>
+                            <input data-toggle="modal" data-target="#exampleModal" name="vision_icono" id="icono_vision" onclick="cambiar(this.id)" value="{{$aboutus->vision_icono}}" type="text"
+                                   placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Valores</label>
                             <textarea name="valores" class="form-control contenido" rows="5"></textarea>
                         </div>
                         <div class="form-group">
+                            <label>Icono Valores</label>
+                            <input data-toggle="modal" data-target="#exampleModal" id="icono_valor" name="valor_icono" onclick="cambiar(this.id)" value="{{$aboutus->valor_icono}}" type="text"
+                                   placeholder="Nombre del icono" class="form-control">
+                        </div>
+                        <div class="form-group">
                             <label>Reseña</label>
                             <textarea name="resenia" class="form-control contenido" rows="5"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Icono Reseña</label>
+                            <input data-toggle="modal" data-target="#exampleModal" id="icono_resenia" onclick="cambiar(this.id)" name="resenia_icono" value="{{$aboutus->resenia_icono}}" type="text"
+                                   placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Imagen</label>
@@ -186,7 +206,9 @@
         })
         var original_name;
 
-
+        function cambiar(id){
+            $("#nombre").attr('value',id);
+        }
         $('.contenido').on( 'focus', function(){
 
             original_name = $(this).attr('name');
