@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\web;
 
+use App\PaginaWeb\Carousel;
 use App\web\Album;
 use App\web\Foto;
 use App\web\Galeria;
@@ -59,43 +60,80 @@ class GaleriaController extends Controller
         return view('web.components.galeria.create', compact('miga_pan', 'variables_url', 'galeria', 'widget'));
     }
 
+    public function guardarseccion(Request $request)
+    {
+        $galeria = new Galeria($request->all());
+        $galeria->titulo = strtoupper($request->titulo);
+        $result = $galeria->save();
+        if ($result) {
+            $message = 'La sección fue almacenada correctamente.';
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
+        } else {
+            $message = 'La sección no fue almacenada de forma correcta.';
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
+        }
+    }
+
+    public function modificarseccion(Request $request, $id)
+    {
+        $galeria = Galeria::find($id);
+        $galeria->titulo = strtoupper($request->titulo);
+        $result = $galeria->save();
+        if ($result) {
+            $message = 'La sección fue modificada correctamente.';
+            $variables_url = $request->variables_url;
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        } else {
+            $message = 'La sección no fue modificada de forma correcta.';
+            $variables_url = $request->variables_url;
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }
+    }
+
+    public function destroy($id)
+    {
+        $galeria = Galeria::find($id);
+        $widget = $galeria->widget_id;
+        $result = $galeria->delete();
+        if ($result) {
+            $message = 'Los servicios fueron eliminados de correctamente.';
+            $variables_url = '?id=' . Input::get('id');
+            return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
+        } else {
+            $message = 'Los servicios no fueron eliminados de forma correcta.';
+            $variables_url = '?id=' . Input::get('id');
+            return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
+        }
+    }
+
     public function store(Request $request)
     {
         $galeria = Galeria::where('widget_id', $request->widget_id)->first();
-        if ($galeria == null) {
-            $galeria = new Galeria($request->all());
-        }
-        if ($galeria->save()) {
-            $album = new Album();
-            $album->titulo = strtoupper($request->titulo);
-            $album->descripcion = $request->descripcion;
-            $album->galeria_id = $galeria->id;
-            $result = $album->save();
-            if ($result) {
-                if (isset($request->imagen)) {
-                    foreach ($request->imagen as $value) {
-                        $foto = new Foto();
-                        $foto->album_id = $album->id;
-                        $file = $value;
-                        $name = time() . $file->getClientOriginalName();
-                        $filename = "img/" . $name;
-                        $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-                        if ($flag !== false) {
-                            $foto->fill(['nombre' => $filename]);
-                        }
-                        $foto->save();
+        $album = new Album();
+        $album->titulo = strtoupper($request->titulo);
+        $album->descripcion = $request->descripcion;
+        $album->galeria_id = $galeria->id;
+        $result = $album->save();
+        if ($result) {
+            if (isset($request->imagen)) {
+                foreach ($request->imagen as $value) {
+                    $foto = new Foto();
+                    $foto->album_id = $album->id;
+                    $file = $value;
+                    $name = time() . $file->getClientOriginalName();
+                    $filename = "img/" . $name;
+                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                    if ($flag !== false) {
+                        $foto->fill(['nombre' => $filename]);
                     }
+                    $foto->save();
                 }
-                $message = 'El Álbum fue almacenado correctamente.';
-                $variables_url = '?id=' . Input::get('id');
-                return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
-            } else {
-                $message = 'El Álbum no fue almacenado correctamente, intente mas tarde.';
-                $variables_url = '?id=' . Input::get('id');
-                return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
             }
+            $message = 'El Álbum fue almacenado correctamente.';
+            $variables_url = '?id=' . Input::get('id');
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         } else {
-            $message = 'La Galeria no fue almacenada correctamente, intente mas tarde.';
+            $message = 'El Álbum no fue almacenado correctamente, intente mas tarde.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         }
@@ -134,11 +172,9 @@ class GaleriaController extends Controller
         $album->titulo = strtoupper($request->titulo);
         $album->descripcion = $request->descripcion;
         $result = $album->save();
-        if ($result)
-        {
-            if ( $request->hasFile('imagen') )
-            {
-            //if (isset($request->imagen)) {
+        if ($result) {
+            if ($request->hasFile('imagen')) {
+                //if (isset($request->imagen)) {
                 foreach ($request->imagen as $value) {
                     $foto = new Foto();
                     $foto->album_id = $album->id;
@@ -152,9 +188,9 @@ class GaleriaController extends Controller
                     $foto->save();
                 }
             }
-                $message = 'El Álbum fue modificado correctamente.';
-                $variables_url = '?id=' . Input::get('id');
-                return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
+            $message = 'El Álbum fue modificado correctamente.';
+            $variables_url = '?id=' . Input::get('id');
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
         } else {
             $message = 'El Álbum no fue modificado correctamente, intente mas tarde.';
             $variables_url = '?id=' . Input::get('id');
@@ -266,4 +302,26 @@ class GaleriaController extends Controller
             ->with('slogan2', 'Conoce la experiencia a través de fotos y videos.');
     }
 
+    public function importar()
+    {
+        dd("no puede");
+        $datos = Carousel::all();
+        $galeria = Galeria::find(3);
+        foreach ($datos as $item) {
+            $album = new Album();
+            $album->titulo = $item->descripcion;
+            $album->descripcion = $item->descripcion;
+            $album->galeria_id = $galeria->id;
+            $result = $album->save();
+            if ($result) {
+                $imagenes = json_decode($item->imagenes);
+                foreach ($imagenes as $i) {
+                    $foto = new Foto();
+                    $foto->nombre = "img/" . $i->imagen;
+                    $foto->album_id = $album->id;
+                    $foto->save();
+                }
+            }
+        }
+    }
 }

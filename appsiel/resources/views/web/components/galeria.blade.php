@@ -10,6 +10,7 @@
         #wrapper {
             overflow-y: scroll;
             width: 30%;
+            height: 100vh;
             margin-right: 0;
         }
 
@@ -89,6 +90,23 @@
             <div id="wrapper">
                 <h4 class="column-title" style="padding: 10px;">Menú Galeria</h4>
                 @if($galeria != null)
+                    <div class="descripcion" style="text-align: center; margin-top: 20px;">
+                        <h5 class="titulo">{{$galeria->titulo}}</h5>
+                        <a href="{{url('galeria/eliminar').'/'.$galeria->id.$variables_url}}" class="btn btn-lg"
+                           title="Eliminar Seccion"><i class="fa fa-window-close"></i></a>
+                    </div>
+                    <div class="col-md-12 add d-flex">
+                        <div class="col-md-6">
+                            <a href="{{url('galeria/create').'/'.$widget.$variables_url}}"
+                               class="btn btn-primary waves-effect btn-block btn-sm"
+                               style="color: white; font-weight: bold;"> Agregar Nuevo Album</a>
+                        </div>
+                        <div class="col-md-6 justify-content-end">
+                            <a data-toggle="modal" data-target="#Modaledit"
+                               class="btn btn-primary waves-effect btn-block btn-sm"
+                               style="color: white; font-weight: bold;"> Editar Sección </a>
+                        </div>
+                    </div>
                     <div class="col-md-12">
                         @foreach($galeria->albums as $album)
                             <div class="contenido">
@@ -104,10 +122,18 @@
                             </div>
                         @endforeach
                     </div>
+                @else
+                    <div class="add d-flex justify-content-end col-md-12">
+                        <a data-toggle="modal" data-target="#exampleModal"
+                           class="btn btn-primary waves-effect btn-block btn-sm"
+                           style="color: white; font-weight: bold;"> Agregar Sección </a>
+                    </div>
                 @endif
-                <div class="col-md-12 add d-flex justify-content-end">
-                    <a href="{{url('galeria/create').'/'.$widget.$variables_url}}" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold;"> Agregar Nuevo Album</a>
-                </div>
+{{--                <div class="add d-flex justify-content-end col-md-12">--}}
+{{--                    <a data-toggle="modal" data-target="#exampleModal"--}}
+{{--                       class="btn btn-primary waves-effect btn-block btn-sm"--}}
+{{--                       style="color: white; font-weight: bold;"> Agregar Sección </a>--}}
+{{--                </div>--}}
             </div>
             <div class="widgets" id="widgets">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
@@ -118,7 +144,77 @@
         </div>
     </div>
 @endsection
+<div class="modal" id="exampleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Galeria</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    {!! Form::open(['route'=>'galeria.guardar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    <input type="hidden" name="widget_id" value="{{$widget}}">
+                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                    <div class="form-group">
+                        <label>Titulo</label>
+                        <input name="titulo" type="text" placeholder="Titulo" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <br/><br/><a class="btn btn-danger" id="exampleModal" style="color: white"
+                                     onclick="cerrar(this.id)">Cancelar</a>
+                        <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                        {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="modal" id="Modaledit" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Sección</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    @if($galeria != null)
+                        {!! Form::model($galeria,['route'=>['galeria.modificar',$galeria],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
+                        <input type="hidden" name="widget_id" value="{{$widget}}">
+                        <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                        <div class="form-group">
+                            <label>Titulo</label>
+                            <input name="titulo" type="text" placeholder="Titulo" value="{{$galeria->titulo}}"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <br/><br/><a class="btn btn-danger" id="Modaledit" style="color: white"
+                                         onclick="cerrar(this.id)">Cancelar</a>
+                            <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                            {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                        </div>
+                        {!! Form::close() !!}
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @section('script')
+    <script type="text/javascript">
 
+        function cerrar(id) {
+            $("#" + id).modal('hide');
+            $("#" + id).removeClass('modal-open');
+            $('.' + id).remove();
+        }
+    </script>
 @endsection
