@@ -5,8 +5,7 @@
             <h2 class="section-title text-center wow fadeInDown">{{$archivo->titulo}}</h2>
             <p class="text-center wow fadeInDown">{{$archivo->descripcion}}</p>
         </div>
-
-        <div class="row col-md-12 wow fadeInDown">
+        <div class="row col-md-12 wow fadeInDown" id="pintar">
             @foreach($items as $a)
             <div class="col-md-4" style="padding-top: 20px;">
                 <div class="profile_title">

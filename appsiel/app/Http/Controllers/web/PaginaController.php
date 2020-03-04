@@ -329,4 +329,34 @@ class PaginaController extends Controller
             ]);
         }
     }
+
+    public function eliminarSeccion($id){
+
+        $widget = Widget::find($id);
+
+        if($widget){
+
+            $flag =  $widget->delete();
+
+            if ($flag) {
+                return response()->json([
+                    'status' => 'ok'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Error inesperado, por favor intentelo más tarde.'
+                ]);
+            }
+
+        }else{
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La sección que intenta eliminar no se encuentra asociada a ninguna pagina, por favor verifique y vuelvalo a intentar.'
+            ]);
+
+        }
+    }
+
 }
