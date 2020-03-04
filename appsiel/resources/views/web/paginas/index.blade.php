@@ -1,5 +1,9 @@
 @extends('web.templates.main')
 
+@section('style')
+    <link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
+@endsection
+
 @section('content')
 
     <div class="container">
@@ -40,12 +44,15 @@
 
 @section('script')
     <script src="{{asset('assets/js/axios.min.js')}}"></script>
+    <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
+
     <script type="text/javascript">
 
         $(function () {
             const select = document.getElementById('paginas');
             rellenarSelect(select);
         });
+
 
         function buscarSecciones(event) {
             let select = event.target;
@@ -76,7 +83,7 @@
                               <td style="cursor:pointer;">${item.seccion}</td>
                               <td>
                                   <a href="{{url('seccion')}}/${item.widget_id}{{$variables_url}}" style="color:white;" title="Editar sección" class="btn bg-warning"><i class="fa fa-edit"></i></a>
-                                  <a href="{{url('')}}/" title="Borrar sección" style="color:white;" class="btn bg-danger"><i class="fa fa-trash"></i></a>
+                                  <a href="" onclick="eliminarSeccion(event,${item.widget_id})" title="Borrar sección" style="color:white;" class="btn bg-danger"><i class="fa fa-trash"></i></a>
                               </td>
                               </tr>`;
                         } else {
@@ -84,7 +91,7 @@
                                         <td style="cursor:pointer;">${item.orden}</td>
                                         <td style="cursor:pointer;">${item.seccion}</td>
                                         <td>
-                                           <a href="{{url('')}}/" title="Borrar sección" style="color:white;" class="btn bg-danger"><i class="fa fa-trash"></i></a>
+                                           <a href="" onclick="eliminarSeccion(event,${item.widget_id})" title="Borrar sección" style="color:white;" class="btn bg-danger"><i class="fa fa-trash"></i></a>
                                         </td>
                                         </tr>`
                         }
@@ -92,6 +99,53 @@
                     });
                     tbody.innerHTML = $html;
                 });
+        }
+
+        function eliminarSeccion(event,id){
+
+           event.preventDefault();
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, bórralo!'
+            }).then((result) => {
+                if (result.value) {
+
+                    const url = '{{url('')}}/'+'pagina/eliminarSeccion/'+id;
+
+                    axios.delete(url)
+                        .then(function (response) {
+
+                            const data = response.data;
+                            if(data.status == 'ok'){
+
+                                Swal.fire(
+
+                                    'Eliminado!',
+                                    'Su archivo ha sido eliminado.',
+                                    'success'
+                                );
+
+                                setTimeout(function(){
+                                    location.reload();
+                                },3000);
+
+                            }else {
+                                Swal.fire(
+                                    'Error!',
+                                    data.message,
+                                    'danger'
+                                )
+                            }
+
+                        });
+
+                }
+            });
         }
 
     </script>
