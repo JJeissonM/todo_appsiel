@@ -156,7 +156,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Texto</label>
-                                                <input type="text" class="form-control" name="texto" required
+                                                <input type="text" class="form-control" name="texto"
                                                        value="{{$footer->texto}}">
                                             </div>
                                             <div class="form-group">
@@ -190,7 +190,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Texto</label>
-                                                <input type="text" class="form-control" name="texto" required>
+                                                <input type="text" class="form-control" name="texto">
                                             </div>
                                             <div class="form-group">
                                                 <label>Ubicación</label>
@@ -295,7 +295,7 @@
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
                 @if($footer != null)
                     <div>
-                        {!! Form::footer($footer,$redes) !!}
+                        {!! Form::footer($footer,$redes,$contactenos,"small") !!}
                     </div>
                 @else
                     <p style="color: red;"><i class="fa fa-warning"></i> La sección no ha sido configurada!</p>

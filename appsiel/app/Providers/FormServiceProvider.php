@@ -84,7 +84,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('contactenos', 'components.web.contactenos', ['contactenos']);
         Form::component('clientes', 'components.web.clientes', ['clientes']);
         Form::component('archivos', 'components.web.archivos', ['items', 'archivo']);
-        Form::component('footer','components.web.footer',['footer','redes','contactenos']);
+        Form::component('footer','components.web.footer',['footer','redes','contactenos','view']);
     }
 
     /**

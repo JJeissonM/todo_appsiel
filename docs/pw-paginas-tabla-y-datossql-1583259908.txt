@@ -1,0 +1,76 @@
+-- phpMyAdmin SQL Dump
+-- version 4.9.0.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 03-03-2020 a las 10:17:40
+-- Versión del servidor: 10.4.6-MariaDB
+-- Versión de PHP: 7.3.9
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `a1_appsiel_2020`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pw_paginas`
+--
+
+CREATE TABLE `pw_paginas` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `descripcion` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `meta_keywords` text COLLATE utf8_unicode_ci NOT NULL,
+  `codigo_google_analitics` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `favicon` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `titulo` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `pagina_inicio` tinyint(1) NOT NULL,
+  `estado` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `slug` varchar(255) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `pw_paginas`
+--
+
+INSERT INTO `pw_paginas` (`id`, `descripcion`, `meta_keywords`, `codigo_google_analitics`, `favicon`, `titulo`, `pagina_inicio`, `estado`, `created_at`, `updated_at`, `slug`) VALUES
+(1, 'AVIPOULET DE LA COSTA D.P.', '', 'UA-149024927-1', 'img/1582996096icono_2020_DwH_icon.ico', 'Landing Page', 1, 'Activa', '2019-07-14 15:29:57', '2020-02-29 18:39:09', 'sitio-landing-page'),
+(2, 'AVIPOULET - Blog', '', 'UA-149024927-1', '5e28355ed76e7.ico', 'Blog', 0, 'Activa', '2020-01-24 02:47:42', '2020-02-29 17:13:12', 'sitioblog');
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `pw_paginas`
+--
+ALTER TABLE `pw_paginas`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `pw_paginas`
+--
+ALTER TABLE `pw_paginas`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

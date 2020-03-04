@@ -20,7 +20,7 @@
                                 </div>
                                 <div class="media-body">
                                     <h4 class="media-heading">{{$item->titulo}}</h4>
-                                    <p>{{$item->descripcion}}</p>
+                                    <p>{{ str_limit($item->descripcion,30) }}</p>
                                 </div>
                             </div>
                             <a class="btn btn-primary" href="{{route('servicios.leer_servicio',$item->id)}}">Leer más...</a>

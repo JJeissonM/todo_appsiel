@@ -79,11 +79,11 @@
                 <input type="hidden" name="widget_id" value="{{$widget}}">
                 <div class="form-group">
                     <label for="">Titulo</label>
-                    <input type="text" class="form-control" placeholder="" name="titulo" required value="{{$item->titulo}}">
+                    <input type="text" class="form-control" placeholder="" name="titulo" value="{{$item->titulo}}">
                 </div>
                 <div class="form-group">
                     <label for="">Descripción</label>
-                    <textarea name="descripcion" id="" cols="30" rows="10" class="form-control" required>{{$item->descripcion}}</textarea>
+                    <textarea name="descripcion" id="" cols="30" rows="10" class="form-control">{{$item->descripcion}}</textarea>
                 </div>
 
                 <div class="form-group">
@@ -96,7 +96,7 @@
                     <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="enlace">
                     <div class="form-group">
                         <label for="">Titulo del Enlace</label>
-                        <input type="text" class="form-control" name="button" required value="{{$item->button}}">
+                        <input type="text" class="form-control" name="button" value="{{$item->button}}">
                     </div>
                     <nav>
                         <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">

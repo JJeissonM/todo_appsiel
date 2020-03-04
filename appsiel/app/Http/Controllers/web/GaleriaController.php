@@ -11,6 +11,9 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 
+use App\web\RedesSociales;
+use App\web\Footer;
+
 class GaleriaController extends Controller
 {
     public function create($widget)
@@ -131,8 +134,11 @@ class GaleriaController extends Controller
         $album->titulo = strtoupper($request->titulo);
         $album->descripcion = $request->descripcion;
         $result = $album->save();
-        if ($result) {
-            if (isset($request->imagen)) {
+        if ($result)
+        {
+            if ( $request->hasFile('imagen') )
+            {
+            //if (isset($request->imagen)) {
                 foreach ($request->imagen as $value) {
                     $foto = new Foto();
                     $foto->album_id = $album->id;
@@ -145,10 +151,10 @@ class GaleriaController extends Controller
                     }
                     $foto->save();
                 }
+            }
                 $message = 'El Álbum fue modificado correctamente.';
                 $variables_url = '?id=' . Input::get('id');
                 return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
-            }
         } else {
             $message = 'El Álbum no fue modificado correctamente, intente mas tarde.';
             $variables_url = '?id=' . Input::get('id');
@@ -246,9 +252,15 @@ class GaleriaController extends Controller
             }
         }
         $data = $data . "</div></div></section>";
+
+        $redes = RedesSociales::all();
+        $footer = Footer::all()->first();
+
         return view('web.container')
             ->with('e', $empresa)
             ->with('data', $data)
+            ->with('redes', $redes)
+            ->with('footer', $footer)
             ->with('title', 'GALERÍA')
             ->with('slogan1', 'Nuestra labor y la ejecución de eventos que genera experiencias que queremos contarte.')
             ->with('slogan2', 'Conoce la experiencia a través de fotos y videos.');

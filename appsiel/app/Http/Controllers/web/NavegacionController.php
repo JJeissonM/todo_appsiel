@@ -68,7 +68,7 @@ class NavegacionController extends Controller
              $menu->enlace = url('/'.$pagina->slug);
            }else {
                $widget = Widget::find($request->seccion);
-               $menu->enlace = url('/'. $widget->pagina->slug.'#'.$widget->seccion->nombre);
+               $menu->enlace = url('/'. $widget->pagina->slug.'#'.str_slug($widget->seccion->nombre));
            }
        }else {
            $menu->enlace =  $request->url;

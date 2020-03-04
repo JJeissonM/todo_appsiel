@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\web;
 
 use App\web\CategoriaFooter;
+use App\web\Contactenos;
 use App\web\EnlaceFooter;
 use App\web\Icon;
 use App\web\Pagina;
@@ -34,7 +35,8 @@ class FooterController extends Controller
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
         $iconos = Icon::all();
-        return view('web.footer.footer',compact('footer','variables_url','miga_pan','iconos','redes'));
+        $contactenos = Contactenos::all()->first();
+        return view('web.footer.footer',compact('footer','variables_url','miga_pan','iconos','redes','contactenos'));
     }
 
     public function store(Request $request){
