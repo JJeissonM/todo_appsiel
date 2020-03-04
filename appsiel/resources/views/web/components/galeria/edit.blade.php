@@ -59,7 +59,7 @@
                         {!! Form::textarea('descripcion',$album->descripcion,['class'=>'form-control col-md-12 col-xs-12','required']) !!}
                     </div>
                     <div class="form-group">
-                        <label>Añadir Imagenes (Las imagenes deben ser de 600px de alto por 400px de ancho)</label>
+                        <label>Añadir Imagenes (Las imagenes deben ser de 600px de alto por 400px de ancho y tamaño max de 2MB)</label>
                         <input name="imagen[]" multiple type="file" placeholder="Agregar una imagen"
                                class="form-control">
                     </div>

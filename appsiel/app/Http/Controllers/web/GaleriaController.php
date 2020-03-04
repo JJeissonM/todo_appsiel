@@ -96,11 +96,11 @@ class GaleriaController extends Controller
         $widget = $galeria->widget_id;
         $result = $galeria->delete();
         if ($result) {
-            $message = 'Los servicios fueron eliminados de correctamente.';
+            $message = 'La galeria fue eliminada de correctamente.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
         } else {
-            $message = 'Los servicios no fueron eliminados de forma correcta.';
+            $message = 'La galeria no fue eliminada de forma correcta.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
         }
@@ -114,22 +114,28 @@ class GaleriaController extends Controller
         $album->descripcion = $request->descripcion;
         $album->galeria_id = $galeria->id;
         $result = $album->save();
+        $response = null;
         if ($result) {
             if (isset($request->imagen)) {
                 foreach ($request->imagen as $value) {
-                    $foto = new Foto();
-                    $foto->album_id = $album->id;
-                    $file = $value;
-                    $name = time() . $file->getClientOriginalName();
-                    $filename = "img/" . $name;
-                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-                    if ($flag !== false) {
-                        $foto->fill(['nombre' => $filename]);
+                    if ($value->getSize() < 2097152) {
+                        $foto = new Foto();
+                        $foto->album_id = $album->id;
+                        $file = $value;
+                        $name = time() . $file->getClientOriginalName();
+                        $filename = "img/" . $name;
+                        $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                        if ($flag !== false) {
+                            $foto->fill(['nombre' => $filename]);
+                        }
+                        $foto->save();
+                        $response = $response . "<p>El archivo fue almacenado correctamente " . $file->getClientOriginalName() . "  <i class='fa fa-check'></i></p>";
+                    } else {
+                        $response = $response . "<p>El archivo no fue almacenado " . $value->getClientOriginalName() . "  <i class='fa fa-warning'></i> El tamaño del archivo excedia lo permitido (2MB)</p>";
                     }
-                    $foto->save();
                 }
             }
-            $message = 'El Álbum fue almacenado correctamente.';
+            $message = "<h3>El Álbum fue almacenado correctamente.</h3>" . $response;
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         } else {
@@ -172,23 +178,29 @@ class GaleriaController extends Controller
         $album->titulo = strtoupper($request->titulo);
         $album->descripcion = $request->descripcion;
         $result = $album->save();
+        $response = null;
         if ($result) {
             if ($request->hasFile('imagen')) {
                 //if (isset($request->imagen)) {
                 foreach ($request->imagen as $value) {
-                    $foto = new Foto();
-                    $foto->album_id = $album->id;
-                    $file = $value;
-                    $name = time() . $file->getClientOriginalName();
-                    $filename = "img/" . $name;
-                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-                    if ($flag !== false) {
-                        $foto->fill(['nombre' => $filename]);
+                    if ($value->getSize() < 2097152) {
+                        $foto = new Foto();
+                        $foto->album_id = $album->id;
+                        $file = $value;
+                        $name = time() . $file->getClientOriginalName();
+                        $filename = "img/" . $name;
+                        $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                        if ($flag !== false) {
+                            $foto->fill(['nombre' => $filename]);
+                        }
+                        $foto->save();
+                        $response = $response . "<p>El archivo fue almacenado correctamente " . $file->getClientOriginalName() . "  <i class='fa fa-check'></i></p>";
+                    } else {
+                        $response = $response . "<p>El archivo no fue almacenado " . $value->getClientOriginalName() . "  <i class='fa fa-warning'></i> El tamaño del archivo excedia lo permitido (2MB)</p>";
                     }
-                    $foto->save();
                 }
             }
-            $message = 'El Álbum fue modificado correctamente.';
+            $message = "<h3>El Álbum fue modificado correctamente.</h3>" . $response;
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
         } else {

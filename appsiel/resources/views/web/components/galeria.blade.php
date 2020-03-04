@@ -129,11 +129,6 @@
                            style="color: white; font-weight: bold;"> Agregar Sección </a>
                     </div>
                 @endif
-{{--                <div class="add d-flex justify-content-end col-md-12">--}}
-{{--                    <a data-toggle="modal" data-target="#exampleModal"--}}
-{{--                       class="btn btn-primary waves-effect btn-block btn-sm"--}}
-{{--                       style="color: white; font-weight: bold;"> Agregar Sección </a>--}}
-{{--                </div>--}}
             </div>
             <div class="widgets" id="widgets">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
