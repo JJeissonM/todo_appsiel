@@ -1134,3 +1134,28 @@ Stack trace:
 #61 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #62 C:\xampp_739\htdocs\appsiel_2020\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #63 {main}  
+[2020-03-04 04:31:45] production.ERROR: Symfony\Component\Debug\Exception\FatalThrowableError: Parse error: syntax error, unexpected '$empresa' (T_VARIABLE) in C:\xampp_739\htdocs\appsiel_2020\appsiel\app\Http\Controllers\web\AboutusController.php:143
+Stack trace:
+#0 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\composer\ClassLoader.php(322): Composer\Autoload\includeFile('C:\\xampp_739\\ht...')
+#1 [internal function]: Composer\Autoload\ClassLoader->loadClass('App\\Http\\Contro...')
+#2 [internal function]: spl_autoload_call('App\\Http\\Contro...')
+#3 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Route.php(280): ReflectionMethod->__construct('App\\Http\\Contro...', 'leer_institucio...')
+#4 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Router.php(857): Illuminate\Routing\Route->signatureParameters('Illuminate\\Data...')
+#5 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Router.php(842): Illuminate\Routing\Router->substituteImplicitBindings(Object(Illuminate\Routing\Route))
+#6 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Router.php(825): Illuminate\Routing\Router->substituteBindings(Object(Illuminate\Routing\Route))
+#7 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Router.php(691): Illuminate\Routing\Router->findRoute(Object(Illuminate\Http\Request))
+#8 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Router.php(675): Illuminate\Routing\Router->dispatchToRoute(Object(Illuminate\Http\Request))
+#9 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(246): Illuminate\Routing\Router->dispatch(Object(Illuminate\Http\Request))
+#10 [internal function]: Illuminate\Foundation\Http\Kernel->Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#11 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Pipeline.php(52): call_user_func(Object(Closure), Object(Illuminate\Http\Request))
+#12 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode.php(44): Illuminate\Routing\Pipeline->Illuminate\Routing\{closure}(Object(Illuminate\Http\Request))
+#13 [internal function]: Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode->handle(Object(Illuminate\Http\Request), Object(Closure))
+#14 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(136): call_user_func_array(Array, Array)
+#15 [internal function]: Illuminate\Pipeline\Pipeline->Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#16 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Pipeline.php(32): call_user_func(Object(Closure), Object(Illuminate\Http\Request))
+#17 [internal function]: Illuminate\Routing\Pipeline->Illuminate\Routing\{closure}(Object(Illuminate\Http\Request))
+#18 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(102): call_user_func(Object(Closure), Object(Illuminate\Http\Request))
+#19 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(132): Illuminate\Pipeline\Pipeline->then(Object(Closure))
+#20 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#21 C:\xampp_739\htdocs\appsiel_2020\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#22 {main}  

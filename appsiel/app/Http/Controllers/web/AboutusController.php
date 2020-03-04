@@ -139,20 +139,13 @@ class AboutusController extends Controller
                 . "</div></div>";
         }
 //        $resenias = $empresa->resenias;
-        $data = $data . "<h2 class='section-title text-center wow fadeInDown'>RESEÑA HISTORICA</h2>";
-        if ($empresa->resenia != null) {
+        if ($empresa->resenia != null && $empresa->resenia != '' )
+        {
+            $data = $data . "<h2 class='section-title text-center wow fadeInDown'>RESEÑA HISTORICA</h2>";
             $data = $data . "<div class='col-sm-12'>"
                 . "<div class='media service-box wow fadeInRight'>"
                 . "<div class='media-body'><p>" . $empresa->resenia. "</p></div>"
                 . "</div></div>";
-//            $data = $data . "<div class='col-md-12 wow fadeInRight'><h2 class='section-title text-center wow fadeInDown'>" . $resenias[0]->titulo . "</h2>"
-////                . $resenias[0]->cuerpo . "<h2>Galería de la Reseña</h2></div><div class='col-md-12'>";
-////            foreach ($resenias[0]->imagenes as $imagen) {
-////                $data = $data . "<div class='col-md-3'>"
-////                    . "<a target='_blank' href='" . asset('images/resenia/' . $imagen->imagen) . "'>"
-////                    . "<img style='width: 100%;' src='" . asset('images/resenia/' . $imagen->imagen) . "' alt='" . $imagen->imagen . "'></a></div>";
-////            }
-//            $data = $data . "</div>";
         }
 
 

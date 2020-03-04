@@ -8,9 +8,17 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="carousel-content">
-                                            <h2 style="text-shadow: 1px 1px 2px black;">{{$item->titulo}}</h2>
-                                            <p style="text-shadow: 1px 1px 2px black;">{{$item->descripcion}}</p>
-                                            <a class="btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}}</a>
+                                            @if( $item->titulo != '' )
+                                                <h2 style="text-shadow: 1px 1px 2px black;">{{$item->titulo}}</h2>
+                                            @endif
+                                            
+                                            @if( $item->descripcion != '' )
+                                                <p style="text-shadow: 1px 1px 2px black;">{{$item->descripcion}}</p>
+                                            @endif
+
+                                            @if( $item->enlace != '' )
+                                                <a class="btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}}</a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>

@@ -42,7 +42,7 @@
                     <div class="media service-box wow fadeInRight animated"
                          style="visibility: visible; animation-name: fadeInRight;">
                         <div class="pull-left">
-                            <i class="fa fa-{{$aboutus->valores_icono}}"></i>
+                            <i class="fa fa-{{$aboutus->valor_icono}}"></i>
                         </div>
                         <div class="media-body">
                             <h4 class="media-heading">Valores</h4>
@@ -51,18 +51,20 @@
                             <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer mas...</a>
                         </div>
                     </div>
-                    <div class="media service-box wow fadeInRight animated"
-                         style="visibility: visible; animation-name: fadeInRight;">
-                        <div class="pull-left">
-                            <i class="fa fa-{{$aboutus->resenia_icono}}"></i>
-                        </div>
-                        <div class="media-body">
-                            <h4 class="media-heading">Reseña Historica</h4>
-                            <p>{!! str_limit($aboutus->resenia,150) !!}</p>
+                    @if( $aboutus->resenia != '')
+                        <div class="media service-box wow fadeInRight animated"
+                             style="visibility: visible; animation-name: fadeInRight;">
+                            <div class="pull-left">
+                                <i class="fa fa-{{$aboutus->resenia_icono}}"></i>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading">Reseña Historica</h4>
+                                <p>{!! str_limit($aboutus->resenia,150) !!}</p>
 
-                            <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer mas...</a>
+                                <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer mas...</a>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
         @else
