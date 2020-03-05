@@ -20,11 +20,11 @@
                                         <a class="dropdown-toggle" style="color: {{$nav->color}}"
                                            href="{{$item->enlace}}" role="button" id="navbarDropdown"
                                            data-toggle="dropdown" aria-haspopup="true"
-                                           aria-expanded="false">{{$item->titulo}}</a>
+                                           aria-expanded="false"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                             @foreach($item->subMenus() as $subItems)
                                                 <a style="color: {{$nav->color}}" class="dropdown-item"
-                                                   href="{{$subItems->enlace}}">{{$subItems->titulo}}</a>
+                                                   href="{{$subItems->enlace}}"><i class="fa fa-{{$subItems->icono}}" style="font-size: 20px;"></i>{{' '.$subItems->titulo}}</a>
                                             @endforeach
                                         </div>
                                     </li>
@@ -61,7 +61,7 @@
                                         <a class="dropdown-toggle" style="color: {{$nav->color}}"
                                            href="{{$item->enlace}}" role="button" id="navbarDropdown"
                                            data-toggle="dropdown" aria-haspopup="true"
-                                           aria-expanded="false">{{$item->titulo}}</a>
+                                           aria-expanded="false"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a>
                                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                             @foreach($item->subMenus() as $subItems)
                                                 <a style="color: {{$nav->color}}" class="dropdown-item"
@@ -71,7 +71,7 @@
                                     </li>
                                 @else
                                     <li class="nav-item"><a href="{{$item->enlace}}"
-                                                            style="color: {{$nav->color}}">{{$item->titulo}}</a></li>
+                                                            style="color: {{$nav->color}}"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a></li>
                                 @endif
                             @endif
                         @endforeach

@@ -1,6 +1,5 @@
 <?php
 
-
 // Página Web - FRONT END
 Route::resource('paginas', 'web\PaginaController');
 Route::get('pagina/secciones/{id}', 'web\PaginaController@secciones');
@@ -50,8 +49,7 @@ Route::get('footer/{id}/categorias','web\FooterController@categorias');
 Route::put('footer/edit/categoria/{id}','web\FooterController@updateCategoria')->name('updateCategoria');
 Route::post('footer/categoria/enlace','web\FooterController@newEnlace')->name('newEnlace');
 Route::get('footer/eliminar/enlace/{id}','web\FooterController@eliminarEnlace');
-
-
+Route::get('footer/eliminar/seccion/{id}','web\FooterController@eliminarSeccion');
 
 //SERVICIOS
 Route::get('servicios/create/{widget}', 'web\ServicioController@create');
@@ -88,6 +86,7 @@ Route::resource('articles', 'web\ArticleController');
 Route::post('articles/article/store', 'web\ArticleController@articlestore')->name('article.articlestore');
 Route::post('articles/article/update', 'web\ArticleController@articleupdate')->name('article.articleupdate');
 Route::get('articles/article/{id}/viewfinder', 'web\ArticleController@show')->name('article.show');
+Route::get('article/delete/destroy/{id}','web\ArticleController@destroy');
 
 //ARCHIVOS
 Route::post('archivos/store', 'web\ArchivoController@store')->name('archivos.store');

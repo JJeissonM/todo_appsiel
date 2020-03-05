@@ -176,7 +176,6 @@
                                 </div>
                             </div>
 
-
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="formGroupExampleInput" for="orden">Orden</label>
@@ -186,10 +185,11 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="customFile" for="customFile">Icono(opcional)</label>
-                                    <input type="file" class="form-control" id="" name="icono">
+                                    <label>Icono</label>
+                                    <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
                                 </div>
                             </div>
+
                             <div class="col-md-12">
                                 <h5>Enlazar a</h5>
                                 <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="pagina">
@@ -242,6 +242,24 @@
                     </form>
                 </div>
 
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seleccionar Icono</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        {!! Form::iconos($iconos) !!}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

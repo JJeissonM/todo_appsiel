@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\web\Icon;
 use App\web\Menunavegacion;
 use App\web\Navegacion;
 use App\web\Pagina;
@@ -19,7 +20,8 @@ class NavegacionController extends Controller
         $paginas = Pagina::all();
         $nav = Navegacion::all()->first();
         $variables_url = '?id='.Input::get('id');
-        return view('web.navegacion.navegacion',compact('miga_pan','nav','paginas','variables_url'));
+        $iconos = Icon::all();
+        return view('web.navegacion.navegacion',compact('miga_pan','nav','paginas','variables_url','iconos'));
     }
 
     public function migapan() {
@@ -97,6 +99,7 @@ class NavegacionController extends Controller
         $nav = Navegacion::find($id);
 
         if($nav){
+
             $nav->fill($request->all());
             $nav->fixed = $request->fixed == 'on' ? 1 : 0;
             $flag = $nav->save();

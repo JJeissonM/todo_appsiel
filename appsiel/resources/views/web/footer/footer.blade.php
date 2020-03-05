@@ -262,7 +262,7 @@
                                                     <div class="col-md-12 article-ls"
                                                          style="line-height: 20px; margin-bottom: 20px;">
                                                         <div class="media service-box"
-                                                             style="margin: 10px !important; font-size: 14px;">
+                                                             style="margin: 10px !important; font-size: 14px; position: relative;">
                                                             <div id="{{$a->id}}" data-toggle="modal"
                                                                  data-target="#exampleModal2" onclick="editar(this.id)"
                                                                  class="pull-left" data-toggle="tooltip"
@@ -272,6 +272,9 @@
                                                             <div class="media-body">
                                                                 <h6 style="font-size: 14px;"
                                                                     class="media-heading">{{$a->texto}}</h6>
+                                                            </div>
+                                                            <div id="{{$a->id}}" onclick="eliminarSeccion(event,id)" title="Eliminar Sección">
+                                                                <i style="cursor: pointer; color: red" class="fa fa-trash-o"></i>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -542,6 +545,42 @@
 
         }
 
+        function eliminarSeccion(event,id){
+            event.preventDefault();
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, bórralo!'
+            }).then((result) => {
+                if (result.value) {
+                    axios.get('{{url('footer/eliminar/seccion')}}'+'/'+id)
+                        .then(function(response) {
+                            const data = response.data;
+                            if(data.status == 'ok'){
+                                Swal.fire(
+
+                                    'Eliminado!',
+                                    'Su archivo ha sido eliminado.',
+                                    'success'
+                                );
+
+                            }else {
+                                Swal.fire(
+                                    'Error!',
+                                    data.message,
+                                    'danger'
+                                )
+                            }
+
+                        });
+                }
+            });
+        }
+
         function eliminarEnlace(event,id){
            event.preventDefault();
            axios.get('{{url('footer/eliminar/enlace')}}'+'/'+id)
@@ -556,6 +595,10 @@
                            'Su archivo ha sido eliminado.',
                            'success'
                        );
+
+                       setTimeout(function () {
+                         location.reload();
+                       },2000);
 
                    }else {
                        Swal.fire(

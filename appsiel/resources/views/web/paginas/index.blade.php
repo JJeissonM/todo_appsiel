@@ -45,7 +45,9 @@
 @section('script')
     <script src="{{asset('assets/js/axios.min.js')}}"></script>
     <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
-
+    <script type="text/javascript">
+        $('tbody').sortable();
+    </script>
     <script type="text/javascript">
 
         $(function () {
