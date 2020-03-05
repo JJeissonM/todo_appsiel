@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\PaginaWeb;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Request;
+use App\web\Navegacion;
 use Illuminate\Support\Facades\Input;
 
 
 class NavegacionController extends Controller
 {
+
+
     public function create(){
         $miga_pan = self::migapan();
         return view('web.navegacion.navegacion',compact('miga_pan'));
@@ -30,5 +33,7 @@ class NavegacionController extends Controller
     public function store(Request $request){
 
     }
+
+
 
 }

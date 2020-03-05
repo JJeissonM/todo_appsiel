@@ -1,6 +1,7 @@
 @extends('web.templates.main')
 
 @section('style')
+    <link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
     <style>
         .card-body {
             padding: 0 !important;
@@ -272,6 +273,9 @@
                                                 <h6 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h6>
                                                 <p>{{"Estado: ".$a->estado}}</p>
                                             </div>
+                                            <div id="{{$a->id}}" onclick="eliminarSeccion(event,id)" title="Eliminar Sección">
+                                                <i style="cursor: pointer; color: red" class="fa fa-trash-o"></i>
+                                            </div>
                                         </div>
                                     </div>
                                     @endforeach
@@ -415,6 +419,8 @@
 @endsection
 
 @section('script')
+    <script src="{{asset('assets/js/axios.min.js')}}"></script>
+    <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
 
 <script type="text/javascript">
     $(function() {
@@ -430,6 +436,42 @@
 
     function submit2() {
         $("#form-article-edit").submit();
+    }
+
+    function eliminarSeccion(event,id){
+        event.preventDefault();
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, bórralo!'
+        }).then((result) => {
+            if (result.value) {
+                axios.get('{{url('article/delete/destroy')}}'+'/'+id)
+                    .then(function(response) {
+                        const data = response.data;
+                        if(data.status == 'ok'){
+                            Swal.fire(
+
+                                'Eliminado!',
+                                'Su archivo ha sido eliminado.',
+                                'success'
+                            );
+
+                        }else {
+                            Swal.fire(
+                                'Error!',
+                                data.message,
+                                'danger'
+                            )
+                        }
+
+                    });
+            }
+        });
     }
 
     function editor() {

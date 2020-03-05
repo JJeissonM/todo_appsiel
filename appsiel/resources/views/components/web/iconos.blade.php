@@ -83,12 +83,11 @@
     }
 
     function seticon(icono) {
-        var inp = $("#nombre").val();
-        $("#" + inp).val(icono);
+        //var inp = $("#iconotxt").val();
+        $("#iconotxt" ).val(icono);
         $("#exampleModal").modal('hide');
         $("#exampleModal").removeClass('modal-open');
         $('.modal-backdrop').remove();
-
     }
 
     function arrayDraw(array) {

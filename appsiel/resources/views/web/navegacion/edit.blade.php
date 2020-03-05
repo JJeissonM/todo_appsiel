@@ -12,7 +12,6 @@
             <div class="card-header d-flex justify-content-between ">
                 ITEMS
             </div>
-
             <div class="card-body">
               <form method="post" action="{{route('itemUpdate',$menu->id).$variables_url}}" ENCTYPE="multipart/form-data">
                   {!! csrf_field() !!}
@@ -37,11 +36,11 @@
                                 <input type="text" class="form-control" id="orden" name="orden" value="{{$menu->orden}}">
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="customFile" for="customFile">Icono(opcional)</label>
-                                <input type="file" class="form-control" id="" name="icono">
+                                <label>Icono(Opcional)</label>
+                                <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
                             </div>
                         </div>
 
@@ -115,7 +114,24 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="modal" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Seleccionar Icono</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="col-md-12">
+                        {!! Form::iconos($iconos) !!}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

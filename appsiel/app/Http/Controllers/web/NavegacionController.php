@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\web\Icon;
 use App\web\Menunavegacion;
 use App\web\Navegacion;
 use App\web\Pagina;
@@ -19,7 +20,8 @@ class NavegacionController extends Controller
         $paginas = Pagina::all();
         $nav = Navegacion::all()->first();
         $variables_url = '?id='.Input::get('id');
-        return view('web.navegacion.navegacion',compact('miga_pan','nav','paginas','variables_url'));
+        $iconos = Icon::all();
+        return view('web.navegacion.navegacion',compact('miga_pan','nav','paginas','variables_url','iconos'));
     }
 
     public function migapan() {
@@ -91,5 +93,29 @@ class NavegacionController extends Controller
        }
 
     }
+
+    public function update(Request $request, $id){
+
+        $nav = Navegacion::find($id);
+
+        if($nav){
+
+            $nav->fill($request->all());
+            $nav->fixed = $request->fixed == 'on' ? 1 : 0;
+            $flag = $nav->save();
+
+            if($flag){
+                return redirect()->back()->with('flash_message','Configuraciones Almacenadas Correctamente.');
+            }else{
+                return redirect()->back() ->with('mensaje_error', "Error inesperado, la Configuración no pudo ser almacenada. Intente nuevamente más tarde");
+            }
+
+        }
+    }
+
+    public function storeNav(Request $request){
+
+    }
+
 
 }
