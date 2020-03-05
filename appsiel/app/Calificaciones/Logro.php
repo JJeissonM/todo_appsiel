@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Calificaciones\CursoTieneAsignatura;
 
 use DB;
+use App\Calificaciones\Periodo;
+use App\Matriculas\PeriodoLectivo;
 
 class Logro extends Model
 {
@@ -33,11 +35,15 @@ class Logro extends Model
     {
         $select_raw = 'CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")") AS campo6';
 
+        $periodo_lectivo_id = PeriodoLectivo::get_actual()->id;
+        //$periodos_actuales = Periodo::get_activos_periodo_lectivo( $periodo_lectivo_id );
+
         $registros = Logro::leftJoin('sga_periodos','sga_periodos.id','=','sga_logros.periodo_id')
                         ->leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_periodos.periodo_lectivo_id')
                         ->leftJoin('sga_cursos','sga_cursos.id','=','sga_logros.curso_id')
                         ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_logros.asignatura_id')
                         ->leftJoin('sga_escala_valoracion','sga_escala_valoracion.id','=','sga_logros.escala_valoracion_id')
+                        ->where('sga_periodos.periodo_lectivo_id',$periodo_lectivo_id)
                         ->select('sga_logros.codigo AS campo1',
                                 'sga_periodos_lectivos.descripcion AS campo2',
                                 'sga_periodos.descripcion AS campo3',

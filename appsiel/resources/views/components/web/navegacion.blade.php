@@ -1,4 +1,4 @@
-<header id="mu-hero" style="background-color: #0A7195;">
+<header id="mu-hero" style="background-color: #275093;">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light mu-navbar">
             <!-- Text based logo 
