@@ -71,72 +71,11 @@
 
 <body id="home" class="homepage">
 
-<header id="header">
-    <nav id="main-menu" class="navbar navbar-default navbar-fixed-top" role="banner">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a style="padding: 0px;" class="navbar-brand" href="http://localhost/Appsiel/todo_appsiel/home"><img style="width: 250px;" src="{{asset('images/logos/'.$e->logo)}}" alt="logo"></a>
-            </div>
+@if($nav != null)
+  {!! Form::navegacion($nav) !!}
+@endif
 
-            <div class="collapse navbar-collapse navbar-right">
-                <ul class="nav navbar-nav">
-                    <li class="scroll active"><a href="http://localhost/Appsiel/todo_appsiel/home">INICIO</a></li>
-                </ul>
-            </div>
-        </div>
-        <!--/.container-->
-    </nav>
-    <!--/nav-->
-</header>
-<!--/header-->
-
-{{--<section id="main-slider">--}}
-{{--    <div class="owl-carousel">--}}
-{{--        @if(count($e->noticias)>0)--}}
-{{--            @foreach($e->noticias as $n)--}}
-{{--                @if($n->estado=='activa' && $n->banner=='si')--}}
-{{--                    <div class="item" style="background-image: url('{{asset('images/noticias/'.$n->imagen)}}');">--}}
-{{--                        <div class="slider-inner">--}}
-{{--                            <div class="container">--}}
-{{--                                <div class="row">--}}
-{{--                                    <div class="col-sm-6">--}}
-{{--                                        <div class="carousel-content">--}}
-{{--                                            <h2><span>{{$n->titulo}}</span></h2>--}}
-{{--                                            <p>{{$n->resumen}}</p>--}}
-{{--                                            <a class="btn btn-primary btn-lg" href="{{route('web.leer_noticia',[$e->id,$n->id])}}">Leer más.</a>--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-{{--                    <!--/.item-->--}}
-{{--                @endif--}}
-{{--            @endforeach--}}
-{{--        @endif--}}
-{{--    </div>--}}
-{{--    <!--/.owl-carousel-->--}}
-{{--</section>--}}
-<!--/#main-slider-->
-
-<section id="cta" class="wow fadeIn">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                <p style="font-size: 18px; font-weight: bold;"><a href="{{url('/')}}">INICIO</a> > {{$title}}</p>
-            </div>
-        </div>
-    </div>
-</section>
-<!--/#cta-->
-
-<section>
+<section style="margin: 100px 0; overflow-y: scroll">
     <div class="container">
         <div class="section-header">
             <h2 class="section-title text-center wow fadeInDown">{{$title}}</h2>
@@ -152,11 +91,11 @@
 </section>
 
 
-<footer id="footer">
+<footer id="footer" class="fixed-bottom" style="background-color: {{$nav->background}}">
     <div class="container">
         <div class="row">
             
-            <div class="col-sm-6">
+            <div class="col-sm-6" style="color: {{$nav->color}}">
                 &copy; {{$footer->texto.' '.$footer->copyright}}
             </div>
 
@@ -165,7 +104,7 @@
                     @foreach($redes as $red)
                         <li style="list-style: none; margin-right: 10px;">
                             <div style="border-radius: 50%; border: 1px solid #ffffff; height: 45px; width: 45px; text-align: center;">
-                                <a href="{{$red->enlace}}" style="color:white; font-size: 30px;" target="_blank"><i class="fa fa-{{$red->icono}}"></i></a>
+                                <a href="{{$red->enlace}}" style="color:{{$nav->color}}; font-size: 30px;" target="_blank"><i class="fa fa-{{$red->icono}}"></i></a>
                             </div> 
                         </li>
                     @endforeach

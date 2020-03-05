@@ -4,6 +4,7 @@ namespace App\Http\Controllers\web;
 
 use App\web\Aboutus;
 use App\web\Icon;
+use App\web\Navegacion;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -151,6 +152,7 @@ class AboutusController extends Controller
 
         $redes = RedesSociales::all();
         $footer = Footer::all()->first();
+        $nav = Navegacion::all()->first();;
 
         return view('web.container')
             ->with('e', $empresa)
@@ -159,6 +161,7 @@ class AboutusController extends Controller
             ->with('footer', $footer)
             ->with('title', 'INSTITUCIONAL')
             ->with('slogan1', $empresa->descripcion)
-            ->with('slogan2', '');
+            ->with('slogan2', '')
+            ->with('nav',$nav);
     }
 }

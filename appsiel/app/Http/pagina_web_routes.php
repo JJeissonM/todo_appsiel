@@ -9,9 +9,9 @@ Route::get('pagina/addSeccion/{id}', 'web\PaginaController@addSeccion');
 Route::post('pagina/nuevaSeccion', 'web\PaginaController@nuevaSeccion');
 Route::delete('pagina/eliminarSeccion/{id}', 'web\PaginaController@eliminarSeccion');
 
-
 //navegacion
 Route::resource('navegacion', 'web\NavegacionController');
+Route::post('navegacion/store', 'web\NavegacionController@storeNav')->name('navegacion.storenav');
 
 Route::resource('menuItem', 'web\MenuNavegacionController');
 Route::post('menuItem/update/{id}', 'web\MenuNavegacionController@update')->name('itemUpdate');

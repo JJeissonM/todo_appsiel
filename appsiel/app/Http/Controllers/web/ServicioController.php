@@ -4,6 +4,7 @@ namespace App\Http\Controllers\web;
 
 use App\web\Icon;
 use App\web\Itemservicio;
+use App\web\Navegacion;
 use App\web\Servicio;
 use Illuminate\Http\Request;
 
@@ -207,6 +208,7 @@ class ServicioController extends Controller
 
         $redes = RedesSociales::all();
         $footer = Footer::all()->first();
+        $nav = Navegacion::all()->first();
         
         return view('web.container')
             ->with('e', $empresa)
@@ -215,6 +217,7 @@ class ServicioController extends Controller
             ->with('footer', $footer)
             ->with('title', 'SERVICIOS - LEER SERVICIO')
             ->with('slogan1', '')
-            ->with('slogan2', '');
+            ->with('slogan2', '')
+            ->with('nav',$nav);
     }
 }
