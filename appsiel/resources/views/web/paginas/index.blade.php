@@ -46,15 +46,11 @@
     <script src="{{asset('assets/js/axios.min.js')}}"></script>
     <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
     <script type="text/javascript">
-        $('tbody').sortable();
-    </script>
-    <script type="text/javascript">
 
         $(function () {
             const select = document.getElementById('paginas');
             rellenarSelect(select);
         });
-
 
         function buscarSecciones(event) {
             let select = event.target;
@@ -79,7 +75,7 @@
                     $html = '';
                     secciones.forEach(function (item) {
                         if (item.tipo !== 'ESTANDAR') {
-                            $html += `<tr>
+                            $html += `<tr class="items" style="cursor:pointer;" draggable=true>
                               <td style="cursor:pointer;">${item.orden}</td>
                               <td style="cursor:pointer;">${item.seccion}</td>
                               <td>
@@ -88,7 +84,7 @@
                               </td>
                               </tr>`;
                         } else {
-                            $html += `<tr style="cursor:pointer;">
+                            $html += `<tr style="cursor:pointer; " draggable=true>
                                         <td style="cursor:pointer;">${item.orden}</td>
                                         <td style="cursor:pointer;">${item.seccion}</td>
                                         <td>
@@ -149,4 +145,5 @@
         }
 
     </script>
+
 @endsection
