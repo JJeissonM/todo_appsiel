@@ -37,7 +37,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="">Logo</label>
-                                            <input type="text" class="form-control" name="logo" required>
+                                            <input type="text" class="form-control" name="logo">
                                         </div>
 
                                         <div class="form-group">
@@ -70,7 +70,7 @@
 
                                         <div class="form-group">
                                             <label for="">Logo</label>
-                                            <input type="text" class="form-control" name="logo" value="{{$nav->logo}}" required>
+                                            <input type="text" class="form-control" name="logo" value="{{$nav->logo}}">
                                         </div>
 
                                         <div class="form-group">
