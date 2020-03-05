@@ -1,8 +1,8 @@
 <header id="mu-hero" style="background-color: #0A7195;">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light mu-navbar">
-            <!-- Text based logo -->
-            <a class="navbar-brand mu-logo" href=""><span>{{$nav->logo}}</span></a>
+            <!-- Text based logo 
+            <a class="navbar-brand mu-logo" href=""><span> { {$nav->logo}}</span></a>-->
             <!-- image based logo -->
             <!-- <a class="navbar-brand mu-logo" href="index.html"><img src="assets/images/logo.png" alt="logo"></a> -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

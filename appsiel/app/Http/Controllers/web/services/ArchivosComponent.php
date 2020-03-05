@@ -24,6 +24,7 @@ class ArchivosComponent implements IDrawComponent
         if ($archivo != null) {
             $items = Archivoitem::where([['archivo_id', $archivo->id], ['estado', 'VISIBLE']])->orderBy('created_at', 'DESC')->paginate(6);
         }
+        //dd( $items );
         return Form::archivos($items, $archivo);
     }
 

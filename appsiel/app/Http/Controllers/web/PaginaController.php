@@ -202,7 +202,7 @@ class PaginaController extends Controller
     public function showPage($slug)
     {
         $pagina = Pagina::where('slug', $slug)->first();
-        $redes = RedesSociales::all();
+
         $widget = $pagina->widgets;
         $view = [];
         if (count($widget) > 0) {
@@ -218,7 +218,7 @@ class PaginaController extends Controller
             }
 
         }
-        return view('web.index', compact('view', 'pagina', 'redes'));
+        return view('web.index', compact('view', 'pagina'));
     }
 
     public function edit($id)

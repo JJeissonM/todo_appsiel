@@ -86,7 +86,7 @@
 
             <div class="collapse navbar-collapse navbar-right">
                 <ul class="nav navbar-nav">
-                    <li class="scroll active"><a href="http://localhost/Appsiel/todo_appsiel/home">INICIO</a></li>
+                    <li class="scroll active"><a href="{{ url('/') }}">Inicio</a></li>
                 </ul>
             </div>
         </div>
