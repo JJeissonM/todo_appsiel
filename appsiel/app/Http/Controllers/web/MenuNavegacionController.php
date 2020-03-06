@@ -12,6 +12,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use App\web\Icon;
 
 class MenuNavegacionController extends Controller
 {
@@ -39,6 +40,7 @@ class MenuNavegacionController extends Controller
 
        $menu = Menunavegacion::find($menu);
        $paginas = Pagina::all();
+       $iconos = Icon::all();
 
        if($menu){
 
@@ -57,7 +59,7 @@ class MenuNavegacionController extends Controller
            ];
 
            $variables_url = '?id='.Input::get('id');
-           return view('web.navegacion.edit',compact('miga_pan','variables_url','menu','paginas'));
+           return view('web.navegacion.edit',compact('miga_pan','variables_url','menu','paginas','iconos'));
 
        }else {
 
