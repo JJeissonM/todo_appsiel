@@ -120,7 +120,7 @@
                     </div>
                 @endif
             </div>
-            <div class="widgets" id="widgets">
+            <div class="widgets" id="widgets" style="position: relative;">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
                 @if($clientes != null)
                     {!! Form::clientes($clientes)!!}
