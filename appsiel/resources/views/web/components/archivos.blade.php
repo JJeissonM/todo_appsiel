@@ -161,6 +161,18 @@
                                         <input type="text" class="form-control" value="{{$archivo->descripcion}}" name="descripcion">
                                     </div>
                                     <div class="form-group">
+                                        <label>Formato</label>
+                                        <select class="form-control" name="formato">
+                                            @if($archivo->formato=='LISTA')
+                                            <option selected value="LISTA">ARCHIVOS EN FORMATO DE LISTA</option>
+                                            <option value="BLOG">ARCHIVOS EN FORMATO DE BLOG</option>
+                                            @else
+                                            <option value="LISTA">ARCHIVOS EN FORMATO DE LISTA</option>
+                                            <option selected value="BLOG">ARCHIVOS EN FORMATO DE BLOG</option>
+                                            @endif
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
                                         {!! Form::submit('Guardar',['class'=>'btn btn-primary waves-effect btn-block btn-sm']) !!}
                                     </div>
                                     {!! Form::close() !!}
@@ -176,6 +188,13 @@
                                     <div class="form-group">
                                         <label>Descripción</label>
                                         <input type="text" class="form-control" name="descripcion">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Formato</label>
+                                        <select class="form-control" name="formato">
+                                            <option value="LISTA">ARCHIVOS EN FORMATO DE LISTA</option>
+                                            <option value="BLOG">ARCHIVOS EN FORMATO DE BLOG</option>
+                                        </select>
                                     </div>
                                     <div class="form-group">
                                         {!! Form::submit('Guardar',['class'=>'btn btn-primary waves-effect btn-block btn-sm']) !!}
@@ -235,7 +254,7 @@
                                                 <i style="cursor: pointer;" class="fa fa-trash-o"></i>
                                             </div>
                                             <div class="media-body">
-                                                <h6 style="font-size: 14px;" class="media-heading">{{$a->file}}</h6>
+                                                <h6 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h6>
                                                 <p>{{"Estado: ".$a->estado}}</p>
                                                 <p><a href="{{asset('docs/'.$a->file)}}" target="_blank">Ver/Descargar Archivo</a></p>
                                             </div>
@@ -284,6 +303,14 @@
                     <input type="hidden" name="archivo_id" id="archivo_id" value="{{$archivo->id}}" />
                     @endif
                     <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" class="form-control" required name="titulo">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input type="text" class="form-control" name="descripcion">
+                    </div>
+                    <div class="form-group">
                         <label class="col-form-label">Estado</label>
                         <select class="form-control" name="estado">
                             <option value="VISIBLE">VISIBLE EN LA SECCIÓN</option>
@@ -291,8 +318,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="message-text" class="col-form-label">Archivo(s)</label>
-                        {!! Form::file('archivos[]',['class'=>'form-control has-feedback-left','multiple'=>'multiple','required'=>'required']) !!}
+                        <label for="message-text" class="col-form-label">Archivo</label>
+                        {!! Form::file('archivo',['class'=>'form-control has-feedback-left','required'=>'required']) !!}
                     </div>
                     {!! Form::close() !!}
                 </div>

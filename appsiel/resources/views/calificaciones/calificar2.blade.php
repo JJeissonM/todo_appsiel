@@ -28,7 +28,7 @@
 					<tr valign="{{$linea}}" data-codigo_matricula="{{ $vec_estudiantes[$k]['codigo_matricula'] }}"  data-id_estudiante="{{ $vec_estudiantes[$k]['id_estudiante'] }}"  data-id_calificacion="{{ $vec_estudiantes[$k]['id_calificacion'] }}"  data-calificacion="{{ $vec_estudiantes[$k]['calificacion'] }}"  data-id_calificacion_aux="{{ $vec_estudiantes[$k]['id_calificacion_aux'] }}">
 
 						<td width="250px" style="font-size:12px">
-							<b>{{ $vec_estudiantes[$k]['nombre'] }}</b>
+							<b> {{$linea}} {{ $vec_estudiantes[$k]['nombre'] }}</b>
 						</td>				
 						
 						@for ($c=1; $c < $cantidad_calificaciones; $c++)

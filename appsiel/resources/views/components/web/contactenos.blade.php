@@ -25,9 +25,9 @@
                                 @endif
                         </address>
                         <div class="col-md-12">
-                            <form id="main-contact-form" name="contact-form" method="post" action="{{route('contactenos.guardar')}}">
+                            <form  name="contact-form" method="post" action="{{route('contactenos.guardar')}}">
                                 <input type="hidden" name="contactenos_id" value="{{$contactenos->id}}">
-                                <input type="hidden" name="_toker" value="{{csrf_token()}}">
+                                <input type="hidden" name="_token" value="{{csrf_token()}}">
                                 <input type="hidden" name="_method" value="post">
                                 <div class="form-group">
                                     <input type="text" name="name" class="form-control" placeholder="Nombre completo" required="">

@@ -202,7 +202,7 @@ class PaginaController extends Controller
     public function showPage($slug)
     {
         $pagina = Pagina::where('slug', $slug)->first();
-        $redes = RedesSociales::all();
+
         $widget = $pagina->widgets;
         $view = [];
         if (count($widget) > 0) {
@@ -213,12 +213,12 @@ class PaginaController extends Controller
             foreach ($widgets as $widget) {
                 $factory = new FactoryCompents($widget->seccion->nombre, $widget->id);
                 $componente = $factory();
-                if ($componente === false) continue;
+                if ($componente === false || $componente->DrawComponent() == false) continue;
                 $view[] = '<div id="'.str_slug($widget->seccion->nombre).'">'.$componente->DrawComponent().'</div>';
             }
 
         }
-        return view('web.index', compact('view', 'pagina', 'redes'));
+        return view('web.index', compact('view', 'pagina'));
     }
 
     public function edit($id)

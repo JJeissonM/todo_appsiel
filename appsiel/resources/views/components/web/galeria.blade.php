@@ -38,7 +38,7 @@
                                 <div class="portfolio-item {{str_slug($album->titulo)}} isotope-item"
                                      style="position: absolute; left: 0px; top: 0px; transform: translate3d(0px, 0px, 0px);">
                                     <div class="portfolio-item-inner">
-                                        <img class="img-responsive" src="{{url($foto->nombre)}}" alt="">
+                                        <img class="img-responsive" style="height: 250px; width: 250px; object-fit: cover;" src="{{url($foto->nombre)}}" alt="">
                                         <div class="portfolio-info">
                                             <h3>{{$album->titulo}}</h3>
                                             {{$foto->nombre}}

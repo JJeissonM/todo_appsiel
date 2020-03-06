@@ -22,7 +22,7 @@
                 {{ $asignatura->intensidad_horaria }}
             </td>
             <td align="center" style="border: 1px solid grey; width:40px;">
-                {{ $calificacion->valor }}
+                {{ number_format( $calificacion->valor, 0, ',', '.' ) }}
             </td>
             <td align="center" style="border: 1px solid grey; width:30px;">
                 {{ $calificacion->escala_abreviatura }}

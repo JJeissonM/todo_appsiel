@@ -45,7 +45,9 @@
 @section('script')
     <script src="{{asset('assets/js/axios.min.js')}}"></script>
     <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
-
+    <script type="text/javascript">
+        $('tbody').sortable();
+    </script>
     <script type="text/javascript">
 
         $(function () {
@@ -76,7 +78,6 @@
                     let secciones = data.secciones;
                     $html = '';
                     secciones.forEach(function (item) {
-
                         if (item.tipo !== 'ESTANDAR') {
                             $html += `<tr>
                               <td style="cursor:pointer;">${item.orden}</td>
@@ -95,7 +96,6 @@
                                         </td>
                                         </tr>`
                         }
-
                     });
                     tbody.innerHTML = $html;
                 });

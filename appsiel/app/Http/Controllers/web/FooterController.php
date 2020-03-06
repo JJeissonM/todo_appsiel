@@ -189,4 +189,22 @@ class FooterController extends Controller
         }
     }
 
+    public function eliminarSeccion($id){
+
+        $categoria = CategoriaFooter::find($id);
+        $flag =  $categoria->delete();
+
+        if ($flag) {
+            return response()->json([
+                'status' => 'ok',
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error inesperado, por favor intentelo más tarde.'
+            ]);
+        }
+
+    }
+
 }

@@ -6,6 +6,7 @@ use App\PaginaWeb\Carousel;
 use App\web\Album;
 use App\web\Foto;
 use App\web\Galeria;
+use App\web\Navegacion;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -287,7 +288,7 @@ class GaleriaController extends Controller
                     foreach ($album->fotos as $foto) {
                         $data = $data . "<div class='portfolio-item " . str_slug($album->titulo) . " isotope-item' style='position: absolute; left: 0px; top: 0px; transform: translate3d(0px, 0px, 0px);'>";
                         $data = $data . "<div class='portfolio-item-inner'>
-                                    <img class='img-responsive' src='" . url($foto->nombre) . "' alt=''>
+                                    <img class='img-responsive' style=\"height: 250px; width: 250px; object-fit: cover;\" src='" . url($foto->nombre) . "' alt=''>
                                     <div class='portfolio-info'>";
                         $data = $data . " <h3>$album->titulo</h3>
                                         $foto->nombre
@@ -303,6 +304,7 @@ class GaleriaController extends Controller
 
         $redes = RedesSociales::all();
         $footer = Footer::all()->first();
+        $nav = Navegacion::all()->first();
 
         return view('web.container')
             ->with('e', $empresa)
@@ -311,7 +313,8 @@ class GaleriaController extends Controller
             ->with('footer', $footer)
             ->with('title', 'GALERÍA')
             ->with('slogan1', 'Nuestra labor y la ejecución de eventos que genera experiencias que queremos contarte.')
-            ->with('slogan2', 'Conoce la experiencia a través de fotos y videos.');
+            ->with('slogan2', 'Conoce la experiencia a través de fotos y videos.')
+            ->with('nav',$nav);
     }
 
     public function importar()

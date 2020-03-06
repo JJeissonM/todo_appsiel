@@ -33,15 +33,14 @@
     </tr>
 </table>
 
-<table class="table table-bordered" style="font-size: 0.8em;">
-    @foreach( $registros as $registro )
-        <tr>
-            <td>
-                <b> {{ $registro->elemento_descripcion }} </b>
-            </td>
-            <td>
-                {!! $registro->contenido !!}
-            </td>
-        </tr>
-    @endforeach
-</table>
+
+@foreach( $registros as $registro )
+    
+    <h4> <b> {{ $registro->elemento_descripcion }} </b> </h4>
+    
+    <hr>
+
+    <div style="padding: 15px;">
+        {!! $registro->contenido !!}
+    </div>
+@endforeach

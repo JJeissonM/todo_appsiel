@@ -80,7 +80,7 @@
 			
 		<div align="center" style="font-size: 1.1em;">
 			<b>{{ $colegio->descripcion }}</b><br/>
-			<b style="padding-top: -10px;">Educación básica primaria {{$tam_hoja}}</b><br/>
+			<b style="padding-top: -10px;">Educación básica primaria</b><br/>
 			Aprobado según resolución No. {{ $colegio->resolucion }}<br/>
 			{{ $colegio->ciudad }}<br/>
 		</div>

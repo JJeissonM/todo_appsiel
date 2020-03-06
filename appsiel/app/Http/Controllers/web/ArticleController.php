@@ -107,7 +107,33 @@ class ArticleController extends Controller
      */
     public function destroy($id)
     {
-        //
+
+        $article = Article::find($id);
+        if($article){
+            if($article->imagen)
+             unlink($article->imagen);
+
+            $flag =  $article->delete();
+
+            if ($flag) {
+                return response()->json([
+                    'status' => 'ok',
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Error inesperado, por favor intentelo más tarde.'
+                ]);
+            }
+
+        }else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error inesperado, por favor intentelo más tarde.'
+            ]);
+        }
+
+
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\web;
 
 use App\web\Aboutus;
 use App\web\Icon;
+use App\web\Navegacion;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Input;
 
 use App\web\RedesSociales;
 use App\web\Footer;
+use App\web\Pagina;
+
+use App\Http\Controllers\web\services\NavegacionComponent;
 
 class AboutusController extends Controller
 {
@@ -151,14 +155,23 @@ class AboutusController extends Controller
 
         $redes = RedesSociales::all();
         $footer = Footer::all()->first();
+        $nav = Navegacion::all()->first();;
+
+        $component = new NavegacionComponent( 0 );
+        $nav = $component->DrawComponent();
+
+        $pagina = Pagina::where('pagina_inicio',1)->get()->first();
 
         return view('web.container')
             ->with('e', $empresa)
             ->with('data', $data)
+            ->with('pagina', $pagina)
+            ->with('nav', $nav)
             ->with('redes', $redes)
             ->with('footer', $footer)
             ->with('title', 'INSTITUCIONAL')
             ->with('slogan1', $empresa->descripcion)
-            ->with('slogan2', '');
+            ->with('slogan2', '')
+            ->with('nav',$nav);
     }
 }

@@ -125,25 +125,19 @@ class ArchivoController extends Controller
     public function archivostore(Request $request)
     {
         $variables_url = $request->variables_url;
-        if (isset($request->archivos)) {
-            $files = $request->file("archivos");
-            $total = 0;
-            $todos = count($request->archivos);
-            foreach ($files as $f) {
-                $date = getdate();
-                $a = new Archivoitem($request->all());
-                //$name = "Archivo_" . $date['year'] . $date['mon'] . $date['mday'] . $date['hours'] . $date['minutes'] . $date['seconds'] . "." . $f->getClientOriginalExtension();
-                $name = str_slug($f->getClientOriginalName()) . '-' . time() . '.' . $f->clientExtension();
-                $path = "docs/" . $name;
-                $flag = file_put_contents($path, file_get_contents($f->getRealPath()), LOCK_EX);
-                if ($flag !== false) {
-                    $a->file = $name;
-                    if ($a->save()) {
-                        $total = $total + 1;
-                    }
+        if (isset($request->archivo)) {
+            $file = $request->file("archivo");
+            $a = new Archivoitem($request->all());
+            //$name = "Archivo_" . $date['year'] . $date['mon'] . $date['mday'] . $date['hours'] . $date['minutes'] . $date['seconds'] . "." . $f->getClientOriginalExtension();
+            $name = str_slug($file->getClientOriginalName()) . '-' . time() . '.' . $file->clientExtension();
+            $path = "docs/" . $name;
+            $flag = file_put_contents($path, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $a->file = $name;
+                if ($a->save()) {
+                    return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', "Archivo almacenado con éxito");
                 }
             }
-            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', "Se guardaron " . $total . " de " . $todos . " archivos");
         } else {
             $message = 'No ha seleccionado archivos.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
