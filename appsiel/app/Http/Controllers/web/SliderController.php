@@ -134,6 +134,8 @@ class SliderController extends Controller
 
         if($item){
 
+            $old_image = $item->imagen;
+
             $item->fill($request->all());
             foreach ($item->attributesToArray() as $key => $value){
                 $item->$key = strtoupper($value);
@@ -159,9 +161,8 @@ class SliderController extends Controller
                 $filename = "img/" . $name;
                 $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
                 if ($flag !== false) {
-                    $image = $item->imagen;
+                    unlink($old_image);
                     $item->fill(['imagen' => $filename]);
-                    unlink($image);
                 } else {
                     $message = 'Error inesperado al intentar guardar la imagen, por favor intente nuevamente mas tarde';
                     return redirect()->back()->withInput($request->input())
