@@ -48,6 +48,7 @@
                 <div class="col-md-12">
                     {!! Form::open(['route'=>'galeria.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
+                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
                         <input name="titulo" type="text" placeholder="Titulo del Álbum" required="required"

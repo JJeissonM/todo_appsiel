@@ -80,7 +80,7 @@
                     secciones.forEach(function (item) {
                         if (item.tipo !== 'ESTANDAR') {
                             $html += `<tr>
-                              <td style="cursor:pointer;">${item.orden}</td>
+                              <td id='${item.widget_id}' ondblclick='orden(event,this.id,${item.orden})' style="cursor:pointer;">${item.orden}</td>
                               <td style="cursor:pointer;">${item.seccion}</td>
                               <td>
                                   <a href="{{url('seccion')}}/${item.widget_id}{{$variables_url}}" style="color:white;" title="Editar sección" class="btn bg-warning"><i class="fa fa-edit"></i></a>
@@ -89,7 +89,7 @@
                               </tr>`;
                         } else {
                             $html += `<tr style="cursor:pointer;">
-                                        <td style="cursor:pointer;">${item.orden}</td>
+                                        <td id="${item.widget_id}" ondblclick="orden(event,this.id,${item.orden})" style="cursor:pointer;">${item.orden}</td>
                                         <td style="cursor:pointer;">${item.seccion}</td>
                                         <td>
                                            <a href="" onclick="eliminarSeccion(event,${item.widget_id})" title="Borrar sección" style="color:white;" class="btn bg-danger"><i class="fa fa-trash"></i></a>
@@ -101,9 +101,36 @@
                 });
         }
 
-        function eliminarSeccion(event,id){
+        function orden(event, id, orden) {
+            event.target.innerHTML = `<input type="number" value="${orden}" onkeypress="validar(event,${id},this.value)" onblur="guardarOrden(${id},this.value)">`;
+        }
 
-           event.preventDefault();
+        function guardarOrden(id, orden) {
+            if(orden < 1){
+                Swal.fire(
+                    'Atención!',
+                    'El orden no puede ser menor que 1.',
+                    'warning'
+                );
+                return;
+            }
+            const url = '{{url('')}}/' + 'pagina/cambiarorden/' + id + '/' + orden;
+            axios.get(url).then(response => {
+                const select = document.getElementById('paginas');
+                rellenarSelect(select);
+            });
+        }
+
+        function validar(event,id,orden) {
+            if(event.key == 'Enter'){
+                guardarOrden(id,orden);
+            }
+        }
+
+
+        function eliminarSeccion(event, id) {
+
+            event.preventDefault();
             Swal.fire({
                 title: '¿Estás seguro?',
                 text: "¡No podrás revertir esto!",
@@ -115,26 +142,25 @@
             }).then((result) => {
                 if (result.value) {
 
-                    const url = '{{url('')}}/'+'pagina/eliminarSeccion/'+id;
+                    const url = '{{url('')}}/' + 'pagina/eliminarSeccion/' + id;
 
                     axios.delete(url)
                         .then(function (response) {
 
                             const data = response.data;
-                            if(data.status == 'ok'){
+                            if (data.status == 'ok') {
 
                                 Swal.fire(
-
                                     'Eliminado!',
                                     'Su archivo ha sido eliminado.',
                                     'success'
                                 );
 
-                                setTimeout(function(){
+                                setTimeout(function () {
                                     location.reload();
-                                },3000);
+                                }, 3000);
 
-                            }else {
+                            } else {
                                 Swal.fire(
                                     'Error!',
                                     data.message,

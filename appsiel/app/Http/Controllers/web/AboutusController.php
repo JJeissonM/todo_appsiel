@@ -156,9 +156,9 @@ class AboutusController extends Controller
         $redes = RedesSociales::all();
         $footer = Footer::all()->first();
         $nav = Navegacion::all()->first();;
-
-        $component = new NavegacionComponent( 0 );
-        $nav = $component->DrawComponent();
+//
+//        $component = new NavegacionComponent( 0 );
+//        $nav = $component->DrawComponent();
 
         $pagina = Pagina::where('pagina_inicio',1)->get()->first();
 
@@ -166,7 +166,6 @@ class AboutusController extends Controller
             ->with('e', $empresa)
             ->with('data', $data)
             ->with('pagina', $pagina)
-            ->with('nav', $nav)
             ->with('redes', $redes)
             ->with('footer', $footer)
             ->with('title', 'INSTITUCIONAL')

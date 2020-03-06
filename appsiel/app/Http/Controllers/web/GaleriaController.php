@@ -137,7 +137,7 @@ class GaleriaController extends Controller
                 }
             }
             $message = "<h3>El Álbum fue almacenado correctamente.</h3>" . $response;
-            $variables_url = '?id=' . Input::get('id');
+            $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         } else {
             $message = 'El Álbum no fue almacenado correctamente, intente mas tarde.';
@@ -202,11 +202,9 @@ class GaleriaController extends Controller
                 }
             }
             $message = "<h3>El Álbum fue modificado correctamente.</h3>" . $response;
-            $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
         } else {
             $message = 'El Álbum no fue modificado correctamente, intente mas tarde.';
-            $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
         }
     }
