@@ -161,7 +161,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Ubicación</label>
-                                                <input type="text" class="form-control" name="ubicacion" required
+                                                <input type="text" class="form-control" name="ubicacion"
                                                        value="{{$footer->ubicacion}}">
                                             </div>
                                             <div class="form-group">
@@ -194,7 +194,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Ubicación</label>
-                                                <input type="text" class="form-control" name="ubicacion" required>
+                                                <input type="text" class="form-control" name="ubicacion">
                                             </div>
                                             <div class="form-group">
                                                 <label>Copyright</label>
@@ -448,6 +448,7 @@
 
     <script src="{{asset('assets/js/axios.min.js')}}"></script>
     <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
+
 
     <script>
 
