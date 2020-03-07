@@ -96,7 +96,9 @@
         <div class="row">
             
             <div class="col-sm-6" style="color: {{$nav->color}}">
+                @if($footer != null)
                 &copy; {{$footer->texto.' '.$footer->copyright}}
+                @endif
             </div>
 
             <div class="col-sm-6">

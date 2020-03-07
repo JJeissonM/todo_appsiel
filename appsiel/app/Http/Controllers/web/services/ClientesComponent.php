@@ -17,7 +17,7 @@ class ClientesComponent implements IDrawComponent
 
     public function DrawComponent()
     {
-        $clientes = Cliente::where('widget_id',$this->widget)->first();
+        $clientes = Cliente::where('widget_id',$this->widget)->get();
         return Form::clientes($clientes);
     }
 

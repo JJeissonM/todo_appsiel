@@ -163,7 +163,7 @@ class PaginaController extends Controller
                 'etiqueta' => 'Agregando nueva sección'
             ]
         ];
-        $pagina =  $id;
+        $pagina = $id;
         $secciones = Seccion::all();
         $variables_url = '?id=' . Input::get('id');
         return view('web.paginas.secciones.addSeccion', compact('secciones', 'miga_pan', 'pagina', 'variables_url'));
@@ -182,7 +182,7 @@ class PaginaController extends Controller
         }
 
 
-        $widget =  new Widget();
+        $widget = new Widget();
         $widget->pagina_id = $request->pagina_id;
         $widget->seccion_id = $request->seccion_id;
         $orden = Widget::where('pagina_id', $request->pagina_id)->count();
@@ -191,7 +191,7 @@ class PaginaController extends Controller
 
         $flag = $widget->save();
 
-        if($flag){
+        if ($flag) {
             $message = "Sección seleccionada correctamente.";
             return redirect()->back()->with('flash_message', $message)->withInput($request->input());
         }
@@ -214,7 +214,7 @@ class PaginaController extends Controller
                 $factory = new FactoryCompents($widget->seccion->nombre, $widget->id);
                 $componente = $factory();
                 if ($componente === false || $componente->DrawComponent() == false) continue;
-                $view[] = '<div id="'.str_slug($widget->seccion->nombre).'">'.$componente->DrawComponent().'</div>';
+                $view[] = '<div id="' . str_slug($widget->seccion->nombre) . '">' . $componente->DrawComponent() . '</div>';
             }
 
         }
@@ -224,7 +224,7 @@ class PaginaController extends Controller
     public function edit($id)
     {
 
-        $pagina =  Pagina::find($id);
+        $pagina = Pagina::find($id);
 
         if ($pagina) {
 
@@ -257,17 +257,15 @@ class PaginaController extends Controller
     public function update(Request $request, $id)
     {
 
-        $pagina =  Pagina::find($id);
+        $pagina = Pagina::find($id);
 
         if ($pagina) {
 
             $old_image = $pagina->favicon;
 
-            if($request->pagina_inicio)
-            {
-                $principal = Pagina::where('pagina_inicio',true)->get()->first();
-                if( $principal && $principal->id != $id)
-                {
+            if ($request->pagina_inicio) {
+                $principal = Pagina::where('pagina_inicio', true)->get()->first();
+                if ($principal && $principal->id != $id) {
                     $principal->pagina_inicio = !$principal->pagina_inicio;
                     $principal->save();
                 }
@@ -277,10 +275,8 @@ class PaginaController extends Controller
             $pagina->slug = "sitio-" . self::generar_slug($request->titulo);
             $flag = $pagina->save();
 
-            if($flag)
-            {
-                if($request->hasFile('favicon'))
-                {
+            if ($flag) {
+                if ($request->hasFile('favicon')) {
 
                     $file = $request->file('favicon');
                     $name = time() . $file->getClientOriginalName();
@@ -288,10 +284,9 @@ class PaginaController extends Controller
                     $filename = "img/" . $name;
                     $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
 
-                    if($flag !== false)
-                    {
-                        unlink( $old_image );
-                        $pagina->fill(['favicon' =>$filename])->save();
+                    if ($flag !== false) {
+                        unlink($old_image);
+                        $pagina->fill(['favicon' => $filename])->save();
                     }
                 }
 
@@ -316,7 +311,7 @@ class PaginaController extends Controller
             ]);
         }
 
-        $flag =  $pagina->delete();
+        $flag = $pagina->delete();
 
         if ($flag) {
             return response()->json([
@@ -330,13 +325,14 @@ class PaginaController extends Controller
         }
     }
 
-    public function eliminarSeccion($id){
+    public function eliminarSeccion($id)
+    {
 
         $widget = Widget::find($id);
 
-        if($widget){
+        if ($widget) {
 
-            $flag =  $widget->delete();
+            $flag = $widget->delete();
 
             if ($flag) {
                 return response()->json([
@@ -349,7 +345,7 @@ class PaginaController extends Controller
                 ]);
             }
 
-        }else{
+        } else {
 
             return response()->json([
                 'status' => 'error',
@@ -357,6 +353,22 @@ class PaginaController extends Controller
             ]);
 
         }
+    }
+
+    public function cambiarOrden($id, $orden)
+    {
+        $widget = Widget::find($id);
+        $count = Widget::where('pagina_id', $widget->pagina_id)->count();
+        if ($orden > $count) {
+            $orden = $count;
+        }
+        $existe = Widget::where([['pagina_id', $widget->pagina_id], ['orden', $orden]])->first();
+        if ($existe != null) {
+            $existe->orden = $widget->orden;
+            $existe->save();
+        }
+        $widget->orden = $orden;
+        $widget->save();
     }
 
 }
