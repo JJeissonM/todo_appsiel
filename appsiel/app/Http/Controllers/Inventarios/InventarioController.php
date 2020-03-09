@@ -450,11 +450,22 @@ class InventarioController extends TransaccionController
         $datos_encabezado_doc =  $sql_datos_encabezado_doc[0];
         $elaboro = $encabezado_doc->creado_por;
 
-        $view = View::make('inventarios.pdf', compact('datos_encabezado_doc', 'descripcion_transaccion', 'productos', 'elaboro') )->render();
+        switch ( Input::get('formato_impresion_id') )
+        {
+            case '2':
+                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision');
+                break;
 
-        if (Input::get('formato_impresion_id') == 2) {
-            $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision');
+            case '3':
+                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_pos');
+                break;
+            
+            default:
+                // No se especifica formato de impresión 
+                $view = View::make('inventarios.pdf', compact('datos_encabezado_doc', 'descripcion_transaccion', 'productos', 'elaboro') )->render();
+                break;
         }
+
 
         // Se prepara el PDF
         $orientacion = 'portrait';

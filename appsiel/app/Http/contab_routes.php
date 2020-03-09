@@ -24,6 +24,7 @@ Route::get('contab_pdf_estados_de_cuentas', 'Contabilidad\ContabReportesControll
 Route::get('contab_balance_comprobacion','Contabilidad\ContabReportesController@balance_comprobacion');
 
 Route::post('contab_ajax_generacion_eeff', 'Contabilidad\ContabReportesController@contab_ajax_generacion_eeff');
+Route::get('contab_pdf_eeff', 'Contabilidad\ContabReportesController@contab_pdf_eeff');
 Route::get('contab_generacion_eeff','Contabilidad\ContabReportesController@generacion_eeff');
 // Reportes del Menú Automático
 Route::post('contab_impuestos', 'Contabilidad\ContabReportesController@impuestos');

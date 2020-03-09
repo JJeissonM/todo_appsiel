@@ -79,6 +79,8 @@
 		<div class="marco_formulario">
 			
 			{{ Form::bsBtnExcel('generacion_eeff') }}
+			{{ Form::bsBtnPdf('estados_financieros') }}
+			{{ Form::Spin( 42 ) }}
 			
 			<div id="resultado_consulta">
 
@@ -122,6 +124,7 @@
 
 				$('#resultado_consulta').html( '' );
 				$('#div_cargando').show();
+				$('#div_spin').show();
 
 				// Preparar datos de los controles para enviar formulario
 				var form_consulta = $('#form_consulta');
@@ -130,8 +133,25 @@
 				// Enviar formulario de ingreso de productos vía POST
 				$.post(url,datos,function(respuesta){
 					$('#div_cargando').hide();
+					$('#div_spin').hide();
+
 					$('#resultado_consulta').html(respuesta);
+					
 					$('#btn_excel').show(500);
+					$('#btn_pdf').show(500);
+
+					var url_pdf = $('#btn_pdf').attr('href');
+					var n = url_pdf.search('a3p0');
+					if ( n > 0) {
+						var new_url = url_pdf.replace('a3p0','contab_pdf_eeff?'+datos);
+					}else{
+						n = url_pdf.search('contab_pdf_eeff');
+						var url_aux = url_pdf.substr(0,n);
+						var new_url = url_aux + 'contab_pdf_eeff?' + datos;
+					}					
+					
+					$('#btn_pdf').attr('href', new_url);
+					$('#btn_pdf').attr('target', '_blank');
 				});
 			});
 

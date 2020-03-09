@@ -14,7 +14,7 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['1'=>'Movimiento','2'=>'Remisión'], null, [ 'id' =>'formato_impresion_id' ] ) }}
+	Formato: {{ Form::select('formato_impresion_id',['1'=>'Movimiento','2'=>'Remisión (estándar)','3'=>'Remisión (POS)'], null, [ 'id' =>'formato_impresion_id' ] ) }}
 	{{ Form::bsBtnPrint( 'transaccion_print/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
 	{{ Form::bsBtnEmail( 'inventarios_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
 @endsection
