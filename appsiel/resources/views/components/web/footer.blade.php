@@ -1,5 +1,5 @@
 @if($footer!=null)
-    <div class="footerarea" style="background-color: {{$footer->background}}; height: 100vh">
+    <div class="footerarea" style="background-color: {{$footer->background}};">
         <div class="container">
             <div class="row">
                 @if($footer->ubicacion == '')

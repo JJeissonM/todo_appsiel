@@ -407,10 +407,47 @@
                                        id="iconotxt" placeholder="Nombre del icono" class="form-control">
                             </div>
 
-                            <div class="form-group">
-                                <label for="">Enlace</label>
-                                <input type="text" class="form-control" id="enlacetxt" name="enlace"
-                                       placeholder="https://">
+                            <div class="col-md-12">
+                                <h5>Enlazar a</h5>
+                                <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="pagina">
+                                <nav>
+                                    <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab"
+                                           href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true"
+                                           onclick="select('pagina')">Página</a>
+                                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab"
+                                           href="#nav-profile" role="tab" aria-controls="nav-profile"
+                                           aria-selected="false" onclick="select('url')">URL del sitio web</a>
+                                    </div>
+                                </nav>
+                                <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+                                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
+                                         aria-labelledby="nav-home-tab">
+                                        <div class="form-group" style="display: inline-block; width: 40%;">
+                                            <label for="">Página</label>
+                                            <select class="form-control" id="paginas" onchange="buscarSecciones(event)"
+                                                    name="pagina">
+                                                @foreach($paginas as $pagina)
+                                                    <option value="{{$pagina->id}}">{{$pagina->titulo}}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group" style="display: inline-block;width: 58%;">
+                                            <label for="">Sección en una página</label>
+                                            <select class="form-control" id="secciones" name="seccion">
+                                                <option value="">Principio de la Página</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="nav-profile" role="tabpanel"
+                                         aria-labelledby="nav-profile-tab">
+                                        <div class="form-group">
+                                            <label for="formGroupExampleInput">URL de sitio web (se abre en una pestaña
+                                                nueva)</label>
+                                            <input type="text" class="form-control" placeholder="https://" name="url">
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                         </form>
@@ -582,6 +619,11 @@
             });
         }
 
+        function select(opcion) {
+            let tipo = document.getElementById('tipo_enlace');
+            tipo.value = opcion;
+        }
+
         function eliminarEnlace(event,id){
            event.preventDefault();
            axios.get('{{url('footer/eliminar/enlace')}}'+'/'+id)
@@ -610,6 +652,31 @@
                    }
 
                });
+
+        }
+
+        function buscarSecciones(event) {
+            let select = event.target;
+            rellenarSelect(select);
+        }
+
+        function rellenarSelect(select) {
+
+            select = select.options[select.selectedIndex].value;
+            const url = '{{url('')}}/' + 'pagina/secciones/' + select;
+
+            axios.get(url)
+                .then(function (response) {
+                    const data = response.data;
+                    let tbody = document.getElementById('secciones');
+                    let secciones = data.secciones;
+                    $html = `<option value="principio">Principio de la página</option>`;
+                    secciones.forEach(function (item) {
+                        console.log(item);
+                        $html += `<option value="${item.widget_id}">${item.seccion}</option>`;
+                    });
+                    tbody.innerHTML = $html;
+                });
         }
 
     </script>

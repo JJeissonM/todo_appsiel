@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Input;
 class RedesSocialesController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function index(){
 
         $miga_pan =   [

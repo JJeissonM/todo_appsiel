@@ -98,7 +98,7 @@
         }
 
         function orden(event, id, orden) {
-            event.target.innerHTML = `<input type="number" value="${orden}" onkeypress="validar(event,${id},this.value)" onblur="guardarOrden(${id},this.value)">`;
+            event.target.innerHTML = `<input  type="number" autofocus value="${orden}" onkeypress="validar(event,${id},this.value)" onblur="guardarOrden(${id},this.value)" style="width: 40px;">`;
         }
 
         function guardarOrden(id, orden) {
