@@ -130,6 +130,40 @@
                   background-color: #fff;
                   border-color: #ddd;
             }
+
+            .section-header .section-title:after {
+                background-color: black !important;
+            }
+
+            .btn.btn-primary {
+                background: #000 !important;
+                border-color: red !important;
+            }
+
+            .media.service-box .pull-left > i {
+                color: black !important;
+            }
+
+            .media.service-box .pull-left > i:after {
+                background-color: black !important;
+            }
+
+            .pagination>li>a, .pagination>li>span {
+                color:black !important;
+            }
+
+            .pagination>.active>a,
+            .pagination>.active>span,
+            .pagination>.active>a:hover,
+            .pagination>.active>span:hover,
+            .pagination>.active>a:focus,
+            .pagination>.active>span:focus{
+                color: #fff !important;
+                cursor: default;
+                background-color: black;
+                border-color: black;
+            }
+
       </style>
 </head>
 

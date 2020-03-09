@@ -84,7 +84,7 @@
                                 @endif
                             @endif
                         @endforeach
-                            <li class="nav-item"><a href="{{url('/login')}}" style="color: {{$nav->color}}">Iniciar Sesion</a></li>
+                        <li class="nav-item"><a href="{{url('/login')}}" style="color: {{$nav->color}}">Iniciar Sesion</a></li>
                     </ul>
                 </div>
             </nav>

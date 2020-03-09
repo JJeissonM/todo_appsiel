@@ -24,7 +24,7 @@
                                 <td>{{$a->titulo}}</td>
                                 <td>{{$a->descripcion}}</td>
                                 <td>{{$a->created_at}}</td>
-                                <td><a target="_blank" href="{{ asset('docs/'.$a->file)}}" class="btn btn-primary btn-block btn-sm"><i class="fa fa-download"></i></a></td>
+                                <td><a target="_blank"  href="{{ asset('docs/'.$a->file)}}" class="btn btn-primary btn-block btn-sm"><i class="fa fa-download"></i></a></td>
                             </tr>
                             @endif
                             @endforeach
@@ -41,7 +41,7 @@
                                         <h5 title="{{$a->titulo}}">{{str_limit($a->titulo, $limit = 25, $end = '...')}}</h5>
                                     </div>
                                 </div>
-                                <a target="_blank" href="{{asset('docs/'.$a->file)}}">
+                                <a target="_blank" style="color: black;" href="{{asset('docs/'.$a->file)}}">
                                     <center><i class="fa fa-file-o" title="{{$a->titulo}}" style="width: 100%; height: 100px; font-size: 80px;"></i></center>
                                 </a>
                                 <p title="{{$a->descripcion}}">{{str_limit($a->descripcion, $limit = 85, $end = '...')}}</p>
