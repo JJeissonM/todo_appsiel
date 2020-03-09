@@ -96,6 +96,7 @@ Route::post('archivos/archivo/store', 'web\ArchivoController@archivostore')->nam
 Route::post('archivos/archivo/update', 'web\ArchivoController@archivoupdate')->name('archivos.archivoupdate');
 Route::post('archivos/archivo/delete', 'web\ArchivoController@destroy')->name('archivos.delete');
 
+Route::resource('cofiguraciones','web\ConfiguracionesController');
 
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
 

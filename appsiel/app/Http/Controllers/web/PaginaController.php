@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\web\services\FactoryCompents;
+use App\web\Configuraciones;
 use App\web\Pagina;
 
 use App\Http\Controllers\Controller;
@@ -208,14 +209,13 @@ class PaginaController extends Controller
     public function showPage($slug)
     {
         $pagina = Pagina::where('slug', $slug)->first();
+        $configuracion = Configuraciones::all()->first();
 
         $widget = $pagina->widgets;
         $view = [];
         if (count($widget) > 0) {
 
             $widgets = $pagina->widgets()->orderBy('orden')->get();
-            //$widgets->sortBy('orden');
-            //dd($widgets);
             foreach ($widgets as $widget) {
                 $factory = new FactoryCompents($widget->seccion->nombre, $widget->id);
                 $componente = $factory();
@@ -224,7 +224,7 @@ class PaginaController extends Controller
             }
 
         }
-        return view('web.index', compact('view', 'pagina'));
+        return view('web.index', compact('view', 'pagina','configuracion'));
     }
 
     public function edit($id)

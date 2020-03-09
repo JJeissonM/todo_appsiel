@@ -132,24 +132,24 @@
             }
 
             .section-header .section-title:after {
-                background-color: black !important;
+                background-color: {{$configuracion->color_primario}} !important;
             }
 
             .btn.btn-primary {
-                background: #000 !important;
-                border-color: red !important;
+                background: {{$configuracion->color_primario}} !important;
+                border-color: {{$configuracion->color_terciario}} !important;
             }
 
             .media.service-box .pull-left > i {
-                color: black !important;
+                color: {{$configuracion->color_primario}} !important;
             }
 
             .media.service-box .pull-left > i:after {
-                background-color: black !important;
+                background-color: {{$configuracion->color_primario}} !important;
             }
 
             .pagination>li>a, .pagination>li>span {
-                color:black !important;
+                color:{{$configuracion->color_primario}} !important;
             }
 
             .pagination>.active>a,
@@ -158,10 +158,14 @@
             .pagination>.active>span:hover,
             .pagination>.active>a:focus,
             .pagination>.active>span:focus{
-                color: #fff !important;
+                color: {{$configuracion->color_segundario}} !important;
                 cursor: default;
-                background-color: black;
-                border-color: black;
+                background-color: {{$configuracion->color_primario}};
+                border-color: {{$configuracion->color_primario}};
+            }
+
+            .column-title:after {
+               border-bottom: 1px solid {{$configuracion->color_terciario}} !important;
             }
 
       </style>
