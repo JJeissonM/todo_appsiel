@@ -8,6 +8,7 @@ use App\web\EnlaceFooter;
 use App\web\Icon;
 use App\web\Pagina;
 use App\web\RedesSociales;
+use App\web\Widget;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -17,6 +18,11 @@ use App\web\Footer;
 
 class FooterController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function index(){
 
@@ -35,14 +41,16 @@ class FooterController extends Controller
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
         $iconos = Icon::all();
+        $paginas = Pagina::all();
         $contactenos = Contactenos::all()->first();
-        return view('web.footer.footer',compact('footer','variables_url','miga_pan','iconos','redes','contactenos'));
+        return view('web.footer.footer',compact('footer','variables_url','miga_pan','iconos','redes','contactenos','paginas'));
     }
 
     public function store(Request $request){
 
         $request->ubicacion =  str_replace('width="600"','width="300"',$request->ubicacion);
         $footer = new Footer($request->all());
+
         $footer->ubicacion = $request->ubicacion;
         $flag = $footer->save();
 
@@ -147,6 +155,19 @@ class FooterController extends Controller
     public function newEnlace(Request $request){
 
         $enlace = new EnlaceFooter($request->all());
+
+        if($request->tipo_enlace == 'pagina' ){
+            if($request->seccion == 'principio' ){
+                $pagina = Pagina::find($request->pagina);
+                $enlace->enlace = url('/'.$pagina->slug);
+            }else {
+                $widget = Widget::find($request->seccion);
+                $enlace->enlace = url('/'. $widget->pagina->slug.'#'.$widget->seccion->nombre);
+            }
+        }else {
+            $enlace->enlace =  $request->url;
+        }
+
         $flag = $enlace->save();
 
         if($flag){

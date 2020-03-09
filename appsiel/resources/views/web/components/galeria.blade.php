@@ -1,6 +1,7 @@
 @extends('web.templates.main')
 
 @section('style')
+    <link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
     <style>
         .card-body {
             padding: 0 !important;
@@ -117,7 +118,7 @@
                                 </div>
                                 <a href="{{url('galeria/edit').'/'.$album->id.$variables_url}}" class="btn"
                                    title="Editar Álbum"><i class="fa fa-edit"></i></a>
-                                <a href="{{url('galeria/destroy/album').'/'.$album->id.$variables_url}}" class="btn"
+                                <a id="{{$album->id}}" href="" onclick="eliminarSeccion(event,id)" class="btn"
                                    title="Eliminar Álbum"><i class="fa fa-eraser"></i></a>
                             </div>
                         @endforeach
@@ -204,12 +205,52 @@
     </div>
 </div>
 @section('script')
-    <script type="text/javascript">
 
+    <script src="{{asset('assets/js/axios.min.js')}}"></script>
+    <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
+
+    <script type="text/javascript">
         function cerrar(id) {
             $("#" + id).modal('hide');
             $("#" + id).removeClass('modal-open');
             $('.' + id).remove();
         }
+
+        function eliminarSeccion(event,id){
+            event.preventDefault();
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás revertir esto!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, bórralo!'
+            }).then((result) => {
+                if (result.value) {
+                    axios.get('{{url('galeria/destroy/album/')}}'+'/'+id)
+                        .then(function(response) {
+                            const data = response.data;
+                            if(data.status == 'ok'){
+                                Swal.fire(
+
+                                    'Eliminado!',
+                                    'Su archivo ha sido eliminado.',
+                                    'success'
+                                );
+
+                            }else {
+                                Swal.fire(
+                                    'Error!',
+                                    data.message,
+                                    'danger'
+                                )
+                            }
+
+                        });
+                }
+            });
+        }
+
     </script>
 @endsection

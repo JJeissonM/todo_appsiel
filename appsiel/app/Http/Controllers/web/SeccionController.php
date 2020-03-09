@@ -11,6 +11,12 @@ use App\Http\Controllers\Controller;
 
 class SeccionController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function orquestador($id){
 
         $widget = Widget::find($id);

@@ -46,15 +46,11 @@
     <script src="{{asset('assets/js/axios.min.js')}}"></script>
     <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
     <script type="text/javascript">
-        $('tbody').sortable();
-    </script>
-    <script type="text/javascript">
 
         $(function () {
             const select = document.getElementById('paginas');
             rellenarSelect(select);
         });
-
 
         function buscarSecciones(event) {
             let select = event.target;
@@ -102,7 +98,7 @@
         }
 
         function orden(event, id, orden) {
-            event.target.innerHTML = `<input type="number" value="${orden}" onkeypress="validar(event,${id},this.value)" onblur="guardarOrden(${id},this.value)">`;
+            event.target.innerHTML = `<input  type="number" autofocus value="${orden}" onkeypress="validar(event,${id},this.value)" onblur="guardarOrden(${id},this.value)" style="width: 40px;">`;
         }
 
         function guardarOrden(id, orden) {
@@ -175,4 +171,5 @@
         }
 
     </script>
+
 @endsection

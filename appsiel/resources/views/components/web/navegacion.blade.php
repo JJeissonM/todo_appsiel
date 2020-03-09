@@ -1,3 +1,11 @@
+<style>
+
+    .active a,li a:hover{
+        color:black !important;
+    }
+
+</style>
+
 @if($nav->fixed)
     <header id="mu-hero" class="fixed-top" style="background-color: {{$nav->background}};">
         <div class="container">
@@ -16,7 +24,7 @@
                         @foreach($nav->menus as $item)
                             @if($item->parent_id == 0)
                                 @if($item->subMenus()->count()>0)
-                                    <li class="nav-item dropdown">
+                                    <li class="nav-item dropdown {{request()->url() == $item->enlace ? 'active':''}}">
                                         <a class="dropdown-toggle" style="color: {{$nav->color}}"
                                            href="{{$item->enlace}}" role="button" id="navbarDropdown"
                                            data-toggle="dropdown" aria-haspopup="true"
@@ -29,11 +37,12 @@
                                         </div>
                                     </li>
                                 @else
-                                    <li class="nav-item"><a href="{{$item->enlace}}"
+                                    <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}"
                                                             style="color: {{$nav->color}}">{{$item->titulo}}</a></li>
                                 @endif
                             @endif
                         @endforeach
+                            <li class="nav-item"><a href="{{url('/login')}}" style="color: {{$nav->color}}">Iniciar Sesion</a></li>
                     </ul>
                 </div>
             </nav>
@@ -57,7 +66,7 @@
                         @foreach($nav->menus as $item)
                             @if($item->parent_id == 0)
                                 @if($item->subMenus()->count()>0)
-                                    <li class="nav-item dropdown">
+                                    <li class="nav-item dropdown {{request()->url() == $item->enlace ? 'active':''}}">
                                         <a class="dropdown-toggle" style="color: {{$nav->color}}"
                                            href="{{$item->enlace}}" role="button" id="navbarDropdown"
                                            data-toggle="dropdown" aria-haspopup="true"
@@ -70,11 +79,12 @@
                                         </div>
                                     </li>
                                 @else
-                                    <li class="nav-item"><a href="{{$item->enlace}}"
+                                    <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}"
                                                             style="color: {{$nav->color}}"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a></li>
                                 @endif
                             @endif
                         @endforeach
+                            <li class="nav-item"><a href="{{url('/login')}}" style="color: {{$nav->color}}">Iniciar Sesion</a></li>
                     </ul>
                 </div>
             </nav>

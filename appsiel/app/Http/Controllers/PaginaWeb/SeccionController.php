@@ -20,6 +20,8 @@ use App\PaginaWeb\Seccion;
 class SeccionController extends ModeloController
 {
 
+
+
     /**
      * Display a listing of the resource.
      *
