@@ -84,6 +84,8 @@
 
     function seticon(icono) {
         //var inp = $("#iconotxt").val();
+        var inp = $("#nombre").val();
+        $("#"+inp).val(icono);
         $("#iconotxt" ).val(icono);
         $("#exampleModal").modal('hide');
         $("#exampleModal").removeClass('modal-open');
