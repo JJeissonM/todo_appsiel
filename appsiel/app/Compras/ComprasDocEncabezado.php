@@ -28,7 +28,7 @@ class ComprasDocEncabezado extends Model
                                 'compras_doc_encabezados.fecha AS campo1',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS campo2' ),
                                 DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3' ),
-                                DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo) AS campo4'),
+                                DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," ",compras_doc_encabezados.doc_proveedor_consecutivo) AS campo4'),
                                 'compras_doc_encabezados.descripcion AS campo5',
                                 'compras_doc_encabezados.valor_total AS campo6',
                                 'compras_doc_encabezados.estado AS campo7',

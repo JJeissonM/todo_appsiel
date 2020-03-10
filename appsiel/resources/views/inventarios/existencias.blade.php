@@ -28,11 +28,9 @@
 @section('contenido')
 		<div class="col-md-12 marco_formulario">
 			<br/>
-			<div class="row" id="spin" style="display: none;">
-                <img src="{{asset('assets/img/spinning-wheel.gif')}}" width="32px" height="32px">
-            </div>
             {{ Form::bsBtnExcel('existencias_inventario') }}
 			{{ Form::bsBtnPdf('existencias_inventario') }}
+			{{ Form::Spin( 42 ) }}
 			<div id="resultado_consulta">
 
 			</div>	

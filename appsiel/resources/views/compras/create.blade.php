@@ -10,7 +10,7 @@
 		    position: absolute;
 		    z-index: 9999;
 		}
-		#proveedores_suggestions {
+		#div_list_suggestions {
 		    position: absolute;
 		    z-index: 9999;
 		}
@@ -134,7 +134,7 @@
 
 			$('#proveedor_input').focus( );
 
-			$("#proveedor_input").after('<div id="proveedores_suggestions"> </div>');
+			$("#proveedor_input").after('<div id="div_list_suggestions"> </div>');
 
 			var respuesta; // de consultar_existencia
 			var hay_productos = 0;
@@ -176,8 +176,8 @@
 
 				if( x == 27 ) // 27 = ESC
 				{
-					$('#proveedores_suggestions').html('');
-                	$('#proveedores_suggestions').hide();
+					$('#div_list_suggestions').html('');
+                	$('#div_list_suggestions').hide();
                 	return false;
 				}
 
@@ -187,17 +187,33 @@
 			    */
 				if ( x == 40) // Flecha hacia abajo
 				{
-					var item_activo = $("a.list-group-item.active");					
+					var item_activo = $("a.list-group-item.active");
+
+					// Si es el útimo item, entonces no se mueve hacia abajo
+					if( item_activo.attr('data-ultimo_item') == 1 )
+					{
+						return false;
+					}
+				
 					item_activo.next().attr('class','list-group-item list-group-item-proveedor active');
 					item_activo.attr('class','list-group-item list-group-item-proveedor');
 					$('#proveedor_input').val( item_activo.next().html() );
 					return false;
 
 				}
+
 	 			if ( x == 38) // Flecha hacia arriba
 				{
-					$(".flecha_mover:focus").prev().focus();
-					var item_activo = $("a.list-group-item.active");					
+
+					//$(".flecha_mover:focus").prev().focus();
+					var item_activo = $("a.list-group-item.active");
+
+					// Si es el útimo item, entonces no se mueve hacia abajo
+					if( item_activo.attr('data-primer_item') == 1 )
+					{
+						return false;
+					}
+
 					item_activo.prev().attr('class','list-group-item list-group-item-proveedor active');
 					item_activo.attr('class','list-group-item list-group-item-proveedor');
 					$('#proveedor_input').val( item_activo.prev().html() );
@@ -207,17 +223,12 @@
 				// Al presionar Enter
 				if( x == 13 )
 				{
-					var item = $('a.list-group-item.active');
-					
-					if( item.attr('data-proveedor_id') === undefined )
-					{
-						alert('El proveedor ingresado no existe.');
-						reset_campos_formulario();
-					}else{
-						seleccionar_proveedor( item );
-	                	return false;
-					}
+					window[tecla_enter_on_keyup( $('a.list-group-item.active') ) ];
+
+					return false;
 				}
+
+				// Si no se presiona tecla especial, se muestra listado de sugerencias
 
 	    		// Manejo código de producto o nombre
 	    		var campo_busqueda = 'descripcion';
@@ -233,10 +244,22 @@
 				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
 					.done(function( data ) {
 						// Se llena el DIV con las sugerencias que arooja la consulta
-		                $('#proveedores_suggestions').show().html(data);
+		                $('#div_list_suggestions').show().html(data);
 		                $('a.list-group-item.active').focus();
 					});
 		    });
+
+
+		    function tecla_enter_on_keyup( item )
+		    {
+		    	if( item.attr('data-proveedor_id') === undefined )
+				{
+					alert('El proveedor ingresado no existe.');
+					reset_campos_formulario();
+				}else{
+					seleccionar_proveedor( item );
+				}
+		    }
 
 
 		    //Al hacer click en alguna de las sugerencias (escoger un producto)
@@ -548,8 +571,8 @@
 
 
                 //Hacemos desaparecer el resto de sugerencias
-                $('#proveedores_suggestions').html('');
-                $('#proveedores_suggestions').hide();
+                $('#div_list_suggestions').html('');
+                $('#div_list_suggestions').hide();
 
                 reset_tabla_ingreso();
 

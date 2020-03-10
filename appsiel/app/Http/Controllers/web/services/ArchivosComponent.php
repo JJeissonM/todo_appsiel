@@ -22,7 +22,7 @@ class ArchivosComponent implements IDrawComponent
         $archivo = Archivo::where('widget_id', $this->widget)->first();
         $items = null;
         if ($archivo != null) {
-            $items = Archivoitem::where([['archivo_id', $archivo->id], ['estado', 'VISIBLE']])->orderBy('created_at', 'DESC')->paginate(6);
+            $items = Archivoitem::where([['archivo_id', $archivo->id], ['estado', 'VISIBLE']])->orderBy('created_at', 'DESC')->get();
         }
         //dd( $items );
         return Form::archivos($items, $archivo);
@@ -49,8 +49,7 @@ class ArchivosComponent implements IDrawComponent
         $archivo = Archivo::where('widget_id', $widget)->first();
         $items = null;
         if ($archivo != null) {
-            $items = Archivoitem::where('archivo_id', $archivo->id)->orderBy('created_at', 'DESC')->paginate(6);
-            $items->setPath($variables_url);
+            $items = Archivoitem::where('archivo_id', $archivo->id)->orderBy('created_at', 'DESC')->get();
         }
         return view('web.components.archivos', compact('miga_pan', 'variables_url', 'widget', 'archivo', 'items'));
     }

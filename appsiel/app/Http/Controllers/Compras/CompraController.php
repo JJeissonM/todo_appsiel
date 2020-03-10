@@ -466,19 +466,33 @@ class CompraController extends TransaccionController
                 # code...
                 break;
         }
-        $proveedores = Proveedor::leftJoin('core_terceros','core_terceros.id','=','compras_proveedores.core_tercero_id')->leftJoin('compras_condiciones_pago','compras_condiciones_pago.id','=','compras_proveedores.condicion_pago_id')->where('compras_proveedores.estado','Activo')->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)->select('compras_proveedores.id AS proveedor_id','compras_proveedores.liquida_impuestos','compras_proveedores.clase_proveedor_id','core_terceros.id AS core_tercero_id','core_terceros.descripcion AS nombre_proveedor','core_terceros.numero_identificacion','compras_proveedores.inv_bodega_id','compras_condiciones_pago.dias_plazo')->get()->take(7);
+
+        $proveedores = Proveedor::leftJoin('core_terceros','core_terceros.id','=','compras_proveedores.core_tercero_id')->leftJoin('compras_condiciones_pago','compras_condiciones_pago.id','=','compras_proveedores.condicion_pago_id')->where('compras_proveedores.estado','Activo')->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)->select('compras_proveedores.id AS proveedor_id','compras_proveedores.liquida_impuestos','compras_proveedores.clase_proveedor_id','core_terceros.id AS core_tercero_id','core_terceros.descripcion AS nombre_proveedor','core_terceros.numero_identificacion','compras_proveedores.inv_bodega_id','compras_condiciones_pago.dias_plazo')->get()->take( 7 );
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
+        $ultimo_item = 0;
+        $num_item = 1;
+        $cantidad_proveedores = count( $proveedores->toArray() );
         foreach ($proveedores as $linea) 
         {
+            $primer_item = 0;
             $clase = '';
             if ($es_el_primero) {
                 $clase = 'active';
                 $es_el_primero = false;
+                $primer_item = 1;
+            }
+
+
+            if ( $num_item == $cantidad_proveedores)
+            {
+                $ultimo_item = 1;
             }
 
             $html .= '<a class="list-group-item list-group-item-proveedor '.$clase.'" data-proveedor_id="'.$linea->proveedor_id.
+                                '" data-primer_item="'.$primer_item.
+                                '" data-ultimo_item="'.$ultimo_item.
                                 '" data-nombre_proveedor="'.$linea->nombre_proveedor.
                                 '" data-clase_proveedor_id="'.$linea->clase_proveedor_id.
                                 '" data-liquida_impuestos="'.$linea->liquida_impuestos.
@@ -487,7 +501,14 @@ class CompraController extends TransaccionController
                                 '" data-inv_bodega_id="'.$linea->inv_bodega_id.
                                 '" data-dias_plazo="'.$linea->dias_plazo.
                                 '" > '.$linea->nombre_proveedor.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
+            $num_item++;
         }
+
+        // Linea crear nuevo registro
+        //$modelo_id = 146;
+        //$html .= '<a class="list-group-item list-group-item-proveedor boton_crear list-group-item-info" data-modelo_id="'.$modelo_id.
+                                '" > + Crear nuevo </a>';
+
         $html .= '</div>';
 
         return $html;

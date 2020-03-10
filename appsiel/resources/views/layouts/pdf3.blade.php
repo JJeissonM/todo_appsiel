@@ -104,6 +104,18 @@
 			    border: 1px solid #333333;
 			}
 
+		    table tr.grupo_abuelo {
+		        background-color: gray;
+		    }
+
+		    table tr.grupo_padre {
+		        background-color: #ddd;
+		    }
+
+		    table tr.grupo_padre {
+		        background-color: #ddd;
+		    }
+
 			.pull-right {
 			    float: right!important;
 			}

@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Input;
 class NavegacionController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function create(){
         $miga_pan = self::migapan();
         $paginas = Pagina::all();

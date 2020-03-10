@@ -255,14 +255,16 @@ class GaleriaController extends Controller
             }
         }
         $result = $album->delete();
+
         if ($result) {
-            $message = 'El Álbum fue eliminado correctamente.';
-            $variables_url = '?id=' . Input::get('id');
-            return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
+            return response()->json([
+                'status' => 'ok',
+            ]);
         } else {
-            $message = 'El Álbum no fue eliminado de forma correcta.';
-            $variables_url = '?id=' . Input::get('id');
-            return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error inesperado, por favor intentelo más tarde.'
+            ]);
         }
     }
 

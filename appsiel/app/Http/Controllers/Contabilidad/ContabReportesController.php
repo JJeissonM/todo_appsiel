@@ -61,39 +61,7 @@ class ContabReportesController extends Controller
     */
     public function reporte_prueba()
     {
-        
-
-        $tabla = '<style> table, td { border: 1px solid; border-collapsed: collapsed; } </style> <table>';
-            $tabla .= '<tr>
-                        <td> transaccion_descripcion</td>
-                        <td> impuesto_descripcion</td>
-                        <td> impuesto_tasa</td>
-                        <td> cuenta_descripcion</td>
-                        <td> cuenta_codigo </td>
-                        <td> producto_descripcion </td>
-                        <td> producto_unidad_medida </td>
-                        <td> movimiento_tasa </td>
-                        <td> valor_debito </td>
-                        <td> valor_credito </td>
-                            </tr>';
-        foreach ($movimiento as $fila)
-        {
-            $tabla .= '<tr>
-                        <td>'.$fila->transaccion_descripcion.'</td>
-                        <td>'.$fila->impuesto_descripcion.'</td>
-                        <td>'.$fila->impuesto_tasa.'</td>
-                        <td>'.$fila->cuenta_descripcion.'</td>
-                        <td>'.$fila->cuenta_codigo.'</td>
-                        <td>'.$fila->producto_descripcion.'</td>
-                        <td>'.$fila->producto_unidad_medida.'</td>
-                        <td>'.$fila->movimiento_tasa.'</td>
-                        <td>'.$fila->valor_debito.'</td>
-                        <td>'.$fila->valor_credito.'</td>
-                            </tr>';
-        }
-
-        $tabla .= '</table>';
-        echo $tabla;
+        //
     }
 
     public function balance_comprobacion()
@@ -233,7 +201,7 @@ class ContabReportesController extends Controller
         $this->lapso3_ini = $request->lapso3_ini;
         $this->lapso3_fin = $request->lapso3_fin;
 
-        //$cols = 1; // cantidad de columnas, una por cada lapso a mostrar 
+        //$cols = 1; // cantidad de columnas, una por cada lapso a mostrar
 
         $tabla = view( 'contabilidad.incluir.eeff.encabezado_tabla_generacion_eeff', compact('lapso1_lbl','lapso2_lbl','lapso3_lbl') )->render();
 
@@ -251,10 +219,10 @@ class ContabReportesController extends Controller
         $tabla.='<tr>
                     <td> TOTAL </td>
                     <td></td>
-                    <td>'.number_format( $this->total1_reporte , 0, ',', '.').'</td>';
+                    <td style="text-align: right;">'.number_format( $this->total1_reporte , 0, ',', '.').'</td>';
         if ( $this->lapso2_lbl != '' ) 
         {
-            $tabla.='<td>'.number_format( $this->total2_reporte , 0, ',', '.').'</td>';
+            $tabla.='<td style="text-align: right;">'.number_format( $this->total2_reporte , 0, ',', '.').'</td>';
         }
 
         $tabla.='</tr>';
@@ -262,6 +230,73 @@ class ContabReportesController extends Controller
         $tabla.='</tbody> </table>';
 
         echo $tabla;
+    }
+
+    // Generar PDF
+    public function contab_pdf_eeff()
+    {
+        
+        // Solo se debería crear el arbol cuando se crean nuevos grupos
+        $this->crear_arbol_grupo_cuentas(); 
+
+        $reporte_id = Input::get( 'reporte_id' );
+
+        $this->lapso1_lbl = Input::get( 'lapso1_lbl' );
+        $lapso1_lbl = Input::get( 'lapso1_lbl' );
+
+        $this->lapso1_ini = Input::get( 'lapso1_ini' );
+        $this->lapso1_fin = Input::get( 'lapso1_fin' );
+
+        $this->lapso2_lbl = Input::get( 'lapso2_lbl' );
+        $lapso2_lbl = Input::get( 'lapso2_lbl' );
+        $this->lapso2_ini = Input::get( 'lapso2_ini' );
+        $this->lapso2_fin = Input::get( 'lapso2_fin' );
+        
+        $this->lapso3_lbl = Input::get( 'lapso3_lbl' );
+        $lapso3_lbl = Input::get( 'lapso3_lbl' );
+        $this->lapso3_ini = Input::get( 'lapso3_ini' );
+        $this->lapso3_fin = Input::get( 'lapso3_fin' );
+
+        //$cols = 1; // cantidad de columnas, una por cada lapso a mostrar
+
+        $tabla = view( 'contabilidad.incluir.eeff.encabezado_tabla_generacion_eeff', compact('lapso1_lbl','lapso2_lbl','lapso3_lbl') )->render();
+
+        // Obtener el reporte
+        $reporte = ContabReporteEeff::find($reporte_id);
+        
+        // 
+        $grupos = $reporte->grupos_cuentas()->orderBy('orden')->get()->toArray();
+
+        foreach ($grupos as $fila) 
+        {
+            $tabla.=$this->get_arbol_movimiento_grupo_cuenta($fila['pivot']['contab_grupo_cuenta_id'], $this->lapso1_ini,$this->lapso1_fin);         
+        }
+
+        $tabla.='<tr>
+                    <td> TOTAL </td>
+                    <td></td>
+                    <td style="text-align: right;">'.number_format( $this->total1_reporte , 0, ',', '.').'</td>';
+        if ( $this->lapso2_lbl != '' ) 
+        {
+            $tabla.='<td style="text-align: right;">'.number_format( $this->total2_reporte , 0, ',', '.').'</td>';
+        }
+
+        $tabla.='</tr>';
+
+        $tabla.='</tbody> </table>';
+
+        $empresa = Empresa::find( Auth::user()->empresa_id );
+        
+        $encabezado2 = View::make( 'contabilidad.incluir.encabezado_pdf_eeff', compact('empresa') )->render();
+
+        $vista = View::make( 'layouts.pdf3', [ 'view' => $encabezado2.$tabla ] )->render();
+
+        $tam_hoja = 'Letter';
+        $orientacion='portrait';
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
+
+        return $pdf->stream('estados_financieros.pdf');
     }
 
     // A los reportes se le asigna el grupo de cuentas superior (Abuelo)
@@ -272,8 +307,6 @@ class ContabReportesController extends Controller
 
         // Se obtienen los valores del movimiento
         $cuentas = ContabMovimiento::get_movimiento_arbol_grupo_cuenta($empresa_id, $fecha_inicial, $fecha_final, $grupo_abuelo_id );
-
-        /*$cuentas2 = ContabMovimiento::get_movimiento_arbol_grupo_cuenta($empresa_id, $this->lapso2_ini, $this->lapso2_fin, $grupo_abuelo_id );*/
 
         // Si hay un segundo lapso, se agrega otro campo de valor al array $cuentas (valor_saldo2)
         if ( $this->lapso2_lbl != '' ) 
@@ -325,19 +358,6 @@ class ContabReportesController extends Controller
 
         }
 
-        /*echo "<br> LAPSO 1<br>";
-        print_r($cuentas);
-        echo "<br>";
-
-        echo "<br> LAPSO 2<br>";
-        print_r($cuentas2);
-        echo "<br>";
-
-        echo "<br> Fución<br>";
-        print_r($cuentas);
-        echo "<br>";
-        */
-
         // Se crea el bloque de la tabla a visualizar
         if ( $this->lapso2_lbl != '' ) 
         {
@@ -357,10 +377,27 @@ class ContabReportesController extends Controller
         
         foreach ($cuentas as $cuenta) 
         {
-            $tr.='<tr>
-                    <td>'.$cuenta["etiqueta"].'</td>
+            // Mostrar valores en positivo
+            $valor = $cuenta["valor"];
+            if( $valor < 0 )
+            {
+                $valor = $valor * -1;
+            }
+
+            $la_etiqueta = $cuenta["etiqueta"];
+            $clase = 'fila_cuenta';
+
+            $etiqueta = explode( 'a3p0', $la_etiqueta );
+            if ( isset($etiqueta[1] ) )
+            {
+                $clase = $etiqueta[0];
+                $la_etiqueta = $etiqueta[1];
+            }
+            
+            $tr.='<tr class="'.$clase.'">
+                    <td>'.$la_etiqueta.'</td>
                     <td></td>
-                    <td>'.number_format( $cuenta["valor"] , 0, ',', '.').'</td>';
+                    <td style="text-align: right;">'.number_format( $valor , 0, ',', '.').'</td>';
 
             if ( $this->lapso2_lbl != '' ) 
             {
@@ -382,8 +419,8 @@ class ContabReportesController extends Controller
             $abuelo = $fila["abuelo_id"];
             $this->acumular(
                 $arr, 
-                $abuelo, 
-                '<span class="label label-default"> <i class="'.$abuelo.'"></i>'.$fila["abuelo_descripcion"]."</span>", 
+                $abuelo,
+                'grupo_abuelo'.'a3p0'.$fila["abuelo_descripcion"],
                 $fila["valor_saldo"]
             );
             
@@ -391,7 +428,7 @@ class ContabReportesController extends Controller
             $this->acumular(
                 $arr[$abuelo]["hijos"], 
                 $padre, 
-                '&nbsp;&nbsp;<span class="label label-primary"> <i class="'.$padre.'"></i>'.$fila["padre_descripcion"]."</span>", 
+                'grupo_padre'.'a3p0'.$fila["padre_descripcion"],
                 $fila["valor_saldo"]
             );
             
@@ -399,12 +436,12 @@ class ContabReportesController extends Controller
             $this->acumular(
                 $arr[$abuelo]["hijos"][$padre]["hijos"], 
                 $hijo, 
-                '&nbsp;&nbsp;&nbsp;&nbsp;<span class="label label-warning"> <i class="'.$hijo.'"></i>'.$fila["hijo_descripcion"]."</span>", 
+                'grupo_hijo'.'a3p0'.$fila["hijo_descripcion"],
                 $fila["valor_saldo"]
             );
             
             array_push($arr[$abuelo]["hijos"][$padre]["hijos"][$hijo]["hijos"], [
-                "etiqueta" =>  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$fila["cuenta_descripcion"],
+                "etiqueta" =>  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$fila["cuenta_codigo"] . ' ' . $fila["cuenta_descripcion"],
                 "valor" =>  $fila["valor_saldo"],
                 "hijos" => []
             ]);
