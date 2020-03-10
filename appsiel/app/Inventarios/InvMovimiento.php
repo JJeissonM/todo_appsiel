@@ -79,7 +79,6 @@ class InvMovimiento extends Model
                                 ->groupBy($orden)
                                 ->get()
                                 ->toArray();//,'inv_costo_prom_productos.costo_promedio as costo_promedio_ponderado'
-                                //dd( [$fecha_corte, $productos] );
         return $productos;
     }
 
@@ -174,7 +173,6 @@ class InvMovimiento extends Model
     public static function validar_saldo_movimientos_posteriores( $bodega_id, $producto_id, $fecha, $cantidad_nueva, $saldo_a_la_fecha, $tipo_movimiento, $cantidad_anterior = null)
     {
         // El tipo_movimiento debe indicar el movimiento de la transacción que se está haciendo
-        
 
         if ( $saldo_a_la_fecha == 'no')
         {
@@ -218,9 +216,6 @@ class InvMovimiento extends Model
 
             $vec_saldo[$k] = $saldo_linea;//.' / '.$linea_movimiento->cantidad;
             
-            /*if ($k==1) {
-                dd( [ 'k: '.$k, 'saldo_linea: '.$saldo_linea, 'saldo_anterior: '.$saldo_anterior, $linea_movimiento->cantidad ] );
-            }*/
             $k++;
             if ( $saldo_linea < 0 )
             {
@@ -230,7 +225,6 @@ class InvMovimiento extends Model
             $saldo_anterior = $saldo_linea;
         }
 
-        //dd($vec_saldo);
         return [null, null];
     }
 
@@ -248,6 +242,7 @@ class InvMovimiento extends Model
             {
                 $motivo = InvMotivo::find($linea->inv_motivo_id);
                 $tipo_movimiento = $motivo->movimiento;
+                
                 // Al anular se intercambian los tipos de movimientos
                 if ( $operacion == 'anular' )
                 {
@@ -258,6 +253,7 @@ class InvMovimiento extends Model
                         $tipo_movimiento = 'entrada';
                     }
                 }
+
             }
 
             $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores( $linea->inv_bodega_id, $linea->inv_producto_id, $inv_doc_encabezado->fecha, $linea->cantidad, 'no', $tipo_movimiento);
@@ -272,7 +268,9 @@ class InvMovimiento extends Model
                 $doc_inventario = InvDocEncabezado::get_registro_impresion( $linea_saldo_negativo[0]->inv_doc_encabezado_id );
                 return 'La transacción arroja saldos negativos en movimentos posteriores. Fecha: '.$doc_inventario->fecha.', Documento: '.$doc_inventario->documento_transaccion_prefijo_consecutivo.', Saldo: '.end($linea_saldo_negativo[1]);
             }
+
             $conta++;
+
         }
 
         return 0;
