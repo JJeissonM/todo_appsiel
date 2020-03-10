@@ -707,8 +707,6 @@ class VentaController extends TransaccionController
             - cxc_documentos_pendientes (se debe verificar que no tenga un abono, sino se debe eliminar primero el abono) y su movimiento en contab_movimientos
             - inv_movimientos de la REMISIÓN y su contabilidad. Además se actualiza el estado a Anulado en inv_doc_registros e inv_doc_encabezados
             - vtas_movimientos y su contabilidad. Además se actualiza el estado a Anulado en vtas_doc_registros y vtas_doc_encabezados
-
-            A FUTURO: se debe preguntar si se elimina o no la REMISIÓN
     */
     public static function anular_factura(Request $request)
     {        
