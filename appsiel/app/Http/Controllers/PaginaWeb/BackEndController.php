@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PaginaWeb;
 
 use App\Http\Controllers\Controller;
+use App\web\Configuraciones;
 use App\web\Formcontactenos;
 use \Illuminate\Support\Facades\Input;
 
@@ -30,6 +31,7 @@ class BackEndController extends Controller
         ];
         $variables_url = '?id=' . Input::get('id');
         $contacts = Formcontactenos::all();
-        return view('web.setup', compact('miga_pan', 'contacts','variables_url'));
+        $configuracion = Configuraciones::all()->first();
+        return view('web.setup', compact('miga_pan', 'contacts','variables_url','configuracion'));
     }
 }

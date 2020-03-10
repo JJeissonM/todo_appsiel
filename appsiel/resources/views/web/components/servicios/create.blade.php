@@ -56,7 +56,7 @@
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
-                        <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
+                        <textarea name="descripcion" class="form-control contenido" rows="5"></textarea>
                     </div>
                     <div class="form-group">
                         <label>Icono</label>
@@ -104,5 +104,26 @@
         $(function () {
             $('#iconos').load('web/icons/view.blade.php');
         })
+
+        $('.contenido').on( 'focus', function(){
+
+            original_name = $(this).attr('name');
+
+            $(this).attr('name','contenido');
+
+            CKEDITOR.replace('contenido', {
+                height: 200,
+                // By default, some basic text styles buttons are removed in the Standard preset.
+                // The code below resets the default config.removeButtons setting.
+                removeButtons: ''
+            });
+
+        });
+
+        $('.contenido').on( 'blur', function(){
+
+            $(this).attr('name', original_name);
+
+        });
     </script>
 @endsection

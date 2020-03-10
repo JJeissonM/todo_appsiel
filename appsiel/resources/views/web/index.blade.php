@@ -130,6 +130,44 @@
                   background-color: #fff;
                   border-color: #ddd;
             }
+
+            .section-header .section-title:after {
+                background-color: {{$configuracion->color_primario}} !important;
+            }
+
+            .btn.btn-primary {
+                background: {{$configuracion->color_primario}} !important;
+                border-color: {{$configuracion->color_terciario}} !important;
+            }
+
+            .media.service-box .pull-left > i {
+                color: {{$configuracion->color_primario}} !important;
+            }
+
+            .media.service-box .pull-left > i:after {
+                background-color: {{$configuracion->color_primario}} !important;
+            }
+
+            .pagination>li>a, .pagination>li>span {
+                color:{{$configuracion->color_primario}} !important;
+            }
+
+            .pagination>.active>a,
+            .pagination>.active>span,
+            .pagination>.active>a:hover,
+            .pagination>.active>span:hover,
+            .pagination>.active>a:focus,
+            .pagination>.active>span:focus{
+                color: {{$configuracion->color_segundario}} !important;
+                cursor: default;
+                background-color: {{$configuracion->color_primario}};
+                border-color: {{$configuracion->color_primario}};
+            }
+
+            .column-title:after {
+               border-bottom: 1px solid {{$configuracion->color_terciario}} !important;
+            }
+
       </style>
 </head>
 
