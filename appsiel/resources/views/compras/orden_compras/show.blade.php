@@ -301,7 +301,7 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 		$("input:text[name=dpreciototal_" + id + "]").val(vu * cant);
 		$(".cant").each(function() {
 			arrayc.push($(this).val());
-			totalc = totalc + parseInt($(this).val());
+			totalc = totalc + parseFloat($(this).val());
 		});
 		$(".total").each(function() {
 			arraytotal.push($(this).val());
@@ -310,10 +310,10 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 			arrayimp.push($(this).val());
 		});
 		arraytotal.forEach(function(value, index) {
-			totalt = totalt + parseInt(value);
-			var sbt = parseInt(value) / (1 + (arrayimp[index] / 100));
+			totalt = totalt + parseFloat(value);
+			var sbt = parseFloat(value) / (1 + (arrayimp[index] / 100));
 			sbtotal = sbtotal + sbt;
-			nuevoimp = nuevoimp + (parseInt(value) - sbt);
+			nuevoimp = nuevoimp + (parseFloat(value) - sbt);
 		});
 		$("#tbtotal").html("<span style='text-align: right; font-weight: bold;'> Total factura: </span> $ " + Math.round(totalt));
 		$("#tbcant").html(totalc);
@@ -340,15 +340,15 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 				o['inv_producto_id'] = value.inv_producto_id;
 				var precio_unitario = $("input:text[name=dpreciounitario_" + id + "]").val();
 				var cantidad = $("input:text[name=dcantidad_" + id + "]").val();
-				var costo_unitario = parseInt(precio_unitario) / (1 + (parseInt(value.tasa_impuesto) / 100));
+				var costo_unitario = parseFloat(precio_unitario) / (1 + (parseFloat(value.tasa_impuesto) / 100));
 				o['costo_unitario'] = costo_unitario;
 				o['precio_unitario'] = value.precio_unitario;
 				o['base_impuesto'] = costo_unitario * cantidad;
 				o['tasa_impuesto'] = value.tasa_impuesto;
-				o['valor_impuesto'] = parseInt(precio_unitario) - parseInt(costo_unitario);
+				o['valor_impuesto'] = parseFloat(precio_unitario) - parseFloat(costo_unitario);
 				o['cantidad'] = cantidad;
-				o['costo_total'] = parseInt(cantidad) * parseInt(costo_unitario);
-				o['precio_total'] = parseInt(cantidad) * parseInt(precio_unitario);
+				o['costo_total'] = parseFloat(cantidad) * parseFloat(costo_unitario);
+				o['precio_total'] = parseFloat(cantidad) * parseFloat(precio_unitario);
 			}
 		});
 		return o;

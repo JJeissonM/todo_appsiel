@@ -171,7 +171,7 @@ Formato: {{ Form::select('formato_impresion_id',['1'=>'POS','2'=>'Estándar'],nu
 		$("input:text[name=dpreciototal_" + id + "]").val(total);
 		$(".cant").each(function() {
 			arrayc.push($(this).val());
-			totalc = totalc + parseInt($(this).val());
+			totalc = totalc + parseFloat($(this).val());
 		});
 		$(".total").each(function() {
 			arraytotal.push($(this).val());
@@ -183,8 +183,8 @@ Formato: {{ Form::select('formato_impresion_id',['1'=>'POS','2'=>'Estándar'],nu
 			arraytotalbruto.push($(this).val());
 		});
 		arraytotal.forEach(function(value, index) {
-			totalt = totalt + parseInt(value);
-			sbtotal = sbtotal + parseInt(arraytotalbruto[index]);
+			totalt = totalt + parseFloat(value);
+			sbtotal = sbtotal + parseFloat(arraytotalbruto[index]);
 			nuevoimp = nuevoimp + (arraytotalbruto[index] * (arrayimp[index] / 100));
 		});
 		$("#tbtotal").html("$ " + Math.round(totalt));
@@ -213,7 +213,7 @@ Formato: {{ Form::select('formato_impresion_id',['1'=>'POS','2'=>'Estándar'],nu
 				o['inv_producto_id'] = value.producto_id;
 				var precio_unitario = $("input:text[name=dpreciounitario_" + id + "]").val();
 				var cantidad = $("input:text[name=dcantidad_" + id + "]").val();
-				var costo_unitario = parseInt(precio_unitario) / (1 + (parseInt(value.tasa_impuesto) / 100));
+				var costo_unitario = parseFloat(precio_unitario) / (1 + (parseFloat(value.tasa_impuesto) / 100));
 				o['costo_unitario'] = costo_unitario;
 				o['cantidad'] = cantidad;
 				o['costo_total'] = Math.round($("input:text[name=dpreciototal_" + id + "]").val());

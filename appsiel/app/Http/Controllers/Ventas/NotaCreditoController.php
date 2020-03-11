@@ -448,6 +448,7 @@ class NotaCreditoController extends TransaccionController
     }
 
     // ANULAR
+    // La nota crédito realiza una salida del inventario
     public function anular( $id )
     {
         $this->set_variables_globales();

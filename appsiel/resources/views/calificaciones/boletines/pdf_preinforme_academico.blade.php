@@ -30,43 +30,10 @@
 
 @foreach($estudiantes as $estudiante)
 
-	@if( $columna == 1 )
-		<div style="width: 100%; display: block; clear: both;">
-			
-			<div style="width: 50%; float: left;">
-				@include('calificaciones.boletines.pdf_preinforme_academico_un_boletin')
-			</div>
+	@include('calificaciones.boletines.pdf_preinforme_academico_un_boletin')
 
-	@endif
 
-	@if( $columna == 2 )
-			<div style="width: 50%; float: left;">
-				@include('calificaciones.boletines.pdf_preinforme_academico_un_boletin')
-			</div>
+	<div class="page-break"></div>
 
-		</div>
-
-		<br><br>
-	@endif
-
-	<?php
-
-		if( $columna == 2 )
-		{
-			$columna = 1;
-		}else{
-			$columna++;
-		}
-
-		$item++;
-
-	?>
-
-	@if( $item == 4 )
-		<div class="page-break"></div>
-		<?php
-			$item = 0;
-		?>
-	@endif
 
 @endforeach {{-- Estudiante --}}

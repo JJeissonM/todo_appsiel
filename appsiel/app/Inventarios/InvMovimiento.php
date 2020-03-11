@@ -174,6 +174,11 @@ class InvMovimiento extends Model
     {
         // El tipo_movimiento debe indicar el movimiento de la transacción que se está haciendo
 
+        if ( $tipo_movimiento == 'entrada' )
+        {
+            return [null, null];
+        }
+
         if ( $saldo_a_la_fecha == 'no')
         {
             // La cantidad anterior se debe tener en cuenta para el cálculo del saldo a la fecha
@@ -228,12 +233,12 @@ class InvMovimiento extends Model
         return [null, null];
     }
 
-    // Valida que no haya saldos negativos en moviminetos posteriores para TODOS los registros de un documento de inventarios
+    // Valida que no haya saldos negativos en moviminetos posteriores para CADA LÍNEA de registro de un documento de inventarios
     // Se usa cuando se va a anular un documento o cuando se vaya cambiar la fecha, al hacer notas creditos, entre otras transacciones, 
     // WARNING!!!! Falta la validación cuando se vaya a cambiar de fecha
     public static function validar_saldo_movimientos_posteriores_todas_lineas( $inv_doc_encabezado, $nueva_fecha, $operacion, $tipo_movimiento )
     {
-        // Para anulación, todos los registros: NUEVA CANTIDAD = 0
+        // Para anulación, todos los registros, se asume: NUEVA CANTIDAD = 0
         $lineas_documento = InvDocRegistro::where('inv_doc_encabezado_id', $inv_doc_encabezado->id)->get();
         $conta = 1;
         foreach ($lineas_documento as $linea)
