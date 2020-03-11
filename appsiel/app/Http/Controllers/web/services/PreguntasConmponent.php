@@ -6,6 +6,7 @@ namespace App\Http\Controllers\web\services;
 
 use App\web\Preguntasfrecuentes;
 use Illuminate\Support\Facades\Input;
+use Form;
 
 class PreguntasConmponent implements IDrawComponent
 {
