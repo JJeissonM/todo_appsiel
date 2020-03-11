@@ -1,22 +1,21 @@
 <div style="padding: 2px; display: inline-block;">
-	<table class="table table-bordered">
+	<table class="table table-bordered" width="100%">
 	    <tr>
 	        <td width="100px">
 	            <img src="{{ $url }}" height="50px"/>
 	        </td>
 
 	        <td align="center">
+	            <b style="font-size: {{$tam_letra}}mm;">{{ $colegio->descripcion }}</b>
 	            <br/>
-	            <b style="font-size: {{$tam_letra-1}}mm;">{{ $colegio->descripcion }}</b>
+	            <b style="font-size: {{$tam_letra}}mm;">{{ $colegio->slogan }}</b>
 	            <br/>
-	            <b style="font-size: {{$tam_letra-1}}mm;">{{ $colegio->slogan }}</b>
-	            <br/>
-	            <b style="font-size: {{$tam_letra-1}}mm;">{{ $colegio->ciudad }}</b>
+	            <b style="font-size: {{$tam_letra}}mm;">{{ $colegio->ciudad }}</b>
 	        </td>
 	    </tr>
 	    <tr>
 	    	<td colspan="2">
-	    		<div style="text-justify: auto; width: 100%; font-size: {{$tam_letra-1}}mm;">
+	    		<div style="text-justify: auto; width: 100%; font-size: {{$tam_letra}}mm;">
 					PRE-INFORME DE RENDIMIENTO ACADÉMICO CORRESPONDIENTE AL PERIODO  <b>{{ $periodo->descripcion }}</b> de {{ $anio }}
 					<br>
 					<b>Estudiante:</b> {{ $estudiante->nombre_completo }} &nbsp;&nbsp; | &nbsp;&nbsp; <b>Curso:</b> {{ $curso->descripcion }}
@@ -31,7 +30,7 @@
 	?>
 
 	<div style="font-size: {{$tam_letra}}mm;">
-		<table class="table table-striped">
+		<table class="table table-striped" width="100%">
 			<thead>
 				<tr>
 					<th>Asignatura</th>

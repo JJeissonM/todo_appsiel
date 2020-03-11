@@ -730,20 +730,23 @@ class InventarioController extends TransaccionController
             return redirect('inventarios/' . $documento_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', 'Registro NO puede ser modificado. El documento ya ha sido facturado.');
         }
 
-        // Antes de anular la entrada de almacén, por cada producto ingresado en la factura
-        // Validar saldos negativos en movimientos de inventarios
-        $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores_todas_lineas($documento, 'no_fecha', 'anular', 'segun_motivo'); // al anular la entrada de almacén se hace una salida de inventarios
+        // Antes de anular el documento, por cada producto ingresado se debe
+        // Validar saldos negativos en movimientos de inventarios LÍNEA X LÍNEA
+        $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores_todas_lineas($documento, 'no_fecha', 'anular', 'segun_motivo');
 
         if ($linea_saldo_negativo != '0') {
             return redirect('inventarios/' . $documento_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', $linea_saldo_negativo);
         }
 
         // El método siguiente se llama desde otros Controllers
-        InventarioController::anular_documento_inventarios($documento_id);
+        InventarioController::anular_documento_inventarios( $documento_id );
 
         return redirect('inventarios/' . $documento_id . $this->variables_url)->with('flash_message', 'Documento ANULADO correctamente.');
     }
 
+
+    // Este método no hace validación de existencias
+    // Dichas validaciones se debieron hacer antes.
     public static function anular_documento_inventarios($doc_encabezado_id)
     {
         $documento = InvDocEncabezado::find($doc_encabezado_id);
