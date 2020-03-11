@@ -62,4 +62,43 @@ class TesoCuentaBancaria extends Model
                             ->get()
                             ->first();
     }
+
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"contab_movimientos",
+                                    "llave_foranea":"teso_cuenta_bancaria_id",
+                                    "mensaje":"Está en movimientos contables."
+                                },
+                            "1":{
+                                    "tabla":"teso_doc_encabezados",
+                                    "llave_foranea":"teso_cuenta_bancaria_id",
+                                    "mensaje":"Está en documentos de tesorería."
+                                },
+                            "2":{
+                                    "tabla":"teso_doc_registros",
+                                    "llave_foranea":"teso_cuenta_bancaria_id",
+                                    "mensaje":"Está en registros de documentos de tesorería."
+                                },
+                            "3":{
+                                    "tabla":"teso_movimientos",
+                                    "llave_foranea":"teso_cuenta_bancaria_id",
+                                    "mensaje":"Está en movimientos de tesorería."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
+    }
 }
