@@ -50,11 +50,11 @@ class ClienteController extends Controller
         }
         $result = $cliente->save();
         if ($result) {
-            $message = 'About us almacenado correctamente.';
+            $message = 'Cliente almacenado correctamente.';
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         } else {
-            $message = 'About us no fue almacenado correctamente, intente mas tarde.';
+            $message = 'Cliente no fue almacenado correctamente, intente mas tarde.';
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         }
