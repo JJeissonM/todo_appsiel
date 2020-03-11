@@ -98,6 +98,11 @@ Route::post('archivos/archivo/delete', 'web\ArchivoController@destroy')->name('a
 
 Route::resource('cofiguraciones','web\ConfiguracionesController');
 
+//PREGUNTAS FRECUENTES
+Route::get('preguntas/create/{widget}', 'web\PreguntasfrecuenteController@creaste');
+Route::post('preguntas/store', 'web\PreguntasfrecuenteController@store')->name('preguntas.store');
+Route::get('preguntas/destroy/{pregunta}', 'web\PreguntasfrecuenteController@destroy');
+Route::post('preguntas/modificar/pregunta/', 'web\PreguntasfrecuenteController@updated')->name('preguntas.modificar');
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
 
 

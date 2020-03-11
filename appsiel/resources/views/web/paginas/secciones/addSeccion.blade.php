@@ -11,7 +11,7 @@
         #wrapper {
             overflow-y: scroll;
             width: 30%;
-            height: 100vh;
+            height: 70vh;
             margin-right: 0;
         }
 
@@ -75,7 +75,6 @@
                             <li class="list-group-item"
                                 onclick="selectSeccion({{$seccion->id}})">{{$seccion->nombre}}</li>
                         @endif
-
                     @endforeach
                 </ul>
             </div>

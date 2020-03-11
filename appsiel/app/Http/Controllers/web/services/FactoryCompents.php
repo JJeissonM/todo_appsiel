@@ -47,6 +47,9 @@ class FactoryCompents
             case "Archivos":
                 $component = new ArchivosComponent($this->widget);
                 break;
+            case "Preguntas Frecuentes":
+                $component = new PreguntasConmponent($this->widget);
+                break;
             default:
                 $component = false;
         }

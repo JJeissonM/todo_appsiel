@@ -84,39 +84,39 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-                <h4>.:: En ésta Sección: Clientes ::.</h4>
+                <h4>.:: En ésta Sección: Preguntas Frecuentes ::.</h4>
             </div>
         </div>
     </div>
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
-                <h4 class="column-title" style="padding: 10px;">Menú Clientes</h4>
-                @if(count($clientes)<=0)
+                <h4 class="column-title" style="padding: 10px;">Menú Preguntas Frecuentes</h4>
+                @if(count($preguntas) <= 0)
                     <div class="add d-flex justify-content-end col-md-12">
                         <a data-toggle="modal" data-target="#exampleModal"
                            class="btn btn-primary waves-effect btn-block btn-sm"
-                           style="color: white; font-weight: bold;"> Agregar cliente</a>
+                           style="color: white; font-weight: bold;"> Agregar pregunta</a>
                     </div>
                 @else
                     <div class="add d-flex justify-content-end col-md-12">
                         <a data-toggle="modal" data-target="#exampleModal"
                            class="btn btn-primary waves-effect btn-block btn-sm"
-                           style="color: white; font-weight: bold;"> Agregar cliente</a>
+                           style="color: white; font-weight: bold;"> Agregar pregunta</a>
                     </div>
                     <div class="col-md-12">
-                        @foreach($clientes as $item)
+                        @foreach($preguntas as $item)
                             <div class="contenido">
-                                <img src="{{url($item->logo)}}" alt="" class="imagen">
                                 <div class="descripcion">
-                                    <h5 class="titulo">{{$item->nombre}}</h5>
+                                    <h5 class="titulo">{{$item->pregunta}}</h5>
+                                    <p>{{str_limit($item->respuesta,30)}}</p>
                                 </div>
                                 <a id="{{$item}}" onclick="editar(this.id)" data-toggle="modal" data-target="#Modaledit"
                                    class="btn"
-                                   title="Editar Álbum" style="color: #45aed6"><i
+                                   title="Editar Pregunta" style="color: #45aed6"><i
                                             class="fa fa-edit"></i></a>
-                                <a href="{{url('clientes/destroy').'/'.$item->id.$variables_url}}" class="btn"
-                                   title="Eliminar Cliente"><i class="fa fa-eraser"></i></a>
+                                <a href="{{url('preguntas/destroy').'/'.$item->id.$variables_url}}" class="btn"
+                                   title="Eliminar Pregunta"><i class="fa fa-eraser"></i></a>
                             </div>
                         @endforeach
                     </div>
@@ -124,8 +124,8 @@
             </div>
             <div class="widgets" id="widgets" style="position: relative;">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                @if(count($clientes)>0)
-                    {!! Form::clientes($clientes)!!}
+                @if(count($preguntas)>0)
+                    {!! Form::preguntas($preguntas)!!}
                 @endif
             </div>
         </div>
@@ -133,28 +133,27 @@
 @endsection
 
 <div class="modal" id="exampleModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Crear Cliente</h5>
+                <h5 class="modal-title">Crear Pregunta</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    {!! Form::open(['route'=>'clientes.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    {!! Form::open(['route'=>'preguntas.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
-                        <label>Nombre del Cliente</label>
-                        <input name="nombre" type="text" placeholder="Nombre de la empresa o persona"
-                               class="form-control">
+                        <label>Pregunta</label>
+                        <input name="pregunta" type="text" placeholder="Nombre de la pregunta"
+                               class="form-control" required="required">
                     </div>
                     <div class="form-group">
-                        <label>Logo</label>
-                        <input name="logo" type="file" placeholder="Agregar una imagen" required="required"
-                               class="form-control">
+                        <label>Respuesta</label>
+                        <textarea name="respuesta" class="form-control" rows="3" required="required"></textarea>
                     </div>
                     <div class="form-group">
                         <br/><br/>
@@ -172,31 +171,30 @@
 </div>
 
 <div class="modal" id="Modaledit" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Editar Cliente</h5>
+                <h5 class="modal-title">Editar Pregunta</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    @if(count($clientes)>0)
-                        {!! Form::open(['route'=>'clientes.modificar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    @if(count($preguntas)>0)
+                        {!! Form::open(['route'=>'preguntas.modificar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                         <input type="hidden" name="widget_id" value="{{$widget}}">
                         <input type="hidden" name="variables_url" value="{{$variables_url}}">
-                        <input type="hidden" name="cliente_id" id="cliente_id">
+                        <input type="hidden" name="pregunta_id" id="pregunta_id">
                         <div class="form-group">
-                            <label>Nombre del Cliente</label>
-                            <input name="nombre" id="nombre" type="text"
-                                   placeholder="Nombre de la empresa o persona"
-                                   class="form-control">
+                            <label>Nombre del Pregunta</label>
+                            <input name="pregunta" id="pregunta" type="text"
+                                   placeholder="Nombre de la Pregunta"
+                                   class="form-control" required="required">
                         </div>
                         <div class="form-group">
-                            <label>Logo</label>
-                            <input name="logo" id="logo" type="file" placeholder="Agregar una imagen"
-                                   class="form-control">
+                            <label>Respuesta</label>
+                            <textarea name="respuesta" id="respuesta" class="form-control" rows="3" required="required"></textarea>
                         </div>
                         <div class="form-group">
                             <br/><br/><a class="btn btn-danger" id="Modaledit" style="color: white"
@@ -221,8 +219,10 @@
 
         function editar(obj) {
             var item = JSON.parse(obj);
-            $("#nombre").attr('value', item.nombre);
-            $("#cliente_id").attr('value', item.id);
+            $("#pregunta").attr('value', item.pregunta);
+            $("#respuesta").val(item.respuesta);
+            $("#respuesta").attr('value', item.respuesta);
+            $("#pregunta_id").attr('value', item.id);
         }
     </script>
 @endsection

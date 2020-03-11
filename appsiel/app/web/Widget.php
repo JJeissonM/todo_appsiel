@@ -54,4 +54,9 @@ class Widget extends Model
     {
         return $this->hasMany(Archivo::class);
     }
+
+    public function preguntas()
+    {
+        return $this->hasMany(Preguntasfrecuentes::class);
+    }
 }
