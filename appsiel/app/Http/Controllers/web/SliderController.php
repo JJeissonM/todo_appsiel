@@ -46,8 +46,15 @@ class SliderController extends Controller
         }
 
         $item = new ItemSlider($request->all());
-        foreach ($item->attributesToArray() as $key => $value){
+        foreach ($item->attributesToArray() as $key => $value)
+        {
+            if( $key == 'imagen' )
+            {
+                $item->$key = $value;
+            }else{
               $item->$key = strtoupper($value);
+            
+            }
         }
 
         $item->slider_id = $slider->id;
