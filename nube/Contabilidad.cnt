@@ -1,0 +1,41 @@
+:BASE Contabilidad.hlp
+:TITLE Contabilidad Antares 
+1 Introducción
+2 Instalación=Instalación@Contabilidad.hlp
+2 Presentación=Presentación@Contabilidad.hlp
+2 Cómo usar la ayuda=CómoUsarAyuda@Contabilidad.hlp
+2 Requerimientos del Sistema=Requerimientos@Contabilidad.hlp
+2 Archivo System.mdw=System@Contabilidad.hlp
+1 Ingresar al Sistema
+2 Pantalla Inicial=Ingreso@Contabilidad.hlp
+2 Menú Principal=MenúPrincipal@Contabilidad.hlp
+2 Referenciar Bases de Datos=ReferenciarBasesdeDatos@Contabilidad.hlp
+2 Consulta y Asignación de Permisos Usuarios=DefinirUsuarios@Contabilidad.hlp
+2 Copiar Bases de Datos=CopiarBasesdeDatos@Contabilidad.hlp
+1 Consulta, Modificación y Creación de Cuentas
+2 Consulta, Modificación y Creación de Cuentas=Consulta,ModificaciónyCreación@Contabilidad.hlp
+1 Consulta, Modificación y creación de NIT´s
+2 Creación de NIT´s=CreacióndeClientesyProveedores@Contabilidad.hlp
+2 Consulta Movimiento Acumulado=ConsultaMovimientoAcumulado@Contabilidad.hlp
+2 Informe de Terceros=InformedeTerceros@Contabilidad.hlp
+1 Configuración de Documentos
+2 Configuración de Documentos=Crear,ConsultaroModificarlaCon@Contabilidad.hlp
+2 Crear Consecutivos=CrearConsecutivos@Contabilidad.hlp
+2 Creación Centros de Costos=CreaciónCentrosdeCostos@Contabilidad.hlp
+1 Actualización Documentos
+2 Periodo de Trabajo=NewTopic@Contabilidad.hlp
+2 Creación y Consulta de Documentos=DefinirFechas@Contabilidad.hlp
+2 Consulta Documentos Descuadrados=ConsultaDocumentosDescuadrados@Contabilidad.hlp
+1 Informes
+2 Listado Informes =ListadodeInformesAdmisiones@Contabilidad.hlp
+1 Procesos Especiales
+2 Borrado, Traslado, Copiado de Documentos=ProcesosEspeciales@Contabilidad.hlp
+2 Reclasificación de Cuentas=ReclasificacióndeCuentas@Contabilidad.hlp
+2 Reclasificación de Nit´s=ReclasificacióndeNit´s@Contabilidad.hlp
+2 Bloqueo de Períodos=BloqueodePeríodos@Contabilidad.hlp
+2 Cierre del Ejercicio=CierredelEjercicio@Contabilidad.hlp
+2 Numeración de Libros Oficiales=NumeracióndeLibrosOficiales@Contabilidad.hlp
+2 Modificar Datos de la Empresa=ModificarDatosdelaEmpresa@Contabilidad.hlp
+2 Exportación=Exportación@Contabilidad.hlp
+2 Importación=Importación@Contabilidad.hlp
+2 Definición de Informes y Razones Financieras =DefinicióndeInformesyRazonesFi@Contabilidad.hlp

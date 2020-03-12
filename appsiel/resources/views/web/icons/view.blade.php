@@ -83,8 +83,10 @@
         <?php
 
         use App\Core\Menu;
+        use Illuminate\Support\Facades\Input;
 
-        $menus = Menu::menus(Input::get('id'));
+        $id = Input::get('id');
+        $menus = Menu::menus($id);
         ?>
 
         @if (!Auth::guest())
@@ -112,7 +114,10 @@
                             @include('web.templates.menu', ['item' => $item])
                             @endforeach
                             <li class="nav-item">
-                                <a href="{{route('icons.view')}}">Íconos</a>
+                                <a href="{{url('pagina_web/icons/view?id='.$id)}}"><i class="fa fa-exclamation-circle"></i> Íconos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{url('pagina_web/nube/view?id='.$id)}}"><i class="fa fa-cloud"></i> Nube</a>
                             </li>
                         </ul>
                     </div>

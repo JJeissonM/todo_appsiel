@@ -126,8 +126,14 @@ Route::get('generar_slug/{cadena}', 'PaginaWeb\SlugController@generar_slug');
 // MÓDULOS
 Route::resource('pagina_web/carousel', 'PaginaWeb\CarouselController');
 
-//iconos
+//ICONOS
 Route::get('pagina_web/icons/view', 'web\IconsController@view')->name('icons.view');
 //leer contactenos
 Route::get('configuracion/contactenos/{id}/leer', 'web\ContactenosController@leer');
 
+//PRODUCTOS
+Route::post('pedidosweb/store', 'web\PedidoswebController@store')->name('pedidosweb.store');
+Route::resource('pedidosweb', 'web\PedidoswebController');
+
+//NUBE
+Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');
