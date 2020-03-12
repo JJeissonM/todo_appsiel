@@ -67,7 +67,7 @@ Route::get('/servicios/{id}/index', 'web\ServicioController@leer_servicio')->nam
 Route::get('contactenos/create/{widget}', 'web\ContactenosController@create');
 Route::post('contactenos/store', 'web\ContactenosController@store')->name('contactenos.store');
 Route::put('contactenos/updated/{id}', 'web\ContactenosController@updated')->name('contactenos.updated');
-Route::post('contactenos/configuaracion/guardar', 'web\ContactenosController@guardar_contactenos')->name('contactenos.guardar');
+Route::get('contactenos/configuracion/{names}/{email}/{asunto}/{message}/guardar', 'web\ContactenosController@guardar_contactenos')->name('contactenos.guardar');
 
 //CLIENTES
 Route::get('clientes/create/{widget}', 'web\ClienteController@creaste');
