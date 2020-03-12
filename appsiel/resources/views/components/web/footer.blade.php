@@ -1,5 +1,18 @@
 @if($footer!=null)
-    <div class="footerarea" style="background-color: {{$footer->background}};">
+
+    <style>
+        .footerarea {
+            background-position: bottom ;
+            background-image: url('{{asset("img/lading-page/footer-bg.png")}}');
+            background-size: contain;
+            background-repeat: no-repeat;
+            object-fit: cover;
+            background-color: {{$footer->background}};
+            position: relative;
+        }
+    </style>
+
+    <div class="footerarea">
         <div class="container">
             <div class="row">
                 @if($footer->ubicacion == '')
@@ -13,7 +26,9 @@
                                         <ul id="menu-menu4" class="menu">
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                            style="color: {{$footer->color}}; font-size: 14px" href="">
+                                                            target="_blank"
+                                                            style="color: {{$footer->color}}; font-size: 14px"
+                                                            href="{{$enlace->enlace}}">
                                                         {{$enlace->icono.' '.$enlace->texto}}
                                                     </a>
                                                 </li>
@@ -34,7 +49,10 @@
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
                                                             style="color: {{$footer->color}}; font-size: {{$enlace->icono=='' ? 14:20}}px"
-                                                            href="" ><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}</a>
+                                                            target="_blank"
+                                                            href="{{$enlace->enlace}}"><i
+                                                                class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
+                                                    </a>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -45,7 +63,8 @@
                         <div class="col-md-3 col-sm-12 d-flex justify-content-between flex-wrap">
                             <div class="contenido col-md-12 col-sm-12" style="margin:20px 0;">
                                 <h5 class="column-title"
-                                    style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">CONTACTENOS</h5>
+                                    style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
+                                    CONTACTENOS</h5>
                                 <aside class="">
                                     {{Form::contactenos($contactenos)}}
                                 </aside>
@@ -63,7 +82,8 @@
                                         <ul id="menu-menu4" class="menu">
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                            style="color: {{$footer->color}}; font-size: 14px" href="">
+                                                            style="color: {{$footer->color}}; font-size: 14px"
+                                                            href="{{$enlace->enlace}}" target="_blank">
                                                         {{$enlace->icono.' '.$enlace->texto}}
                                                     </a>
                                                 </li>
@@ -76,7 +96,8 @@
                         <div class="col-md-3 col-sm-12 d-flex justify-content-between flex-wrap">
                             <div class="contenido col-md-12 col-sm-12" style="margin:20px 0;">
                                 <h5 class="column-title"
-                                    style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">ENCUENTRANOS</h5>
+                                    style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
+                                    ENCUENTRANOS</h5>
                                 <aside class="">
                                     {!! str_replace('width="300"','width="200"',$footer->ubicacion)!!}
                                 </aside>
@@ -93,7 +114,9 @@
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
                                                             style="color: {{$footer->color}}; font-size: {{$enlace->icono=='' ? 14:20}}px"
-                                                            href="" ><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}</a>
+                                                            href="{{$enlace->enlace}}" target="_blank"><i
+                                                                class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
+                                                    </a>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -104,14 +127,16 @@
                         <div class="col-md-6 col-sm-12 d-flex justify-content-between flex-wrap">
                             <div class="contenido col-md-6 col-sm-12" style="margin:20px 0;">
                                 <h5 class="column-title"
-                                    style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">CONTACTENOS</h5>
+                                    style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
+                                    CONTACTENOS</h5>
                                 <aside class="">
                                     {{Form::contactenos($contactenos)}}
                                 </aside>
                             </div><!--end .widget-column-2-->
                             <div class="contenido col-md-6 col-sm-12" style="margin:20px 0;">
                                 <h5 class="column-title"
-                                    style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">ENCUENTRANOS</h5>
+                                    style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
+                                    ENCUENTRANOS</h5>
                                 <aside class="">
                                     {!! str_replace('width="300"','width="200"',$footer->ubicacion)!!}
                                 </aside>

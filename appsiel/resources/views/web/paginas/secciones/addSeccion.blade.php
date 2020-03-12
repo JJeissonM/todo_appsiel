@@ -11,7 +11,7 @@
         #wrapper {
             overflow-y: scroll;
             width: 30%;
-            height: 100vh;
+            height: 70vh;
             margin-right: 0;
         }
 

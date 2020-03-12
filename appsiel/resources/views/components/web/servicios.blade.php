@@ -20,7 +20,7 @@
                                     </div>
                                     <div class="media-body">
                                         <h4 class="media-heading">{{$item->titulo}}</h4>
-                                        <p>{{ str_limit($item->descripcion,150) }}</p>
+                                        <p>{!! str_limit($item->descripcion,150) !!} </p>
                                     </div>
                                 </div>
                                 <div class="col-md-12 d-flex justify-content-end">
