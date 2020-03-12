@@ -2,7 +2,7 @@
 
     <style>
         .footerarea {
-            background-position: bottom ;
+            background-position: bottom;
             background-image: url('{{asset("img/lading-page/footer-bg.png")}}');
             background-size: contain;
             background-repeat: no-repeat;
