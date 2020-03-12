@@ -1,0 +1,822 @@
+Ejemplos ¶
+Ejemplo #1 Ejemplo de filesize()
+
+<?php
+
+// Muestra, p.ej., fichero.txt: 1024 bytes
+
+$nombre_fichero = 'fichero.txt';
+echo $nombre_fichero . ': ' . filesize($nombre_fichero) . ' bytes';
+
+?>
+Errores/Excepciones ¶
+En caso de fallo, se emite un E_WARNING.
+
+Notas ¶
+Nota: Los resultados de esta función son guardados en caché. Para más información ver clearstatcache().
+
+Sugerencia
+Desde PHP 5.0.0, esta función también puede usarse con algunos URL wrappers. Consultar Protocolos y Envolturas soportados para deter4minar qué envolturas soportan la familia de funcionalidad de stat().
+
+Ver también ¶
+file_exists() - Comprueba si existe un fichero o directorio
+add a note add a note
+User Contributed Notes 35 notes
+up
+down
+182rommel at rommelsantor dot com ¶8 years ago
+Extremely simple function to get human filesize.
+<?php
+function human_filesize($bytes, $decimals = 2) {
+  $sz = 'BKMGTP';
+  $factor = floor((strlen($bytes) - 1) / 3);
+  return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+}
+?>
+up
+down
+2mbh789 at gmail dot com ¶2 years ago
+function dir_size($file) {
+   //tested on win 7x64 php 5.4
+    exec('dir /s /a "' . $file.'"', $inf);
+    $r=explode(' ',$inf[count($inf)-2]);
+    $rr = preg_replace('~[^\d]+~','',$r[count($r)-2]);
+    return $rr;
+}
+up
+down
+38Arseny Mogilev ¶6 years ago
+<?php
+/**
+* Converts bytes into human readable file size.
+*
+* @param string $bytes
+* @return string human readable file size (2,87 Мб)
+* @author Mogilev Arseny
+*/
+function FileSizeConvert($bytes)
+{
+    $bytes = floatval($bytes);
+        $arBytes = array(
+            0 => array(
+                "UNIT" => "TB",
+                "VALUE" => pow(1024, 4)
+            ),
+            1 => array(
+                "UNIT" => "GB",
+                "VALUE" => pow(1024, 3)
+            ),
+            2 => array(
+                "UNIT" => "MB",
+                "VALUE" => pow(1024, 2)
+            ),
+            3 => array(
+                "UNIT" => "KB",
+                "VALUE" => 1024
+            ),
+            4 => array(
+                "UNIT" => "B",
+                "VALUE" => 1
+            ),
+        );
+
+    foreach($arBytes as $arItem)
+    {
+        if($bytes >= $arItem["VALUE"])
+        {
+            $result = $bytes / $arItem["VALUE"];
+            $result = str_replace(".", "," , strval(round($result, 2)))." ".$arItem["UNIT"];
+            break;
+        }
+    }
+    return $result;
+}
+
+?>
+up
+down
+28Anonymous ¶9 years ago
+if you recently appended something to file, and closed it then this method will not show appended data:
+<?php
+// get contents of a file into a string
+$filename = "/usr/local/something.txt";
+$handle = fopen($filename, "r");
+$contents = fread($handle, filesize($filename));
+fclose($handle);
+?>
+You should insert a call to clearstatcache() before calling filesize()
+I've spent two hours to find that =/
+up
+down
+13Damien Dussouillez ¶2 years ago
+<?php
+/**
+* Return file size (even for file > 2 Gb)
+* For file size over PHP_INT_MAX (2 147 483 647), PHP filesize function loops from -PHP_INT_MAX to PHP_INT_MAX.
+*
+* @param string $path Path of the file
+* @return mixed File size or false if error
+*/
+function realFileSize($path)
+{
+    if (!file_exists($path))
+        return false;
+
+    $size = filesize($path);
+   
+    if (!($file = fopen($path, 'rb')))
+        return false;
+   
+    if ($size >= 0)
+    {//Check if it really is a small file (< 2 GB)
+        if (fseek($file, 0, SEEK_END) === 0)
+        {//It really is a small file
+            fclose($file);
+            return $size;
+        }
+    }
+   
+    //Quickly jump the first 2 GB with fseek. After that fseek is not working on 32 bit php (it uses int internally)
+    $size = PHP_INT_MAX - 1;
+    if (fseek($file, PHP_INT_MAX - 1) !== 0)
+    {
+        fclose($file);
+        return false;
+    }
+   
+    $length = 1024 * 1024;
+    while (!feof($file))
+    {//Read the file until end
+        $read = fread($file, $length);
+        $size = bcadd($size, $length);
+    }
+    $size = bcsub($size, $length);
+    $size = bcadd($size, strlen($read));
+   
+    fclose($file);
+    return $size;
+}
+up
+down
+13C0nw0nk ¶3 years ago
+Here is my super fast method of getting >2GB files to output the correct byte size on any version of windows works with both 32Bit and 64Bit.
+
+<?php
+function find_filesize($file)
+{
+    if(substr(PHP_OS, 0, 3) == "WIN")
+    {
+        exec('for %I in ("'.$file.'") do @echo %~zI', $output);
+        $return = $output[0];
+    }
+    else
+    {
+        $return = filesize($file);
+    }
+    return $return;
+}
+
+//Usage : find_filesize("path");
+//Example :
+echo "File size is : ".find_filesize("D:\Server\movie.mp4")."";
+?>
+up
+down
+6synnus at gmail dot com ¶3 years ago
+// best converting the negative number with File Size .
+// does not work with files greater than 4GB
+//
+// specifically for 32 bit systems. limit conversions filsize is 4GB or
+// 4294967296. why we get negative numbers? by what the file
+// pointer of the meter must work with the PHP MAX value is 2147483647.
+// Offset file : 0 , 1 , 2 , 3 , ... 2147483647 = 2GB
+// to go higher up the 4GB negative numbers are used
+// and therefore after 2147483647, we will -2147483647
+// -2147483647,  -2147483646, -2147483645, -2147483644 ... 0 = 4GB
+// therefore 0, 2147483647 and -2147483647 to 0. all done 4GB = 4294967296
+// the first offset to 0 and the last offset to 0 of 4GB should be added in
+// your compute, so "+ 2" for the number of bytes exate .
+
+<?php
+function filsize_32b($file) {
+    $filez = filesize($file);
+    if($filez < 0) {  return (($filez + PHP_INT_MAX) + PHP_INT_MAX + 2); }
+    else { return $filez; }
+}
+?>
+up
+down
+4evgenij at kostanay dot kz ¶3 years ago
+Slightly edited version of the function from rommel at rommelsantor dot com. Now it returns a two characters file size which is a bit more convenient to read.
+
+<?php
+function human_filesize($bytes, $decimals = 2) {
+    $factor = floor((strlen($bytes) - 1) / 3);
+    if ($factor > 0) $sz = 'KMGT';
+    return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor - 1] . 'B';
+}
+
+print human_filesize(12, 0);                // 12B
+print human_filesize(1234567890, 4);        // 1.1498GB
+print human_filesize(123456789, 1);            // 117.7MB
+print human_filesize(12345678901234, 5);    // 11.22833TB
+print human_filesize(1234567, 3);            // 1.177MB
+print human_filesize(123456);                // 120.56KB
+?>
+
+I removed the P units because strlen doesn't seem to work as expected with integers longer than 14 digits. Though it might be only my system's limitation.
+up
+down
+1honza dot kuchar at grifart dot cz ¶4 years ago
+For files bigger then 2 GB use my library called Big File Tools. https://github.com/jkuchar/BigFileTools. More details on stackoverflow: http://stackoverflow.com/a/35233556/631369
+up
+down
+17CertaiN ¶5 years ago
+The simplest and most efficient implemention for getting remote filesize:
+
+<?php
+function remote_filesize($url) {
+    static $regex = '/^Content-Length: *+\K\d++$/im';
+    if (!$fp = @fopen($url, 'rb')) {
+        return false;
+    }
+    if (
+        isset($http_response_header) &&
+        preg_match($regex, implode("\n", $http_response_header), $matches)
+    ) {
+        return (int)$matches[0];
+    }
+    return strlen(stream_get_contents($fp));
+}
+?>
+up
+down
+3synnus at gmail dot com ¶2 years ago
+<?php
+
+      // Recover all file sizes larger than > 4GB.
+      // Works on php 32bits and 64bits and supports linux
+      // Used the com_dotnet extension
+
+     function getSize($file) {
+        $size = filesize($file);
+        if ($size <= 0)
+            if (!(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN')) {
+                $size = trim(`stat -c%s $file`);
+            }
+            else{
+                $fsobj = new COM("Scripting.FileSystemObject");
+                $f = $fsobj->GetFile($file);
+                $size = $f->Size;
+            }
+        return $size;
+    }
+?>
+up
+down
+4Anonymous ¶6 years ago
+This functions returns the exact file size for file larger than 2 GB on 32 bit OS:
+
+<?php
+function file_get_size($file) {
+    //open file
+    $fh = fopen($file, "r");
+    //declare some variables
+    $size = "0";
+    $char = "";
+    //set file pointer to 0; I'm a little bit paranoid, you can remove this
+    fseek($fh, 0, SEEK_SET);
+    //set multiplicator to zero
+    $count = 0;
+    while (true) {
+        //jump 1 MB forward in file
+        fseek($fh, 1048576, SEEK_CUR);
+        //check if we actually left the file
+        if (($char = fgetc($fh)) !== false) {
+            //if not, go on
+            $count ++;
+        } else {
+            //else jump back where we were before leaving and exit loop
+            fseek($fh, -1048576, SEEK_CUR);
+            break;
+        }
+    }
+    //we could make $count jumps, so the file is at least $count * 1.000001 MB large
+    //1048577 because we jump 1 MB and fgetc goes 1 B forward too
+    $size = bcmul("1048577", $count);
+    //now count the last few bytes; they're always less than 1048576 so it's quite fast
+    $fine = 0;
+    while(false !== ($char = fgetc($fh))) {
+        $fine ++;
+    }
+    //and add them
+    $size = bcadd($size, $fine);
+    fclose($fh);
+    return $size;
+}
+?>
+up
+down
+4Supermagnus ¶11 years ago
+<?php
+function getSizeFile($url) {
+    if (substr($url,0,4)=='http') {
+        $x = array_change_key_case(get_headers($url, 1),CASE_LOWER);
+        if ( strcasecmp($x[0], 'HTTP/1.1 200 OK') != 0 ) { $x = $x['content-length'][1]; }
+        else { $x = $x['content-length']; }
+    }
+    else { $x = @filesize($url); }
+
+    return $x;
+}
+?>
+
+In case of you have a redirection in the server (like Redirect Permanent in the .htaccess)
+
+In this case we have for exemple:
+    [content-length] => Array
+
+        (
+
+            [0] => 294          // Size requested file
+
+            [1] => 357556     // Real Size redirected file
+
+        )
+up
+down
+5linda dot collins at mailinator dot com ¶6 years ago
+A fast implementation that determines actual file size of large files (>2GB) on 32-bit PHP:
+
+function RealFileSize($fp)
+{
+    $pos = 0;
+    $size = 1073741824;
+    fseek($fp, 0, SEEK_SET);
+    while ($size > 1)
+    {
+        fseek($fp, $size, SEEK_CUR);
+
+        if (fgetc($fp) === false)
+        {
+            fseek($fp, -$size, SEEK_CUR);
+            $size = (int)($size / 2);
+        }
+        else
+        {
+            fseek($fp, -1, SEEK_CUR);
+            $pos += $size;
+        }
+    }
+
+    while (fgetc($fp) !== false)  $pos++;
+
+    return $pos;
+}
+
+Input is an open file handle.  Return value is an integer for file sizes < 4GB, floating-point otherwise.
+
+This starts out by skipping ~1GB at a time, reads a character in, repeats.  When it gets into the last GB, it halves the size whenever the read fails.  The last couple of bytes are just read in.
+
+Some people might have concerns over this function because $pos will become a floating point number after exceeding integer limits and they know of floating point's tendencies to be inaccurate.  On most computers that correctly implement the IEEE floating point spec, $pos will be accurate out to around 9 *petabytes*.  Unless you are working with multi-petabyte files in PHP or the code is executing on strange hardware, this function is going to be more than sufficient.  Every part of this function has been carefully crafted to deal with 32-bit deficiencies.
+up
+down
+1ivijan dot stefan at gmail dot com ¶2 years ago
+This function also can be great for browser caching controll. For example, you have a stylesheet and you want to make sure everyone has the most recent version. You could rename it every time you edit it, but that would be a waste of time. Instead, you can do like:
+
+<?php
+
+echo '<link rel="stylesheet" href="style.css?ver=1.'.filesize(dirname(__FILE__).'/style.css').'.'.filemtime(dirname(__FILE__).'/style.css').'.0">';
+
+?>
+
+Sample output:
+
+<link rel="stylesheet" href="style.css?ver=1.8824.1499869132.0">
+
+This also can be apply for JS and also images with same name.
+up
+down
+4Svetoslav Marinov ¶10 years ago
+This is an updated version of my previous filesize2bytes.
+The return type now it's really an int.
+
+<?php
+/**
+* Converts human readable file size (e.g. 10 MB, 200.20 GB) into bytes.
+*
+* @param string $str
+* @return int the result is in bytes
+* @author Svetoslav Marinov
+* @author http://slavi.biz
+*/
+function filesize2bytes($str) {
+    $bytes = 0;
+
+    $bytes_array = array(
+        'B' => 1,
+        'KB' => 1024,
+        'MB' => 1024 * 1024,
+        'GB' => 1024 * 1024 * 1024,
+        'TB' => 1024 * 1024 * 1024 * 1024,
+        'PB' => 1024 * 1024 * 1024 * 1024 * 1024,
+    );
+
+    $bytes = floatval($str);
+
+    if (preg_match('#([KMGTP]?B)$#si', $str, $matches) && !empty($bytes_array[$matches[1]])) {
+        $bytes *= $bytes_array[$matches[1]];
+    }
+
+    $bytes = intval(round($bytes, 2));
+
+    return $bytes;
+}
+?>
+up
+down
+4tmont ¶10 years ago
+Here's the best way (that I've found) to get the size of a remote file. Note that HEAD requests don't get the actual body of the request, they just retrieve the headers. So making a HEAD request to a resource that is 100MB will take the same amount of time as a HEAD request to a resource that is 1KB.
+
+<?php
+$remoteFile = 'http://us.php.net/get/php-5.2.10.tar.bz2/from/this/mirror';
+$ch = curl_init($remoteFile);
+curl_setopt($ch, CURLOPT_NOBODY, true);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HEADER, true);
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); //not necessary unless the file redirects (like the PHP example we're using here)
+$data = curl_exec($ch);
+curl_close($ch);
+if ($data === false) {
+  echo 'cURL failed';
+  exit;
+}
+
+$contentLength = 'unknown';
+$status = 'unknown';
+if (preg_match('/^HTTP\/1\.[01] (\d\d\d)/', $data, $matches)) {
+  $status = (int)$matches[1];
+}
+if (preg_match('/Content-Length: (\d+)/', $data, $matches)) {
+  $contentLength = (int)$matches[1];
+}
+
+echo 'HTTP Status: ' . $status . "\n";
+echo 'Content-Length: ' . $contentLength;
+?>
+
+Result:
+
+HTTP Status: 302
+Content-Length: 8808759
+up
+down
+2synnus at gmail dot com ¶3 years ago
+// use system windows for give filesize
+// best for php 32bit or php 64bit
+// I do not know if it works on other windows, but on Windows 10 works well here
+
+<?php
+
+echo filesize_cmd('c:\\', 'log.txt'); //return  1135
+
+function filesize_cmd($folder, $file) {
+return exec('forfiles /p '.$folder.' /m "'.$file.'" /c "cmd /c echo @fsize"');
+}
+
+?>
+up
+down
+3jason dot whitehead dot tas at gmail dot com ¶12 years ago
+I have created a handy function, using parts of code from kaspernj at gmail dot com and md2perpe at gmail dot com, which should get file sizes > 4GB on Windows, Linux and Mac  (at least).
+
+<?php
+    function getSize($file) {
+        $size = filesize($file);
+        if ($size < 0)
+            if (!(strtoupper(substr(PHP_OS, 0, 3)) == 'WIN'))
+                $size = trim(`stat -c%s $file`);
+            else{
+                $fsobj = new COM("Scripting.FileSystemObject");
+                $f = $fsobj->GetFile($file);
+                $size = $file->Size;
+            }
+        return $size;
+    }
+?>
+up
+down
+1Anonymous ¶5 years ago
+Here a function to get the size of a file in a human understanding way with decimal separator, thousand separator, decimals...
+
+function convertFileSize($file, $size=null, $decimals=2, $dec_sep='.', $thousands_sep=','){
+if (!is_file($file)){
+  return "El fichero no existe";
+}
+$bytes = filesize($file);
+$sizes = 'BKMGTP';
+if (isset($size)){
+  $factor = strpos($sizes, $size[0]);
+  if ($factor===false){
+   return "El tamaño debe ser B, K, M, G, T o P";
+  }
+} else {
+  $factor = floor((strlen($bytes) - 1) / 3);
+  $size = $sizes[$factor];
+}
+return number_format($bytes / pow(1024, $factor), $decimals, $dec_sep, $thousands_sep).' '.$size;
+}
+
+Source: http://softontherocks.blogspot.com/2014/11/obtener-el-tamano-de-un-fichero-y.html
+up
+down
+1aidan at php dot net ¶14 years ago
+This function quickly calculates the size of a directory:
+http://aidanlister.com/repos/v/function.dirsize.php
+
+You can convert filesizes to a human readable size using:
+http://aidanlister.com/repos/v/function.size_readable.php
+
+For a faster (unix only) implementation, see function.disk-total-space, note #34100
+http://www.php.net/manual/en/function.disk-total-space.php#34100
+
+Also of interest is this wikipedia article, discussing the difference between a kilobyte (1000) and a kibibyte (1024).
+http://en.wikipedia.org/wiki/Bytes
+up
+down
+1frank (at) haua dot net ¶9 years ago
+I have a cli script running that use the filesize function on a ssh2_sftp connection. It has the >2Gb limit issue, while it does not have that issue locally. I have managed to get around this by doing a "du -sb" command through ssh2_shell.
+
+The following function takes the ssh2_connect resource and the path as input. It may not be neat, but it solves the problem for the moment.
+
+<?php
+function fSSHFileSize($oConn, $sPath) {
+    if(false !== ($oShell = @ssh2_shell($oConn, 'xterm', null, 500, 24, SSH2_TERM_UNIT_CHARS))) {
+        fwrite($oShell, "du -sb '".$sPath."'".PHP_EOL);
+        sleep(1);
+        while($sLine = fgets($oShell)) {
+            flush();
+            $aResult[] = $sLine;
+        }
+        fclose($oShell);
+        $iSize = 0;
+        if(count($aResult) > 1) {
+            $sTemp = $aResult[count($aResult)-2];
+            $sSize = substr($sTemp, 0, strpos($sTemp, chr(9)));
+            if(is_numeric(trim($sSize))) {
+                $iTemp = (int)$sSize;
+                if($iTemp > "2000000000") $iSize = $iTemp;
+            }
+        }
+        return $iSize;
+    }
+    return 0;
+}
+?>
+up
+down
+1itsrool at gmail dot com ¶10 years ago
+My solution for calculating the directory size:
+
+<?php
+/**
+* Get the directory size
+* @param directory $directory
+* @return integer
+*/
+function dirSize($directory) {
+    $size = 0;
+    foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory)) as $file){
+        $size+=$file->getSize();
+    }
+    return $size;
+}
+?>
+up
+down
+0John Crocker ¶5 months ago
+The first example given may lead one to assume that this function works with a local filename e.g. $fs = filesize("error_log") but if you manually delete some text, then save and close the file, the next time you check filesize("error_log") it will return the original value, because the value is cached for performance reasons. If you didn't know this, it would look like a nasty bug.
+
+So, everyone tells you to insert clearstatcache() which is supposed to clear the cached value and allow you to retrieve the current file size but it still does nothing and looks like another bug!
+
+However, I found that if you always specify the FULL PATH
+e.g. $fs = filesize("/user/some/path/error_log");
+then clearstatcache() is not even needed.
+up
+down
+0PHP-Hasan ¶1 year ago
+Under Windows 10 filesize obviously cannot work with relative path names. Use absolute path instead. $size = filesize(".\\myfile.txt"); does not work for me while "d:\\MyFiles\\Myfile.txt" will do. The same applys to similar functions like is_file() or stat(). They won't work correctly unless given an absolute path.
+up
+down
+1webmaster at eclipse org ¶12 years ago
+On 64-bit platforms, this seems quite reliable for getting the filesize of files > 4GB
+
+<?php
+$a = fopen($filename, 'r');
+fseek($a, 0, SEEK_END);
+$filesize = ftell($a);
+fclose($a);
+?>
+up
+down
+0synnus at gmail dot com ¶3 years ago
+// extract filesize with command dir windows 10
+// is ok for all system 32/64 and the best compatibility  for Dummy file
+// but cant return value in (int) for best return use Float 
+
+<?php
+
+filesize_dir("d:\\test.mkv"); //11.5GB => return (float) 12401880207
+
+function filesize_dir($file) {
+    exec('dir ' . $file, $inf);
+    $size_raw = $inf[6];
+    $size_exp = explode(" ",$size_raw);
+    $size_ext = $size_exp[19];
+    $size_int = (float) str_replace(chr(255), '', $size_ext);
+    return $size_int;
+}
+
+?>
+up
+down
+-2k dot reznichak at pcpin dot com ¶5 years ago
+Here ist the very fast and reliable way to get size of large files > 2Gb on 32bit and 64bit platforms.
+
+<?php
+  /**
+   * Get the size of file, platform- and architecture-independant.
+   * This function supports 32bit and 64bit architectures and works fith large files > 2 GB
+   * The return value type depends on platform/architecture: (float) when PHP_INT_SIZE < 8 or (int) otherwise
+   * @param   resource $fp
+   * @return  mixed (int|float) File size on success or (bool) FALSE on error
+   */
+  function my_filesize($fp) {
+    $return = false;
+    if (is_resource($fp)) {
+      if (PHP_INT_SIZE < 8) {
+        // 32bit
+        if (0 === fseek($fp, 0, SEEK_END)) {
+          $return = 0.0;
+          $step = 0x7FFFFFFF;
+          while ($step > 0) {
+            if (0 === fseek($fp, - $step, SEEK_CUR)) {
+              $return += floatval($step);
+            } else {
+              $step >>= 1;
+            }
+          }
+        }
+      } elseif (0 === fseek($fp, 0, SEEK_END)) {
+        // 64bit
+        $return = ftell($fp);
+      }
+    }
+    return $return;
+  }
+?>
+up
+down
+-1core58 at mail dot ru ¶13 years ago
+some notes and modifications to previous post.
+refering to RFC, when using HTTP/1.1 your request (either GET or POST or HEAD) must contain Host header string, opposite to HTTP/1.1 where Host ain't required. but there's no sure how your remote server would treat the request so you can add Host anyway (it won't be an error for HTTP/1.0).
+host value _must_ be a host name (not CNAME and not IP address).
+
+this function catches response, containing Location header and recursively sends HEAD request to host where we are moved until final response is met.
+(you can experience such redirections often when downloading something from php scripts or some hash links that use apache mod_rewrite. most all of dowloading masters handle 302 redirects correctly, so this code does it too (running recursively thru 302 redirections).)
+
+[$counter302] specify how much times your allow this function to jump if redirections are met. If initial limit (5 is default) expired -- it returns 0 (should be modified for your purposes whatever).0
+ReadHeader() function is listed in previous post
+(param description is placed there too).
+
+<?php
+function remote_filesize_thru( $ipAddress, $url, $counter302 = 5 )
+{
+    $socket = fsockopen( "10.233.225.2", 8080 );
+    if( !$socket )
+    {
+        // failed to open TCP socket connection
+        // do something sensible here besides exit();
+        echo "<br>failed to open socket for [$ipAddress]";
+        exit();
+    }
+                   
+    // just send HEAD request to server
+    $head = "HEAD $url HTTP/1.0\r\nConnection: Close\r\n\r\n";
+    // you may use HTTP/1.1 instead, then your request head string _must_ contain "Host: " header
+    fwrite( $socket, $head );
+       
+    // read the response header
+    $header = ReadHeader( $socket );
+    if( !$header )
+    {
+        // handle empty response here the way you need...
+        Header( "HTTP/1.1 404 Not Found" );
+        exit();
+    }
+   
+    fclose( $socket );
+   
+    // check for "Location" header
+    $locationMarker = "Location: ";
+    $pos = strpos( $header, $locationMarker );
+    if( $pos > 0 )
+    {
+            $counter302--;
+            if( $counter302 < 0 )
+            {
+                     // redirect limit (5 by default) expired -- return some warning or do something sensible here
+                    echo "warning: too long redirection sequence";
+                    return 0;
+            }
+
+            // Location is present -- we should determine target host and move there, like any downloading masters do...
+            // no need to use regex here
+            $end = strpos( $header, "\n", $pos );
+            $location = trim( substr( $header, $pos + strlen( $locationMarker ), $end - $pos - strlen( $locationMarker ) ), "\\r\\n" );
+            
+             // extract pure host (without "http://")
+             $host = explode( "/", $location );
+             $ipa = gethostbyname( $host[2] );
+             // move to Location
+             return remote_filesize_thru( $ipa, $location, $counter302 );
+    }
+       
+    // try to acquire Content-Length within the response
+    $regex = '/Content-Length:\s([0-9].+?)\s/';
+    $count = preg_match($regex, $header, $matches);
+                       
+    // if there was a Content-Length field, its value
+    // will now be in $matches[1]
+    if( isset( $matches[1] ) )
+          $size = $matches[1];
+    else
+          $size = 0;
+   
+    return $size;
+}
+?>
+up
+down
+-2synnus at gmail dot com ¶3 years ago
+<?php
+// File size for windows
+// if filesize() php > PHP_INT_MAX (4 294 967 296) :: failled
+// filesize_cmd returns the value measured by windows
+
+function filesize_cmd($file) {
+    $pth = pathinfo($file);       
+    $fz = filesize($file);
+    $fx = exec('forfiles /p ' . $pth['dirname'] . ' /m "' . $pth['basename'] . '" /c "cmd /c echo @fsize"');   
+    if($fz != $fx) { return $fx; }
+    return $fz;
+}
+
+?>
+up
+down
+-6lito at eordes dot com ¶7 years ago
+A simple and improved function to get the folder size including subfolders:
+
+<?php
+function folderSize ($dir)
+{
+    $size = 0;
+    $contents = glob(rtrim($dir, '/').'/*', GLOB_NOSORT);
+
+    foreach ($contents as $contents_value) {
+        if (is_file($contents_value)) {
+            $size += filesize($contents_value);
+        } else {
+            $size += realFolderSize($contents_value);
+        }
+    }
+
+    return $size;
+}
+
+echo folderSize('/var/www/html/').' bytes';
+?>
+up
+down
+-19cfv1000 at gmail dot com ¶6 years ago
+To get the filesize of a directory use the built-in function disk_total_space
+up
+down
+-3jakob dot riishede dot moller at gmail dot com ¶3 years ago
+"Note: Because PHP's integer type is signed and many platforms use 32bit integers, some filesystem functions may return unexpected results for files which are larger than 2GB."
+
+This ought to be a warning and not a note: filesize - as some of the other comments suggest - is useless for applications where custom action must be taken for large files.
+up
+down
+-3Lingasamy Sakthivel ¶2 years ago
+Using fseek is really slow. This one really better and faster.
+
+    if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+        $size = trim(exec("for %F in (\"" . $file . "\") do @echo %~zF"));
+    }
+    elseif ((PHP_OS == 'Linux') || (PHP_OS == 'FreeBSD') || (PHP_OS == 'Unix') || (PHP_OS == 'SunOS')) {
+        $size = trim(shell_exec("stat -c%s " . escapeshellarg($file)));
+    } else {
+        $size = filesize($file);
+    }
