@@ -75,7 +75,7 @@
 						</div>
 
 						<div class="row" style="padding:5px;">
-							<br><br>
+							{{ Form::bsSelect('mostrar_usuarios_estudiantes',1,'Mostrar usuario de estudiantes',['No'=>'No','Si'=>'Si'],[]) }}
 						</div>
 
 						<?php 

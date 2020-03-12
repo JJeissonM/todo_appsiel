@@ -176,6 +176,10 @@
 			</tbody>
 		</table>
 
+		@if( $mostrar_usuarios_estudiantes == 'Si') 
+			@include('calificaciones.boletines.mostrar_usuarios_estudiantes')
+		@endif
+
 		@include('calificaciones.boletines.seccion_firmas')
 		
 		<div class="page-break"></div>

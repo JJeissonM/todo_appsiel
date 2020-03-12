@@ -30,14 +30,9 @@ use \Excel;
 
 use App\Calificaiones\Asignatura;
 
-class ConfiguracionController extends Controller
+class ConfiguracionController extends ModeloController
 {
-	
-	public function __construct()
-    {
-		$this->middleware('auth');
-    }
-    
+
 	/**
      * Display a listing of the resource.
      *

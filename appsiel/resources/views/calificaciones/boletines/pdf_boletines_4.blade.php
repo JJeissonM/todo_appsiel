@@ -159,28 +159,36 @@
 			</tbody>
 		</table>
 
-			@if( $mostrar_escala_valoracion == 'Si') 
-				@include('calificaciones.boletines.escala_valoracion')
-			@else
-				<br/><br/><br/>
 
-				<table border="0">
-					<tr>
-						<td width="50px"> &nbsp; </td>
-						<td align="center">	_____________________________ </td>
-						<td align="center"> &nbsp;	</td>
-						<td align="center">	_____________________________ </td>
-						<td width="50px">&nbsp;</td>
-					</tr>
-					<tr style="font-size: {{$tam_letra}}mm;">
-						<td width="50px"> &nbsp; </td>
-						<td align="center">	{{ $colegio->piefirma1 }} </td>
-						<td align="center"> &nbsp;	</td>
-						<td align="center">	{{ $colegio->piefirma2 }} </td>
-						<td width="50px">&nbsp;</td>
-					</tr>
-				</table>
-			@endif
+
+		@if( $mostrar_usuarios_estudiantes == 'Si') 
+			@include('calificaciones.boletines.mostrar_usuarios_estudiantes')
+		@endif
+
+		
+
+		@if( $mostrar_escala_valoracion == 'Si') 
+			@include('calificaciones.boletines.escala_valoracion')
+		@else
+			<br/><br/><br/>
+
+			<table border="0">
+				<tr>
+					<td width="50px"> &nbsp; </td>
+					<td align="center">	_____________________________ </td>
+					<td align="center"> &nbsp;	</td>
+					<td align="center">	_____________________________ </td>
+					<td width="50px">&nbsp;</td>
+				</tr>
+				<tr style="font-size: {{$tam_letra}}mm;">
+					<td width="50px"> &nbsp; </td>
+					<td align="center">	{{ $colegio->piefirma1 }} </td>
+					<td align="center"> &nbsp;	</td>
+					<td align="center">	{{ $colegio->piefirma2 }} </td>
+					<td width="50px">&nbsp;</td>
+				</tr>
+			</table>
+		@endif
 
 		
 		<div class="page-break"></div>
