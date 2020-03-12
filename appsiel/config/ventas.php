@@ -15,5 +15,5 @@
   'pie_pagina_linea_1' => 'JESUCRISTO ES EL MISMO AYER Y HOY Y POR LOS SIGLOS.',
   'pie_pagina_linea_2' => 'GRACIAS POR PREFERIRNOS.',
   'pie_pagina_linea_3' => '',
-  'url_id_modelo' => '0',
+  'url_id_modelo' => '0'
 ) ;

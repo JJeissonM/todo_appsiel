@@ -46,8 +46,15 @@ class SliderController extends Controller
         }
 
         $item = new ItemSlider($request->all());
-        foreach ($item->attributesToArray() as $key => $value){
+        foreach ($item->attributesToArray() as $key => $value)
+        {
+            if( $key == 'imagen' )
+            {
+                $item->$key = $value;
+            }else{
               $item->$key = strtoupper($value);
+            
+            }
         }
 
         $item->slider_id = $slider->id;
@@ -133,10 +140,15 @@ class SliderController extends Controller
         $item  = ItemSlider::find($id);
 
         if($item){
-
-            $old_image = $item->imagen;
+            
+            $old_image = '';
+            if ( $pagina->imagen != '')
+            {
+                $old_image = $pagina->imagen;
+            }
 
             $item->fill($request->all());
+            $item->imagen = $old_image;
             foreach ($item->attributesToArray() as $key => $value){
                 $item->$key = strtoupper($value);
             }
@@ -160,8 +172,13 @@ class SliderController extends Controller
 
                 $filename = "img/" . $name;
                 $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-                if ($flag !== false) {
-                    unlink($old_image);
+                if ($flag !== false)
+                {
+                    if ( $old_image != '' )
+                    {
+                        unlink($old_image);
+                    }
+                    
                     $item->fill(['imagen' => $filename]);
                 } else {
                     $message = 'Error inesperado al intentar guardar la imagen, por favor intente nuevamente mas tarde';

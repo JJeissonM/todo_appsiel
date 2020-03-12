@@ -265,9 +265,15 @@ class PaginaController extends Controller
 
         $pagina = Pagina::find($id);
 
-        if ($pagina) {
+        if ($pagina)
+        {
 
-            $old_image = $pagina->favicon;
+            $old_image = '';
+            if ( $pagina->favicon != '')
+            {
+                $old_image = $pagina->favicon;
+            }
+            
 
             if ($request->pagina_inicio) {
                 $principal = Pagina::where('pagina_inicio', true)->get()->first();
@@ -290,8 +296,14 @@ class PaginaController extends Controller
                     $filename = "img/" . $name;
                     $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
 
-                    if ($flag !== false) {
-                        unlink($old_image);
+                    if ($flag !== false)
+                    {
+
+                        if ( $old_image != '' )
+                        {
+                            unlink($old_image);
+                        }
+                        
                         $pagina->fill(['favicon' => $filename])->save();
                     }
                 }

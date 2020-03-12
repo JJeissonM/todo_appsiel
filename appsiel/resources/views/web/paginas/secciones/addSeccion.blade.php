@@ -75,7 +75,6 @@
                             <li class="list-group-item"
                                 onclick="selectSeccion({{$seccion->id}})">{{$seccion->nombre}}</li>
                         @endif
-
                     @endforeach
                 </ul>
             </div>

@@ -107,6 +107,17 @@
 
 				<br>
 				<h4> Cuentas contables por defecto </h4>
+				<?php 
+
+					$tabla_existe = DB::select( DB::raw( "SHOW TABLES LIKE 'contab_cuentas'" ) );
+
+			        if ( !empty( $tabla_existe ) )
+			        {
+						$array_cuentas = App\Contabilidad\ContabCuenta::opciones_campo_select();
+					}else{
+						$array_cuentas = [0];
+					}
+				?>
 				<hr>
 				<div class="row">
 
@@ -120,7 +131,7 @@
 									$cta_cartera_default = 27;
 								}
 							?>
-							{{ Form::bsSelect('cta_cartera_default', $cta_cartera_default, 'Cta. Cartera (CxC)', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							{{ Form::bsSelect('cta_cartera_default', $cta_cartera_default, 'Cta. Cartera (CxC)', $array_cuentas, ['class'=>'combobox']) }}
 						</div>
 					</div>
 
@@ -134,7 +145,7 @@
 									$cta_anticipo_clientes_default = 219;
 								}
 							?>
-							{{ Form::bsSelect('cta_anticipo_clientes_default', $cta_anticipo_clientes_default, 'Cta. Anticipo clientes', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							{{ Form::bsSelect('cta_anticipo_clientes_default', $cta_anticipo_clientes_default, 'Cta. Anticipo clientes', $array_cuentas, ['class'=>'combobox']) }}
 						</div>
 					</div>
 
@@ -152,7 +163,7 @@
 									$cta_por_pagar_default = 131;
 								}
 							?>
-							{{ Form::bsSelect('cta_por_pagar_default', $cta_por_pagar_default, 'Cta. por pagar (CxP)', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							{{ Form::bsSelect('cta_por_pagar_default', $cta_por_pagar_default, 'Cta. por pagar (CxP)', $array_cuentas, ['class'=>'combobox']) }}
 						</div>
 					</div>
 
@@ -166,7 +177,7 @@
 									$cta_anticipo_proveedores_default = 29;
 								}
 							?>
-							{{ Form::bsSelect('cta_anticipo_proveedores_default', $cta_anticipo_proveedores_default, 'Cta. Anticipo proveedores', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							{{ Form::bsSelect('cta_anticipo_proveedores_default', $cta_anticipo_proveedores_default, 'Cta. Anticipo proveedores', $array_cuentas, ['class'=>'combobox']) }}
 						</div>
 					</div>
 
@@ -184,7 +195,7 @@
 									$cta_ingresos_default = 229;
 								}
 							?>
-							{{ Form::bsSelect('cta_ingresos_default', $cta_ingresos_default, 'Cta. ingresos (ventas)', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+							{{ Form::bsSelect('cta_ingresos_default', $cta_ingresos_default, 'Cta. ingresos (ventas)', $array_cuentas, ['class'=>'combobox']) }}
 						</div>
 					</div>
 

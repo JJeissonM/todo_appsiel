@@ -92,11 +92,17 @@
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
                 <h4 class="column-title" style="padding: 10px;">Menú Clientes</h4>
-                @if($clientes != null)
+                @if(count($clientes)<=0)
                     <div class="add d-flex justify-content-end col-md-12">
-                        <a href="{{url('clientes/destroy').'/'.$widget.$variables_url}}"
+                        <a data-toggle="modal" data-target="#exampleModal"
                            class="btn btn-primary waves-effect btn-block btn-sm"
-                           style="color: white; font-weight: bold;"> Eliminar Clientes</a>
+                           style="color: white; font-weight: bold;"> Agregar cliente</a>
+                    </div>
+                @else
+                    <div class="add d-flex justify-content-end col-md-12">
+                        <a data-toggle="modal" data-target="#exampleModal"
+                           class="btn btn-primary waves-effect btn-block btn-sm"
+                           style="color: white; font-weight: bold;"> Agregar cliente</a>
                     </div>
                     <div class="col-md-12">
                         @foreach($clientes as $item)
@@ -105,7 +111,8 @@
                                 <div class="descripcion">
                                     <h5 class="titulo">{{$item->nombre}}</h5>
                                 </div>
-                                <a  id="{{$item}}" onclick="editar(this.id)" data-toggle="modal" data-target="#Modaledit" class="btn"
+                                <a id="{{$item}}" onclick="editar(this.id)" data-toggle="modal" data-target="#Modaledit"
+                                   class="btn"
                                    title="Editar Álbum" style="color: #45aed6"><i
                                             class="fa fa-edit"></i></a>
                                 <a href="{{url('clientes/destroy').'/'.$item->id.$variables_url}}" class="btn"
@@ -113,16 +120,11 @@
                             </div>
                         @endforeach
                     </div>
-                    <div class="add d-flex justify-content-end col-md-12">
-                        <a data-toggle="modal" data-target="#exampleModal"
-                           class="btn btn-primary waves-effect btn-block btn-sm"
-                           style="color: white; font-weight: bold;"> Agregar cleinte</a>
-                    </div>
                 @endif
             </div>
             <div class="widgets" id="widgets" style="position: relative;">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                @if($clientes != null)
+                @if(count($clientes)>0)
                     {!! Form::clientes($clientes)!!}
                 @endif
             </div>
@@ -180,7 +182,7 @@
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    @if($clientes != null)
+                    @if(count($clientes)>0)
                         {!! Form::open(['route'=>'clientes.modificar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                         <input type="hidden" name="widget_id" value="{{$widget}}">
                         <input type="hidden" name="variables_url" value="{{$variables_url}}">
@@ -193,7 +195,8 @@
                         </div>
                         <div class="form-group">
                             <label>Logo</label>
-                            <input name="logo" id="logo" type="file" placeholder="Agregar una imagen" class="form-control">
+                            <input name="logo" id="logo" type="file" placeholder="Agregar una imagen"
+                                   class="form-control">
                         </div>
                         <div class="form-group">
                             <br/><br/><a class="btn btn-danger" id="Modaledit" style="color: white"
@@ -218,8 +221,8 @@
 
         function editar(obj) {
             var item = JSON.parse(obj);
-            $("#nombre").attr('value',item.nombre);
-            $("#cliente_id").attr('value',item.id);
+            $("#nombre").attr('value', item.nombre);
+            $("#cliente_id").attr('value', item.id);
         }
     </script>
 @endsection

@@ -67,7 +67,7 @@ Route::get('/servicios/{id}/index', 'web\ServicioController@leer_servicio')->nam
 Route::get('contactenos/create/{widget}', 'web\ContactenosController@create');
 Route::post('contactenos/store', 'web\ContactenosController@store')->name('contactenos.store');
 Route::put('contactenos/updated/{id}', 'web\ContactenosController@updated')->name('contactenos.updated');
-Route::post('contactenos/configuaracion/guardar', 'web\ContactenosController@guardar_contactenos')->name('contactenos.guardar');
+Route::get('contactenos/configuracion/{names}/{email}/{asunto}/{message}/guardar', 'web\ContactenosController@guardar_contactenos')->name('contactenos.guardar');
 
 //CLIENTES
 Route::get('clientes/create/{widget}', 'web\ClienteController@creaste');
@@ -98,6 +98,11 @@ Route::post('archivos/archivo/delete', 'web\ArchivoController@destroy')->name('a
 
 Route::resource('cofiguraciones','web\ConfiguracionesController');
 
+//PREGUNTAS FRECUENTES
+Route::get('preguntas/create/{widget}', 'web\PreguntasfrecuenteController@creaste');
+Route::post('preguntas/store', 'web\PreguntasfrecuenteController@store')->name('preguntas.store');
+Route::get('preguntas/destroy/{pregunta}', 'web\PreguntasfrecuenteController@destroy');
+Route::post('preguntas/modificar/pregunta/', 'web\PreguntasfrecuenteController@updated')->name('preguntas.modificar');
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
 
 
@@ -121,8 +126,14 @@ Route::get('generar_slug/{cadena}', 'PaginaWeb\SlugController@generar_slug');
 // MÓDULOS
 Route::resource('pagina_web/carousel', 'PaginaWeb\CarouselController');
 
-//iconos
+//ICONOS
 Route::get('pagina_web/icons/view', 'web\IconsController@view')->name('icons.view');
 //leer contactenos
 Route::get('configuracion/contactenos/{id}/leer', 'web\ContactenosController@leer');
 
+//PRODUCTOS
+Route::post('pedidosweb/store', 'web\PedidoswebController@store')->name('pedidosweb.store');
+Route::resource('pedidosweb', 'web\PedidoswebController');
+
+//NUBE
+Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');
