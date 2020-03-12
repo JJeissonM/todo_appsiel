@@ -50,6 +50,9 @@ class FactoryCompents
             case "Preguntas Frecuentes":
                 $component = new PreguntasConmponent($this->widget);
                 break;
+            case "Productos":
+                $component = new ProductosComponent($this->widget);
+                break;
             default:
                 $component = false;
         }
