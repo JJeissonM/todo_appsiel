@@ -84,12 +84,8 @@ class ContactenosController extends Controller
         $result = $cont->save();
         if ($result) {
             return "SI";
-//            $message = 'Mensaje enviado.';
-//            return redirect(url('/'))->with('flash_message', $message);
         } else {
             return "NO";
-//            $message = 'Mensaje no enviado.';
-//            return redirect(url('/'))->with('flash_message', $message);
         }
     }
 }
