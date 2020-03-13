@@ -89,7 +89,7 @@
         </div>
     </div>
     <div class="card">
-        <div class="card-body d-flex justify-content-between flex-wrap">
+        <div class="body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
                 <h4 class="column-title" style="padding: 10px;">Menú Preguntas Frecuentes</h4>
                 @if(count($preguntas) <= 0)

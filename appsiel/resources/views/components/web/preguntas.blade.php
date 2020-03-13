@@ -1,57 +1,68 @@
 <style>
-    ::after, ::before {
-        box-sizing: border-box;
+    #faq-area {
+        margin: 118px 0 100px;
+        background-repeat: no-repeat;
+        background-position: left;
+        background-size: 25% 95%;
     }
-    user agent stylesheet
-    div {
-        display: block;
+
+    #faq-area.bg-1 {
+        background-image: url('{{asset('img/lading-page/1583859741codelco.png')}}')
     }
-    body {
-        font-family: 'Poppins', sans-serif;
-        font-weight: 400;
-        color: #000;
-        position: relative;
-        overflow-x: hidden;
+
+    #faq-area.bg-2 {
+        background-image: url(../images/faq-bg-2.png)
     }
+
+    #faq-area .section-heading p {
+        padding: 0 20px;
+    }
+
     .card {
         margin-bottom: 20px;
         border-radius: 10px;
-        border: 0;
+        border: 0
     }
+
     .card .card-header {
         background-color: #fff;
         -webkit-box-shadow: 0px 0px 15px 0px rgba(52, 69, 199, 0.4);
         box-shadow: 0px 0px 15px 0px rgba(52, 69, 199, 0.4);
         border: 0;
         border-radius: 10px;
-        padding: 0;
+        padding: 0
     }
-    .card-header:first-child {
-        border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0;
+
+    .card.v-dark .card-header {
+        background-color: #0084ff;
     }
-    .card .card-header.active, .card .card-header:hover {
-        background-image: -webkit-gradient( linear, left top, right top, from(rgb(32, 0, 126)), to(rgb(230, 30, 182)));
-        background-image: linear-gradient( 90deg, rgb(32, 0, 126) 0%, rgb(230, 30, 182) 100%);
-    }
+
     .card .card-header.active {
-        border-radius: 10px 10px 0 0;
+        border-radius: 10px 10px 0 0
     }
-    .mb-0, .my-0 {
-        margin-bottom: 0!important;
+
+    .card .card-header.active,
+    .card .card-header:hover {
+        background-image: -webkit-gradient(linear, left top, right top, from(rgb(32, 0, 126)), to(rgb(230, 30, 182)));
+        background-image: linear-gradient(90deg, rgb(32, 0, 126) 0%, rgb(230, 30, 182) 100%);
     }
-    h5{
-        font-size: 16px;
-        line-height: 26px;
+
+    .card.two .card-header.active,
+    .card.two .card-header:hover {
+        background-image: linear-gradient(45deg, rgb(157, 91, 254) 0%, rgb(56, 144, 254) 100%);
     }
-    a, a:visited, a:focus, a:active, a:hover {
-        text-decoration: none;
-        outline: none;
+
+    ::after, ::before {
+        box-sizing: border-box;
     }
-    .card .card-header a {
-        font-size: 15px;
-        line-height: 25px;
-        padding: 15px 15px;
+
+    .card .card-header.active a,
+    .card .card-header:hover a,
+    .card-body p,
+    .card.v-dark .card-header a {
+        color: #fff !important;
     }
+
     .card .card-header a {
         font-size: 18px;
         line-height: 28px;
@@ -59,56 +70,43 @@
         color: #000;
         display: block;
         padding: 20px 30px;
-        position: relative;
+        position: relative
     }
-    .card .card-header.active a, .card .card-header:hover a, .card-body p, .card.v-dark .card-header a {
-        color: #fff;
-    }
-    .card .card-header a {
-        font-size: 15px;
-        line-height: 25px;
-        padding: 15px 15px;
-    }
+
     .card .card-header a:after {
-        content: '\eab2';
-        font-family: 'IcoFont';
+        content: '\f078';
+        font-family: 'FontAwesome';
         position: absolute;
-        right: 30px;
+        right: 30px
     }
+
     .card .card-header.active a:after {
-        content: '\eab9';
-        font-family: 'IcoFont';
+        content: '\f077';
+        font-family: 'FontAwesome'
     }
+
     .card-body {
-        background-image: -webkit-gradient( linear, left top, right top, from(rgb(32, 0, 126)), to(rgb(230, 30, 182)));
-        background-image: linear-gradient( 90deg, rgb(32, 0, 126) 0%, rgb(230, 30, 182) 100%);
+        background-image: -webkit-gradient(linear, left top, right top, from(rgb(32, 0, 126)), to(rgb(230, 30, 182)));
+        background-image: linear-gradient(90deg, rgb(32, 0, 126) 0%, rgb(230, 30, 182) 100%);
         border-radius: 0 0 10px 10px;
-        padding: 0 30px 10px 30px;
+        padding: 0 30px 10px 30px
     }
-    .card-body {
-        -ms-flex: 1 1 auto;
-        flex: 1 1 auto;
-        padding: 1.25rem;
+
+    .card.two .card-body {
+        background-image: linear-gradient(45deg, rgb(157, 91, 254) 0%, rgb(56, 144, 254) 100%);
+
     }
-    .card .card-header.active a, .card .card-header:hover a, .card-body p, .card.v-dark .card-header a {
-        color: #fff;
-    }
-    p {
-        font-size: 16px;
-        color: #505b6d;
-        line-height: 26px;
-        font-family: 'Open Sans', sans-serif;
-    }
-    p {
-        margin-top: 0;
-        margin-bottom: 1rem;
+
+    .faq-img img {
+        max-width: 350px;
+        margin-left: 130px;
     }
 </style>
-<div class="col-sm-12">
-    <div class="section-header">
-        <h2 class="section-title text-center wow fadeInDown animated"
-            style="visibility: visible; animation-name: fadeInDown;">PREGUNTAS FRECUENTES</h2>
-    </div>
+
+{{--    <div class="section-header">--}}
+{{--        <h2 class="section-title text-center wow fadeInDown animated"--}}
+{{--            style="visibility: visible; animation-name: fadeInDown;">PREGUNTAS FRECUENTES</h2>--}}
+{{--    </div>--}}
 {{--    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">--}}
 {{--        @foreach($preguntas as $item)--}}
 {{--            <div class="panel panel-collapse col-md-12">--}}
@@ -131,64 +129,57 @@
 {{--            </div>--}}
 {{--        @endforeach--}}
 {{--    </div>--}}
-    <div class="col-md-7">
-        <div id="accordion" role="tablist">
-            <!--start faq single-->
-            <div class="card">
-                <div class="card-header" role="tab" id="faq1">
-                    <h5 class="mb-0">
-                        <a data-toggle="collapse" href="#collapse1" aria-expanded="false" aria-controls="collapse1" class="collapsed">Is the Mobile App Secure?</a>
-                    </h5>
-                </div>
-                <div id="collapse1" class="collapse" role="tabpanel" aria-labelledby="faq1" data-parent="#accordion" style="">
-                    <div class="card-body">
-                        <p>Both the Mobile Apps and the Mobile Web App give you the ability to you to access your account information, view news releases, report an outage, and contact us via email or phone. Once you've installed a Mobile App on your phone, you'll also have the ability to view a map of our offices and payment locations.</p>
-                    </div>
+<section id="faq-area" class="bg-1">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="section-heading text-center">
+                    <h5>Take A look</h5>
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Our Mobile App can be downloaded and installed on your compatible mobile device easily. If you
+                        have any questions - please look through the most frequently asked questions or contact us for
+                        more details.</p>
                 </div>
             </div>
-            <!--end faq single-->
-            <!--start faq single-->
-            <div class="card">
-                <div class="card-header" role="tab" id="faq2">
-                    <h5 class="mb-0">
-                        <a class="collapsed" data-toggle="collapse" href="#collapse2" aria-expanded="false" aria-controls="collapse2">What features does the Mobile App have?</a>
-                    </h5>
-                </div>
-                <div id="collapse2" class="collapse" role="tabpanel" aria-labelledby="faq2" data-parent="#accordion" style="">
-                    <div class="card-body">
-                        <p>Both the Mobile Apps and the Mobile Web App give you the ability to you to access your account information, view news releases, report an outage, and contact us via email or phone. Once you've installed a Mobile App on your phone, you'll also have the ability to view a map of our offices and payment locations.</p>
-                    </div>
-                </div>
-            </div>
-            <!--end faq single-->
-            <!--start faq single-->
-            <div class="card">
-                <div class="card-header" role="tab" id="faq3">
-                    <h5 class="mb-0">
-                        <a class="collapsed" data-toggle="collapse" href="#collapse3" aria-expanded="false" aria-controls="collapse3">How do I get the Mobile App for my phone?</a>
-                    </h5>
-                </div>
-                <div id="collapse3" class="collapse" role="tabpanel" aria-labelledby="faq3" data-parent="#accordion" style="">
-                    <div class="card-body">
-                        <p>Both the Mobile Apps and the Mobile Web App give you the ability to you to access your account information, view news releases, report an outage, and contact us via email or phone. Once you've installed a Mobile App on your phone, you'll also have the ability to view a map of our offices and payment locations.</p>
-                    </div>
-                </div>
-            </div>
-            <!--end faq single-->
-            <!--start faq single-->
-            <div class="card">
-                <div class="card-header" role="tab" id="faq4">
-                    <h5 class="mb-0">
-                        <a class="collapsed" data-toggle="collapse" href="#collapse4" aria-expanded="false" aria-controls="collapse4">How does Arribo differ from usual apps? </a>
-                    </h5>
-                </div>
-                <div id="collapse4" class="collapse" role="tabpanel" aria-labelledby="faq4" data-parent="#accordion">
-                    <div class="card-body">
-                        <p>Both the Mobile Apps and the Mobile Web App give you the ability to you to access your account information, view news releases, report an outage, and contact us via email or phone. Once you've installed a Mobile App on your phone, you'll also have the ability to view a map of our offices and payment locations.</p>
-                    </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-7">
+                <div id="accordion" role="tablist">
+                    <!--start faq single-->
+                    @foreach($preguntas as $item)
+                        <div class="card">
+                            <div class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar(event)" onfocusout="agregar(event)">
+                                <h5 class="mb-0">
+                                    <a data-toggle="collapse" href="#collapse{{$item->id}}" aria-expanded="false"
+                                       aria-controls="collapse{{$item->id}}"
+                                       class="collapsed">{{$item->pregunta}}</a>
+                                </h5>
+                            </div>
+                            <div id="collapse{{$item->id}}" class="collapse" role="tabpanel"
+                                 aria-labelledby="faq{{$item->id}}"
+                                 data-parent="#accordion"
+                                 style="">
+                                <div class="card-body">
+                                    <p>{{$item->respuesta}}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-            <!--end faq single-->
+            <div class="col-md-5">
+                <div class="faq-img">
+                    <img src="{{asset('img/lading-page/faq-img-1.png')}}" class="img-fluid"
+                         style="margin-top: -50px; margin-left: 55px;" alt="">
+                </div>
+            </div>
         </div>
     </div>
-</div>
+
+</section>
+<script type="text/javascript">
+    function agregar(event) {
+        event.target.parentElement.parentElement.classList.toggle('active');
+    }
+</script>
