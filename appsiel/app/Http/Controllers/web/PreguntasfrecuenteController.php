@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\web;
 
+use App\web\Itempregunta;
 use App\web\Preguntasfrecuentes;
 use Illuminate\Http\Request;
 
@@ -28,13 +29,14 @@ class PreguntasfrecuenteController extends Controller
             ]
         ];
         $variables_url = '?id=' . Input::get('id');
-        $preguntas = Preguntasfrecuentes::where('widget_id', $widget)->get();
-        return view('web.components.preguntas.create', compact('miga_pan', 'variables_url', 'clientes', 'widget'));
+        $pregunta = Preguntasfrecuentes::where('widget_id', $widget)->first();
+        return view('web.components.preguntas.create', compact('miga_pan', 'variables_url', 'pregunta', 'widget'));
     }
 
+    //guardar itempregunta
     public function store(Request $request)
     {
-        $pregunta = new Preguntasfrecuentes($request->all());
+        $pregunta = new Itempregunta($request->all());
         $result = $pregunta->save();
         if ($result) {
             $message = 'La pregunta fue almacenada correctamente.';
@@ -47,9 +49,42 @@ class PreguntasfrecuenteController extends Controller
         }
     }
 
+
+    //guardar seccion pregunta
+    public function guardar(Request $request)
+    {
+        $seccion = new Preguntasfrecuentes();
+        $seccion->titulo = $request->titulo;
+        $seccion->descripcion = $request->descripcion;
+        $seccion->widget_id = $request->widget_id;
+        if (isset($request->imagen)) {
+            $file = $request->imagen_fondo;
+            $name = time() . str_slug($file->getClientOriginalName());
+            $filename = "img/lading-page" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+
+            if ($flag !== false) {
+                $seccion->fill(['imagen_fondo' => $filename]);
+            }
+        }else{
+            $seccion->imagen_fondo="img/lading-page/faq-img-1.png";
+        }
+        $result = $seccion->save();
+        if($result){
+            $message = 'La sección fue almacenada correctamente.';
+            $variables_url = $request->variables_url;
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }else{
+            $message = 'La sección no fue almacenada correctamente, intente mas tarde.';
+            $variables_url = $request->variables_url;
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }
+    }
+
+    //modificar itempregunta
     public function updated(Request $request)
     {
-        $pregunta = Preguntasfrecuentes::find($request->pregunta_id);
+        $pregunta = Itempregunta::find($request->itempregunta_id);
         $pregunta->pregunta = $request->pregunta;
         $pregunta->respuesta = $request->respuesta;
         $result = $pregunta->save();
@@ -64,25 +99,55 @@ class PreguntasfrecuenteController extends Controller
         }
     }
 
+    //modificar seccion pregunta
+    public function modificar(Request $request){
+        $seccion = Preguntasfrecuentes::find($request->pregunta_id);
+        $seccion->titulo = $request->titulo;
+        $seccion->descripcion = $request->descripcion;
+        if (isset($request->imagen)) {
+            $file = $request->imagen_fondo;
+            $name = time() . str_slug($file->getClientOriginalName());
+            $filename = "img/lading-page" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+
+            if ($flag !== false) {
+                $seccion->fill(['imagen_fondo' => $filename]);
+            }
+        }
+        $result = $seccion->save();
+        if ($result) {
+            $message = 'Sección modificada correctamente.';
+            $variables_url = $request->variables_url;
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        } else {
+            $message = 'La Sección no pudo ser modificada de forma correcta, intente mas tarde.';
+            $variables_url = $request->variables_url;
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }
+    }
+
+    //eliminar seccion pregunta
     public function destroy($id)
     {
-        $pregunta = Preguntasfrecuentes::find($id);
-        $widget = $pregunta->widget_id;
-        $miga_pan = [
-            [
-                'url' => 'pagina_web' . '?id=' . Input::get('id'),
-                'etiqueta' => 'Web'
-            ],
-            [
-                'url' => 'paginas?id=' . Input::get('id'),
-                'etiqueta' => 'Paginas y secciones'
-            ],
-            [
-                'url' => 'NO',
-                'etiqueta' => 'Clientes'
-            ]
-        ];
-        $result = $pregunta->delete();
+        $seccion = Preguntasfrecuentes::find($id);
+        $widget = $seccion->widget_id;
+        $result = $seccion->delete();
+        if ($result) {
+            $message = 'Pregunta eliminada correctamente.';
+            $variables_url = '?id=' . Input::get('id');
+            return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
+        } else {
+            $message = 'La pregunta no pudo ser eliminada de forma correcta, intente mas tarde.';
+            $variables_url = '?id=' . Input::get('id');
+            return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
+        }
+    }
+
+    //eliminar itempregunta
+    public function delete($id){
+        $pregunta = Itempregunta::find($id);
+        $widget= $pregunta->preguntasfercuente->widget_id;
+        $result=$pregunta->delete();
         if ($result) {
             $message = 'Pregunta eliminada correctamente.';
             $variables_url = '?id=' . Input::get('id');

@@ -17,8 +17,8 @@ class PreguntasConmponent implements IDrawComponent
 
     public function DrawComponent()
     {
-        $preguntas = Preguntasfrecuentes::where('widget_id', $this->widget)->get();
-        return Form::preguntas($preguntas);
+        $pregunta = Preguntasfrecuentes::where('widget_id', $this->widget)->first();
+        return Form::preguntas($pregunta);
     }
 
     public function viewComponent()
@@ -39,7 +39,7 @@ class PreguntasConmponent implements IDrawComponent
         ];
         $widget = $this->widget;
         $variables_url = '?id=' . Input::get('id');
-        $preguntas = Preguntasfrecuentes::where('widget_id', $this->widget)->get();
-        return view('web.components.preguntas', compact('miga_pan', 'variables_url', 'widget', 'preguntas'));
+        $pregunta = Preguntasfrecuentes::where('widget_id', $this->widget)->first();
+        return view('web.components.preguntas', compact('miga_pan', 'variables_url', 'widget', 'pregunta'));
     }
 }

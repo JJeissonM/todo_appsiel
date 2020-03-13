@@ -15,6 +15,7 @@ class CreateRenameColumnPreguntasTable extends Migration
         Schema::table('pw_preguntas', function (Blueprint $table) {
             $table->renameColumn('pregunta','titulo');
             $table->renameColumn('respuesta','descripcion');
+            $table->string('imagen_fondo')->after('respuesta');
         });
     }
 
@@ -28,6 +29,7 @@ class CreateRenameColumnPreguntasTable extends Migration
         Schema::table('pw_preguntas', function (Blueprint $table) {
             $table->renameColumn('titulo','pregunta');
             $table->renameColumn('descripcion','respuesta');
+            $table->dropColumn('imagen_fondo');
         });
     }
 }

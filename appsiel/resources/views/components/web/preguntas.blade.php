@@ -147,7 +147,7 @@
             <div class="col-md-7">
                 <div id="accordion" role="tablist">
                     <!--start faq single-->
-                    @foreach($preguntas as $item)
+                    @foreach($pregunta as $item)
                         <div class="card">
                             <div class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar(event)" onfocusout="agregar(event)">
                                 <h5 class="mb-0">
