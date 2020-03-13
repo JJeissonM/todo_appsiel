@@ -20,7 +20,7 @@ class ArticleComponent implements IDrawComponent
         $setup = Articlesetup::where('widget_id', $this->widget)->first();
         $articles = null;
         if ($setup != null) {
-            $articles = Article::where('articlesetup_id', $setup->id)->orderBy('created_at', $setup->orden)->paginate(4);
+            $articles = Article::where('articlesetup_id', $setup->id)->orderBy('created_at', $setup->orden)->paginate(6);
         }
         return Form::articles($articles, $setup);
     }
@@ -46,7 +46,7 @@ class ArticleComponent implements IDrawComponent
         $setup = Articlesetup::where('widget_id', $widget)->first();
         $articles = null;
         if ($setup != null) {
-            $articles = Article::where('articlesetup_id', $setup->id)->orderBy('created_at', $setup->orden)->paginate(4);
+            $articles = Article::where('articlesetup_id', $setup->id)->orderBy('created_at', $setup->orden)->paginate(6);
             $articles->setPath($variables_url);
         }
         return view('web.components.articles', compact('miga_pan', 'variables_url', 'widget', 'setup', 'articles'));

@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="es">
 
+<?php
+    $principal = App\web\Pagina::where('pagina_inicio', true)->get()->first();
+?>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>NOMBRE DE LA EMPRESA</title>
+    <title>{{ $principal->descripcion }}</title>
     <!-- core CSS -->
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/icon" href="{{asset('assets/images/favicon.ico')}}" />
+    <link rel="shortcut icon" type="image/icon" href="{{asset( $principal->favicon )}}" />
     <!-- Font Awesome -->
     <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- Bootstrap CSS -->

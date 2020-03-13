@@ -56,7 +56,7 @@
                                     <h2 class="entry-title"><a href="#">{{$a->titulo}}</a></h2>
                                 </header>
 
-                                <div class="entry-content" style="height: 80px;">
+                                <div class="entry-content" style="height: 100px;">
                                     <P>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</P>
                                     <a class="btn btn-primary" target="_blank" href="{{route('article.show',$a->id)}}">Leer más...</a>
                                 </div>

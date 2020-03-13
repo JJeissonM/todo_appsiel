@@ -135,7 +135,9 @@ class SliderController extends Controller
 
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
+        $pagina = Pagina::find($request->pagina);
 
         $item  = ItemSlider::find($id);
 
@@ -154,8 +156,8 @@ class SliderController extends Controller
             }
 
             if($request->tipo_enlace == 'pagina' ){
-                if($request->seccion == 'principio' ){
-                    $pagina = Pagina::find($request->pagina);
+                if($request->seccion == 'principio' )
+                {                    
                     $item->enlace = url('/'.$pagina->slug);
                 }else {
                     $widget = Widget::find($request->seccion);
