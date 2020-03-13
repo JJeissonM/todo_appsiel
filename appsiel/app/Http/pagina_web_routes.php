@@ -137,3 +137,6 @@ Route::resource('pedidosweb', 'web\PedidoswebController');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');
+Route::post('pagina_web/nube/ruta/get', 'web\NubeController@listPath')->name('nube.list');
+Route::post('pagina_web/nube/ruta/get/all/delete', 'web\NubeController@delete')->name('nube.delete');
+Route::post('pagina_web/nube/ruta/nueva/carpeta', 'web\NubeController@nueva')->name('nube.nueva');

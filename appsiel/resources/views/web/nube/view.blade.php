@@ -24,6 +24,7 @@
     <!-- Main Style -->
     <link href="{{asset('assets/style.css')}}" rel="stylesheet">
     <link href="{{asset('css/main.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
 
     <!-- Fonts -->
 
@@ -142,48 +143,137 @@
 
         <div class="col-md-12 container-fluid">
             <div class="alert alert-success" role="alert">
-                <h3 style="text-align: center;">Espacio de Almacenamiento en la Nube</h3>
+                <h3 style="text-align: center;">Espacio de Almacenamiento en la Nube ({{$path}})</h3>
             </div>
             <div class="col-md-12">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        @foreach($breadc as $b)
-                        @if($b['url']=='NO')
-                        <li class="breadcrumb-item active" aria-current="page">{{$b['etiqueta']}}</li>
-                        @else
-                        <li class="breadcrumb-item">
-                            <a href="{{$b['url']}}">{{$b['etiqueta']}}</a>
-                        </li>
-                        @endif
-                        @endforeach
+                        @if($prev!='NO') <a onclick="ir()" class="btn btn-primary" style="color: #FFFFFF; cursor: pointer;">REGRESAR UN NIVEL</a>@endif
+                        <a class="btn btn-primary" style="color: #FFFFFF; cursor: pointer;" data-toggle="modal" data-target="#exampleModal">NUEVA CARPETA</a>
+                        <a class="btn btn-primary" style="color: #FFFFFF; cursor: pointer;" data-toggle="modal" data-target="#exampleModal2">SUBIR ARCHIVOS</a>
                     </ol>
                 </nav>
             </div>
+            {!! Form::open(['route'=>'nube.list','method'=>'POST','id'=>'prev'])!!}
+            <input type="hidden" name="prev" value="{{$path}}" />
+            @if($prev=='NO')
+            <input type="hidden" name="path" value="./nube/" />
+            @else
+            <input type="hidden" name="path" value="{{$prev}}" />
+            @endif
+            <input type="hidden" name="id" value="{{$id}}" />
+            {!! Form::close() !!}
             <div class="col-md-12">
                 <div class="form-group">
                     <center><input class="buscar" type="text" id="buscar" placeholder="Buscar en éste directorio..." onkeyup="buscar()" /></center>
                 </div>
             </div>
             <div class="col-md-12 d-flex flex-wrap" id="txt" style="margin-bottom: 20px;">
+                @if($files!=null)
                 @foreach($files as $f)
                 <div class="col-md-2" style="margin-top: 10px;" title="{{$f['file']}} ({{$f['file-size']}})">
                     <a>
                         <center>
+                            @if($f['type']=='FOLDER')
+                            <i style="font-size: 60px; color: {{$f['color']}}; cursor: pointer;" class="fa fa-{{$f['icon']}}" onclick='ingresar(this.id)' id="{{$f['m']}}" data-toggle='tooltip' data-placement='top' title='Ingresar'></i>
+                            @else
                             <i style="font-size: 60px; color: {{$f['color']}};" class="fa fa-{{$f['icon']}}"></i>
+                            @endif
                         </center>
                     </a>
                     <center>
+                        <p>{{$f['file']." (".$f['file-size'].")"}}</p>
                         @if($f['type']!='FOLDER')
-                        <a style="font-size: 12px; color: #45aed6; cursor: pointer;" id="{{url('').$f['path']}}" onclick='copiar(this.id)' data-toggle='tooltip' data-placement='top' title='Copiar Enlace'><i class='fa fa-clone'></i> Copiar Enlace</a> |
+                        <a style="font-size: 12px; color: #45aed6; cursor: pointer;" id="{{url('').$f['path']}}" onclick='copiar(this.id)' data-toggle='tooltip' data-placement='top' title='Copiar Enlace'><i class='fa fa-clone'></i> Copiar Enlace</a> </br>
+                        @else
+                        <form method="POST" action="{{route('nube.list')}}" id="ingresar{{$f['m']}}">
+                            <input type="hidden" name="prev" value="{{$prev}}" />
+                            <input type="hidden" name="path" value="{{$f['path']}}/" />
+                            <input type="hidden" name="id" value="{{$id}}" />
+                            {{ csrf_field() }}
+                        </form>
                         @endif
-                        <a style="font-size: 12px; color: #ff0000;" href="#" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-remove"></i> Eliminar</a>
+                        <form method="POST" action="{{route('nube.delete')}}" id="borrar_{{$f['m']}}">
+                            <input type="hidden" name="prev" value="{{$prev}}" />
+                            <input type="hidden" name="path" value="{{$path}}" />
+                            <input type="hidden" name="id" value="{{$id}}" />
+                            <input type="hidden" name="file_id" value="{{$f['path']}}" />
+                            <input type="hidden" id="type" name="type" value="{{$f['type']}}" />
+                            {{ csrf_field() }}
+                        </form>
+                        <a onclick="borrar(this.id)" id="{{$f['m']}}" style="font-size: 12px; color: #ff0000; cursor: pointer;" data-toggle="tooltip" data-placement="top" title="Eliminar"><i class="fa fa-remove"></i> Eliminar</a>
                     </center>
                 </div>
                 @endforeach
+                @else
+                <h4>Directorio vacío!</h4>
+                @endif
             </div>
         </div>
 
     </main>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Crear Nueva Carpeta</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{route('nube.nueva')}}" id="nueva">
+                        <input type="hidden" name="prev" value="{{$prev}}" />
+                        <input type="hidden" name="path" value="{{$path}}" />
+                        <input type="hidden" name="id" value="{{$id}}" />
+                        <div class="form-group">
+                            <label class="control-label">Nombre de la carpeta</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        {{ csrf_field() }}
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="nueva()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Subir Archivos en esta Carpeta</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!--<form method="POST" action="{{route('nube.nueva')}}" id="nueva">
+                        <input type="hidden" name="prev" value="{{$prev}}" />
+                        <input type="hidden" name="path" value="{{$path}}" />
+                        <input type="hidden" name="id" value="{{$id}}" />
+                        <div class="form-group">
+                            <label class="control-label">Nombre de la carpeta</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        {{ csrf_field() }}
+                    </form>-->
+                    <h3>Deje el afan, no he terminado!</h3>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <!--<button type="button" class="btn btn-primary" onclick="nueva()">Guardar</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- End main content -->
 
@@ -203,6 +293,7 @@
     <!-- Ajax contact form  -->
     <script type="text/javascript" src="{{asset('assets/web/js/app.js')}}"></script>
 
+    <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
 
     <!-- About us Skills Circle progress  -->
 
@@ -237,8 +328,77 @@
             $("#temp").val(text).select();
             document.execCommand("copy");
             $("#temp").remove();
-            
-            alert("Ha Copiado el enlace al portapapeles");
+            Swal.fire(
+                'Información',
+                'Ha Copiado el enlace al portapapeles',
+                'success'
+            );
+        }
+
+        function ir() {
+            $('#prev').submit();
+        }
+
+        function nueva() {
+            var a = $("#name").val();
+            if (a == "") {
+                Swal.fire(
+                    'Información',
+                    'Debe indicar un nombre para la carpeta',
+                    'error'
+                );
+                return;
+            }
+            $('#nueva').submit();
+        }
+
+        function ingresar(id) {
+            $('#ingresar' + id).submit();
+        }
+
+        function borrar(id) {
+            var type = document.forms["borrar_" + id]['type'].value;
+            if (type == 'FOLDER') {
+                Swal.fire({
+                    title: 'Confirmación',
+                    text: "Está a punto de borrar un directorio y todo su contenido, ¿Desea continuar?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, borrar!',
+                    cancelButtonText: 'No'
+                }).then((result) => {
+                    if (result.value) {
+                        $("#borrar_" + id).submit();
+                        Swal.fire(
+                            'Borrado!',
+                            'Su carpeta fue borrada con todo su contenido.',
+                            'success'
+                        )
+                    }
+                })
+            } else {
+                Swal.fire({
+                    title: 'Confirmación',
+                    text: "Está a punto de borrar un archivo, ¿Desea continuar?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, borrar!',
+                    cancelButtonText: 'No'
+                }).then((result) => {
+                    if (result.value) {
+                        $("#borrar_" + id).submit();
+                        Swal.fire(
+                            'Borrado!',
+                            'Su archivo fue borrado.',
+                            'success'
+                        )
+                    }
+                })
+            }
         }
     </script>
 
