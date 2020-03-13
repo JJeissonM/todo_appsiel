@@ -21,7 +21,7 @@
                             </div>
                             <div class="card-body">
                                 @if($nav == null)
-                                    {!! Form::open(['url' => route('navegacion.storenav'), 'method' => 'POST']) !!}
+                                    {!! Form::open(['url' => route('navegacion.storenav'), 'method' => 'POST','files' => 'true']) !!}
                                         <div class="form-group">
                                             <label for="">Background</label>
                                             <input type="color" id="background" onchange="selectColor(event)"
@@ -37,7 +37,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label for="">Logo</label>
-                                            <input type="text" class="form-control" name="logo">
+                                            <input type="file" class="form-control" name="logo">
                                         </div>
 
                                         <div class="form-group">
@@ -52,7 +52,7 @@
                                         </div>
                                    {!! Form::close() !!}
                                 @else
-                                    {!! Form::open(['url' => route('navegacion.update',$nav->id), 'method' => 'put']) !!}
+                                    {!! Form::open(['url' => route('navegacion.update',$nav->id), 'method' => 'put','files'=>'true']) !!}
                                         <input type="hidden" name="_method" value="PUT">
                                         <div class="form-group">
                                             <label for="">Background</label>
@@ -70,7 +70,7 @@
 
                                         <div class="form-group">
                                             <label for="">Logo</label>
-                                            <input type="text" class="form-control" name="logo" value="{{$nav->logo}}">
+                                            <input type="file" class="form-control" name="logo" value="">
                                         </div>
 
                                         <div class="form-group">
