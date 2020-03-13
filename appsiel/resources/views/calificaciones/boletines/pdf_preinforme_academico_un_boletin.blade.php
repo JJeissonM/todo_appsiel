@@ -90,5 +90,11 @@
 				@endforeach {{--  Asignaturas --}}
 			</tbody>
 		</table>
+
+
+		@if( $mostrar_usuarios_estudiantes == 'Si') 
+			@include('calificaciones.boletines.mostrar_usuarios_estudiantes')
+		@endif
+
 	</div>
 </div>

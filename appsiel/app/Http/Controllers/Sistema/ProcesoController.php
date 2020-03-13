@@ -13,8 +13,16 @@ use Auth;
 use Storage;
 use View;
 use File;
+use Hash;
 
 use App\Http\Requests;
+
+use Spatie\Permission\Models\Role;
+
+use App\Core\PasswordReset;
+
+use App\UserHasRole;
+use App\User;
 
 class ProcesoController extends ModeloController
 {
@@ -219,5 +227,58 @@ class ProcesoController extends ModeloController
         $salida .= '</table>';
                 
         echo $salida;
+    }
+
+
+    // PROCESO. Resetear contraseñas: Este proceso crea nuevas contraseñas para TODOS los usuarios del perfil seleccionado.
+    public function form_password_resets()
+    {
+        $opciones = Role::all();
+        
+        $roles['']='';
+        foreach ($opciones as $opcion){
+            if ( $opcion->id != 1) // Exceptuando al SuperAdmin
+            {
+                $roles[$opcion->id] = $opcion->name;
+            }
+        }
+
+       $miga_pan = $this->get_miga_pan($this->modelo, 'Ejecutar proceso');
+
+        // Se llama un formulario específico para cada aplicación
+        return view( 'core.form_password_resets', compact( 'roles', 'miga_pan' ) );
+
+    }
+    public function config_password_resets( $role_id )
+    {
+        $usuarios = UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
+                                ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
+                                ->where( [ 'roles.id' => $role_id ] )
+                                ->select('users.id')
+                                ->get()
+                                ->toArray();
+            
+        foreach ($usuarios as $key => $value)
+        {   
+            $usuario = User::find( $value['id'] );
+
+            if ( !is_null( $usuario ) )
+            {
+                // Borrar registro anterior, si ya ha sido reseteada
+                PasswordReset::where('email',$usuario->email)->delete();
+
+                // Almacenar nueva contraseña en 
+                $token = str_random(7);
+                PasswordReset::insert([
+                                        'email' => $usuario->email,
+                                        'token' => $token ]);
+
+                // Actualizar contraseña
+                $usuario->password = Hash::make( $token );
+                $usuario->save();
+            }
+        }
+
+        return 'ok';
     }
 }

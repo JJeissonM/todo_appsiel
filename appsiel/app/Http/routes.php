@@ -181,6 +181,11 @@ Route::get('insertar_registros_tablas_bd', 'Sistema\ProcesoController@insertar_r
 // ************************	REVISAR ESTRUCTURA BD
 Route::get('generar_lista_tablas_con_sus_campos', 'Sistema\ProcesoController@generar_lista_tablas_con_sus_campos' );
 
+Route::get('form_password_resets', 'Sistema\ProcesoController@form_password_resets' );
+Route::get('config_password_resets/{role_id}', 'Sistema\ProcesoController@config_password_resets' );
+
+
+
 
 // Aplicación MATRICULAS
 include __DIR__.'/matriculas_routes.php';

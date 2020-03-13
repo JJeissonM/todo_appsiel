@@ -17,6 +17,7 @@ use App\Sistema\Modelo;
 use App\Sistema\Aplicacion;
 use App\Sistema\Campo;
 use App\Core\Empresa;
+use App\Core\PasswordReset;
 
 use App\Matriculas\Estudiante;
 
@@ -133,7 +134,7 @@ class UserController extends ModeloController
 
         if ( is_null($registro) )
         {
-            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Usuario no ha sido creado.');
+            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Usuario no ha sido creado. Debe editar el registro y el usuario se creará automáticamente.');
         }
 
         if (!isset($miga_pan)) {
@@ -177,6 +178,9 @@ class UserController extends ModeloController
 
         $usuario->password = Hash::make($request->password_new);
         $usuario->save();
+
+        // Eliminar contraseña si ha sido reseteada con anteioridad.
+        PasswordReset::where('email',$usuario->email)->delete();
 
         return redirect( 'web?id='.$app_id.'&id_modelo='.$modelo_id )->with('flash_message','Se cambió correctamente la contraseña de '.$usuario->name);
     }
@@ -269,6 +273,10 @@ class UserController extends ModeloController
             
             $usuario->password = Hash::make($request->password_new);
             $usuario->save();
+
+            // Eliminar contraseña si ha sido reseteada con anteioridad.
+            PasswordReset::where('email',$usuario->email)->delete();
+
             return redirect('/core/usuario/perfil?id=7&id_modelo=5')->with('flash_message','Se cambió correctamente la contraseña.');
         }else{
             return redirect('/core/usuario/perfil/cambiar_mi_passwd?id=7&id_modelo=5&ruta='.$request->ruta.'?id=7&id_modelo=5')->with('mensaje_error','La contraseña actual no es correcta, por favor intente nuevamente.');
