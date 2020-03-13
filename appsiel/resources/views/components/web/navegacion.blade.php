@@ -9,6 +9,13 @@
           color: black !important;
           background-color:transparent !important;
       }
+
+    .icono img{
+        width:150px !important;
+        height:35px !important;
+        object-fit: cover;
+    }
+
 </style>
 
 @if($nav->fixed)
@@ -16,7 +23,7 @@
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex ">
                 <!-- Text based logo -->
-                <a class="navbar-brand p-0" href="{{url('/')}}"><img src="{{asset($nav->logo)}}" alt=""></a>
+                <a class="navbar-brand p-0 icono" href="{{url('/')}}"><img src="{{asset($nav->logo)}}" alt=""></a>
                 <!-- image based logo -->
                 <!-- <a class="navbar-brand mu-logo" href="index.html"><img src="assets/images/logo.png" alt="logo"></a> -->
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -62,7 +69,7 @@
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex nav-bg">
                 <!-- Text based logo -->
-                <a class="navbar-brand p-0" href="{{url('/')}}"><img src="{{asset($nav->logo)}}" alt=""></a>
+                <a class="navbar-brand p-0 icono" href="{{url('/')}}"><img src="{{asset($nav->logo)}}" alt=""></a>
                 <!-- image based logo -->
                 <!-- <a class="navbar-brand mu-logo" href="index.html"><img src="assets/images/logo.png" alt="logo"></a> -->
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
