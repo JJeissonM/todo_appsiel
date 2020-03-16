@@ -258,4 +258,33 @@ class NubeController extends Controller
             ->with('prev', $request->prev)
             ->with('path', $request->path);
     }
+
+    //subir archivos
+    public function upload(Request $request)
+    {
+        if (isset($request->archivo)) {
+            $files = $request->file("archivo");
+            foreach ($files as $f) {
+                $name = str_slug($f->getClientOriginalName()) . '.' . $f->clientExtension();
+                $path = $request->path . $name;
+                file_put_contents($path, file_get_contents($f->getRealPath()), LOCK_EX);
+            }
+        }
+        $miga_pan = [
+            [
+                'url' => 'pagina_web' . '?id=' . $request->id,
+                'etiqueta' => 'Web'
+            ],
+            [
+                'url' => 'NO',
+                'etiqueta' => 'Almacenamiento en la Nube'
+            ]
+        ];
+        $this->listFolder($request->path);
+        return view('web.nube.view')
+            ->with('files', $this->rutas)
+            ->with('miga_pan', $miga_pan)
+            ->with('prev', $request->prev)
+            ->with('path', $request->path);
+    }
 }
