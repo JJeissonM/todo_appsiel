@@ -147,25 +147,28 @@
             <div class="col-md-7">
                 <div id="accordion" role="tablist">
                     <!--start faq single-->
-                    @foreach($pregunta as $item)
-                        <div class="card">
-                            <div class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar(event)" onfocusout="agregar(event)">
-                                <h5 class="mb-0">
-                                    <a data-toggle="collapse" href="#collapse{{$item->id}}" aria-expanded="false"
-                                       aria-controls="collapse{{$item->id}}"
-                                       class="collapsed">{{$item->pregunta}}</a>
-                                </h5>
-                            </div>
-                            <div id="collapse{{$item->id}}" class="collapse" role="tabpanel"
-                                 aria-labelledby="faq{{$item->id}}"
-                                 data-parent="#accordion"
-                                 style="">
-                                <div class="card-body">
-                                    <p>{{$item->respuesta}}</p>
+                    @if(count($pregunta->itempreguntas) > 0)
+                        @foreach($pregunta as $item)
+                            <div class="card">
+                                <div class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar(event)"
+                                     onfocusout="agregar(event)">
+                                    <h5 class="mb-0">
+                                        <a data-toggle="collapse" href="#collapse{{$item->id}}" aria-expanded="false"
+                                           aria-controls="collapse{{$item->id}}"
+                                           class="collapsed">{{$item->pregunta}}</a>
+                                    </h5>
+                                </div>
+                                <div id="collapse{{$item->id}}" class="collapse" role="tabpanel"
+                                     aria-labelledby="faq{{$item->id}}"
+                                     data-parent="#accordion"
+                                     style="">
+                                    <div class="card-body">
+                                        <p>{{$item->respuesta}}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    @endif
                 </div>
             </div>
             <div class="col-md-5">

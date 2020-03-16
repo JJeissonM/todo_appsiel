@@ -138,7 +138,7 @@
             </div>
             <div class="widgets" id="widgets" style="position: relative;">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                @if($pregunta == null)
+                @if($pregunta != null)
                     {!! Form::preguntas($pregunta)!!}
                 @endif
             </div>
