@@ -38,6 +38,7 @@
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 
 	<link rel="stylesheet" href="{{ asset('assets/css/mis_estilos.css') }}">
+	<link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
 
 
 
@@ -63,78 +64,87 @@
 			width: 35px;
 		}
 		*/
-		
-	  .custom-combobox {
-	    position: relative;
-	    display: inline-block;
-	  }
-	  .custom-combobox-toggle {
-	    position: absolute;
-	    top: 0;
-	    bottom: 0;
-	    margin-left: -1px;
-	    padding: 0;
-	  }
-	  .custom-combobox-input {
-	    margin: 0;
-	    padding: 5px 10px;
-	  }
 
-	  #div_cargando{
-			display: none;/**/
-			color: #FFFFFF;
-			background: #3394FF;
-			position: fixed; /*El div será ubicado con relación a la pantalla*/
-			/*left:0px; A la derecha deje un espacio de 0px*/
-			/*right:0px; A la izquierda deje un espacio de 0px*/
-			bottom:0px; /*Abajo deje un espacio de 0px*/
-			/*height:50px; alto del div*/
-			z-index:999;
-			width: 100%;
-    		text-align: center;
+		.custom-combobox {
+			position: relative;
+			display: inline-block;
 		}
 
-		#popup_alerta_danger{
-			display: none;/**/
+		.custom-combobox-toggle {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			margin-left: -1px;
+			padding: 0;
+		}
+
+		.custom-combobox-input {
+			margin: 0;
+			padding: 5px 10px;
+		}
+
+		#div_cargando {
+			display: none;
+			/**/
+			color: #FFFFFF;
+			background: #3394FF;
+			position: fixed;
+			/*El div será ubicado con relación a la pantalla*/
+			/*left:0px; A la derecha deje un espacio de 0px*/
+			/*right:0px; A la izquierda deje un espacio de 0px*/
+			bottom: 0px;
+			/*Abajo deje un espacio de 0px*/
+			/*height:50px; alto del div*/
+			z-index: 999;
+			width: 100%;
+			text-align: center;
+		}
+
+		#popup_alerta_danger {
+			display: none;
+			/**/
 			color: #FFFFFF;
 			background: red;
 			border-radius: 5px;
-			position: fixed; /*El div será ubicado con relación a la pantalla*/
+			position: fixed;
+			/*El div será ubicado con relación a la pantalla*/
 			/*left:0px; A la derecha deje un espacio de 0px*/
-			right:10px; /*A la izquierda deje un espacio de 0px*/
-			bottom:10px; /*Abajo deje un espacio de 0px*/
+			right: 10px;
+			/*A la izquierda deje un espacio de 0px*/
+			bottom: 10px;
+			/*Abajo deje un espacio de 0px*/
 			/*height:50px; alto del div */
 			width: 20%;
-			z-index:999999;
+			z-index: 999999;
 			float: right;
-    		text-align: center;
-    		padding: 5px;
-    		opacity: 0.7;
+			text-align: center;
+			padding: 5px;
+			opacity: 0.7;
 		}
-		
-	  </style>
+	</style>
 
 	@yield('webstyle')
-    @yield('estilos_1')
-    @yield('estilos_2')
+	@yield('estilos_1')
+	@yield('estilos_2')
 </head>
+
 <body id="app-layout">
-	
+
 	<div id="div_cargando">Cargando...</div>
 
 	<div id="popup_alerta_danger"> </div>
-	
+
 	@include('layouts.menu_principal')
 
 	<div class="container-fluid">
 
 		@if( app()->environment() != 'demo' || !in_array( Input::get('id'), $aplicaciones_inactivas_demo ) )
 
-			@yield('content')
+		@yield('content')
 
 		@else
-			@include('layouts.demo_pagina_bloqueo_aplicaciones')
-        @endif
+		@include('layouts.demo_pagina_bloqueo_aplicaciones')
+		@endif
 	</div>
 
 
@@ -165,6 +175,8 @@
 	<script src="{{asset('assets/js/todas_las_funciones.js')}}"></script>
 
 	<script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
+
+	<script src="{{asset('js/sweetAlert2.min.js')}}"></script>
 
 	<script>
 		var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
@@ -412,4 +424,5 @@
 	@yield('scripts2')
 	@yield('scripts3')
 </body>
+
 </html>

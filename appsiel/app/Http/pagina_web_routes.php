@@ -99,10 +99,13 @@ Route::post('archivos/archivo/delete', 'web\ArchivoController@destroy')->name('a
 Route::resource('cofiguraciones','web\ConfiguracionesController');
 
 //PREGUNTAS FRECUENTES
-Route::get('preguntas/create/{widget}', 'web\PreguntasfrecuenteController@creaste');
+Route::get('preguntas/create/{widget}', 'web\PreguntasfrecuenteController@create');
+Route::get('preguntas/eliminar/seccion/{preguntafrecuente}', 'web\PreguntasfrecuenteController@delete')->name('preguntas.eliminar');
+Route::post('preguntas/guardar/seccion','web\PreguntasfrecuenteController@guardar')->name('preguntas.guardar');
 Route::post('preguntas/store', 'web\PreguntasfrecuenteController@store')->name('preguntas.store');
 Route::get('preguntas/destroy/{pregunta}', 'web\PreguntasfrecuenteController@destroy');
 Route::post('preguntas/modificar/pregunta/', 'web\PreguntasfrecuenteController@updated')->name('preguntas.modificar');
+Route::post('preguntas/ferecuntes/seccion/modificar/', 'web\PreguntasfrecuenteController@modificar')->name('preguntas.updated');
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
 
 
