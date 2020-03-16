@@ -243,7 +243,7 @@
         </div>
     </div>
 
-    
+
     <!-- Modal -->
     <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -255,21 +255,20 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!--<form method="POST" action="{{route('nube.nueva')}}" id="nueva">
+                    <form method="POST" action="{{route('nube.upload')}}" id="upload" enctype="multipart/form-data">
                         <input type="hidden" name="prev" value="{{$prev}}" />
                         <input type="hidden" name="path" value="{{$path}}" />
                         <input type="hidden" name="id" value="{{$id}}" />
                         <div class="form-group">
-                            <label class="control-label">Nombre de la carpeta</label>
-                            <input type="text" id="name" name="name" class="form-control" required>
+                            <label for="message-text" class="col-form-label">Archivos</label>
+                            {!! Form::file('archivo[]',['class'=>'form-control has-feedback-left','required'=>'required','multiple'=>'multiple']) !!}
                         </div>
                         {{ csrf_field() }}
-                    </form>-->
-                    <h3>Deje el afan, no he terminado!</h3>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <!--<button type="button" class="btn btn-primary" onclick="nueva()">Guardar</button>-->
+                    <button type="button" class="btn btn-primary" onclick="upload()">Guardar</button>
                 </div>
             </div>
         </div>
@@ -354,6 +353,10 @@
 
         function ingresar(id) {
             $('#ingresar' + id).submit();
+        }
+
+        function upload() {
+            $('#upload').submit();
         }
 
         function borrar(id) {
