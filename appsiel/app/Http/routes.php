@@ -167,6 +167,7 @@ Route::get('quitar_imagen', 'Sistema\ImagenController@quitar_imagen');
 // Revisión de errores
 Route::get('/logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
+
 // FOROS
 Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio', 'Core\ForoController@index')->name('foros.index');
 Route::post('foros/inicio/crearnuevo', 'Core\ForoController@store')->name('foros.store');

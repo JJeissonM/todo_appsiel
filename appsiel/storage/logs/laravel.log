@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 [2020-03-11 08:25:05] production.ERROR: PDOException: SQLSTATE[HY000] [1045] Access denied for user 'forge'@'localhost' (using password: NO) in C:\xampp\htdocs\Appsiel\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:55
 Stack trace:
 #0 C:\xampp\htdocs\Appsiel\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php(55): PDO->__construct('mysql:host=loca...', 'forge', '', Array)
@@ -15473,3 +15474,5 @@ Stack trace:
 #58 C:\xampp\htdocs\Appsiel\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #59 C:\xampp\htdocs\Appsiel\todo_appsiel\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #60 {main}  
+=======
+>>>>>>> a117572140fddf86c4fca878a3bc16cb5a015fb2

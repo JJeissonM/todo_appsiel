@@ -32,7 +32,7 @@
 			break;
 		}
 
-		alert('¡¡¡ ADVERTENCIA !!! Al presionar el botón Guardar, se borrarán todas las respuestas ingresadas por los estudiantes para esta actividad.');
+		//alert('¡¡¡ ADVERTENCIA !!! Al presionar el botón Guardar, se borrarán todas las respuestas ingresadas por los estudiantes para esta actividad.');
 	}
 
 	$("#curso_id").on('change', function(){
