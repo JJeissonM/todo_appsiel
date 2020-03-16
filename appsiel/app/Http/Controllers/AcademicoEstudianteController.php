@@ -17,10 +17,12 @@ use App\Core\Colegio;
 use App\Matriculas\Estudiante;
 use App\Matriculas\Matricula;
 use App\Matriculas\Curso;
+use App\Matriculas\PeriodoLectivo;
 use App\Calificaciones\Periodo;
 use App\Calificaciones\CalificacionAuxiliar;
 use App\Calificaciones\Logro;
 use App\Calificaciones\EncabezadoCalificacion;
+use App\Calificaciones\CursoTieneAsignatura;
 
 
 use App\Cuestionarios\Pregunta;
@@ -62,13 +64,19 @@ class AcademicoEstudianteController extends Controller
     {
     	if( !is_null($this->estudiante) )
         {
+            
+            $matricula = Matricula::get_matricula_activa_un_estudiante( $this->estudiante->id );
+            $curso = Curso::find( $matricula->curso_id );
+
     		$estudiante = $this->estudiante;
+
         	$miga_pan = [
                     ['url'=>'NO','etiqueta'=>'Académico estudiante']
                 ];
-            return view('academico_estudiante.index',compact( 'miga_pan', 'estudiante') );
+            return view('academico_estudiante.index',compact( 'miga_pan', 'estudiante', 'curso') );
         }else{
-            return redirect('inicio')->with('mensaje_error', 'El usuario actual no tiene perfil de estudiante.');
+
+            return redirect( 'inicio' )->with('mensaje_error', 'El usuario actual no tiene perfil de estudiante.');
         }
     }
     
@@ -76,7 +84,7 @@ class AcademicoEstudianteController extends Controller
 
     public function horario()
     {
-    	$miga_pan = [
+        $miga_pan = [
                 ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
                 ['url'=>'NO','etiqueta'=>'Horario']
             ];
@@ -84,7 +92,22 @@ class AcademicoEstudianteController extends Controller
         $matricula = Matricula::get_matricula_activa_un_estudiante( $this->estudiante->id );
         $curso = Curso::find( $matricula->curso_id );
 
-    	return view('academico_estudiante.horario',compact('miga_pan', 'curso'));
+        return view('academico_estudiante.horario',compact('miga_pan', 'curso'));
+    }
+
+
+    public function ver_foros( $curso_id )
+    {
+        $miga_pan = [
+                ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
+                ['url'=>'NO','etiqueta'=>'Foros']
+            ];
+
+        $asignaturas = CursoTieneAsignatura::asignaturas_del_curso( $curso_id, null, null, null );
+
+        $periodo_lectivo = PeriodoLectivo::get_actual(); 
+
+        return view( 'academico_estudiante.ver_foros', compact('miga_pan', 'curso_id', 'asignaturas','periodo_lectivo') );
     }
 
 

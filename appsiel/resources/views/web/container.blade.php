@@ -79,14 +79,14 @@
   {!! Form::navegacion($nav) !!}
 @endif
 
-<section style="margin: 100px 0; overflow-y: scroll">
+<section>
     <div class="container">
         <div class="section-header">
             <h2 class="section-title text-center wow fadeInDown">{{$title}}</h2>
             <p class="text-center wow fadeInDown">{!!$slogan1!!}</p>
             <p class="text-center wow fadeInDown">{!!$slogan2!!}</p>
         </div>
-        <div class="row">
+        <div class="row" style="height: 70vh; overflow-y:scroll; ">
             <div class="col-sm-12 wow fadeInLeft">
                 {!!$data!!}
             </div>

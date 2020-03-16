@@ -68,6 +68,14 @@
 	                Libreta de pagos
 	            </a>
 			</div>
+
+			<div class="col-sm-4" align="center">
+				<a href="{{ url( 'ver_foros/'.$curso->id.'?id='.Input::get('id') ) }}">
+          			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/foros.png')}}" width="80px" height="80px" />
+	          		<br/>
+	                FOROS
+	            </a>
+			</div>
 		</div>
 	</div>
 @endsection
