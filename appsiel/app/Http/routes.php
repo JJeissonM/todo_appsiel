@@ -78,10 +78,10 @@ Route::get('core/validar_email/{email}', 'Core\TerceroController@validar_email')
 
 
 //Route::group(['middleware' => ['role:SuperAdmin']], function () {
-    Route::resource('core/usuarios', 'UserController');
-	Route::resource('core/roles', 'Core\RoleController');
-	//Route::resource('/core/permisos', 'Core\PermissionController');
-	Route::get('core/colegios/create', 'Core\ColegioController@create');
+Route::resource('core/usuarios', 'UserController');
+Route::resource('core/roles', 'Core\RoleController');
+//Route::resource('/core/permisos', 'Core\PermissionController');
+Route::get('core/colegios/create', 'Core\ColegioController@create');
 //});
 
 Route::resource('core/colegios', 'Core\ColegioController', ['except' => ['create']]);
@@ -110,12 +110,12 @@ Route::get('importar/importar_manualmente/inmuebles', 'Core\ImportarDatosControl
 
 
 // MODULO DISEÑADOR DE FORMATOS
-Route::get('core/dis_formatos/secciones_formato/{id_formato}','Core\DisFormatosController@secciones_formato');
-Route::post('core/dis_formatos/guardar_asignacion','Core\DisFormatosController@guardar_asignacion');
-Route::post('core/dis_formatos/eliminar_asignacion','Core\DisFormatosController@eliminar_asignacion');
+Route::get('core/dis_formatos/secciones_formato/{id_formato}', 'Core\DisFormatosController@secciones_formato');
+Route::post('core/dis_formatos/guardar_asignacion', 'Core\DisFormatosController@guardar_asignacion');
+Route::post('core/dis_formatos/eliminar_asignacion', 'Core\DisFormatosController@eliminar_asignacion');
 
 
-Route::resource('get_eventos','Core\EventoController@get_eventos');
+Route::resource('get_eventos', 'Core\EventoController@get_eventos');
 
 
 // MODELO EAV
@@ -134,13 +134,13 @@ Route::group(['prefix' => 'messages'], function () {
 });
 
 // MODULO GESTION DOCUMENTAL
-Route::get('gestion_documental/imprimir_formato','GestionDocumentalController@imprimir_formato');
-Route::get('gestion_documental/cargar_controles/{formato_id}','GestionDocumentalController@cargar_controles');
-Route::post('gestion_documental/generar_formato','GestionDocumentalController@generar_formato');
+Route::get('gestion_documental/imprimir_formato', 'GestionDocumentalController@imprimir_formato');
+Route::get('gestion_documental/cargar_controles/{formato_id}', 'GestionDocumentalController@cargar_controles');
+Route::post('gestion_documental/generar_formato', 'GestionDocumentalController@generar_formato');
 
 Route::get('get_select_estudiantes_del_curso/{curso_id}', 'GestionDocumentalController@get_select_estudiantes_del_curso');
 
-Route::resource('gestion_documental','GestionDocumentalController', ['except' => ['show']]);
+Route::resource('gestion_documental', 'GestionDocumentalController', ['except' => ['show']]);
 
 
 //             PROPIEDAD HORIZONTAL
@@ -168,74 +168,76 @@ Route::get('quitar_imagen', 'Sistema\ImagenController@quitar_imagen');
 Route::get('/logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
 // FOROS
-Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio', 'Core\ForoController@index');
-Route::get('ver_foros/{curso_id}', 'AcademicoEstudianteController@ver_foros');
-
+Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio', 'Core\ForoController@index')->name('foros.index');
+Route::post('foros/inicio/crearnuevo', 'Core\ForoController@store')->name('foros.store');
+Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio/{idapp}/ver/{foro}/foro', 'Core\ForoController@show')->name('foros.show');
+Route::post('foros/inicio/participacion/guardarrespuesta', 'Core\ForoController@guardarrespuesta')->name('foros.guardarrespuesta');
+Route::get('ver_foros/{curso_id}','AcademicoestudianteController@ver_foros');
 
 
 // PROCESOS
 
 // ************************ Exportar/Importar registros tablas BD a través de archivo de configuración
-Route::get('form_exportar_importar_tablas_bd', 'Sistema\ProcesoController@form_exportar_importar_tablas_bd' );
-Route::post('exportar_tablas_bd', 'Sistema\ProcesoController@exportar_tablas_bd' );
-Route::get('visualizar_tablas_archivo', 'Sistema\ProcesoController@visualizar_tablas_archivo' );
+Route::get('form_exportar_importar_tablas_bd', 'Sistema\ProcesoController@form_exportar_importar_tablas_bd');
+Route::post('exportar_tablas_bd', 'Sistema\ProcesoController@exportar_tablas_bd');
+Route::get('visualizar_tablas_archivo', 'Sistema\ProcesoController@visualizar_tablas_archivo');
 
-Route::get('generar_registros_archivo_configuracion/{tablas_a_exportar}', 'Sistema\ProcesoController@generar_registros_archivo_configuracion' );
-Route::get('insertar_registros_tablas_bd', 'Sistema\ProcesoController@insertar_registros_tablas_bd' );
+Route::get('generar_registros_archivo_configuracion/{tablas_a_exportar}', 'Sistema\ProcesoController@generar_registros_archivo_configuracion');
+Route::get('insertar_registros_tablas_bd', 'Sistema\ProcesoController@insertar_registros_tablas_bd');
 // ************************
 // ************************	REVISAR ESTRUCTURA BD
-Route::get('generar_lista_tablas_con_sus_campos', 'Sistema\ProcesoController@generar_lista_tablas_con_sus_campos' );
+Route::get('generar_lista_tablas_con_sus_campos', 'Sistema\ProcesoController@generar_lista_tablas_con_sus_campos');
 
-Route::get('form_password_resets', 'Sistema\ProcesoController@form_password_resets' );
-Route::get('config_password_resets/{role_id}', 'Sistema\ProcesoController@config_password_resets' );
+Route::get('form_password_resets', 'Sistema\ProcesoController@form_password_resets');
+Route::get('config_password_resets/{role_id}', 'Sistema\ProcesoController@config_password_resets');
 
 
 
 
 // Aplicación MATRICULAS
-include __DIR__.'/matriculas_routes.php';
+include __DIR__ . '/matriculas_routes.php';
 
 // Aplicación CALIFICACIONES
-include __DIR__.'/calificaciones_routes.php';
+include __DIR__ . '/calificaciones_routes.php';
 
 // Aplicación ACADÉMICO DOCENTE
-include __DIR__.'/academico_docente_routes.php';
+include __DIR__ . '/academico_docente_routes.php';
 
 // Aplicación ACADÉMICO ESTUDIANTE
-include __DIR__.'/academico_estudiante_routes.php';
+include __DIR__ . '/academico_estudiante_routes.php';
 
 // Aplicación T E S O R E R Í A
-include __DIR__.'/teso_routes.php';
+include __DIR__ . '/teso_routes.php';
 
 // Aplicación INVENTARIOS
-include __DIR__.'/inv_routes.php';
+include __DIR__ . '/inv_routes.php';
 
 // Aplicación VENTAS
-include __DIR__.'/vtas_routes.php';
+include __DIR__ . '/vtas_routes.php';
 
 // Aplicación COMPRAS
-include __DIR__.'/compras_routes.php';
+include __DIR__ . '/compras_routes.php';
 
 // Aplicación CONTABILIDAD
-include __DIR__.'/contab_routes.php';
+include __DIR__ . '/contab_routes.php';
 
 // Aplicación GESTIÓN DE COBROS (CxC)
-include __DIR__.'/cxc_routes.php';
+include __DIR__ . '/cxc_routes.php';
 
 // Aplicación GESTIÓN DE Ctas. por Paga (CxP)
-include __DIR__.'/cxp_routes.php';
+include __DIR__ . '/cxp_routes.php';
 
 // Aplicación NÓMINA
-include __DIR__.'/nomina_routes.php';
+include __DIR__ . '/nomina_routes.php';
 
 // Aplicación PÁGINA WEB
-include __DIR__.'/pagina_web_routes.php';
+include __DIR__ . '/pagina_web_routes.php';
 
 // Aplicación CONSULTORIO MÉDICO
-include __DIR__.'/consultorio_medico_routes.php';
+include __DIR__ . '/consultorio_medico_routes.php';
 
 // Rutas Adicionales Sistema Gestión Académica
-include __DIR__.'/sga_routes.php';
+include __DIR__ . '/sga_routes.php';
 
 // Esta línea debe ir de última porque ya hay rutas específicas para /{slug}
 // Ejemplo, /inicio, /ventas, /configuracion, etc. 
