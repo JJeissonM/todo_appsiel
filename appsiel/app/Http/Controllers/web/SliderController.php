@@ -74,7 +74,7 @@ class SliderController extends Controller
         if ($request->hasFile('imagen')) {
 
             $file = $request->file('imagen');
-            $name = time() . $file->getClientOriginalName();
+            $name = time() . '-' . str_slug( $file->getClientOriginalName() );
 
             $filename = "img/" . $name;
             $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
@@ -143,16 +143,18 @@ class SliderController extends Controller
 
         if($item){
             
-            $old_image = '';
-            if ( $pagina->imagen != '')
-            {
-                $old_image = $pagina->imagen;
-            }
+            $old_image = $item->imagen;
 
             $item->fill($request->all());
             $item->imagen = $old_image;
-            foreach ($item->attributesToArray() as $key => $value){
-                $item->$key = strtoupper($value);
+            foreach ($item->attributesToArray() as $key => $value)
+            {
+                if( $key == 'imagen' )
+                {
+                    $item->$key = $value;
+                }else{
+                    $item->$key = strtoupper($value);
+                }
             }
 
             if($request->tipo_enlace == 'pagina' ){
@@ -170,7 +172,7 @@ class SliderController extends Controller
             if ($request->hasFile('imagen')) {
 
                 $file = $request->file('imagen');
-                $name = time() . $file->getClientOriginalName();
+                $name = time() . '-' . str_slug( $file->getClientOriginalName() );
 
                 $filename = "img/" . $name;
                 $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);

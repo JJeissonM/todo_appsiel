@@ -78,6 +78,8 @@
 									  		{{ Form::bsBtnDropdown( 'Control disciplinario', 'danger', 'eye', [ ['link' => 'matriculas/control_disciplinario/precreate/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id'), 'etiqueta' => 'Ingresar'], ['link' => 'matriculas/control_disciplinario/consultar/'.$fila->curso_id.'/'.date('Y-m-d').'?id='.Input::get('id'), 'etiqueta' => 'Consultar' ] ] ) }}
 									  	@endcan
 
+									  	<a href="{{ url( 'foros/'.$fila->curso_id.'/'.$fila->id_asignatura.'/'.$periodo_lectivo->id.'/inicio?id='.Input::get('id') ) }}" class="btn btn-sm btn-info"><i class="fa fa-bullhorn"></i> FOROS </a>
+
 									</td>
 								</tr>
 								<?php 

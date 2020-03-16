@@ -11,9 +11,11 @@
       }
 
     .icono img{
-        width:150px !important;
+        max-height: 250px !important;
+        border-radius: 4px;
+        /*width:150px !important;
         height:35px !important;
-        object-fit: cover;
+        object-fit: cover;*/
     }
 
 </style>
@@ -103,7 +105,7 @@
                 </div>
                 <div id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto mu-navbar-nav">
-                        <a href="{{url('/login')}}" class="btn btn-outline-primary text-white ml-3" style="color: {{$nav->color}}">Sign Up</a>
+                        <a href="{{url('/login')}}" class="btn btn-outline-primary text-white ml-3" style="color: {{$nav->color}}"><i class="fa fa-edit"></i>Plataforma</a>
                     </ul>
                 </div>
             </nav>
