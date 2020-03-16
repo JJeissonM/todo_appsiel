@@ -48,7 +48,20 @@ div.recuadro{
             					    <br>
             					    <b>Usuario: </b>{{ $registro->email }}
             					    <br>
-            					    <b>Contraseña: </b>colombia1
+
+                                    <?php 
+                                        $passwd = App\Core\PasswordReset::where('email',$registro->email )->get()->first();
+                                        
+                                        if( !is_null( $passwd ) )
+                                        {
+                                            $passwd = $passwd->token;
+                                        }else{
+                                            $passwd = '';
+                                        }
+                                        
+                                    ?>
+
+            					    <b>Contraseña: </b>{{ $passwd }}
             					</td>
             					<td>
             					    NOTA: Debe cambiar la contraseña. Ingresando en la parte superior derecha. Hace clic en el <b>Nombre del estudiante</b>, luego en <b>Perfil</b> y luego en <b>Cambiar Contraseña</b>

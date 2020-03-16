@@ -21,6 +21,8 @@ use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Estudiante;
 
+use App\Calificaciones\Asignatura;
+
 use App\Cuestionarios\ActividadEscolar;
 use App\Cuestionarios\Cuestionario;
 use App\Cuestionarios\RespuestaCuestionario;
@@ -121,6 +123,7 @@ class ActividadesEscolaresController extends ModeloController
             $registro2 = $registro;
         } 
 
+        /*
         //$periodo_lectivo = PeriodoLectivo::get_segun_periodo( $request->periodo_id );
             $periodo_lectivo = PeriodoLectivo::get_actual();
 
@@ -132,14 +135,17 @@ class ActividadesEscolaresController extends ModeloController
 
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo_lectivo->id, 'Activo' );
 
+        // Crear nuevamente las asignaciones para esa actividad
         foreach ($estudiantes as $fila) 
         {
             EstudianteTieneActividadEscolar::create([
                                                     'estudiante_id' => $fila->id,
                                                     'actividad_escolar_id' => $registro->id
                                                 ]);        
-        }
+        }*/
 
+        $registro->fill( $request->all() );
+        $registro->save();
         
         $this->almacenar_imagenes( $request, $modelo->ruta_storage_imagen, $registro2, 'edit' );
 
@@ -223,7 +229,9 @@ class ActividadesEscolaresController extends ModeloController
 
         $estudiante = (object)['id'=>0];
 
-        return view('calificaciones.actividades_escolares.ver_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','modelo','respuestas','estudiantes','estudiante'));
+        $asignatura = Asignatura::find( $actividad->asignatura_id );
+
+        return view('calificaciones.actividades_escolares.ver_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','modelo','respuestas','estudiantes','estudiante', 'asignatura'));
         
     }
 
@@ -251,7 +259,7 @@ class ActividadesEscolaresController extends ModeloController
         $preguntas = (object)[];
         $respuestas = (object)['id'=>0,'respuesta_enviada'=>''];
 
-        if ($actividad->cuestionario_id > 0 ) 
+        if ( $actividad->cuestionario_id > 0 ) 
         {
             $cuestionario = Cuestionario::find($actividad->cuestionario_id);
             $preguntas = $cuestionario->preguntas()->orderBy('orden')->get();
@@ -263,9 +271,20 @@ class ActividadesEscolaresController extends ModeloController
             {   
                 $respuestas = (object)['id'=>0,'respuesta_enviada'=>''];
             }
-        }   
+        }
 
-        return view('calificaciones.actividades_escolares.hacer_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','estudiante','modelo','respuestas'));        
+        // Para actividades sin cuestionario
+        $respuesta = RespuestaCuestionario::where( [ 'actividad_id' => $actividad->id, 'estudiante_id' => $estudiante->id ] )->get()->first();
+
+        if ( is_null( $respuesta ) )
+        {
+            $respuesta = (object)['id'=>0,'respuesta_enviada'=>''];
+        }
+
+
+        $asignatura = Asignatura::find( $actividad->asignatura_id );
+
+        return view('calificaciones.actividades_escolares.hacer_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','estudiante','modelo','respuestas','respuesta','asignatura'));        
     }
 
     /**
@@ -288,6 +307,23 @@ class ActividadesEscolaresController extends ModeloController
         
     }
 
+
+    public function sin_cuestionario_guardar_respuesta(Request $request)
+    {
+        if ( $request->respuesta_id == 0)
+        {
+            // Crear nuevo registro
+            $respuestas = RespuestaCuestionario::create( $request->all() );
+        }else{
+            // actualizar registro anterior
+            $respuestas = RespuestaCuestionario::find($request->respuesta_id);
+            $respuestas->fill( $request->all() );
+            $respuestas->save();
+        }   
+
+        return 'Respuesta guardada correctamente.';
+        
+    }
 
 
     /**

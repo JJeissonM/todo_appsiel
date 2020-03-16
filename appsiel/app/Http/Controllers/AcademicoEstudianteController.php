@@ -184,10 +184,12 @@ class AcademicoEstudianteController extends Controller
     
     public function actividades_escolares()
     {
-        $actividades = EstudianteTieneActividadEscolar::leftJoin('sga_actividades_escolares','sga_actividades_escolares.id','=','sga_estudiante_tiene_actividad_escolar.actividad_escolar_id')
+        /*$actividades = EstudianteTieneActividadEscolar::leftJoin('sga_actividades_escolares','sga_actividades_escolares.id','=','sga_estudiante_tiene_actividad_escolar.actividad_escolar_id')
                                         ->where('sga_estudiante_tiene_actividad_escolar.estudiante_id',$this->estudiante->id)
                                         ->where('sga_actividades_escolares.estado','Activo')
-                                        ->get();
+                                        ->get();*/
+
+        $actividades = EstudianteTieneActividadEscolar::get_actividades_periodo_lectivo_actual( $this->estudiante->id );
 
         $miga_pan = [
                 ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],

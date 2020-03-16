@@ -11,9 +11,10 @@
 		<div class="marco_formulario">
 		    <h4>{{$actividad->descripcion}}</h4>
 		    <hr>
+				<h5><b>Asignatura: </b> {{ $asignatura->descripcion }}</h5>
 				<h5><b>Temática: </b> {{$actividad->tematica}}</h5>
 				
-				<div style="border: solid 1px; border-bottom: solid 2px; border-right: solid 2px; border-radius: 5px; padding: 10px;">
+				<div style="border: solid 1px; border-bottom: solid 2px; border-right: solid 2px; border-radius: 5px; padding: 10px; margin: 10px;">
 					<h4><b>Instrucciones: </b> </h4>
 					<hr>
 					{!! $actividad->instrucciones !!}
@@ -90,6 +91,19 @@
 					</div>
 
 					<input type="hidden" name="cuestionario_id" id="cuestionario_id" value="{{ $cuestionario->id }}">
+				@else
+					<div class="container-fluid">
+						<div class="row">
+							<div class="col-md-12">
+
+								<h4> Respuestas ó anotaciones de estudiantes </h4>
+								@include('calificaciones.actividades_escolares.profesor_respuestas_actividad_sin_cuestionario')
+
+							</div>
+						</div>
+					</div>
+						
+						
 				@endif
 
 		</div>

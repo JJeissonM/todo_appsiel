@@ -10,10 +10,16 @@
 
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped" id="myTable">
-			{{ Form::bsTableHeader(['Descripción','Temática','Fecha de entrega','Acción']) }}
+			{{ Form::bsTableHeader(['Periodo','Asignatura','Descripción actividad','Temática','Fecha de entrega','Acción']) }}
 			<tbody>
 				@foreach ($actividades as $fila)
 					<tr>
+						<td>
+							{{ $fila->periodo_descripcion }}
+						</td>
+						<td>
+							{{ $fila->asignatura_descripcion }}
+						</td>
 						<td>
 							{{ $fila->descripcion }}
 						</td>

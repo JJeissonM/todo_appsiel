@@ -167,6 +167,7 @@ Route::get('quitar_imagen', 'Sistema\ImagenController@quitar_imagen');
 // Revisión de errores
 Route::get('/logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
+
 // FOROS
 Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio', 'Core\ForoController@index');
 Route::get('ver_foros/{curso_id}', 'AcademicoEstudianteController@ver_foros');
