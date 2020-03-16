@@ -12,6 +12,7 @@ use App\User;
 use App\Calificaciones\Area;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\CursoTieneAsignatura;
+use App\Core\Foro;
 
 class Curso extends Model
 {
@@ -21,6 +22,11 @@ class Curso extends Model
 
     public $encabezado_tabla = ['ID','Nivel','Grado','Descripcion','Código','Maneja Calificacion (0=No, 1=Si)','Estado','Acción'];
 
+    public function foros()
+    {
+        return $this->hasMany(Foro::class);
+    }
+    
     /**/
     public static function consultar_registros()
     {

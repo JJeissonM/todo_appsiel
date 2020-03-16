@@ -10,7 +10,7 @@ use App\Http\Controllers\Controller;
 class ForoController extends Controller
 {
     //index
-    public function index($curso, $asignatura)
+    public function index($curso, $asignatura, $periodo)
     {
         dd($curso);
     }
