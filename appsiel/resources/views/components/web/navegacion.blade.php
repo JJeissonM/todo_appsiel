@@ -7,7 +7,7 @@
 </style>
 
 @if($nav->fixed)
-    <header id="mu-hero" class="fixed-top" style="background-color: {{$nav->background}};">
+    <header  class="fixed-top" style="background-color: {{$nav->background}};">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex ">
                 <!-- Text based logo -->
@@ -49,7 +49,7 @@
         </div>
     </header>
 @else
-    <header id="mu-hero" style="background-color: {{$nav->background}};">
+    <header style="background-color: {{$nav->background}};">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex ">
                 <!-- Text based logo -->
