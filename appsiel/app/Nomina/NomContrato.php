@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class NomContrato extends Model
 {
     //protected $table = 'nom_contratos';
-		protected $fillable = ['core_tercero_id', 'clase_contrato', 'cargo_id', 'horas_laborales', 'sueldo', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado'];
+		protected $fillable = ['core_tercero_id', 'clase_contrato', 'cargo_id', 'horas_laborales', 'sueldo', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado',
+            'liquida_subsidio_transporte','planilla_pila_id','es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id'];
+
 	public $encabezado_tabla = ['Empleado', 'Cargo', 'Sueldo', 'Estado', 'Acción'];
 	public static function consultar_registros()
 	{

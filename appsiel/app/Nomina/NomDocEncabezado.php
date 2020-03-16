@@ -11,7 +11,15 @@ class NomDocEncabezado extends Model
     //protected $table = 'nom_doc_encabezados';
 
     // tiempo_a_liquidar: cantidad de horas a liquidar en el documento !!! WARNING, puede haber conflicto cuando una empleado tiene una cantidad de horas_laborales al mes diferente a los demás, pued que todas sus horas se liquiden antes de cumplirse el mes. Ejemplo, si tiene en el contrato 120 horas (medio tiempo) y se hacen dos documentos con un tiempo_a_liquidar de 120 horas cada uno, al empleado se le liquidarán 240 horas !!!!
-	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'descripcion','tiempo_a_liquidar', 'total_devengos', 'total_deducciones', 'estado', 'creado_por', 'modificado_por'];
+
+    /* 
+        tipo_liquidacion: cada tipo tiene sus propias formas de liquidar y conceptos 
+            Normal: automática todos los contratos activos. 
+            Selectiva: se debe seleccionar a los empleados que se liquidarán (ejemplo, vacaciones, terminación contratos).
+            terminacion_contrato: Se liquida todo y se dejan tablas de consolidados en cero.
+
+    */
+	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'descripcion','tiempo_a_liquidar', 'total_devengos', 'total_deducciones', 'estado', 'creado_por', 'modificado_por','tipo_liquidacion'];
 	
 	public $encabezado_tabla = ['Documento', 'Fecha', 'Descripción', 'Total devengos', 'Total deducciones', 'Estado', 'Acción'];
 	public static function consultar_registros()

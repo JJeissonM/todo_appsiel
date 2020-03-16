@@ -104,8 +104,26 @@ class NavegacionController extends Controller
         $nav = Navegacion::find($id);
 
         if($nav){
-
             $nav->fill($request->all());
+            if($request->hasFile('logo')){
+
+                $file = $request->file('logo');
+                $name = time().str_slug($file->getClientOriginalName());
+
+                $filename = 'img/logos/'.$name;
+                $flag = file_put_contents($filename,file_get_contents($file->getRealPath()),LOCK_EX);
+
+                if($flag !== false){
+                    $nav->fill(['logo' =>$filename]);
+                }else {
+                    $message = 'Error inesperado al intentar guardar el logo, por favor intente nuevamente más tarde';
+                    return redirect()->back()->withInput($request->input())
+                        ->with('mensaje_error',$message);
+                }
+
+            }
+
+
             $nav->fixed = $request->fixed == 'on' ? 1 : 0;
             $flag = $nav->save();
 
@@ -120,6 +138,39 @@ class NavegacionController extends Controller
 
     public function storeNav(Request $request){
 
+        $nav =new Navegacion($request->all());
+
+        if($nav){
+
+            if($request->hasFile('logo')){
+
+                $file = $request->file('logo');
+                $name = time().str_slug($file->getClientOriginalName());
+
+                $filename = 'img/logos/'.$name;
+                $flag = file_put_contents($filename,file_get_contents($file->getRealPath()),LOCK_EX);
+
+                if($flag !== false){
+                    $nav->fill(['icono' =>$filename]);
+                }else {
+                    $message = 'Error inesperado al intentar guardar el logo, por favor intente nuevamente más tarde';
+                    return redirect()->back()->withInput($request->input())
+                        ->with('mensaje_error',$message);
+                }
+
+            }
+
+            $nav->fill($request->all());
+            $nav->fixed = $request->fixed == 'on' ? 1 : 0;
+            $flag = $nav->save();
+
+            if($flag){
+                return redirect()->back()->with('flash_message','Configuraciones Almacenadas Correctamente.');
+            }else{
+                return redirect()->back() ->with('mensaje_error', "Error inesperado, la Configuración no pudo ser almacenada. Intente nuevamente más tarde");
+            }
+
+        }
     }
 
 

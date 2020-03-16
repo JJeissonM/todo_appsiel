@@ -1,20 +1,15 @@
 @if($footer!=null)
-
     <style>
         .footerarea {
             background-position: bottom;
             background-image: url('{{asset("img/lading-page/footer-bg.png")}}');
-            background-size: contain;
+            background-size: cover;
             background-repeat: no-repeat;
-            object-fit: cover;
             background-color: {{$footer->background}};
-            position: relative;
         }
     </style>
-
-
     <div style="height: 150px; overflow: hidden;" ><svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;"><path d="M0.00,49.98 C334.36,229.44 308.96,-42.92 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: {{$footer->background}};"></path></svg></div>
-    <div class="footerarea">
+    <div class="footerarea" style="padding-top: 20px;">
         <div class="container">
             <div class="row">
                 @if($footer->ubicacion == '')
@@ -147,13 +142,13 @@
                     @endif
                 @endif
                 <div class="col-md-12 col-sm-12 d-flex justify-content-between flex-wrap"
-                     style="height: 150px; margin-top: 20px;">
+                     style="margin-top: 20px;">
                     <p style="font-size: 20px; color: {{$footer->color}}">
                         &copy; {{$footer->texto.' '.$footer->copyright}}</p>
                     <ul style="" class="d-flex justify-content-between">
                         @foreach($redes as $red)
                             <li style="list-style: none; margin-right: 10px;">
-                                <a href="{{$red->enlace}}" style="color:white; font-size: 30px;" target="_blank"><i
+                                <a href="{{$red->enlace}}" style="color:{{$footer->color}}; font-size: 30px;" target="_blank"><i
                                             class="fa fa-{{$red->icono}}"></i></a>
                             </li>
                         @endforeach
