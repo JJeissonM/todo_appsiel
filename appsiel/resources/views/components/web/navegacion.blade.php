@@ -1,7 +1,19 @@
 <style>
 
-    .active a,li a:hover{
-        color:black !important;
+      li.active a{
+           color: black !important;
+           background-color: transparent !important;
+      }
+
+      li a:hover {
+          color: black !important;
+          background-color:transparent !important;
+      }
+
+    .icono img{
+        width:150px !important;
+        height:35px !important;
+        object-fit: cover;
     }
 
 </style>
@@ -11,7 +23,7 @@
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex ">
                 <!-- Text based logo -->
-                <a class="navbar-brand mu-logo" href="" style="color:{{$nav->color}}"><span>{{$nav->logo}}</span></a>
+                <a class="navbar-brand p-0 icono" href="{{url('/')}}"><img src="{{asset($nav->logo)}}" alt=""></a>
                 <!-- image based logo -->
                 <!-- <a class="navbar-brand mu-logo" href="index.html"><img src="assets/images/logo.png" alt="logo"></a> -->
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -38,11 +50,15 @@
                                     </li>
                                 @else
                                     <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}"
-                                                            style="color: {{$nav->color}}">{{$item->titulo}}</a></li>
+                                                                                                                style="color: {{$nav->color}}">{{$item->titulo}}</a></li>
                                 @endif
                             @endif
                         @endforeach
-                            <li class="nav-item"><a href="{{url('/login')}}" style="color: {{$nav->color}}">Iniciar Sesion</a></li>
+                    </ul>
+                </div>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto mu-navbar-nav">
+                        <a href="{{url('/login')}}" class="btn btn-outline-primary text-white ml-3" style="color: {{$nav->color}}">Iniciar Sesion</a>
                     </ul>
                 </div>
             </nav>
@@ -51,9 +67,9 @@
 @else
     <header id="mu-hero" style="background-color: {{$nav->background}};">
         <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex ">
+            <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex nav-bg">
                 <!-- Text based logo -->
-                <a class="navbar-brand mu-logo" href="" style="color:{{$nav->color}}"><span>{{$nav->logo}}</span></a>
+                <a class="navbar-brand p-0 icono" href="{{url('/')}}"><img src="{{asset($nav->logo)}}" alt=""></a>
                 <!-- image based logo -->
                 <!-- <a class="navbar-brand mu-logo" href="index.html"><img src="assets/images/logo.png" alt="logo"></a> -->
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -79,15 +95,20 @@
                                         </div>
                                     </li>
                                 @else
-                                    <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}"
-                                                            style="color: {{$nav->color}}"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a></li>
+                                    <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}" style="color: {{$nav->color}}"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a></li>
                                 @endif
                             @endif
                         @endforeach
-                        <li class="nav-item"><a href="{{url('/login')}}" style="color: {{$nav->color}}">Iniciar Sesion</a></li>
+                    </ul>
+                </div>
+                <div id="navbarSupportedContent">
+                    <ul class="navbar-nav mr-auto mu-navbar-nav">
+                        <a href="{{url('/login')}}" class="btn btn-outline-primary text-white ml-3" style="color: {{$nav->color}}">Sign Up</a>
                     </ul>
                 </div>
             </nav>
         </div>
     </header>
 @endif
+
+
