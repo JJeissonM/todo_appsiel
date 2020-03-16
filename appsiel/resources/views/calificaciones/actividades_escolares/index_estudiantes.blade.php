@@ -31,7 +31,7 @@
 							{{ $fila->fecha_entrega }}
 						</td>
 						<td>
-							{{ Form::bsBtnVer('actividades_escolares/hacer_actividad/'.$fila->id) }}
+							{{ Form::bsBtnVer( 'actividades_escolares/hacer_actividad/'.$fila->id.'?id='.Input::get('id') ) }}
 						</td>
 					</tr>
 				@endforeach

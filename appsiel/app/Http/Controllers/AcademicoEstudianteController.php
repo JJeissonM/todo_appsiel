@@ -73,7 +73,7 @@ class AcademicoEstudianteController extends Controller
         	$miga_pan = [
                     ['url'=>'NO','etiqueta'=>'Académico estudiante']
                 ];
-            return view('academico_estudiante.index',compact( 'miga_pan', 'estudiante', 'curso') );
+            return view( 'academico_estudiante.index', compact( 'miga_pan', 'estudiante', 'curso') );
         }else{
 
             return redirect( 'inicio' )->with('mensaje_error', 'El usuario actual no tiene perfil de estudiante.');

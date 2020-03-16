@@ -146,7 +146,7 @@
 			$('.btn_eliminar').on('click',function(event){
 				event.preventDefault();
 				alert('¡¡¡ ADVERTENCIA !!! Al elminar la actividad se borrarán todas las respuestas ingresadas por los estudiantes para esta actividad.');
-				if( confirm("¿Desea eliminar la actividad?") )
+				if( confirm("¿REALMENTE Desea eliminar la actividad?") )
 				{
 					$(this).parent('form').submit();
 				}

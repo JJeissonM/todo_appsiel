@@ -313,15 +313,18 @@ class ActividadesEscolaresController extends ModeloController
         if ( $request->respuesta_id == 0)
         {
             // Crear nuevo registro
-            $respuestas = RespuestaCuestionario::create( $request->all() );
+            $respuesta = RespuestaCuestionario::create( $request->all() );
+            $respuesta_id = $respuesta->id;
         }else{
             // actualizar registro anterior
             $respuestas = RespuestaCuestionario::find($request->respuesta_id);
             $respuestas->fill( $request->all() );
             $respuestas->save();
-        }   
 
-        return 'Respuesta guardada correctamente.';
+            $respuesta_id = $request->respuesta_id;
+        }
+
+        return redirect( 'actividades_escolares/hacer_actividad/'.$request->actividad_id.'?id='.Input::get('id') )->with('flash_message','¡Respuesta almacenada correctamente!');
         
     }
 

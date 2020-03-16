@@ -5,8 +5,8 @@
                 <thead>
                     <tr>
                         <th>Estudiante</th>
-                        <th>Resultado</th>
-                        <th>Revisar</th>
+                        <th>Respuesta enviada</th>
+                        <th>Calificación asignada</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -19,7 +19,7 @@
 
 							if( is_null( $respuestas ) )
 				            {   
-				                $respuestas = (object)['id'=>0,'respuesta_enviada'=>''];
+				                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
 				            }
 
 						?>
@@ -29,10 +29,11 @@
 								{{ $estudiante->nombre_completo }}
 							</td>
 							<td> 
-								{{ $respuestas->respuesta_enviada }}
+								{!! $respuestas->respuesta_enviada !!}
 							</td>
 							<td> 
-								<button type="button" class="btn btn-primary btn-xs btn_ver_respuestas" data-estudiante_id="{{ $estudiante->id }}"><i class="fa fa-eye"> </i> Calificar </button>
+								<div title="Doble click para modificar." class="elemento_modificar" data-respuesta_id="{{$respuestas->id}}">
+								{{ $respuestas->calificacion }} </div>
 							</td>
 						</tr>
 

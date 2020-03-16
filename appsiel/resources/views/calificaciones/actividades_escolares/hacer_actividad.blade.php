@@ -80,17 +80,18 @@
 					</div>
 				@else
 
-					<div class="container-fluid">
+					<div class="container-fluid" id="div_ingresar_respuesta">
 						<div class="row">
 							<div class="col-md-12">
-								{{ Form::open( [ 'url' => 'guardar_respuesta', 'id' => 'form_create', 'files' => true]) }}
+								{{ Form::open( [ 'url' => 'sin_cuestionario_guardar_respuesta?id='.Input::get('id'), 'id' => 'form_create', 'files' => true]) }}
 
 									<h4> A continuación Ingrese sus respuestas ó anotaciones: </h4>
-									<textarea class="form-control" rows="4" name="respuesta_enviada" id="respuesta" cols="250" required="required">{{ $respuesta->respuesta_enviada }}</textarea>
+
+									<textarea class="form-control" rows="4" name="respuesta_enviada" id="respuesta_enviada" cols="250" required="required">{{ $respuesta->respuesta_enviada }}</textarea>
 
 									{{ Form::hidden('estudiante_id', $estudiante->id ) }}
 									{{ Form::hidden('actividad_id', $actividad->id ) }}
-									{{ Form::hidden('respuesta_id', $respuesta->id ) }}
+									{{ Form::hidden('respuesta_id', $respuesta->id, ['id' => 'respuesta_id'] ) }}
 									<br>
 
 									<div class="form-group">
@@ -207,15 +208,36 @@
 					return false;
 				}
 
+
+
 				// Desactivar el click del botón
 				$( this ).off( event );
 
 				$('#form_create').submit();
+
+				/*
+				$('#div_cargando').show();
+
+				// Preparar datos de los controles para enviar formulario
+				var form_consulta = $('#form_create');
+				var url = form_consulta.attr('action');
+				var datos = form_consulta.serialize();
+				// Enviar formulario de ingreso de productos vía POST
+				$.post(url,datos,function(respuesta){
+					$('#div_cargando').hide();
+					$('#respuesta_id').val( respuesta );
+					$('#mensaje_ok').show();
+				});
+
+				*/
+
+
+
 			});
 
 		});
 
-		CKEDITOR.replace('respuesta', {
+		CKEDITOR.replace('respuesta_enviada', {
 		    height: 200,
 		      // By default, some basic text styles buttons are removed in the Standard preset.
 		      // The code below resets the default config.removeButtons setting.
