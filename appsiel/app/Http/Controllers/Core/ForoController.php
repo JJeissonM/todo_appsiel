@@ -9,5 +9,9 @@ use App\Http\Controllers\Controller;
 
 class ForoController extends Controller
 {
-    //
+    //index
+    public function index($curso, $asignatura)
+    {
+        dd($curso);
+    }
 }
