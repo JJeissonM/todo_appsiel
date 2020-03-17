@@ -121,6 +121,28 @@
 			padding: 5px;
 			opacity: 0.7;
 		}
+
+		#popup_alerta_success {
+			display: none;
+			/**/
+			color: #FFFFFF;
+			background: #55b196;
+			border-radius: 5px;
+			position: fixed;
+			/*El div será ubicado con relación a la pantalla*/
+			/*left:0px; A la derecha deje un espacio de 0px*/
+			right: 10px;
+			/*A la izquierda deje un espacio de 0px*/
+			bottom: 10px;
+			/*Abajo deje un espacio de 0px*/
+			/*height:50px; alto del div */
+			width: 20%;
+			z-index: 999999;
+			float: right;
+			text-align: center;
+			padding: 5px;
+			opacity: 0.7;
+		}
 	</style>
 
 	@yield('webstyle')
@@ -133,6 +155,8 @@
 	<div id="div_cargando">Cargando...</div>
 
 	<div id="popup_alerta_danger"> </div>
+
+	<div id="popup_alerta_success"> </div>
 
 	@include('layouts.menu_principal')
 

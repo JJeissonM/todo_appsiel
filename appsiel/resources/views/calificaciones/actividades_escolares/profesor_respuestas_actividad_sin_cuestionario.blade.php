@@ -32,7 +32,7 @@
 								{!! $respuestas->respuesta_enviada !!}
 							</td>
 							<td> 
-								<div title="Doble click para modificar." class="elemento_modificar" data-respuesta_id="{{$respuestas->id}}">
+								<div title="Doble click para modificar." class="elemento_modificar" data-estudiante_id="{{$estudiante->id}}" data-actividad_id="{{$actividad->id}}" data-respuesta_id="{{$respuestas->id}}">
 								{{ $respuestas->calificacion }} </div>
 							</td>
 						</tr>
@@ -42,4 +42,18 @@
             </table>
 		</div>
 	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="container-fluid">
+	        <div class="alert alert-success">
+	            NOTA: Cuando se le asigna una calificación a un estudiante, este ya no podrá modificar la respuesta enviada.
+				<br>
+				Mientras la calificación sea cero (0) ó está vacía, el estudiante podrá seguir modificando la respuesta.
+	        </div>
+	    </div>
+				
+	</div>
+
 </div>

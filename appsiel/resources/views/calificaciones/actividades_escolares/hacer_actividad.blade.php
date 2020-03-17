@@ -87,22 +87,34 @@
 
 									<h4> A continuación Ingrese sus respuestas ó anotaciones: </h4>
 
-									<textarea class="form-control" rows="4" name="respuesta_enviada" id="respuesta_enviada" cols="250" required="required">{{ $respuesta->respuesta_enviada }}</textarea>
-
 									{{ Form::hidden('estudiante_id', $estudiante->id ) }}
 									{{ Form::hidden('actividad_id', $actividad->id ) }}
 									{{ Form::hidden('respuesta_id', $respuesta->id, ['id' => 'respuesta_id'] ) }}
-									<br>
 
-									<div class="form-group">
-										<a href="#" class="btn btn-primary btn-xs" id="btn_guardar"> <i class="fa fa-save"></i>&nbsp;Guardar</a>
-									</div>
+									@if( (float)$respuesta->calificacion == 0 || $respuesta->calificacion == '')
+										<textarea class="form-control" rows="4" name="respuesta_enviada_2" id="respuesta_enviada_2" cols="250" required="required">{{ $respuesta->respuesta_enviada }}</textarea>
+
+										<br>
+
+										<div class="form-group">
+											<a href="#" class="btn btn-primary btn-xs" id="btn_guardar"> <i class="fa fa-save"></i>&nbsp;Guardar</a>
+										</div>
+									@else
+
+										<div style="border: solid 1px; border-bottom: solid 2px; border-right: solid 2px; border-radius: 5px; padding: 10px; margin: 10px;">
+												<h4> <b> La actividad ya ha sido calificada </b> </h4>
+												<hr>
+												<b> Respuesta enviada: </b> {!! $respuesta->respuesta_enviada !!}
+												<br>
+												<b> Calificación: </b> {{ $respuesta->calificacion }}
+											</div>
+										
+									@endif
 
 								{{ Form::close() }}
 							</div>
 						</div>
-					</div>						
-						
+					</div>	
 				@endif
 
 		</div>
@@ -237,7 +249,7 @@
 
 		});
 
-		CKEDITOR.replace('respuesta_enviada', {
+		CKEDITOR.replace('respuesta_enviada_2', {
 		    height: 200,
 		      // By default, some basic text styles buttons are removed in the Standard preset.
 		      // The code below resets the default config.removeButtons setting.

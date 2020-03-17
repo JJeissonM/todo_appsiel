@@ -13,6 +13,8 @@ Route::post('actividades_escolares/guardar_respuesta', 'ActividadesEscolares\Act
 
 
 Route::post('sin_cuestionario_guardar_respuesta', 'ActividadesEscolares\ActividadesEscolaresController@sin_cuestionario_guardar_respuesta');
+Route::get('almacenar_calificacion_a_respuesta_estudiante', 'ActividadesEscolares\ActividadesEscolaresController@almacenar_calificacion_a_respuesta_estudiante');
+
 
 
 Route::resource('actividades_escolares', 'ActividadesEscolares\ActividadesEscolaresController');

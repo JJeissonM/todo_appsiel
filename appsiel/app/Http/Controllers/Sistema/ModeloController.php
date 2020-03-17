@@ -331,8 +331,10 @@ class ModeloController extends Controller
             $archivo = $request->file($key);
             $extension =  $archivo->clientExtension();
 
+            $nuevo_nombre = uniqid() . '-' . str_slug( $archivo->getClientOriginalName() ).'.'.$extension;
+
             // Crear un nombre unico para el archivo con su misma extensión
-            $nuevo_nombre = uniqid() . '.' . $extension;
+            //$nuevo_nombre = uniqid() . '.' . $extension;
             if ($nombre_es_el_primero) {
                 $lista_nombres .= $nuevo_nombre;
                 $nombre_es_el_primero = false;

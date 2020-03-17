@@ -2,7 +2,10 @@
 
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
-	<div style="padding-left: 10px;">{{ Form::formEliminar( '/actividades_escolares/eliminar_actividad', $actividad->id ) }}</div>
+	<div style="padding-left: 10px;">
+		{{ Form::formEliminar( '/actividades_escolares/eliminar_actividad', $actividad->id ) }}
+		<a href="{{ url('actividades_escolares/'.$actividad->id.'/edit?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion=0') }}" class="btn btn-warning btn-xs"> <i class="fa fa-btn fa-edit"></i> </a>
+	</div>
 	<hr>
 
 	@include('layouts.mensajes')
@@ -47,7 +50,7 @@
 							$mostrar = '<p><b>Recurso: </b> Archivo adjunto</p>
 										<div class="row">
 											<div class="col-md-10 col-md-offset-1">
-												<a href="'.config('configuracion.url_instancia_cliente')."/storage/app/".$modelo->ruta_storage_archivo_adjunto.$actividad->archivo_adjunto.'" class="btn btn-warning btn-sm" target="_blank"> <i class="fa fa-file"></i> '.$actividad->archivo_adjunto.' </a>
+												<a href="'.config('configuracion.url_instancia_cliente')."/storage/app/".$modelo->ruta_storage_archivo_adjunto.$actividad->archivo_adjunto.'" class="btn btn-info btn-md" target="_blank"> <i class="fa fa-file"></i> '.$actividad->archivo_adjunto.' </a>
 											</div>
 										</div>';
 							break;
@@ -151,6 +154,85 @@
 					$(this).parent('form').submit();
 				}
 			});
+
+
+			var valor_actual, elemento_modificar, elemento_padre;
+			
+			// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
+			$('.elemento_modificar').on('dblclick',function(){
+
+				$('#popup_alerta_success').hide();
+				
+				elemento_modificar = $(this);
+
+				elemento_padre = elemento_modificar.parent();
+
+				valor_actual = $(this).html();
+
+				elemento_modificar.hide();
+
+				elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" class="form-control input-sm"> ');
+
+				document.getElementById('valor_nuevo').value = valor_actual;
+				document.getElementById('valor_nuevo').select();
+
+			});
+
+			// Si la caja de texto pierde el foco
+			$(document).on('blur','#valor_nuevo',function(){
+				guardar_valor_nuevo();
+			});
+
+			// Al presiona teclas en la caja de texto
+			$(document).on('keyup','#valor_nuevo',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Abortar la edición
+				if( x == 27 ) // 27 = ESC
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+		        	elemento_modificar.show();
+		        	return false;
+				}
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	guardar_valor_nuevo();
+				}
+			});
+
+			function guardar_valor_nuevo()
+			{
+				var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+				// Si no cambió el valor_nuevo, no pasa nada
+				if ( valor_nuevo == valor_actual) { return false; }
+
+				var url = "{{url('almacenar_calificacion_a_respuesta_estudiante')}}";
+				// almacenar el valor_nuevo
+				$.get( url, { respuesta_id: elemento_modificar.attr('data-respuesta_id'), estudiante_id: elemento_modificar.attr('data-estudiante_id'), actividad_id: elemento_modificar.attr('data-actividad_id'), valor_nuevo: valor_nuevo } )
+					.done(function( data ) {
+						
+						elemento_modificar.html( valor_nuevo );
+						elemento_modificar.show();
+
+						elemento_modificar.attr('data-respuesta_id', data)
+
+						elemento_padre.find('#valor_nuevo').remove();
+
+						mostrar_popup( 'Calificación actualizada correctamente.' );
+					});
+			}
+
+
+			function mostrar_popup( mensaje )
+			{
+				$('#popup_alerta_success').show();
+				$('#popup_alerta_success').text( mensaje );
+			}
+
 		});
 	</script>
 @endsection
