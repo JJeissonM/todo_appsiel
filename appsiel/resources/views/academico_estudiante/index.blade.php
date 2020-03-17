@@ -73,7 +73,7 @@
 				<a href="{{ url( 'ver_foros/'.$curso->id.'?id='.Input::get('id') ) }}">
           			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/foros.png')}}" width="80px" height="80px" />
 	          		<br/>
-	                FOROS
+	                Foros de discusión
 	            </a>
 			</div>
 		</div>

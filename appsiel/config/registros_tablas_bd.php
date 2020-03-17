@@ -13821,7 +13821,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     166 => 
     array (
       'id' => 171,
-      'descripcion' => 'Instrucciones',
+      'descripcion' => 'Instrucciones / GUIA',
       'tipo' => 'bsTextArea',
       'name' => 'instrucciones',
       'opciones' => '',
@@ -13832,7 +13832,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2018-10-16 10:37:20',
-      'updated_at' => '2018-10-16 10:37:20',
+      'updated_at' => '2020-03-17 07:11:31',
     ),
     167 => 
     array (

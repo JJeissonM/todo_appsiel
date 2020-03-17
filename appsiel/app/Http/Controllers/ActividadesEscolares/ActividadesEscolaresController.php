@@ -257,7 +257,7 @@ class ActividadesEscolaresController extends ModeloController
 
         $cuestionario = (object)[];
         $preguntas = (object)[];
-        $respuestas = (object)['id'=>0,'respuesta_enviada'=>''];
+        $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
 
         if ( $actividad->cuestionario_id > 0 ) 
         {
@@ -269,7 +269,7 @@ class ActividadesEscolaresController extends ModeloController
 
             if( is_null( $respuestas ) )
             {   
-                $respuestas = (object)['id'=>0,'respuesta_enviada'=>''];
+                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
             }
         }
 
@@ -278,7 +278,7 @@ class ActividadesEscolaresController extends ModeloController
 
         if ( is_null( $respuesta ) )
         {
-            $respuesta = (object)['id'=>0,'respuesta_enviada'=>''];
+            $respuesta = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
         }
 
 

@@ -173,7 +173,7 @@ Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio', 'Core
 Route::post('foros/inicio/crearnuevo', 'Core\ForoController@store')->name('foros.store');
 Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio/{idapp}/ver/{foro}/foro', 'Core\ForoController@show')->name('foros.show');
 Route::post('foros/inicio/participacion/guardarrespuesta', 'Core\ForoController@guardarrespuesta')->name('foros.guardarrespuesta');
-Route::get('ver_foros/{curso_id}','AcademicoestudianteController@ver_foros');
+Route::get('ver_foros/{curso_id}','AcademicoEstudianteController@ver_foros');
 
 
 // PROCESOS
