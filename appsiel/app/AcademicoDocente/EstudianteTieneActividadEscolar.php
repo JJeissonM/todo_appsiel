@@ -16,7 +16,7 @@ class EstudianteTieneActividadEscolar extends Model
     protected $fillable = [ 'estudiante_id', 'actividad_escolar_id' ];
 
 
-    public static function get_actividades_periodo_lectivo_actual( $estudiante_id )
+    public static function get_actividades_periodo_lectivo_actual( $estudiante_id, $curso_id, $asignatura_id )
     {
     	$periodo_lectivo_actual = PeriodoLectivo::get_actual();
 
@@ -28,6 +28,8 @@ class EstudianteTieneActividadEscolar extends Model
                                         ->whereIn( 'sga_actividades_escolares.periodo_id', $periodos )
                                         ->where('sga_estudiante_tiene_actividad_escolar.estudiante_id', $estudiante_id )
                                         ->where('sga_actividades_escolares.estado','Activo')
+                                        ->where('sga_actividades_escolares.curso_id', $curso_id)
+                                        ->where('sga_asignaturas.id', $asignatura_id)
                                         ->select(
                                                 'sga_actividades_escolares.id',
                                                 'sga_asignaturas.descripcion AS asignatura_descripcion',

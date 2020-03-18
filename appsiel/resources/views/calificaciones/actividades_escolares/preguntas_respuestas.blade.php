@@ -25,7 +25,7 @@
 					<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 				  <strong>Procedimiento!</strong> 
 				  <br> Paso 1. Debe contestar la pregunta y presionar el botón "Agregar Respuesta"
-				  <br> Paso 2. Debe presionar el botón "Guardar respuestas" para que las respuestas sean almacenadas.
+				  <br> Paso 2. Debe presionar el botón "Guardar TODAS las respuestas" para que las respuestas sean almacenadas.
 				</div>
 
 			<div class="row">
@@ -163,7 +163,7 @@
 							{{ Form::hidden('respuesta_enviada', $respuestas->respuesta_enviada, ['id'=>'respuesta_enviada', 'required'=>'required'] ) }}
 							{{ Form::hidden('respuesta_id', $respuestas->id, ['id'=>'respuesta_enviada', 'required'=>'required'] ) }}
 							
-							<button class="btn btn-primary btn-sm btn_guardar_respuestas"><i class="fa fa-save"></i> Guardar respuestas</button>
+							<button class="btn btn-primary btn-sm btn_guardar_respuestas"><i class="fa fa-save"></i> Guardar TODAS las respuestas</button>
 
 						{{ Form::close() }}
 					</div>

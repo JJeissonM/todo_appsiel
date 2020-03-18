@@ -20,6 +20,7 @@ use App\User;
 use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Estudiante;
+use App\Matriculas\Curso;
 
 use App\Calificaciones\Asignatura;
 
@@ -122,27 +123,27 @@ class ActividadesEscolaresController extends ModeloController
             // Copia identica del registro del modelo, pues cuando se almacenan los datos cambia la instancia
             $registro2 = $registro;
         } 
-
-        /*
-        //$periodo_lectivo = PeriodoLectivo::get_segun_periodo( $request->periodo_id );
-            $periodo_lectivo = PeriodoLectivo::get_actual();
-
-        // Borrar todas las asignaciones anteriores de la actividad
-        EstudianteTieneActividadEscolar::where('actividad_escolar_id',$id)->delete();
+   
+/*
 
         // Borrar todas las respuestas ingresadas por los estudiantes para esa actividad
         RespuestaCuestionario::where('actividad_id',$id)->delete();
+*/
 
+        // Reasignar actividades, para tomar los estudiantes que no la tengan asignada (matriculados después de la creación de la actividad. )
+        $periodo_lectivo = PeriodoLectivo::get_actual();
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo_lectivo->id, 'Activo' );
 
+        // Borrar todas las asignaciones anteriores de la actividad
+        EstudianteTieneActividadEscolar::where('actividad_escolar_id',$id)->delete();
         // Crear nuevamente las asignaciones para esa actividad
         foreach ($estudiantes as $fila) 
         {
             EstudianteTieneActividadEscolar::create([
                                                     'estudiante_id' => $fila->id,
                                                     'actividad_escolar_id' => $registro->id
-                                                ]);        
-        }*/
+                                                ]);
+        }
 
         $registro->fill( $request->all() );
         $registro->save();
@@ -247,9 +248,17 @@ class ActividadesEscolaresController extends ModeloController
 
         $actividad = ActividadEscolar::find($actividad_id);
 
+        $curso = Curso::find( $actividad->curso_id );
+        $asignatura = Asignatura::find( $actividad->asignatura_id );
+        if (is_null($asignatura) )
+        {
+            $asignatura = (object)['id'=>0,'descripcion'=>''];
+        }
+
         $miga_pan = [
                 ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
-                ['url'=>'academico_estudiante/actividades_escolares?id='.Input::get('id'),'etiqueta'=>'Actividades escolares'],
+                ['url'=>'mis_asignaturas/'.$curso->id.'?id='.Input::get('id'),'etiqueta'=>'Mis Asignaturas: ' . $curso->descripcion],
+                ['url'=>'academico_estudiante/actividades_escolares/'.$curso->id.'/'.$actividad->asignatura_id . '?id='.Input::get('id'),'etiqueta'=>'Actividades escolares: ' . $asignatura->descripcion ],
                 ['url'=>'NO','etiqueta' => $actividad->descripcion ]
             ];
 
@@ -257,7 +266,7 @@ class ActividadesEscolaresController extends ModeloController
 
         $cuestionario = (object)[];
         $preguntas = (object)[];
-        $respuestas = (object)['id'=>0,'respuesta_enviada'=>''];
+        $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
 
         if ( $actividad->cuestionario_id > 0 ) 
         {
@@ -269,7 +278,7 @@ class ActividadesEscolaresController extends ModeloController
 
             if( is_null( $respuestas ) )
             {   
-                $respuestas = (object)['id'=>0,'respuesta_enviada'=>''];
+                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
             }
         }
 
@@ -278,7 +287,7 @@ class ActividadesEscolaresController extends ModeloController
 
         if ( is_null( $respuesta ) )
         {
-            $respuesta = (object)['id'=>0,'respuesta_enviada'=>''];
+            $respuesta = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
         }
 
 
@@ -310,18 +319,50 @@ class ActividadesEscolaresController extends ModeloController
 
     public function sin_cuestionario_guardar_respuesta(Request $request)
     {
+        $request['respuesta_enviada'] = $request->respuesta_enviada_2;
+        
         if ( $request->respuesta_id == 0)
         {
             // Crear nuevo registro
-            $respuestas = RespuestaCuestionario::create( $request->all() );
+            $respuesta = RespuestaCuestionario::create( $request->all() );
+            $respuesta_id = $respuesta->id;
         }else{
             // actualizar registro anterior
             $respuestas = RespuestaCuestionario::find($request->respuesta_id);
             $respuestas->fill( $request->all() );
             $respuestas->save();
-        }   
 
-        return 'Respuesta guardada correctamente.';
+            $respuesta_id = $request->respuesta_id;
+        }
+
+        return redirect( 'actividades_escolares/hacer_actividad/'.$request->actividad_id.'?id='.Input::get('id') )->with('flash_message','¡Respuesta almacenada correctamente!');
+        
+    }
+
+    public function almacenar_calificacion_a_respuesta_estudiante()
+    {
+        $respuesta_id = Input::get('respuesta_id');
+
+        $datos = [
+                    'estudiante_id' => Input::get('estudiante_id'),
+                    'actividad_id' => Input::get('actividad_id'),
+                    'cuestionario_id' => 0,
+                    'calificacion' => Input::get('valor_nuevo')
+                ];
+
+        if ( $respuesta_id == 0 && Input::get('valor_nuevo') != '' )
+        {
+            // Crear nuevo registro
+            $respuesta = RespuestaCuestionario::create( $datos );
+            $respuesta_id = $respuesta->id;
+        }else{
+            // actualizar registro anterior
+            $respuestas = RespuestaCuestionario::find($respuesta_id);
+            $respuestas->fill( $datos );
+            $respuestas->save();
+        }
+
+        return $respuesta_id;
         
     }
 
