@@ -40,7 +40,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Icono(Opcional)</label>
-                                <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
+                                <input data-toggle="modal" value="{{$menu->icono}}" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
                             </div>
                         </div>
 

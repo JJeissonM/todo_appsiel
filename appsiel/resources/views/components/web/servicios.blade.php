@@ -1,3 +1,24 @@
+<style>
+
+    #services {
+        position: relative;
+    }
+
+    #services .container {
+        position: relative;
+       z-index: 1000;
+    }
+
+    .ilustracion{
+        position: absolute;
+        top:0;
+        left: 0;
+        width: 60%;
+        height: 550px;
+    }
+
+</style>
+
 <section id="services">
     <div class="container">
         @if($servicios!=null)
@@ -9,9 +30,9 @@
             </div>
             <div class="row">
                 @if(count($servicios->itemservicios) > 0)
-                    <div class="features d-flex flex-wrap">
+                    <div class="features d-flex justify-content-around flex-wrap">
                         @foreach($servicios->itemservicios as $item)
-                            <div class="col-md-4 col-sm-6 wow fadeInUp animated" data-wow-duration="300ms"
+                            <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms"
                                  data-wow-delay="0ms"
                                  style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
                                 <div class="media service-box" style="height: 150px">
@@ -39,4 +60,5 @@
             </div>
         @endif
     </div><!--/.container-->
+    <img class="ilustracion" src="{{asset('img/lading-page/bg-2.svg')}}" alt="">
 </section>

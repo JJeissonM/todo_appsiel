@@ -1,10 +1,6 @@
 @if($footer!=null)
     <style>
         .footerarea {
-            background-position: bottom;
-            background-image: url('{{asset("img/lading-page/footer-bg.png")}}');
-            background-size: cover;
-            background-repeat: no-repeat;
             background-color: {{$footer->background}};
         }
     </style>
