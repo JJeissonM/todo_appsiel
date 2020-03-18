@@ -13,7 +13,7 @@ class NomDocRegistro extends Model
 
 	public $rutas = [
 						'create' => 'web',
-						'edit' =>  
+						'edit' => 'web/id_fila/edit' 
 						];
 						
 	public static function consultar_registros()

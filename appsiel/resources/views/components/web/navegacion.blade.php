@@ -11,15 +11,17 @@
       }
 
     .icono img{
-        width:150px !important;
+        max-height: 250px !important;
+        border-radius: 4px;
+        /*width:150px !important;
         height:35px !important;
-        object-fit: cover;
+        object-fit: cover;*/
     }
 
 </style>
 
 @if($nav->fixed)
-    <header id="mu-hero" class="fixed-top" style="background-color: {{$nav->background}};">
+    <header  class="fixed-top" style="background-color: {{$nav->background}};">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex ">
                 <!-- Text based logo -->
@@ -65,7 +67,7 @@
         </div>
     </header>
 @else
-    <header id="mu-hero" style="background-color: {{$nav->background}};">
+    <header style="background-color: {{$nav->background}};">
         <div class="container">
             <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex nav-bg">
                 <!-- Text based logo -->
@@ -103,7 +105,7 @@
                 </div>
                 <div id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto mu-navbar-nav">
-                        <a href="{{url('/login')}}" class="btn btn-outline-primary text-white ml-3" style="color: {{$nav->color}}">Sign Up</a>
+                        <a href="{{url('/login')}}" class="btn btn-outline-primary text-white ml-3" style="color: {{$nav->color}}"><i class="fa fa-edit"></i>Plataforma</a>
                     </ul>
                 </div>
             </nav>

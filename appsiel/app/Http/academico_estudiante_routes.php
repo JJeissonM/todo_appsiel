@@ -8,10 +8,16 @@ Route::post('academico_estudiante/ajax_calificaciones', 'AcademicoEstudianteCont
 
 Route::get('academico_estudiante/observador_show/{estudiante_id}', 'AcademicoEstudianteController@observador_show');
 Route::get('academico_estudiante/agenda', 'AcademicoEstudianteController@agenda');
-Route::get('academico_estudiante/actividades_escolares', 'AcademicoEstudianteController@actividades_escolares');
+
+Route::get('academico_estudiante/actividades_escolares/{curso_id}/{asignatura_id}', 'AcademicoEstudianteController@actividades_escolares');
+Route::get('academico_estudiante/guias_planes_clases/{curso_id}/{asignatura_id}', 'AcademicoEstudianteController@guias_planes_clases');
+
 Route::get('academico_estudiante', 'AcademicoEstudianteController@index');
 
 Route::get('academico_estudiante/mi_plan_de_pagos/{libreta_id}', 'AcademicoEstudianteController@mi_plan_de_pagos');
+
+
+Route::get('mis_asignaturas/{curso_id}','AcademicoEstudianteController@mis_asignaturas');
 
 
 // Solo deberia contener rutas del AcademicoEstudianteController, nada de Matriculas

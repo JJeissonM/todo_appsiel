@@ -89,23 +89,36 @@
         </div>
     </div>
     <div class="card">
-        <div class="card-body d-flex justify-content-between flex-wrap">
+        <div class="body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
                 <h4 class="column-title" style="padding: 10px;">Menú Preguntas Frecuentes</h4>
-                @if(count($preguntas) <= 0)
+                @if($pregunta == null)
                     <div class="add d-flex justify-content-end col-md-12">
-                        <a data-toggle="modal" data-target="#exampleModal"
+                        <a data-toggle="modal" data-target="#crearseccion"
                            class="btn btn-primary waves-effect btn-block btn-sm"
-                           style="color: white; font-weight: bold;"> Agregar pregunta</a>
+                           style="color: white; font-weight: bold;"> Agregar Sección</a>
                     </div>
                 @else
-                    <div class="add d-flex justify-content-end col-md-12">
-                        <a data-toggle="modal" data-target="#exampleModal"
-                           class="btn btn-primary waves-effect btn-block btn-sm"
-                           style="color: white; font-weight: bold;"> Agregar pregunta</a>
+                    <div class="descripcion" style="text-align: center; margin-top: 20px;">
+                        <h5 class="titulo">{{$pregunta->titulo}}</h5>
+                        <a href="{{url('preguntas/eliminar/seccion').'/'.$pregunta->id.$variables_url}}" class="btn btn-lg"
+                           title="Eliminar Seccion"><i class="fa fa-window-close"></i></a>
+                    </div>
+                    <div class="col-md-12 add d-flex">
+                        <div class="add d-flex justify-content-end">
+                            <a data-toggle="modal" data-target="#exampleModal"
+                               class="btn btn-primary waves-effect btn-block btn-sm"
+                               style="color: white; font-weight: bold;"> Agregar pregunta</a>
+                        </div>
+                        <div class="col-md-6 justify-content-end">
+                            <a data-toggle="modal" data-target="#edit2"
+                               class="btn btn-primary waves-effect btn-block btn-sm"
+                               style="color: white; font-weight: bold;"> Editar Sección </a>
+                        </div>
                     </div>
                     <div class="col-md-12">
-                        @foreach($preguntas as $item)
+                        @if(count($pregunta->itempreguntas)>0)
+                        @foreach($pregunta->itempreguntas as $item)
                             <div class="contenido">
                                 <div class="descripcion">
                                     <h5 class="titulo">{{$item->pregunta}}</h5>
@@ -119,18 +132,100 @@
                                    title="Eliminar Pregunta"><i class="fa fa-eraser"></i></a>
                             </div>
                         @endforeach
+                            @endif
                     </div>
                 @endif
             </div>
             <div class="widgets" id="widgets" style="position: relative;">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                @if(count($preguntas)>0)
-                    {!! Form::preguntas($preguntas)!!}
+                @if($pregunta != null)
+                    {!! Form::preguntas($pregunta)!!}
                 @endif
             </div>
         </div>
     </div>
 @endsection
+
+<div class="modal" id="crearseccion" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Sección</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    {!! Form::open(['route'=>'preguntas.guardar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    <input type="hidden" name="widget_id" value="{{$widget}}">
+                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                    <div class="form-group">
+                        <label>Titulo</label>
+                        <input name="titulo" type="text" placeholder="Nombre de la pregunta"
+                               class="form-control" required="required">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea name="descripcion" class="form-control" rows="3" required="required"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Imagen de Fondo</label>
+                        <input type="file" name="imagen_fondo" class="form-control" rows="3">
+                    </div>
+                    <div class="form-group">
+                        <br/><br/>
+                        <a class="btn btn-danger" id="exampleModal" style="color: white" onclick="cerrar(this.id)">
+                            Cancelar
+                        </a>
+                        <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                        {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="edit2" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Sección</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    @if($pregunta != null)
+                        {!! Form::model($pregunta,['route'=>['preguntas.updated',$pregunta],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
+                        <input type="hidden" name="widget_id" value="{{$widget}}">
+                        <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                        <div class="form-group">
+                            <label>Titulo</label>
+                            <input name="titulo" type="text" placeholder="Titulo" value="{{$pregunta->titulo}}"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción</label>
+                            <input name="descripcion" type="text" placeholder="Titulo" value="{{$pregunta->descripcion}}"
+                                   class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <br/><br/><a class="btn btn-danger" id="edit2" style="color: white"
+                                         onclick="cerrar(this.id)">Cancelar</a>
+                            <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                            {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                        </div>
+                        {!! Form::close() !!}
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="modal" id="exampleModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
@@ -146,6 +241,7 @@
                     {!! Form::open(['route'=>'preguntas.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                    <input type="hidden" name="pregunta_id" value="{{$pregunta->id}}">
                     <div class="form-group">
                         <label>Pregunta</label>
                         <input name="pregunta" type="text" placeholder="Nombre de la pregunta"
@@ -181,11 +277,11 @@
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    @if(count($preguntas)>0)
+                    @if($pregunta != null)
                         {!! Form::open(['route'=>'preguntas.modificar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                         <input type="hidden" name="widget_id" value="{{$widget}}">
                         <input type="hidden" name="variables_url" value="{{$variables_url}}">
-                        <input type="hidden" name="pregunta_id" id="pregunta_id">
+                        <input type="hidden" name="itempregunta_id" id="itempregunta_id">
                         <div class="form-group">
                             <label>Nombre del Pregunta</label>
                             <input name="pregunta" id="pregunta" type="text"
@@ -194,7 +290,8 @@
                         </div>
                         <div class="form-group">
                             <label>Respuesta</label>
-                            <textarea name="respuesta" id="respuesta" class="form-control" rows="3" required="required"></textarea>
+                            <textarea name="respuesta" id="respuesta" class="form-control" rows="3"
+                                      required="required"></textarea>
                         </div>
                         <div class="form-group">
                             <br/><br/><a class="btn btn-danger" id="Modaledit" style="color: white"
@@ -222,7 +319,7 @@
             $("#pregunta").attr('value', item.pregunta);
             $("#respuesta").val(item.respuesta);
             $("#respuesta").attr('value', item.respuesta);
-            $("#pregunta_id").attr('value', item.id);
+            $("#itempregunta_id").attr('value', item.id);
         }
     </script>
 @endsection

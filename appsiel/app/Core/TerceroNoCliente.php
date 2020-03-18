@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
-use App\Matriculas\Estudiante;
-
 class TerceroNoCliente extends Tercero
 {
     protected $table = 'core_terceros';

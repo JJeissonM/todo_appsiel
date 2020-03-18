@@ -20,6 +20,9 @@ use App\User;
 use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Estudiante;
+use App\Matriculas\Curso;
+
+use App\Calificaciones\Asignatura;
 
 use App\Cuestionarios\ActividadEscolar;
 use App\Cuestionarios\Cuestionario;
@@ -120,26 +123,30 @@ class ActividadesEscolaresController extends ModeloController
             // Copia identica del registro del modelo, pues cuando se almacenan los datos cambia la instancia
             $registro2 = $registro;
         } 
-
-        //$periodo_lectivo = PeriodoLectivo::get_segun_periodo( $request->periodo_id );
-            $periodo_lectivo = PeriodoLectivo::get_actual();
-
-        // Borrar todas las asignaciones anteriores de la actividad
-        EstudianteTieneActividadEscolar::where('actividad_escolar_id',$id)->delete();
+   
+/*
 
         // Borrar todas las respuestas ingresadas por los estudiantes para esa actividad
         RespuestaCuestionario::where('actividad_id',$id)->delete();
+*/
 
+        // Reasignar actividades, para tomar los estudiantes que no la tengan asignada (matriculados después de la creación de la actividad. )
+        $periodo_lectivo = PeriodoLectivo::get_actual();
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo_lectivo->id, 'Activo' );
 
+        // Borrar todas las asignaciones anteriores de la actividad
+        EstudianteTieneActividadEscolar::where('actividad_escolar_id',$id)->delete();
+        // Crear nuevamente las asignaciones para esa actividad
         foreach ($estudiantes as $fila) 
         {
             EstudianteTieneActividadEscolar::create([
                                                     'estudiante_id' => $fila->id,
                                                     'actividad_escolar_id' => $registro->id
-                                                ]);        
+                                                ]);
         }
 
+        $registro->fill( $request->all() );
+        $registro->save();
         
         $this->almacenar_imagenes( $request, $modelo->ruta_storage_imagen, $registro2, 'edit' );
 
@@ -223,7 +230,9 @@ class ActividadesEscolaresController extends ModeloController
 
         $estudiante = (object)['id'=>0];
 
-        return view('calificaciones.actividades_escolares.ver_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','modelo','respuestas','estudiantes','estudiante'));
+        $asignatura = Asignatura::find( $actividad->asignatura_id );
+
+        return view('calificaciones.actividades_escolares.ver_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','modelo','respuestas','estudiantes','estudiante', 'asignatura'));
         
     }
 
@@ -239,9 +248,17 @@ class ActividadesEscolaresController extends ModeloController
 
         $actividad = ActividadEscolar::find($actividad_id);
 
+        $curso = Curso::find( $actividad->curso_id );
+        $asignatura = Asignatura::find( $actividad->asignatura_id );
+        if (is_null($asignatura) )
+        {
+            $asignatura = (object)['id'=>0,'descripcion'=>''];
+        }
+
         $miga_pan = [
                 ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
-                ['url'=>'academico_estudiante/actividades_escolares?id='.Input::get('id'),'etiqueta'=>'Actividades escolares'],
+                ['url'=>'mis_asignaturas/'.$curso->id.'?id='.Input::get('id'),'etiqueta'=>'Mis Asignaturas: ' . $curso->descripcion],
+                ['url'=>'academico_estudiante/actividades_escolares/'.$curso->id.'/'.$actividad->asignatura_id . '?id='.Input::get('id'),'etiqueta'=>'Actividades escolares: ' . $asignatura->descripcion ],
                 ['url'=>'NO','etiqueta' => $actividad->descripcion ]
             ];
 
@@ -249,9 +266,9 @@ class ActividadesEscolaresController extends ModeloController
 
         $cuestionario = (object)[];
         $preguntas = (object)[];
-        $respuestas = (object)['id'=>0,'respuesta_enviada'=>''];
+        $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
 
-        if ($actividad->cuestionario_id > 0 ) 
+        if ( $actividad->cuestionario_id > 0 ) 
         {
             $cuestionario = Cuestionario::find($actividad->cuestionario_id);
             $preguntas = $cuestionario->preguntas()->orderBy('orden')->get();
@@ -261,11 +278,22 @@ class ActividadesEscolaresController extends ModeloController
 
             if( is_null( $respuestas ) )
             {   
-                $respuestas = (object)['id'=>0,'respuesta_enviada'=>''];
+                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
             }
-        }   
+        }
 
-        return view('calificaciones.actividades_escolares.hacer_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','estudiante','modelo','respuestas'));        
+        // Para actividades sin cuestionario
+        $respuesta = RespuestaCuestionario::where( [ 'actividad_id' => $actividad->id, 'estudiante_id' => $estudiante->id ] )->get()->first();
+
+        if ( is_null( $respuesta ) )
+        {
+            $respuesta = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
+        }
+
+
+        $asignatura = Asignatura::find( $actividad->asignatura_id );
+
+        return view('calificaciones.actividades_escolares.hacer_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','estudiante','modelo','respuestas','respuesta','asignatura'));        
     }
 
     /**
@@ -288,6 +316,55 @@ class ActividadesEscolaresController extends ModeloController
         
     }
 
+
+    public function sin_cuestionario_guardar_respuesta(Request $request)
+    {
+        $request['respuesta_enviada'] = $request->respuesta_enviada_2;
+        
+        if ( $request->respuesta_id == 0)
+        {
+            // Crear nuevo registro
+            $respuesta = RespuestaCuestionario::create( $request->all() );
+            $respuesta_id = $respuesta->id;
+        }else{
+            // actualizar registro anterior
+            $respuestas = RespuestaCuestionario::find($request->respuesta_id);
+            $respuestas->fill( $request->all() );
+            $respuestas->save();
+
+            $respuesta_id = $request->respuesta_id;
+        }
+
+        return redirect( 'actividades_escolares/hacer_actividad/'.$request->actividad_id.'?id='.Input::get('id') )->with('flash_message','¡Respuesta almacenada correctamente!');
+        
+    }
+
+    public function almacenar_calificacion_a_respuesta_estudiante()
+    {
+        $respuesta_id = Input::get('respuesta_id');
+
+        $datos = [
+                    'estudiante_id' => Input::get('estudiante_id'),
+                    'actividad_id' => Input::get('actividad_id'),
+                    'cuestionario_id' => 0,
+                    'calificacion' => Input::get('valor_nuevo')
+                ];
+
+        if ( $respuesta_id == 0 && Input::get('valor_nuevo') != '' )
+        {
+            // Crear nuevo registro
+            $respuesta = RespuestaCuestionario::create( $datos );
+            $respuesta_id = $respuesta->id;
+        }else{
+            // actualizar registro anterior
+            $respuestas = RespuestaCuestionario::find($respuesta_id);
+            $respuestas->fill( $datos );
+            $respuestas->save();
+        }
+
+        return $respuesta_id;
+        
+    }
 
 
     /**

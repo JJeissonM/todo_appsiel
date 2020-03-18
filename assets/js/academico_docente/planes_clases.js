@@ -9,7 +9,8 @@ $(document).ready(function(){
 	    height: 200,
 	      // By default, some basic text styles buttons are removed in the Standard preset.
 	      // The code below resets the default config.removeButtons setting.
-	      removeButtons: ''
+	      removeButtons: '',
+	      //filebrowserUploadUrl: '../../carga_imagen_ckeditor'
 	    });
 
 	});

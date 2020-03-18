@@ -50,5 +50,30 @@ class ImagenController extends Controller
         $registro->save();
 
         return redirect('web/'.Input::get('registro_id').'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('flash_message','Imágen eliminada correctamente.');
-    } 
+    }
+
+    public function carga_imagen_ckeditor()
+    {
+        if(isset($_FILES['upload']['name']))
+        {
+            $file = $_FILES['upload']['tmp_name'];
+            $file_name = $_FILES['upload']['name'];
+            $file_name_array = explode(".", $file_name);
+            $extension = end($file_name_array);
+            $new_image_name = rand() . '.' . $extension;
+            //chmod('upload', 0777);
+            $allowed_extension = array("jpg", "gif", "png");
+
+            if(in_array($extension, $allowed_extension))
+            {
+                $ruta = asset('img/ckeditor/');
+                
+                move_uploaded_file($file, $ruta . $new_image_name);
+                $function_number = $_GET['CKEditorFuncNum'];
+                $url = $ruta . $new_image_name;
+                $message = '';
+                echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($function_number, '$url', '$message');</script>";
+            }
+        }
+    }
 }

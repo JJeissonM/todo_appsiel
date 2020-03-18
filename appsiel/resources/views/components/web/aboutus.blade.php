@@ -1,4 +1,4 @@
-<div class="aboutus" style="margin-top:60px;">
+<div class="aboutus">
     <div class="container">
         @if($aboutus!=null)
             <div class="section-header">

@@ -373,4 +373,32 @@ class PlanClaseEncabezado extends Model
                                     ->get()
                                     ->first();
     }
+
+
+    
+    public static function consultar_guias_estudiantes( $curso_id, $asignatura_id )
+    {
+        $array_wheres = [ ['sga_plan_clases_encabezados.id' ,'>', 0] ];
+        $array_wheres = array_merge($array_wheres, 
+                                        ['sga_plan_clases_encabezados.curso_id' => $curso_id,'sga_plan_clases_encabezados.asignatura_id' => $asignatura_id ] );
+
+        return PlanClaseEncabezado::leftJoin( 'sga_plan_clases_struc_plantillas', 'sga_plan_clases_struc_plantillas.id','=', 'sga_plan_clases_encabezados.plantilla_plan_clases_id' )
+                                    ->leftJoin( 'sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')
+                                    ->leftJoin( 'sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
+                                    ->leftJoin( 'sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
+                                    ->leftJoin( 'sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
+                                    ->leftJoin( 'users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
+                                    ->where( $array_wheres )
+                                    ->select(
+                                        'sga_plan_clases_struc_plantillas.descripcion AS plan_clases',
+                                        'sga_plan_clases_encabezados.fecha',
+                                        'sga_semanas_calendario.descripcion AS semana',
+                                        'sga_periodos.descripcion AS periodo_decripcion',
+                                        'sga_cursos.descripcion AS curso_decripcion',
+                                        'sga_asignaturas.descripcion AS asignatura_decripcion',
+                                        'users.name AS profesor',
+                                        'sga_plan_clases_encabezados.estado',
+                                        'sga_plan_clases_encabezados.id')
+                                    ->get();
+    }
 }
