@@ -198,6 +198,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
 	<script src="{{asset('assets/js/todas_las_funciones.js')}}"></script>
 
+
+	<!-- <script src="{ {asset('js/ckeditor/ckeditor.js')}}"></script> -->
+
 	<script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
 
 	<script src="{{asset('js/sweetAlert2.min.js')}}"></script>

@@ -20,6 +20,7 @@ use App\User;
 use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Estudiante;
+use App\Matriculas\Curso;
 
 use App\Calificaciones\Asignatura;
 
@@ -247,9 +248,17 @@ class ActividadesEscolaresController extends ModeloController
 
         $actividad = ActividadEscolar::find($actividad_id);
 
+        $curso = Curso::find( $actividad->curso_id );
+        $asignatura = Asignatura::find( $actividad->asignatura_id );
+        if (is_null($asignatura) )
+        {
+            $asignatura = (object)['id'=>0,'descripcion'=>''];
+        }
+
         $miga_pan = [
                 ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
-                ['url'=>'academico_estudiante/actividades_escolares?id='.Input::get('id'),'etiqueta'=>'Actividades escolares'],
+                ['url'=>'mis_asignaturas/'.$curso->id.'?id='.Input::get('id'),'etiqueta'=>'Mis Asignaturas: ' . $curso->descripcion],
+                ['url'=>'academico_estudiante/actividades_escolares/'.$curso->id.'/'.$actividad->asignatura_id . '?id='.Input::get('id'),'etiqueta'=>'Actividades escolares: ' . $asignatura->descripcion ],
                 ['url'=>'NO','etiqueta' => $actividad->descripcion ]
             ];
 
