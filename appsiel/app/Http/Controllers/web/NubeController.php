@@ -29,11 +29,15 @@ class NubeController extends Controller
             ]
         ];
         $this->listFolder('./nube/');
+        $simple = "'";
+        $doble = '"';
+        $token = str_replace($doble, $simple, csrf_field());
         return view('web.nube.view')
             ->with('files', $this->rutas)
             ->with('miga_pan', $miga_pan)
             ->with('prev', 'NO')
-            ->with('path', './nube/');
+            ->with('path', './nube/')
+            ->with('token', $token);
     }
 
     //pinta el file
@@ -106,7 +110,7 @@ class NubeController extends Controller
                             'file' => $file,
                             'path' => $path . $file,
                             'type' => 'FOLDER',
-                            'file-size' => number_format(round(filesize($path . $file) / 1024 / 1024, 4), 2) . ' MB',
+                            'tamanio' => number_format(round(filesize($path . $file) / 1024 / 1024, 4), 2) . ' MB',
                             'extension' => 'FOLDER',
                             'icon' => $this->drawFile('FOLDER'),
                             'color' => $this->drawColor('FOLDER'),
@@ -120,7 +124,7 @@ class NubeController extends Controller
                                 'file' => $file,
                                 'path' => $path . $file,
                                 'type' => 'FILE',
-                                'file-size' => number_format(round(filesize($path . $file) / 1024 / 1024, 4), 2) . ' MB',
+                                'tamanio' => number_format(round(filesize($path . $file) / 1024 / 1024, 4), 2) . ' MB',
                                 'extension' => $extension,
                                 'icon' => $this->drawFile($extension),
                                 'color' => $this->drawColor($extension),
@@ -179,11 +183,15 @@ class NubeController extends Controller
             $path = "./nube/";
         }
         $this->listFolder($request->path);
+        $simple = "'";
+        $doble = '"';
+        $token = str_replace($doble, $simple, csrf_field());
         return view('web.nube.view')
             ->with('files', $this->rutas)
             ->with('miga_pan', $miga_pan)
             ->with('prev', $prev)
-            ->with('path', $path);
+            ->with('path', $path)
+            ->with('token', $token);
     }
 
     //calcula prev
@@ -217,11 +225,15 @@ class NubeController extends Controller
             ]
         ];
         $this->listFolder($request->path);
+        $simple = "'";
+        $doble = '"';
+        $token = str_replace($doble, $simple, csrf_field());
         return view('web.nube.view')
             ->with('files', $this->rutas)
             ->with('miga_pan', $miga_pan)
             ->with('prev', $request->prev)
-            ->with('path', $request->path);
+            ->with('path', $request->path)
+            ->with('token', $token);
     }
 
     //Borra directorio
@@ -252,11 +264,15 @@ class NubeController extends Controller
             ]
         ];
         $this->listFolder($request->path);
+        $simple = "'";
+        $doble = '"';
+        $token = str_replace($doble, $simple, csrf_field());
         return view('web.nube.view')
             ->with('files', $this->rutas)
             ->with('miga_pan', $miga_pan)
             ->with('prev', $request->prev)
-            ->with('path', $request->path);
+            ->with('path', $request->path)
+            ->with('token', $token);
     }
 
     //subir archivos
@@ -281,10 +297,14 @@ class NubeController extends Controller
             ]
         ];
         $this->listFolder($request->path);
+        $simple = "'";
+        $doble = '"';
+        $token = str_replace($doble, $simple, csrf_field());
         return view('web.nube.view')
             ->with('files', $this->rutas)
             ->with('miga_pan', $miga_pan)
             ->with('prev', $request->prev)
-            ->with('path', $request->path);
+            ->with('path', $request->path)
+            ->with('token', $token);
     }
 }

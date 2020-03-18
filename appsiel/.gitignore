@@ -2,6 +2,7 @@
 /node_modules
 /public/storage
 /storage/logs/laravel.log
+../img
 Homestead.yaml
 Homestead.json
 .env
