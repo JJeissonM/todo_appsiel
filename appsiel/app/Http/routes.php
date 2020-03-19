@@ -241,6 +241,9 @@ include __DIR__ . '/consultorio_medico_routes.php';
 // Rutas Adicionales Sistema Gestión Académica
 include __DIR__ . '/sga_routes.php';
 
+// Rutas Adicionales Sistema Gestión Académica
+include __DIR__ . '/contratos_transporte_routes.php';
+
 // Esta línea debe ir de última porque ya hay rutas específicas para /{slug}
 // Ejemplo, /inicio, /ventas, /configuracion, etc. 
 // Cada ruta de estas llama a sus propios controladores

@@ -94,10 +94,31 @@
 									@if( (float)$respuesta->calificacion == 0 || $respuesta->calificacion == '')
 										<textarea class="form-control" rows="4" name="respuesta_enviada_2" id="respuesta_enviada_2" cols="250" required="required">{{ $respuesta->respuesta_enviada }}</textarea>
 
-										<br>
+										<br><br>
+										@if( $respuesta->adjunto == '')
+											<h4>Adjuntar un archivo</h4>
+											<input type="file" name="adjunto" id="adjunto" accept=".xlsx,.pdf,.docx,.ppt,.pptx,.doc,.xls,.jpg,.png,.jpeg" class="form-control">
+											<b style="color: red;"> El tamaño máximo del archivo debe ser de 2M </b>
+										@else
+										<div class="row">
+											<div class="col-md-8">
+												<b>Archivo adjunto: </b>
+												&nbsp;&nbsp;
+												<a href="{{ config('configuracion.url_instancia_cliente').'/storage/app/img/adjuntos_respuestas_estudiantes/'.$respuesta->adjunto }}" class="btn btn-success btn-sm" target="_blank"> <i class="fa fa-file"></i> {{ $respuesta->adjunto }} </a>
+
+											</div>
+											<div class="col-md-4">
+												<a href="{{ url('remover_archivo_adjunto/'.$respuesta->id.'?id='.Input::get('id') ) }}" class="btn btn-danger btn-xs"> <i class="fa fa-trash"></i>&nbsp;Remover adjunto</a>
+												<br>
+												<b style="color: red;">NOTA: Guarde primero su respuesta antes de eliminar el archivo. Si quita el archivo adjunto <u>SIN GUARDAR</u> se borra también todo lo ingresado. </b>
+											</div>
+										</div>
+											
+										@endif
+										<br><br>
 
 										<div class="form-group">
-											<a href="#" class="btn btn-primary btn-xs" id="btn_guardar"> <i class="fa fa-save"></i>&nbsp;Guardar</a>
+											<a href="#" class="btn btn-primary btn-xs" id="btn_guardar"> <i class="fa fa-save"></i>&nbsp;Guardar respuesta</a>
 										</div>
 									@else
 
@@ -106,6 +127,13 @@
 												<hr>
 												<b> Respuesta enviada: </b> {!! $respuesta->respuesta_enviada !!}
 												<br>
+												<b>Archivo adjunto: </b>
+												@if( $respuesta->adjunto != '' )
+													&nbsp;&nbsp;
+													<a href="{{ config('configuracion.url_instancia_cliente').'/storage/app/img/adjuntos_respuestas_estudiantes/'.$respuesta->adjunto }}" class="btn btn-success btn-sm" target="_blank"> <i class="fa fa-file"></i> {{ $respuesta->adjunto }} </a>
+												@endif
+
+												<br><br>
 												<b> Calificación: </b> {{ $respuesta->calificacion }}
 											</div>
 										
@@ -247,13 +275,42 @@
 
 			});
 
+
+			CKEDITOR.replace('respuesta_enviada_2', {
+			    height: 200,
+			      // By default, some basic text styles buttons are removed in the Standard preset.
+			      // The code below resets the default config.removeButtons setting.
+			      removeButtons: ''
+		    });
+
+
+		    // Validar tamaño archivos
+			$(document).on('change', '#adjunto', function(e) {
+				var file = e.target.files[0];
+				if ( file.size < 2106000 ) {
+					//addImage(e);
+				}else{
+					alert('El tamaño (peso) del archivo supera el maximo permitido.');
+					$(this).val('');
+					$(this).focus();
+				}
+			});
+
+		     function addImage(e){
+
+		      var file = e.target.files[0];
+		  
+		      var reader = new FileReader();
+		      reader.onload = fileOnload;
+		      reader.readAsDataURL(file);
+		     }
+		  
+		     function fileOnload(e) {
+		      var result=e.target.result;
+		      $('#imgSalida_'+cant_imagenes).attr("src",result);
+		     }
+
 		});
 
-		CKEDITOR.replace('respuesta_enviada_2', {
-		    height: 200,
-		      // By default, some basic text styles buttons are removed in the Standard preset.
-		      // The code below resets the default config.removeButtons setting.
-		      removeButtons: ''
-	    });
 	</script>
 @endsection

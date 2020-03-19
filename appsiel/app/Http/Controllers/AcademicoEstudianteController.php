@@ -34,8 +34,6 @@ use App\Cuestionarios\ActividadEscolar;
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoCarteraEstudiante;
 
-use App\AcademicoDocente\EstudianteTieneActividadEscolar;
-
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -123,8 +121,6 @@ class AcademicoEstudianteController extends Controller
 
         $opciones = Periodo::get_activos_periodo_lectivo();
 
-        //dd($opciones);
-
         $vec['']='';
         foreach ($opciones as $opcion)
         {
@@ -188,7 +184,7 @@ class AcademicoEstudianteController extends Controller
 
     public function actividades_escolares( $curso_id, $asignatura_id )
     {
-        $actividades = EstudianteTieneActividadEscolar::get_actividades_periodo_lectivo_actual( $this->estudiante->id, $curso_id, $asignatura_id );
+        $actividades = ActividadEscolar::get_actividades_periodo_lectivo_actual( $curso_id, $asignatura_id );
 
         $curso = Curso::find($curso_id);
         $asignatura = Asignatura::find($asignatura_id);

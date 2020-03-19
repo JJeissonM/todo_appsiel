@@ -6,6 +6,7 @@
                     <tr>
                         <th>Estudiante</th>
                         <th>Respuesta enviada</th>
+                        <th>Archivo adjunto</th>
                         <th>Calificación asignada</th>
                     </tr>
                 </thead>
@@ -19,7 +20,7 @@
 
 							if( is_null( $respuestas ) )
 				            {   
-				                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
+				                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','adjunto'=>''];
 				            }
 
 						?>
@@ -30,6 +31,12 @@
 							</td>
 							<td> 
 								{!! $respuestas->respuesta_enviada !!}
+							</td>
+							<td>
+								@if( $respuestas->adjunto != '' )
+									&nbsp;&nbsp;
+									<a href="{{ config('configuracion.url_instancia_cliente').'/storage/app/img/adjuntos_respuestas_estudiantes/'.$respuestas->adjunto }}" class="btn btn-info btn-sm" target="_blank"> <i class="fa fa-file"></i> {{ $respuestas->adjunto }} </a>
+								@endif
 							</td>
 							<td> 
 								<div title="Doble click para modificar." class="elemento_modificar" data-estudiante_id="{{$estudiante->id}}" data-actividad_id="{{$actividad->id}}" data-respuesta_id="{{$respuestas->id}}">

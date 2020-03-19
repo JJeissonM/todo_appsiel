@@ -255,10 +255,10 @@ class NominaController extends TransaccionController
 
             switch ($un_concepto->naturaleza) 
             {
-                case 'Devengo':
+                case 'devengo':
                     $this->total_devengos_empleado += $registro[0]->valor_devengo;
                     break;
-                case 'Deduccion':
+                case 'deduccion':
                     $this->total_deducciones_empleado += $registro[0]->valor_deduccion;
                     break;
                 
@@ -408,7 +408,7 @@ class NominaController extends TransaccionController
         // Se obtienen las descripciones del concepto y documento de nómina
         $concepto = NomConcepto::find($request->nom_concepto_id);
         $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
-            
+        
         // Verificar si ya se han ingresado registro para ese concepto y documento
         $cant_registros = NomDocRegistro::where(['nom_doc_encabezado_id'=>$request->nom_doc_encabezado_id,
                 'nom_concepto_id'=>$request->nom_concepto_id])
@@ -447,10 +447,10 @@ class NominaController extends TransaccionController
                 if( !is_null($datos) )
                 {
                     switch ($concepto->naturaleza) {
-                        case 'Devengo':
+                        case 'devengo':
                             $vec_personas[$i]['valor_concepto'] = $datos[0]->valor_devengo;
                             break;
-                        case 'Deduccion':
+                        case 'deduccion':
                             $vec_personas[$i]['valor_concepto'] = $datos[0]->valor_deduccion;
                             break;
                         
@@ -506,7 +506,8 @@ class NominaController extends TransaccionController
             // 1=Automático
             // 3=Cuota
             // 4=Préstamo
-            $modo_liquidacion_id = [1, 3, 4];//
+            // 9=Prestaciones sociales
+            $modo_liquidacion_id = [1, 3, 4, 9];//
             $cant = count($modo_liquidacion_id);
             for ($i=0; $i < $cant; $i++) 
             { 
@@ -524,6 +525,7 @@ class NominaController extends TransaccionController
     */
     public function liquidar_automaticos($modo_liquidacion_id, $nom_doc_encabezado_id, $una_persona, $documento, $usuario)
     {
+        $documento_nomina = NomDocEncabezado::find( $nom_doc_encabezado_id );
         $conceptos = NomConcepto::where('estado','Activo')->where('modo_liquidacion_id', $modo_liquidacion_id)->get();
         
         foreach ($conceptos as $un_concepto) 
@@ -537,13 +539,13 @@ class NominaController extends TransaccionController
             if ( $cant == 0) 
             {
                 // Las horas lanborales se traen de la configuración de nómina (240 horas al mes)
-                $salario_x_hora = $una_persona->salario / config('nomina')['horas_laborales'];
+                $salario_x_hora = $una_persona->salario / config('nomina')['horas_laborales'] * $documento_nomina->tiempo_a_liquidar;
 
                 switch ($modo_liquidacion_id) 
                 {
 
                     case '1': //automáticos
-                        $valor_a_liquidar = $salario_x_hora * $una_persona->salario * $un_concepto->porcentaje_sobre_basico / 100;
+                        $valor_a_liquidar = $salario_x_hora * $un_concepto->porcentaje_sobre_basico / 100;
 
                         $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
 
@@ -558,11 +560,24 @@ class NominaController extends TransaccionController
                     case '4': //Préstamos
                         $this->liquidar_prestamos($una_persona, $un_concepto, $documento);
                         break;
+
+                    case '9': //Presataciones sociales
+                        $valor_a_liquidar = $salario_x_hora * $un_concepto->porcentaje_sobre_basico / 100;
+
+                        $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
+
+                        $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
+
+                        break;
                     
                     default:
                         # code...
                         break;
                 }
+
+
+
+                        
 
                 if( ($this->vec_campos->valor_devengo +$this->vec_campos->valor_deduccion ) > 0)
                 {
@@ -680,10 +695,10 @@ class NominaController extends TransaccionController
 
                     switch( $un_concepto->naturaleza )
                     {
-                        case 'Devengo':
+                        case 'devengo':
                             $cuota->valor_acumulado -= $un_registro->valor_devengo;
                             break;
-                        case 'Deduccion':
+                        case 'deduccion':
                             $cuota->valor_acumulado -= $un_registro->valor_deduccion;
                             break;
                         default:
@@ -702,10 +717,10 @@ class NominaController extends TransaccionController
 
                     switch( $un_concepto->naturaleza )
                     {
-                        case 'Devengo':
+                        case 'devengo':
                             $prestamo->valor_acumulado -= $un_registro->valor_devengo;
                             break;
-                        case 'Deduccion':
+                        case 'deduccion':
                             $prestamo->valor_acumulado -= $un_registro->valor_deduccion;
                             break;
                         default:
@@ -736,12 +751,14 @@ class NominaController extends TransaccionController
     
     function get_valor_devengo_deduccion( $naturaleza, $valor )
     {
+        $valor_devengo = 0;
+        $valor_deduccion = 0;
         switch ($naturaleza) {
-            case 'Devengo':
+            case 'devengo':
                 $valor_devengo = $valor;
                 $valor_deduccion = 0;
                 break;
-            case 'Deduccion':
+            case 'deduccion':
                 $valor_devengo = 0;
                 $valor_deduccion = $valor;
                 break;

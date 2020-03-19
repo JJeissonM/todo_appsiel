@@ -118,14 +118,15 @@
     <br>
     Elaboró: {{ explode('@',$doc_encabezado->creado_por)[0] }}
     
-    <br><br><br>
+    <br><br><br><br>
     <div style="width: 100%; text-align: right;">
         _______________________ 
         <br>
         Recibe
     </div>
     
-
+    <br><br><br>
+    _______________________ 
 
 </body>
 </html>

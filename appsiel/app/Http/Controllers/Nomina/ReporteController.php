@@ -204,6 +204,9 @@ class ReporteController extends Controller
                         <td><hr>'.Form::TextoMoneda($total_devengos).'</td>
                         <td><hr>'.Form::TextoMoneda($total_deducciones).'</td>
                     </tr>
+                    <tr>
+                        <td colspan="3">&nbsp;</td>
+                    </tr>
                 <tr>
                         <td colspan="3"><b>Saldo a pagar: </b> $'.number_format($total_a_pagar, 0, ',', '.').' ('.NumerosEnLetras::convertir($total_a_pagar,'pesos',false).')</td>
                     </tr>
