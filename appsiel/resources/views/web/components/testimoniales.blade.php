@@ -84,15 +84,15 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-                <h4>.:: En ésta Sección: Preguntas Frecuentes ::.</h4>
+                <h4>.:: En ésta Sección: Testimoniales ::.</h4>
             </div>
         </div>
     </div>
     <div class="card">
         <div class="body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
-                <h4 class="column-title" style="padding: 10px;">Menú Preguntas Frecuentes</h4>
-                @if($pregunta == null)
+                <h4 class="column-title" style="padding: 10px;">Menú Testimoniales</h4>
+                @if($testimonial == null)
                     <div class="add d-flex justify-content-end col-md-12">
                         <a data-toggle="modal" data-target="#crearseccion"
                            class="btn btn-primary waves-effect btn-block btn-sm"
@@ -100,9 +100,9 @@
                     </div>
                 @else
                     <div class="descripcion" style="text-align: center; margin-top: 20px;">
-                        <h5 class="titulo">{{$pregunta->titulo}}</h5>
-                        <p>{{str_limit($pregunta->descripcion,30)}}</p>
-                        <a href="{{url('preguntas/destroy').'/'.$pregunta->id.$variables_url}}"
+                        <h5 class="titulo">{{$testimonial->titulo}}</h5>
+                        <p>{{str_limit($testimonial->descripcion,30)}}</p>
+                        <a href="{{url('testimonial/destroy').'/'.$testimonial->id.$variables_url}}"
                            class="btn btn-lg"
                            title="Eliminar Seccion"><i class="fa fa-window-close"></i></a>
                     </div>
@@ -110,7 +110,7 @@
                         <div class="col-md-6">
                             <a data-toggle="modal" data-target="#Crearpregunta"
                                class="btn btn-primary waves-effect btn-block btn-sm"
-                               style="color: white; font-weight: bold;"> Agregar pregunta</a>
+                               style="color: white; font-weight: bold;"> Agregar Testimonio</a>
                         </div>
                         <div class="col-md-6 justify-content-end">
                             <a data-toggle="modal" data-target="#edit2"
@@ -119,21 +119,22 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        @if(count($pregunta->itempreguntas)>0)
-                            @foreach($pregunta->itempreguntas as $item)
+                        @if(count($testimonial->itemtestimonials)>0)
+                            @foreach($testimonial->itemtestimonials as $item)
                                 <div class="contenido">
+                                    <img src="{{url($item->foto)}}" alt="" class="imagen">
                                     <div class="descripcion">
-                                        <h5 class="titulo">{{$item->pregunta}}</h5>
-                                        <p>{{str_limit($item->respuesta,30)}}</p>
+                                        <h5 class="titulo">{{$item->nombre}}</h5>
+                                        <p>{{str_limit($item->testimonio,30)}}</p>
                                     </div>
                                     <a id="{{$item}}" onclick="editar(this.id)" data-toggle="modal"
                                        data-target="#Modaledit"
                                        class="btn"
-                                       title="Editar Pregunta" style="color: #45aed6"><i
+                                       title="Editar Testimonio" style="color: #45aed6"><i
                                                 class="fa fa-edit"></i></a>
-                                    <a href="{{url('preguntas/eliminar/itempregunta').'/'.$item->id.$variables_url}}"
+                                    <a href="{{url('testimonial/eliminar/itemtestimonial').'/'.$item->id.$variables_url}}"
                                        class="btn"
-                                       title="Eliminar Pregunta"><i class="fa fa-eraser"></i></a>
+                                       title="Eliminar Testimonio"><i class="fa fa-eraser"></i></a>
                                 </div>
                             @endforeach
                         @endif
@@ -142,8 +143,8 @@
             </div>
             <div class="widgets" id="widgets" style="position: relative;">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                @if($pregunta != null)
-                    {!! Form::preguntas($pregunta)!!}
+                @if($testimonial != null)
+                    {!! Form::testimoniales($testimonial)!!}
                 @endif
             </div>
         </div>
@@ -161,12 +162,12 @@
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    {!! Form::open(['route'=>'preguntas.guardar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    {!! Form::open(['route'=>'testimonial.guardar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
-                        <input name="titulo" type="text" placeholder="Nombre de la pregunta"
+                        <input name="titulo" type="text" placeholder="Titulo de la sección"
                                class="form-control" required="required">
                     </div>
                     <div class="form-group">
@@ -203,19 +204,19 @@
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    @if($pregunta != null)
-                        {!! Form::model($pregunta,['route'=>['preguntas.updated',$pregunta],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
+                    @if($testimonial != null)
+                        {!! Form::model($testimonial,['route'=>['testimonial.updated',$testimonial],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
                         <input type="hidden" name="widget_id" value="{{$widget}}">
                         <input type="hidden" name="variables_url" value="{{$variables_url}}">
                         <div class="form-group">
                             <label>Titulo</label>
-                            <input name="titulo" type="text" placeholder="Titulo" value="{{$pregunta->titulo}}"
+                            <input name="titulo" type="text" placeholder="Titulo" value="{{$testimonial->titulo}}"
                                    class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Descripción</label>
                             <input name="descripcion" type="text" placeholder="Titulo"
-                                   value="{{$pregunta->descripcion}}"
+                                   value="{{$testimonial->descripcion}}"
                                    class="form-control">
                         </div>
                         <div class="form-group">
@@ -236,34 +237,56 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Crear Pregunta</h5>
+                <h5 class="modal-title">Crear Testimonio</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    @if($pregunta != null)
-                        {!! Form::open(['route'=>'preguntas.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    @if($testimonial != null)
+                        {!! Form::open(['route'=>'testimonial.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                         <input type="hidden" name="widget_id" value="{{$widget}}">
                         <input type="hidden" name="variables_url" value="{{$variables_url}}">
-                        <input type="hidden" name="pregunta_id" value="{{$pregunta->id}}">
-                        <div class="form-group">
-                            <label>Pregunta</label>
-                            <input name="pregunta" type="text" placeholder="Nombre de la pregunta"
-                                   class="form-control" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label>Respuesta</label>
-                            <textarea name="respuesta" class="form-control" rows="3" required="required"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <br/><br/>
-                            <a class="btn btn-danger" id="Crearpregunta" style="color: white" onclick="cerrar(this.id)">
-                                Cancelar
-                            </a>
-                            <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
-                            {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                        <input type="hidden" name="testimoniale_id" value="{{$testimonial->id}}">
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Nombre</label>
+                                    <input name="nombre" type="text" placeholder="Nombre de la pregunta"
+                                           class="form-control" required="required">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Cargo</label>
+                                    <input name="cargo" type="text" placeholder="Cargo de la persona"
+                                           class="form-control" required="required">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Foto</label>
+                                    <input name="foto" type="file" placeholder="foto"
+                                           class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Testimonio</label>
+                                    <textarea name="testimonio" class="form-control" rows="3"
+                                              required="required"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <br/><br/>
+                                <a class="btn btn-danger" id="Crearpregunta" style="color: white"
+                                   onclick="cerrar(this.id)">
+                                    Cancelar
+                                </a>
+                                <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                                {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                            </div>
                         </div>
                         {!! Form::close() !!}
                     @endif
@@ -284,27 +307,46 @@
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    @if($pregunta != null)
-                        {!! Form::open(['route'=>'preguntas.modificar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    @if($testimonial != null)
+                        {!! Form::open(['route'=>'testimonial.modificar','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                         <input type="hidden" name="widget_id" value="{{$widget}}">
                         <input type="hidden" name="variables_url" value="{{$variables_url}}">
-                        <input type="hidden" name="itempregunta_id" id="itempregunta_id">
-                        <div class="form-group">
-                            <label>Nombre del Pregunta</label>
-                            <input name="pregunta" id="pregunta" type="text"
-                                   placeholder="Nombre de la Pregunta"
-                                   class="form-control" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label>Respuesta</label>
-                            <textarea name="respuesta" id="respuesta" class="form-control" rows="3"
-                                      required="required"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <br/><br/><a class="btn btn-danger" id="Modaledit" style="color: white"
-                                         onclick="cerrar(this.id)">Cancelar</a>
-                            <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
-                            {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                        <input type="hidden" name="itemtestimonial_id" id="itemtestimonial_id">
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Nombre</label>
+                                    <input name="nombre" id="nombre" type="text" placeholder="Nombre de la pregunta"
+                                           class="form-control" required="required">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Cargo</label>
+                                    <input name="cargo" id="cargo" type="text" placeholder="Cargo de la persona"
+                                           class="form-control" required="required">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Foto</label>
+                                    <input name="foto" type="file" placeholder="foto"
+                                           class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Testimonio</label>
+                                    <textarea name="testimonio" id="testimonio" class="form-control" rows="3"
+                                              required="required"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <br/><br/><a class="btn btn-danger" id="Modaledit" style="color: white"
+                                             onclick="cerrar(this.id)">Cancelar</a>
+                                <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                                {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                            </div>
                         </div>
                     @endif
                     {!! Form::close() !!}
@@ -323,10 +365,11 @@
 
         function editar(obj) {
             var item = JSON.parse(obj);
-            $("#pregunta").attr('value', item.pregunta);
-            $("#respuesta").val(item.respuesta);
-            $("#respuesta").attr('value', item.respuesta);
-            $("#itempregunta_id").attr('value', item.id);
+            $("#nombre").attr('value', item.nombre);
+            $("#cargo").attr('value',item.cargo)
+            $("#testimonio").val(item.testimonio);
+            $("#testimonio").attr('value', item.testimonio);
+            $("#itemtestimonial_id").attr('value', item.id);
         }
     </script>
 @endsection

@@ -10,8 +10,8 @@ class Itempregunta extends Model
     protected $table = 'pw_itempreguntas';
     protected $fillable = ['id', 'pregunta', 'respuesta', 'pregunta_id', 'created_at', 'updated_at'];
 
-    public function preguntasfercuente()
+    public function preguntasfrecuente()
     {
-        return $this->belongsTo(Preguntasfrecuentes::class);
+        return $this->belongsTo(Preguntasfrecuentes::class,'id');
     }
 }

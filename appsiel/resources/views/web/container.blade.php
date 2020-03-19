@@ -86,7 +86,7 @@
             <p class="text-center wow fadeInDown">{!!$slogan1!!}</p>
             <p class="text-center wow fadeInDown">{!!$slogan2!!}</p>
         </div>
-        <div class="row" style="height: 70vh; overflow-y:scroll; ">
+        <div class="row" style="height: 70vh; overflow-y:scroll;">
             <div class="col-sm-12 wow fadeInLeft">
                 {!!$data!!}
             </div>
