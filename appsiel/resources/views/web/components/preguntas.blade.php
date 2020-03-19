@@ -101,12 +101,14 @@
                 @else
                     <div class="descripcion" style="text-align: center; margin-top: 20px;">
                         <h5 class="titulo">{{$pregunta->titulo}}</h5>
-                        <a href="{{url('preguntas/eliminar/seccion').'/'.$pregunta->id.$variables_url}}" class="btn btn-lg"
+                        <p>{{str_limit($pregunta->descripcion,30)}}</p>
+                        <a href="{{url('preguntas/destroy').'/'.$pregunta->id.$variables_url}}"
+                           class="btn btn-lg"
                            title="Eliminar Seccion"><i class="fa fa-window-close"></i></a>
                     </div>
                     <div class="col-md-12 add d-flex">
-                        <div class="add d-flex justify-content-end">
-                            <a data-toggle="modal" data-target="#exampleModal"
+                        <div class="col-md-6">
+                            <a data-toggle="modal" data-target="#Crearpregunta"
                                class="btn btn-primary waves-effect btn-block btn-sm"
                                style="color: white; font-weight: bold;"> Agregar pregunta</a>
                         </div>
@@ -118,21 +120,23 @@
                     </div>
                     <div class="col-md-12">
                         @if(count($pregunta->itempreguntas)>0)
-                        @foreach($pregunta->itempreguntas as $item)
-                            <div class="contenido">
-                                <div class="descripcion">
-                                    <h5 class="titulo">{{$item->pregunta}}</h5>
-                                    <p>{{str_limit($item->respuesta,30)}}</p>
+                            @foreach($pregunta->itempreguntas as $item)
+                                <div class="contenido">
+                                    <div class="descripcion">
+                                        <h5 class="titulo">{{$item->pregunta}}</h5>
+                                        <p>{{str_limit($item->respuesta,30)}}</p>
+                                    </div>
+                                    <a id="{{$item}}" onclick="editar(this.id)" data-toggle="modal"
+                                       data-target="#Modaledit"
+                                       class="btn"
+                                       title="Editar Pregunta" style="color: #45aed6"><i
+                                                class="fa fa-edit"></i></a>
+                                    <a href="{{url('preguntas/eliminar/itempregunta').'/'.$item->id.$variables_url}}"
+                                       class="btn"
+                                       title="Eliminar Pregunta"><i class="fa fa-eraser"></i></a>
                                 </div>
-                                <a id="{{$item}}" onclick="editar(this.id)" data-toggle="modal" data-target="#Modaledit"
-                                   class="btn"
-                                   title="Editar Pregunta" style="color: #45aed6"><i
-                                            class="fa fa-edit"></i></a>
-                                <a href="{{url('preguntas/destroy').'/'.$item->id.$variables_url}}" class="btn"
-                                   title="Eliminar Pregunta"><i class="fa fa-eraser"></i></a>
-                            </div>
-                        @endforeach
-                            @endif
+                            @endforeach
+                        @endif
                     </div>
                 @endif
             </div>
@@ -175,7 +179,7 @@
                     </div>
                     <div class="form-group">
                         <br/><br/>
-                        <a class="btn btn-danger" id="exampleModal" style="color: white" onclick="cerrar(this.id)">
+                        <a class="btn btn-danger" id="crearseccion" style="color: white" onclick="cerrar(this.id)">
                             Cancelar
                         </a>
                         <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
@@ -210,7 +214,8 @@
                         </div>
                         <div class="form-group">
                             <label>Descripción</label>
-                            <input name="descripcion" type="text" placeholder="Titulo" value="{{$pregunta->descripcion}}"
+                            <input name="descripcion" type="text" placeholder="Titulo"
+                                   value="{{$pregunta->descripcion}}"
                                    class="form-control">
                         </div>
                         <div class="form-group">
@@ -227,7 +232,7 @@
     </div>
 </div>
 
-<div class="modal" id="exampleModal" tabindex="-1" role="dialog">
+<div class="modal" id="Crearpregunta" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -238,28 +243,30 @@
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    {!! Form::open(['route'=>'preguntas.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
-                    <input type="hidden" name="widget_id" value="{{$widget}}">
-                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
-                    <input type="hidden" name="pregunta_id" value="{{$pregunta->id}}">
-                    <div class="form-group">
-                        <label>Pregunta</label>
-                        <input name="pregunta" type="text" placeholder="Nombre de la pregunta"
-                               class="form-control" required="required">
-                    </div>
-                    <div class="form-group">
-                        <label>Respuesta</label>
-                        <textarea name="respuesta" class="form-control" rows="3" required="required"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <br/><br/>
-                        <a class="btn btn-danger" id="exampleModal" style="color: white" onclick="cerrar(this.id)">
-                            Cancelar
-                        </a>
-                        <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
-                        {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
-                    </div>
-                    {!! Form::close() !!}
+                    @if($pregunta != null)
+                        {!! Form::open(['route'=>'preguntas.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                        <input type="hidden" name="widget_id" value="{{$widget}}">
+                        <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                        <input type="hidden" name="pregunta_id" value="{{$pregunta->id}}">
+                        <div class="form-group">
+                            <label>Pregunta</label>
+                            <input name="pregunta" type="text" placeholder="Nombre de la pregunta"
+                                   class="form-control" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label>Respuesta</label>
+                            <textarea name="respuesta" class="form-control" rows="3" required="required"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <br/><br/>
+                            <a class="btn btn-danger" id="Crearpregunta" style="color: white" onclick="cerrar(this.id)">
+                                Cancelar
+                            </a>
+                            <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                            {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                        </div>
+                        {!! Form::close() !!}
+                    @endif
                 </div>
             </div>
         </div>

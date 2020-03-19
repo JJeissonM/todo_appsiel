@@ -1,5 +1,46 @@
+<style>
+    @keyframes rotate {from {transform: rotate(0deg);}
+        to {transform: rotate(360deg);}}
+    @-webkit-keyframes rotate {from {-webkit-transform: rotate(0deg);}
+        to {-webkit-transform: rotate(360deg);}}
+    .imgr{
+        -webkit-animation: 50s rotate linear infinite;
+        animation: 50s rotate linear infinite;
+        -webkit-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
+    }
+    .imgr{
+        position: absolute;
+        background-repeat: no-repeat;
+        background-position: right;
+        background-size: 25% 95%;
+        right: -330px;
+    }
+    .faq-area-img{
+        position: absolute;
+        background-repeat: no-repeat;
+        background-position: right;
+        background-size: 25% 95%;
+        right: -330px;
+        /*-webkit-animation: ani-rotate 50s linear infinite;*/
+
+    }
+    .faq-img {
+        width: 100%;
+    }
+
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+
+    }
+</style>
 <div class="aboutus">
     <div class="container" style="margin-top: 40px;">
+    <div class="imgr">
+        <img src="{{asset('img/lading-page/faq-bg-1.png')}}" class="img-fluid" alt="">
+    </div>
+    <div class="container">
         @if($aboutus!=null)
             <div class="section-header">
                 <h2 class="section-title text-center wow fadeInDown animated"
