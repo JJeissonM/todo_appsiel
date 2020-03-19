@@ -100,12 +100,21 @@ Route::resource('cofiguraciones','web\ConfiguracionesController');
 
 //PREGUNTAS FRECUENTES
 Route::get('preguntas/create/{widget}', 'web\PreguntasfrecuenteController@create');
-Route::get('preguntas/eliminar/seccion/{preguntafrecuente}', 'web\PreguntasfrecuenteController@delete')->name('preguntas.eliminar');
+Route::get('preguntas/eliminar/itempregunta/{itempregunta}', 'web\PreguntasfrecuenteController@delete')->name('preguntas.eliminar');
 Route::post('preguntas/guardar/seccion','web\PreguntasfrecuenteController@guardar')->name('preguntas.guardar');
 Route::post('preguntas/store', 'web\PreguntasfrecuenteController@store')->name('preguntas.store');
 Route::get('preguntas/destroy/{pregunta}', 'web\PreguntasfrecuenteController@destroy');
 Route::post('preguntas/modificar/pregunta/', 'web\PreguntasfrecuenteController@updated')->name('preguntas.modificar');
-Route::post('preguntas/ferecuntes/seccion/modificar/', 'web\PreguntasfrecuenteController@modificar')->name('preguntas.updated');
+Route::put('preguntas/ferecuntes/seccion/modificar/{seccion}', 'web\PreguntasfrecuenteController@modificar')->name('preguntas.updated');
+
+//TESTIMONIALES
+Route::get('testimonial/eliminar/itemtestimonial/{itemtestimonial}', 'web\TestimonialController@delete')->name('testimonial.eliminar');
+Route::post('testimonial/guardar/seccion','web\TestimonialController@guardar')->name('testimonial.guardar');
+Route::post('testimonial/store', 'web\TestimonialController@store')->name('testimonial.store');
+Route::get('testimonial/destroy/{testimonial}', 'web\TestimonialController@destroy');
+Route::post('testimonial/modificar/pregunta/', 'web\TestimonialController@updated')->name('testimonial.modificar');
+Route::put('testimonial/testimonial/seccion/modificar/{seccion}', 'web\TestimonialController@modificar')->name('testimonial.updated');
+
 //Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
 
 

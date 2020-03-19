@@ -53,6 +53,9 @@ class FactoryCompents
             case "Productos":
                 $component = new ProductosComponent($this->widget);
                 break;
+            case "Testimoniales":
+                $component = new TestimonialesComponent($this->widget);
+                break;
             default:
                 $component = false;
         }

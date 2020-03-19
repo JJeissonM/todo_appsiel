@@ -131,14 +131,11 @@
 {{--    </div>--}}
 <section id="faq-area" class="bg-1">
     <div class="container">
-        <div class="row">
+        <div class="row" style="justify-content: center; margin-bottom: 50px;">
             <div class="col-md-8 offset-md-2">
                 <div class="section-heading text-center">
-                    <h5>Take A look</h5>
-                    <h2>Frequently Asked Questions</h2>
-                    <p>Our Mobile App can be downloaded and installed on your compatible mobile device easily. If you
-                        have any questions - please look through the most frequently asked questions or contact us for
-                        more details.</p>
+                    <h2>{{$pregunta->titulo}}</h2>
+                    <p>{{$pregunta->descripcion}}</p>
                 </div>
             </div>
         </div>
@@ -148,7 +145,7 @@
                 <div id="accordion" role="tablist">
                     <!--start faq single-->
                     @if(count($pregunta->itempreguntas) > 0)
-                        @foreach($pregunta as $item)
+                        @foreach($pregunta->itempreguntas as $item)
                             <div class="card">
                                 <div class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar(event)"
                                      onfocusout="agregar(event)">
