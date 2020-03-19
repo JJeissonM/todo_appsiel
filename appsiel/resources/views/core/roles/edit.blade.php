@@ -15,7 +15,7 @@
         {{ Form::model($role, array('route' => array('core.roles.update', $role->id), 'method' => 'PUT')) }}
 
         <div class="row" style="padding:5px;">
-            {{ Form::bsText('name',null,"Nombre del perfil: ",[]) }}
+            {{ Form::bsText('name',null,"Nombre del perfil: ",['readonly','readonly']) }}
         </div>
 
         <h4 align="center"><b>Asignación de permisos</b></h4>

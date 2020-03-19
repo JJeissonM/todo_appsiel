@@ -171,7 +171,7 @@
             <div class="col-md-12 d-flex flex-wrap" id="txt" style="margin-bottom: 20px;">
                 @if($files!=null)
                 @foreach($files as $f)
-                <div class="col-md-2" style="margin-top: 10px;" title="{{$f['file']}} ({{$f['file-size']}})">
+                <div class="col-md-2" style="margin-top: 10px;" title="{{$f['file']}} ({{$f['tamanio']}})">
                     <a>
                         <center>
                             @if($f['type']=='FOLDER')
@@ -182,7 +182,7 @@
                         </center>
                     </a>
                     <center>
-                        <p>{{$f['file']." (".$f['file-size'].")"}}</p>
+                        <p>{{$f['file']." (".$f['tamanio'].")"}}</p>
                         @if($f['type']!='FOLDER')
                         <a style="font-size: 12px; color: #45aed6; cursor: pointer;" id="{{url('').$f['path']}}" onclick='copiar(this.id)' data-toggle='tooltip' data-placement='top' title='Copiar Enlace'><i class='fa fa-clone'></i> Copiar Enlace</a> </br>
                         @else
@@ -243,7 +243,7 @@
         </div>
     </div>
 
-    
+
     <!-- Modal -->
     <div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -255,21 +255,20 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <!--<form method="POST" action="{{route('nube.nueva')}}" id="nueva">
+                    <form method="POST" action="{{route('nube.upload')}}" id="upload" enctype="multipart/form-data">
                         <input type="hidden" name="prev" value="{{$prev}}" />
                         <input type="hidden" name="path" value="{{$path}}" />
                         <input type="hidden" name="id" value="{{$id}}" />
                         <div class="form-group">
-                            <label class="control-label">Nombre de la carpeta</label>
-                            <input type="text" id="name" name="name" class="form-control" required>
+                            <label for="message-text" class="col-form-label">Archivos</label>
+                            {!! Form::file('archivo[]',['class'=>'form-control has-feedback-left','required'=>'required','multiple'=>'multiple']) !!}
                         </div>
                         {{ csrf_field() }}
-                    </form>-->
-                    <h3>Deje el afan, no he terminado!</h3>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <!--<button type="button" class="btn btn-primary" onclick="nueva()">Guardar</button>-->
+                    <button type="button" class="btn btn-primary" onclick="upload()">Guardar</button>
                 </div>
             </div>
         </div>
@@ -307,18 +306,51 @@
             $("#txt").html("");
             var texto = $("#buscar").val();
             var nuevoArray = [];
-            iconos.forEach(function(i) {
-                if (i.file.indexOf(texto) != -1) {
-                    nuevoArray.push(i);
-                }
-            });
-            arrayDraw(nuevoArray);
+            if (iconos != null) {
+                iconos.forEach(function(i) {
+                    if (i.file.indexOf(texto) != -1) {
+                        nuevoArray.push(i);
+                    }
+                });
+                arrayDraw(nuevoArray);
+            } else {
+                Swal.fire(
+                    'Información',
+                    'Directorio vacío',
+                    'error'
+                );
+            }
         }
 
         function arrayDraw(array) {
             var html = "";
             array.forEach(function(i) {
-                html = html + "<div class='col-md-3 icon'><p id='icono'>" + i.file + "</p></div>";
+                html = html + "<div class='col-md-2' style='margin-top: 10px;' title='" + i.file + " (" + i.tamanio + ")'>" +
+                    "<a><center>";
+                if (i.type == 'FOLDER') {
+                    html = html + "<i style='font-size: 60px; color: " + i.color + "; cursor: pointer;' class='fa fa-" + i.icon + "' onclick='ingresar(this.id)' id='" + i.m + "' data-toggle='tooltip' data-placement='top' title='Ingresar'></i>";
+                } else {
+                    html = html + "<i style='font-size: 60px; color: " + i.color + ";' class='fa fa-" + i.icon + "'></i>";
+                }
+                html = html + "</center></a><center><p>" + i.file + " (" + i.tamanio + ")</p>";
+                if (i.type != 'FOLDER') {
+                    html = html + "<a style='font-size: 12px; color: #45aed6; cursor: pointer;' id='<?php echo url(''); ?>" + i.path + "' onclick='copiar(this.id)' data-toggle='tooltip' data-placement='top' title='Copiar Enlace'><i class='fa fa-clone'></i> Copiar Enlace</a> </br>";
+                } else {
+                    html = html + "<form method='POST' action='<?php echo route('nube.list'); ?>' id='ingresar" + i.m + "'>" +
+                        "<input type='hidden' name='prev' value='<?php echo $prev; ?>' />" +
+                        "<input type='hidden' name='path' value='" + i.path + "/' />" +
+                        "<input type='hidden' name='id' value='<?php echo $id; ?>' />" +
+                        "<?php echo $token; ?></form>";
+                }
+                html = html + "<form method='POST' action='<?php echo route('nube.delete'); ?>' id='borrar_" + i.m + "'>" +
+                    "<input type='hidden' name='prev' value='<?php echo $prev; ?>' />" +
+                    "<input type='hidden' name='path' value='<?php echo $path; ?>' />" +
+                    "<input type='hidden' name='id' value='<?php echo $id; ?>' />" +
+                    "<input type='hidden' name='file_id' value='" + i.path + "' />" +
+                    "<input type='hidden' id='type' name='type' value='" + i.type + "' />" +
+                    "<?php echo $token; ?></form>" +
+                    "<a onclick='borrar(this.id)' id='" + i.m + "' style='font-size: 12px; color: #ff0000; cursor: pointer;' data-toggle='tooltip' data-placement='top' title='Eliminar'><i class='fa fa-remove'></i> Eliminar</a>" +
+                    "</center></div>";
             });
             $("#txt").html(html);
         }
@@ -354,6 +386,10 @@
 
         function ingresar(id) {
             $('#ingresar' + id).submit();
+        }
+
+        function upload() {
+            $('#upload').submit();
         }
 
         function borrar(id) {

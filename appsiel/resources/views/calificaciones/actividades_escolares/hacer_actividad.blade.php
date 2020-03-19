@@ -10,9 +10,10 @@
 		<div class="marco_formulario">
 		    <h4>{{$actividad->descripcion}}</h4>
 		    <hr>
-				<h5><b>Temática: </b> {{$actividad->tematica}}</h5>
+				<h5><b>Asignatura: </b> {{ $asignatura->descripcion }}</h5>
+				<h5><b>Temática: </b> {{ $actividad->tematica }}</h5>
 				
-				<div style="border: solid 1px; border-bottom: solid 2px; border-right: solid 2px; border-radius: 5px; padding: 10px;">
+				<div style="border: solid 1px; border-bottom: solid 2px; border-right: solid 2px; border-radius: 5px; padding: 10px; margin: 10px;">
 					<h4><b>Instrucciones: </b> </h4>
 					<hr>
 					{!! $actividad->instrucciones !!}
@@ -77,6 +78,43 @@
 							@include('calificaciones.actividades_escolares.preguntas_respuestas')
 						@endif
 					</div>
+				@else
+
+					<div class="container-fluid" id="div_ingresar_respuesta">
+						<div class="row">
+							<div class="col-md-12">
+								{{ Form::open( [ 'url' => 'sin_cuestionario_guardar_respuesta?id='.Input::get('id'), 'id' => 'form_create', 'files' => true]) }}
+
+									<h4> A continuación Ingrese sus respuestas ó anotaciones: </h4>
+
+									{{ Form::hidden('estudiante_id', $estudiante->id ) }}
+									{{ Form::hidden('actividad_id', $actividad->id ) }}
+									{{ Form::hidden('respuesta_id', $respuesta->id, ['id' => 'respuesta_id'] ) }}
+
+									@if( (float)$respuesta->calificacion == 0 || $respuesta->calificacion == '')
+										<textarea class="form-control" rows="4" name="respuesta_enviada_2" id="respuesta_enviada_2" cols="250" required="required">{{ $respuesta->respuesta_enviada }}</textarea>
+
+										<br>
+
+										<div class="form-group">
+											<a href="#" class="btn btn-primary btn-xs" id="btn_guardar"> <i class="fa fa-save"></i>&nbsp;Guardar</a>
+										</div>
+									@else
+
+										<div style="border: solid 1px; border-bottom: solid 2px; border-right: solid 2px; border-radius: 5px; padding: 10px; margin: 10px;">
+												<h4> <b> La actividad ya ha sido calificada </b> </h4>
+												<hr>
+												<b> Respuesta enviada: </b> {!! $respuesta->respuesta_enviada !!}
+												<br>
+												<b> Calificación: </b> {{ $respuesta->calificacion }}
+											</div>
+										
+									@endif
+
+								{{ Form::close() }}
+							</div>
+						</div>
+					</div>	
 				@endif
 
 		</div>
@@ -171,6 +209,51 @@
 					$('#respuesta_enviada').val( '' );
 				}
 			}
+
+
+
+			$('#btn_guardar').on('click',function(event){
+				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+
+
+
+				// Desactivar el click del botón
+				$( this ).off( event );
+
+				$('#form_create').submit();
+
+				/*
+				$('#div_cargando').show();
+
+				// Preparar datos de los controles para enviar formulario
+				var form_consulta = $('#form_create');
+				var url = form_consulta.attr('action');
+				var datos = form_consulta.serialize();
+				// Enviar formulario de ingreso de productos vía POST
+				$.post(url,datos,function(respuesta){
+					$('#div_cargando').hide();
+					$('#respuesta_id').val( respuesta );
+					$('#mensaje_ok').show();
+				});
+
+				*/
+
+
+
+			});
+
 		});
+
+		CKEDITOR.replace('respuesta_enviada_2', {
+		    height: 200,
+		      // By default, some basic text styles buttons are removed in the Standard preset.
+		      // The code below resets the default config.removeButtons setting.
+		      removeButtons: ''
+	    });
 	</script>
 @endsection

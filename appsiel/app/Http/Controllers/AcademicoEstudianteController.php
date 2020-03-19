@@ -19,11 +19,13 @@ use App\Matriculas\Matricula;
 use App\Matriculas\Curso;
 use App\Matriculas\PeriodoLectivo;
 use App\Calificaciones\Periodo;
+use App\Calificaciones\Asignatura;
 use App\Calificaciones\CalificacionAuxiliar;
 use App\Calificaciones\Logro;
 use App\Calificaciones\EncabezadoCalificacion;
 use App\Calificaciones\CursoTieneAsignatura;
 
+use App\AcademicoDocente\PlanClaseEncabezado;
 
 use App\Cuestionarios\Pregunta;
 use App\Cuestionarios\Cuestionario;
@@ -73,7 +75,7 @@ class AcademicoEstudianteController extends Controller
         	$miga_pan = [
                     ['url'=>'NO','etiqueta'=>'Académico estudiante']
                 ];
-            return view('academico_estudiante.index',compact( 'miga_pan', 'estudiante', 'curso') );
+            return view( 'academico_estudiante.index', compact( 'miga_pan', 'estudiante', 'curso') );
         }else{
 
             return redirect( 'inicio' )->with('mensaje_error', 'El usuario actual no tiene perfil de estudiante.');
@@ -96,18 +98,21 @@ class AcademicoEstudianteController extends Controller
     }
 
 
-    public function ver_foros( $curso_id )
+    public function mis_asignaturas( $curso_id )
     {
+
+        $curso = Curso::find( $curso_id );
+
         $miga_pan = [
                 ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
-                ['url'=>'NO','etiqueta'=>'Foros']
+                ['url'=>'NO','etiqueta'=>'Mis Asignaturas. Curso: '.$curso->descripcion]
             ];
 
         $asignaturas = CursoTieneAsignatura::asignaturas_del_curso( $curso_id, null, null, null );
 
-        $periodo_lectivo = PeriodoLectivo::get_actual(); 
+        $periodo_lectivo = PeriodoLectivo::get_actual();
 
-        return view( 'academico_estudiante.ver_foros', compact('miga_pan', 'curso_id', 'asignaturas','periodo_lectivo') );
+        return view( 'academico_estudiante.mis_asignaturas', compact('miga_pan', 'curso_id', 'asignaturas','periodo_lectivo') );
     }
 
 
@@ -179,22 +184,39 @@ class AcademicoEstudianteController extends Controller
 
     	return view('academico_estudiante.agenda',compact('miga_pan'));
     }
-
-
     
-    public function actividades_escolares()
+
+    public function actividades_escolares( $curso_id, $asignatura_id )
     {
-        $actividades = EstudianteTieneActividadEscolar::leftJoin('sga_actividades_escolares','sga_actividades_escolares.id','=','sga_estudiante_tiene_actividad_escolar.actividad_escolar_id')
-                                        ->where('sga_estudiante_tiene_actividad_escolar.estudiante_id',$this->estudiante->id)
-                                        ->where('sga_actividades_escolares.estado','Activo')
-                                        ->get();
+        $actividades = EstudianteTieneActividadEscolar::get_actividades_periodo_lectivo_actual( $this->estudiante->id, $curso_id, $asignatura_id );
+
+        $curso = Curso::find($curso_id);
+        $asignatura = Asignatura::find($asignatura_id);
 
         $miga_pan = [
                 ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
-                ['url'=>'NO','etiqueta'=>'Actividades escolares']
+                ['url'=>'mis_asignaturas/'.$curso_id.'?id='.Input::get('id'),'etiqueta'=>'Mis asignaturas: '. $curso->descripcion ],
+                ['url'=>'NO','etiqueta'=>'Actividades escolares: '. $asignatura->descripcion ]
             ];
 
         return view('calificaciones.actividades_escolares.index_estudiantes',compact('actividades','miga_pan'));
+    }
+    
+
+    public function guias_planes_clases( $curso_id, $asignatura_id )
+    {
+        $planes = PlanClaseEncabezado::consultar_guias_estudiantes( $curso_id, $asignatura_id );
+
+        $curso = Curso::find($curso_id);
+        $asignatura = Asignatura::find($asignatura_id);
+
+        $miga_pan = [
+                ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
+                ['url'=>'mis_asignaturas/'.$curso_id.'?id='.Input::get('id'),'etiqueta'=>'Mis asignaturas: '. $curso->descripcion ],
+                ['url'=>'NO','etiqueta'=>'Guías planes de clases: '. $asignatura->descripcion]
+            ];
+
+        return view('calificaciones.actividades_escolares.guias_planes_clases',compact('planes', 'asignatura', 'miga_pan'));
     }
 
 
