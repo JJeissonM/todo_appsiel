@@ -18022,3 +18022,51 @@ Stack trace:
 #70 {main}  
 >>>>>>> 5189484618715748d638c3cca834b5a2fea485b0
 >>>>>>> d774448491e2be51885e752541808849f481fb9a
+[2020-03-19 12:38:28] production.ERROR: Symfony\Component\Debug\Exception\FatalThrowableError: Parse error: syntax error, unexpected '<<' (T_SL), expecting end of file in C:\xampp_739\htdocs\appsiel_2020\appsiel\app\Http\routes.php:244
+Stack trace:
+#0 [internal function]: App\Providers\RouteServiceProvider->App\Providers\{closure}(Object(Illuminate\Routing\Router))
+#1 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Router.php(398): call_user_func(Object(Closure), Object(Illuminate\Routing\Router))
+#2 C:\xampp_739\htdocs\appsiel_2020\appsiel\app\Providers\RouteServiceProvider.php(60): Illuminate\Routing\Router->group(Array, Object(Closure))
+#3 C:\xampp_739\htdocs\appsiel_2020\appsiel\app\Providers\RouteServiceProvider.php(41): App\Providers\RouteServiceProvider->mapWebRoutes(Object(Illuminate\Routing\Router))
+#4 [internal function]: App\Providers\RouteServiceProvider->map(Object(Illuminate\Routing\Router))
+#5 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Container\Container.php(507): call_user_func_array(Array, Array)
+#6 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Support\Providers\RouteServiceProvider.php(72): Illuminate\Container\Container->call(Array)
+#7 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Support\Providers\RouteServiceProvider.php(31): Illuminate\Foundation\Support\Providers\RouteServiceProvider->loadRoutes()
+#8 C:\xampp_739\htdocs\appsiel_2020\appsiel\app\Providers\RouteServiceProvider.php(30): Illuminate\Foundation\Support\Providers\RouteServiceProvider->boot(Object(Illuminate\Routing\Router))
+#9 [internal function]: App\Providers\RouteServiceProvider->boot(Object(Illuminate\Routing\Router))
+#10 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Container\Container.php(507): call_user_func_array(Array, Array)
+#11 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Application.php(757): Illuminate\Container\Container->call(Array)
+#12 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Application.php(740): Illuminate\Foundation\Application->bootProvider(Object(App\Providers\RouteServiceProvider))
+#13 [internal function]: Illuminate\Foundation\Application->Illuminate\Foundation\{closure}(Object(App\Providers\RouteServiceProvider), 24)
+#14 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Application.php(741): array_walk(Array, Object(Closure))
+#15 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\BootProviders.php(17): Illuminate\Foundation\Application->boot()
+#16 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Application.php(203): Illuminate\Foundation\Bootstrap\BootProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#17 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(232): Illuminate\Foundation\Application->bootstrapWith(Array)
+#18 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(127): Illuminate\Foundation\Http\Kernel->bootstrap()
+#19 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#20 C:\xampp_739\htdocs\appsiel_2020\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#21 {main}  
+[2020-03-19 12:38:40] production.ERROR: Symfony\Component\Debug\Exception\FatalThrowableError: Parse error: syntax error, unexpected '<<' (T_SL), expecting end of file in C:\xampp_739\htdocs\appsiel_2020\appsiel\app\Http\routes.php:244
+Stack trace:
+#0 [internal function]: App\Providers\RouteServiceProvider->App\Providers\{closure}(Object(Illuminate\Routing\Router))
+#1 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Routing\Router.php(398): call_user_func(Object(Closure), Object(Illuminate\Routing\Router))
+#2 C:\xampp_739\htdocs\appsiel_2020\appsiel\app\Providers\RouteServiceProvider.php(60): Illuminate\Routing\Router->group(Array, Object(Closure))
+#3 C:\xampp_739\htdocs\appsiel_2020\appsiel\app\Providers\RouteServiceProvider.php(41): App\Providers\RouteServiceProvider->mapWebRoutes(Object(Illuminate\Routing\Router))
+#4 [internal function]: App\Providers\RouteServiceProvider->map(Object(Illuminate\Routing\Router))
+#5 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Container\Container.php(507): call_user_func_array(Array, Array)
+#6 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Support\Providers\RouteServiceProvider.php(72): Illuminate\Container\Container->call(Array)
+#7 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Support\Providers\RouteServiceProvider.php(31): Illuminate\Foundation\Support\Providers\RouteServiceProvider->loadRoutes()
+#8 C:\xampp_739\htdocs\appsiel_2020\appsiel\app\Providers\RouteServiceProvider.php(30): Illuminate\Foundation\Support\Providers\RouteServiceProvider->boot(Object(Illuminate\Routing\Router))
+#9 [internal function]: App\Providers\RouteServiceProvider->boot(Object(Illuminate\Routing\Router))
+#10 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Container\Container.php(507): call_user_func_array(Array, Array)
+#11 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Application.php(757): Illuminate\Container\Container->call(Array)
+#12 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Application.php(740): Illuminate\Foundation\Application->bootProvider(Object(App\Providers\RouteServiceProvider))
+#13 [internal function]: Illuminate\Foundation\Application->Illuminate\Foundation\{closure}(Object(App\Providers\RouteServiceProvider), 24)
+#14 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Application.php(741): array_walk(Array, Object(Closure))
+#15 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\BootProviders.php(17): Illuminate\Foundation\Application->boot()
+#16 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Application.php(203): Illuminate\Foundation\Bootstrap\BootProviders->bootstrap(Object(Illuminate\Foundation\Application))
+#17 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(232): Illuminate\Foundation\Application->bootstrapWith(Array)
+#18 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(127): Illuminate\Foundation\Http\Kernel->bootstrap()
+#19 C:\xampp_739\htdocs\appsiel_2020\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#20 C:\xampp_739\htdocs\appsiel_2020\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
+#21 {main}  
