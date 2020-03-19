@@ -1,5 +1,5 @@
 <div class="aboutus">
-    <div class="container">
+    <div class="container" style="margin-top: 40px;">
         @if($aboutus!=null)
             <div class="section-header">
                 <h2 class="section-title text-center wow fadeInDown animated"

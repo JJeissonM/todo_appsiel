@@ -10225,3 +10225,28 @@ Stack trace:
 #9 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(152): Illuminate\Foundation\Application->make('App\\Http\\Middle...')
 #10 C:\xampp\htdocs\Appsiel\index.php(58): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
 #11 {main}  
+[2020-03-18 11:53:35] local.ERROR: Symfony\Component\Debug\Exception\FatalThrowableError: Class 'Doctrine\DBAL\Driver\PDOMySql\Driver' not found in C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\MySqlConnection.php:64
+Stack trace:
+#0 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Connection.php(895): Illuminate\Database\MySqlConnection->getDoctrineDriver()
+#1 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Schema\Grammars\Grammar.php(30): Illuminate\Database\Connection->getDoctrineSchemaManager()
+#2 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php(107): Illuminate\Database\Schema\Grammars\Grammar->compileRenameColumn(Object(Illuminate\Database\Schema\Blueprint), Object(Illuminate\Support\Fluent), Object(Illuminate\Database\MySqlConnection))
+#3 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php(82): Illuminate\Database\Schema\Blueprint->toSql(Object(Illuminate\Database\MySqlConnection), Object(Illuminate\Database\Schema\Grammars\MySqlGrammar))
+#4 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php(229): Illuminate\Database\Schema\Blueprint->build(Object(Illuminate\Database\MySqlConnection), Object(Illuminate\Database\Schema\Grammars\MySqlGrammar))
+#5 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php(130): Illuminate\Database\Schema\Builder->build(Object(Illuminate\Database\Schema\Blueprint))
+#6 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php(219): Illuminate\Database\Schema\Builder->table('pw_preguntas', Object(Closure))
+#7 C:\xampp\htdocs\Appsiel\appsiel\database\migrations\2020_03_13_095234_create_RenameColumnPreguntas_table.php(19): Illuminate\Support\Facades\Facade::__callStatic('table', Array)
+#8 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php(147): CreateRenameColumnPreguntasTable->up()
+#9 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php(117): Illuminate\Database\Migrations\Migrator->runUp('2020_03_13_0952...', 55, false)
+#10 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php(86): Illuminate\Database\Migrations\Migrator->runMigrationList(Array, Array)
+#11 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php(76): Illuminate\Database\Migrations\Migrator->run('C:\\xampp\\htdocs...', Array)
+#12 [internal function]: Illuminate\Database\Console\Migrations\MigrateCommand->fire()
+#13 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Container\Container.php(507): call_user_func_array(Array, Array)
+#14 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Console\Command.php(169): Illuminate\Container\Container->call(Array)
+#15 C:\xampp\htdocs\Appsiel\appsiel\vendor\symfony\console\Command\Command.php(256): Illuminate\Console\Command->execute(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#16 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Console\Command.php(155): Symfony\Component\Console\Command\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#17 C:\xampp\htdocs\Appsiel\appsiel\vendor\symfony\console\Application.php(794): Illuminate\Console\Command->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#18 C:\xampp\htdocs\Appsiel\appsiel\vendor\symfony\console\Application.php(186): Symfony\Component\Console\Application->doRunCommand(Object(Illuminate\Database\Console\Migrations\MigrateCommand), Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#19 C:\xampp\htdocs\Appsiel\appsiel\vendor\symfony\console\Application.php(117): Symfony\Component\Console\Application->doRun(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#20 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php(107): Symfony\Component\Console\Application->run(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#21 C:\xampp\htdocs\Appsiel\appsiel\artisan(35): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
+#22 {main}  
