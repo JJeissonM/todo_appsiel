@@ -1,3 +1,18 @@
+<style>
+
+     .article {
+         background-color: white;
+         border-radius: 20px;
+     }
+
+    .article:hover {
+        transform: scale(1.1);
+        box-shadow: 0px 0px 5px 1px #3d6983;
+        cursor: pointer;
+    }
+
+</style>
+
 <section id="blog">
     <div class="container">
         @if($setup!=null)
@@ -36,13 +51,12 @@
             @if($setup->formato=='BLOG')
             @foreach($articles as $a)
                 <div class="col-md-4">
-                    <div class="blog-post blog-media">
+                    <div class="article blog-post blog-media">
                         <article class="media clearfix">
                             <!-- <div class="entry-thumbnail pull-left">
                                 <span class="post-format post-format-gallery"><i class="fa fa-bullhorn"></i></span>
                             </div> -->
-                            <div class="media-body" style="height: 450px;">
-                                
+                            <div class=" media-body" style="height: 450px;">
                                 <div style="text-align: center;">
                                     @if($a->imagen != '')
                                         <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-width: 100%; height: 180px; object-fit: cover;">
@@ -66,6 +80,7 @@
                                     <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$setup->titulo}}</a></span>
                                 </footer>
                             </div>
+
                         </article>
                     </div>
                 </div>
@@ -82,5 +97,4 @@
         </div>
         @endif
     </div>
-
 </section>

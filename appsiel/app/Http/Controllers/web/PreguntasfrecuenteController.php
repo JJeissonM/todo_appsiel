@@ -57,7 +57,7 @@ class PreguntasfrecuenteController extends Controller
         $seccion->titulo = $request->titulo;
         $seccion->descripcion = $request->descripcion;
         $seccion->widget_id = $request->widget_id;
-        if (isset($request->imagen)) {
+        if (isset($request->imagen_fondo)) {
             $file = $request->imagen_fondo;
             $name = time() . str_slug($file->getClientOriginalName());
             $filename = "img/lading-page" . $name;
@@ -100,8 +100,8 @@ class PreguntasfrecuenteController extends Controller
     }
 
     //modificar seccion pregunta
-    public function modificar(Request $request){
-        $seccion = Preguntasfrecuentes::find($request->pregunta_id);
+    public function modificar(Request $request, $id){
+        $seccion = Preguntasfrecuentes::find($id);
         $seccion->titulo = $request->titulo;
         $seccion->descripcion = $request->descripcion;
         if (isset($request->imagen)) {
@@ -133,7 +133,7 @@ class PreguntasfrecuenteController extends Controller
         $widget = $seccion->widget_id;
         $result = $seccion->delete();
         if ($result) {
-            $message = 'Pregunta eliminada correctamente.';
+            $message = 'Sección eliminada correctamente.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
         } else {
@@ -146,7 +146,7 @@ class PreguntasfrecuenteController extends Controller
     //eliminar itempregunta
     public function delete($id){
         $pregunta = Itempregunta::find($id);
-        $widget= $pregunta->preguntasfercuente->widget_id;
+        $widget= $pregunta->preguntasfrecuente->widget_id;
         $result=$pregunta->delete();
         if ($result) {
             $message = 'Pregunta eliminada correctamente.';
