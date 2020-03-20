@@ -12,8 +12,12 @@ class CreatePlantillaarticulosTable extends Migration
      */
     public function up()
     {
-        Schema::create('plantillaarticulos', function (Blueprint $table) {
+        Schema::create('cte_plantillaarticulos', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('titulo');
+            $table->text('texto');
+            $table->unsignedInteger('plantilla_id'); //planilla
+            $table->foreign('plantilla_id')->references('id')->on('cte_plantillas')->onDelete('CASCADE');
             $table->timestamps();
         });
     }

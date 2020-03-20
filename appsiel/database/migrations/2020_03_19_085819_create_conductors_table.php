@@ -12,8 +12,11 @@ class CreateConductorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('conductors', function (Blueprint $table) {
+        Schema::create('cte_conductors', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('estado'); //ACTIVO, INACTIVO
+            $table->unsignedInteger('tercero_id'); //tercero
+            $table->foreign('tercero_id')->references('id')->on('core_terceros')->onDelete('CASCADE');
             $table->timestamps();
         });
     }

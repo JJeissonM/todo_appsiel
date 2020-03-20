@@ -12,8 +12,21 @@ class CreateVehiculosTable extends Migration
      */
     public function up()
     {
-        Schema::create('vehiculos', function (Blueprint $table) {
+        Schema::create('cte_vehiculos', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('int', 10); //Número interno del movil
+            $table->string('placa', 50);
+            $table->string('numero_vin');
+            $table->string('numero_motor');
+            $table->string('modelo', 5);
+            $table->string('marca', 100);
+            $table->string('clase', 100); //tipo
+            $table->string('color');
+            $table->integer('cilindraje');
+            $table->integer('capacidad');
+            $table->date('fecha_control_kilometraje')->nullable();
+            $table->unsignedInteger('propietario_id'); //dueño del vehiculo
+            $table->foreign('propietario_id')->references('id')->on('cte_propietarios')->onDelete('CASCADE');
             $table->timestamps();
         });
     }
