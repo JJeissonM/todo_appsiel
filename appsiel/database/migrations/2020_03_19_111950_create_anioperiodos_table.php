@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateContratantesTable extends Migration
+class CreateAnioperiodosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,12 @@ class CreateContratantesTable extends Migration
      */
     public function up()
     {
-        Schema::create('cte_contratantes', function (Blueprint $table) {
+        Schema::create('cte_anioperiodos', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('estado');
-            $table->unsignedInteger('tercero_id'); //tercero
-            $table->foreign('tercero_id')->references('id')->on('core_terceros')->onDelete('CASCADE');
+            $table->string('inicio');
+            $table->string('fin');
+            $table->unsignedInteger('anio_id'); //anio
+            $table->foreign('anio_id')->references('id')->on('cte_anios')->onDelete('CASCADE');
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ class CreateContratantesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('contratantes');
+        Schema::drop('anioperiodos');
     }
 }

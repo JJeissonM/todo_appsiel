@@ -12,8 +12,16 @@ class CreatePlantillasTable extends Migration
      */
     public function up()
     {
-        Schema::create('plantillas', function (Blueprint $table) {
+        Schema::create('cte_plantillas', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('estado', 5)->default('NO'); // es actual: SI,  NO
+            $table->string('titulo');
+            $table->string('direccion');
+            $table->string('telefono');
+            $table->string('correo');
+            $table->string('firma');
+            $table->text('pie_pagina1'); //en formato json y guarda un arreglo de elementos para el pie
+            $table->string('titulo_atras');
             $table->timestamps();
         });
     }
