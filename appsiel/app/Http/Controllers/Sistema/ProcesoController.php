@@ -38,6 +38,7 @@ class ProcesoController extends ModeloController
         //$tablas_bd = $this->get_array_tablas_bd();
 
         $tablas_bd = [
+                        'sys_aplicaciones',
                         'permissions',
                         'roles',
                         'role_has_permissions',
