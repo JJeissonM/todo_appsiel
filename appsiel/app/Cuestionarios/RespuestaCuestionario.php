@@ -11,7 +11,7 @@ class RespuestaCuestionario extends Model
 {
     protected $table = 'sga_respuestas_cuestionarios';
 
-    protected $fillable = ['estudiante_id','actividad_id','cuestionario_id','respuesta_enviada','calificacion'];
+    protected $fillable = ['estudiante_id','actividad_id','cuestionario_id','respuesta_enviada','calificacion','adjunto'];
 
     //public $encabezado_tabla = ['Nombre','Detalle','Estado','Acción'];
 
