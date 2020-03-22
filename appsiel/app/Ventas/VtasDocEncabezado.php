@@ -61,7 +61,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.id AS campo7'
             )
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
-            ->paginate(100);
+            ->paginate(500);
     }
 
     public function movimientos()

@@ -171,7 +171,7 @@
 
 				elemento_modificar.hide();
 
-				elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" class="form-control input-sm"> ');
+				elemento_modificar.after( '<input type="number" name="valor_nuevo" id="valor_nuevo" class="form-control input-sm"> ');
 
 				document.getElementById('valor_nuevo').value = valor_actual;
 				document.getElementById('valor_nuevo').select();
