@@ -9,7 +9,7 @@ use App\web\Pedidoweb;
 use Form;
 use Illuminate\Support\Facades\Input;
 
-class ProductosComponent implements IDrawComponent
+class TiendaComponent implements IDrawComponent
 {
     public function __construct($widget)
     {
@@ -32,7 +32,8 @@ class ProductosComponent implements IDrawComponent
                 }
             }
         }
-        return Form::productos($items, $pedido);
+
+        return Form::tienda($items, $pedido);
     }
 
     function viewComponent()

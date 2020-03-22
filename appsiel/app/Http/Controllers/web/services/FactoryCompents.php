@@ -50,8 +50,8 @@ class FactoryCompents
             case "Preguntas Frecuentes":
                 $component = new PreguntasConmponent($this->widget);
                 break;
-            case "Productos":
-                $component = new ProductosComponent($this->widget);
+            case "Tienda Online":
+                $component = new TiendaComponent($this->widget);
                 break;
             case "Testimoniales":
                 $component = new TestimonialesComponent($this->widget);
