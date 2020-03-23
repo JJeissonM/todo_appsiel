@@ -26,7 +26,8 @@ class ImagenController extends Controller
         $extension =  $archivo->clientExtension();
 
         // Crear un nombre unico para el archivo con su misma extensión
-        $nuevo_nombre = uniqid().'.'.$extension;
+        //$nuevo_nombre = uniqid().'.'.$extension;
+        $nuevo_nombre = str_slug( $archivo->getClientOriginalName() ) . '-' . uniqid() . '.' . $extension;
 
         // Guardar la imagen en disco
         Storage::put( $ruta_storage_imagen.$nuevo_nombre, file_get_contents( $archivo->getRealPath() ) );

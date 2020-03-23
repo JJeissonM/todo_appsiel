@@ -290,6 +290,7 @@
 
 			$('#myTable').DataTable({
 				dom: 'Bfrtip',
+				"paging": false,
 				buttons: [
 					'excel', 'pdf'
 				],

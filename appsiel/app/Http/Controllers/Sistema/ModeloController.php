@@ -68,6 +68,10 @@ class ModeloController extends Controller
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, 'Listado');
 
         $encabezado_tabla = app($this->modelo->name_space)->encabezado_tabla;
+        if (is_null($encabezado_tabla))
+        {
+            $encabezado_tabla = [];
+        }
 
         $id_transaccion = TipoTransaccion::where('core_modelo_id', (int) Input::get('id_modelo'))->value('id');
 
@@ -118,6 +122,7 @@ class ModeloController extends Controller
         // Si el modelo tiene un archivo js particular
         $archivo_js = app($this->modelo->name_space)->archivo_js;
 
+        $registros = [];
         $vista = 'layouts.index';
         /*  Lo ideal es que las URLs se manejen desde cada modelo
         y no, desde la base de datos
@@ -331,7 +336,7 @@ class ModeloController extends Controller
             $archivo = $request->file($key);
             $extension =  $archivo->clientExtension();
 
-            $nuevo_nombre = uniqid() . '-' . str_slug( $archivo->getClientOriginalName() ).'.'.$extension;
+            $nuevo_nombre = str_slug( $archivo->getClientOriginalName() ) . '-' . uniqid() . '.' . $extension;
 
             // Crear un nombre unico para el archivo con su misma extensión
             //$nuevo_nombre = uniqid() . '.' . $extension;
