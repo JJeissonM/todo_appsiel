@@ -44,7 +44,7 @@
     <link href="{{asset('css/prettyPhoto.css')}}" rel="stylesheet">
     <link href="{{asset('css/main.css')}}" rel="stylesheet">
     <link href="{{asset('css/responsive.css')}}" rel="stylesheet">
-<style>
+    <style>
     @media (min-width: 768px) {
         .carousel-multi-item-2 .col-md-3 {
             float: left;
@@ -68,6 +68,25 @@
 
     .carousel-multi-item-2 .card img {
         border-radius: 2px; }
+    .mdb-lightbox [class*="col-"] {
+        padding: .5rem;
+    }
+
+    .mdb-lightbox figure {
+        float: left;
+        margin: 0;
+    }
+
+    .mdb-lightbox figure img {
+        cursor: zoom-in;
+        border-radius: 0;
+        -webkit-transition: opacity .4s;
+        transition: opacity .4s;
+    }
+    .img-fluid, .modal-dialog.cascading-modal.modal-avatar .modal-header, .video-fluid {
+        max-width: 100%;
+        height: auto;
+    }
 </style>
 <!--[if lt IE 9]>
     <script src="{{asset('js/html5shiv.js')}}"></script>
@@ -187,7 +206,14 @@
 
 
 <script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // console.log('mdb-addons/mdb-lightbox-ui.html');
+        console.log($("#mdb-lightbox-ui").load($("#mdb-lightbox")));
+        $("#mdb-lightbox-ui").load($("#mdb-lightbox").innerHTML);
 
+    });
+</script>
 <!-- About us Skills Circle progress  -->
 {{--<script src="{{asset('web/js/jquery.js')}}"></script>--}}
 {{--<script src="{{asset('web/js/bootstrap.min.js')}}"></script>--}}

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Galeria extends Model
 {
     protected $table = 'pw_galerias';
-    protected $fillable = ['id', 'titulo', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'titulo', 'disposicion', 'widget_id', 'created_at', 'updated_at'];
 
     public function widget()
     {

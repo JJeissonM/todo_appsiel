@@ -20,9 +20,7 @@ class GaleriaComponent implements IDrawComponent
     public function DrawComponent()
     {
         $galeria = Galeria::where('widget_id', $this->widget)->first();
-        //$albunes = Album::where('galeria_id',$galeria->id)->paginate(2);
-        $albunes = Foto::paginate(2);
-        return Form::galeria($galeria,$albunes);
+        return Form::galeria($galeria);
     }
 
     public function viewComponent()

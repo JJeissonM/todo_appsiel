@@ -273,66 +273,63 @@ class GaleriaController extends Controller
     {
         $empresa = Galeria::find($id);
         $data = "";
-        $data = "<div id='multi-item-example' class='carousel slide carousel-multi-item carousel-multi-item-2' data-ride='carousel' style='margin-top: -20px;'>";
-        $data = $data . "<div class='controls-top' style='margin-left: 50%; margin-bottom: 10px; font-size: 20px;'><a class='black-text' href='#multi-item-example' data-slide='prev'><i class='fa fa-angle-left fa-3x pr-3'></i></a>
+        if ($empresa->disposicion != 'DEFAULT') {
+            $data = "<div id='multi-item-example' class='carousel slide carousel-multi-item carousel-multi-item-2' data-ride='carousel' style='margin-top: -20px;'>";
+            $data = $data . "<div class='controls-top' style='margin-left: 50%; margin-bottom: 10px; font-size: 20px;'><a class='black-text' href='#multi-item-example' data-slide='prev'><i class='fa fa-angle-left fa-3x pr-3'></i></a>
         <a class='black-text' href='#multi-item-example' data-slide='next'><i class='fa fa-angle-right fa-3x pl-3'></i></a></div>";
-        $data = $data . "<div class='carousel-inner' role='listbox'>";
-        if (count($empresa->albums) > 0) {
-            $fila = 0;
-            $bandera = false;
-            $total = count($empresa->albums);
-            foreach ($empresa->albums as $n) {
-                $fila=$fila+1;
-                if ($bandera == true || $fila == 1) {
-                    if($fila == 1){
-                        $data = $data . "<div class='carousel-item active'>";
-                    }else{
-                        $data = $data . "<div class='carousel-item'>";
+            $data = $data . "<div class='carousel-inner' role='listbox'>";
+            if (count($empresa->albums) > 0) {
+                $fila = 0;
+                $bandera = false;
+                $total = count($empresa->albums);
+                foreach ($empresa->albums as $n) {
+                    $fila = $fila + 1;
+                    if ($bandera == true || $fila == 1) {
+                        if ($fila == 1) {
+                            $data = $data . "<div class='carousel-item active'>";
+                        } else {
+                            $data = $data . "<div class='carousel-item'>";
+                        }
+                        $bandera = false;
                     }
-                    $bandera=false;
+                    $data = $data . "<div class='col-md-3 mb-3 efecto'><div class='card'><img style='height: 250px; width: 250px; object-fit: cover; cursor: pointer;' class='img-fluid' src='" . url($n->fotos->first()->nombre) . "' alt='Card image cap'><a href='" . route('galeria.veralbum', $n->id) . "'><div><h5>" . str_limit($n->titulo, 15) . "</h5></div></a></div></div>";
+                    if ($fila % 4 == 0 || $fila == $total) {
+                        $data = $data . "</div>";
+                        $bandera = true;
+                    }
                 }
-                $data = $data . "<div class='col-md-3 mb-3 efecto'><div class='card'><img style='height: 250px; width: 250px; object-fit: cover; cursor: pointer;' class='img-fluid' src='" . url($n->fotos->first()->nombre) . "' alt='Card image cap'><a href='".route('galeria.veralbum',$n->id)."'><div><h5>".str_limit($n->titulo,15)."</h5></div></a></div></div>";
-                if($fila % 4 == 0 || $fila == $total){
-                    $data=$data."</div>";
-                    $bandera = true;
-                }
-//                dd(8 % 5);
-//                if($fila == 5){
-//                    dd($data);
-//                 dd([$fila % 4],["fila:".$fila]);
-//                }
             }
+            $data = $data . "</div></div>";
+        } else {
+            $data = "<section id='portfolio'><div class='container'><div class='text-center'>" . "<ul class='portfolio-filter'>";
+            if (count($empresa->albums) > 0) {
+                $data = $data . "<li><a href='#' data-filter='*' class='active'>TODOS</a></li>";
+                foreach ($empresa->albums as $n) {
+                    $data = $data . "<li><a href='#' data-filter='." . str_slug($n->titulo) . "'>" . $n->titulo . "</a></li>";
+                }
+            }
+            $data = $data . "</ul></div>";
+            $data = $data . "<div class='portfolio-items isotope' style='position: relative; overflow: hidden; height: 260px;'>";
+            if (count($empresa->albums) > 0) {
+                foreach ($empresa->albums as $album) {
+                    if (count($album->fotos) > 0) {
+                        foreach ($album->fotos as $foto) {
+                            $data = $data . "<div class='portfolio-item " . str_slug($album->titulo) . " isotope-item' style='position: absolute; left: 0px; top: 0px; transform: translate3d(0px, 0px, 0px);'>";
+                            $data = $data . "<div class='portfolio-item-inner'>
+                                    <img class='img-responsive' style=\"height: 250px; width: 250px; object-fit: cover;\" src='" . url($foto->nombre) . "' alt=''>
+                                    <div class='portfolio-info'>";
+                            $data = $data . " <h3>$album->titulo</h3>
+                                        $foto->nombre
+                                        <a class='preview' href='" . url($foto->nombre) . "' rel='prettyPhoto'><i class='fa fa-eye'></i></a>
+                                    </div>
+                                </div>
+                            </div>";
+                        }
+                    }
+                }
+            }
+            $data = $data . "</div></div></section>";
         }
-        $data=$data."</div></div>";
-//        $data = "<section id='portfolio'><div class='container'><div class='text-center'>" . "<ul class='portfolio-filter'>";
-//        if (count($empresa->albums) > 0) {
-//            $data = $data . "<li><a href='#' data-filter='*' class='active'>TODOS</a></li>";
-//            foreach ($empresa->albums as $n) {
-//                $data = $data . "<li><a href='#' data-filter='." . str_slug($n->titulo) . "'>" . $n->titulo . "</a></li>";
-//            }
-//        }
-//        $data = $data . "</ul></div>";
-//        $data = $data . "<div class='portfolio-items isotope' style='position: relative; overflow: hidden; height: 260px;'>";
-//        if (count($empresa->albums) > 0) {
-//            foreach ($empresa->albums as $album) {
-//                if (count($album->fotos) > 0) {
-//                    foreach ($album->fotos as $foto) {
-//                        $data = $data . "<div class='portfolio-item " . str_slug($album->titulo) . " isotope-item' style='position: absolute; left: 0px; top: 0px; transform: translate3d(0px, 0px, 0px);'>";
-//                        $data = $data . "<div class='portfolio-item-inner'>
-//                                    <img class='img-responsive' style=\"height: 250px; width: 250px; object-fit: cover;\" src='" . url($foto->nombre) . "' alt=''>
-//                                    <div class='portfolio-info'>";
-//                        $data = $data . " <h3>$album->titulo</h3>
-//                                        $foto->nombre
-//                                        <a class='preview' href='" . url($foto->nombre) . "' rel='prettyPhoto'><i class='fa fa-eye'></i></a>
-//                                    </div>
-//                                </div>
-//                            </div>";
-//                    }
-//                }
-//            }
-//        }
-//        $data = $data . "</div></div></section>";
-
         $redes = RedesSociales::all();
         $footer = Footer::all()->first();
         $nav = Navegacion::all()->first();
@@ -348,18 +345,19 @@ class GaleriaController extends Controller
             ->with('nav', $nav);
     }
 
-    public function veralbum($id){
+    public function veralbum($id)
+    {
         $empresa = Album::find($id);
-        dd($empresa);
         $data = "";
-        if(count($empresa->fotos) > 0){
-            $data=$data."<div class='row'><div class='col-md-12'><div id='mdb-lightbox-ui'></div><div class='mdb-lightbox'>";
-            foreach ($empresa->fotos as $foto){
-                $data=$data."<figure class='col-md-4'><a href='".$foto->nombre."' data-size='1600x1067'></a><img alt='picture' src='".$foto->nombre."'>";
+        if (count($empresa->fotos) > 0) {
+            $data = $data . "<div class='row'><div class='col-md-12'><div id='mdb-lightbox-ui'></div><div class='mdb-lightbox' data-pswp-uid='2'>";
+            foreach ($empresa->fotos as $foto) {
+                $data = $data . "<figure class='col-md-4'><a style='text-decoration: none; cursor: pointer; transition: all;' href='" . url($foto->nombre) . "' data-size='1600x1067'><img alt='picture' src='" . url($foto->nombre) . "' class='img-fluid'></a></figure>";
             }
+            $data = $data . "</div></div></div>";
+        } else {
+            $data = $data . "<h3 style='color: red'>No hay fotos para el album seleccionado.</h3>";
         }
-
-        $data="</div></div></div>";
         $redes = RedesSociales::all();
         $footer = Footer::all()->first();
         $nav = Navegacion::all()->first();
@@ -369,11 +367,12 @@ class GaleriaController extends Controller
             ->with('data', $data)
             ->with('redes', $redes)
             ->with('footer', $footer)
-            ->with('title', 'GALERÍA')
-            ->with('slogan1', 'Nuestra labor y la ejecución de eventos que genera experiencias que queremos contarte.')
+            ->with('title', $empresa->titulo)
+            ->with('slogan1', $empresa->descripcion)
             ->with('slogan2', 'Conoce la experiencia a través de fotos y videos.')
             ->with('nav', $nav);
     }
+
     public function importar()
     {
         dd("no puede");
