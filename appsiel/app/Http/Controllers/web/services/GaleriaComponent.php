@@ -3,6 +3,8 @@
 
 namespace App\Http\Controllers\web\services;
 
+use App\web\Album;
+use App\web\Foto;
 use App\web\Galeria;
 use Form;
 use Illuminate\Support\Facades\Input;

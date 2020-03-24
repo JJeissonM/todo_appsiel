@@ -6,6 +6,7 @@
 ?>
 
 <head>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
@@ -43,6 +44,50 @@
     <link href="{{asset('css/prettyPhoto.css')}}" rel="stylesheet">
     <link href="{{asset('css/main.css')}}" rel="stylesheet">
     <link href="{{asset('css/responsive.css')}}" rel="stylesheet">
+    <style>
+    @media (min-width: 768px) {
+        .carousel-multi-item-2 .col-md-3 {
+            float: left;
+            width: 25%;
+            max-width: 100%; }
+    }
+
+    .card {
+        font-weight: 400;
+        border: 0;
+        box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+    }
+    .efecto:hover{
+        transform: scale(1.1);
+    }
+
+    .carousel-multi-item-2 .col-md-3 {
+        float: left;
+        width: 25%;
+        max-width: 100%; }
+
+    .carousel-multi-item-2 .card img {
+        border-radius: 2px; }
+    .mdb-lightbox [class*="col-"] {
+        padding: .5rem;
+    }
+
+    .mdb-lightbox figure {
+        float: left;
+        margin: 0;
+    }
+
+    .mdb-lightbox figure img {
+        cursor: zoom-in;
+        border-radius: 0;
+        -webkit-transition: opacity .4s;
+        transition: opacity .4s;
+    }
+    .img-fluid, .modal-dialog.cascading-modal.modal-avatar .modal-header, .video-fluid {
+        max-width: 100%;
+        height: auto;
+    }
+</style>
 <!--[if lt IE 9]>
     <script src="{{asset('js/html5shiv.js')}}"></script>
     <script src="{{asset('js/respond.min.js')}}"></script>
@@ -87,7 +132,7 @@
             <p class="text-center wow fadeInDown">{!!$slogan2!!}</p>
         </div>
         <div class="row" style="height: 70vh; overflow-y:scroll;">
-            <div class="col-sm-12 wow fadeInLeft">
+            <div class="col-sm-12 wow fadeInLeft" style="margin-top: 8px;">
                 {!!$data!!}
             </div>
         </div>
@@ -161,7 +206,14 @@
 
 
 <script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
+<script type="text/javascript">
+    $(function () {
+        // console.log('mdb-addons/mdb-lightbox-ui.html');
+        console.log($("#mdb-lightbox-ui").load($("#mdb-lightbox")));
+        $("#mdb-lightbox-ui").load($("#mdb-lightbox").innerHTML);
 
+    });
+</script>
 <!-- About us Skills Circle progress  -->
 {{--<script src="{{asset('web/js/jquery.js')}}"></script>--}}
 {{--<script src="{{asset('web/js/bootstrap.min.js')}}"></script>--}}
