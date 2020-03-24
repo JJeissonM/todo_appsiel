@@ -26,6 +26,7 @@ use App\Calificaciones\EncabezadoCalificacion;
 use App\Calificaciones\CursoTieneAsignatura;
 
 use App\AcademicoDocente\PlanClaseEncabezado;
+use App\AcademicoDocente\PlanClaseRegistro;
 
 use App\Cuestionarios\Pregunta;
 use App\Cuestionarios\Cuestionario;
@@ -103,7 +104,7 @@ class AcademicoEstudianteController extends Controller
 
         $miga_pan = [
                 ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
-                ['url'=>'NO','etiqueta'=>'Mis Asignaturas. Curso: '.$curso->descripcion]
+                ['url'=>'NO','etiqueta'=>'Mis Asignaturas: '.$curso->descripcion]
             ];
 
         $asignaturas = CursoTieneAsignatura::asignaturas_del_curso( $curso_id, null, null, null );
@@ -212,8 +213,34 @@ class AcademicoEstudianteController extends Controller
                 ['url'=>'NO','etiqueta'=>'Guías planes de clases: '. $asignatura->descripcion]
             ];
 
-        return view('calificaciones.actividades_escolares.guias_planes_clases',compact('planes', 'asignatura', 'miga_pan'));
+        return view('calificaciones.actividades_escolares.guias_planes_clases',compact('planes', 'asignatura', 'curso', 'miga_pan'));
     }
+
+
+
+    public function ver_guia_plan_clases( $curso_id, $asignatura_id, $plan_id)
+    {
+
+        $encabezado = PlanClaseEncabezado::get_registro_impresion( $plan_id );
+
+        $registros = PlanClaseRegistro::get_registros_impresion( $plan_id );
+
+        $vista = View::make( 'academico_docente.planes_clases.vista_impresion', compact( 'encabezado', 'registros' ) )->render();
+
+        $curso = Curso::find($curso_id);
+        $asignatura = Asignatura::find($asignatura_id);
+
+        $miga_pan = [
+                ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
+                ['url'=>'mis_asignaturas/'.$curso_id.'?id='.Input::get('id'),'etiqueta'=>'Mis asignaturas: '. $curso->descripcion ],
+                ['url'=>'academico_estudiante/guias_planes_clases/'.$curso_id.'/'.$asignatura_id.'?id='.Input::get('id'),'etiqueta'=>'Guías planes de clases: '. $asignatura->descripcion],
+                ['url'=>'NO','etiqueta'=>'Guías planes de clases: '. $asignatura->descripcion]
+            ];
+
+        return view( 'academico_estudiante.guia_plan_clases_show',compact( 'miga_pan', 'vista', 'plan_id') );
+
+    }
+
 
 
     public function mi_plan_de_pagos($id_libreta)

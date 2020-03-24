@@ -21,7 +21,7 @@ class PlanClaseEncabezado extends Model
 {
     protected $table = 'sga_plan_clases_encabezados';
 
-	protected $fillable = ['plantilla_plan_clases_id', 'fecha', 'semana_calendario_id', 'periodo_id', 'curso_id', 'asignatura_id', 'user_id', 'estado'];
+	protected $fillable = ['plantilla_plan_clases_id', 'fecha', 'semana_calendario_id', 'periodo_id', 'curso_id', 'asignatura_id', 'user_id','archivo_adjunto', 'estado'];
 	
     public $encabezado_tabla = ['Plan de clases', 'Fecha', 'Semana académica', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Estado', 'Acción'];
     
@@ -363,6 +363,7 @@ class PlanClaseEncabezado extends Model
                                     ->select(
                                         'sga_plan_clases_struc_plantillas.descripcion AS plantilla_decripcion',
                                         'sga_plan_clases_encabezados.fecha',
+                                        'sga_plan_clases_encabezados.archivo_adjunto',
                                         'sga_semanas_calendario.descripcion AS semana_decripcion',
                                         'sga_periodos.descripcion AS periodo_decripcion',
                                         'sga_cursos.descripcion AS curso_decripcion',

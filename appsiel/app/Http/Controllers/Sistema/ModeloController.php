@@ -323,14 +323,17 @@ class ModeloController extends Controller
     */
     public function almacenar_imagenes($request, $ruta_storage_imagen, $registro, $modo = null )
     {
+
         $lista_nombres = '';
         $nombre_es_el_primero = true;
         // Si se envía archivos tipo file (imagenes, adjuntos)
         $archivos_enviados = $request->file();
-        foreach ($archivos_enviados as $key => $value) {
+        foreach ($archivos_enviados as $key => $value)
+        {
             // Si se envía un nuevo archivo, se borran el archivo anterior del disco
-            if ($modo == 'edit' && $request->file($key) != '') {
-                Storage::delete($ruta_storage_imagen . $registro->$key);
+            if ($modo == 'edit' && $request->file($key) != '')
+            {
+                Storage::delete( $ruta_storage_imagen . $registro->$key );
             }
 
             $archivo = $request->file($key);
@@ -340,7 +343,8 @@ class ModeloController extends Controller
 
             // Crear un nombre unico para el archivo con su misma extensión
             //$nuevo_nombre = uniqid() . '.' . $extension;
-            if ($nombre_es_el_primero) {
+            if ($nombre_es_el_primero)
+            {
                 $lista_nombres .= $nuevo_nombre;
                 $nombre_es_el_primero = false;
             } else {
@@ -360,7 +364,7 @@ class ModeloController extends Controller
     }
 
 
-    // FOMRULARIO PARA EDITAR UN REGISTRO
+    // FORMULARIO PARA EDITAR UN REGISTRO
     public function edit($id)
     {
         // Se obtiene el registro a modificar del modelo
@@ -424,7 +428,7 @@ class ModeloController extends Controller
         //if ( count($request->file()) > 0)
         if (!empty($request->file())) {
             // Copia identica del registro del modelo, pues cuando se almacenan los datos cambia la instancia
-            $registro2 = $registro;
+            $registro2 = app($modelo->name_space)->find($id);
         }
 
         // LLamar a los campos del modelo para verificar los que son requeridos
@@ -847,8 +851,8 @@ class ModeloController extends Controller
                 }
 
                 // Si se está editando un checkbox
-                if ($lista_campos[$i]['tipo'] == 'bsCheckBox') {
-                    //dd($lista_campos[$i]);
+                if ($lista_campos[$i]['tipo'] == 'bsCheckBox')
+                {
                     // Si el name del campo enviado tiene la palabra core_campo_id-ID, se trata de un campo Atributo de EAV
                     if (strpos($lista_campos[$i]['name'], "core_campo_id-") !== false) {
                         $lista_campos[$i]['value'] = ModeloEavValor::where(["modelo_padre_id" => Input::get('modelo_padre_id'), "registro_modelo_padre_id" => Input::get('registro_modelo_padre_id'), "modelo_entidad_id" => Input::get('modelo_entidad_id'), "core_campo_id" => $lista_campos[$i]['id']])->value('valor');
@@ -889,7 +893,6 @@ class ModeloController extends Controller
             $registros_asignados = $registro_modelo_padre->$metodo_modelo_relacionado()->orderBy('orden')->get()->toArray(); //
 
 
-            //dd($registros_asignados);
             // Se obtiene una tabla con los registros asociados al registro del modelo
             $tabla = app($modelo_padre->name_space)->get_tabla($registro_modelo_padre, $registros_asignados);
 
