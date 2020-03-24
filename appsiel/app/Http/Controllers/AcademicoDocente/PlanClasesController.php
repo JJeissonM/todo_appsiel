@@ -11,6 +11,7 @@ use App\Sistema\Modelo;
 
 use Input;
 use View;
+use Storage;
 
 use App\AcademicoDocente\PlanClaseEstrucPlantilla;
 use App\AcademicoDocente\PlanClaseEncabezado;
@@ -31,7 +32,7 @@ class PlanClasesController extends ModeloController
     	$datos = $request->all(); // Datos originales
 
     	// Crear el encabezado
-    	$registro = $this->crear_nuevo_registro( $request ); // Esta línea hace que la variable $request cambie (no se porqué)
+    	$registro = $this->crear_nuevo_registro( $request ); // Esta línea hace que la variable $request cambie (no se porqué   ¿¿¿???)
 
     	foreach ( $datos['elemento_descripcion'] as $key => $value )
     	{
@@ -45,6 +46,9 @@ class PlanClasesController extends ModeloController
 					    				]
 					    			);
     	}
+
+        $modelo = Modelo::find( $request->url_id_modelo );
+        $this->almacenar_imagenes($request, $modelo->ruta_storage_imagen, $registro);
         
         return redirect( 'sga_planes_clases/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with( 'flash_message','Registro CREADO correctamente.' );
     }
@@ -115,6 +119,15 @@ class PlanClasesController extends ModeloController
         // Se obtinene el registro a modificar del modelo
         $registro = app($modelo->name_space)->find($id);
 
+        $registro2 = '';
+        // Si se envían datos tipo file
+        if( !empty( $request->file() ) )
+        {   
+            // Copia identica del registro del modelo, pues cuando se almacenan los datos cambia la instancia
+            $registro2 = $registro;
+        }
+
+
     	foreach ( $datos['elemento_descripcion'] as $key => $value )
     	{
 
@@ -144,7 +157,16 @@ class PlanClasesController extends ModeloController
 
 
         $registro->fill( $request->all() );
+
+        if ($request->hasFile('archivo_adjunto')) 
+        {
+            $general = new ModeloController;
+            $registro->archivo_adjunto = $general->almacenar_imagenes( $request, $modelo->ruta_storage_imagen, $registro2, 'edit' );
+        }
+
         $registro->save();
+
+
 
         return redirect( 'sga_planes_clases/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with( 'flash_message','Registro MODIFICADO correctamente.' );
     }
@@ -162,5 +184,21 @@ class PlanClasesController extends ModeloController
     	PlanClaseRegistro::where( 'plan_clase_encabezado_id', $encabezado_id )->delete();
 
     	return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registro ELIMINADO correctamente.' );
+    }
+
+
+    public function remover_archivo_adjunto( $encabezado_id )
+    {
+        
+        $registro = PlanClaseEncabezado::find( $encabezado_id );
+
+        // Se borra el archivo del disco
+        Storage::delete( 'planes_clases/' . $registro->archivo_adjunto );
+
+        // Actualizar registro
+        $registro->update( [ 'archivo_adjunto' => '' ] );
+
+        return redirect( 'sga_planes_clases/'.$encabezado_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion=0' )->with( 'flash_message','Archivo adjunto removido correctamente.' );
+        
     }
 }

@@ -33,7 +33,7 @@
 							{{ $fila->profesor }}
 						</td>
 						<td>
-							{{ Form::bsBtnPrint( 'sga_planes_clases_imprimir/'.$fila->id.'?id='.Input::get('id') ) }}
+							{{ Form::bsBtnVer( 'academico_estudiante/ver_guia_plan_clases/'.$curso->id.'/'.$asignatura->id.'/'.$fila->id.'?id='.Input::get('id') ) }}
 						</td>
 					</tr>
 				@endforeach

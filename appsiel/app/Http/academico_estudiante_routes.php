@@ -11,6 +11,7 @@ Route::get('academico_estudiante/agenda', 'AcademicoEstudianteController@agenda'
 
 Route::get('academico_estudiante/actividades_escolares/{curso_id}/{asignatura_id}', 'AcademicoEstudianteController@actividades_escolares');
 Route::get('academico_estudiante/guias_planes_clases/{curso_id}/{asignatura_id}', 'AcademicoEstudianteController@guias_planes_clases');
+Route::get('academico_estudiante/ver_guia_plan_clases/{curso_id}/{asignatura_id}/{plan_id}', 'AcademicoEstudianteController@ver_guia_plan_clases');
 
 Route::get('academico_estudiante', 'AcademicoEstudianteController@index');
 
