@@ -203,7 +203,6 @@ class ModeloController extends Controller
                 $vista = $vistas->create;
             }
         }
-
         if (Input::get('vista') != null) {
             return view(Input::get('vista'), compact('form_create', 'miga_pan', 'archivo_js'));
         }
