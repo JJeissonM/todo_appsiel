@@ -124,9 +124,6 @@ class ModeloController extends Controller
 
         $registros = [];
         $vista = 'layouts.index';
-        /*  Lo ideal es que las URLs se manejen desde cada modelo
-        y no, desde la base de datos
-                */
         
         if ( method_exists( app( $this->modelo->name_space ), 'consultar_registros' ) )
         {
@@ -134,10 +131,12 @@ class ModeloController extends Controller
         }
 
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if (!is_null($vistas)) {
-            if (isset($vistas->index)) {
+        if ( !is_null( $vistas ) )
+        {
+            if ( isset( $vistas->index ) )
+            {
                 $vista = $vistas->index;
-                $registros = app($this->modelo->name_space)->consultar_registros2(); //->take(20);
+                $registros = app($this->modelo->name_space)->consultar_registros2();
                 $registros->setPath('?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion);
             }
         }
@@ -198,8 +197,10 @@ class ModeloController extends Controller
             y no, desde la base de datos
                  */
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if (!is_null($vistas)) {
-            if (!is_null($vistas->create)) {
+        if ( !is_null( $vistas ) )
+        {
+            if ( isset( $vistas->create ) )
+            {
                 $vista = $vistas->create;
             }
         }
@@ -393,11 +394,14 @@ class ModeloController extends Controller
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, $registro->descripcion);
 
         $archivo_js = app($this->modelo->name_space)->archivo_js;
-        $vistas = json_decode(app($this->modelo->name_space)->vistas); // solo se intentó usar con el modelo Logro
+
 
         $vista = 'layouts.edit';
-        if (!is_null($vistas)) {
-            if (!is_null($vistas->edit)) {
+        $vistas = json_decode(app($this->modelo->name_space)->vistas);
+        if ( !is_null( $vistas ) )
+        {
+            if ( isset( $vistas->edit ) )
+            {
                 $vista = $vistas->edit;
             }
         }
