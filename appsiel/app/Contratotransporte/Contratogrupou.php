@@ -7,5 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class Contratogrupou extends Model
 {
     protected $table = 'cte_contratogrupous';
-    protected $fillable = ['id', 'identificacion', 'persona', 'contrato_id', 'created_at'];
+    protected $fillable = ['id', 'contrato_id', 'identificacion', 'persona', 'created_at', 'updated_at'];
 }

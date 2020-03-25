@@ -14,6 +14,20 @@ class Vehiculo extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
+    public static function opciones_campo_select()
+    {
+        $opciones = Vehiculo::all();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->clase.' '.$opcion->marca.' '.$opcion->modelo.' '.$opcion->placa.')';
+        }
+
+        return $vec;
+    }
+    
+
     public static function consultar_registros2()
     {
         return Vehiculo::leftJoin('cte_propietarios', 'cte_propietarios.id', '=', 'cte_vehiculos.propietario_id')
