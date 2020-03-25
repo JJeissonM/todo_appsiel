@@ -49,8 +49,7 @@ class ProcesoController extends ModeloController
                         'sys_reportes',
                         'sys_reporte_tiene_campos',
                         'sys_tipos_transacciones',
-                        'migrations',
-                        'pw_seccion'];
+                        'migrations'];
 
         return view( 'core.procesos.exportar_importar_registros_bd', compact( 'miga_pan', 'tablas_bd') );
     }
