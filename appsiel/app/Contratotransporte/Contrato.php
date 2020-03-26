@@ -11,7 +11,7 @@ class Contrato extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = Contrato::leftJoin('cte_contratantes', 'cte_contratantes.id', '=', 'cte_contratantes.contratante_id')
+        $opciones = Contrato::leftJoin('cte_contratantes', 'cte_contratantes.id', '=', 'cte_contratos.contratante_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_contratantes.tercero_id')
                             ->select('cte_contratos.id','cte_contratos.codigo AS contrato_codigo','core_terceros.descripcion AS tercero_descripcion','core_terceros.numero_identificacion')
                             ->get();

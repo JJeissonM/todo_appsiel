@@ -44,11 +44,12 @@ class ProcesoController extends ModeloController
                         'role_has_permissions',
                         'sys_campos',
                         'sys_modelos',
-                        'sys_modelos_relacionados',
+                        //'sys_modelos_relacionados',
                         'sys_modelo_tiene_campos',
                         'sys_reportes',
                         'sys_reporte_tiene_campos',
-                        'sys_tipos_transacciones'];
+                        'sys_tipos_transacciones',
+                        'migrations'];
 
         return view( 'core.procesos.exportar_importar_registros_bd', compact( 'miga_pan', 'tablas_bd') );
     }
