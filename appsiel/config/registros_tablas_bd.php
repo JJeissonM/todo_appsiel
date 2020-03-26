@@ -5233,25 +5233,25 @@ Manejo de historias clínicas
       'url' => 'web',
       'parent' => 0,
       'orden' => 7,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2020-03-19 16:24:30',
-      'updated_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:27:43',
     ),
     328 => 
     array (
       'id' => 354,
       'core_app_id' => 19,
-      'modelo_id' => 195,
-      'name' => 'cte_conductores',
+      'modelo_id' => 0,
+      'name' => 'cte_conductores_menu',
       'descripcion' => 'Conductores',
       'url' => 'web',
       'parent' => 0,
-      'orden' => 3,
+      'orden' => 5,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-03-19 16:24:30',
-      'updated_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:13:51',
     ),
     329 => 
     array (
@@ -5261,42 +5261,42 @@ Manejo de historias clínicas
       'name' => 'cte_contratantes',
       'descripcion' => 'Contratantes',
       'url' => 'web',
-      'parent' => 353,
-      'orden' => 1,
+      'parent' => 356,
+      'orden' => 3,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-03-19 16:24:30',
-      'updated_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:09:43',
     ),
     330 => 
     array (
       'id' => 356,
       'core_app_id' => 19,
-      'modelo_id' => 197,
-      'name' => 'cte_contratos',
+      'modelo_id' => 0,
+      'name' => 'cte_contratos_menu',
       'descripcion' => 'Contratos',
       'url' => 'web',
       'parent' => 0,
-      'orden' => 1,
+      'orden' => 2,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-03-19 16:24:30',
-      'updated_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:08:57',
     ),
     331 => 
     array (
       'id' => 357,
       'core_app_id' => 19,
-      'modelo_id' => 200,
-      'name' => 'cte_plantillas',
+      'modelo_id' => 0,
+      'name' => 'cte_plantillas_menu',
       'descripcion' => 'Plantillas',
       'url' => 'web',
-      'parent' => 353,
-      'orden' => 3,
+      'parent' => 0,
+      'orden' => 6,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-03-19 16:24:30',
-      'updated_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:14:40',
     ),
     332 => 
     array (
@@ -5306,27 +5306,282 @@ Manejo de historias clínicas
       'name' => 'cte_propietarios',
       'descripcion' => 'Propietarios',
       'url' => 'web',
-      'parent' => 0,
+      'parent' => 356,
       'orden' => 2,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-03-19 16:24:30',
-      'updated_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:10:05',
     ),
     333 => 
     array (
       'id' => 359,
       'core_app_id' => 19,
-      'modelo_id' => 202,
-      'name' => 'cte_vehiculos',
+      'modelo_id' => 0,
+      'name' => 'cte_vehiculos_menu',
       'descripcion' => 'Vehículos',
       'url' => 'web',
-      'parent' => 353,
-      'orden' => 2,
+      'parent' => 0,
+      'orden' => 3,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-03-19 16:24:30',
-      'updated_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:12:07',
+    ),
+    334 => 
+    array (
+      'id' => 360,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'cte_manteniminentos_menu',
+      'descripcion' => 'Mantenimientos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-24 16:24:30',
+      'updated_at' => '2020-03-25 07:13:18',
+    ),
+    335 => 
+    array (
+      'id' => 361,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'cte_planillasc_menu',
+      'descripcion' => 'FUEC',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    336 => 
+    array (
+      'id' => 362,
+      'core_app_id' => 19,
+      'modelo_id' => 205,
+      'name' => 'cte_grupos_usuarios_contrato',
+      'descripcion' => 'Grupos de usuarios',
+      'url' => 'web',
+      'parent' => 356,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    337 => 
+    array (
+      'id' => 363,
+      'core_app_id' => 19,
+      'modelo_id' => 197,
+      'name' => 'cte_contratos_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 356,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    338 => 
+    array (
+      'id' => 364,
+      'core_app_id' => 19,
+      'modelo_id' => 210,
+      'name' => 'cte_planillasc_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 361,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    339 => 
+    array (
+      'id' => 365,
+      'core_app_id' => 19,
+      'modelo_id' => 211,
+      'name' => 'cte_planillasc_conductores',
+      'descripcion' => 'Conductores x planilla',
+      'url' => 'web',
+      'parent' => 361,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    340 => 
+    array (
+      'id' => 366,
+      'core_app_id' => 19,
+      'modelo_id' => 206,
+      'name' => 'cte_manteniminentos_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 360,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    341 => 
+    array (
+      'id' => 367,
+      'core_app_id' => 19,
+      'modelo_id' => 204,
+      'name' => 'cte_manteniminentos_periodos',
+      'descripcion' => 'Periodos',
+      'url' => 'web',
+      'parent' => 360,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    342 => 
+    array (
+      'id' => 368,
+      'core_app_id' => 19,
+      'modelo_id' => 203,
+      'name' => 'cte_manteniminentos_anios',
+      'descripcion' => 'Años',
+      'url' => 'web',
+      'parent' => 360,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    343 => 
+    array (
+      'id' => 369,
+      'core_app_id' => 19,
+      'modelo_id' => 202,
+      'name' => 'cte_vehiculos_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 359,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    344 => 
+    array (
+      'id' => 370,
+      'core_app_id' => 19,
+      'modelo_id' => 195,
+      'name' => 'cte_conductores_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 354,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    345 => 
+    array (
+      'id' => 371,
+      'core_app_id' => 19,
+      'modelo_id' => 199,
+      'name' => 'cte_vehiculos_documentos',
+      'descripcion' => 'Documentos',
+      'url' => 'web',
+      'parent' => 359,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    346 => 
+    array (
+      'id' => 372,
+      'core_app_id' => 19,
+      'modelo_id' => 198,
+      'name' => 'cte_conductores_crud',
+      'descripcion' => 'Documentos',
+      'url' => 'web',
+      'parent' => 354,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    347 => 
+    array (
+      'id' => 373,
+      'core_app_id' => 19,
+      'modelo_id' => 200,
+      'name' => 'cte_plantillac_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 357,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    348 => 
+    array (
+      'id' => 374,
+      'core_app_id' => 19,
+      'modelo_id' => 212,
+      'name' => 'cte_plantillac_articulos',
+      'descripcion' => 'Artículos',
+      'url' => 'web',
+      'parent' => 357,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    349 => 
+    array (
+      'id' => 375,
+      'core_app_id' => 19,
+      'modelo_id' => 213,
+      'name' => 'cte_plantillac_numerales_articulos',
+      'descripcion' => 'Numerales artículos',
+      'url' => 'web',
+      'parent' => 357,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    350 => 
+    array (
+      'id' => 376,
+      'core_app_id' => 19,
+      'modelo_id' => 209,
+      'name' => 'cte_plantillac_numerales_tabla',
+      'descripcion' => 'Numerales tabla',
+      'url' => 'web',
+      'parent' => 357,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
     ),
   ),
   'roles' => 
@@ -11610,6 +11865,108 @@ Manejo de historias clínicas
     array (
       'orden' => 0,
       'permission_id' => 359,
+      'role_id' => 1,
+    ),
+    1030 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 360,
+      'role_id' => 1,
+    ),
+    1031 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 361,
+      'role_id' => 1,
+    ),
+    1032 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 362,
+      'role_id' => 1,
+    ),
+    1033 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 363,
+      'role_id' => 1,
+    ),
+    1034 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 364,
+      'role_id' => 1,
+    ),
+    1035 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 365,
+      'role_id' => 1,
+    ),
+    1036 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 366,
+      'role_id' => 1,
+    ),
+    1037 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 367,
+      'role_id' => 1,
+    ),
+    1038 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 368,
+      'role_id' => 1,
+    ),
+    1039 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 369,
+      'role_id' => 1,
+    ),
+    1040 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 370,
+      'role_id' => 1,
+    ),
+    1041 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 371,
+      'role_id' => 1,
+    ),
+    1042 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 372,
+      'role_id' => 1,
+    ),
+    1043 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 373,
+      'role_id' => 1,
+    ),
+    1044 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 374,
+      'role_id' => 1,
+    ),
+    1045 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 375,
+      'role_id' => 1,
+    ),
+    1046 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 376,
       'role_id' => 1,
     ),
   ),
@@ -22014,6 +22371,1142 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-03-15 10:19:03',
       'updated_at' => '2020-03-15 10:21:44',
     ),
+    645 => 
+    array (
+      'id' => 651,
+      'descripcion' => 'Número interno',
+      'tipo' => 'bsText',
+      'name' => 'int',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    646 => 
+    array (
+      'id' => 652,
+      'descripcion' => 'Placa',
+      'tipo' => 'bsText',
+      'name' => 'placa',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    647 => 
+    array (
+      'id' => 653,
+      'descripcion' => 'Número vinculación',
+      'tipo' => 'bsText',
+      'name' => 'numero_vin',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    648 => 
+    array (
+      'id' => 654,
+      'descripcion' => 'Número motor',
+      'tipo' => 'bsText',
+      'name' => 'numero_motor',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    649 => 
+    array (
+      'id' => 655,
+      'descripcion' => 'Modelo',
+      'tipo' => 'bsText',
+      'name' => 'modelo',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    650 => 
+    array (
+      'id' => 656,
+      'descripcion' => 'Marca',
+      'tipo' => 'bsText',
+      'name' => 'marca',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    651 => 
+    array (
+      'id' => 657,
+      'descripcion' => 'Clase',
+      'tipo' => 'bsText',
+      'name' => 'clase',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    652 => 
+    array (
+      'id' => 658,
+      'descripcion' => 'Color',
+      'tipo' => 'bsText',
+      'name' => 'color',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    653 => 
+    array (
+      'id' => 659,
+      'descripcion' => 'Cilindraje',
+      'tipo' => 'bsText',
+      'name' => 'cilindraje',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    654 => 
+    array (
+      'id' => 660,
+      'descripcion' => 'Capacidad',
+      'tipo' => 'bsText',
+      'name' => 'capacidad',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    655 => 
+    array (
+      'id' => 661,
+      'descripcion' => 'Fecha control kilometraje',
+      'tipo' => 'fecha',
+      'name' => 'fecha_control_kilometraje',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    656 => 
+    array (
+      'id' => 662,
+      'descripcion' => 'Propietario',
+      'tipo' => 'select',
+      'name' => 'propietario_id',
+      'opciones' => 'model_App\\Contratotransporte\\Propietario',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    657 => 
+    array (
+      'id' => 663,
+      'descripcion' => 'genera_planilla',
+      'tipo' => 'select',
+      'name' => 'genera_planilla',
+      'opciones' => '{"SI":"SI","NO":"NO"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-25 15:28:54',
+    ),
+    658 => 
+    array (
+      'id' => 664,
+      'descripcion' => 'Tercero',
+      'tipo' => 'select',
+      'name' => 'tercero_id',
+      'opciones' => 'model_App\\Core\\Tercero',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    659 => 
+    array (
+      'id' => 665,
+      'descripcion' => 'Numeración',
+      'tipo' => 'bsText',
+      'name' => 'numeracion',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    660 => 
+    array (
+      'id' => 666,
+      'descripcion' => 'Texto',
+      'tipo' => 'bsTextArea',
+      'name' => 'texto',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    661 => 
+    array (
+      'id' => 667,
+      'descripcion' => 'Plantilla artículo',
+      'tipo' => 'select',
+      'name' => 'plantillaarticulo_id',
+      'opciones' => 'model_App\\Contratotransporte\\Plantillaarticulo',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    662 => 
+    array (
+      'id' => 668,
+      'descripcion' => 'Teléfono',
+      'tipo' => 'bsText',
+      'name' => 'telefono',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    663 => 
+    array (
+      'id' => 669,
+      'descripcion' => 'E-mail',
+      'tipo' => 'bsText',
+      'name' => 'correo',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    664 => 
+    array (
+      'id' => 670,
+      'descripcion' => 'Firma',
+      'tipo' => 'bsText',
+      'name' => 'firma',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    665 => 
+    array (
+      'id' => 671,
+      'descripcion' => 'Pie de página',
+      'tipo' => 'bsText',
+      'name' => 'pie_pagina1',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    666 => 
+    array (
+      'id' => 672,
+      'descripcion' => 'Tíitulo al respaldo',
+      'tipo' => 'bsText',
+      'name' => 'titulo_atras',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    667 => 
+    array (
+      'id' => 673,
+      'descripcion' => 'Conductor',
+      'tipo' => 'select',
+      'name' => 'conductor_id',
+      'opciones' => 'model_App\\Contratotransporte\\Conductor',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    668 => 
+    array (
+      'id' => 674,
+      'descripcion' => 'Planilla',
+      'tipo' => 'select',
+      'name' => 'planillac_id',
+      'opciones' => 'model_App\\Contratotransporte\\Planillac',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    669 => 
+    array (
+      'id' => 675,
+      'descripcion' => 'Contrato',
+      'tipo' => 'select',
+      'name' => 'contrato_id',
+      'opciones' => 'model_App\\Contratotransporte\\Contrato',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    670 => 
+    array (
+      'id' => 676,
+      'descripcion' => 'Razón social',
+      'tipo' => 'bsText',
+      'name' => 'razon_social',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    671 => 
+    array (
+      'id' => 677,
+      'descripcion' => 'NIT',
+      'tipo' => 'bsText',
+      'name' => 'nit',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    672 => 
+    array (
+      'id' => 678,
+      'descripcion' => 'Convenio',
+      'tipo' => 'bsText',
+      'name' => 'convenio',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    673 => 
+    array (
+      'id' => 679,
+      'descripcion' => 'Plantilla',
+      'tipo' => 'select',
+      'name' => 'plantilla_id',
+      'opciones' => 'model_App\\Contratotransporte\\Plantilla',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    674 => 
+    array (
+      'id' => 680,
+      'descripcion' => 'Plantilla artículo numeral',
+      'tipo' => 'select',
+      'name' => 'plantillaarticulonumeral_id',
+      'opciones' => 'model_App\\Contratotransporte\\Plantillaarticulonumeral',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    675 => 
+    array (
+      'id' => 681,
+      'descripcion' => 'Campo',
+      'tipo' => 'bsText',
+      'name' => 'campo',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    676 => 
+    array (
+      'id' => 682,
+      'descripcion' => 'Valor',
+      'tipo' => 'bsText',
+      'name' => 'valor',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    677 => 
+    array (
+      'id' => 683,
+      'descripcion' => 'Mantenimiento',
+      'tipo' => 'select',
+      'name' => 'mantenimiento_id',
+      'opciones' => 'model_App\\Contratotransporte\\Mantenimiento',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    678 => 
+    array (
+      'id' => 684,
+      'descripcion' => 'Fecha suceso',
+      'tipo' => 'fecha',
+      'name' => 'fecha_suceso',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    679 => 
+    array (
+      'id' => 685,
+      'descripcion' => 'Reporte',
+      'tipo' => 'bsTextArea',
+      'name' => 'reporte',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    680 => 
+    array (
+      'id' => 686,
+      'descripcion' => 'Sede',
+      'tipo' => 'bsText',
+      'name' => 'sede',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    681 => 
+    array (
+      'id' => 687,
+      'descripcion' => 'Revisado',
+      'tipo' => 'select',
+      'name' => 'revisado',
+      'opciones' => '{"":"","1":"Si","0":"No"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    682 => 
+    array (
+      'id' => 688,
+      'descripcion' => 'Anio/periodo',
+      'tipo' => 'select',
+      'name' => 'anioperiodo_id',
+      'opciones' => 'model_App\\Contratotransporte\\Anioperiodo',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    683 => 
+    array (
+      'id' => 689,
+      'descripcion' => 'Tarjeta operación',
+      'tipo' => 'select',
+      'name' => 'tarjeta_operacion',
+      'opciones' => '{"SI":"SI","NO":"NO"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-25 15:28:17',
+    ),
+    684 => 
+    array (
+      'id' => 690,
+      'descripcion' => 'Documento',
+      'tipo' => 'bsText',
+      'name' => 'documento',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    685 => 
+    array (
+      'id' => 691,
+      'descripcion' => 'Recurso',
+      'tipo' => 'file',
+      'name' => 'recurso',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-25 15:29:42',
+    ),
+    686 => 
+    array (
+      'id' => 692,
+      'descripcion' => 'No. documento',
+      'tipo' => 'bsText',
+      'name' => 'nro_documento',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    687 => 
+    array (
+      'id' => 693,
+      'descripcion' => 'Vigencia inicio',
+      'tipo' => 'fecha',
+      'name' => 'vigencia_inicio',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-25 15:31:24',
+    ),
+    688 => 
+    array (
+      'id' => 694,
+      'descripcion' => 'Vigencia fin',
+      'tipo' => 'fecha',
+      'name' => 'vigencia_fin',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-25 15:31:37',
+    ),
+    689 => 
+    array (
+      'id' => 695,
+      'descripcion' => 'Vehículo',
+      'tipo' => 'select',
+      'name' => 'vehiculo_id',
+      'opciones' => 'model_App\\Contratotransporte\\Vehiculo',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    690 => 
+    array (
+      'id' => 696,
+      'descripcion' => 'Licencia',
+      'tipo' => 'select',
+      'name' => 'licencia',
+      'opciones' => '{"SI":"SI","NO":"NO"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-25 15:30:36',
+    ),
+    691 => 
+    array (
+      'id' => 697,
+      'descripcion' => 'Identificación',
+      'tipo' => 'bsText',
+      'name' => 'identificacion',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    692 => 
+    array (
+      'id' => 698,
+      'descripcion' => 'Persona',
+      'tipo' => 'bsText',
+      'name' => 'persona',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    693 => 
+    array (
+      'id' => 699,
+      'descripcion' => 'Código',
+      'tipo' => 'bsText',
+      'name' => 'codigo',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    694 => 
+    array (
+      'id' => 700,
+      'descripcion' => 'Versión',
+      'tipo' => 'bsText',
+      'name' => 'version',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    695 => 
+    array (
+      'id' => 701,
+      'descripcion' => 'Número contrato',
+      'tipo' => 'bsText',
+      'name' => 'numero_contrato',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    696 => 
+    array (
+      'id' => 702,
+      'descripcion' => 'Objeto',
+      'tipo' => 'bsText',
+      'name' => 'objeto',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    697 => 
+    array (
+      'id' => 703,
+      'descripcion' => 'Origen',
+      'tipo' => 'bsText',
+      'name' => 'origen',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    698 => 
+    array (
+      'id' => 704,
+      'descripcion' => 'Destino',
+      'tipo' => 'bsText',
+      'name' => 'destino',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    699 => 
+    array (
+      'id' => 705,
+      'descripcion' => 'Fecha fin',
+      'tipo' => 'fecha',
+      'name' => 'fecha_fin',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    700 => 
+    array (
+      'id' => 706,
+      'descripcion' => 'Valor contrato',
+      'tipo' => 'bsText',
+      'name' => 'valor_contrato',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    701 => 
+    array (
+      'id' => 707,
+      'descripcion' => 'Valor empresa',
+      'tipo' => 'bsText',
+      'name' => 'valor_empresa',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    702 => 
+    array (
+      'id' => 708,
+      'descripcion' => 'Valor propietario',
+      'tipo' => 'bsText',
+      'name' => 'valor_propietario',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    703 => 
+    array (
+      'id' => 709,
+      'descripcion' => 'Dirección notificación',
+      'tipo' => 'bsText',
+      'name' => 'direccion_notificacion',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    704 => 
+    array (
+      'id' => 710,
+      'descripcion' => 'Teléfono notificación',
+      'tipo' => 'bsText',
+      'name' => 'telefono_notificacion',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    705 => 
+    array (
+      'id' => 711,
+      'descripcion' => 'Día contrato',
+      'tipo' => 'bsText',
+      'name' => 'dia_contrato',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    706 => 
+    array (
+      'id' => 712,
+      'descripcion' => 'Mes contrato',
+      'tipo' => 'bsText',
+      'name' => 'mes_contrato',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    707 => 
+    array (
+      'id' => 713,
+      'descripcion' => 'Pie uno',
+      'tipo' => 'bsText',
+      'name' => 'pie_uno',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    708 => 
+    array (
+      'id' => 714,
+      'descripcion' => 'Pie dos',
+      'tipo' => 'bsText',
+      'name' => 'pie_dos',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    709 => 
+    array (
+      'id' => 715,
+      'descripcion' => 'Pie tres',
+      'tipo' => 'bsText',
+      'name' => 'pie_tres',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    710 => 
+    array (
+      'id' => 716,
+      'descripcion' => 'Pie cuatro',
+      'tipo' => 'bsText',
+      'name' => 'pie_cuatro',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    711 => 
+    array (
+      'id' => 717,
+      'descripcion' => 'Contratante',
+      'tipo' => 'select',
+      'name' => 'contratante_id',
+      'opciones' => 'model_App\\Contratotransporte\\Contratante',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    712 => 
+    array (
+      'id' => 718,
+      'descripcion' => 'Año',
+      'tipo' => 'select',
+      'name' => 'anio_id',
+      'opciones' => 'model_App\\Contratotransporte\\Anio',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    713 => 
+    array (
+      'id' => 719,
+      'descripcion' => 'Inicio',
+      'tipo' => 'bsText',
+      'name' => 'inicio',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    714 => 
+    array (
+      'id' => 720,
+      'descripcion' => 'Fin',
+      'tipo' => 'bsText',
+      'name' => 'fin',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
+    715 => 
+    array (
+      'id' => 721,
+      'descripcion' => 'Año',
+      'tipo' => 'bsText',
+      'name' => 'anio',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-24 09:46:22',
+      'updated_at' => '2020-03-24 09:46:22',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -22034,10 +23527,10 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'controller_complementario' => '',
       'url_form_create' => '',
       'home_miga_pan' => 'matriculas,Matrículas',
-      'ruta_storage_imagen' => 'calificaciones/horarios_cursos',
+      'ruta_storage_imagen' => 'calificaciones/horarios_cursos/',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2018-08-29 05:00:00',
-      'updated_at' => '2020-01-21 07:50:34',
+      'updated_at' => '2020-03-23 17:28:39',
     ),
     1 => 
     array (
@@ -25906,10 +27399,10 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'controller_complementario' => '',
       'url_form_create' => 'sga_planes_clases',
       'home_miga_pan' => 'academico_docente, Académico Docente',
-      'ruta_storage_imagen' => '',
+      'ruta_storage_imagen' => 'planes_clases/',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-01-24 09:13:22',
-      'updated_at' => '2020-01-25 09:41:08',
+      'updated_at' => '2020-03-21 01:53:45',
     ),
     177 => 
     array (
@@ -26204,10 +27697,10 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'modelo' => 'cte_plantillas',
       'name_space' => 'App\\Contratotransporte\\Plantilla',
       'modelo_relacionado' => '',
-      'url_crear' => 'cte_plantillas/create',
-      'url_edit' => 'cte_plantillas/id_fila/edit',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
-      'url_ver' => 'cte_plantillas/id_fila',
+      'url_ver' => 'web/id_fila',
       'enlaces' => '',
       'url_estado' => '',
       'url_eliminar' => '',
@@ -26217,7 +27710,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-03-19 09:13:22',
-      'updated_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-25 07:57:11',
     ),
     191 => 
     array (
@@ -26263,9 +27756,248 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-03-19 09:13:22',
       'updated_at' => '2020-03-19 09:13:22',
     ),
-  ),
-  'sys_modelos_relacionados' => 
-  array (
+    193 => 
+    array (
+      'id' => 203,
+      'descripcion' => 'Años',
+      'modelo' => 'cte_anios',
+      'name_space' => 'App\\Contratotransporte\\Anio',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 15:26:51',
+    ),
+    194 => 
+    array (
+      'id' => 204,
+      'descripcion' => 'Periodos de años',
+      'modelo' => 'cte_anioperiodos',
+      'name_space' => 'App\\Contratotransporte\\Anioperiodo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    195 => 
+    array (
+      'id' => 205,
+      'descripcion' => 'Grupos de usuarios del contrato',
+      'modelo' => 'cte_contratogrupous',
+      'name_space' => 'App\\Contratotransporte\\Contratogrupou',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    196 => 
+    array (
+      'id' => 206,
+      'descripcion' => 'Mantenimientos de vehículos',
+      'modelo' => 'cte_mantenimientos',
+      'name_space' => 'App\\Contratotransporte\\Mantenimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    197 => 
+    array (
+      'id' => 207,
+      'descripcion' => 'Observaciones de mantenimientos',
+      'modelo' => 'cte_mantobs',
+      'name_space' => 'App\\Contratotransporte\\Mantobs',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    198 => 
+    array (
+      'id' => 208,
+      'descripcion' => 'Reportes de mantenimientos',
+      'modelo' => 'cte_mantreportes',
+      'name_space' => 'App\\Contratotransporte\\Mantreportes',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    199 => 
+    array (
+      'id' => 209,
+      'descripcion' => 'Numerales tabla de plantilla',
+      'modelo' => 'cte_numeraltablas',
+      'name_space' => 'App\\Contratotransporte\\Numeraltabla',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    200 => 
+    array (
+      'id' => 210,
+      'descripcion' => 'FUEC (Planillas)',
+      'modelo' => 'cte_planillacs',
+      'name_space' => 'App\\Contratotransporte\\Planillac',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-25 07:06:07',
+    ),
+    201 => 
+    array (
+      'id' => 211,
+      'descripcion' => 'Planillas de conductores',
+      'modelo' => 'cte_planillaconductors',
+      'name_space' => 'App\\Contratotransporte\\Planillaconductor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    202 => 
+    array (
+      'id' => 212,
+      'descripcion' => 'Artículos de la plantilla',
+      'modelo' => 'cte_plantillaarticulos',
+      'name_space' => 'App\\Contratotransporte\\Plantillaarticulo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 15:24:21',
+    ),
+    203 => 
+    array (
+      'id' => 213,
+      'descripcion' => 'Numerales de artículos de planillas',
+      'modelo' => 'cte_plantillaarticulonumerals',
+      'name_space' => 'App\\Contratotransporte\\Plantillaarticulonumeral',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
   ),
   'sys_modelo_tiene_campos' => 
   array (
@@ -36202,6 +37934,678 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 83,
       'core_campo_id' => 650,
     ),
+    1419 => 
+    array (
+      'id' => 1641,
+      'orden' => 13,
+      'core_modelo_id' => 184,
+      'core_campo_id' => 174,
+    ),
+    1420 => 
+    array (
+      'id' => 1642,
+      'orden' => 2,
+      'core_modelo_id' => 213,
+      'core_campo_id' => 667,
+    ),
+    1421 => 
+    array (
+      'id' => 1643,
+      'orden' => 4,
+      'core_modelo_id' => 213,
+      'core_campo_id' => 665,
+    ),
+    1422 => 
+    array (
+      'id' => 1644,
+      'orden' => 4,
+      'core_modelo_id' => 213,
+      'core_campo_id' => 666,
+    ),
+    1423 => 
+    array (
+      'id' => 1645,
+      'orden' => 2,
+      'core_modelo_id' => 212,
+      'core_campo_id' => 679,
+    ),
+    1424 => 
+    array (
+      'id' => 1646,
+      'orden' => 4,
+      'core_modelo_id' => 212,
+      'core_campo_id' => 316,
+    ),
+    1425 => 
+    array (
+      'id' => 1647,
+      'orden' => 6,
+      'core_modelo_id' => 212,
+      'core_campo_id' => 666,
+    ),
+    1426 => 
+    array (
+      'id' => 1648,
+      'orden' => 2,
+      'core_modelo_id' => 211,
+      'core_campo_id' => 673,
+    ),
+    1427 => 
+    array (
+      'id' => 1649,
+      'orden' => 4,
+      'core_modelo_id' => 211,
+      'core_campo_id' => 674,
+    ),
+    1428 => 
+    array (
+      'id' => 1650,
+      'orden' => 2,
+      'core_modelo_id' => 210,
+      'core_campo_id' => 675,
+    ),
+    1429 => 
+    array (
+      'id' => 1651,
+      'orden' => 4,
+      'core_modelo_id' => 210,
+      'core_campo_id' => 676,
+    ),
+    1430 => 
+    array (
+      'id' => 1652,
+      'orden' => 6,
+      'core_modelo_id' => 210,
+      'core_campo_id' => 677,
+    ),
+    1431 => 
+    array (
+      'id' => 1653,
+      'orden' => 8,
+      'core_modelo_id' => 210,
+      'core_campo_id' => 678,
+    ),
+    1432 => 
+    array (
+      'id' => 1654,
+      'orden' => 10,
+      'core_modelo_id' => 210,
+      'core_campo_id' => 679,
+    ),
+    1433 => 
+    array (
+      'id' => 1655,
+      'orden' => 2,
+      'core_modelo_id' => 209,
+      'core_campo_id' => 680,
+    ),
+    1434 => 
+    array (
+      'id' => 1656,
+      'orden' => 4,
+      'core_modelo_id' => 209,
+      'core_campo_id' => 681,
+    ),
+    1435 => 
+    array (
+      'id' => 1657,
+      'orden' => 6,
+      'core_modelo_id' => 209,
+      'core_campo_id' => 682,
+    ),
+    1436 => 
+    array (
+      'id' => 1658,
+      'orden' => 2,
+      'core_modelo_id' => 208,
+      'core_campo_id' => 683,
+    ),
+    1437 => 
+    array (
+      'id' => 1659,
+      'orden' => 4,
+      'core_modelo_id' => 208,
+      'core_campo_id' => 684,
+    ),
+    1438 => 
+    array (
+      'id' => 1660,
+      'orden' => 6,
+      'core_modelo_id' => 208,
+      'core_campo_id' => 685,
+    ),
+    1439 => 
+    array (
+      'id' => 1661,
+      'orden' => 2,
+      'core_modelo_id' => 207,
+      'core_campo_id' => 683,
+    ),
+    1440 => 
+    array (
+      'id' => 1662,
+      'orden' => 4,
+      'core_modelo_id' => 207,
+      'core_campo_id' => 684,
+    ),
+    1441 => 
+    array (
+      'id' => 1663,
+      'orden' => 6,
+      'core_modelo_id' => 207,
+      'core_campo_id' => 280,
+    ),
+    1442 => 
+    array (
+      'id' => 1664,
+      'orden' => 2,
+      'core_modelo_id' => 206,
+      'core_campo_id' => 688,
+    ),
+    1443 => 
+    array (
+      'id' => 1665,
+      'orden' => 4,
+      'core_modelo_id' => 206,
+      'core_campo_id' => 93,
+    ),
+    1444 => 
+    array (
+      'id' => 1666,
+      'orden' => 6,
+      'core_modelo_id' => 206,
+      'core_campo_id' => 686,
+    ),
+    1445 => 
+    array (
+      'id' => 1667,
+      'orden' => 8,
+      'core_modelo_id' => 206,
+      'core_campo_id' => 687,
+    ),
+    1446 => 
+    array (
+      'id' => 1668,
+      'orden' => 2,
+      'core_modelo_id' => 205,
+      'core_campo_id' => 675,
+    ),
+    1447 => 
+    array (
+      'id' => 1669,
+      'orden' => 4,
+      'core_modelo_id' => 205,
+      'core_campo_id' => 697,
+    ),
+    1448 => 
+    array (
+      'id' => 1670,
+      'orden' => 6,
+      'core_modelo_id' => 205,
+      'core_campo_id' => 698,
+    ),
+    1449 => 
+    array (
+      'id' => 1671,
+      'orden' => 2,
+      'core_modelo_id' => 204,
+      'core_campo_id' => 718,
+    ),
+    1450 => 
+    array (
+      'id' => 1672,
+      'orden' => 4,
+      'core_modelo_id' => 204,
+      'core_campo_id' => 719,
+    ),
+    1451 => 
+    array (
+      'id' => 1673,
+      'orden' => 6,
+      'core_modelo_id' => 204,
+      'core_campo_id' => 720,
+    ),
+    1452 => 
+    array (
+      'id' => 1674,
+      'orden' => 2,
+      'core_modelo_id' => 203,
+      'core_campo_id' => 721,
+    ),
+    1453 => 
+    array (
+      'id' => 1675,
+      'orden' => 2,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 662,
+    ),
+    1454 => 
+    array (
+      'id' => 1676,
+      'orden' => 4,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 651,
+    ),
+    1455 => 
+    array (
+      'id' => 1677,
+      'orden' => 6,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 652,
+    ),
+    1456 => 
+    array (
+      'id' => 1678,
+      'orden' => 8,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 653,
+    ),
+    1457 => 
+    array (
+      'id' => 1679,
+      'orden' => 10,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 654,
+    ),
+    1458 => 
+    array (
+      'id' => 1681,
+      'orden' => 12,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 655,
+    ),
+    1459 => 
+    array (
+      'id' => 1682,
+      'orden' => 14,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 656,
+    ),
+    1460 => 
+    array (
+      'id' => 1683,
+      'orden' => 16,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 657,
+    ),
+    1461 => 
+    array (
+      'id' => 1684,
+      'orden' => 18,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 658,
+    ),
+    1462 => 
+    array (
+      'id' => 1685,
+      'orden' => 20,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 659,
+    ),
+    1463 => 
+    array (
+      'id' => 1686,
+      'orden' => 22,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 660,
+    ),
+    1464 => 
+    array (
+      'id' => 1687,
+      'orden' => 24,
+      'core_modelo_id' => 202,
+      'core_campo_id' => 661,
+    ),
+    1465 => 
+    array (
+      'id' => 1688,
+      'orden' => 2,
+      'core_modelo_id' => 201,
+      'core_campo_id' => 664,
+    ),
+    1466 => 
+    array (
+      'id' => 1689,
+      'orden' => 4,
+      'core_modelo_id' => 201,
+      'core_campo_id' => 663,
+    ),
+    1467 => 
+    array (
+      'id' => 1690,
+      'orden' => 2,
+      'core_modelo_id' => 200,
+      'core_campo_id' => 316,
+    ),
+    1468 => 
+    array (
+      'id' => 1691,
+      'orden' => 4,
+      'core_modelo_id' => 200,
+      'core_campo_id' => 236,
+    ),
+    1469 => 
+    array (
+      'id' => 1692,
+      'orden' => 6,
+      'core_modelo_id' => 200,
+      'core_campo_id' => 668,
+    ),
+    1470 => 
+    array (
+      'id' => 1693,
+      'orden' => 8,
+      'core_modelo_id' => 200,
+      'core_campo_id' => 669,
+    ),
+    1471 => 
+    array (
+      'id' => 1694,
+      'orden' => 10,
+      'core_modelo_id' => 200,
+      'core_campo_id' => 670,
+    ),
+    1472 => 
+    array (
+      'id' => 1695,
+      'orden' => 12,
+      'core_modelo_id' => 200,
+      'core_campo_id' => 671,
+    ),
+    1473 => 
+    array (
+      'id' => 1696,
+      'orden' => 14,
+      'core_modelo_id' => 200,
+      'core_campo_id' => 672,
+    ),
+    1474 => 
+    array (
+      'id' => 1697,
+      'orden' => 14,
+      'core_modelo_id' => 200,
+      'core_campo_id' => 22,
+    ),
+    1475 => 
+    array (
+      'id' => 1698,
+      'orden' => 2,
+      'core_modelo_id' => 199,
+      'core_campo_id' => 695,
+    ),
+    1476 => 
+    array (
+      'id' => 1699,
+      'orden' => 4,
+      'core_modelo_id' => 199,
+      'core_campo_id' => 689,
+    ),
+    1477 => 
+    array (
+      'id' => 1700,
+      'orden' => 6,
+      'core_modelo_id' => 199,
+      'core_campo_id' => 690,
+    ),
+    1478 => 
+    array (
+      'id' => 1701,
+      'orden' => 8,
+      'core_modelo_id' => 199,
+      'core_campo_id' => 691,
+    ),
+    1479 => 
+    array (
+      'id' => 1702,
+      'orden' => 10,
+      'core_modelo_id' => 199,
+      'core_campo_id' => 692,
+    ),
+    1480 => 
+    array (
+      'id' => 1703,
+      'orden' => 12,
+      'core_modelo_id' => 199,
+      'core_campo_id' => 693,
+    ),
+    1481 => 
+    array (
+      'id' => 1704,
+      'orden' => 14,
+      'core_modelo_id' => 199,
+      'core_campo_id' => 694,
+    ),
+    1482 => 
+    array (
+      'id' => 1705,
+      'orden' => 2,
+      'core_modelo_id' => 198,
+      'core_campo_id' => 673,
+    ),
+    1483 => 
+    array (
+      'id' => 1706,
+      'orden' => 4,
+      'core_modelo_id' => 198,
+      'core_campo_id' => 696,
+    ),
+    1484 => 
+    array (
+      'id' => 1707,
+      'orden' => 6,
+      'core_modelo_id' => 198,
+      'core_campo_id' => 690,
+    ),
+    1485 => 
+    array (
+      'id' => 1708,
+      'orden' => 8,
+      'core_modelo_id' => 198,
+      'core_campo_id' => 691,
+    ),
+    1486 => 
+    array (
+      'id' => 1709,
+      'orden' => 10,
+      'core_modelo_id' => 198,
+      'core_campo_id' => 692,
+    ),
+    1487 => 
+    array (
+      'id' => 1710,
+      'orden' => 12,
+      'core_modelo_id' => 198,
+      'core_campo_id' => 693,
+    ),
+    1488 => 
+    array (
+      'id' => 1711,
+      'orden' => 14,
+      'core_modelo_id' => 198,
+      'core_campo_id' => 694,
+    ),
+    1489 => 
+    array (
+      'id' => 1712,
+      'orden' => 2,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 3,
+    ),
+    1490 => 
+    array (
+      'id' => 1713,
+      'orden' => 4,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 700,
+    ),
+    1491 => 
+    array (
+      'id' => 1714,
+      'orden' => 6,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 93,
+    ),
+    1492 => 
+    array (
+      'id' => 1715,
+      'orden' => 8,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 701,
+    ),
+    1493 => 
+    array (
+      'id' => 1716,
+      'orden' => 10,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 702,
+    ),
+    1494 => 
+    array (
+      'id' => 1717,
+      'orden' => 12,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 703,
+    ),
+    1495 => 
+    array (
+      'id' => 1718,
+      'orden' => 14,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 704,
+    ),
+    1496 => 
+    array (
+      'id' => 1719,
+      'orden' => 16,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 125,
+    ),
+    1497 => 
+    array (
+      'id' => 1720,
+      'orden' => 18,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 705,
+    ),
+    1498 => 
+    array (
+      'id' => 1721,
+      'orden' => 20,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 706,
+    ),
+    1499 => 
+    array (
+      'id' => 1722,
+      'orden' => 22,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 707,
+    ),
+    1500 => 
+    array (
+      'id' => 1723,
+      'orden' => 24,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 708,
+    ),
+    1501 => 
+    array (
+      'id' => 1724,
+      'orden' => 26,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 709,
+    ),
+    1502 => 
+    array (
+      'id' => 1725,
+      'orden' => 28,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 710,
+    ),
+    1503 => 
+    array (
+      'id' => 1726,
+      'orden' => 30,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 711,
+    ),
+    1504 => 
+    array (
+      'id' => 1727,
+      'orden' => 32,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 712,
+    ),
+    1505 => 
+    array (
+      'id' => 1728,
+      'orden' => 34,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 713,
+    ),
+    1506 => 
+    array (
+      'id' => 1730,
+      'orden' => 36,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 714,
+    ),
+    1507 => 
+    array (
+      'id' => 1731,
+      'orden' => 38,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 715,
+    ),
+    1508 => 
+    array (
+      'id' => 1732,
+      'orden' => 40,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 716,
+    ),
+    1509 => 
+    array (
+      'id' => 1733,
+      'orden' => 42,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 717,
+    ),
+    1510 => 
+    array (
+      'id' => 1734,
+      'orden' => 44,
+      'core_modelo_id' => 197,
+      'core_campo_id' => 695,
+    ),
+    1511 => 
+    array (
+      'id' => 1735,
+      'orden' => 2,
+      'core_modelo_id' => 196,
+      'core_campo_id' => 664,
+    ),
+    1512 => 
+    array (
+      'id' => 1736,
+      'orden' => 4,
+      'core_modelo_id' => 196,
+      'core_campo_id' => 22,
+    ),
+    1513 => 
+    array (
+      'id' => 1737,
+      'orden' => 2,
+      'core_modelo_id' => 195,
+      'core_campo_id' => 664,
+    ),
+    1514 => 
+    array (
+      'id' => 1738,
+      'orden' => 4,
+      'core_modelo_id' => 195,
+      'core_campo_id' => 22,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -37434,6 +39838,894 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'estado' => 'Activo',
       'created_at' => '2020-02-07 12:34:26',
       'updated_at' => '2020-02-10 07:20:15',
+    ),
+  ),
+  'migrations' => 
+  array (
+    0 => 
+    array (
+      'migration' => '2014_10_12_000000_create_users_table',
+      'batch' => 1,
+    ),
+    1 => 
+    array (
+      'migration' => '2014_10_12_100000_create_password_resets_table',
+      'batch' => 1,
+    ),
+    2 => 
+    array (
+      'migration' => '2016_07_16_155014_tabla_estudiantes',
+      'batch' => 1,
+    ),
+    3 => 
+    array (
+      'migration' => '2016_07_16_163147_tabla_boletin_contenidos',
+      'batch' => 1,
+    ),
+    4 => 
+    array (
+      'migration' => '2016_07_16_163159_tabla_boletin_encabezados',
+      'batch' => 1,
+    ),
+    5 => 
+    array (
+      'migration' => '2016_07_16_164443_tabla_grados',
+      'batch' => 1,
+    ),
+    6 => 
+    array (
+      'migration' => '2016_07_16_164603_tabla_periodos',
+      'batch' => 1,
+    ),
+    7 => 
+    array (
+      'migration' => '2016_07_16_164705_tabla_matriculas',
+      'batch' => 1,
+    ),
+    8 => 
+    array (
+      'migration' => '2016_07_16_164815_tabla_asignaturas',
+      'batch' => 1,
+    ),
+    9 => 
+    array (
+      'migration' => '2016_07_16_165155_tabla_niveles',
+      'batch' => 1,
+    ),
+    10 => 
+    array (
+      'migration' => '2016_07_16_193527_tabla_logros',
+      'batch' => 2,
+    ),
+    11 => 
+    array (
+      'migration' => '2016_07_23_064653_tabla_datoscolegio',
+      'batch' => 3,
+    ),
+    12 => 
+    array (
+      'migration' => '2016_08_08_221803_tabla_matriculas',
+      'batch' => 4,
+    ),
+    13 => 
+    array (
+      'migration' => '2016_10_01_033532_create_existencias_table',
+      'batch' => 5,
+    ),
+    14 => 
+    array (
+      'migration' => '2017_03_13_155945_crear_tabla_boletines',
+      'batch' => 5,
+    ),
+    15 => 
+    array (
+      'migration' => '2017_03_13_163246_crear_tabla_calificaciones',
+      'batch' => 5,
+    ),
+    16 => 
+    array (
+      'migration' => '2017_03_13_163627_crear_tabla_logros_calificaciones',
+      'batch' => 5,
+    ),
+    17 => 
+    array (
+      'migration' => '2017_03_14_015409_crear_tabla_consecutivo_logros',
+      'batch' => 6,
+    ),
+    18 => 
+    array (
+      'migration' => '2017_10_29_163430_crear_tabla_calificaciones',
+      'batch' => 7,
+    ),
+    19 => 
+    array (
+      'migration' => '2018_02_27_221431_create_permission_tables',
+      'batch' => 8,
+    ),
+    20 => 
+    array (
+      'migration' => '2018_03_05_210435_create_posts_table',
+      'batch' => 9,
+    ),
+    21 => 
+    array (
+      'migration' => '2018_03_15_225958_create_colegios_table',
+      'batch' => 10,
+    ),
+    22 => 
+    array (
+      'migration' => '2018_04_15_171547_create_cursos_table',
+      'batch' => 11,
+    ),
+    23 => 
+    array (
+      'migration' => '2018_04_17_225106_create_asignacions_table',
+      'batch' => 12,
+    ),
+    24 => 
+    array (
+      'migration' => '2018_06_22_093041_create_teso_libretas_pagos_table',
+      'batch' => 13,
+    ),
+    25 => 
+    array (
+      'migration' => '2018_07_09_123312_create_difo_formatos_table',
+      'batch' => 14,
+    ),
+    26 => 
+    array (
+      'migration' => '2018_07_09_123336_create_difo_seccions_table',
+      'batch' => 14,
+    ),
+    27 => 
+    array (
+      'migration' => '2018_07_11_103257_create_core_firmas_autorizadas_table',
+      'batch' => 15,
+    ),
+    28 => 
+    array (
+      'migration' => '2018_07_16_112040_create_teso_recaudos_libretas_table',
+      'batch' => 16,
+    ),
+    29 => 
+    array (
+      'migration' => '2018_07_19_050606_create_sga_configuracions_table',
+      'batch' => 17,
+    ),
+    30 => 
+    array (
+      'migration' => '2018_07_19_123906_create_difo_campos_seccions_table',
+      'batch' => 18,
+    ),
+    31 => 
+    array (
+      'migration' => '2018_07_26_010921_create_teso_cartera_estudiantes_table',
+      'batch' => 19,
+    ),
+    32 => 
+    array (
+      'migration' => '2018_08_02_153604_create_escala_valoracions_table',
+      'batch' => 20,
+    ),
+    33 => 
+    array (
+      'migration' => '2018_08_03_051123_create_sga_novedades_observadors_table',
+      'batch' => 20,
+    ),
+    34 => 
+    array (
+      'migration' => '2018_08_03_052455_create_sga_foda_estudiantes_table',
+      'batch' => 20,
+    ),
+    35 => 
+    array (
+      'migration' => '2018_08_03_052513_create_sga_aspectos_observadors_table',
+      'batch' => 20,
+    ),
+    36 => 
+    array (
+      'migration' => '2018_08_03_052552_create_sga_catalogo_aspectos_table',
+      'batch' => 20,
+    ),
+    37 => 
+    array (
+      'migration' => '2018_08_03_052606_create_sga_tipos_aspectos_table',
+      'batch' => 20,
+    ),
+    38 => 
+    array (
+      'migration' => '2018_08_08_231720_create_asistencia_clases_table',
+      'batch' => 21,
+    ),
+    39 => 
+    array (
+      'migration' => '2018_08_29_223224_create_core_campos_table',
+      'batch' => 22,
+    ),
+    40 => 
+    array (
+      'migration' => '2018_08_29_232020_create_core_modelos_table',
+      'batch' => 23,
+    ),
+    41 => 
+    array (
+      'migration' => '2019_03_22_081508_create_codigo_discipliarios_table',
+      'batch' => 24,
+    ),
+    42 => 
+    array (
+      'migration' => '2019_03_22_082351_create_semanas_calendarios_table',
+      'batch' => 24,
+    ),
+    43 => 
+    array (
+      'migration' => '2019_03_22_083007_create_control_disciplinarios_table',
+      'batch' => 24,
+    ),
+    44 => 
+    array (
+      'migration' => '2019_04_28_064829_create_nom_contratos_table',
+      'batch' => 25,
+    ),
+    45 => 
+    array (
+      'migration' => '2019_04_28_064853_create_nom_conceptos_table',
+      'batch' => 25,
+    ),
+    46 => 
+    array (
+      'migration' => '2019_04_28_064919_create_nom_modo_liquidacions_table',
+      'batch' => 25,
+    ),
+    47 => 
+    array (
+      'migration' => '2019_04_28_065007_create_nom_cargos_table',
+      'batch' => 25,
+    ),
+    48 => 
+    array (
+      'migration' => '2019_04_28_071128_create_nom_doc_encabezados_table',
+      'batch' => 25,
+    ),
+    49 => 
+    array (
+      'migration' => '2019_04_28_071140_create_nom_doc_registros_table',
+      'batch' => 25,
+    ),
+    50 => 
+    array (
+      'migration' => '2019_04_28_071200_create_nom_cuotas_table',
+      'batch' => 25,
+    ),
+    51 => 
+    array (
+      'migration' => '2019_04_28_071209_create_nom_prestamos_table',
+      'batch' => 25,
+    ),
+    52 => 
+    array (
+      'migration' => '2019_04_28_071516_create_nom_entidads_table',
+      'batch' => 25,
+    ),
+    53 => 
+    array (
+      'migration' => '2019_06_06_225155_create_modelo_relacionados_table',
+      'batch' => 26,
+    ),
+    54 => 
+    array (
+      'migration' => '2019_06_06_225525_create_valor_registro_modelo_relacionados_table',
+      'batch' => 27,
+    ),
+    55 => 
+    array (
+      'migration' => '2019_06_06_225700_create_consultorios_table',
+      'batch' => 27,
+    ),
+    56 => 
+    array (
+      'migration' => '2019_06_06_225716_create_profesional_saluds_table',
+      'batch' => 27,
+    ),
+    57 => 
+    array (
+      'migration' => '2019_06_06_225735_create_codigo_cies_table',
+      'batch' => 27,
+    ),
+    58 => 
+    array (
+      'migration' => '2019_06_06_225741_create_pacientes_table',
+      'batch' => 27,
+    ),
+    59 => 
+    array (
+      'migration' => '2019_06_06_225754_create_consulta_medicas_table',
+      'batch' => 27,
+    ),
+    60 => 
+    array (
+      'migration' => '2019_06_06_225810_create_organo_del_cuerpos_table',
+      'batch' => 27,
+    ),
+    61 => 
+    array (
+      'migration' => '2019_06_06_225826_create_variable_examens_table',
+      'batch' => 27,
+    ),
+    62 => 
+    array (
+      'migration' => '2019_06_06_225837_create_examen_medicos_table',
+      'batch' => 27,
+    ),
+    63 => 
+    array (
+      'migration' => '2019_06_06_225854_create_resultado_examen_medicos_table',
+      'batch' => 27,
+    ),
+    64 => 
+    array (
+      'migration' => '2019_06_06_225910_create_formula_opticas_table',
+      'batch' => 27,
+    ),
+    65 => 
+    array (
+      'migration' => '2019_06_19_090050_create_tipo_lentes_table',
+      'batch' => 28,
+    ),
+    66 => 
+    array (
+      'migration' => '2019_06_19_090353_create_material_lentes_table',
+      'batch' => 28,
+    ),
+    67 => 
+    array (
+      'migration' => '2019_07_02_063033_create_min_stocks_table',
+      'batch' => 29,
+    ),
+    68 => 
+    array (
+      'migration' => '2019_07_04_074322_create_carousels_table',
+      'batch' => 30,
+    ),
+    69 => 
+    array (
+      'migration' => '2019_07_09_040341_create_encabezado_calificacions_table',
+      'batch' => 30,
+    ),
+    70 => 
+    array (
+      'migration' => '2019_07_12_094903_create_seccions_table',
+      'batch' => 30,
+    ),
+    71 => 
+    array (
+      'migration' => '2019_07_16_155803_create_reportes_table',
+      'batch' => 30,
+    ),
+    72 => 
+    array (
+      'migration' => '2019_08_13_184943_create_tipo_modulos_table',
+      'batch' => 31,
+    ),
+    73 => 
+    array (
+      'migration' => '2019_08_13_185026_create_modulos_table',
+      'batch' => 31,
+    ),
+    74 => 
+    array (
+      'migration' => '2019_09_15_221915_create_descuento_pp_encabezados_table',
+      'batch' => 32,
+    ),
+    75 => 
+    array (
+      'migration' => '2019_09_15_221947_create_descuento_pp_detalles_table',
+      'batch' => 32,
+    ),
+    76 => 
+    array (
+      'migration' => '2019_09_15_221958_create_lista_precio_encabezados_table',
+      'batch' => 32,
+    ),
+    77 => 
+    array (
+      'migration' => '2019_09_15_222007_create_lista_precio_detalles_table',
+      'batch' => 32,
+    ),
+    78 => 
+    array (
+      'migration' => '2019_09_15_222018_create_lista_dcto_encabezados_table',
+      'batch' => 32,
+    ),
+    79 => 
+    array (
+      'migration' => '2019_09_15_222029_create_lista_dcto_detalles_table',
+      'batch' => 32,
+    ),
+    80 => 
+    array (
+      'migration' => '2019_09_15_222055_create_clase_vendedors_table',
+      'batch' => 32,
+    ),
+    81 => 
+    array (
+      'migration' => '2019_09_15_222116_create_equipo_ventas_table',
+      'batch' => 32,
+    ),
+    82 => 
+    array (
+      'migration' => '2019_09_15_222133_create_vendedors_table',
+      'batch' => 32,
+    ),
+    83 => 
+    array (
+      'migration' => '2019_09_15_222148_create_zonas_table',
+      'batch' => 32,
+    ),
+    84 => 
+    array (
+      'migration' => '2019_09_15_222203_create_condicion_pagos_table',
+      'batch' => 32,
+    ),
+    85 => 
+    array (
+      'migration' => '2019_09_15_222214_create_clase_clientes_table',
+      'batch' => 32,
+    ),
+    86 => 
+    array (
+      'migration' => '2019_09_15_222230_create_clientes_table',
+      'batch' => 32,
+    ),
+    87 => 
+    array (
+      'migration' => '2019_09_17_190053_create_impuestos_table',
+      'batch' => 33,
+    ),
+    88 => 
+    array (
+      'migration' => '2019_10_07_081832_create_precio_proveedors_table',
+      'batch' => 34,
+    ),
+    89 => 
+    array (
+      'migration' => '2019_10_07_081837_create_compradors_table',
+      'batch' => 34,
+    ),
+    90 => 
+    array (
+      'migration' => '2019_10_07_081847_create_clase_proveedors_table',
+      'batch' => 34,
+    ),
+    91 => 
+    array (
+      'migration' => '2019_10_07_081913_create_condicion_pago_provs_table',
+      'batch' => 34,
+    ),
+    92 => 
+    array (
+      'migration' => '2019_10_07_081936_create_proveedors_table',
+      'batch' => 34,
+    ),
+    93 => 
+    array (
+      'migration' => '2019_10_07_081943_create_compras_doc_encabezados_table',
+      'batch' => 34,
+    ),
+    94 => 
+    array (
+      'migration' => '2019_10_07_081951_create_compras_doc_registros_table',
+      'batch' => 34,
+    ),
+    95 => 
+    array (
+      'migration' => '2019_10_15_040106_create_resolucion_facturacions_table',
+      'batch' => 35,
+    ),
+    96 => 
+    array (
+      'migration' => '2019_10_29_051416_create_arqueo_cajas_table',
+      'batch' => 36,
+    ),
+    97 => 
+    array (
+      'migration' => '2019_12_20_105855_create_grupo_empleados_table',
+      'batch' => 36,
+    ),
+    98 => 
+    array (
+      'migration' => '2019_12_23_052205_create_agrupacion_tiene_conceptos_table',
+      'batch' => 36,
+    ),
+    99 => 
+    array (
+      'migration' => '2019_12_23_052241_create_agrupacion_conceptos_table',
+      'batch' => 36,
+    ),
+    100 => 
+    array (
+      'migration' => '2019_12_23_052421_create_equivalencia_contables_table',
+      'batch' => 36,
+    ),
+    101 => 
+    array (
+      'migration' => '2020_01_24_064002_create_plan_clase_estruc_plantillas_table',
+      'batch' => 37,
+    ),
+    102 => 
+    array (
+      'migration' => '2020_01_24_064017_create_plan_clase_estruc_elementos_table',
+      'batch' => 37,
+    ),
+    103 => 
+    array (
+      'migration' => '2020_01_24_064341_create_plan_clase_encabezados_table',
+      'batch' => 37,
+    ),
+    104 => 
+    array (
+      'migration' => '2020_01_24_064351_create_plan_clase_registros_table',
+      'batch' => 37,
+    ),
+    105 => 
+    array (
+      'migration' => '2020_01_26_043452_create_slugs_table',
+      'batch' => 38,
+    ),
+    106 => 
+    array (
+      'migration' => '2020_02_05_091424_Componente',
+      'batch' => 39,
+    ),
+    107 => 
+    array (
+      'migration' => '2020_02_05_094004_Seccion',
+      'batch' => 39,
+    ),
+    108 => 
+    array (
+      'migration' => '2020_02_05_094818_Widget',
+      'batch' => 39,
+    ),
+    109 => 
+    array (
+      'migration' => '2020_02_06_092207_Navegacion',
+      'batch' => 39,
+    ),
+    110 => 
+    array (
+      'migration' => '2020_02_06_221421_Menunavegacion',
+      'batch' => 39,
+    ),
+    111 => 
+    array (
+      'migration' => '2020_02_09_004455_remove_column_to_table_pw_paginas',
+      'batch' => 40,
+    ),
+    112 => 
+    array (
+      'migration' => '2020_02_10_100426_add_column_to_seccion',
+      'batch' => 40,
+    ),
+    113 => 
+    array (
+      'migration' => '2020_02_11_085301_add_column_tipo_to_seccion',
+      'batch' => 40,
+    ),
+    114 => 
+    array (
+      'migration' => '2020_02_20_080110_create_aboutuses_table',
+      'batch' => 40,
+    ),
+    115 => 
+    array (
+      'migration' => '2020_02_21_102319_create_galerias_table',
+      'batch' => 41,
+    ),
+    116 => 
+    array (
+      'migration' => '2020_02_21_103118_create_albums_table',
+      'batch' => 41,
+    ),
+    117 => 
+    array (
+      'migration' => '2020_02_21_103150_create_fotos_table',
+      'batch' => 41,
+    ),
+    118 => 
+    array (
+      'migration' => '2020_02_23_110336_AddColumnFechaEntrega',
+      'batch' => 42,
+    ),
+    119 => 
+    array (
+      'migration' => '2020_02_21_101627_create_icons_table',
+      'batch' => 43,
+    ),
+    120 => 
+    array (
+      'migration' => '2020_02_23_113642_create_slider_table',
+      'batch' => 43,
+    ),
+    121 => 
+    array (
+      'migration' => '2020_02_23_114254_create_itemSlider_table',
+      'batch' => 43,
+    ),
+    122 => 
+    array (
+      'migration' => '2020_02_24_073639_create_articlesetups_table',
+      'batch' => 43,
+    ),
+    123 => 
+    array (
+      'migration' => '2020_02_24_115116_create_articles_table',
+      'batch' => 43,
+    ),
+    124 => 
+    array (
+      'migration' => '2020_02_24_202845_create_servicios_table',
+      'batch' => 43,
+    ),
+    125 => 
+    array (
+      'migration' => '2020_02_24_204148_create_itemservicios_table',
+      'batch' => 43,
+    ),
+    126 => 
+    array (
+      'migration' => '2020_02_25_095419_create_redesSociales_table',
+      'batch' => 43,
+    ),
+    127 => 
+    array (
+      'migration' => '2020_02_27_073711_create_contactenos_table',
+      'batch' => 44,
+    ),
+    128 => 
+    array (
+      'migration' => '2020_02_28_093619_create_pw_clientes_table',
+      'batch' => 44,
+    ),
+    129 => 
+    array (
+      'migration' => '2020_02_28_104225_create_formcontactenos_table',
+      'batch' => 44,
+    ),
+    130 => 
+    array (
+      'migration' => '2020_02_29_161413_AddColumnOrdenMenuNavigation',
+      'batch' => 45,
+    ),
+    131 => 
+    array (
+      'migration' => '2020_03_01_051359_create_preinforme_academicos_table',
+      'batch' => 46,
+    ),
+    132 => 
+    array (
+      'migration' => '2020_03_02_104702_create_archivos_table',
+      'batch' => 47,
+    ),
+    133 => 
+    array (
+      'migration' => '2020_03_02_105008_create_archivoitems_table',
+      'batch' => 47,
+    ),
+    134 => 
+    array (
+      'migration' => '2020_02_27_115119_create_footer_table',
+      'batch' => 48,
+    ),
+    135 => 
+    array (
+      'migration' => '2020_02_27_122302_create_categoria_footer_table',
+      'batch' => 48,
+    ),
+    136 => 
+    array (
+      'migration' => '2020_02_28_074631_create_enlace_footer_table',
+      'batch' => 48,
+    ),
+    137 => 
+    array (
+      'migration' => '2020_03_03_120406_AddColumnImagenArticulo',
+      'batch' => 49,
+    ),
+    138 => 
+    array (
+      'migration' => '2020_03_03_135120_AddColumnDescripcionArticulo',
+      'batch' => 50,
+    ),
+    139 => 
+    array (
+      'migration' => '2020_03_04_091524_AddColumnTituloGaleria',
+      'batch' => 51,
+    ),
+    140 => 
+    array (
+      'migration' => '2020_03_04_095949_AddColumnTituloArchivo',
+      'batch' => 51,
+    ),
+    141 => 
+    array (
+      'migration' => '2020_03_04_100743_AddColumnOrdenArchivo',
+      'batch' => 52,
+    ),
+    142 => 
+    array (
+      'migration' => '2020_03_05_033939_AddColumnFixedNavegacion',
+      'batch' => 53,
+    ),
+    143 => 
+    array (
+      'migration' => '2020_03_05_041305_AddColumnBackgroundtoNavegacion',
+      'batch' => 53,
+    ),
+    144 => 
+    array (
+      'migration' => '2020_03_09_125843_create_pw_configuracion_general_table',
+      'batch' => 54,
+    ),
+    145 => 
+    array (
+      'migration' => '2020_03_10_111935_create_preguntas_table',
+      'batch' => 55,
+    ),
+    146 => 
+    array (
+      'migration' => '2020_03_11_084817_create_pedidowebs_table',
+      'batch' => 55,
+    ),
+    147 => 
+    array (
+      'migration' => '2020_03_13_095234_create_RenameColumnPreguntas_table',
+      'batch' => 56,
+    ),
+    148 => 
+    array (
+      'migration' => '2020_03_13_101740_create_itempreguntas_table',
+      'batch' => 56,
+    ),
+    149 => 
+    array (
+      'migration' => '2020_03_15_033321_AgregarCamposTablaContratos',
+      'batch' => 56,
+    ),
+    150 => 
+    array (
+      'migration' => '2020_03_15_102923_AgregarCamposTablaEncabezadoNomina',
+      'batch' => 56,
+    ),
+    151 => 
+    array (
+      'migration' => '2020_03_16_085712_create_foros_table',
+      'batch' => 56,
+    ),
+    152 => 
+    array (
+      'migration' => '2020_03_16_085734_create_fororespuestas_table',
+      'batch' => 56,
+    ),
+    153 => 
+    array (
+      'migration' => '2020_03_19_053043_AddColumnAdjuntoRespuestasCuestionario',
+      'batch' => 57,
+    ),
+    154 => 
+    array (
+      'migration' => '2020_03_17_082556_create_testimoniales_table',
+      'batch' => 58,
+    ),
+    155 => 
+    array (
+      'migration' => '2020_03_17_082715_create_itemtestimonials_table',
+      'batch' => 58,
+    ),
+    156 => 
+    array (
+      'migration' => '2020_03_19_084311_create_propietarios_table',
+      'batch' => 58,
+    ),
+    157 => 
+    array (
+      'migration' => '2020_03_19_085636_create_vehiculos_table',
+      'batch' => 58,
+    ),
+    158 => 
+    array (
+      'migration' => '2020_03_19_085819_create_conductors_table',
+      'batch' => 58,
+    ),
+    159 => 
+    array (
+      'migration' => '2020_03_19_085902_create_documentosconductors_table',
+      'batch' => 58,
+    ),
+    160 => 
+    array (
+      'migration' => '2020_03_19_085913_create_documentosvehiculos_table',
+      'batch' => 58,
+    ),
+    161 => 
+    array (
+      'migration' => '2020_03_19_085938_create_plantillas_table',
+      'batch' => 58,
+    ),
+    162 => 
+    array (
+      'migration' => '2020_03_19_085952_create_plantillaarticulos_table',
+      'batch' => 58,
+    ),
+    163 => 
+    array (
+      'migration' => '2020_03_19_090002_create_plantillaarticulonumerals_table',
+      'batch' => 58,
+    ),
+    164 => 
+    array (
+      'migration' => '2020_03_19_090003_create_numeraltablas_table',
+      'batch' => 58,
+    ),
+    165 => 
+    array (
+      'migration' => '2020_03_19_090010_create_contratantes_table',
+      'batch' => 58,
+    ),
+    166 => 
+    array (
+      'migration' => '2020_03_19_090020_create_contratos_table',
+      'batch' => 58,
+    ),
+    167 => 
+    array (
+      'migration' => '2020_03_19_090021_create_contratogrupous_table',
+      'batch' => 58,
+    ),
+    168 => 
+    array (
+      'migration' => '2020_03_19_111927_create_planillacs_table',
+      'batch' => 58,
+    ),
+    169 => 
+    array (
+      'migration' => '2020_03_19_111928_create_planillaconductors_table',
+      'batch' => 58,
+    ),
+    170 => 
+    array (
+      'migration' => '2020_03_19_111942_create_anios_table',
+      'batch' => 58,
+    ),
+    171 => 
+    array (
+      'migration' => '2020_03_19_111950_create_anioperiodos_table',
+      'batch' => 58,
+    ),
+    172 => 
+    array (
+      'migration' => '2020_03_19_112003_create_mantenimientos_table',
+      'batch' => 58,
+    ),
+    173 => 
+    array (
+      'migration' => '2020_03_19_112036_create_mantreportes_table',
+      'batch' => 58,
+    ),
+    174 => 
+    array (
+      'migration' => '2020_03_19_112106_create_mantobs_table',
+      'batch' => 58,
+    ),
+    175 => 
+    array (
+      'migration' => '2020_03_21_015004_AddColumnAdjuntoPlanClasesEncabezado',
+      'batch' => 59,
+    ),
+    176 => 
+    array (
+      'migration' => '2020_03_24_130207_AddColumnEstadoPropietario',
+      'batch' => 60,
     ),
   ),
 ) ;

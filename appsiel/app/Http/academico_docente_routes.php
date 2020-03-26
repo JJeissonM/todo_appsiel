@@ -71,6 +71,7 @@ Route::resource('academico_docente/dofa_observador', 'AcademicoDocente\DofaObser
 
 Route::get( 'sga_planes_clases_imprimir/{encabezado_id}', 'AcademicoDocente\PlanClasesController@imprimir');
 Route::get( 'sga_planes_clases_eliminar/{encabezado_id}', 'AcademicoDocente\PlanClasesController@eliminar');
+Route::get( 'sga_planes_clases_remover_archivo_adjunto/{encabezado_id}', 'AcademicoDocente\PlanClasesController@remover_archivo_adjunto');
 Route::resource('sga_planes_clases', 'AcademicoDocente\PlanClasesController');
 
 

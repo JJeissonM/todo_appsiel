@@ -41,6 +41,7 @@ Route::get('galeria/destroy/album/{album}', 'web\GaleriaController@destroyAlbum'
 Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store');
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 Route::get('/galeria/{id}/albums/index', 'web\GaleriaController@albums')->name('galeria.albums');
+Route::get('/galeria/{id}/ver/album/index', 'web\GaleriaController@veralbum')->name('galeria.veralbum');
 Route::get('/galeria/crear/','web\GaleriaController@importar')->name('galeria.importar');
 
 Route::resource('sociales','web\RedesSocialesController');
