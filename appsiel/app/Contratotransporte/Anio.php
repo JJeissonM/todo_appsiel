@@ -16,7 +16,6 @@ class Anio extends Model
     public static function opciones_campo_select()
     {
         $opciones = Anio::all();
-
         $vec[''] = '';
         foreach ($opciones as $opcion) {
             $vec[$opcion->id] = $opcion->anio;
