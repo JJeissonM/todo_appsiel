@@ -16,14 +16,13 @@ class Propietario extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = Propietario::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_propietarios.core_tercero_id')
-                            ->select('cte_propietarios.id','core_terceros.descripcion','core_terceros.numero_identificacion')
-                            ->get();
+        $opciones = Propietario::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_propietarios.tercero_id')
+            ->select('cte_propietarios.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
+            ->get();
 
-        $vec['']='';
-        foreach ($opciones as $opcion)
-        {
-            $vec[$opcion->id] = $opcion->numero_identificacion.' '.$opcion->descripcion;
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
+            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->descripcion;
         }
 
         return $vec;

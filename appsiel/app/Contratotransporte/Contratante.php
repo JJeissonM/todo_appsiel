@@ -37,8 +37,8 @@ class Contratante extends Model
                 'core_tipos_docs_id.abreviatura AS campo1',
                 'core_terceros.numero_identificacion AS campo2',
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'cte_contratantes.estado AS campo5',
-                'cte_contratantes.id AS campo6'
+                'cte_contratantes.estado AS campo4',
+                'cte_contratantes.id AS campo5'
             )
             ->orderBy('cte_contratantes.created_at', 'DESC')
             ->paginate(100);

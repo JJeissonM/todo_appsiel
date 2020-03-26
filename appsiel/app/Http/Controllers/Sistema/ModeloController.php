@@ -51,13 +51,12 @@ class ModeloController extends Controller
     {
         $this->middleware('auth');
 
-        $this->aplicacion = Aplicacion::find( Input::get('id') );
+        $this->aplicacion = Aplicacion::find(Input::get('id'));
 
         // Se obtiene el modelo
-        if ( !is_null( Input::get('id_modelo') ) ) {
-            $this->modelo = Modelo::find( Input::get('id_modelo') );
+        if (!is_null(Input::get('id_modelo'))) {
+            $this->modelo = Modelo::find(Input::get('id_modelo'));
         }
-
     }
 
     /*
@@ -68,8 +67,7 @@ class ModeloController extends Controller
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, 'Listado');
 
         $encabezado_tabla = app($this->modelo->name_space)->encabezado_tabla;
-        if (is_null($encabezado_tabla))
-        {
+        if (is_null($encabezado_tabla)) {
             $encabezado_tabla = [];
         }
 
@@ -124,17 +122,14 @@ class ModeloController extends Controller
 
         $registros = [];
         $vista = 'layouts.index';
-        
-        if ( method_exists( app( $this->modelo->name_space ), 'consultar_registros' ) )
-        {
+
+        if (method_exists(app($this->modelo->name_space), 'consultar_registros')) {
             $registros = app($this->modelo->name_space)->consultar_registros();
         }
 
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if ( !is_null( $vistas ) )
-        {
-            if ( isset( $vistas->index ) )
-            {
+        if (!is_null($vistas)) {
+            if (isset($vistas->index)) {
                 $vista = $vistas->index;
                 $registros = app($this->modelo->name_space)->consultar_registros2();
                 $registros->setPath('?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion);
@@ -158,17 +153,15 @@ class ModeloController extends Controller
             Algunas Modelos necesitan campos formateados o compuestos de una manera única
             También se pueden personalizar los campos asignados al Modelo
         */
-        if ( method_exists( app( $this->modelo->name_space ), 'get_campos_adicionales_create' ) )
-        {
-            $lista_campos = app( $this->modelo->name_space )->get_campos_adicionales_create( $lista_campos );
+        if (method_exists(app($this->modelo->name_space), 'get_campos_adicionales_create')) {
+            $lista_campos = app($this->modelo->name_space)->get_campos_adicionales_create($lista_campos);
         }
 
 
-        if( Input::get('id_transaccion') != '' )
-        {
-            $tipo_transaccion = TipoTransaccion::find( Input::get('id_transaccion') );
-            $cantidad_campos = count( $lista_campos );
-            $lista_campos = $this->personalizar_campos( Input::get('id_transaccion'), $tipo_transaccion,$lista_campos,$cantidad_campos,'create');
+        if (Input::get('id_transaccion') != '') {
+            $tipo_transaccion = TipoTransaccion::find(Input::get('id_transaccion'));
+            $cantidad_campos = count($lista_campos);
+            $lista_campos = $this->personalizar_campos(Input::get('id_transaccion'), $tipo_transaccion, $lista_campos, $cantidad_campos, 'create');
         }
 
         // Se crear un array para generar el formulario
@@ -176,8 +169,7 @@ class ModeloController extends Controller
         // La vista layouts.create incluye a la vista core.vistas.form_create que es la que usa al array form_create para generar un formulario html
 
         $url_form_create = 'web';
-        if ( $this->modelo->url_form_create != '')
-        {
+        if ($this->modelo->url_form_create != '') {
             $url_form_create = $this->modelo->url_form_create;
         }
 
@@ -197,10 +189,8 @@ class ModeloController extends Controller
             y no, desde la base de datos
                  */
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if ( !is_null( $vistas ) )
-        {
-            if ( isset( $vistas->create ) )
-            {
+        if (!is_null($vistas)) {
+            if (isset($vistas->create)) {
                 $vista = $vistas->create;
             }
         }
@@ -290,29 +280,24 @@ class ModeloController extends Controller
     public function validar_requeridos_y_unicos($request, $registro_modelo_crud)
     {
         // Obtener la table de ese modelo
-        $registro = New $registro_modelo_crud->name_space;
-        $nombre_tabla = $registro->getTable();       
+        $registro = new $registro_modelo_crud->name_space;
+        $nombre_tabla = $registro->getTable();
 
         // LLamar a los campos del modelo para verificar los que son requeridos
         $lista_campos = $registro_modelo_crud->campos->toArray();
 
         $cant = count($lista_campos);
-        for ($i=0; $i < $cant; $i++) 
-        { 
+        for ($i = 0; $i < $cant; $i++) {
             // Se valida solo si el campo pertenece al Modelo directamente
-            if ( in_array( $lista_campos[$i]['name'], $registro->getFillable() )  ) 
-            {
-                if ($lista_campos[$i]['requerido']) 
-                {
-                    $this->validate($request,[$lista_campos[$i]['name']=>'required']);
+            if (in_array($lista_campos[$i]['name'], $registro->getFillable())) {
+                if ($lista_campos[$i]['requerido']) {
+                    $this->validate($request, [$lista_campos[$i]['name'] => 'required']);
                 }
 
-                if ($lista_campos[$i]['unico']) 
-                {
-                    $this->validate($request,[$lista_campos[$i]['name']=>'unique:'.$nombre_tabla]);
+                if ($lista_campos[$i]['unico']) {
+                    $this->validate($request, [$lista_campos[$i]['name'] => 'unique:' . $nombre_tabla]);
                 }
             }
-                
         }
     }
 
@@ -321,30 +306,27 @@ class ModeloController extends Controller
     /*
       * Esta función debe estar en ImagenController y en lugar de recibir todo el $request, solo necesita el array archivos tipo file
     */
-    public function almacenar_imagenes($request, $ruta_storage_imagen, $registro, $modo = null )
+    public function almacenar_imagenes($request, $ruta_storage_imagen, $registro, $modo = null)
     {
 
         $lista_nombres = '';
         $nombre_es_el_primero = true;
         // Si se envía archivos tipo file (imagenes, adjuntos)
         $archivos_enviados = $request->file();
-        foreach ($archivos_enviados as $key => $value)
-        {
+        foreach ($archivos_enviados as $key => $value) {
             // Si se envía un nuevo archivo, se borran el archivo anterior del disco
-            if ($modo == 'edit' && $request->file($key) != '')
-            {
-                Storage::delete( $ruta_storage_imagen . $registro->$key );
+            if ($modo == 'edit' && $request->file($key) != '') {
+                Storage::delete($ruta_storage_imagen . $registro->$key);
             }
 
             $archivo = $request->file($key);
             $extension =  $archivo->clientExtension();
 
-            $nuevo_nombre = str_slug( $archivo->getClientOriginalName() ) . '-' . uniqid() . '.' . $extension;
+            $nuevo_nombre = str_slug($archivo->getClientOriginalName()) . '-' . uniqid() . '.' . $extension;
 
             // Crear un nombre unico para el archivo con su misma extensión
             //$nuevo_nombre = uniqid() . '.' . $extension;
-            if ($nombre_es_el_primero)
-            {
+            if ($nombre_es_el_primero) {
                 $lista_nombres .= $nuevo_nombre;
                 $nombre_es_el_primero = false;
             } else {
@@ -397,10 +379,8 @@ class ModeloController extends Controller
 
         $vista = 'layouts.edit';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if ( !is_null( $vistas ) )
-        {
-            if ( isset( $vistas->edit ) )
-            {
+        if (!is_null($vistas)) {
+            if (isset($vistas->edit)) {
                 $vista = $vistas->edit;
             }
         }
@@ -854,8 +834,7 @@ class ModeloController extends Controller
                 }
 
                 // Si se está editando un checkbox
-                if ($lista_campos[$i]['tipo'] == 'bsCheckBox')
-                {
+                if ($lista_campos[$i]['tipo'] == 'bsCheckBox') {
                     // Si el name del campo enviado tiene la palabra core_campo_id-ID, se trata de un campo Atributo de EAV
                     if (strpos($lista_campos[$i]['name'], "core_campo_id-") !== false) {
                         $lista_campos[$i]['value'] = ModeloEavValor::where(["modelo_padre_id" => Input::get('modelo_padre_id'), "registro_modelo_padre_id" => Input::get('registro_modelo_padre_id'), "modelo_entidad_id" => Input::get('modelo_entidad_id'), "core_campo_id" => $lista_campos[$i]['id']])->value('valor');

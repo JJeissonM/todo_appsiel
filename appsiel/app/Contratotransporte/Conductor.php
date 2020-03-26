@@ -17,13 +17,12 @@ class Conductor extends Model
     public static function opciones_campo_select()
     {
         $opciones = Conductor::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_conductors.tercero_id')
-                            ->select('cte_conductors.id','core_terceros.descripcion','core_terceros.numero_identificacion')
-                            ->get();
+            ->select('cte_conductors.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
+            ->get();
 
-        $vec['']='';
-        foreach ($opciones as $opcion)
-        {
-            $vec[$opcion->id] = $opcion->numero_identificacion.' '.$opcion->descripcion;
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
+            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->descripcion;
         }
 
         return $vec;
@@ -37,8 +36,8 @@ class Conductor extends Model
                 'core_tipos_docs_id.abreviatura AS campo1',
                 'core_terceros.numero_identificacion AS campo2',
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'cte_conductors.estado AS campo5',
-                'cte_conductors.id AS campo6'
+                'cte_conductors.estado AS campo4',
+                'cte_conductors.id AS campo5'
             )
             ->orderBy('cte_conductors.created_at', 'DESC')
             ->paginate(100);
