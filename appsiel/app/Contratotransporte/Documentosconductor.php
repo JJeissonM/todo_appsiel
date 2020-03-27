@@ -12,7 +12,7 @@ class Documentosconductor extends Model
 
     public $encabezado_tabla = ['Nro. Documento', 'Documento', 'Inicio Vigencia', 'Vence', 'Documento Conductor', 'Conductor', 'Acción'];
 
-    public $vistas = '{"index":"layouts.index3"}';
+    public $vistas = '{"index":"layouts.index3"}'; 
 
     public static function consultar_registros2()
     {
