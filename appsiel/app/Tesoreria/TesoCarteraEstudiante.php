@@ -8,7 +8,7 @@ use DB;
 
 class TesoCarteraEstudiante extends Model
 {
-    protected $fillabel = ['id_libreta','id_estudiante','concepto',
+    protected $fillable = ['id_libreta','id_estudiante','concepto',
     						'valor_cartera','valor_pagado','saldo_pendiente','fecha_vencimiento','estado'];
 
     public static function get_cartera_estudiantes_curso( $curso_id, $fecha_vencimiento, $concepto)
