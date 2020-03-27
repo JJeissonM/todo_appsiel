@@ -36,6 +36,7 @@
     }
 </style>
 <div class="aboutus">
+    <div class="container" style="margin-top: 40px;">
     <div class="imgr">
         <img src="{{asset('img/lading-page/faq-bg-1.png')}}" class="img-fluid" alt="">
     </div>

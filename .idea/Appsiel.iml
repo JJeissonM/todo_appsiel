@@ -8,6 +8,9 @@
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/cmgmyr/messenger" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/dnoegel/php-xdg-base-dir" />
+      <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/doctrine/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/doctrine/dbal" />
+      <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/doctrine/event-manager" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/doctrine/inflector" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/doctrine/instantiator" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/dompdf/dompdf" />
@@ -21,7 +24,6 @@
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/jeremeamia/superclosure" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/khill/lavacharts" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/kylekatarnls/update-helper" />
-      <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/laracasts/flash" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/laracasts/utilities" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/laravel/framework" />
       <excludeFolder url="file://$MODULE_DIR$/appsiel/vendor/laravelcollective/html" />
