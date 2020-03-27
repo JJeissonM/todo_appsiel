@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers\ContratoTransporte;
 
-use App\Contratotransporte\Documentosvehiculo;
-use App\Contratotransporte\Vehiculo;
+use App\Contratotransporte\Anioperiodo;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 
-class VehiculoController extends Controller
+class AnioperiodoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -51,7 +50,7 @@ class VehiculoController extends Controller
      */
     public function show($id)
     {
-        $v = Vehiculo::find($id);
+        $v = Anioperiodo::find($id);
         $idapp = Input::get('id');
         $modelo = Input::get('id_modelo');
         $transaccion = Input::get('id_transaccion');
@@ -62,7 +61,7 @@ class VehiculoController extends Controller
             ],
             [
                 'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
-                'etiqueta' => 'Vehículos'
+                'etiqueta' => 'Periodos de años'
             ],
             [
                 'url' => 'NO',
@@ -70,40 +69,7 @@ class VehiculoController extends Controller
             ]
         ];
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
-        return view('contratos_transporte.vehiculos.show')
-            ->with('v', $v)
-            ->with('variables_url', $variables_url)
-            ->with('miga_pan', $miga_pan);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function showDocuments($id)
-    {
-        $v = Documentosvehiculo::find($id);
-        $idapp = Input::get('id');
-        $modelo = Input::get('id_modelo');
-        $transaccion = Input::get('id_transaccion');
-        $miga_pan = [
-            [
-                'url' => 'contratos_transporte' . '?id=' . $idapp,
-                'etiqueta' => 'Contratos transporte'
-            ],
-            [
-                'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
-                'etiqueta' => 'Documentos de vehículo'
-            ],
-            [
-                'url' => 'NO',
-                'etiqueta' => 'Ver Documentos'
-            ]
-        ];
-        $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
-        return view('contratos_transporte.vehiculos.showDocuments')
+        return view('contratos_transporte.anioperiodos.show')
             ->with('v', $v)
             ->with('variables_url', $variables_url)
             ->with('miga_pan', $miga_pan);

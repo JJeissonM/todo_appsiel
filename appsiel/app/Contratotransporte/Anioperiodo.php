@@ -42,4 +42,9 @@ class Anioperiodo extends Model
             ->orderBy('cte_anioperiodos.created_at', 'DESC')
             ->paginate(100);
     }
+
+    public function anio()
+    {
+        return $this->belongsTo(Anio::class);
+    }
 }
