@@ -42,4 +42,9 @@ class Conductor extends Model
             ->orderBy('cte_conductors.created_at', 'DESC')
             ->paginate(100);
     }
+
+    public function documentosconductors()
+    {
+        return $this->hasMany(Documentosconductor::class);
+    }
 }
