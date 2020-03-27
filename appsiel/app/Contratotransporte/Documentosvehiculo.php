@@ -10,22 +10,31 @@ class Documentosvehiculo extends Model
     protected $table = 'cte_documentosvehiculos';
     protected $fillable = ['id', 'vehiculo_id', 'tarjeta_operacion', 'documento', 'recurso', 'nro_documento', 'vigencia_inicio', 'vigencia_fin', 'created_at', 'updated_at'];
 
-    public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Conductor', 'Estado', 'Acción'];
+    public $encabezado_tabla = ['Nro. Documento', 'Documento', 'Inicio Vigencia', 'Vence', 'Vehículo', 'Documento Propietario', 'Propietario', 'Acción'];
 
     public $vistas = '{"index":"layouts.index3"}';
 
     public static function consultar_registros2()
     {
-        return Conductor::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_conductors.tercero_id')
-            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+        return Documentosvehiculo::leftJoin('cte_vehiculos', 'cte_vehiculos.id', '=', 'cte_documentosvehiculos.vehiculo_id')
+            ->leftJoin('cte_propietarios', 'cte_propietarios.id', '=', 'cte_vehiculos.propietario_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_propietarios.tercero_id')
             ->select(
-                'core_tipos_docs_id.abreviatura AS campo1',
-                'core_terceros.numero_identificacion AS campo2',
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'cte_conductors.estado AS campo4',
-                'cte_conductors.id AS campo5'
+                'cte_documentosvehiculos.nro_documento AS campo1',
+                'cte_documentosvehiculos.documento AS campo2',
+                'cte_documentosvehiculos.vigencia_inicio AS campo3',
+                'cte_documentosvehiculos.vigencia_fin AS campo4',
+                DB::raw('CONCAT("INTERNO: ",cte_vehiculos.int," - PLACA: ",cte_vehiculos.placa," - MODELO: ",cte_vehiculos.modelo," - MARCA: ",cte_vehiculos.marca," - CLASE: ",cte_vehiculos.clase) AS campo5'),
+                'core_terceros.numero_identificacion AS campo6',
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo7'),
+                'cte_documentosvehiculos.id AS campo8'
             )
-            ->orderBy('cte_conductors.created_at', 'DESC')
+            ->orderBy('cte_documentosvehiculos.created_at', 'DESC')
             ->paginate(100);
+    }
+
+    public function vehiculo()
+    {
+        return $this->belongsTo(Vehiculo::class);
     }
 }
