@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 [2020-03-25 08:15:07] production.ERROR: ErrorException: Trying to get property 'widgets' of non-object in C:\xampp\htdocs\Appsiel\todo_appsiel\appsiel\app\Http\Controllers\web\PaginaController.php:214
 Stack trace:
 #0 C:\xampp\htdocs\Appsiel\todo_appsiel\appsiel\app\Http\Controllers\web\PaginaController.php(214): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(8, 'Trying to get p...', 'C:\\xampp\\htdocs...', 214, Array)
@@ -5272,3 +5273,5 @@ Stack trace:
 #57 C:\xampp\htdocs\Appsiel\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #58 C:\xampp\htdocs\Appsiel\todo_appsiel\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #59 {main}  
+=======
+>>>>>>> 97143f79f617913a3bcb5421220b108a6bf6d707

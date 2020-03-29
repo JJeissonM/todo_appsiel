@@ -735,8 +735,7 @@ class LibretaPagoController extends ModeloController
         //crear PDF
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
-        //return $pdf->stream();
-        return $pdf->download('comprobante_recaudo.pdf');
+        return $pdf->stream('comprobante_recaudo.pdf');
     }
 
     public function eliminar_recaudo_libreta($recaudo_id)

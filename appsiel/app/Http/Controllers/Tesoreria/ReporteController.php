@@ -601,7 +601,6 @@ class ReporteController extends TesoreriaController
             									->first();
 
 
-
             // Se obtiene la cartera de ese estudiante para el año de la matríula activa
             if ( !is_null($libreta_pagos) ) 
             {
@@ -616,13 +615,13 @@ class ReporteController extends TesoreriaController
                     $linea_cartera = $cartera_matricula[0];
 
                     switch ($tipo_reporte) {
-                        case '0':
+                        case '0': // Resumen de recaudos
                         	$saldo_pendiente = $linea_cartera->saldo_pendiente;
                             $subtabla = $this->get_tabla_anidada($linea_cartera->id, $saldo_pendiente, $linea_cartera->valor_cartera, $linea_cartera->concepto);
 
                             break;
                         
-                        case '1':
+                        case '1': // Cartera Vencida
                             if ( $linea_cartera->estado == 'Vencida') 
                             {
                                 $saldo_pendiente = $linea_cartera->saldo_pendiente;
@@ -650,11 +649,12 @@ class ReporteController extends TesoreriaController
 
                 //Pensión
                 $cartera_pension = TesoCarteraEstudiante::where('id_libreta',$libreta_pagos->id)->where('concepto','Pensión')->orderBy('fecha_vencimiento','ASC')->get();
-
+                
                 for ($i=2; $i < 12; $i++) 
                 { 
-                    $aplico_mes = false;
+                    $aplico_mes = false; // aplicó mes, es decir, si hay valor de pensión en ese mes
                     $mes_columna = str_repeat(0, 2-strlen($i) ).$i;
+
                     foreach ($cartera_pension as $linea_cartera) 
                     {
                         $mes_libreta =explode("-", $linea_cartera->fecha_vencimiento)[1];
@@ -699,6 +699,9 @@ class ReporteController extends TesoreriaController
                     if ( !$aplico_mes) 
                     {
                         $tabla.='<td align="center">&nbsp;</td>';
+
+                        $total_columna[$num_columna] += 0;
+                        $num_columna++;
                     }
                 }
 
@@ -726,8 +729,8 @@ class ReporteController extends TesoreriaController
 
         $gran_total = 0;
         for ($i=0; $i < 11; $i++)
-        { 
-        	$tabla.='<td>$'.number_format( $total_columna[$i], 0, ',', '.').'</td>';
+        {
+            $tabla.='<td>$'.number_format( $total_columna[$i], 0, ',', '.').'</td>';
         	$gran_total += $total_columna[$i];
         }
 
