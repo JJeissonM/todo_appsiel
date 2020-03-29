@@ -18,15 +18,14 @@ class Vehiculo extends Model
     {
         $opciones = Vehiculo::all();
 
-        $vec['']='';
-        foreach ($opciones as $opcion)
-        {
-            $vec[$opcion->id] = $opcion->clase.' '.$opcion->marca.' '.$opcion->modelo.' '.$opcion->placa.')';
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
+            $vec[$opcion->id] = $opcion->clase . ' ' . $opcion->marca . ' ' . $opcion->modelo . ' ' . $opcion->placa . ')';
         }
 
         return $vec;
     }
-    
+
 
     public static function consultar_registros2()
     {
@@ -45,5 +44,15 @@ class Vehiculo extends Model
             )
             ->orderBy('cte_vehiculos.created_at', 'DESC')
             ->paginate(100);
+    }
+
+    public function propietario()
+    {
+        return $this->belongsTo(Propietario::class);
+    }
+
+    public function documentosvehiculos()
+    {
+        return $this->hasMany(Documentosvehiculo::class);
     }
 }

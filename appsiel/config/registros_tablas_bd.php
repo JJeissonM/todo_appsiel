@@ -1,321 +1,5 @@
 <?php
  return array (
-  'sys_aplicaciones' => 
-  array (
-    0 => 
-    array (
-      'id' => 1,
-      'descripcion' => 'Matrículas',
-      'app' => 'matriculas',
-      'ambito' => 'Gestión Educativa',
-      'definicion' => 'Registro de estudiantes, observador del estudiante, historial de matrículas, listados y reportes.',
-      'tipo_precio' => 'Fijo',
-      'precio' => 15000.0,
-      'orden' => 1,
-      'nombre_imagen' => 'matriculas.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-07-09 00:00:00',
-      'updated_at' => '2020-01-14 04:54:35',
-    ),
-    1 => 
-    array (
-      'id' => 2,
-      'descripcion' => 'Calificaciones',
-      'app' => 'calificaciones',
-      'ambito' => 'Gestión Educativa',
-      'definicion' => 'Gestión de logros, notas, observaciones, revisión e impresión de boletines de manera rápida y sin complicaciones.',
-      'tipo_precio' => 'Fijo',
-      'precio' => 15000.0,
-      'orden' => 2,
-      'nombre_imagen' => 'calificaciones.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-07-09 00:00:00',
-      'updated_at' => '2020-01-14 04:54:46',
-    ),
-    2 => 
-    array (
-      'id' => 3,
-      'descripcion' => 'Tesorería',
-      'app' => 'tesoreria',
-      'ambito' => 'Gestión Empresarial',
-      'definicion' => 'Gestión de Cajas y Bancos.
-Creación libreta de pagos periódicos (acuerdos de pagos).
-Gestión de Recaudos y Pagos.',
-      'tipo_precio' => 'Fijo',
-      'precio' => 12000.0,
-      'orden' => 5,
-      'nombre_imagen' => 'tesoreria.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-07-09 00:00:00',
-      'updated_at' => '2019-05-16 04:16:50',
-    ),
-    3 => 
-    array (
-      'id' => 4,
-      'descripcion' => 'Gestion documental',
-      'app' => 'gestion_documental',
-      'ambito' => 'Gestión Empresarial',
-      'definicion' => 'Generación de certificados y constancias automáticas. Impresión de hojas membreteadas, formatos y planillas personalizadas.',
-      'tipo_precio' => 'Fijo',
-      'precio' => 25000.0,
-      'orden' => 15,
-      'nombre_imagen' => 'gestion_documental.png',
-      'mostrar_en_pag_web' => 0,
-      'estado' => 'Activo',
-      'created_at' => '2018-07-09 00:00:00',
-      'updated_at' => '2020-01-14 08:21:45',
-    ),
-    4 => 
-    array (
-      'id' => 5,
-      'descripcion' => 'Académico docente',
-      'app' => 'academico_docente',
-      'ambito' => 'Gestión Educativa',
-      'definicion' => 'Acceso al profesor a sus cursos asignados. Ragistro de calificaciones, control de asistencias, listados de estudiantes y planillas.',
-      'tipo_precio' => 'Por usuario',
-      'precio' => 2000.0,
-      'orden' => 3,
-      'nombre_imagen' => 'academico_docente.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-08-18 00:00:00',
-      'updated_at' => '2020-01-05 07:57:14',
-    ),
-    5 => 
-    array (
-      'id' => 6,
-      'descripcion' => 'Académico estudiante',
-      'app' => 'academico_estudiante',
-      'ambito' => 'Gestión Educativa',
-      'definicion' => 'Acceso al estudiante a revisar sus calificaciones en todo momento, sus padres podrán ver el observador y los boletines según las restricciones de cada colegio.',
-      'tipo_precio' => 'Por usuario',
-      'precio' => 200.0,
-      'orden' => 4,
-      'nombre_imagen' => 'academico_estudiante.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-08-18 00:00:00',
-      'updated_at' => '2020-01-14 08:22:02',
-    ),
-    6 => 
-    array (
-      'id' => 7,
-      'descripcion' => 'Configuración',
-      'app' => 'configuracion',
-      'ambito' => 'Core',
-      'definicion' => 'Confguraciones comunes a todas las aplicaciones.',
-      'tipo_precio' => 'Fijo',
-      'precio' => 0.0,
-      'orden' => 9999,
-      'nombre_imagen' => 'configuracion.png',
-      'mostrar_en_pag_web' => 0,
-      'estado' => 'Activo',
-      'created_at' => '2018-08-25 14:29:27',
-      'updated_at' => '2020-01-17 02:15:41',
-    ),
-    7 => 
-    array (
-      'id' => 8,
-      'descripcion' => 'Inventarios',
-      'app' => 'inventarios',
-      'ambito' => 'Gestión Empresarial',
-      'definicion' => '',
-      'tipo_precio' => 'Fijo',
-      'precio' => 12000.0,
-      'orden' => 7,
-      'nombre_imagen' => 'inventarios.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-09-06 02:58:53',
-      'updated_at' => '2020-01-14 08:21:53',
-    ),
-    8 => 
-    array (
-      'id' => 9,
-      'descripcion' => 'Compras',
-      'app' => 'compras',
-      'ambito' => 'Gestión Empresarial',
-      'definicion' => '',
-      'tipo_precio' => 'Fijo',
-      'precio' => 12000.0,
-      'orden' => 6,
-      'nombre_imagen' => 'compras.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-09-30 22:38:40',
-      'updated_at' => '2020-01-21 10:22:50',
-    ),
-    9 => 
-    array (
-      'id' => 10,
-      'descripcion' => 'Página Web',
-      'app' => 'pagina_web',
-      'ambito' => 'Core',
-      'definicion' => 'Alojamiento incluido. Constructor de sitio web .',
-      'tipo_precio' => 'Fijo',
-      'precio' => 10000.0,
-      'orden' => 12,
-      'nombre_imagen' => 'pagina_web.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-09-30 22:38:40',
-      'updated_at' => '2020-01-14 08:21:49',
-    ),
-    10 => 
-    array (
-      'id' => 11,
-      'descripcion' => 'Administración propiedad horizontal',
-      'app' => 'propiedad_horizontal',
-      'ambito' => 'Gestión Inmobiliaria',
-      'definicion' => '* Generación automática de cuentas de cobro.
-* Presupuestos con base en Coeficiente de copropiedad
-* Gestión de micrositios por propiedades.
-* Perfil residentes: consultas cxc, anunciós, PQR, Calendario de eventos, Reservas de zonas comunes.',
-      'tipo_precio' => 'Fijo',
-      'precio' => 25000.0,
-      'orden' => 13,
-      'nombre_imagen' => 'propiedad_horizontal.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-10-18 05:15:09',
-      'updated_at' => '2020-01-31 08:45:26',
-    ),
-    11 => 
-    array (
-      'id' => 12,
-      'descripcion' => 'Gestión de cobros',
-      'app' => 'cxc',
-      'ambito' => 'Gestión Empresarial',
-      'definicion' => 'Cartera, CxC, generación y cancelación de cuentas de cobro.',
-      'tipo_precio' => 'Fijo',
-      'precio' => 12000.0,
-      'orden' => 10,
-      'nombre_imagen' => 'cxc.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-10-18 05:34:44',
-      'updated_at' => '2020-01-31 08:45:31',
-    ),
-    12 => 
-    array (
-      'id' => 13,
-      'descripcion' => 'Ventas',
-      'app' => 'ventas',
-      'ambito' => 'Gestión Empresarial',
-      'definicion' => '',
-      'tipo_precio' => 'Fijo',
-      'precio' => 12000.0,
-      'orden' => 8,
-      'nombre_imagen' => 'ventas.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-10-19 05:01:01',
-      'updated_at' => '2020-01-31 08:45:36',
-    ),
-    13 => 
-    array (
-      'id' => 14,
-      'descripcion' => 'Contabilidad',
-      'app' => 'contabilidad',
-      'ambito' => 'Gestión Empresarial',
-      'definicion' => 'Manejo contable bajo NIIF (nativo).
-Creación de notas contables.
-Generación de estados financieros.',
-      'tipo_precio' => 'Fijo',
-      'precio' => 15000.0,
-      'orden' => 10,
-      'nombre_imagen' => 'contabilidad.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-11-04 12:09:54',
-      'updated_at' => '2020-01-14 08:22:41',
-    ),
-    14 => 
-    array (
-      'id' => 15,
-      'descripcion' => 'Mi Conjunto',
-      'app' => 'mi_conjunto',
-      'ambito' => 'Gestión Inmobiliaria',
-      'definicion' => 'Portal para residentes',
-      'tipo_precio' => 'Fijo',
-      'precio' => 0.0,
-      'orden' => 14,
-      'nombre_imagen' => 'mi_conjunto.png',
-      'mostrar_en_pag_web' => 0,
-      'estado' => 'Activo',
-      'created_at' => '2018-12-02 17:30:24',
-      'updated_at' => '2020-01-31 08:45:47',
-    ),
-    15 => 
-    array (
-      'id' => 16,
-      'descripcion' => 'Usuario adicional',
-      'app' => 'usuario_adicional',
-      'ambito' => 'Core',
-      'definicion' => '',
-      'tipo_precio' => 'Por usuario',
-      'precio' => 7000.0,
-      'orden' => 98,
-      'nombre_imagen' => 'usuario_adicional.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Inactivo',
-      'created_at' => '2018-12-18 17:25:26',
-      'updated_at' => '2020-01-14 08:22:32',
-    ),
-    16 => 
-    array (
-      'id' => 17,
-      'descripcion' => 'Nómina',
-      'app' => 'nomina',
-      'ambito' => 'Gestión Empresarial',
-      'definicion' => '',
-      'tipo_precio' => 'Fijo',
-      'precio' => 20000.0,
-      'orden' => 9,
-      'nombre_imagen' => 'nomina.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2018-12-19 09:13:44',
-      'updated_at' => '2020-01-14 08:22:28',
-    ),
-    17 => 
-    array (
-      'id' => 18,
-      'descripcion' => 'Consultorio Médico',
-      'app' => 'consultorio_medico',
-      'ambito' => 'Gestión Educativa',
-      'definicion' => 'Administrar consultorios y pacientes
-Manejo de historias clínicas
-',
-      'tipo_precio' => 'Fijo',
-      'precio' => 15000.0,
-      'orden' => 1,
-      'nombre_imagen' => 'historias_clinicas.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2019-06-04 20:48:20',
-      'updated_at' => '2020-01-23 06:48:18',
-    ),
-    18 => 
-    array (
-      'id' => 19,
-      'descripcion' => 'Contratos transporte',
-      'app' => 'contratos_transporte',
-      'ambito' => 'Gestión Empresarial',
-      'definicion' => '',
-      'tipo_precio' => 'Fijo',
-      'precio' => 15000.0,
-      'orden' => 99,
-      'nombre_imagen' => 'contratos_transporte.png',
-      'mostrar_en_pag_web' => 1,
-      'estado' => 'Activo',
-      'created_at' => '2020-03-19 09:43:15',
-      'updated_at' => '2020-03-19 09:43:15',
-    ),
-  ),
   'permissions' => 
   array (
     0 => 
@@ -1602,11 +1286,11 @@ Manejo de historias clínicas
       'descripcion' => 'Imprimir en blanco',
       'url' => 'tesoreria/imprimir_libreta/0',
       'parent' => 107,
-      'orden' => 2,
+      'orden' => 7,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2018-08-27 13:57:34',
-      'updated_at' => '2018-10-02 10:56:24',
+      'updated_at' => '2020-03-27 12:00:56',
     ),
     86 => 
     array (
@@ -5368,10 +5052,10 @@ Manejo de historias clínicas
       'url' => 'web',
       'parent' => 356,
       'orden' => 4,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2020-03-25 16:24:30',
-      'updated_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-27 07:24:02',
     ),
     337 => 
     array (
@@ -5583,106 +5267,20 @@ Manejo de historias clínicas
       'created_at' => '2020-03-25 16:24:30',
       'updated_at' => '2020-03-25 16:24:30',
     ),
-  ),
-  'roles' => 
-  array (
-    0 => 
+    351 => 
     array (
-      'id' => 1,
-      'name' => 'SuperAdmin',
-      'created_at' => '2018-02-28 13:57:25',
-      'updated_at' => '2018-02-28 13:57:25',
-    ),
-    1 => 
-    array (
-      'id' => 2,
-      'name' => 'Profesor',
-      'created_at' => '2018-03-13 15:05:33',
-      'updated_at' => '2018-03-13 15:05:33',
-    ),
-    2 => 
-    array (
-      'id' => 3,
-      'name' => 'Administrador',
-      'created_at' => '2018-03-30 14:27:12',
-      'updated_at' => '2018-08-20 18:31:22',
-    ),
-    3 => 
-    array (
-      'id' => 4,
-      'name' => 'Estudiante',
-      'created_at' => '2018-08-10 15:54:50',
-      'updated_at' => '2018-08-10 15:54:50',
-    ),
-    4 => 
-    array (
-      'id' => 5,
-      'name' => 'Gerente',
-      'created_at' => '2018-08-20 18:32:02',
-      'updated_at' => '2018-08-20 18:32:02',
-    ),
-    5 => 
-    array (
-      'id' => 6,
-      'name' => 'Jefe de almacén',
-      'created_at' => '2018-10-05 00:58:28',
-      'updated_at' => '2018-10-05 00:58:28',
-    ),
-    6 => 
-    array (
-      'id' => 7,
-      'name' => 'Administrador PH',
-      'created_at' => '2018-10-29 03:56:14',
-      'updated_at' => '2018-10-29 03:56:14',
-    ),
-    7 => 
-    array (
-      'id' => 8,
-      'name' => 'Residente PH',
-      'created_at' => '2018-12-19 04:34:19',
-      'updated_at' => '2018-12-19 04:34:19',
-    ),
-    8 => 
-    array (
-      'id' => 9,
-      'name' => 'Admin Colegio',
-      'created_at' => '2019-01-03 09:05:08',
-      'updated_at' => '2019-01-03 09:05:08',
-    ),
-    9 => 
-    array (
-      'id' => 10,
-      'name' => 'Secretaria Colegio',
-      'created_at' => '2019-01-10 05:47:04',
-      'updated_at' => '2019-01-10 05:47:04',
-    ),
-    10 => 
-    array (
-      'id' => 11,
-      'name' => 'Coord financiero colegio',
-      'created_at' => '2019-01-14 08:29:14',
-      'updated_at' => '2019-01-14 08:29:14',
-    ),
-    11 => 
-    array (
-      'id' => 12,
-      'name' => 'Colegio - Vicerrector',
-      'created_at' => '2019-01-31 10:06:17',
-      'updated_at' => '2019-01-31 10:06:17',
-    ),
-    12 => 
-    array (
-      'id' => 13,
-      'name' => 'Director de grupo',
-      'created_at' => '2019-02-07 11:16:36',
-      'updated_at' => '2019-02-07 11:16:36',
-    ),
-    13 => 
-    array (
-      'id' => 14,
-      'name' => 'Profesional Salud',
-      'created_at' => '2019-06-13 05:01:40',
-      'updated_at' => '2019-06-13 05:01:40',
+      'id' => 377,
+      'core_app_id' => 3,
+      'modelo_id' => 214,
+      'name' => 'teso_recaudos_libretas',
+      'descripcion' => 'Recaudos de libretas',
+      'url' => 'web',
+      'parent' => 107,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-27 12:00:03',
+      'updated_at' => '2020-03-27 12:02:57',
     ),
   ),
   'role_has_permissions' => 
@@ -11968,6 +11566,18 @@ Manejo de historias clínicas
       'orden' => 0,
       'permission_id' => 376,
       'role_id' => 1,
+    ),
+    1047 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 377,
+      'role_id' => 1,
+    ),
+    1048 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 377,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -23507,6 +23117,22 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-03-24 09:46:22',
       'updated_at' => '2020-03-24 09:46:22',
     ),
+    716 => 
+    array (
+      'id' => 722,
+      'descripcion' => 'Estado',
+      'tipo' => 'select',
+      'name' => 'estado',
+      'opciones' => '{"SI":"SI","NO":"NO"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-03-27 07:20:30',
+      'updated_at' => '2020-03-27 07:20:51',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -27590,7 +27216,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_crear' => 'web/create',
       'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
-      'url_ver' => 'web/id_fila',
+      'url_ver' => 'cte_conductores/id_fila/show',
       'enlaces' => '',
       'url_estado' => '',
       'url_eliminar' => '',
@@ -27600,7 +27226,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-03-19 09:13:22',
-      'updated_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-27 11:18:52',
     ),
     186 => 
     array (
@@ -27656,7 +27282,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_crear' => 'web/create',
       'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
-      'url_ver' => 'web/id_fila',
+      'url_ver' => 'cte_documentos_conductor/id_fila/show',
       'enlaces' => '',
       'url_estado' => '',
       'url_eliminar' => '',
@@ -27666,7 +27292,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-03-19 09:13:22',
-      'updated_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-27 11:17:18',
     ),
     189 => 
     array (
@@ -27678,7 +27304,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_crear' => 'web/create',
       'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
-      'url_ver' => 'web/id_fila',
+      'url_ver' => 'cte_documentos_vehiculo/id_fila/show',
       'enlaces' => '',
       'url_estado' => '',
       'url_eliminar' => '',
@@ -27688,7 +27314,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-03-19 09:13:22',
-      'updated_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-27 11:12:44',
     ),
     190 => 
     array (
@@ -27744,7 +27370,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_crear' => 'web/create',
       'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
-      'url_ver' => 'web/id_fila',
+      'url_ver' => 'cte_vehiculos/id_fila/show',
       'enlaces' => '',
       'url_estado' => '',
       'url_eliminar' => '',
@@ -27754,7 +27380,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-03-19 09:13:22',
-      'updated_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-27 07:22:13',
     ),
     193 => 
     array (
@@ -27788,7 +27414,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_crear' => 'web/create',
       'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
-      'url_ver' => 'web/id_fila',
+      'url_ver' => 'cte_anioperiodos/id_fila/show',
       'enlaces' => '',
       'url_estado' => '',
       'url_eliminar' => '',
@@ -27798,7 +27424,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-03-24 09:13:22',
-      'updated_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-27 07:23:11',
     ),
     195 => 
     array (
@@ -27997,6 +27623,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-03-24 09:13:22',
       'updated_at' => '2020-03-24 09:13:22',
+    ),
+    204 => 
+    array (
+      'id' => 214,
+      'descripcion' => 'Recaudos de Libretas',
+      'modelo' => 'teso_recaudos_libretas',
+      'name_space' => 'App\\Tesoreria\\TesoRecaudosLibreta',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => 'tesoreria/imprimir_comprobante_recaudo/id_fila',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-27 11:59:07',
+      'updated_at' => '2020-03-27 11:59:07',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -38321,290 +37969,290 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     1474 => 
     array (
-      'id' => 1697,
-      'orden' => 14,
-      'core_modelo_id' => 200,
-      'core_campo_id' => 22,
-    ),
-    1475 => 
-    array (
       'id' => 1698,
       'orden' => 2,
       'core_modelo_id' => 199,
       'core_campo_id' => 695,
     ),
-    1476 => 
+    1475 => 
     array (
       'id' => 1699,
       'orden' => 4,
       'core_modelo_id' => 199,
       'core_campo_id' => 689,
     ),
-    1477 => 
+    1476 => 
     array (
       'id' => 1700,
       'orden' => 6,
       'core_modelo_id' => 199,
       'core_campo_id' => 690,
     ),
-    1478 => 
+    1477 => 
     array (
       'id' => 1701,
       'orden' => 8,
       'core_modelo_id' => 199,
       'core_campo_id' => 691,
     ),
-    1479 => 
+    1478 => 
     array (
       'id' => 1702,
       'orden' => 10,
       'core_modelo_id' => 199,
       'core_campo_id' => 692,
     ),
-    1480 => 
+    1479 => 
     array (
       'id' => 1703,
       'orden' => 12,
       'core_modelo_id' => 199,
       'core_campo_id' => 693,
     ),
-    1481 => 
+    1480 => 
     array (
       'id' => 1704,
       'orden' => 14,
       'core_modelo_id' => 199,
       'core_campo_id' => 694,
     ),
-    1482 => 
+    1481 => 
     array (
       'id' => 1705,
       'orden' => 2,
       'core_modelo_id' => 198,
       'core_campo_id' => 673,
     ),
-    1483 => 
+    1482 => 
     array (
       'id' => 1706,
       'orden' => 4,
       'core_modelo_id' => 198,
       'core_campo_id' => 696,
     ),
-    1484 => 
+    1483 => 
     array (
       'id' => 1707,
       'orden' => 6,
       'core_modelo_id' => 198,
       'core_campo_id' => 690,
     ),
-    1485 => 
+    1484 => 
     array (
       'id' => 1708,
       'orden' => 8,
       'core_modelo_id' => 198,
       'core_campo_id' => 691,
     ),
-    1486 => 
+    1485 => 
     array (
       'id' => 1709,
       'orden' => 10,
       'core_modelo_id' => 198,
       'core_campo_id' => 692,
     ),
-    1487 => 
+    1486 => 
     array (
       'id' => 1710,
       'orden' => 12,
       'core_modelo_id' => 198,
       'core_campo_id' => 693,
     ),
-    1488 => 
+    1487 => 
     array (
       'id' => 1711,
       'orden' => 14,
       'core_modelo_id' => 198,
       'core_campo_id' => 694,
     ),
-    1489 => 
+    1488 => 
     array (
       'id' => 1712,
       'orden' => 2,
       'core_modelo_id' => 197,
       'core_campo_id' => 3,
     ),
-    1490 => 
+    1489 => 
     array (
       'id' => 1713,
       'orden' => 4,
       'core_modelo_id' => 197,
       'core_campo_id' => 700,
     ),
-    1491 => 
+    1490 => 
     array (
       'id' => 1714,
       'orden' => 6,
       'core_modelo_id' => 197,
       'core_campo_id' => 93,
     ),
-    1492 => 
+    1491 => 
     array (
       'id' => 1715,
       'orden' => 8,
       'core_modelo_id' => 197,
       'core_campo_id' => 701,
     ),
-    1493 => 
+    1492 => 
     array (
       'id' => 1716,
       'orden' => 10,
       'core_modelo_id' => 197,
       'core_campo_id' => 702,
     ),
-    1494 => 
+    1493 => 
     array (
       'id' => 1717,
       'orden' => 12,
       'core_modelo_id' => 197,
       'core_campo_id' => 703,
     ),
-    1495 => 
+    1494 => 
     array (
       'id' => 1718,
       'orden' => 14,
       'core_modelo_id' => 197,
       'core_campo_id' => 704,
     ),
-    1496 => 
+    1495 => 
     array (
       'id' => 1719,
       'orden' => 16,
       'core_modelo_id' => 197,
       'core_campo_id' => 125,
     ),
-    1497 => 
+    1496 => 
     array (
       'id' => 1720,
       'orden' => 18,
       'core_modelo_id' => 197,
       'core_campo_id' => 705,
     ),
-    1498 => 
+    1497 => 
     array (
       'id' => 1721,
       'orden' => 20,
       'core_modelo_id' => 197,
       'core_campo_id' => 706,
     ),
-    1499 => 
+    1498 => 
     array (
       'id' => 1722,
       'orden' => 22,
       'core_modelo_id' => 197,
       'core_campo_id' => 707,
     ),
-    1500 => 
+    1499 => 
     array (
       'id' => 1723,
       'orden' => 24,
       'core_modelo_id' => 197,
       'core_campo_id' => 708,
     ),
-    1501 => 
+    1500 => 
     array (
       'id' => 1724,
       'orden' => 26,
       'core_modelo_id' => 197,
       'core_campo_id' => 709,
     ),
-    1502 => 
+    1501 => 
     array (
       'id' => 1725,
       'orden' => 28,
       'core_modelo_id' => 197,
       'core_campo_id' => 710,
     ),
-    1503 => 
+    1502 => 
     array (
       'id' => 1726,
       'orden' => 30,
       'core_modelo_id' => 197,
       'core_campo_id' => 711,
     ),
-    1504 => 
+    1503 => 
     array (
       'id' => 1727,
       'orden' => 32,
       'core_modelo_id' => 197,
       'core_campo_id' => 712,
     ),
-    1505 => 
+    1504 => 
     array (
       'id' => 1728,
       'orden' => 34,
       'core_modelo_id' => 197,
       'core_campo_id' => 713,
     ),
-    1506 => 
+    1505 => 
     array (
       'id' => 1730,
       'orden' => 36,
       'core_modelo_id' => 197,
       'core_campo_id' => 714,
     ),
-    1507 => 
+    1506 => 
     array (
       'id' => 1731,
       'orden' => 38,
       'core_modelo_id' => 197,
       'core_campo_id' => 715,
     ),
-    1508 => 
+    1507 => 
     array (
       'id' => 1732,
       'orden' => 40,
       'core_modelo_id' => 197,
       'core_campo_id' => 716,
     ),
-    1509 => 
+    1508 => 
     array (
       'id' => 1733,
       'orden' => 42,
       'core_modelo_id' => 197,
       'core_campo_id' => 717,
     ),
-    1510 => 
+    1509 => 
     array (
       'id' => 1734,
       'orden' => 44,
       'core_modelo_id' => 197,
       'core_campo_id' => 695,
     ),
-    1511 => 
+    1510 => 
     array (
       'id' => 1735,
       'orden' => 2,
       'core_modelo_id' => 196,
       'core_campo_id' => 664,
     ),
-    1512 => 
+    1511 => 
     array (
       'id' => 1736,
       'orden' => 4,
       'core_modelo_id' => 196,
       'core_campo_id' => 22,
     ),
-    1513 => 
+    1512 => 
     array (
       'id' => 1737,
       'orden' => 2,
       'core_modelo_id' => 195,
       'core_campo_id' => 664,
     ),
-    1514 => 
+    1513 => 
     array (
       'id' => 1738,
       'orden' => 4,
       'core_modelo_id' => 195,
       'core_campo_id' => 22,
+    ),
+    1514 => 
+    array (
+      'id' => 1739,
+      'orden' => 16,
+      'core_modelo_id' => 200,
+      'core_campo_id' => 722,
     ),
   ),
   'sys_reportes' => 

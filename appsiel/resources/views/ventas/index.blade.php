@@ -22,102 +22,109 @@ $semana = ReportesController::pedidos_semana();
 		<h3> Pedidos de ventas (pedidos pendientes, actuales, futuros y vencidos)</h3>
 		<hr>
 		<div class="row">
+			
 			<div class="col-md-12">
-				<div class="col-md-6">
-					<div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-danger" role="alert">Pedidos vencidos</div>
-					@if($vencidas!=null)
-					<table class="table table-striped">
+				<!-- <div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-warning" role="alert">Pendientes ésta semana</div> -->
+				<h4 style="text-align: center; width: 100%; background-color: #faf4d4; color: #636363;">Pedidos ésta semana</h4>
+				<div class="table-responsive">
+					@if($semana!=null)
+					<table class="table table-striped table-responsive">
 						<thead>
 							<tr>
-								<th>Pedido</th>
-								<th>Cliente</th>
-								<th>Venció</th>
+								<th>LUNES</th>
+								<th>MARTES</th>
+								<th>MIERCOLES</th>
+								<th>JUEVES</th>
+								<th>VIERNES</th>
+								<th>SABADO</th>
+								<th>DOMINGO</th>
 							</tr>
 						</thead>
 						<tbody>
-							@foreach($vencidas as $v)
 							<tr>
-								<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-								<td>{{$v['cliente']}}</td>
-								<td>{{$v['fecha_entrega']}}</td>
+								@foreach($semana as $s)
+								<td>
+									<!-- <div class="alert alert-success" style="padding: 5px" role="alert">
+										{ {$s['fecha']}}
+									</div> -->
+									<h5 style="text-align: center; width: 100%; background-color: #ddd; color: #636363;">{{$s['fecha']}}</h5>
+									@if($s['data']!=null)
+									<ol>
+										@foreach($s['data'] as $d)
+										<li>
+											<a target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$d['documento']}}</a>
+											- {{$d['cliente']." - ".$d['fecha_entrega']}}
+										</li>
+										@endforeach
+									</ol>
+									@else
+									<p>---</p>
+									@endif
+								</td>
+								@endforeach
 							</tr>
-							@endforeach
 						</tbody>
 					</table>
 					@else
-					<p>No hay pedidos pendientes vencidos</p>
+					<p>No hay pedidos pendientes esta semana</p>
 					@endif
 				</div>
-				<div class="col-md-6">
-					<div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-success" role="alert">Pedidos Futuros</div>
-					@if($futuras!=null)
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Pedido</th>
-								<th>Cliente</th>
-								<th>Vence</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach($futuras as $v)
-							<tr>
-								<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-								<td>{{$v['cliente']}}</td>
-								<td>{{$v['fecha_entrega']}}</td>
-							</tr>
-							@endforeach
-						</tbody>
-					</table>
-					@else
-					<p>No hay pedidos pendientes futuros</p>
-					@endif
-				</div>
-				<div class="col-md-12">
-					<div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-warning" role="alert">Pendientes ésta semana</div>
-					<div class="table-responsive">
-						@if($semana!=null)
-						<table class="table table-striped table-responsive">
-							<thead>
-								<tr>
-									<th>LUNES</th>
-									<th>MARTES</th>
-									<th>MIERCOLES</th>
-									<th>JUEVES</th>
-									<th>VIERNES</th>
-									<th>SABADO</th>
-									<th>DOMINGO</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									@foreach($semana as $s)
-									<td>
-										<div class="alert alert-success" style="padding: 5px" role="alert">
-											{{$s['fecha']}}
-										</div>
-										@if($s['data']!=null)
-										<ol>
-											@foreach($s['data'] as $d)
-											<li>
-												<a target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$d['documento']}}</a>
-												- {{$d['cliente']." - ".$d['fecha_entrega']}}
-											</li>
-											@endforeach
-										</ol>
-										@else
-										<p>---</p>
-										@endif
-									</td>
-									@endforeach
-								</tr>
-							</tbody>
-						</table>
-						@else
-						<p>No hay pedidos pendientes esta semana</p>
-						@endif
-					</div>
-				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6">
+				<!-- <div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-danger" role="alert">Pedidos vencidos</div> -->
+				<h4 style="text-align: center; width: 100%; background-color: #FFD3D3; color: #636363;">Pedidos vencidos</h4>
+				@if($vencidas!=null)
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Pedido</th>
+							<th>Cliente</th>
+							<th>Venció</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach($vencidas as $v)
+						<tr>
+							<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
+							<td>{{$v['cliente']}}</td>
+							<td>{{$v['fecha_entrega']}}</td>
+						</tr>
+						@endforeach
+					</tbody>
+				</table>
+				@else
+				<p>No hay pedidos pendientes vencidos</p>
+				@endif
+			</div>
+			<div class="col-md-6">
+				<!-- <div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-success" role="alert">Pedidos Futuros</div> -->
+				<h4 style="text-align: center; width: 100%; background-color: #d3eac9; color: #636363;">Pedidos futuros</h4>
+
+				@if($futuras!=null)
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Pedido</th>
+							<th>Cliente</th>
+							<th>Vence</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach($futuras as $v)
+						<tr>
+							<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
+							<td>{{$v['cliente']}}</td>
+							<td>{{$v['fecha_entrega']}}</td>
+						</tr>
+						@endforeach
+					</tbody>
+				</table>
+				@else
+				<p>No hay pedidos pendientes futuros</p>
+				@endif
 			</div>
 		</div>
 

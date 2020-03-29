@@ -2,6 +2,7 @@
 
 namespace App\Contratotransporte;
 
+use App\Core\Tercero;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -42,5 +43,15 @@ class Propietario extends Model
             )
             ->orderBy('cte_propietarios.created_at', 'DESC')
             ->paginate(100);
+    }
+
+    public function vehiculos()
+    {
+        return $this->hasMany(Vehiculo::class);
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo(Tercero::class);
     }
 }
