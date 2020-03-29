@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Contratotransporte\Conductor;
 use App\Contratotransporte\Propietario;
 use Illuminate\Database\Eloquent\Model;
 
@@ -302,5 +303,10 @@ class Tercero extends Model
     public function propietario()
     {
         return $this->hasOne(Propietario::class);
+    }
+
+    public function conductor()
+    {
+        return $this->hasOne(Conductor::class);
     }
 }
