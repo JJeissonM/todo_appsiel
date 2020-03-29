@@ -5,8 +5,10 @@ namespace App\Http\Controllers\web\services;
 
 use App\Inventarios\InvGrupo;
 use App\Inventarios\InvProducto;
+use App\web\Correo;
 use App\web\Pedidoweb;
 use Form;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
 class TiendaComponent implements IDrawComponent
@@ -64,6 +66,8 @@ class TiendaComponent implements IDrawComponent
                 }
             }
         }
-        return view('web.components.productos', compact('miga_pan', 'variables_url', 'widget', 'pedido', 'items'));
+        $paises = DB::table('core_paises')->get();
+        $correo = Correo::all()->first();
+        return view('web.components.productos', compact('miga_pan', 'variables_url', 'widget', 'pedido', 'paises','correo', 'items'));
     }
 }

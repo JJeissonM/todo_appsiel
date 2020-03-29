@@ -148,6 +148,9 @@ Route::get('configuracion/contactenos/{id}/leer', 'web\ContactenosController@lee
 Route::post('pedidosweb/store', 'web\PedidoswebController@store')->name('pedidosweb.store');
 Route::resource('pedidosweb', 'web\PedidoswebController');
 
+//TIENDA
+Route::post('correo/itemcorreo/store','web\CorreoController@modificaritem')->name('correo.modificaritem');
+
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');
 Route::post('pagina_web/nube/ruta/get', 'web\NubeController@listPath')->name('nube.list');
