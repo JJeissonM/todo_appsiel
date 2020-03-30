@@ -139,26 +139,10 @@
 		$(document).ready(function(){
 
 			checkCookie();
-			
-			var today = new Date();
-			var dd = today.getDate();
-			var mm = today.getMonth()+1; //January is 0!
-			var yyyy = today.getFullYear();
 
-			if(dd<10) {
-			    dd = '0'+dd
-			} 
-
-			if(mm<10) {
-			    mm = '0'+mm
-			} 
-
-			today = yyyy + '-' + mm + '-' + dd;
-
-			$('#fecha').val( today );
+			$('#fecha').val( get_fecha_hoy() );
 
 			$('#cliente_input').focus( );
-
 
 
 			/* INVENTARIOS*/
@@ -167,7 +151,8 @@
 
 		    // Al cambiar la fecha
 		    $('#fecha').on('change',function(){
-		    	// Reset línea de registro
+
+		    	// Reset línea de registro de productos
 		    	$('#linea_ingreso_default input[type="text"]').val('');
 				$('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
 				$('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
@@ -176,7 +161,7 @@
 				$('#inv_motivo_id').attr('style','background-color:#ECECE5;');
 				$('#inv_motivo_id').attr('disabled','disabled');
 
-
+				// Se habilitan los campos necesarios
 				$('#precio_unitario').removeAttr('style');
 				$('#precio_unitario').removeAttr('disabled');
 
