@@ -7,6 +7,7 @@ use App\Inventarios\InvGrupo;
 use App\Inventarios\InvProducto;
 use App\web\Correo;
 use App\web\Pedidoweb;
+use App\web\Tienda;
 use Form;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
@@ -68,6 +69,7 @@ class TiendaComponent implements IDrawComponent
         }
         $paises = DB::table('core_paises')->get();
         $correo = Correo::all()->first();
-        return view('web.components.productos', compact('miga_pan', 'variables_url', 'widget', 'pedido', 'paises','correo', 'items'));
+        $tienda = Tienda::where('widget_id',$widget)->first();
+        return view('web.components.productos', compact('miga_pan', 'variables_url', 'widget', 'pedido', 'paises','correo','tienda', 'items'));
     }
 }

@@ -150,6 +150,12 @@ Route::resource('pedidosweb', 'web\PedidoswebController');
 
 //TIENDA
 Route::post('correo/itemcorreo/store','web\CorreoController@modificaritem')->name('correo.modificaritem');
+Route::put('correo/updated/{correo}','web\CorreoController@updated')->name('correo.updated');
+Route::post('tienda/store','web\TiendaController@store')->name('tienda.store');
+Route::get('tienda/{pais}/getciudades','web\TiendaController@getCiudades')->name('tienda.getciudades');
+Route::put('tienda/general/updated/{tienda}','web\TiendaController@generalUpdated')->name('tienda.generalupdated');
+Route::put('tienda/producto/updated/{tienda}','web\TiendaController@productoUpdated')->name('tienda.productoupdated');
+Route::put('tienda/inventario/updated/{tienda}','web\TiendaController@inventarioUpdated')->name('tienda.inventarioupdated');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');
