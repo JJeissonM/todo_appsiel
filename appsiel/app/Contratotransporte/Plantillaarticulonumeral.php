@@ -42,4 +42,14 @@ class Plantillaarticulonumeral extends Model
             ->orderBy('cte_plantillaarticulonumerals.created_at', 'DESC')
             ->paginate(100);
     }
+
+    public function numeraltablas()
+    {
+        return $this->hasMany(Numeraltabla::class);
+    }
+
+    public function plantillaarticulo()
+    {
+        return $this->belongsTo(Plantillaarticulo::class);
+    }
 }
