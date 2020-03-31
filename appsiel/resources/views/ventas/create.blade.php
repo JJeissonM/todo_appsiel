@@ -109,27 +109,24 @@
 			</div>
 		-->
 
-			<div id="div_ingreso_registros">				
-
-			    {!! $tabla->dibujar() !!}
+			{!! $tabla->dibujar() !!}
 
 
-				Productos ingresados: <span id="numero_lineas"> 0 </span>
-				
-				<div style="text-align: right;">
-					<div id="total_cantidad" style="display: none;"> 0 </div>
-	            	<table style="display: inline;">
-	            		<tr>
-	            			<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td> <td> <div id="subtotal"> $ 0 </div> </td>
-	            		</tr>
-	            		<tr>
-	            			<td style="text-align: right; font-weight: bold;"> Impuestos: &nbsp; </td> <td> <div id="total_impuestos"> $ 0 </div> </td>
-	            		</tr>
-	            		<tr>
-	            			<td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td> <td> <div id="total_factura"> $ 0 </div> </td>
-	            		</tr>
-	            	</table>
-				</div>
+			Productos ingresados: <span id="numero_lineas"> 0 </span>
+			
+			<div style="text-align: right;">
+				<div id="total_cantidad" style="display: none;"> 0 </div>
+            	<table style="display: inline;">
+            		<tr>
+            			<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td> <td> <div id="subtotal"> $ 0 </div> </td>
+            		</tr>
+					<tr>
+            			<td style="text-align: right; font-weight: bold;"> Impuestos: &nbsp; </td> <td> <div id="total_impuestos"> $ 0 </div> </td>
+            		</tr>
+            		<tr>
+            			<td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td> <td> <div id="total_factura"> $ 0 </div> </td>
+            		</tr>
+            	</table>
 			</div>
 			
 		</div>
@@ -142,26 +139,10 @@
 		$(document).ready(function(){
 
 			checkCookie();
-			
-			var today = new Date();
-			var dd = today.getDate();
-			var mm = today.getMonth()+1; //January is 0!
-			var yyyy = today.getFullYear();
 
-			if(dd<10) {
-			    dd = '0'+dd
-			} 
-
-			if(mm<10) {
-			    mm = '0'+mm
-			} 
-
-			today = yyyy + '-' + mm + '-' + dd;
-
-			$('#fecha').val( today );
+			$('#fecha').val( get_fecha_hoy() );
 
 			$('#cliente_input').focus( );
-
 
 
 			/* INVENTARIOS*/
@@ -170,7 +151,8 @@
 
 		    // Al cambiar la fecha
 		    $('#fecha').on('change',function(){
-		    	// Reset línea de registro
+
+		    	// Reset línea de registro de productos
 		    	$('#linea_ingreso_default input[type="text"]').val('');
 				$('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
 				$('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
@@ -179,7 +161,7 @@
 				$('#inv_motivo_id').attr('style','background-color:#ECECE5;');
 				$('#inv_motivo_id').attr('disabled','disabled');
 
-
+				// Se habilitan los campos necesarios
 				$('#precio_unitario').removeAttr('style');
 				$('#precio_unitario').removeAttr('disabled');
 
@@ -201,68 +183,60 @@
 
 		    	var x = event.which || event.keyCode; // Capturar la tecla presionada
 
-				if( x == 27 ) // 27 = ESC
-				{
-					$('#clientes_suggestions').html('');
-                	$('#clientes_suggestions').hide();
-                	return false;
-				}
+		    	switch( x )
+		    	{
+		    		case 27:// 27 = ESC
+						$('#clientes_suggestions').html('');
+	                	$('#clientes_suggestions').hide();
+		    			break;
 
+		    		case 40:// Flecha hacia abajo
+						var item_activo = $("a.list-group-item.active");					
+						item_activo.next().attr('class','list-group-item list-group-item-cliente active');
+						item_activo.attr('class','list-group-item list-group-item-cliente');
+						$('#cliente_input').val( item_activo.next().html() );
+		    			break;
 
-				/*
-					Al presionar las teclas "flecha hacia abajo" o "flecha hacia arriba"
-			    */
-				if ( x == 40) // Flecha hacia abajo
-				{
-					var item_activo = $("a.list-group-item.active");					
-					item_activo.next().attr('class','list-group-item list-group-item-cliente active');
-					item_activo.attr('class','list-group-item list-group-item-cliente');
-					$('#cliente_input').val( item_activo.next().html() );
-					return false;
+		    		case 38:// Flecha hacia arriba
+						$(".flecha_mover:focus").prev().focus();
+						var item_activo = $("a.list-group-item.active");					
+						item_activo.prev().attr('class','list-group-item list-group-item-cliente active');
+						item_activo.attr('class','list-group-item list-group-item-cliente');
+						$('#cliente_input').val( item_activo.prev().html() );
+		    			break;
 
-				}
-	 			if ( x == 38) // Flecha hacia arriba
-				{
-					$(".flecha_mover:focus").prev().focus();
-					var item_activo = $("a.list-group-item.active");					
-					item_activo.prev().attr('class','list-group-item list-group-item-cliente active');
-					item_activo.attr('class','list-group-item list-group-item-cliente');
-					$('#cliente_input').val( item_activo.prev().html() );
-					return false;
-				}
+		    		case 13:// Al presionar Enter
+						var item = $('a.list-group-item.active');
+						
+						if( item.attr('data-cliente_id') === undefined )
+						{
+							alert('El cliente ingresado no existe.');
+							reset_campos_formulario();
+						}else{
+							seleccionar_cliente( item );
+						}
+		    			break;
 
-				// Al presionar Enter
-				if( x == 13 )
-				{
-					var item = $('a.list-group-item.active');
-					
-					if( item.attr('data-cliente_id') === undefined )
-					{
-						alert('El cliente ingresado no existe.');
-						reset_campos_formulario();
-					}else{
-						seleccionar_cliente( item );
-	                	return false;
-					}
-				}
+		    		default :
+			    		// Manejo código de producto o nombre
+			    		var campo_busqueda = 'descripcion';
+			    		if( $.isNumeric( $(this).val() ) ){
+				    		var campo_busqueda = 'numero_identificacion';
+				    	}
 
-	    		// Manejo código de producto o nombre
-	    		var campo_busqueda = 'descripcion';
-	    		if( $.isNumeric( $(this).val() ) ){
-		    		var campo_busqueda = 'numero_identificacion';
+				    	// Si la longitud es menor a tres, todavía no busca
+					    if ( $(this).val().length < 2 ) { return false; }
+
+				    	var url = '../vtas_consultar_clientes';
+
+						$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+							.done(function( data ) {
+								// Se llena el DIV con las sugerencias que arooja la consulta
+				                $('#clientes_suggestions').show().html(data);
+				                $('a.list-group-item.active').focus();
+							});
+		    			break;
 		    	}
-
-		    	// Si la longitud es menor a tres, todavía no busca
-			    if ( $(this).val().length < 2 ) { return false; }
-
-		    	var url = '../vtas_consultar_clientes';
-
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
-					.done(function( data ) {
-						// Se llena el DIV con las sugerencias que arooja la consulta
-		                $('#clientes_suggestions').show().html(data);
-		                $('a.list-group-item.active').focus();
-					});
 		    });
 
 
