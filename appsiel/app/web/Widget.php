@@ -64,4 +64,9 @@ class Widget extends Model
     {
         return $this->hasMany(Testimoniale::class);
     }
+
+    public function tiendas()
+    {
+        return $this->hasMany(Tienda::class);
+    }
 }

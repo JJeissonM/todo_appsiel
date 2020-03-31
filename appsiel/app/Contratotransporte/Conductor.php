@@ -2,6 +2,7 @@
 
 namespace App\Contratotransporte;
 
+use App\Core\Tercero;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -41,5 +42,15 @@ class Conductor extends Model
             )
             ->orderBy('cte_conductors.created_at', 'DESC')
             ->paginate(100);
+    }
+
+    public function documentosconductors()
+    {
+        return $this->hasMany(Documentosconductor::class);
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo(Tercero::class);
     }
 }

@@ -18,7 +18,7 @@ class Modelo extends Model
     // El campo ruta_storage_imagen almacenará todos los archivos tipo file que maneje el modelo (cambiar nombre del campo)
 	protected $fillable = ['descripcion', 'modelo','name_space','modelo_relacionado','url_crear','url_edit','url_print','url_ver','enlaces','url_estado','controller_complementario','url_form_create','url_eliminar','home_miga_pan','ruta_storage_imagen'];
 
-    public $encabezado_tabla = ['ID','Descripción','Ubicación','Modelo relacionado','Directorio Imágenes','Controller complementario','Create','Edit','Acción'];
+    public $encabezado_tabla = ['ID','Descripción','Ubicación','Modelo relacionado','Directorio Imágenes','Create','Edit','Show','Print','Eliminar','Acción'];
 
     public function campos()
     {
@@ -27,7 +27,18 @@ class Modelo extends Model
 
     public static function consultar_registros()
     {
-        $registros = Modelo::select('sys_modelos.id AS campo1','sys_modelos.descripcion AS campo2','sys_modelos.name_space AS campo3','sys_modelos.modelo_relacionado AS campo4','sys_modelos.ruta_storage_imagen AS campo5','sys_modelos.controller_complementario AS campo6','sys_modelos.url_crear AS campo7','sys_modelos.url_edit AS campo8','sys_modelos.id AS campo9')
+        $registros = Modelo::select(
+                                'sys_modelos.id AS campo1',
+                                'sys_modelos.descripcion AS campo2',
+                                'sys_modelos.name_space AS campo3',
+                                'sys_modelos.modelo_relacionado AS campo4',
+                                'sys_modelos.ruta_storage_imagen AS campo5',
+                                'sys_modelos.url_crear AS campo6',
+                                'sys_modelos.url_edit AS campo7',
+                                'sys_modelos.url_ver AS campo8',
+                                'sys_modelos.url_print AS campo9',
+                                'sys_modelos.url_eliminar AS campo10',
+                                'sys_modelos.id AS campo11')
                     ->get()
                     ->toArray();
 
