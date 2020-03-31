@@ -156,6 +156,7 @@ Route::get('tienda/{pais}/getciudades','web\TiendaController@getCiudades')->name
 Route::put('tienda/general/updated/{tienda}','web\TiendaController@generalUpdated')->name('tienda.generalupdated');
 Route::put('tienda/producto/updated/{tienda}','web\TiendaController@productoUpdated')->name('tienda.productoupdated');
 Route::put('tienda/inventario/updated/{tienda}','web\TiendaController@inventarioUpdated')->name('tienda.inventarioupdated');
+Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@terminos')->name('tienda.terminos');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');

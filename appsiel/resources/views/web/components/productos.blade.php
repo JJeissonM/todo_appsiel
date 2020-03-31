@@ -466,7 +466,8 @@
                                         <div class="col-md-4"><label>Umbral de inventario agotado</label></div>
                                         <div class="col-md-8">
                                             <input type="number" class="form-control" min="0" max="500"
-                                                   name="umbral_inventario_agotado" value="{{$tienda->umbral_inventario_agotado}}"
+                                                   name="umbral_inventario_agotado"
+                                                   value="{{$tienda->umbral_inventario_agotado}}"
                                                    placeholder="Cantidad minima para enviar aviso de inventario agotado"
                                                    required="required">
                                         </div>
@@ -504,9 +505,25 @@
                         </div>
                         <div class="tab-pane fade" id="nav-terminos" role="tabpanel"
                              aria-labelledby="nav-profile-tab">
-                            <div class="form-group">
-                                <label for="formGroupExampleInput">envio</label>
-                                <input type="text" class="form-control" placeholder="https://" name="url">
+                            <div class="col-md-12">
+                                @if($tienda == null)
+                                    <i>Configure las opciones generales primero.</i></br></br>
+                                @else
+                                    {!! Form::model($tienda,['route'=>['tienda.terminos',$tienda],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
+                                    <input type="hidden" name="widget_id" value="{{$widget}}">
+                                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                                    <i>Configuraciones de Terminos y condiciones</i></br></br>
+                                    <i>Considera que el propósito de este material es sólo informativo y es tu responsabilidad usar estos recursos correctamente, para ofrecer la información que requiera tu política de privacidad y para asegurar que la información que ofreces es actual y precisa.</i></br></br>
+                                    <div class="form-group">
+                                        <label>Terminos y Condiciones</label>
+                                        <textarea class="form-control area" name="terminos_condiciones" rows="10" required>{!! $tienda->terminos_condiciones !!}</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                                        {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                                    </div>
+                                    {!! Form::close() !!}
+                                @endif
                             </div>
                         </div>
                         <div class="tab-pane fade" id="nav-correo" role="tabpanel"
@@ -523,10 +540,12 @@
                                     @if(count($correo->itemcorreos)>0)
                                         @foreach($correo->itemcorreos as $c)
                                             <tr>
-                                                <td>@if($c->activo == 'SI')<input type="checkbox"
-                                                                                  name="activos[{{$c->id}}]"
-                                                                                  checked>@else <input type="checkbox"
-                                                                                                       name="activos[{{$c->id}}]">@endif{{$c->correo}}
+                                                <td>@if($c->activo == 'SI')
+                                                        <input type="checkbox" name="activos[{{$c->id}}]" checked>
+                                                    @else
+                                                        <input type="checkbox" name="activos[{{$c->id}}]">
+                                                    @endif
+                                                    {{$c->correo}}
                                                 </td>
                                                 <td>{{$c->destinatario}}</td>
                                                 <td>

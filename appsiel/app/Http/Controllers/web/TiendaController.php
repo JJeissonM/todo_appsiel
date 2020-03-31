@@ -131,6 +131,26 @@ class TiendaController extends Controller
         }
     }
 
+    /* modifica los terminos y condiciones de la pagina
+     *
+     * @param Request $request, App\Tienda $id
+     * @return Response
+     */
+    public function terminos(Request $request,$id){
+        $tienda=Tienda::find($id);
+        $tienda->terminos_condiciones = $request->terminos_condiciones;
+        $result = $tienda->save();
+        if($result){
+            $message = "Los Terminos y Condiciones de la tienda se modificaron correctamente";
+            $variables_url = $request->variables_url;
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }else{
+            $message = "Los Terminnos y Condiciones no se modificaron correctamente";
+            $variables_url = $request->variables_url;
+            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+        }
+    }
+
     public function getCiudades($id)
     {
         //$pais = DB::table('core_paises')->find($id);
