@@ -39,4 +39,14 @@ class Plantillaarticulo extends Model
             ->orderBy('cte_plantillaarticulos.created_at', 'DESC')
             ->paginate(100);
     }
+
+    public function plantillaarticulonumerals()
+    {
+        return $this->hasMany(Plantillaarticulonumeral::class);
+    }
+
+    public function plantilla()
+    {
+        return $this->belongsTo(Plantilla::class);
+    }
 }

@@ -30,4 +30,9 @@ class Numeraltabla extends Model
             ->orderBy('cte_numeraltablas.created_at', 'DESC')
             ->paginate(100);
     }
+
+    public function plantillaarticulonumeral()
+    {
+        return $this->belongsTo(Plantillaarticulonumeral::class);
+    }
 }
