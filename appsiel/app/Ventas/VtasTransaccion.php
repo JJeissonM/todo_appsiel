@@ -44,9 +44,9 @@ class VtasTransaccion
                         </td>
                         <td> '. Form::select('inv_motivo_id',$motivos,null,['id'=>'inv_motivo_id']) .' </td>
                         <td> '. Form::text('existencia_actual', null, ['disabled'=>'disabled','id'=>'existencia_actual','width'=>'15px']) .' </td>
+                        <td> '. Form::text('cantidad', null, ['disabled'=>'disabled','id'=>'cantidad','width'=>'30px']) .' </td>
                         <td> '. Form::text('precio_unitario', null, ['disabled'=>'disabled','id'=>'precio_unitario']) . Form::hidden('costo_unitario', null, ['id'=>'costo_unitario']) .' </td>
                         <td> '. Form::text('tasa_impuesto', null, ['disabled'=>'disabled','id'=>'tasa_impuesto','width'=>'15px']) .' </td>
-                        <td> '. Form::text('cantidad', null, ['disabled'=>'disabled','id'=>'cantidad']) .' </td>
                         <td> '. Form::text('precio_total', null, ['disabled'=>'disabled','id'=>'precio_total']) . Form::hidden('costo_total', null, ['id'=>'costo_total']) .' </td>
                         <td></td>
                     </tr>';

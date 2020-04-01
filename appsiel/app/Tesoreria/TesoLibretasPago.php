@@ -10,8 +10,7 @@ class TesoLibretasPago extends Model
 {
     protected $table = 'teso_libretas_pagos';
 
-    protected $fillable = ['id_estudiante','matricula_id','fecha_inicio','valor_matricula',
-    					'valor_pension_anual','numero_periodos','valor_pension_mensual','estado','creado_por','modificado_por'];
+    protected $fillable = ['id_estudiante','matricula_id','fecha_inicio','valor_matricula','valor_pension_anual','numero_periodos','valor_pension_mensual','estado','creado_por','modificado_por'];
 
     public $encabezado_tabla = ['Estudiante','Curso','Cód. Matricula','Fecha inicio','Vlr. Matrícula','Vlr. Pensión anual','No. periodos','Vlr. Pensión mes','Estado','Acción'];
 

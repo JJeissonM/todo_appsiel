@@ -24,9 +24,9 @@ class VtasDocRegistro extends Model
     											['Producto','280px'],
     											['Motivo','200px'],
     											['Stock','35px'],
+                                                ['Cantidad',''],
                                                 ['Precio Unit. (IVA incluido)',''],
                                                 ['IVA',''],
-    											['Cantidad',''],
     											['Total',''],
     											['&nbsp;','10px']
     										]; // 9 campos

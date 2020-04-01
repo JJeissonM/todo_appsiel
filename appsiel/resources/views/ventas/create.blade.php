@@ -549,41 +549,6 @@
 				}
 
 			});
-
-
-			$('#cargar_datos_producto').on('click',function(event){
-				event.preventDefault();
-
-				if ( validar_requeridos() == false )
-				{
-					return false;
-				}
-
-				$('#div_cargando').show();
-				var bascula_id = $("input[name='bascula_id']:checked").val();
-
-				var mov = $('#inv_motivo_id').val().split('-');
-				var bodega_id = $('#inv_bodega_id').val();
-				var cliente_id = $('#cliente_id').val();
-
-
-				var url = '../vtas_get_productos_por_facturar';
-
-				$.get( url, { bascula_id: bascula_id, numero_linea: numero_linea, hay_productos:hay_productos, inv_motivo_id: mov[0], motivo_descripcion: $('#inv_motivo_id option:selected').text(), bodega_id:bodega_id, cliente_id: cliente_id } )
-					.done(function( data ) {
-						$('#ingreso_registros').find('tbody:last').append( data[0] );
-
-						// Se calculan los totales
-						calcular_totales();
-
-						numero_linea = data[1];
-						hay_productos = data[2];
-
-						reset_linea_ingreso_default();
-						$('#div_cargando').hide();
-					});
-				
-			});
 			
 
 		    function seleccionar_cliente(item_sugerencia)
@@ -639,6 +604,9 @@
                 reset_tabla_ingreso();
 
                 consultar_remisiones_pendientes();
+                
+				// Bajar el Scroll hasta el final de la página
+				$("html, body").animate( { scrollTop: $(document).height()+"px"} );
             }
 
             function seleccionar_producto(item_sugerencia)
@@ -753,10 +721,7 @@
 				// Se escogen los campos de la fila ingresada
 				var fila = $('#linea_ingreso_default');
 
-				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
-
-
-				$('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="'+numero_linea+'"><td style="display: none;"><div class="inv_motivo_id">'+ fila.find('.inv_motivo_id').html() +'</div></td><td style="display: none;"><div class="inv_bodega_id">'+ fila.find('.inv_bodega_id').html() +'</div></td><td style="display: none;"><div class="inv_producto_id">'+ fila.find('.inv_producto_id').html() +'</div></td><td style="display: none;"><div class="costo_unitario">'+ fila.find('.costo_unitario').html() +'</div></td><td style="display: none;"><div class="precio_unitario">'+ fila.find('.precio_unitario').html() +'</div></td><td style="display: none;"><div class="base_impuesto">'+ fila.find('.base_impuesto').html() +'</div></td><td style="display: none;"><div class="tasa_impuesto">'+ fila.find('.tasa_impuesto').html() +'</div></td><td style="display: none;"><div class="valor_impuesto">'+ fila.find('.valor_impuesto').html() +'</div></td><td style="display: none;"><div class="base_impuesto_total">'+ fila.find('.base_impuesto_total').html() +'</div></td><td style="display: none;"><div class="cantidad">'+ $('#cantidad').val() +'</div></td><td style="display: none;"><div class="costo_total">'+ fila.find('.costo_total').html() +'</div></td><td style="display: none;"><div class="precio_total">'+ fila.find('.precio_total').html() +'</div></td><td> &nbsp; </td><td> <span style="background-color:#F7B2A3;">'+ fila.find('.inv_producto_id').html() + "</span> " + $('#inv_producto_id').val() + '</td> <td>'+ $('#inv_motivo_id option:selected').text() + '</td><td> '+ $('#existencia_actual').val() + '</td><td> '+ $('#precio_unitario').val() + '</td> <td>  '+ $('#tasa_impuesto').val() + ' </td> <td> '+ $('#cantidad').val() + ' </td> <td> '+ $('#precio_total').val() + ' </td><td>' + btn_borrar + '</td></tr>');
+				$('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="'+numero_linea+'">' + generar_string_celdas( fila ) + '</tr>');
 				
 				// Se calculan los totales
 				calcular_totales();
@@ -773,6 +738,102 @@
 				// !!    WARNING   !!!!!!!!!!!!!!!! Se DEBE INACTIVAR la bodega para que ya no se pueda cambiar, pues el motiviemto está amarrado a la bodega
 
 				numero_linea++;
+			}
+
+			// Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
+			// Debe ser complatible con las columnas de la tabla de ingreso de registros
+			function generar_string_celdas( fila )
+			{
+				var celdas = [];
+				var num_celda = 0;
+				
+				celdas[ num_celda ] = '<td style="display: none;"><div class="inv_motivo_id">'+ fila.find('.inv_motivo_id').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="inv_bodega_id">'+ fila.find('.inv_bodega_id').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="inv_producto_id">'+ fila.find('.inv_producto_id').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="costo_unitario">'+ fila.find('.costo_unitario').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="precio_unitario">'+ fila.find('.precio_unitario').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="base_impuesto">'+ fila.find('.base_impuesto').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="tasa_impuesto">'+ fila.find('.tasa_impuesto').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="valor_impuesto">'+ fila.find('.valor_impuesto').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="base_impuesto_total">'+ fila.find('.base_impuesto_total').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="cantidad">'+ $('#cantidad').val() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="costo_total">'+ fila.find('.costo_total').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="precio_total">'+ fila.find('.precio_total').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td> &nbsp; </td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td> <span style="background-color:#F7B2A3;">'+ fila.find('.inv_producto_id').html() + "</span> " + $('#inv_producto_id').val() + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td>'+ $('#inv_motivo_id option:selected').text() + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td> '+ $('#existencia_actual').val() + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td>'+ $('#cantidad').val() + ' </td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td> '+ $('#precio_unitario').val() + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td>'+ $('#tasa_impuesto').val() + '</td>';
+				
+				num_celda++;
+
+				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
+				celdas[ num_celda ] = '<td> '+ $('#precio_total').val() + ' </td><td>' + btn_borrar + '</td>';
+
+				var cantidad_celdas = celdas.length;
+				var string_celdas = '';
+				for (var i = 0; i < cantidad_celdas; i++)
+				{
+					string_celdas = string_celdas + celdas[i];
+				}
+
+				return string_celdas;
 			}
 
 			function deshabilitar_campos_encabezado()
@@ -1066,6 +1127,8 @@
 					});/**/
 			}
 
+
+
 			$("#btn_cerrar_alert").on('click', function(){
 				$('#div_remisiones_pendientes').hide();
 
@@ -1176,6 +1239,41 @@
             }
 			
 
+
+            // PARA BASCULA
+			$('#cargar_datos_producto').on('click',function(event){
+				event.preventDefault();
+
+				if ( validar_requeridos() == false )
+				{
+					return false;
+				}
+
+				$('#div_cargando').show();
+				var bascula_id = $("input[name='bascula_id']:checked").val();
+
+				var mov = $('#inv_motivo_id').val().split('-');
+				var bodega_id = $('#inv_bodega_id').val();
+				var cliente_id = $('#cliente_id').val();
+
+
+				var url = '../vtas_get_productos_por_facturar';
+
+				$.get( url, { bascula_id: bascula_id, numero_linea: numero_linea, hay_productos:hay_productos, inv_motivo_id: mov[0], motivo_descripcion: $('#inv_motivo_id option:selected').text(), bodega_id:bodega_id, cliente_id: cliente_id } )
+					.done(function( data ) {
+						$('#ingreso_registros').find('tbody:last').append( data[0] );
+
+						// Se calculan los totales
+						calcular_totales();
+
+						numero_linea = data[1];
+						hay_productos = data[2];
+
+						reset_linea_ingreso_default();
+						$('#div_cargando').hide();
+					});
+				
+			});
 		});
 	</script>
 @endsection
