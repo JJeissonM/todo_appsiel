@@ -289,69 +289,43 @@
 					return false;
 				}
 
-				var x = event.which || event.keyCode; // Capturar la tecla presionada
+				var codigo_tecla_presionada = event.which || event.keyCode; // Capturar la tecla presionada
 
-				if( x == 27 ) // 27 = ESC
-				{
-					terminar++;
-					$('#suggestions').html('');
-                	$('#suggestions').hide();
-
-                	if ( terminar == 2 ){ 
-                		terminar = 0;
-                		$('#btn_guardar').focus(); 
-                	}
-                	return false;
-				}
-
-
-				/*
-					Al presionar las teclas "flecha hacia abajo" o "flecha hacia arriba"
-			    */
-				if ( x == 40) // Flecha hacia abajo
-				{
-					var item_activo = $("a.list-group-item.active");					
-					item_activo.next().attr('class','list-group-item list-group-item-productos active');
-					item_activo.attr('class','list-group-item list-group-item-productos');
-					$('#inv_producto_id').val( item_activo.html() );
-					return false;
-
-				}
-	 			if ( x == 38) // Flecha hacia arriba
-				{
-					$(".flecha_mover:focus").prev().focus();
-					var item_activo = $("a.list-group-item.active");					
-					item_activo.prev().attr('class','list-group-item list-group-item-productos active');
-					item_activo.attr('class','list-group-item list-group-item-productos');
-					$('#inv_producto_id').val( item_activo.html() );
-					return false;
-				}
-
-				
-		    	if( $('#modo_ingreso').is(':checked') )
+				switch( codigo_tecla_presionada )
 		    	{
-		    		// Manejo códigos de barra
-		    		var campo_busqueda = 'codigo_barras'; // Busqueda por CÓDIGO DE BARRA
-		    	}else{
+		    		case 27: // 27 = ESC
+						terminar++;
+						$('#suggestions').html('');
+	                	$('#suggestions').hide();
 
-		    		// Se determina el campo de busqueda
-		    		
-		    		
-		    		if( $.isNumeric( $(this).val() ) ){
-			    		var campo_busqueda = 'id'; // Busqueda por CODIGO (ID en base de datos)
-			    	}else{
-			    		var campo_busqueda = 'descripcion'; // Busqueda por NOMBRE
+	                	if ( terminar == 2 )
+	                	{ 
+	                		terminar = 0;
+	                		$('#btn_guardar').focus(); 
+	                	}
+		    			break;
 
-			    		// Si la longitud es menor a tres, todavía no busca
-			    		if ( $(this).val().length < 2 ) { return false; }
-			    	}
+		    		case 40: // Flecha hacia abajo
+						var item_activo = $("a.list-group-item.active");					
+						item_activo.next().attr('class','list-group-item list-group-item-productos active');
+						item_activo.attr('class','list-group-item list-group-item-productos');
+						$('#inv_producto_id').val( item_activo.html() );
+		    			break;
 
-		    		// Si el campo_busqueda es ID y el texto_busqueda coincide con el ID exacto del producto, en el listado de sugerencias ya viene marcado como Active el producto de la lista 
+		    		case 38: // Flecha hacia arriba
+						$(".flecha_mover:focus").prev().focus();
+						var item_activo = $("a.list-group-item.active");					
+						item_activo.prev().attr('class','list-group-item list-group-item-productos active');
+						item_activo.attr('class','list-group-item list-group-item-productos');
+						$('#inv_producto_id').val( item_activo.html() );
+		    			break;
+
+		    		case 13: // Al presionar Enter
+
+		    			// Si el campo_busqueda es ID y el texto_busqueda coincide con el ID exacto del producto, en el listado de sugerencias ya viene marcado como Active el producto de la lista 
 		    		
-		    		// Cuando se ingresa el ID, se selecciona el item activo cuando se presiona Enter 
-			    	
-					if( x == 13 ) // && $.isNumeric( $(this).val() )
-					{
+		    			// Cuando se ingresa el ID, se selecciona el item activo cuando se presiona Enter 
+
 						var item = $('a.list-group-item.active');
 						
 						if( item.attr('data-producto_id') === undefined )
@@ -363,20 +337,39 @@
 		                	consultar_existencia( $('#inv_bodega_id').val(), item.attr('data-producto_id') );
 		                	return false;
 						}
-					}
+		    			break;
+
+		    		default :
+			    		// Se determina el campo de busqueda
+			    		if( $.isNumeric( $(this).val() ) )
+			    		{
+			    			if( $('#modo_ingreso').is(':checked') )
+					    	{
+					    		// Manejo códigos de barra
+					    		var campo_busqueda = 'codigo_barras'; // Busqueda por CÓDIGO DE BARRA
+					    	}else{
+					    		var campo_busqueda = 'id'; // Busqueda por CODIGO (ID en base de datos)
+					    	}
+				    	}else{
+				    		var campo_busqueda = 'descripcion'; // Busqueda por NOMBRE
+
+				    		// Si la longitud es menor a tres, todavía no busca
+				    		if ( $(this).val().length < 2 ) { return false; }
+				    	}
+
+				    	terminar = 0;
+
+				    	// Realizar consulta y mostar sugerencias
+				    	var url = '../inv_consultar_productos';
+
+						$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+							.done(function( data ) {
+								//Escribimos las sugerencias que nos manda la consulta
+				                $('#suggestions').show().html(data);
+				                $('.list-group-item-productos:first').focus();
+							});
+		    			break;
 		    	}
-
-		    	terminar = 0;
-
-		    	// Realizar consulta y mostar sugerencias
-		    	var url = '../inv_consultar_productos';
-
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
-					.done(function( data ) {
-						//Escribimos las sugerencias que nos manda la consulta
-		                $('#suggestions').show().html(data);
-		                $('.list-group-item-productos:first').focus();
-					});
 
 		    });
 
@@ -402,7 +395,7 @@
 					if( $('#url_id_transaccion').val() == 23 ) 
 					{
 						// Si es una factura de ventas
-						calcula_nuevo_saldo_a_la_fecha();
+						calcula_nuevo_saldo_a_la_fecha(); // NO VALIDA AÚN
 					}
 
 					// El registro se agrega al presionas Enter, si pasa las validaciones
@@ -414,18 +407,7 @@
 							return false;
 						}
 
-						if ( !validar_venta_menor_costo() )
-						{ 
-							return false;
-						}
-
-						if( $('#url_id_transaccion').val() == 23 ) 
-						{ 
-							// Si es una factura de ventas (salida de invetario)
-							validacion_saldo_movimientos_posteriores();
-						}else{
-							agregar_nueva_linea();
-						}
+						$('#precio_unitario').select();
 
 						return true;					
 					}
@@ -475,10 +457,20 @@
 				{	
 
 					var x = event.which || event.keyCode;
-					if( x==13 )
+					if( x == 13 )
 					{
-						// Se pasa a ingresar las cantidades
-						$('#cantidad').focus();				
+						if ( !validar_venta_menor_costo() )
+						{ 
+							return false;
+						}
+
+						if( $('#url_id_transaccion').val() == 23 ) 
+						{ 
+							// Si es una factura de ventas (salida de invetario)
+							validacion_saldo_movimientos_posteriores();
+						}else{
+							agregar_nueva_linea();
+						}			
 					}
 
 					var tasa_impuesto = $('#linea_ingreso_default').find('.tasa_impuesto').html();
@@ -490,7 +482,6 @@
 
 
 		            var valor_impuesto =  precio_unitario - base_impuesto;
-
 
 					//$('#linea_ingreso_default').find('.costo_unitario').html( precio_unitario );
 					$('#linea_ingreso_default').find('.base_impuesto').html( base_impuesto );
@@ -718,6 +709,11 @@
 					return false;
 				}
 
+				if ( !validar_existencia_actual() )
+				{
+					return false;
+				}
+
 				// Se escogen los campos de la fila ingresada
 				var fila = $('#linea_ingreso_default');
 
@@ -816,6 +812,14 @@
 				num_celda++;
 
 				celdas[ num_celda ] = '<td> '+ $('#precio_unitario').val() + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td>'+ $('#tasa_descuento').val() + ' </td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td> '+ $('#valor_total_descuento').val() + '</td>';
 				
 				num_celda++;
 
@@ -1212,6 +1216,7 @@
 			// Para las notas crédito directas (salida de inventario)
 			function calcula_nuevo_saldo_a_la_fecha()
 			{
+				// saldo_original es la existencia_actual al consultar las existencias luego de seleccionar_producto()
 				// 0 es la cantidad_original
 				var nuevo_saldo = parseFloat( $('#saldo_original').val() ) + 0 - parseFloat( $('#cantidad').val() );
 

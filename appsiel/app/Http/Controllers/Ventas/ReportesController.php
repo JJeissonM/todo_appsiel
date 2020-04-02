@@ -20,6 +20,8 @@ use Lava;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasPedido;
 
+use App\Contabilidad\Impuesto;
+
 class ReportesController extends Controller
 {
 
@@ -89,6 +91,39 @@ class ReportesController extends Controller
         //dd( $movimiento );
 
         $vista = View::make('ventas.reportes.precio_venta', compact('movimiento'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+
+    public function vtas_reporte_ventas(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $agrupar_por = $request->agrupar_por;
+        $detalla_productos  = (int)$request->detalla_productos;
+        $detalla_clientes  = (int)$request->detalla_clientes;
+        $iva_incluido  = (int)$request->iva_incluido;
+
+        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
+
+        // En el movimiento se trae el precio_total con IVA incluido
+        $mensaje = 'IVA Incluido en precio.';
+        if ( !$iva_incluido )
+        {
+            $mensaje = 'IVA <b>NO</b> incluido en precio.';     
+            foreach ($movimiento as $linea )
+            {
+                $tasa_impuesto = Impuesto::get_tasa( $linea->inv_producto_id, 0, 0 );
+                $precio_unitario = $linea->precio_total / ( 1 + $tasa_impuesto  / 100 );
+                $linea->precio_total = $precio_unitario;
+            }
+        }
+
+        $vista = View::make('ventas.reportes.reporte_ventas', compact('movimiento','agrupar_por','mensaje'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
