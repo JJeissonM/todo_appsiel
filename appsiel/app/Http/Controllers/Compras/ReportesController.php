@@ -128,16 +128,10 @@ class ReportesController extends Controller
         
         if ( !$iva_incluido )
         {
-            $mensaje = 'IVA <b>NO</b> incluido en precio.';            
-            foreach ($movimiento as $linea )
-            {
-                $tasa_impuesto = Impuesto::get_tasa( $linea->inv_producto_id, 0, 0 );
-                $precio_unitario = $linea->precio_total / ( 1 + $tasa_impuesto  / 100 );
-                $linea->precio_total = $precio_unitario;
-            }
+            $mensaje = 'IVA <b>NO</b> incluido en precio.';
         }
 
-        $vista = View::make('compras.reportes.precio_compra', compact('movimiento','detalla_proveedores', 'mensaje', 'porcentaje_proyeccion_1', 'porcentaje_proyeccion_2', 'porcentaje_proyeccion_3', 'porcentaje_proyeccion_4' ) )->render();
+        $vista = View::make('compras.reportes.precio_compra', compact('movimiento','detalla_proveedores', 'mensaje', 'porcentaje_proyeccion_1', 'porcentaje_proyeccion_2', 'porcentaje_proyeccion_3', 'porcentaje_proyeccion_4', 'iva_incluido' ) )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

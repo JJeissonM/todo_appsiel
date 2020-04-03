@@ -6,6 +6,7 @@
 	if ( $calificacion->escala_id != 0 ) 
 	{
 		$logros = App\Calificaciones\Logro::where('escala_valoracion_id',$calificacion->escala_id)->where('periodo_id',$periodo->id)->where('curso_id', $curso->id)->where('asignatura_id', $asignatura->id)->where('estado','Activo')->get();
+		
 	}else{
 		$logros = (object) [ (object)['descripcion' => ''] ];
 	}

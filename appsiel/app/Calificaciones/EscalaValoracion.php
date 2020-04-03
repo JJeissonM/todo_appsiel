@@ -81,10 +81,13 @@ class EscalaValoracion extends Model
         return [ $escala_valoracion->first()->calificacion_minima, $escala_valoracion->last()->calificacion_maxima];
     }
 
-    public static function get_escala_segun_calificacion( $calificacion )
+    public static function get_escala_segun_calificacion( $calificacion, $periodo_lectivo_id = null )
     {
+        $periodo_lectivo_id = PeriodoLectivo::get_actual()->id;
+        
         return EscalaValoracion::where('calificacion_minima','<=',$calificacion)
                                         ->where('calificacion_maxima','>=',$calificacion)
+                                        ->where('periodo_lectivo_id','=',$periodo_lectivo_id)
                                         ->get()
                                         ->first();
     }

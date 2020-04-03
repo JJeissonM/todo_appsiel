@@ -15,8 +15,8 @@
 		    z-index: 9999;
 		}
 
-		#existencia_actual, #tasa_impuesto{
-			width: 35px;
+		#existencia_actual, #tasa_impuesto, #tasa_descuento{
+			width: 40px;
 		}
 
 		#popup_alerta{
@@ -473,12 +473,12 @@
 						}			
 					}
 
-					var tasa_impuesto = $('#linea_ingreso_default').find('.tasa_impuesto').html();
+					var tasa_impuesto = parseFloat( $('#linea_ingreso_default').find('.tasa_impuesto').html() );
 
 	            	// Los impuestos se obtienen del precio ingresado
 					var precio_unitario = parseFloat( $(this).val() );
 		            
-		            var base_impuesto = ( precio_unitario ) / ( 1 + parseFloat(tasa_impuesto) / 100 );
+		            var base_impuesto = precio_unitario / ( 1 + tasa_impuesto / 100 );
 
 
 		            var valor_impuesto =  precio_unitario - base_impuesto;
@@ -499,6 +499,28 @@
 					return false;
 				}
 
+			});
+
+            $('#tasa_descuento').keyup(function(){
+
+            	if( validar_input_numerico( $(this) ) )
+				{	
+					var x = event.which || event.keyCode;
+					if( x == 13 )
+					{
+						agregar_nueva_linea();
+						return true;
+					}
+					
+					$('#valor_total_descuento').val();
+
+					calcula_precio_total();
+
+				}else{
+
+					$(this).focus();
+					return false;
+				}
 			});
 
             // Al modificar el precio total
@@ -653,7 +675,7 @@
 							/**/
 						}
 
-						// Asignar datos a columnas invisibles (cantidades sin formatear)
+						// Asignar datos a columnas invisibles ( valores sin formato )
 						$('#linea_ingreso_default').find('.inv_bodega_id').html( $('#inv_bodega_id').val() );
 						$('#linea_ingreso_default').find('.costo_unitario').html( respuesta.costo_promedio );
 						$('#linea_ingreso_default').find('.base_impuesto').html( respuesta.base_impuesto );
@@ -662,8 +684,7 @@
 						$('#linea_ingreso_default').find('.precio_unitario').html( respuesta.precio_venta );
 
 						// Asignar datos a los controles (formateados visualmente para el usuario)
-						//var precio_compra = 
-						$('#precio_unitario').val( '$' + new Intl.NumberFormat("de-DE").format( respuesta.precio_venta )  );
+						$('#precio_unitario').val(  respuesta.precio_venta );
 						$('#tasa_impuesto').val( respuesta.tasa_impuesto + '%' );
 
 						// Se pasa a ingresar las cantidades
@@ -698,6 +719,7 @@
 				return true;
 			}
 
+
 			/*
 			** Al presionar enter, luego de ingresar la cantidad y si se pasan la validaciones
 			*/
@@ -710,6 +732,11 @@
 				}
 
 				if ( !validar_existencia_actual() )
+				{
+					return false;
+				}
+
+				if ( !validar_venta_menor_costo() )
 				{
 					return false;
 				}
@@ -735,6 +762,8 @@
 
 				numero_linea++;
 			}
+
+
 
 			// Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
 			// Debe ser complatible con las columnas de la tabla de ingreso de registros
@@ -981,6 +1010,12 @@
 				$('#precio_unitario').removeAttr('style');
 				$('#precio_unitario').removeAttr('disabled');
 
+				$('#tasa_descuento').removeAttr('style');
+				$('#tasa_descuento').removeAttr('disabled');
+
+				$('#valor_total_descuento').removeAttr('style');
+				$('#valor_total_descuento').removeAttr('disabled');
+
 				$('#precio_total').removeAttr('style');
 				$('#precio_total').removeAttr('disabled');
 
@@ -994,12 +1029,10 @@
 			{
 				var fila = $('#linea_ingreso_default');
 				
-				var cantidad = $('#cantidad').val();
-				
-				var base_impuesto = parseFloat( fila.find('.base_impuesto').html() );
-				var base_impuesto_total = base_impuesto * cantidad;
+				var cantidad = parseFloat( $('#cantidad').val() );
 
 				var precio_unitario = parseFloat( fila.find('.precio_unitario').html() );
+
 				var precio_total = precio_unitario * cantidad;
 
 				var costo_unitario = parseFloat( fila.find('.costo_unitario').html() );
@@ -1014,11 +1047,13 @@
 				$('#base_impuesto_total').val('');
 				fila.find('.base_impuesto_total').html('');
 
-				if( $.isNumeric(precio_total) && precio_total > 0 )
+				if( $.isNumeric( precio_total ) && precio_total > 0 )
 				{
 					$('#precio_total').val( '$ ' + new Intl.NumberFormat("de-DE").format( precio_total )  );
 					fila.find('.precio_total').html( precio_total );
 
+					var base_impuesto = parseFloat( fila.find('.base_impuesto').html() );
+					var base_impuesto_total = base_impuesto * cantidad;
 					fila.find('.base_impuesto_total').html( base_impuesto_total );
 					
 					fila.find('.costo_total').html( costo_total );
@@ -1029,6 +1064,8 @@
 					return false;
 				}
 			}
+
+
 
 			function calcular_totales()
 			{	

@@ -14,7 +14,7 @@
             $primer_encabezado = 'Productos';
             break;
         case 'tasa_impuesto':
-            $primer_encabezado = 'Tasas de impuesto';
+            $primer_encabezado = 'Tasas de impuesto (%)';
             break;
         case 'clase_cliente_id':
             $primer_encabezado = 'Clases de clientes';
@@ -44,46 +44,41 @@
             $total_1_producto = 0;
             $total_2_producto = 0;
         ?>
-        @foreach( $movimiento as $linea)
+        @foreach( $movimiento as $campo_agrupado => $coleccion_movimiento)
 
             <?php 
-                switch ( $agrupar_por )
-                {
-                    case 'cliente_id':
-                        $texto_celda = $linea->cliente;
-                        break;
-                    case 'inv_producto_id':
-                        $texto_celda = $linea->producto;
-                        break;
-                    case 'tasa_impuesto':
-                        $texto_celda = $linea->tasa_impuesto . '%';
-                        break;
-                    case 'clase_cliente_id':
-                        $texto_celda = $linea->clase_cliente;
-                        break;
-                    case 'core_tipo_transaccion_id':
-                        $texto_celda = $linea->descripcion_tipo_transaccion;
-                        break;
-                    
-                    default:
-                        $texto_celda = '';
-                        break;
-                }
+                $cantidad = $coleccion_movimiento->sum('cantidad');
+                $precio_total = $coleccion_movimiento->sum('precio_total');
+                $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
             ?>
 
             <tr class="fila-{{$j}}">
-                <td> {{ $texto_celda }} </td>
-                <td> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
-                @php $precio_promedio = 0; if( $linea->cantidad != 0 ){ $precio_promedio = $linea->precio_total / $linea->cantidad; } @endphp
+                <td> {{ $campo_agrupado }} </td>
+                <td> {{ number_format( $cantidad, 2, ',', '.') }} </td>
+                @php
+
+                    if ( $iva_incluido )
+                    {
+                        $precio = $precio_total;
+                    }else{
+                        $precio = $base_impuesto_total;
+                    }
+
+                    $precio_promedio = 0; 
+                    if( $cantidad != 0 )
+                    { 
+                        $precio_promedio = $precio / $cantidad; 
+                    } 
+                @endphp
                 <td> ${{ number_format( $precio_promedio, 2, ',', '.') }} </td>
-                <td> ${{ number_format( $linea->precio_total, 2, ',', '.') }} </td>
+                <td> ${{ number_format( $precio, 2, ',', '.') }} </td>
             </tr>
 
          <?php
             
 
-            $total_1_producto += $linea->cantidad;
-            $total_2_producto += $linea->precio_total;
+            $total_1_producto += $cantidad;
+            $total_2_producto += $precio;
 
             $j++;
             if ($j==3) {

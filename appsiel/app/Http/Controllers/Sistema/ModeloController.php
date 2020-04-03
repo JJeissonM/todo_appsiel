@@ -198,12 +198,7 @@ class ModeloController extends Controller
             return view(Input::get('vista'), compact('form_create', 'miga_pan', 'archivo_js'));
         }
 
-        // Si HAY tareas adicionales u otros modelos que afectar (almacenar en otras tablas)
-        if ($this->modelo->controller_complementario != '') {
-            return \App::call($this->modelo->controller_complementario . '@create', ['form_create' => $form_create, 'miga_pan' => $miga_pan, 'archivo_js' => $archivo_js]);
-        } else { // Si no, se envía al index del ModeloController
-            return view($vista, compact('form_create', 'miga_pan', 'archivo_js'));
-        }
+        return view($vista, compact('form_create', 'miga_pan', 'archivo_js'));
     }
 
     /*
@@ -237,18 +232,14 @@ class ModeloController extends Controller
 
         /*
             Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)
-            Este método debe reemplazar el condicional de más abajo que usa controller_complementario
         */
-        if (method_exists(app($this->modelo->name_space), 'store_adicional')) {
+        if (method_exists(app($this->modelo->name_space), 'store_adicional'))
+        {
+            // Aquí mismo hace el return
             app($this->modelo->name_space)->store_adicional($datos, $registro);
         }
 
-        // Si HAY tareas adicionales u otros modelos que afectar (almacenar en otras tablas)
-        if ($this->modelo->controller_complementario != '') {
-            return \App::call($this->modelo->controller_complementario . '@store', ['request' => $request, 'registro' => $registro]);
-        } else { // Si no, se envía a la vista SHOW del ModeloController
-            return redirect($url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro CREADO correctamente.');
-        }
+        return redirect($url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro CREADO correctamente.');
     }
 
     /*
@@ -447,17 +438,12 @@ class ModeloController extends Controller
 
         /*
             Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)
-            Este método debe reemplazar el condicional de más abajo que usa controller_complementario
         */
         if (method_exists(app($modelo->name_space), 'update_adicional')) {
             app($modelo->name_space)->update_adicional($datos, $id);
         }
 
-        if ($modelo->controller_complementario != '') {
-            return \App::call($modelo->controller_complementario . '@update', ['request' => $request, 'id' => $id]);
-        } else {
-            return redirect('web/' . $registro->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro MODIFICADO correctamente.');
-        }/**/
+        return redirect('web/' . $registro->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro MODIFICADO correctamente.');
     }
 
     /*

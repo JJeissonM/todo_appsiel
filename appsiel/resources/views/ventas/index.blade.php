@@ -24,7 +24,6 @@ $semana = ReportesController::pedidos_semana();
 		<div class="row">
 			
 			<div class="col-md-12">
-				<!-- <div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-warning" role="alert">Pendientes ésta semana</div> -->
 				<h4 style="text-align: center; width: 100%; background-color: #faf4d4; color: #636363;">Pedidos ésta semana</h4>
 				<div class="table-responsive">
 					@if($semana!=null)
@@ -74,7 +73,6 @@ $semana = ReportesController::pedidos_semana();
 
 		<div class="row">
 			<div class="col-md-6">
-				<!-- <div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-danger" role="alert">Pedidos vencidos</div> -->
 				<h4 style="text-align: center; width: 100%; background-color: #FFD3D3; color: #636363;">Pedidos vencidos</h4>
 				@if($vencidas!=null)
 				<table class="table table-striped">
@@ -100,7 +98,6 @@ $semana = ReportesController::pedidos_semana();
 				@endif
 			</div>
 			<div class="col-md-6">
-				<!-- <div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-success" role="alert">Pedidos Futuros</div> -->
 				<h4 style="text-align: center; width: 100%; background-color: #d3eac9; color: #636363;">Pedidos futuros</h4>
 
 				@if($futuras!=null)
