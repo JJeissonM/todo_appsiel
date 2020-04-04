@@ -179,30 +179,11 @@
     </div>
     <div class="container-fludi">
         <ul class="nav nav-categorias" >
-            <li class="nav-item">
-                <a class="nav-link " href="#">Mercado</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="#">Tecnología</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="#">Electrodomésticos</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="#">Hogar</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="#">Moda y accesorios</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="#">Salud y belleza</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="#">Bebés,niños y jugueteria</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link " href="#">Deportes y Tiempo Libre</a>
-            </li>
+            @foreach( $grupos as $key => $value)
+                <li class="nav-item">
+                    <a class="nav-link " href="#">{{ $value }}</a>
+                </li>
+            @endforeach
         </ul>
     </div>
 </header>
@@ -237,76 +218,24 @@
                     </div>
                 </div>
                 <div class="row" id="productos">
-                    <div class="contenido-producto">
-                        <img src="{{asset('img/carrito/curso3.jpg')}}" loading="lazy"  class="imagen-curso u-full-width">
-                        <div class="info-card">
-                            <h4>Banana unidad</h4>
-                            <p>Unidad a $400</p>
-                            <p class="precio">$200  <span class="u-pull-right ">$15</span></p>
-                            <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="3">!Lo quiero!</a>
-                            <div class="button-opciones">
-                                <a href=""  style="color: gray;"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                <p>1 und</p>
-                                <a href="" style="color: #FD9943;"><i class="fa fa-plus" aria-hidden="true"></i></a>
+
+                    @foreach( $items as $item)
+                        <div class="contenido-producto">
+                            <img src="{{ asset( config('configuracion.url_instancia_cliente') . "/storage/app/inventarios/" . $item->imagen ) }}" loading="lazy"  class="imagen-curso u-full-width">
+                            <div class="info-card">
+                                <h4> {{ $item->descripcion }} </h4>
+                                <p>Unidad a $400</p>
+                                <p class="precio">${{ $item->precio_venta }}  <span class="u-pull-right ">$15</span></p>
+                                <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="3">!Lo quiero!</a>
+                                <div class="button-opciones">
+                                    <a href=""  style="color: gray;"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
+                                    <p>1 und</p>
+                                    <a href="" style="color: #FD9943;"><i class="fa fa-plus" aria-hidden="true"></i></a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="contenido-producto">
-                        <img src="{{asset('img/carrito/curso3.jpg')}}" loading="lazy"  class="imagen-curso u-full-width">
-                        <div class="info-card">
-                            <h4>Banana unidad</h4>
-                            <p>Unidad a $400</p>
-                            <p class="precio">$200  <span class="u-pull-right ">$15</span></p>
-                            <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="3">!Lo quiero!</a>
-                            <div class="button-opciones">
-                                <a href=""  style="color: gray;"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                <p>1 und</p>
-                                <a href="" style="color: #FD9943;"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="contenido-producto">
-                        <img src="{{asset('img/carrito/curso3.jpg')}}" loading="lazy"  class="imagen-curso u-full-width">
-                        <div class="info-card">
-                            <h4>Banana unidad</h4>
-                            <p>Unidad a $400</p>
-                            <p class="precio">$200  <span class="u-pull-right ">$15</span></p>
-                            <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="3">!Lo quiero!</a>
-                            <div class="button-opciones">
-                                <a href=""  style="color: gray;"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                <p>1 und</p>
-                                <a href="" style="color: #FD9943;"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="contenido-producto">
-                        <img src="{{asset('img/carrito/curso3.jpg')}}" loading="lazy"  class="imagen-curso u-full-width">
-                        <div class="info-card">
-                            <h4>Banana unidad</h4>
-                            <p>Unidad a $400</p>
-                            <p class="precio">$200  <span class="u-pull-right ">$15</span></p>
-                            <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="3">!Lo quiero!</a>
-                            <div class="button-opciones">
-                                <a href=""  style="color: gray;"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                <p>1 und</p>
-                                <a href="" style="color: #FD9943;"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="contenido-producto">
-                        <img src="{{asset('img/carrito/curso3.jpg')}}" loading="lazy"  class="imagen-curso u-full-width">
-                        <div class="info-card">
-                            <h4>Banana unidad</h4>
-                            <p>Unidad a $400</p>
-                            <p class="precio">$200  <span class="u-pull-right ">$15</span></p>
-                            <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="3">!Lo quiero!</a>
-                            <div class="button-opciones">
-                                <a href=""  style="color: gray;"><i class="fa fa-trash-o" aria-hidden="true"></i></a>
-                                <p>1 und</p>
-                                <a href="" style="color: #FD9943;"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                            </div>
-                        </div>
-                    </div>
+                    @endforeach
+
                 </div> <!--.row-->
             </div>
         </div>
