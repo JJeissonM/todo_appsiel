@@ -95,7 +95,9 @@
                 <div class="col-md-12">
                     @if($aboutus != null)
                         <div class="contenido">
+                            @if($aboutus->disposicion == 'DEFAULT')
                             <img src="{{url($aboutus->imagen)}}" alt="" class="imagen">
+                            @endif
                             <div class="descripcion">
                                 <h5 class="titulo">{{$aboutus->titulo}}</h5>
                                 <p>{{str_limit($aboutus->descripcion,30)}}</p>
