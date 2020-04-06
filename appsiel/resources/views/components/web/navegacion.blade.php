@@ -51,8 +51,7 @@
                                         </div>
                                     </li>
                                 @else
-                                    <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}"
-                                                                                                                style="color: {{$nav->color}}">{{$item->titulo}}</a></li>
+                                    <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}" style="color: {{$nav->color}}">{{$item->titulo}}</a></li>
                                 @endif
                             @endif
                         @endforeach
@@ -105,7 +104,7 @@
                 </div>
                 <div id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto mu-navbar-nav">
-                        <a href="{{url('/login')}}" class="btn btn-outline-primary text-white ml-3" style="color: {{$nav->color}}"><i class="fa fa-edit"></i>Plataforma</a>
+                        <a href="{{url('/login')}}" class="btn btn-outline-primary text-white ml-3" style="color: {{$nav->color}}!important; font-weight: bold;!important;"><i class="fa fa-edit"></i>Plataforma</a>
                     </ul>
                 </div>
             </nav>

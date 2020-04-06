@@ -1,6 +1,5 @@
 <style>
     .aboutus {
-        background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}});
         background-repeat: no-repeat;
         background-size: cover;
         background-position: top center;
@@ -10,7 +9,7 @@
     }
 </style>
 
-<div class="aboutus">
+<div class="aboutus" style="background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}});">
     <div class="container">
         <div class="container" style="padding: 40px;">
             @if($aboutus!=null)
