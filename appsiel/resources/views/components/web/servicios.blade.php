@@ -31,7 +31,7 @@
                             <p class="text-center wow fadeInDown animated"
                                style="visibility: visible; animation-name: fadeInDown;">{{$servicios->descripcion}}</p>
                         </div>
-                        <div class="row">
+                        <div class="row" style="height: 484px">
                             @if(count($servicios->itemservicios) > 0)
                                 <div class="features d-flex justify-content-around flex-wrap">
                                     @foreach($servicios->itemservicios as $item)
