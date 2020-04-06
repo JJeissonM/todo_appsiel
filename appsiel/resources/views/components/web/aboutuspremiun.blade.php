@@ -1,20 +1,24 @@
 <style>
+    .aboutus {
+        background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}});
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: top center;
+    }
     .aboutus p {
         color: #000;
     }
 </style>
 
-<div class="aboutus" style="background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}})">
+<div class="aboutus">
     <div class="container">
-        <div class="container">
+        <div class="container" style="padding: 40px;">
             @if($aboutus!=null)
                 <div class="section-header">
                     <h2 class="section-title text-center wow fadeInDown animated"
                         style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->titulo}}</h2>
                     <p class="text-center wow fadeInDown animated"
                        style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->descripcion}}
-                    <center><a class="btn btn-primary btn-md text-center"
-                               href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer todo</a></center>
                 </div>
                 <div class="row">
                     <div class="col-sm-6 wow fadeInLeft animated"
