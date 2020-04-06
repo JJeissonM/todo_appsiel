@@ -506,7 +506,9 @@ class LibretaPagoController extends ModeloController
         
         $cuenta = TesoCuentaBancaria::get_cuenta_por_defecto();
 
-        $view =  View::make('tesoreria.pdf_libreta', compact('registro','colegio','empresa','cuenta'))->render();
+        $formato = config('tesoreria.formato_libreta_pago_defecto');
+
+        $view =  View::make('tesoreria.'.$formato, compact('registro','colegio','empresa','cuenta'))->render();
 
         //crear PDF   echo $view;
         $pdf = \App::make('dompdf.wrapper');

@@ -125,7 +125,8 @@
 								{
 									$calificacion = $obj_calificacion->calificacion;
 									$escala = App\Calificaciones\EscalaValoracion::where('calificacion_minima','<=',$calificacion)
-													->where('calificacion_maxima','>=',$calificacion)->first();									
+													->where('calificacion_maxima','>=',$calificacion)
+													->where('periodo_lectivo_id','=',$periodo->periodo_lectivo_id)->first();									
 								}
 
 								$tbody.='<tr>

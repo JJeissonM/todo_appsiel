@@ -35,7 +35,8 @@ class InvProducto extends Model
     public static function get_datos_basicos($grupo_inventario_id, $estado)
     {
 
-        if ( $grupo_inventario_id == '') {
+        if ( $grupo_inventario_id == '')
+        {
           $grupo_inventario_id = '%'.$grupo_inventario_id.'%';
           $operador1 = 'LIKE';
         }else{
@@ -57,6 +58,8 @@ class InvProducto extends Model
                                 'contab_impuestos.tasa_impuesto',
                                 'inv_productos.tipo',
                                 'inv_productos.estado',
+                                'inv_productos.imagen',
+                                'inv_productos.mostrar_en_pagina_web',
                                 'inv_productos.codigo_barras')
                     ->get();
     }

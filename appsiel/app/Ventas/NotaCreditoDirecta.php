@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
-class NotaCreditoDirecta extends VtasDocEncabezado
+class NotaCreditoDirecta extends Model
 {
     protected $table = 'vtas_doc_encabezados';
 
