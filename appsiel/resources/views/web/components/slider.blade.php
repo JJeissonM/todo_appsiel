@@ -6,20 +6,24 @@
             padding: 0 !important;
             overflow-y: hidden;
         }
+
         #wrapper {
             overflow-y: scroll;
             width: 30%;
             margin-right: 0;
         }
+
         .list-group-item {
             background-color: transparent;
             font-size: 16px;
         }
+
         .list-group-item:hover {
             background-color: #3d6983;
             color: white;
             cursor: pointer;
         }
+
         .widgets {
             width: 70%;
         }
@@ -27,31 +31,35 @@
         .widgets .card-body {
             position: relative;
         }
+
         .contenido {
             display: flex;
             padding: 5px;
             border: 1px solid #3d6983;
             border-radius: 5px;
         }
+
         .contenido img {
             width: 80px;
             height: 80px;
             object-fit: cover;
         }
+
         .descripcion {
             padding: 5px;
         }
+
         .descripcion h5 {
-            color:black;
+            color: black;
             font-size: 16px;
         }
 
         .add {
-            margin-top : 20px;
+            margin-top: 20px;
         }
 
         .add a {
-            color:#1c85c4;
+            color: #1c85c4;
         }
 
     </style>
@@ -66,7 +74,7 @@
         </div>
     </div>
     <div class="card">
-        <div class="card-body d-flex justify-content-between flex-wrap" >
+        <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
                 <h4 class="column-title" style="padding: 10px;">Menu Slider</h4>
                 @if($slider != null)
@@ -77,19 +85,26 @@
                                 <h5 class="titulo">{{$item->titulo}}</h5>
                                 <p>{{str_limit($item->descripcion,20)}}</p>
                             </div>
-                            <a href="{{route('slider.edit',$item->id).$variables_url}}" class="btn"><i class="fa fa-edit"></i></a>
-                            <a href="{{url('slider/item/'.$item->id).$variables_url}}" class="btn"><i class="fa fa-eraser"></i></a>
+                            <a href="{{route('slider.edit',$item->id).$variables_url}}" class="btn"><i
+                                        class="fa fa-edit"></i></a>
+                            <a href="{{url('slider/item/'.$item->id).$variables_url}}" class="btn"><i
+                                        class="fa fa-eraser"></i></a>
                         </div>
                     @endforeach
                 @endif
 
                 <div class="add d-flex justify-content-end">
-                    <a href="{{url('slider').'/'.$widget.$variables_url}}" class="btn btn-info btn-sm" style="color: white; margin: 20px;"> Agregar Item</a>
+                    <a href="{{url('slider').'/'.$widget.$variables_url}}" class="btn btn-info btn-sm"
+                       style="color: white; margin: 20px;"> Agregar Item</a>
                 </div>
             </div>
             <div class="widgets" id="widgets">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                {!! Form::slider($slider) !!}
+                @if($slider->disposicion == 'DEFAULT')
+                    {!! Form::slider($slider) !!}
+                @else
+                    {!! Form::sliderpremiun($slider) !!}
+                @endif
             </div>
         </div>
     </div>

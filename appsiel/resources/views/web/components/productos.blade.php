@@ -516,7 +516,7 @@
                                     <i>Considera que el propósito de este material es sólo informativo y es tu responsabilidad usar estos recursos correctamente, para ofrecer la información que requiera tu política de privacidad y para asegurar que la información que ofreces es actual y precisa.</i></br></br>
                                     <div class="form-group">
                                         <label>Terminos y Condiciones</label>
-                                        <textarea class="form-control area" name="terminos_condiciones" rows="10" required>{!! $tienda->terminos_condiciones !!}</textarea>
+                                        <textarea class="form-control area" name="terminos_condiciones" rows="20" required>{!! $tienda->terminos_condiciones !!}</textarea>
                                     </div>
                                     <div class="form-group">
                                         <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
@@ -758,7 +758,7 @@
             $(this).attr('name', 'area');
 
             CKEDITOR.replace('area', {
-                height: 200,
+                height: 600,
                 // By default, some basic text styles buttons are removed in the Standard preset.
                 // The code below resets the default config.removeButtons setting.
                 removeButtons: ''

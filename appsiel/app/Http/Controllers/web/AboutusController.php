@@ -114,7 +114,13 @@ class AboutusController extends Controller
     public function leer_institucional($id)
     {
         $empresa = Aboutus::find($id);
-        $data = "<h2 class='section-title text-center wow fadeInDown'>MISIÓN</h2>";
+        $ban = false;
+        $data ="";
+//        if($empresa->disposicion != 'DEFAULT'){
+//            $ban = true;
+//            $data="<div style='background-image: url(".asset('img/corazon/Diseño_Appsiel_2.jpg').")'>";
+//        }
+        $data = $data."<h2 class='section-title text-center wow fadeInDown'>MISIÓN</h2>";
         if ($empresa->mision != null) {
             $data = $data . "<div class='col-sm-12'>"
                 . "<div class='media service-box wow fadeInRight'>"
@@ -151,7 +157,9 @@ class AboutusController extends Controller
                 . "<div class='media-body'><p>" . $empresa->resenia. "</p></div>"
                 . "</div></div>";
         }
-
+//        if($ban){
+//            $data=$data."</div>";
+//        }
 
         $redes = RedesSociales::all();
         $footer = Footer::all()->first();

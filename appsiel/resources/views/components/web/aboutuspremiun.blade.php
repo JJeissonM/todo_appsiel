@@ -1,63 +1,12 @@
 <style>
-    @keyframes rotate {
-        from {
-            transform: rotate(0deg);
-        }
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    @-webkit-keyframes rotate {
-        from {
-            -webkit-transform: rotate(0deg);
-        }
-        to {
-            -webkit-transform: rotate(360deg);
-        }
-    }
-
-    .imgr {
-        -webkit-animation: 50s rotate linear infinite;
-        animation: 50s rotate linear infinite;
-        -webkit-transform-origin: 50% 50%;
-        transform-origin: 50% 50%;
-    }
-
-    .imgr {
-        position: absolute;
-        background-repeat: no-repeat;
-        background-position: right;
-        background-size: 25% 95%;
-        right: -330px;
-    }
-
-    .faq-area-img {
-        position: absolute;
-        background-repeat: no-repeat;
-        background-position: right;
-        background-size: 25% 95%;
-        right: -330px;
-        /*-webkit-animation: ani-rotate 50s linear infinite;*/
-
-    }
-
-    .faq-img {
-        width: 100%;
-    }
-
-    .img-fluid {
-        max-width: 100%;
-        height: auto;
-
+    .aboutus p {
+        color: #000;
     }
 </style>
-<div class="aboutus">
-    <div class="container" style="margin-top: 40px;">
-        <div class="imgr">
-            <img src="{{asset('img/lading-page/faq-bg-1.png')}}" class="img-fluid" alt="">
-        </div>
-        <div class="container">
+
+<div class="aboutus" style="background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}}">
+    <div class="container">
+        <div class="container" style="padding: 40px;height: 850px">
             @if($aboutus!=null)
                 <div class="section-header">
                     <h2 class="section-title text-center wow fadeInDown animated"
@@ -67,14 +16,13 @@
                     <center><a class="btn btn-primary btn-md text-center"
                                href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer todo</a></center>
                 </div>
-                <div class="row">
+                <div class="row" style="margin-top: -50px;">
                     <div class="col-sm-6 wow fadeInLeft animated"
-                         style="visibility: visible; animation-name: fadeInLeft;">
-                        <img class="img-responsive" src="{{url($aboutus->imagen)}}" alt="">
+                         style="visibility: visible; animation-name: fadeInLeft;height: 10px">
                     </div>
                     <div class="col-sm-6">
                         <div class="media service-box wow fadeInRight animated"
-                             style="visibility: visible; animation-name: fadeInRight;">
+                             style="visibility: visible; animation-name: fadeInRight; height: 120px;">
                             <div class="pull-left">
                                 <i class="fa fa-{{$aboutus->mision_icono}}"></i>
                             </div>
