@@ -1,11 +1,11 @@
 <style>
-    .image {
-        position: relative;
-        width: 100%;
+    .aboutus p {
+        color: #000;
     }
 </style>
-<div class="aboutus">
-    <div class="container" style="margin-top: 40px;>
+
+<div class="aboutus" style="background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}})">
+    <div class="container" style="margin-top: 40px;">
         <div class="container">
             @if($aboutus!=null)
                 <div class="section-header">
