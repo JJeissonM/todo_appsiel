@@ -76,6 +76,7 @@ class FormServiceProvider extends ServiceProvider
         //componentes utilizado en el diseñador de la pagina web
         Form::component('navegacion', 'components.web.navegacion', ['nav']);
         Form::component('slider', 'components.web.slider', ['slider']);
+        Form::component('sliderpremiun', 'components.web.sliderpremiun', ['slider']);
         Form::component('aboutus', 'components.web.aboutus', ['aboutus']);
         Form::component('aboutuspremiun', 'components.web.aboutuspremiun', ['aboutus']);
         Form::component('galeria', 'components.web.galeria', ['galeria']);

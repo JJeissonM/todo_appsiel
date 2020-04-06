@@ -20,20 +20,24 @@ class SliderComponent implements IDrawComponent
 
     function DrawComponent()
     {
-       $widget = Widget::find($this->widget);
-       $slider = Slider::where('widget_id',$widget->id)->first();
-       return Form::slider($slider);
+        $widget = Widget::find($this->widget);
+        $slider = Slider::where('widget_id', $widget->id)->first();
+        if ($slider->disposicion == 'DEFAULT')
+            return Form::slider($slider);
+        else {
+            return Form::sliderpremiun($slider);
+        }
     }
 
     function viewComponent()
     {
         $miga_pan = [
             [
-                'url' => 'pagina_web'.'?id='. Input::get('id'),
+                'url' => 'pagina_web' . '?id=' . Input::get('id'),
                 'etiqueta' => 'Web'
             ],
             [
-                'url' => 'paginas?id='.Input::get('id'),
+                'url' => 'paginas?id=' . Input::get('id'),
                 'etiqueta' => 'Paginas y secciones'
             ],
             [
@@ -43,8 +47,8 @@ class SliderComponent implements IDrawComponent
         ];
 
         $widget = $this->widget;
-        $slider = Slider::where('widget_id',$widget)->first();
-        $variables_url = '?id='.Input::get('id');
-        return view('web.components.slider',compact('miga_pan','variables_url','widget','slider'));
+        $slider = Slider::where('widget_id', $widget)->first();
+        $variables_url = '?id=' . Input::get('id');
+        return view('web.components.slider', compact('miga_pan', 'variables_url', 'widget', 'slider'));
     }
 }
