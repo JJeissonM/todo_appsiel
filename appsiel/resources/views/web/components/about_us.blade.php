@@ -102,11 +102,15 @@
                             </div>
                         </div>
                         <div class="add d-flex justify-content-end">
-                            <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold;"> Editar</a>
+                            <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}"
+                               class="btn btn-primary waves-effect btn-block btn-sm"
+                               style="color: white; font-weight: bold;"> Editar</a>
                         </div>
                     @else
                         <div class="add d-flex justify-content-end">
-                            <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold;"> Agregar</a>
+                            <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}"
+                               class="btn btn-primary waves-effect btn-block btn-sm"
+                               style="color: white; font-weight: bold;"> Agregar</a>
                         </div>
                     @endif
                 </div>
@@ -114,7 +118,11 @@
             <div class="widgets" id="widgets">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
                 @if($aboutus != null)
-                    {!! Form::aboutus($aboutus)!!}
+                    @if($aboutus->disposicion == 'DEFAULT')
+                        {!! Form::aboutus($aboutus)!!}
+                    @else
+                        {!! Form::aboutuspremiun($aboutus) !!}
+                    @endif
                 @endif
             </div>
         </div>

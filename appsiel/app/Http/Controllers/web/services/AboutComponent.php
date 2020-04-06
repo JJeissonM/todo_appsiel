@@ -18,7 +18,11 @@ class AboutComponent implements IDrawComponent
     function DrawComponent()
     {
         $aboutus = Aboutus::where('widget_id', $this->widget)->first();
-        return Form::aboutus($aboutus);
+        if($aboutus->disposicion != 'DEFAULT'){
+            return Form::aboutuspremiun($aboutus);
+        }else{
+            return Form::aboutus($aboutus);
+        }
     }
 
     function viewComponent()
