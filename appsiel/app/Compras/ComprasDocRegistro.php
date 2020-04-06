@@ -15,7 +15,7 @@ class ComprasDocRegistro extends Model
     // base_impuesto: precio_unitario * cantidad (se calcula sobre el costo total, NO es unitario)
     // valor_impuesto: precio_total - base_impuesto (tambien es total, NO unitario)
 
-	protected $fillable = ['compras_doc_encabezado_id', 'inv_doc_registro_id', 'inv_motivo_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'cantidad_recibida', 'cantidad_devuelta', 'creado_por', 'modificado_por', 'estado'];
+	protected $fillable = ['compras_doc_encabezado_id', 'inv_doc_registro_id', 'inv_motivo_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'tasa_descuento', 'valor_total_descuento', 'cantidad_recibida', 'cantidad_devuelta', 'creado_por', 'modificado_por', 'estado'];
 
 	// En compras los impuestos se calculan con base en el costo_unitario (precio_compra)
 	public $campos_invisibles_linea_registro = ['inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','cantidad','costo_total','precio_total']; // 11 campos

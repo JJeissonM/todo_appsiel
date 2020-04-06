@@ -20,6 +20,8 @@ use Lava;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasPedido;
 
+use App\Contabilidad\Impuesto;
+
 class ReportesController extends Controller
 {
 
@@ -89,6 +91,35 @@ class ReportesController extends Controller
         //dd( $movimiento );
 
         $vista = View::make('ventas.reportes.precio_venta', compact('movimiento'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+
+    public function vtas_reporte_ventas(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $agrupar_por = $request->agrupar_por;
+        $detalla_productos  = (int)$request->detalla_productos;
+        $detalla_clientes  = (int)$request->detalla_clientes;
+        $iva_incluido  = (int)$request->iva_incluido;
+
+        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
+
+        //dd($movimiento);
+
+        // En el movimiento se trae el precio_total con IVA incluido
+        $mensaje = 'IVA Incluido en precio.';
+        if ( !$iva_incluido )
+        {
+            $mensaje = 'IVA <b>NO</b> incluido en precio.';
+        }
+
+        $vista = View::make('ventas.reportes.reporte_ventas', compact('movimiento','agrupar_por','mensaje','iva_incluido'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

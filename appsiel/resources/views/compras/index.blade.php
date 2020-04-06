@@ -24,101 +24,102 @@ $semana = ReportesController::ordenes_semana();
 		<hr>
 		<div class="row">
 			<div class="col-md-12">
-				<div class="col-md-6">
-					<div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-danger" role="alert">Órdenes vencidas</div>
-					@if($vencidas!=null)
-					<table class="table table-striped">
+				<h4 style="text-align: center; width: 100%; background-color: #faf4d4; color: #636363;">Pendientes ésta semana</h4>
+				<div class="table-responsive">
+					@if($semana!=null)
+					<table class="table table-striped table-responsive">
 						<thead>
 							<tr>
-								<th>Órden</th>
-								<th>Proveedor</th>
-								<th>Venció</th>
+								<th>LUNES</th>
+								<th>MARTES</th>
+								<th>MIERCOLES</th>
+								<th>JUEVES</th>
+								<th>VIERNES</th>
+								<th>SABADO</th>
+								<th>DOMINGO</th>
 							</tr>
 						</thead>
 						<tbody>
-							@foreach($vencidas as $v)
 							<tr>
-								<td><a target="_blank" href="{{url('orden_compra/'.$v['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$v['documento']}}</a></td>
-								<td>{{$v['proveedor']}}</td>
-								<td>{{$v['fecha_recepcion']}}</td>
+								@foreach($semana as $s)
+								<td>
+									<div class="alert alert-success" style="padding: 5px" role="alert">
+										{{$s['fecha']}}
+									</div>
+									@if($s['data']!=null)
+									<ol>
+										@foreach($s['data'] as $d)
+										<li>
+											<a target="_blank" href="{{url('orden_compra/'.$d['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$d['documento']}}</a>
+											- {{$d['proveedor']." - ".$d['fecha_recepcion']}}
+										</li>
+										@endforeach
+									</ol>
+									@else
+									<p>---</p>
+									@endif
+								</td>
+								@endforeach
 							</tr>
-							@endforeach
 						</tbody>
 					</table>
 					@else
-					<p>No hay órdenes pendientes vencidas</p>
+					<p>No hay órdenes pendientes esta semana</p>
 					@endif
 				</div>
-				<div class="col-md-6">
-					<div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-success" role="alert">Órdenes Futuras</div>
-					@if($futuras!=null)
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Órden</th>
-								<th>Proveedor</th>
-								<th>Vence</th>
-							</tr>
-						</thead>
-						<tbody>
-							@foreach($futuras as $v)
-							<tr>
-								<td><a target="_blank" href="{{url('orden_compra/'.$v['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$v['documento']}}</a></td>
-								<td>{{$v['proveedor']}}</td>
-								<td>{{$v['fecha_recepcion']}}</td>
-							</tr>
-							@endforeach
-						</tbody>
-					</table>
-					@else
-					<p>No hay órdenes pendientes futuras</p>
-					@endif
-				</div>
-				<div class="col-md-12">
-					<div style="font-size: 20px; font-weight: bold; padding: 5px; text-align: center;" class="alert alert-warning" role="alert">Pendientes ésta semana</div>
-					<div class="table-responsive">
-						@if($semana!=null)
-						<table class="table table-striped table-responsive">
-							<thead>
-								<tr>
-									<th>LUNES</th>
-									<th>MARTES</th>
-									<th>MIERCOLES</th>
-									<th>JUEVES</th>
-									<th>VIERNES</th>
-									<th>SABADO</th>
-									<th>DOMINGO</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr>
-									@foreach($semana as $s)
-									<td>
-										<div class="alert alert-success" style="padding: 5px" role="alert">
-											{{$s['fecha']}}
-										</div>
-										@if($s['data']!=null)
-										<ol>
-											@foreach($s['data'] as $d)
-											<li>
-												<a target="_blank" href="{{url('orden_compra/'.$d['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$d['documento']}}</a>
-												- {{$d['proveedor']." - ".$d['fecha_recepcion']}}
-											</li>
-											@endforeach
-										</ol>
-										@else
-										<p>---</p>
-										@endif
-									</td>
-									@endforeach
-								</tr>
-							</tbody>
-						</table>
-						@else
-						<p>No hay órdenes pendientes esta semana</p>
-						@endif
-					</div>
-				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6">
+				<h4 style="text-align: center; width: 100%; background-color: #FFD3D3; color: #636363;">Órdenes vencidos</h4>
+				@if($vencidas!=null)
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Órden</th>
+							<th>Proveedor</th>
+							<th>Venció</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach($vencidas as $v)
+						<tr>
+							<td><a target="_blank" href="{{url('orden_compra/'.$v['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$v['documento']}}</a></td>
+							<td>{{$v['proveedor']}}</td>
+							<td>{{$v['fecha_recepcion']}}</td>
+						</tr>
+						@endforeach
+					</tbody>
+				</table>
+				@else
+				<p>No hay órdenes pendientes vencidas</p>
+				@endif
+			</div>
+			<div class="col-md-6">
+				<h4 style="text-align: center; width: 100%; background-color: #d3eac9; color: #636363;">Órdenes Futuras</h4>
+				@if($futuras!=null)
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Órden</th>
+							<th>Proveedor</th>
+							<th>Vence</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach($futuras as $v)
+						<tr>
+							<td><a target="_blank" href="{{url('orden_compra/'.$v['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$v['documento']}}</a></td>
+							<td>{{$v['proveedor']}}</td>
+							<td>{{$v['fecha_recepcion']}}</td>
+						</tr>
+						@endforeach
+					</tbody>
+				</table>
+				@else
+				<p>No hay órdenes pendientes futuras</p>
+				@endif
 			</div>
 		</div>
 

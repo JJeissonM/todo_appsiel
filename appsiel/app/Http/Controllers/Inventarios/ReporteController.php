@@ -23,7 +23,6 @@ use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\MinStock;
 
-use App\Ventas\VtasMovimiento;
 use App\Compras\ComprasMovimiento;
 
 class ReporteController extends Controller
@@ -303,52 +302,6 @@ class ReporteController extends Controller
             ];
 
         return view('inventarios.repo_stock_minimo',compact('bodegas','tabla','miga_pan'));
-    }
-
-    /*
-        Hubo un problema al almacenar las cantidades de los documentos de inventarios
-        En el codigo se estaba convirtiendo la cantidad recibida del reuqest a entero con la funcion (int) de php
-        Por tanto las cantidades que venían con decimales no quedaron bien registradas en el sistema, pues se eliminó la parte decimal
-    */
-    // DESDE EL MOVIMIENTO DE VENTAS
-    public function corregir_cantidades()
-    {
-        // Se va a actualizar los registros de los documentos de inventario y el movimiento con base en los movimientos de compras y ventas que si quedaron bien registrados
-
-        // Registros de ventas
-        $movimiento_ventas = VtasMovimiento::select('remision_doc_encabezado_id','inv_producto_id','cantidad')->get();
-
-        $i = 0;
-        foreach ($movimiento_ventas as $linea) {
-            // Actualizar registros de documentos de inventarios
-            $registro = InvDocRegistro::where('inv_doc_encabezado_id',$linea->remision_doc_encabezado_id)->where('inv_producto_id',$linea->inv_producto_id)->get()->first();
-
-            if ( !is_null($registro) ) {
-                $costo_total = $registro->costo_unitario * $linea->cantidad * -1;
-
-                $registro->update( [ 
-                                    'cantidad' => ( $linea->cantidad * -1 ),
-                                    'costo_total' => $costo_total
-                                    ]);
-            }
-
-            // Actualizar movimientos
-            $movimiento = InvMovimiento::where('inv_doc_encabezado_id',$linea->remision_doc_encabezado_id)->where('inv_producto_id',$linea->inv_producto_id)->get()->first();
-
-            if ( !is_null($movimiento) ) {
-                $costo_total = $movimiento->costo_unitario * $linea->cantidad * -1;
-
-                $movimiento->update( [ 
-                                    'cantidad' => ( $linea->cantidad * -1 ),
-                                    'costo_total' => $costo_total
-                                    ]);
-            }
-
-            $i++;
-        }
-
-        echo 'Se actualizaron '.$i.' registros las tablas de inv_doc_registros e inv_movimientos.';
-
     }
 
 

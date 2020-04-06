@@ -16,7 +16,6 @@ use App\Inventarios\InvProducto;
 use App\Inventarios\InvMotivo;
 use App\Inventarios\InvCostoPromProducto;
 
-use App\Ventas\VtasMovimiento;
 use App\Compras\ComprasMovimiento;
 use App\Contabilidad\ContabMovimiento;
 

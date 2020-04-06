@@ -15,18 +15,20 @@ class VtasDocRegistro extends Model
 
     // valor_impuesto es del precio_unitario
     // base_impuesto es del precio_unitario
-    protected $fillable = ['vtas_doc_encabezado_id','vtas_motivo_id','inv_producto_id','precio_unitario','cantidad','cantidad_devuelta','precio_total','base_impuesto','tasa_impuesto','valor_impuesto','base_impuesto_total','creado_por','modificado_por'];
+    protected $fillable = ['vtas_doc_encabezado_id','vtas_motivo_id','inv_producto_id','precio_unitario','cantidad','cantidad_devuelta','precio_total','base_impuesto','tasa_impuesto','valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'creado_por', 'modificado_por'];
 
-    public $campos_invisibles_linea_registro = ['inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','base_impuesto_total','cantidad','costo_total','precio_total']; // 13 campos
+    public $campos_invisibles_linea_registro = ['inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','base_impuesto_total','cantidad','costo_total','precio_total', 'tasa_descuento', 'valor_total_descuento']; // 13 campos
 
     public $campos_visibles_linea_registro = [ 
     											['&nbsp;','10px'],
     											['Producto','280px'],
     											['Motivo','200px'],
     											['Stock','35px'],
+                                                ['Cantidad',''],
                                                 ['Precio Unit. (IVA incluido)',''],
+                                                ['Dcto. (%)',''],
+                                                ['Dcto. Tot. ($)',''],
                                                 ['IVA',''],
-    											['Cantidad',''],
     											['Total',''],
     											['&nbsp;','10px']
     										]; // 9 campos
@@ -58,6 +60,8 @@ class VtasDocRegistro extends Model
                                 'vtas_doc_registros.valor_impuesto',
                                 'vtas_doc_registros.base_impuesto_total',
                                 'vtas_doc_registros.cantidad_devuelta',
+                                'vtas_doc_registros.tasa_descuento',
+                                'vtas_doc_registros.valor_total_descuento',
                                 'inv_motivos.descripcion as inv_motivo_descripcion',
                                 'vtas_doc_registros.vtas_motivo_id'
                             )
@@ -89,6 +93,8 @@ class VtasDocRegistro extends Model
                                 'vtas_doc_registros.valor_impuesto',
                                 'vtas_doc_registros.base_impuesto_total',
                                 'vtas_doc_registros.cantidad_devuelta',
+                                'vtas_doc_registros.tasa_descuento',
+                                'vtas_doc_registros.valor_total_descuento',
                                 'inv_motivos.descripcion as inv_motivo_descripcion'
                             )
                     ->get()

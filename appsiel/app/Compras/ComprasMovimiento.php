@@ -52,7 +52,13 @@ class ComprasMovimiento extends Model
             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
             ->where('compras_movimientos.inv_producto_id', $operador1, $producto_id)
             ->where('compras_movimientos.proveedor_id', $operador2, $proveedor_id)
-            ->select('compras_movimientos.inv_producto_id', DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'), 'core_terceros.descripcion AS proveedor', DB::raw('SUM(compras_movimientos.cantidad) AS cantidad'), DB::raw('SUM(compras_movimientos.precio_total) AS precio_total'))
+            ->select(
+                        'compras_movimientos.inv_producto_id',
+                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'),
+                        'core_terceros.descripcion AS proveedor',
+                        DB::raw('SUM(compras_movimientos.cantidad) AS cantidad'),
+                        DB::raw('SUM(compras_movimientos.precio_total) AS precio_total'),
+                        DB::raw('SUM(compras_movimientos.base_impuesto) AS base_impuesto'))
             ->groupBy('compras_movimientos.inv_producto_id')
             ->groupBy('compras_movimientos.proveedor_id')
             ->get();
