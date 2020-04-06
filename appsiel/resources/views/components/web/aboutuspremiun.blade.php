@@ -1,5 +1,11 @@
+<style>
+    .image {
+        position: relative;
+        width: 100%;
+    }
+</style>
 <div class="aboutus">
-    <div class="container" style="margin-top: 40px;">
+    <div class="container" style="margin-top: 40px;>
         <div class="container">
             @if($aboutus!=null)
                 <div class="section-header">
