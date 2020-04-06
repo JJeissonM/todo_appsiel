@@ -18,7 +18,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-6 wow fadeInLeft animated"
-                         style="visibility: visible; animation-name: fadeInLeft;">
+                         style="visibility: visible; animation-name: fadeInLeft;height: 10px">
                     </div>
                     <div class="col-sm-6">
                         <div class="media service-box wow fadeInRight animated"

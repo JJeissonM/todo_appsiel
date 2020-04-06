@@ -62,38 +62,48 @@
                         </div>
                         <div class="form-group">
                             <label>Misión</label>
-                            <textarea name="mision" class="form-control contenido" rows="5">{{$aboutus->mision}}</textarea>
+                            <textarea name="mision" class="form-control contenido"
+                                      rows="5">{{$aboutus->mision}}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Icono Misión</label>
-                            <input data-toggle="modal" data-target="#exampleModal" name="mision_icono" onclick="cambiaricono(this.id)" value="{{$aboutus->mision_icono}}" type="text" id="icono_mision"
+                            <input data-toggle="modal" data-target="#exampleModal" name="mision_icono"
+                                   onclick="cambiaricono(this.id)" value="{{$aboutus->mision_icono}}" type="text"
+                                   id="icono_mision"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Visión</label>
-                            <textarea name="vision" class="form-control contenido" rows="5">{{$aboutus->vision}}</textarea>
+                            <textarea name="vision" class="form-control contenido"
+                                      rows="5">{{$aboutus->vision}}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Icono Visión</label>
-                            <input data-toggle="modal" data-target="#exampleModal" name="vision_icono" id="icono_vision" onclick="cambiaricono(this.id)" value="{{$aboutus->vision_icono}}" type="text"
+                            <input data-toggle="modal" data-target="#exampleModal" name="vision_icono" id="icono_vision"
+                                   onclick="cambiaricono(this.id)" value="{{$aboutus->vision_icono}}" type="text"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Valores</label>
-                            <textarea name="valores" class="form-control contenido" rows="5">{{$aboutus->valores}}</textarea>
+                            <textarea name="valores" class="form-control contenido"
+                                      rows="5">{{$aboutus->valores}}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Icono Valores</label>
-                            <input data-toggle="modal" data-target="#exampleModal" id="icono_valor" name="valor_icono" onclick="cambiaricono(this.id)" value="{{$aboutus->valor_icono}}" type="text"
+                            <input data-toggle="modal" data-target="#exampleModal" id="icono_valor" name="valor_icono"
+                                   onclick="cambiaricono(this.id)" value="{{$aboutus->valor_icono}}" type="text"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Reseña Historica</label>
-                            <textarea name="resenia" class="form-control contenido" rows="5">{{$aboutus->resenia}}</textarea>
+                            <textarea name="resenia" class="form-control contenido"
+                                      rows="5">{{$aboutus->resenia}}</textarea>
                         </div>
                         <div class="form-group">
                             <label>Icono Reseña</label>
-                            <input data-toggle="modal" data-target="#exampleModal" id="icono_resenia" onclick="cambiaricono(this.id)" name="resenia_icono" value="{{$aboutus->resenia_icono}}" type="text"
+                            <input data-toggle="modal" data-target="#exampleModal" id="icono_resenia"
+                                   onclick="cambiaricono(this.id)" name="resenia_icono"
+                                   value="{{$aboutus->resenia_icono}}" type="text"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
@@ -128,7 +138,8 @@
                         </div>
                         <div class="form-group">
                             <label>Icono Misión</label>
-                            <input data-toggle="modal" data-target="#exampleModal" name="mision_icono" onclick="cambiaricono(this.id)" type="text" id="icono_mision"
+                            <input data-toggle="modal" data-target="#exampleModal" name="mision_icono"
+                                   onclick="cambiaricono(this.id)" type="text" id="icono_mision"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
@@ -137,7 +148,8 @@
                         </div>
                         <div class="form-group">
                             <label>Icono Visión</label>
-                            <input data-toggle="modal" data-target="#exampleModal" name="vision_icono" id="icono_vision" onclick="cambiaricono(this.id)" type="text"
+                            <input data-toggle="modal" data-target="#exampleModal" name="vision_icono" id="icono_vision"
+                                   onclick="cambiaricono(this.id)" type="text"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
@@ -146,7 +158,8 @@
                         </div>
                         <div class="form-group">
                             <label>Icono Valores</label>
-                            <input data-toggle="modal" data-target="#exampleModal" id="icono_valor" name="valor_icono" onclick="cambiaricono(this.id)" type="text"
+                            <input data-toggle="modal" data-target="#exampleModal" id="icono_valor" name="valor_icono"
+                                   onclick="cambiaricono(this.id)" type="text"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
@@ -155,7 +168,8 @@
                         </div>
                         <div class="form-group">
                             <label>Icono Reseña</label>
-                            <input data-toggle="modal" data-target="#exampleModal" id="icono_resenia" onclick="cambiaricono(this.id)" name="resenia_icono" type="text"
+                            <input data-toggle="modal" data-target="#exampleModal" id="icono_resenia"
+                                   onclick="cambiaricono(this.id)" name="resenia_icono" type="text"
                                    placeholder="Nombre del icono" class="form-control">
                         </div>
                         <div class="form-group">
@@ -176,7 +190,11 @@
             <div class="widgets" id="widgets">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
                 @if($aboutus != null)
-                    {!! Form::aboutus($aboutus)!!}
+                    @if($aboutus->disposicion == 'DEFAULT')
+                        {!! Form::aboutus($aboutus)!!}
+                    @else
+                        {!! Form::aboutuspremiun($aboutus) !!}
+                    @endif
                 @endif
             </div>
         </div>
@@ -206,25 +224,26 @@
         })
         var original_name;
 
-        function cambiaricono(id){
-            $("#nombre").attr('value',id);
+        function cambiaricono(id) {
+            $("#nombre").attr('value', id);
         }
-        $('.contenido').on( 'focus', function(){
+
+        $('.contenido').on('focus', function () {
 
             original_name = $(this).attr('name');
 
-            $(this).attr('name','contenido');
+            $(this).attr('name', 'contenido');
 
             CKEDITOR.replace('contenido', {
-            height: 200,
-              // By default, some basic text styles buttons are removed in the Standard preset.
-              // The code below resets the default config.removeButtons setting.
-              removeButtons: ''
+                height: 200,
+                // By default, some basic text styles buttons are removed in the Standard preset.
+                // The code below resets the default config.removeButtons setting.
+                removeButtons: ''
             });
 
         });
 
-        $('.contenido').on( 'blur', function(){
+        $('.contenido').on('blur', function () {
 
             $(this).attr('name', original_name);
 
