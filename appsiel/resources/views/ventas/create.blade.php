@@ -422,6 +422,7 @@
 					if ( $(this).val() != '' && validar_input_numerico( $(this) ) )
 					{
 						calcula_precio_total();
+						calcular_valor_descuento();
 					}
 				}else{
 					return false;
@@ -501,10 +502,20 @@
 
 			});
 
+
+
             $('#tasa_descuento').keyup(function(){
 
             	if( validar_input_numerico( $(this) ) )
 				{	
+					// máximo valor de 100
+					if ( $(this).val() > 100 )
+					{ 
+						$(this).val(100); 
+						calcular_valor_descuento();
+						return false;
+					}
+
 					var x = event.which || event.keyCode;
 					if( x == 13 )
 					{
@@ -512,7 +523,7 @@
 						return true;
 					}
 					
-					$('#valor_total_descuento').val();
+					calcular_valor_descuento();
 
 					calcula_precio_total();
 
@@ -523,6 +534,22 @@
 				}
 			});
 
+
+			function calcular_valor_descuento()
+			{
+				$('#valor_unitario_descuento').val( $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 );
+				$('#valor_total_descuento').val( $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 * $('#cantidad').val() );
+			}
+
+
+			function reset_descuento()
+			{
+				$('#tasa_descuento').val( 0 );
+				calcular_valor_descuento();
+			}
+
+
+
             // Al modificar el precio total
             $('#precio_total').keyup(function(event){
 				
@@ -532,7 +559,7 @@
 					if( x==13 )
 					{
 						if ( !validar_venta_menor_costo() ) { return false; }
-
+						
 						agregar_nueva_linea();
 						return true;
 					}
@@ -553,6 +580,7 @@
 					$('#linea_ingreso_default').find('.precio_unitario').html( precio_total / cantidad );
 
 					$('#precio_unitario').val( precio_total / cantidad );
+					reset_descuento();
 
 					//calcula_precio_total();
 				}else{
@@ -847,7 +875,7 @@
 				celdas[ num_celda ] = '<td>'+ $('#tasa_descuento').val() + ' </td>';
 				
 				num_celda++;
-
+				// ¿se va  amostrar valor del descuento?
 				celdas[ num_celda ] = '<td> '+ $('#valor_total_descuento').val() + '</td>';
 				
 				num_celda++;
@@ -1015,6 +1043,9 @@
 
 				$('#valor_total_descuento').removeAttr('style');
 				$('#valor_total_descuento').removeAttr('disabled');
+
+				$('#valor_unitario_descuento').removeAttr('style');
+				$('#valor_unitario_descuento').removeAttr('disabled');
 
 				$('#precio_total').removeAttr('style');
 				$('#precio_total').removeAttr('disabled');
