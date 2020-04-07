@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Servicio extends Model
 {
     protected $table = 'pw_servicios';
-    protected $fillable = ['id', 'titulo', 'descripcion', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'titulo', 'descripcion', 'disposicion', 'widget_id', 'created_at', 'updated_at'];
 
     public function widget()
     {

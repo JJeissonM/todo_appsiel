@@ -92,12 +92,12 @@ class ReportesController extends Controller
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
-        $detalla_proveedores  = $request->detalla_proveedores;
-        $iva_incluido  = $request->iva_incluido;
+        $detalla_proveedores  = (int)$request->detalla_proveedores;
+        $iva_incluido  = (int)$request->iva_incluido;
         
         $inv_producto_id = $request->inv_producto_id;
         $operador1 = '=';
-        
+        //dd($inv_producto_id);
         $proveedor_id = $request->proveedor_id;
         $operador2 = '=';
 
@@ -109,16 +109,16 @@ class ReportesController extends Controller
 
 
 
-        if ( $request->inv_producto_id == '' )
+        if ( $inv_producto_id == '' )
         {
             $operador1 = 'LIKE';
-            $inv_producto_id = '%'.$request->inv_producto_id.'%';
+            $inv_producto_id = '%'.$inv_producto_id.'%';
         }
 
-        if ( $request->proveedor_id == '' )
+        if ( $proveedor_id == '' )
         {
             $operador2 = 'LIKE';
-            $proveedor_id = '%'.$request->proveedor_id.'%';
+            $proveedor_id = '%'.$proveedor_id.'%';
         }
 
         $movimiento = ComprasMovimiento::get_precios_compras( $fecha_desde, $fecha_hasta, $inv_producto_id, $operador1, $proveedor_id, $operador2 );
@@ -128,18 +128,10 @@ class ReportesController extends Controller
         
         if ( !$iva_incluido )
         {
-            $mensaje = 'IVA <b>NO</b> incluido en precio.';            
-            foreach ($movimiento as $linea )
-            {
-                $tasa_impuesto = Impuesto::get_tasa( $linea->inv_producto_id, 0, 0 );
-                $precio_unitario = $linea->precio_total / ( 1 + $tasa_impuesto  / 100 );
-                $linea->precio_total = $precio_unitario;
-            }
+            $mensaje = 'IVA <b>NO</b> incluido en precio.';
         }
 
-        //dd( $movimiento );
-
-        $vista = View::make('compras.reportes.precio_compra', compact('movimiento','detalla_proveedores', 'mensaje', 'porcentaje_proyeccion_1', 'porcentaje_proyeccion_2', 'porcentaje_proyeccion_3', 'porcentaje_proyeccion_4' ) )->render();
+        $vista = View::make('compras.reportes.precio_compra', compact('movimiento','detalla_proveedores', 'mensaje', 'porcentaje_proyeccion_1', 'porcentaje_proyeccion_2', 'porcentaje_proyeccion_3', 'porcentaje_proyeccion_4', 'iva_incluido' ) )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

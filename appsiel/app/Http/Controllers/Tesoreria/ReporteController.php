@@ -173,7 +173,8 @@ class ReporteController extends TesoreriaController
                 $num_mes = "0" . $num_mes;
             }
             $cadena = "%-" . $num_mes . "-%";
-            $cartera_matriculas[$num_mes] = TesoCarteraEstudiante::leftJoin('sga_matriculas', 'sga_matriculas.id_estudiante', '=', 'teso_cartera_estudiantes.id_estudiante')
+            $cartera_matriculas[$num_mes] = TesoCarteraEstudiante::leftJoin('teso_libretas_pagos','teso_libretas_pagos.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
+                ->leftJoin('sga_matriculas','sga_matriculas.id','=','teso_libretas_pagos.matricula_id')
                 ->where('curso_id', 'LIKE', $curso_id)
                 ->where('teso_cartera_estudiantes.fecha_vencimiento', 'LIKE', $cadena)
                 ->where('teso_cartera_estudiantes.concepto', '=', $concepto)
@@ -210,7 +211,8 @@ class ReporteController extends TesoreriaController
                 $num_mes = "0" . $num_mes;
             }
             $cadena = "%-" . $num_mes . "-%";
-            $cartera_pensiones[$num_mes] = TesoCarteraEstudiante::leftJoin('sga_matriculas', 'sga_matriculas.id_estudiante', '=', 'teso_cartera_estudiantes.id_estudiante')
+            $cartera_pensiones[$num_mes] = TesoCarteraEstudiante::leftJoin('teso_libretas_pagos','teso_libretas_pagos.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
+                ->leftJoin('sga_matriculas','sga_matriculas.id','=','teso_libretas_pagos.matricula_id')
                 ->where('curso_id', 'LIKE', $curso_id)
                 ->where('teso_cartera_estudiantes.fecha_vencimiento', 'LIKE', $cadena)
                 ->where('teso_cartera_estudiantes.concepto', '=', $concepto)

@@ -23,7 +23,8 @@ class TesoCarteraEstudiante extends Model
 
     	return TesoCarteraEstudiante::leftJoin('sga_estudiantes','sga_estudiantes.id','=','teso_cartera_estudiantes.id_estudiante')
                         ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
-                        ->leftJoin('sga_matriculas','sga_matriculas.id_estudiante','=','sga_estudiantes.id')
+                        ->leftJoin('teso_libretas_pagos','teso_libretas_pagos.id_estudiante','=','sga_estudiantes.id')
+                        ->leftJoin('sga_matriculas','sga_matriculas.id','=','teso_libretas_pagos.matricula_id')
                         ->leftJoin('sga_cursos','sga_cursos.id','=','sga_matriculas.curso_id')
                         ->where('sga_matriculas.curso_id', 'LIKE', $curso_id)
                 		->where('teso_cartera_estudiantes.fecha_vencimiento','LIKE', $cadena)

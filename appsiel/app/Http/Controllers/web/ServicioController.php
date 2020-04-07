@@ -196,7 +196,7 @@ class ServicioController extends Controller
     public function leer_servicio($id)
     {
         $empresa = Itemservicio::find($id);
-        $data = "<section><div class='row'><div class='col-sm-12'>"
+        $data = "<section style='background-image: url(".asset('img/corazon/Diseño_Appsiel_3.jpg')."'><div class='row'><div class='col-sm-12'>"
             . "<div class='blog-post blog-large wow fadeInLeft' data-wow-duration='300ms' data-wow-delay='0ms'>"
             . "<article>"
             . "<header class='entry-header'><div class='entry-thumbnail'>";
@@ -205,7 +205,7 @@ class ServicioController extends Controller
             . "<footer class='entry-meta'><span class='entry-author'><i class='fa fa-user'></i> " . $empresa->servicio->titulo . "</span>"
             . "</footer></article></div></div></div></section>";
 
-
+        dd($data);
         $redes = RedesSociales::all();
         $footer = Footer::all()->first();
         $nav = Navegacion::all()->first();

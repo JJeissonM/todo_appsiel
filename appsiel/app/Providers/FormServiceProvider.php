@@ -76,7 +76,9 @@ class FormServiceProvider extends ServiceProvider
         //componentes utilizado en el diseñador de la pagina web
         Form::component('navegacion', 'components.web.navegacion', ['nav']);
         Form::component('slider', 'components.web.slider', ['slider']);
+        Form::component('sliderpremiun', 'components.web.sliderpremiun', ['slider']);
         Form::component('aboutus', 'components.web.aboutus', ['aboutus']);
+        Form::component('aboutuspremiun', 'components.web.aboutuspremiun', ['aboutus']);
         Form::component('galeria', 'components.web.galeria', ['galeria']);
         Form::component('articles', 'components.web.articles', ['articles', 'setup']);
         Form::component('servicios', 'components.web.servicios', ['servicios']);
@@ -86,7 +88,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('archivos', 'components.web.archivos', ['items', 'archivo']);
         Form::component('footer', 'components.web.footer', ['footer', 'redes', 'contactenos', 'view']);
         Form::component('preguntas', 'components.web.preguntas', ['pregunta']);
-        Form::component('tienda', 'components.web.tienda', ['items']);
+        Form::component('tienda', 'components.web.tienda', ['items','grupos']);
         Form::component('testimoniales', 'components.web.testimoniales', ['testimonial']);
     }
 

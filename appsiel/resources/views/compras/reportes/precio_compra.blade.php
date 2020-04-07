@@ -77,6 +77,14 @@
 
         @foreach( $movimiento as $linea)
             <?php
+
+                if ( $iva_incluido )
+                {
+                    $precio = $linea->precio_total;
+                }else{
+                    $precio = $linea->base_impuesto;
+                }
+
                 $nombre_producto = $linea->producto;
                 $nombre_proveedor = $linea->proveedor;
             ?>
@@ -87,12 +95,12 @@
                     
                     {!! dibujar_primera_fila( $estilo_linea_subtotal, $nombre_producto, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4 ) !!}
 
-                    {!! dibujar_fila_proveedor( $nombre_proveedor, $linea, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4 ) !!}
+                    {!! dibujar_fila_proveedor( $nombre_proveedor, $linea, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4, $iva_incluido ) !!}
                 @endif
 
                 <!-- Filas de proveedor para el mismo producto después de la primera fila -->
                 @if( $linea->inv_producto_id == $producto_anterior_id && !$primera_linea_producto )
-                    {!! dibujar_fila_proveedor( $nombre_proveedor, $linea, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4 ) !!}
+                    {!! dibujar_fila_proveedor( $nombre_proveedor, $linea, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4, $iva_incluido ) !!}
                 @endif
 
             @endif
@@ -116,7 +124,7 @@
                         @if( $primera_linea_producto )
                             {!! dibujar_primera_fila( $estilo_linea_subtotal, $nombre_producto, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4 ) !!}
 
-                            {!! dibujar_fila_proveedor( $nombre_proveedor, $linea, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4 ) !!}
+                            {!! dibujar_fila_proveedor( $nombre_proveedor, $linea, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4, $iva_incluido ) !!}
                         @endif
 
                     @endif
@@ -128,10 +136,10 @@
             <?php
 
                 $total_1_producto += $linea->cantidad;
-                $total_2_producto += $linea->precio_total;
+                $total_2_producto += $precio;
 
                 $gran_total_1_producto += $linea->cantidad;
-                $gran_total_2_producto += $linea->precio_total;
+                $gran_total_2_producto += $precio;
                 
                 if( $primera_linea_producto )
                 {
@@ -171,6 +179,7 @@
 
 
 <?php 
+
     function dibujar_primera_fila( $estilo_linea_subtotal, $nombre_producto, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4 )
     {
         // La primera línea solo el nombre del producto, solo en la primera iteración del producto
@@ -187,8 +196,17 @@
                     </tr>';
     }
 
-    function dibujar_fila_proveedor( $nombre_proveedor, $linea, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4 )
+
+
+    function dibujar_fila_proveedor( $nombre_proveedor, $linea, $display_porcentaje_1, $display_porcentaje_2, $display_porcentaje_3, $display_porcentaje_4, $iva_incluido )
     {
+        if ( $iva_incluido )
+        {
+            $precio = $linea->precio_total;
+        }else{
+            $precio = $linea->base_impuesto;
+        }
+                
         $html_linea = '';
         // Línea por cada proveedor
         $html_linea .= '<tr>
@@ -199,11 +217,11 @@
         $precio_promedio = 0; 
         if( $linea->cantidad != 0 )
         {
-            $precio_promedio = $linea->precio_total / $linea->cantidad;
+            $precio_promedio = $precio / $linea->cantidad;
         }
 
         $html_linea .= '<td> $'.number_format( $precio_promedio, 2, ',', '.').' </td>
-                            <td> $'.number_format( $linea->precio_total, 2, ',', '.').' </td>
+                            <td> $'.number_format( $precio, 2, ',', '.').' </td>
                             <td style="display: '.$display_porcentaje_1.'"> &nbsp; </td>
                             <td style="display: '.$display_porcentaje_2.'"> &nbsp; </td>
                             <td style="display: '.$display_porcentaje_3.'"> &nbsp; </td>
@@ -212,6 +230,7 @@
 
         return $html_linea;
     }
+
 
     function get_valor_proyeccion( $total_precio_promedio, $porcentaje_proyeccion )
     {

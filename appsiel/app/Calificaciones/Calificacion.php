@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 
 use App\Calificaciones\EscalaValoracion;
+use App\Calificaciones\Periodo;
 
 class Calificacion extends Model
 {
@@ -109,6 +110,8 @@ class Calificacion extends Model
 
     public static function get_la_calificacion($periodo_id, $curso_id, $estudiante_id, $asignatura_id)
     {
+        $periodo = Periodo::find( $periodo_id );
+
         $calificacion = Calificacion::where(['id_periodo'=>$periodo_id,
             'curso_id' => $curso_id,
             'id_estudiante' => $estudiante_id,
@@ -116,7 +119,7 @@ class Calificacion extends Model
                     
         if ( !is_null($calificacion) ) 
         {
-            $escala = EscalaValoracion::get_escala_segun_calificacion( $calificacion->calificacion );
+            $escala = EscalaValoracion::get_escala_segun_calificacion( $calificacion->calificacion, $periodo->periodo_lectivo_id );
 
             if ( !is_null($escala) ) 
             {
@@ -157,6 +160,8 @@ class Calificacion extends Model
 
     public static function get_promedio_periodos($periodos_promediar, $curso_id, $estudiante_id, $asignatura_id)
     {
+        $periodo = Periodo::find( $periodos_promediar[0] );
+
         $calificacion = number_format( Calificacion::whereIn('id_periodo',$periodos_promediar)
                                     ->where( [ 'curso_id' => $curso_id,
                                             'id_estudiante' => $estudiante_id,
@@ -164,7 +169,7 @@ class Calificacion extends Model
                     
         if ( !is_null($calificacion) ) 
         {
-            $escala = EscalaValoracion::get_escala_segun_calificacion( $calificacion );
+            $escala = EscalaValoracion::get_escala_segun_calificacion( $calificacion,$periodo->periodo_lectivo_id );
 
             if ( !is_null($escala) && !empty($escala) )
             {
