@@ -78,13 +78,14 @@ class ContabMovimiento extends Model
     public static function get_movimiento_arbol_grupo_cuenta($empresa_id, $fecha_inicial, $fecha_final, $grupo_abuelo_id )
     {
         return ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
-            ->leftJoin('contab_arbol_grupos_cuentas','contab_arbol_grupos_cuentas.hijo_id','=','contab_cuentas.contab_cuenta_grupo_id')
-            ->where('contab_movimientos.core_empresa_id',$empresa_id)
-            ->where('contab_movimientos.fecha','<=',$fecha_final)
-            ->where('contab_arbol_grupos_cuentas.abuelo_id',$grupo_abuelo_id)
-            ->groupBy('contab_movimientos.contab_cuenta_id')
-            ->selectRaw( 'sum(contab_movimientos.valor_saldo) AS valor_saldo, contab_arbol_grupos_cuentas.abuelo_descripcion, contab_arbol_grupos_cuentas.padre_descripcion, contab_arbol_grupos_cuentas.hijo_descripcion, contab_arbol_grupos_cuentas.abuelo_id, contab_arbol_grupos_cuentas.padre_id, contab_arbol_grupos_cuentas.hijo_id, contab_cuentas.descripcion AS cuenta_descripcion, contab_cuentas.id AS cuenta_id, contab_cuentas.codigo AS cuenta_codigo' )
-            ->get()->toArray();
+                ->leftJoin('contab_arbol_grupos_cuentas','contab_arbol_grupos_cuentas.hijo_id','=','contab_cuentas.contab_cuenta_grupo_id')
+                ->where('contab_movimientos.core_empresa_id',$empresa_id)
+                ->where('contab_movimientos.fecha','<=',$fecha_final)
+                ->where('contab_arbol_grupos_cuentas.abuelo_id',$grupo_abuelo_id)
+                ->groupBy('contab_movimientos.contab_cuenta_id')
+                ->selectRaw( 'sum(contab_movimientos.valor_saldo) AS valor_saldo, contab_arbol_grupos_cuentas.abuelo_descripcion, contab_arbol_grupos_cuentas.padre_descripcion, contab_arbol_grupos_cuentas.hijo_descripcion, contab_arbol_grupos_cuentas.abuelo_id, contab_arbol_grupos_cuentas.padre_id, contab_arbol_grupos_cuentas.hijo_id, contab_cuentas.descripcion AS cuenta_descripcion, contab_cuentas.id AS cuenta_id, contab_cuentas.codigo AS cuenta_codigo' )
+                ->get()
+                ->toArray();
     }
 
     public static function get_registros_contables($core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo )

@@ -211,9 +211,15 @@ class ContabReportesController extends Controller
         // 
         $grupos = $reporte->grupos_cuentas()->orderBy('orden')->get()->toArray();
 
+
         foreach ($grupos as $fila) 
         {
-            $tabla.=$this->get_arbol_movimiento_grupo_cuenta($fila['pivot']['contab_grupo_cuenta_id'], $this->lapso1_ini,$this->lapso1_fin);         
+            //if ( $fila['descripcion'] == 'PASIVOS NO CORRIENTES' )
+            //{
+                $tabla.=$this->get_arbol_movimiento_grupo_cuenta($fila['pivot']['contab_grupo_cuenta_id'], $this->lapso1_ini,$this->lapso1_fin);
+            //    dd( $tabla );
+            //}
+            
         }
 
         $tabla.='<tr>
