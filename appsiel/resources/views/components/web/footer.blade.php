@@ -1,11 +1,5 @@
 @if($footer!=null)
-    <style>
-        .footerarea {
-            background-color: {{$footer->background}};
-        }
-    </style>
-    <div style="height: 150px; overflow: hidden;" ><svg viewBox="0 0 500 150" preserveAspectRatio="none" style="height: 100%; width: 100%;"><path d="M0.00,49.98 C334.36,229.44 308.96,-42.92 500.00,49.98 L500.00,150.00 L0.00,150.00 Z" style="stroke: none; fill: {{$footer->background}};"></path></svg></div>
-    <div class="footerarea" style="padding-top: 20px;">
+    <div class="footerarea" style="padding-top: 20px;background-image: url({{asset('img/corazon/Diseño_Appsiel_5.jpg')}}">
         <div class="container">
             <div class="row">
                 @if($footer->ubicacion == '')

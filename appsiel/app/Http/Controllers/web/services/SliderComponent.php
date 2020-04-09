@@ -22,10 +22,12 @@ class SliderComponent implements IDrawComponent
     {
         $widget = Widget::find($this->widget);
         $slider = Slider::where('widget_id', $widget->id)->first();
-        if ($slider->disposicion == 'DEFAULT')
-            return Form::slider($slider);
-        else {
-            return Form::sliderpremiun($slider);
+        if ($slider != null) {
+            if ($slider->disposicion == 'DEFAULT')
+                return Form::slider($slider);
+            else {
+                return Form::sliderpremiun($slider);
+            }
         }
     }
 
