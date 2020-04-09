@@ -24,3 +24,13 @@ Route::get('cte_numeraltablas/{id}/show', 'ContratoTransporte\PlantillaControlle
 Route::get('cte_plantillaarticulonumerals/{id}/show', 'ContratoTransporte\PlantillaController@show_plantillaarticulonumeral')->name('cte_plantilla.show_plantillaarticulonumeral');
 Route::get('cte_plantillaarticulos/{id}/show', 'ContratoTransporte\PlantillaController@show_plantillaarticulo')->name('cte_plantilla.show_plantillaarticulo');
 Route::get('cte_plantillas/{id}/show', 'ContratoTransporte\PlantillaController@show_plantilla')->name('cte_plantilla.show_plantilla');
+
+//MANTENIMIENTOS
+Route::get('cte_mantenimientos', 'ContratoTransporte\MantenimientoController@index')->name('mantenimiento.index');
+Route::get('cte_mantenimientos/{vehiculo_id}/continuar', 'ContratoTransporte\MantenimientoController@continuar')->name('mantenimiento.continuar');
+Route::get('cte_mantenimientos/{vehiculo_id}/{anioperiodo_id}/create', 'ContratoTransporte\MantenimientoController@create')->name('mantenimiento.create');
+Route::post('cte_mantenimientos/store', 'ContratoTransporte\MantenimientoController@store')->name('mantenimiento.store');
+Route::get('cte_mantenimientos/mantenimientos/reportes/{id}/delete', 'ContratoTransporte\MantenimientoController@deletereporte')->name('mantenimiento.deletereporte');
+Route::get('cte_mantenimientos/mantenimientos/observaciones/{id}/delete', 'ContratoTransporte\MantenimientoController@deleteobs')->name('mantenimiento.deleteobs');
+Route::post('cte_mantenimientos/reportes/store', 'ContratoTransporte\MantenimientoController@storemant')->name('mantenimiento.storemant');
+Route::post('cte_mantenimientos/observaciones/store', 'ContratoTransporte\MantenimientoController@storeobs')->name('mantenimiento.storeobs');
