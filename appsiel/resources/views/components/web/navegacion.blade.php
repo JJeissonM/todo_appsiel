@@ -18,6 +18,10 @@
         object-fit: cover;*/
     }
 
+    @media (max-width: 468px){
+
+    }
+
 </style>
 
 @if($nav->fixed)
@@ -31,7 +35,7 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
                         data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="fa fa-bars"></span>
+                    <span class="fa fa-bars" style="color: {{$nav->color}}"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto mu-navbar-nav">
@@ -76,7 +80,7 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
                         data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="fa fa-bars"></span>
+                    <span class="fa fa-bars"  style="color: {{$nav->color}}"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto mu-navbar-nav">

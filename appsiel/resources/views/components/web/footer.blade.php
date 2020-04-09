@@ -1,5 +1,31 @@
 @if($footer!=null)
-    <div class="footerarea" style="padding-top: 20px;background-image: url({{asset('img/corazon/Diseño_Appsiel_5.jpg')}}">
+    <style>
+        .footerarea {
+           position: relative;
+        }
+
+        .footerarea img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        @media (max-width: 468px){
+            .footerarea {
+                background-color: {{$footer->background}};
+            }
+
+            .footerarea  img{
+               display: none;
+            }
+        }
+
+    </style>
+
+    <div class="footerarea" style="padding-top: 20px;">
+        <img src="{{asset('img/corazon/Diseño_Appsiel_5.jpg')}}" alt="">
         <div class="container">
             <div class="row">
                 @if($footer->ubicacion == '')

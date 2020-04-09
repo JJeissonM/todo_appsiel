@@ -1,16 +1,37 @@
 <style>
+
     .aboutus {
         background-repeat: no-repeat;
+        background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}});
     }
+
     .aboutus p {
         color: #000;
         font-weight: bold;
     }
+
+
+    @media  (max-width: 468px){
+
+        .aboutus {
+            background-image: none !important;
+        }
+
+        .aboutus h2,  .aboutus h4 {
+            font-size: 24px !important;
+        }
+
+        .aboutus p {
+            font-size: 16px !important;
+        }
+
+    }
+
 </style>
 
-<div class="aboutus" style="background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}}">
+<div class="aboutus" style="background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}})">
     <div class="container">
-        <div class="container" style="padding: 40px;height: 850px">
+        <div class="container" style="padding: 40px;">
             @if($aboutus!=null)
                 <div class="section-header">
                     <h2 class="section-title text-center wow fadeInDown animated"
@@ -22,11 +43,11 @@
                 </div>
                 <div class="row" style="margin-top: -50px;">
                     <div class="col-sm-6 wow fadeInLeft animated"
-                         style="visibility: visible; animation-name: fadeInLeft;height: 10px">
+                         style="visibility: visible; animation-name: fadeInLeft;height: auto">
                     </div>
                     <div class="col-sm-6">
-                        <div class="media service-box wow fadeInRight animated"
-                             style="visibility: visible; animation-name: fadeInRight; height: 120px;">
+                        <div style="margin: 0;" class="media service-box wow fadeInRight animated"
+                             style="visibility: visible; animation-name: fadeInRight;">
                             <div class="pull-left">
                                 <i class="fa fa-{{$aboutus->mision_icono}}"></i>
                             </div>
@@ -39,7 +60,7 @@
                             </div>
                         </div>
 
-                        <div class="media service-box wow fadeInRight animated"
+                        <div style="margin: 0;" class="media service-box wow fadeInRight animated"
                              style="visibility: visible; animation-name: fadeInRight;">
                             <div class="pull-left">
                                 <i class="fa fa-{{$aboutus->vision_icono}}"></i>
@@ -54,7 +75,7 @@
                         </div>
                         @if($aboutus->valores != '')
                             <div class="media service-box wow fadeInRight animated"
-                                 style="visibility: visible; animation-name: fadeInRight;">
+                                 style="margin:0; visibility: visible; animation-name: fadeInRight;">
                                 <div class="pull-left">
                                     <i class="fa fa-{{$aboutus->valor_icono}}"></i>
                                 </div>
