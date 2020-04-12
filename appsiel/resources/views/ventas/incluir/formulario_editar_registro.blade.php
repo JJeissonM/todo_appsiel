@@ -23,11 +23,21 @@
   </div>
 
   <div class="row" style="padding:5px;">
+    {{ Form::bsText('tasa_descuento', $linea_factura->tasa_descuento, 'Tasa descuento', [ 'id'=>'tasa_descuento','width'=>'15px']) }}
+  </div>
+
+  <div class="row" style="padding:5px;">
+    {{ Form::bsText('valor_total_descuento_no', $linea_factura->valor_total_descuento, 'Valor total descuento', ['disabled'=>'disabled','id'=>'valor_total_descuento_no']) }}
+  </div>
+
+  <div class="row" style="padding:5px;">
     {{ Form::bsText('precio_total', $linea_factura->precio_total, 'Precio total', ['disabled'=>'disabled','id'=>'precio_total']) }}
   </div>
   
   <input type="hidden" name="saldo_original" id="saldo_original" value="{{ $saldo_a_la_fecha }}">
   <input type="hidden" name="cantidad_original" id="cantidad_original" value="{{ $linea_factura->cantidad }}">
+
+  <input type="hidden" name="valor_total_descuento" id="valor_total_descuento" value="{{ $linea_factura->valor_total_descuento }}">
 
   <input type="hidden" name="saldo_a_la_fecha2" id="saldo_a_la_fecha2" value="{{ $saldo_a_la_fecha }}">
   <input type="hidden" name="producto_id" id="producto_id" value="{{ $linea_remision->inv_producto_id}}">

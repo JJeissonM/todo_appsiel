@@ -119,8 +119,8 @@ class CompraController extends TransaccionController
         $ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
         
         $lineas_registros = json_decode($request->lineas_registros);
-        // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
 
+        // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
         $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
         $core_tipo_doc_app_id_original = $request['core_tipo_doc_app_id'];
 
@@ -165,6 +165,9 @@ class CompraController extends TransaccionController
         $total_documento = 0;
         // Por cada entrada de almacén pendiente
         $cantidad_registros = count( $lineas_registros );
+
+        $lineas_registros_originales = json_decode( $datos['lineas_registros'] );
+
         $entrada_almacen_id = '';
         $primera = true;
         for ($i=0; $i < $cantidad_registros ; $i++)
@@ -172,6 +175,8 @@ class CompraController extends TransaccionController
             $doc_entrada_id = (int)$lineas_registros[$i]->id_doc;
 
             $registros_entrada = InvDocRegistro::where( 'inv_doc_encabezado_id', $doc_entrada_id )->get();
+
+            $linea = 0;
             foreach ($registros_entrada as $un_registro)
             {
                 // Nota: $un_registro contiene datos de inventarios 
@@ -193,6 +198,8 @@ class CompraController extends TransaccionController
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
                                 [ 'valor_impuesto' => ( $precio_total - $total_base_impuesto ) ] +
+                                [ 'tasa_descuento' => $lineas_registros_originales[ $linea ]->tasa_descuento ] +
+                                [ 'valor_total_descuento' => $lineas_registros_originales[ $linea ]->valor_total_descuento ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
 
@@ -215,6 +222,8 @@ class CompraController extends TransaccionController
                 CompraController::contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
 
                 $total_documento += $precio_total;
+
+                $linea++;
             } // Fin por cada registro de la entrada
 
             // Marcar la entrada como facturada

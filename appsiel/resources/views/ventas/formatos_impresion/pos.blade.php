@@ -41,6 +41,10 @@
     <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
 @endsection
 
+<?php 
+    //dd( $doc_registros->sum('valor_total_descuento') );
+?>
+
 @section('tabla_registros_1')
     <table style="width: 100%;">
         {{ Form::bsTableHeader(['Producto','Cant. (Precio)','IVA','Total']) }}
@@ -58,11 +62,18 @@
                 <tr>
                     <td> {{ $linea->producto_descripcion }} </td>
                     <td> 
-                        {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }}  (${{ number_format( $linea->precio_unitario, 0, ',', '.') }})                       
+                        {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }}  (${{ number_format( $linea->precio_unitario, 0, ',', '.') }})
                     </td>
                     <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.') }}% </td>
                     <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
                 </tr>
+
+                @if( $linea->valor_total_descuento != 0 )
+                    <tr>
+                        <td colspan="3" style="text-align: right;">Dcto.</td>
+                        <td> ( -${{ number_format( $linea->valor_total_descuento, 0, ',', '.') }} ) </td>
+                    </tr>                    
+                @endif
                 <?php
 
                     // Si la tasa no está en el array, se agregan sus valores por primera vez

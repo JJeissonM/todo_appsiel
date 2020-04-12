@@ -12,7 +12,7 @@ class VtasMovimiento extends Model
 {
     // base_impuesto: es unitario
     // valor_impuesto: es unitario
-    protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'vtas_motivo_id', 'fecha', 'core_tercero_id', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'cliente_id', 'vendedor_id', 'zona_id', 'clase_cliente_id', 'equipo_ventas_id', 'forma_pago', 'fecha_vencimiento', 'orden_compras', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'codigo_referencia_tercero', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total'];
+    protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'vtas_motivo_id', 'fecha', 'core_tercero_id', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'cliente_id', 'vendedor_id', 'zona_id', 'clase_cliente_id', 'equipo_ventas_id', 'forma_pago', 'fecha_vencimiento', 'orden_compras', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'codigo_referencia_tercero', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento'];
 
     public $encabezado_tabla = ['Fecha', 'Documento', 'Producto', 'Cliente', 'Precio unit.', 'Cantidad', 'Precio total', 'IVA', 'Base IVA Total', 'Acción'];
 
@@ -87,27 +87,6 @@ class VtasMovimiento extends Model
                 break;
         }
 
-        /*return VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
-            ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_movimientos.clase_cliente_id')
-            ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_movimientos.core_tipo_transaccion_id')
-            ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
-            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-            ->select(
-                        'vtas_movimientos.inv_producto_id',
-                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'),
-                        'core_terceros.descripcion AS cliente',
-                        'vtas_movimientos.cliente_id',
-                        'vtas_clases_clientes.descripcion AS clase_cliente',
-                        'vtas_movimientos.tasa_impuesto',
-                        'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
-                        DB::raw('SUM(vtas_movimientos.cantidad) AS cantidad'),
-                        DB::raw('SUM(vtas_movimientos.precio_total) AS precio_total'),
-                        DB::raw('SUM(vtas_movimientos.base_impuesto_total) AS base_impuesto_total') )
-            ->groupBy( $agrupar_por )
-            ->get();
-            */
-
         $movimiento = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_movimientos.clase_cliente_id')
@@ -124,7 +103,9 @@ class VtasMovimiento extends Model
                         'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
                         'vtas_movimientos.cantidad',
                         'vtas_movimientos.precio_total',
-                        'vtas_movimientos.base_impuesto_total' )
+                        'vtas_movimientos.base_impuesto_total',
+                        'vtas_movimientos.tasa_descuento',
+                        'vtas_movimientos.valor_total_descuento' )
             ->get();
 
         foreach ($movimiento as $fila)

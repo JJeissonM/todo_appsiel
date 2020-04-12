@@ -119,6 +119,8 @@ class PedidoController extends TransaccionController
                 ['tasa_impuesto' => $lineas_registros[$i]->tasa_impuesto] +
                 ['valor_impuesto' => $lineas_registros[$i]->valor_impuesto] +
                 ['base_impuesto_total' => $lineas_registros[$i]->base_impuesto_total] +
+                [ 'tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento ] +
+                [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
                 ['creado_por' => Auth::user()->email] +
                 ['estado' => 'Activo'];
 

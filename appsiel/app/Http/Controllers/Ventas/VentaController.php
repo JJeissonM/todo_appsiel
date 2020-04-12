@@ -169,6 +169,8 @@ class VentaController extends TransaccionController
                             [ 'tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto ] +
                             [ 'valor_impuesto' => (float)$lineas_registros[$i]->valor_impuesto ] +
                             [ 'base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total ] +
+                            [ 'tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento ] +
+                            [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
                             [ 'creado_por' => Auth::user()->email ] +
                             [ 'estado' => 'Activo' ];
 
@@ -828,10 +830,15 @@ class VentaController extends TransaccionController
         // Se pasaron las validaciones
         $precio_unitario = $request->precio_unitario;
         $cantidad = $request->cantidad;
-        $precio_total = $precio_unitario * $cantidad;
+        $valor_total_descuento = $request->valor_total_descuento;
+        $tasa_descuento = $request->tasa_descuento;
 
-        $base_impuesto = $precio_unitario / ( 1 + $linea_registro->tasa_impuesto / 100);
-        $valor_impuesto = $precio_unitario - $base_impuesto;
+        $precio_total = $precio_unitario * $cantidad - $valor_total_descuento;
+
+        $precio_venta = $precio_unitario - ( $valor_total_descuento / $cantidad );
+
+        $base_impuesto = $precio_venta / ( 1 + $linea_registro->tasa_impuesto / 100);
+        $valor_impuesto = $precio_venta - $base_impuesto;
         $base_impuesto_total = $base_impuesto * $cantidad;
         $valor_impuesto_total = $valor_impuesto * $cantidad;
 
@@ -864,7 +871,9 @@ class VentaController extends TransaccionController
                                     'precio_total' => $precio_total,
                                     'base_impuesto' => $base_impuesto,
                                     'valor_impuesto' => $valor_impuesto,
-                                    'base_impuesto_total' => $base_impuesto_total
+                                    'base_impuesto_total' => $base_impuesto_total,
+                                    'tasa_descuento' => $tasa_descuento,
+                                    'valor_total_descuento' => $valor_total_descuento
                                 ] );
 
         // 4. Actualizar movimiento contable del registro de la factura
@@ -989,7 +998,9 @@ class VentaController extends TransaccionController
                                     'precio_total' => $precio_total,
                                     'base_impuesto' => $base_impuesto,
                                     'valor_impuesto' => $valor_impuesto,
-                                    'base_impuesto_total' => $base_impuesto_total
+                                    'base_impuesto_total' => $base_impuesto_total,
+                                    'tasa_descuento' => $tasa_descuento,
+                                    'valor_total_descuento' => $valor_total_descuento
                                 ] );
 
 
