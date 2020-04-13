@@ -92,3 +92,6 @@ Stack trace:
 #9 C:\xampp\htdocs\Appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(152): Illuminate\Foundation\Application->make('App\\Http\\Middle...')
 #10 C:\xampp\htdocs\Appsiel\index.php(58): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
 #11 {main}  
+[2020-04-10 09:22:20] local.ERROR: Symfony\Component\Debug\Exception\FatalErrorException: Maximum execution time of 30 seconds exceeded in C:\xampp\htdocs\Appsiel\appsiel\vendor\symfony\routing\Route.php:20
+Stack trace:
+#0 {main}  
