@@ -28,10 +28,10 @@
 
 @section('tabla_registros_1')
 
-    <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Productos compados </div>
+    <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Productos comprados </div>
 
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Cód.','Producto','Precio','IVA','Cantidad','Total']) }}
+        {{ Form::bsTableHeader(['Cód.','Producto','Cantidad','Precio','Dcto.','IVA','Total']) }}
         <tbody>
             <?php 
             
@@ -39,40 +39,51 @@
             $subtotal = 0;
             $total_impuestos = 0;
             $total_factura = 0;
+            $total_descuentos = 0;
             ?>
             @foreach($doc_registros as $linea )
+
+                <?php 
+                    $precio_original = $linea->precio_unitario + ( $linea->valor_total_descuento / $linea->cantidad );
+                    $subtotal_linea = ( $linea->cantidad * $precio_original ) - $linea->valor_impuesto;
+                ?>
                 <tr>
                     <td> {{ $linea->producto_id }} </td>
                     <td> {{ $linea->producto_descripcion }} </td>
-                    <td style="text-align: right;"> {{ '$ '.number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
-                    <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
                     <td style="text-align: right;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
+                    <td style="text-align: right;"> {{ '$ '.number_format( $precio_original, 0, ',', '.') }} </td>
+                    <td style="text-align: right;"> {{ number_format( $linea->tasa_descuento, 0, ',', '.').'%' }} </td>
+                    <td style="text-align: right;"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
                     <td style="text-align: right;"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
                 </tr>
                 <?php 
                     $total_cantidad += $linea->cantidad;
-                    $subtotal += (float)$linea->base_impuesto;
+                    $subtotal += $subtotal_linea;
                     $total_impuestos += (float)$linea->valor_impuesto;
+                    $total_descuentos += (float)$linea->valor_total_descuento;
                     $total_factura += $linea->precio_total;
                 ?>
             @endforeach
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4">&nbsp;</td>
+                <td colspan="2">&nbsp;</td>
                 <td style="text-align: right;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
-                <td>&nbsp;</td>
+                <td colspan="3">&nbsp;</td>
+                <td style="text-align: right;"> {{ number_format($total_factura, 2, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>
 @endsection
 
 @section('tabla_registros_2')
+    <br>
     <table class="table table-bordered">
         <tr>
-            <td> <span style="text-align: right; font-weight: bold;"> Subtotal: </span> $ {{ number_format($subtotal, 0, ',', '.') }}</td>
-            <td> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> $ {{ number_format($total_impuestos, 0, ',', '.') }}</td>
-            <td> <span style="text-align: right; font-weight: bold;"> Total factura: </span> $ {{ number_format($total_factura, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> Subtotal: </span> ${{ number_format($subtotal, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> Descuentos: </span> ${{ number_format($total_descuentos, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> ${{ number_format($total_impuestos, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> Total factura: </span> ${{ number_format($total_factura, 0, ',', '.') }}</td>
         </tr>
     </table>
 @endsection

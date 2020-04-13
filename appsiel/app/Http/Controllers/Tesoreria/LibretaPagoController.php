@@ -508,6 +508,11 @@ class LibretaPagoController extends ModeloController
 
         $formato = config('tesoreria.formato_libreta_pago_defecto');
 
+        if( is_null($formato) )
+        {
+            $formato = 'pdf_libreta';
+        }
+        
         $view =  View::make('tesoreria.'.$formato, compact('registro','colegio','empresa','cuenta'))->render();
 
         //crear PDF   echo $view;
@@ -672,7 +677,7 @@ class LibretaPagoController extends ModeloController
 
     public function ver_recaudos($id_libreta){
         $libreta = TesoLibretasPago::find($id_libreta);
-        $estudiante = Estudiante::find($libreta->id_estudiante);
+        $estudiante = Estudiante::get_datos_basicos( $libreta->id_estudiante );
 
         $recaudos = TesoRecaudosLibreta::where('id_libreta',$id_libreta)->get();
 
@@ -739,6 +744,7 @@ class LibretaPagoController extends ModeloController
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
         return $pdf->stream('comprobante_recaudo.pdf');
     }
+
 
     public function eliminar_recaudo_libreta($recaudo_id)
     {

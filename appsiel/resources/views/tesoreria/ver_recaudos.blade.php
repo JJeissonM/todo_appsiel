@@ -9,10 +9,10 @@
 		<div class="col-md-10 col-md-offset-1">
 
 			<?php
-				$nombre_completo=$estudiante->nombres." ".$estudiante->apellido1." ".$estudiante->apellido2;
+				//$nombre_completo=$nombres." ".$estudiante->apellido1." ".$estudiante->apellido2;
 			?>
 			
-			<h2>{{ $nombre_completo }}</h2>
+			<h2>{{ $estudiante->nombre_completo }}</h2>
 			<h4>Matrícula: {{ $codigo_matricula }} /  Curso: {{ $curso->descripcion }}</h4>
 
 			<h3>Libreta de pagos</h3>
@@ -52,7 +52,7 @@
 								<td>{{$nombre_mes}}</td>
 								<td><?php echo number_format($fila->valor_recaudo, 0, ',', '.')?></td>
 								<td>
-									<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$fila->id_cartera) }}"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
+									<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$fila->id_cartera) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
 
 									@can('eliminar_recaudo_libreta')
 										&nbsp;&nbsp;&nbsp;

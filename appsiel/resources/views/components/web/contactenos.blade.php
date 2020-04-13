@@ -8,18 +8,22 @@
                         <address style="color: black">
                             @if( $contactenos->empresa != '' )
                                 <strong style="color: black">
-                                    {{str_limit($contactenos->empresa,20)}}
-                                </strong><br>
+                                    <span  title="{{ $contactenos->empresa }}"> {{str_limit($contactenos->empresa,20)}} </span>
+                                </strong>
+                                <br>
                             @endif
                             @if( $contactenos->correo != '' )
-                                <a href="mailto:{{ $contactenos->correo }}"> <span title="{{ $contactenos->correo }}"> {{str_limit($contactenos->correo,20)}}<br> </span>
+                                <a href="mailto:{{ $contactenos->correo }}"> 
+                                    <span title="{{ $contactenos->correo }}"> {{str_limit($contactenos->correo,20)}}<br> </span>
                                 </a>
                             @endif
                             @if( $contactenos->direccion != '' )
-                                {{str_limit($contactenos->direccion,20)}}<br>
+                                <span title="{{ $contactenos->direccion }}"> {{str_limit($contactenos->direccion,20)}} </span>
+                                <br>
                             @endif
                             @if( $contactenos->ciudad != '' )
-                                {{str_limit($contactenos->ciudad,20)}}<br>
+                                <span title="{{ $contactenos->ciudad }}"> {{str_limit($contactenos->ciudad,20)}} </span>
+                                <br>
                             @endif
                             @if( $contactenos->telefono != '' )
                                 <i class="fa fa-whatsapp"></i> {{$contactenos->telefono}}

@@ -73,7 +73,7 @@
 									@if($fila->estado!='Pagada')
 										<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/hacer_recaudo_cartera/'.$fila->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}" title="Recaudar"><i class="fa fa-btn fa-cube"></i>&nbsp;Recaudar</a>
 									@else
-										<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$fila->id) }}"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
+										<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$fila->id) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
 									@endif
 								</td>
 							</tr>

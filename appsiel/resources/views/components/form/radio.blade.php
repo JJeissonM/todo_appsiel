@@ -15,7 +15,7 @@
 					<?php $checked = false; ?>
 				@endif
 			@endforeach
-			{{ Form::radio($name."[]", $valor_opcion, $checked) }}{{$lbl_opcion}}
+			{{ Form::radio($name."[]", $valor_opcion, $checked, $attributes ) }} {{ $lbl_opcion }}
 	    </label>
 	@endforeach
 </div>

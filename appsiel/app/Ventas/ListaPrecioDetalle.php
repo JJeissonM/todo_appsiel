@@ -35,7 +35,8 @@ class ListaPrecioDetalle extends Model
 
 		if ( is_null($registro) )
 		{
-			return InvProducto::find($inv_producto_id)->precio_venta;
+			//return InvProducto::find($inv_producto_id)->precio_venta;
+			return 0;
 		}else{
 			return $registro->precio;
 		}
