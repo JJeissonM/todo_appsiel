@@ -732,12 +732,16 @@
 
 				if ( parseFloat( $('#existencia_actual').val() ) < 0 ) 
 				{
-					alert('Saldo negativo a la fecha.');
+					$('#popup_alerta').show();
+					$('#popup_alerta').css('background-color','red');
+					$('#popup_alerta').text( 'Saldo negativo a la fecha.' );
 					cantidad = 0;
 					$('#cantidad').val(0);
 					$('#cantidad').select();
 					return false;
 				}/**/
+				
+				$('#popup_alerta').hide();
 				return true;
 			}
 
@@ -747,6 +751,9 @@
 			{
 				if ( !calcular_precio_total() )
 				{
+					$('#popup_alerta').show();
+					$('#popup_alerta').css('background-color','red');
+					$('#popup_alerta').text( 'Error en precio total. Por favor verifique' );
 					return false;
 				}
 
@@ -759,6 +766,8 @@
 				{
 					return false;
 				}
+
+				$('#popup_alerta').hide();
 
 				if( $('#url_id_transaccion').val() == 23 ) 
 				{ 

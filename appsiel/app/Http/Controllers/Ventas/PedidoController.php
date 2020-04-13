@@ -52,10 +52,15 @@ class PedidoController extends TransaccionController
         // WARNING!!!! Este motivo es de INVENTARIOS
         $motivos = ['10-salida' => 'Ventas POS'];
 
+        if( is_null($this->transaccion) )
+        {
+            $this->transaccion = TipoTransaccion::find(42);
+        }
+
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros(VtasTransaccion::get_datos_tabla_ingreso_lineas_registros($this->transaccion, $motivos));
 
-        return $this->crear($this->app, $this->modelo, $this->transaccion, 'ventas.create', $tabla);
+        return $this->crear($this->app, $this->modelo, $this->transaccion, 'ventas.pedidos.create', $tabla);
     }
 
     /**

@@ -43,6 +43,7 @@
   <input type="hidden" name="producto_id" id="producto_id" value="{{ $linea_remision->inv_producto_id}}">
   <input type="hidden" name="bodega_id" id="bodega_id" value="{{ $linea_remision->inv_bodega_id }}">
   <input type="hidden" name="fecha" id="fecha" value="{{ $remision->fecha }}">
+  <input type="hidden" name="tipo" id="tipo" value="{{ $producto->tipo }}">
 
   {{ Form::hidden('linea_factura_id', $linea_factura->id ) }}
 

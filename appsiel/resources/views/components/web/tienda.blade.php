@@ -221,11 +221,18 @@
 
                     @foreach( $items as $item)
                         <div class="contenido-producto">
-                            <img src="{{ asset( config('configuracion.url_instancia_cliente') . "/storage/app/inventarios/" . $item->imagen ) }}" loading="lazy"  class="imagen-curso u-full-width">
+                            <div>
+                                <img src="{{ asset( config('configuracion.url_instancia_cliente') . "/storage/app/inventarios/" . $item->imagen ) }}" loading="lazy"  class="imagen-curso u-full-width">
+                                @if( $item->descuento != 0)
+                                    <div style="color: red; z-index: 999; position: relative; right: 0;">{{ $item->descuento }}% </div> 
+                                @endif
+                            </div>
                             <div class="info-card">
-                                <h4> {{ $item->descripcion }} </h4>
+                                <h4> 
+                                    {{ $item->descripcion }}
+                                </h4>
                                 <p>Unidad a $400</p>
-                                <p class="precio">${{ $item->precio_venta }}  <span class="u-pull-right ">$15</span></p>
+                                <p class="precio">${{ number_format( $item->precio_venta, 0, ',', '.') }}  <span class="u-pull-right">${{ number_format( ($item->precio_venta - $item->precio_venta * $item->descuento / 100 ), 0, ',', '.') }}</span></p>
                                 <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="3">!Lo quiero!</a>
                                 <div class="button-opciones">
                                     <a href=""  style="color: gray;"><i class="fa fa-trash-o" aria-hidden="true"></i></a>

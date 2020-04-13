@@ -486,18 +486,13 @@
             // Valores unitarios
 			function calcular_impuestos()
 			{
-				var precio_venta = precio_unitario - valor_unitario_descuento;
+				var precio_compra = precio_unitario - valor_unitario_descuento;
 
-	            base_impuesto_unitario = precio_venta / ( 1 + tasa_impuesto / 100 );
+	            base_impuesto_unitario = precio_compra / ( 1 + tasa_impuesto / 100 );
 
-	            valor_impuesto_unitario = precio_venta - base_impuesto_unitario;
+	            valor_impuesto_unitario = precio_compra - base_impuesto_unitario;
 
-	            if ( tasa_impuesto > 0 )
-	            {
-					costo_unitario = base_impuesto_unitario;
-	            }else{
-	            	costo_unitario = precio_venta;
-	            }
+	            costo_unitario = base_impuesto_unitario;
 			}
 
 

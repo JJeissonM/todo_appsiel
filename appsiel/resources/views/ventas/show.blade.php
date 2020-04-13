@@ -167,7 +167,7 @@
 					var x = event.which || event.keyCode;
 					if( x==13 )
 					{
-						$('#tasa_descuento').select();				
+						$('#tasa_descuento').select();
 					}
 
 					calcular_valor_descuento();
@@ -188,12 +188,7 @@
 					// máximo valor de 100
 					if ( $(this).val() > 100 )
 					{ 
-						$(this).val(100); 
-						calcular_valor_descuento();
-
-						calcular_precio_total();
-
-						return false;
+						$(this).val(100);
 					}
 
 					var x = event.which || event.keyCode;
@@ -275,6 +270,7 @@
 			*/
 			function validar_existencia_actual()
 			{
+				if ( $('#tipo').val() == 'servicio' ) { return true; }
 
 				if ( parseFloat( $('#saldo_a_la_fecha').val() ) < 0 ) 
 				{

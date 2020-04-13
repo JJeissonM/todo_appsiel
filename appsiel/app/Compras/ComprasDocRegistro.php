@@ -72,7 +72,8 @@ class ComprasDocRegistro extends Model
                                 'compras_doc_registros.tasa_impuesto',
                                 'compras_doc_registros.valor_impuesto',
                                 'compras_doc_registros.tasa_descuento',
-                                'compras_doc_registros.valor_total_descuento'
+                                'compras_doc_registros.valor_total_descuento',
+                                'compras_doc_registros.estado'
                             )
                     ->get();
     }
@@ -98,7 +99,10 @@ class ComprasDocRegistro extends Model
                                 'compras_doc_registros.precio_total',
                                 'compras_doc_registros.base_impuesto',
                                 'compras_doc_registros.tasa_impuesto',
-                                'compras_doc_registros.valor_impuesto'
+                                'compras_doc_registros.valor_impuesto',
+                                'compras_doc_registros.tasa_descuento',
+                                'compras_doc_registros.valor_total_descuento',
+                                'compras_doc_registros.estado'
                             )
                     ->get()
                     ->first();
