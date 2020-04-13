@@ -220,11 +220,11 @@
                 <div class="row" id="productos">
 
                     @foreach( $items as $item)
-                        <div class="contenido-producto">
+                        <div class="contenido-producto" style="position: relative;">
                             <div>
                                 <img src="{{ asset( config('configuracion.url_instancia_cliente') . "/storage/app/inventarios/" . $item->imagen ) }}" loading="lazy"  class="imagen-curso u-full-width">
                                 @if( $item->descuento != 0)
-                                    <div style="color: red; z-index: 999; position: relative; right: 0;">{{ $item->descuento }}% </div> 
+                                    <div style="color: red; z-index: 999; position: absolute;top: 0; right: 0;">{{ $item->descuento }}% </div>
                                 @endif
                             </div>
                             <div class="info-card">
