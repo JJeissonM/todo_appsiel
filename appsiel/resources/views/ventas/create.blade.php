@@ -131,7 +131,22 @@
 
 			<hr>
 			<h4>Parámetros</h4>
-			{{ Form::bsSelect( 'permitir_venta_menor_costo', 0, 'Permitir venta a menor costo', ['0'=>'No','1'=>'Si'], ['class'=>'permitir_venta_menor_costo','disabled'=>'disabled'] ) }}
+			<div class="row">
+
+				<div class="col-md-6">
+					<div class="row" style="padding:5px;">
+						{{ Form::bsSelect( 'permitir_venta_menor_costo', config('ventas.permitir_venta_menor_costo'), 'Permitir ventas menor que el costo', ['0'=>'No','1'=>'Si'], ['class'=>'permitir_venta_menor_costo','disabled'=>'disabled'] ) }}
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="row" style="padding:5px;">
+						{{ Form::bsSelect( 'permitir_inventarios_negativos', config('ventas.permitir_inventarios_negativos'), 'Permitir inventarios negativos', ['0'=>'No','1'=>'Si'], ['class'=>'permitir_inventarios_negativos','disabled'=>'disabled'] ) }}
+					</div>
+				</div>
+
+			</div>
+			
 			<br><br>
 		</div>
 	</div>
@@ -397,7 +412,20 @@
 			/*
 			** Al digitar la cantidad, se valida la existencia actual y se calcula el precio total
 			*/
+			var ir_al_precio_total = 0;
 			$('#cantidad').keyup(function(event){
+				
+				var codigo_tecla_presionada = event.which || event.keyCode;
+
+				// Si se preciona dos veces la tecla t, se desplaza al input de precio total
+				if( codigo_tecla_presionada == 84)
+				{
+					ir_al_precio_total++;
+					if ( ir_al_precio_total == 2 ) { $('#precio_total').select(); }
+					return false;
+				}else{
+					ir_al_precio_total = 0;
+				}
 
 				if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
 				{
@@ -409,7 +437,6 @@
 						calcular_nuevo_saldo_a_la_fecha();
 					}
 
-					var codigo_tecla_presionada = event.which || event.keyCode;
 					if( codigo_tecla_presionada == 13)
 					{
 						if ( !validar_existencia_actual() )
@@ -430,6 +457,7 @@
 					if ( $(this).val() != '' )
 					{
 						calcular_valor_descuento();
+						calcular_impuestos();
 						calcular_precio_total();
 					}
 				}else{
@@ -468,6 +496,12 @@
 				{
 					precio_unitario = parseFloat( $(this).val() );
 
+					calcular_valor_descuento();
+
+					calcular_impuestos();
+
+					calcular_precio_total();
+
 					var codigo_tecla_presionada = event.which || event.keyCode;
 					if( codigo_tecla_presionada == 13 )
 					{
@@ -480,11 +514,6 @@
 					}
 
 
-					calcular_valor_descuento();
-
-					calcular_impuestos();
-
-					calcular_precio_total();
 
 				}else{
 
@@ -700,6 +729,7 @@
 						}
 
 						costo_unitario = respuesta.costo_promedio;
+
 						tasa_impuesto = respuesta.tasa_impuesto;
 						precio_unitario = respuesta.precio_venta;
 
@@ -728,21 +758,26 @@
 
 			function validar_existencia_actual()
 			{
-				if ( $('#tipo_producto').val() == 'servicio') { return true; }
-
-				if ( parseFloat( $('#existencia_actual').val() ) < 0 ) 
+				if ( $("#permitir_inventarios_negativos").val() == 0 )
 				{
-					$('#popup_alerta').show();
-					$('#popup_alerta').css('background-color','red');
-					$('#popup_alerta').text( 'Saldo negativo a la fecha.' );
-					cantidad = 0;
-					$('#cantidad').val(0);
-					$('#cantidad').select();
-					return false;
-				}/**/
+					if ( $('#tipo_producto').val() == 'servicio') { return true; }
+
+					if ( parseFloat( $('#existencia_actual').val() ) < 0 ) 
+					{
+						$('#popup_alerta').show();
+						$('#popup_alerta').css('background-color','red');
+						$('#popup_alerta').text( 'Saldo negativo a la fecha.' );
+						cantidad = 0;
+						$('#cantidad').val(0);
+						$('#cantidad').select();
+						return false;
+					}
+					
+					$('#popup_alerta').hide();
+				}else{
+					return true;
+				}		
 				
-				$('#popup_alerta').hide();
-				return true;
 			}
 
 
@@ -1084,7 +1119,7 @@
 
 				if( $.isNumeric( precio_total ) && precio_total > 0 )
 				{
-					$('#precio_total').val( '$ ' + new Intl.NumberFormat("de-DE").format( precio_total )  );
+					$('#precio_total').val( precio_total );
 					return true;
 				}else{
 					precio_total = 0;

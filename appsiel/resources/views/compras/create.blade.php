@@ -451,6 +451,7 @@
 					if ( $(this).val() != '')
 					{
 						calcular_valor_descuento();
+						calcular_impuestos();
 						calcular_precio_total();
 					}
 
@@ -1038,7 +1039,7 @@
 
 				if( $.isNumeric( precio_total ) && precio_total > 0 )
 				{
-					$('#precio_total').val( '$ ' + new Intl.NumberFormat("de-DE").format( precio_total )  );
+					$('#precio_total').val( precio_total );
 					return true;
 				}else{
 					precio_total = 0;
