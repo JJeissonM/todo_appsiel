@@ -712,20 +712,23 @@
 
 						$('#existencia_actual').attr('style','background-color:#97D897;'); // color verde
 
-						if (respuesta.existencia_actual<=0)
+						if ( $("#permitir_inventarios_negativos").val() == 0 )
 						{
-							$('#existencia_actual').attr('style','background-color:#FF8C8C;'); // color rojo
-							
-							// Si no es un motivo de entrada, no se permite seguir con existencia 0
-							
-							var mov = $('#inv_motivo_id').val().split('-');
-							
-							if ( mov[1] != 'entrada' && respuesta.tipo != 'servicio' ) 
-							{	
-								$('#inv_producto_id').select();
-								return false;
+							if (respuesta.existencia_actual<=0)
+							{
+								$('#existencia_actual').attr('style','background-color:#FF8C8C;'); // color rojo
+								
+								// Si no es un motivo de entrada, no se permite seguir con existencia 0
+								
+								var mov = $('#inv_motivo_id').val().split('-');
+								
+								if ( mov[1] != 'entrada' && respuesta.tipo != 'servicio' ) 
+								{	
+									$('#inv_producto_id').select();
+									return false;
+								}
+								/**/
 							}
-							/**/
 						}
 
 						costo_unitario = respuesta.costo_promedio;
@@ -1331,6 +1334,12 @@
 
                 $.get( url )
                     .done( function( data ) {
+
+                    	if ( $("#permitir_inventarios_negativos").val() == 1 )
+						{
+                    		var data = 0; // se deja pasar
+                    	}
+
                         if ( data != 0 )
                         {
                             $('#popup_alerta_danger').show();

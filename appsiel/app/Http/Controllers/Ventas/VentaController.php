@@ -198,7 +198,7 @@ class VentaController extends TransaccionController
         $doc_encabezado->save();
 
         // Un solo registro contable débito
-        $forma_pago = 'credito'; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
+        $forma_pago = $request->forma_pago; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
 
         // Cartera ó Caja (DB)
         VentaController::contabilizar_movimiento_debito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );

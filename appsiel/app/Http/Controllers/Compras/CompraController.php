@@ -246,7 +246,7 @@ class CompraController extends TransaccionController
         $doc_encabezado->save();
         
         // Un solo registro de la cuenta por pagar (CR)
-        $forma_pago = 'credito'; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
+        $forma_pago = $datos['forma_pago']; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
 
         CompraController::contabilizar_movimiento_credito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
 
