@@ -15,8 +15,8 @@
 		    z-index: 9999;
 		}
 
-		#existencia_actual, #tasa_impuesto{
-			width: 35px;
+		#existencia_actual, #tasa_impuesto, #tasa_descuento{
+			width: 40px;
 		}
 
 		#popup_alerta{
@@ -125,6 +125,17 @@
 
 		$(document).ready(function(){
 
+			// Variables de cada línea de ingresos de registros.
+			var producto_id, precio_total, costo_total, base_impuesto_total, valor_impuesto_total, tasa_impuesto, valor_total_descuento, cantidad, inv_producto_id, inv_bodega_id, inv_motivo_id;
+			var costo_unitario = 0;
+			var precio_unitario = 0;
+			var base_impuesto_unitario = 0;
+			var valor_impuesto_unitario = 0;
+			var valor_unitario_descuento = 0;
+			var tasa_descuento = 0;
+
+			var hay_productos = 0;
+
 			checkCookie();
 
 
@@ -135,9 +146,6 @@
 			$('#proveedor_input').focus( );
 
 			$("#proveedor_input").after('<div id="div_list_suggestions"> </div>');
-
-			var respuesta; // de consultar_existencia
-			var hay_productos = 0;
 
 			$('#fecha').on('change',function(event){
 				var fecha = new Date( $(this).val() );
@@ -172,81 +180,69 @@
 
 		    	reset_campos_formulario();
 
-		    	var x = event.which || event.keyCode; // Capturar la tecla presionada
+		    	var codigo_tecla_presionada = event.which || event.keyCode;
 
-				if( x == 27 ) // 27 = ESC
-				{
-					$('#div_list_suggestions').html('');
-                	$('#div_list_suggestions').hide();
-                	return false;
-				}
+		    	switch( codigo_tecla_presionada )
+		    	{
+		    		case 27:// 27 = ESC
+						$('#div_list_suggestions').html('');
+                		$('#div_list_suggestions').hide();
+		    			break;
 
+		    		case 40:// Flecha hacia abajo
+		    			var item_activo = $("a.list-group-item.active");
 
-				/*
-					Al presionar las teclas "flecha hacia abajo" o "flecha hacia arriba"
-			    */
-				if ( x == 40) // Flecha hacia abajo
-				{
-					var item_activo = $("a.list-group-item.active");
+						// Si es el útimo item, entonces no se mueve hacia abajo
+						if( item_activo.attr('data-ultimo_item') == 1 )
+						{
+							return false;
+						}
+					
+						item_activo.next().attr('class','list-group-item list-group-item-proveedor active');
+						item_activo.attr('class','list-group-item list-group-item-proveedor');
+						$('#proveedor_input').val( item_activo.next().html() );
+		    			break;
 
-					// Si es el útimo item, entonces no se mueve hacia abajo
-					if( item_activo.attr('data-ultimo_item') == 1 )
-					{
-						return false;
-					}
-				
-					item_activo.next().attr('class','list-group-item list-group-item-proveedor active');
-					item_activo.attr('class','list-group-item list-group-item-proveedor');
-					$('#proveedor_input').val( item_activo.next().html() );
-					return false;
+		    		case 38:// Flecha hacia arriba
+		    			var item_activo = $("a.list-group-item.active");
 
-				}
+						// Si es el útimo item, entonces no se mueve hacia abajo
+						if( item_activo.attr('data-primer_item') == 1 )
+						{
+							return false;
+						}
 
-	 			if ( x == 38) // Flecha hacia arriba
-				{
+						item_activo.prev().attr('class','list-group-item list-group-item-proveedor active');
+						item_activo.attr('class','list-group-item list-group-item-proveedor');
+						$('#proveedor_input').val( item_activo.prev().html() );
+		    			break;
 
-					//$(".flecha_mover:focus").prev().focus();
-					var item_activo = $("a.list-group-item.active");
+		    		case 13:// Al presionar Enter
+		    			window[tecla_enter_on_keyup( $('a.list-group-item.active') ) ];
+		    			break;
 
-					// Si es el útimo item, entonces no se mueve hacia abajo
-					if( item_activo.attr('data-primer_item') == 1 )
-					{
-						return false;
-					}
+		    		default :
+		    			// Si no se presiona tecla especial, se muestra listado de sugerencias
 
-					item_activo.prev().attr('class','list-group-item list-group-item-proveedor active');
-					item_activo.attr('class','list-group-item list-group-item-proveedor');
-					$('#proveedor_input').val( item_activo.prev().html() );
-					return false;
-				}
+		    		// Manejo código de producto o nombre
+		    		var campo_busqueda = 'descripcion';
+		    		if( $.isNumeric( $(this).val() ) ){
+			    		var campo_busqueda = 'numero_identificacion';
+			    	}
 
-				// Al presionar Enter
-				if( x == 13 )
-				{
-					window[tecla_enter_on_keyup( $('a.list-group-item.active') ) ];
+			    	// Si la longitud es menor a tres, todavía no busca
+				    if ( $(this).val().length < 2 ) { return false; }
 
-					return false;
-				}
+			    	var url = '../compras_consultar_proveedores';
 
-				// Si no se presiona tecla especial, se muestra listado de sugerencias
-
-	    		// Manejo código de producto o nombre
-	    		var campo_busqueda = 'descripcion';
-	    		if( $.isNumeric( $(this).val() ) ){
-		    		var campo_busqueda = 'numero_identificacion';
-		    	}
-
-		    	// Si la longitud es menor a tres, todavía no busca
-			    if ( $(this).val().length < 2 ) { return false; }
-
-		    	var url = '../compras_consultar_proveedores';
-
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
-					.done(function( data ) {
-						// Se llena el DIV con las sugerencias que arooja la consulta
-		                $('#div_list_suggestions').show().html(data);
-		                $('a.list-group-item.active').focus();
-					});
+					$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+						.done(function( data ) {
+							// Se llena el DIV con las sugerencias que arooja la consulta
+			                $('#div_list_suggestions').show().html(data);
+			                $('a.list-group-item.active').focus();
+						});
+		    			break;
+		    	}	
 		    });
 
 
@@ -278,9 +274,8 @@
 
 			
 			$('#doc_proveedor_prefijo').on('keyup',function(){
-				var x = event.which || event.keyCode; // Capturar la tecla presionada
-				// Al presionar Enter
-				if( x == 13 )
+				var codigo_tecla_presionada = event.which || event.keyCode;
+				if( codigo_tecla_presionada == 13 )
 				{
 					$('#doc_proveedor_consecutivo').focus();
 				}
@@ -291,9 +286,8 @@
 
 				$('#popup_alerta').hide();
 
-				var x = event.which || event.keyCode; // Capturar la tecla presionada
-				// Al presionar Enter
-				if( x == 13 )
+				var codigo_tecla_presionada = event.which || event.keyCode;
+				if( codigo_tecla_presionada == 13 )
 				{
 					$('#inv_producto_id').focus();
 				}
@@ -338,70 +332,38 @@
 					return false;
 				}
 
-				var x = event.which || event.keyCode; // Capturar la tecla presionada
+				var codigo_tecla_presionada = event.which || event.keyCode;
 
-				if( x == 27 ) // 27 = ESC
-				{
-					terminar++;
-					$('#suggestions').html('');
-                	$('#suggestions').hide();
-
-                	if ( terminar == 2 ){ 
-                		terminar = 0;
-                		$('#btn_guardar').focus(); 
-                	}
-                	return false;
-				}
-
-
-				/*
-					Al presionar las teclas "flecha hacia abajo" o "flecha hacia arriba"
-			    */
-				if ( x == 40) // Flecha hacia abajo
-				{
-					var item_activo = $("a.list-group-item.active");					
-					item_activo.next().attr('class','list-group-item list-group-item-productos active');
-					item_activo.attr('class','list-group-item list-group-item-productos');
-					$('#inv_producto_id').val( item_activo.html() );
-					return false;
-
-				}
-	 			if ( x == 38) // Flecha hacia arriba
-				{
-					$(".flecha_mover:focus").prev().focus();
-					var item_activo = $("a.list-group-item.active");					
-					item_activo.prev().attr('class','list-group-item list-group-item-productos active');
-					item_activo.attr('class','list-group-item list-group-item-productos');
-					$('#inv_producto_id').val( item_activo.html() );
-					return false;
-				}
-
-				
-		    	if( $('#modo_ingreso').is(':checked') )
+		    	switch( codigo_tecla_presionada )
 		    	{
-		    		// Manejo códigos de barra
-		    		var campo_busqueda = 'codigo_barras'; // Busqueda por CÓDIGO DE BARRA
-		    	}else{
+		    		case 27:// 27 = ESC
+						terminar++;
+						$('#suggestions').html('');
+	                	$('#suggestions').hide();
 
-		    		// Se determina el campo de busqueda
-		    		
-		    		
-		    		if( $.isNumeric( $(this).val() ) ){
-			    		var campo_busqueda = 'id'; // Busqueda por CODIGO (ID en base de datos)
-			    	}else{
-			    		var campo_busqueda = 'descripcion'; // Busqueda por NOMBRE
+	                	if ( terminar == 2 ){ 
+	                		terminar = 0;
+	                		$('#btn_guardar').focus(); 
+	                	}
+		    			break;
 
-			    		// Si la longitud es menor a tres, todavía no busca
-			    		if ( $(this).val().length < 2 ) { return false; }
-			    	}
+		    		case 40:// Flecha hacia abajo
+		    			var item_activo = $("a.list-group-item.active");					
+						item_activo.next().attr('class','list-group-item list-group-item-productos active');
+						item_activo.attr('class','list-group-item list-group-item-productos');
+						$('#inv_producto_id').val( item_activo.html() );
+		    			break;
 
-		    		// Si el campo_busqueda es ID y el texto_busqueda coincide con el ID exacto del producto, en el listado de sugerencias ya viene marcado como Active el producto de la lista 
-		    		
-		    		// Cuando se ingresa el ID, se selecciona el item activo cuando se presiona Enter 
-			    	
-					if( x == 13 ) // && $.isNumeric( $(this).val() )
-					{
-						var item = $('a.list-group-item.active');
+		    		case 38:// Flecha hacia arriba
+		    			$(".flecha_mover:focus").prev().focus();
+						var item_activo = $("a.list-group-item.active");					
+						item_activo.prev().attr('class','list-group-item list-group-item-productos active');
+						item_activo.attr('class','list-group-item list-group-item-productos');
+						$('#inv_producto_id').val( item_activo.html() );
+		    			break;
+
+		    		case 13:// Al presionar Enter
+		    			var item = $('a.list-group-item.active');
 						
 						if( item.attr('data-producto_id') === undefined )
 						{
@@ -412,24 +374,33 @@
 		                	consultar_existencia( $('#inv_bodega_id').val(), item.attr('data-producto_id') );
 		                	return false;
 						}
-					}
+		    			break;
+
+		    		default :
+		    			if( $.isNumeric( $(this).val() ) ){
+				    		var campo_busqueda = 'id'; // Busqueda por CODIGO (ID en base de datos)
+				    	}else{
+				    		var campo_busqueda = 'descripcion'; // Busqueda por NOMBRE
+
+				    		// Si la longitud es menor a tres, todavía no busca
+				    		if ( $(this).val().length < 2 ) { return false; }
+				    	}
+
+				    	terminar = 0;
+
+				    	// Realizar consulta y mostar sugerencias
+				    	var url = '../inv_consultar_productos';
+
+						$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+							.done(function( data ) {
+								//Escribimos las sugerencias que nos manda la consulta
+				                $('#suggestions').show().html(data);
+				                $('.list-group-item-productos:first').focus();
+							});
+		    			break;
 		    	}
-
-		    	terminar = 0;
-
-		    	// Realizar consulta y mostar sugerencias
-		    	var url = '../inv_consultar_productos';
-
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
-					.done(function( data ) {
-						//Escribimos las sugerencias que nos manda la consulta
-		                $('#suggestions').show().html(data);
-		                $('.list-group-item-productos:first').focus();
-					});
-
 		    });
 
-				    
 
             //Al hacer click en alguna de las sugerencias (escoger un producto)
             $(document).on('click','.list-group-item-productos', function(){
@@ -441,54 +412,6 @@
             });
 
 
-            // Al modificar el precio de compra
-            $('#precio_unitario').keyup(function(event){
-				
-				if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
-				{	
-
-					var x = event.which || event.keyCode;
-					if( x==13 )
-					{
-						// Se pasa a ingresar las cantidades
-						$('#cantidad').removeAttr('disabled');
-						$('#cantidad').attr('style','background-color:white;');
-						$('#cantidad').focus();				
-					}
-
-					var tasa_impuesto = $('#linea_ingreso_default').find('.tasa_impuesto').html();
-
-	            	// Los impuestos se obtienen del precio ingresado
-					var precio_compra = parseFloat( $(this).val() );
-		            
-		            var base_impuesto = ( precio_compra ) / ( 1 + parseFloat(tasa_impuesto) / 100 );
-		            var valor_impuesto =  precio_compra - base_impuesto;
-
-					$('#linea_ingreso_default').find('.costo_unitario').html( precio_compra );
-					$('#linea_ingreso_default').find('.base_impuesto').html( base_impuesto );
-					
-					$('#linea_ingreso_default').find('.valor_impuesto').html( valor_impuesto );
-					$('#linea_ingreso_default').find('.precio_unitario').html( precio_compra );
-
-		            // Si se ha liquidado impuestos en la transacción, el costo_unitario corresponde a base_impuesto
-		            if ( tasa_impuesto > 0 )
-		            {        
-						$('#linea_ingreso_default').find('.costo_unitario').html( base_impuesto );
-		            }
-
-					// Asignar datos a los controles (formateados visualmente para el usuario)
-					$('#tasa_impuesto').val( tasa_impuesto + '%' );
-
-					calcula_precio_total();
-				}else{
-
-					$(this).focus();
-					return false;
-				}
-
-			});
-
-
 			/*
 			** Al digitar la cantidad, se valida la existencia actual y se calcula el precio total
 			*/
@@ -496,33 +419,28 @@
 
 				if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
 				{
+					cantidad = parseFloat( $(this).val() );
+
 					if( $('#url_id_transaccion').val() == 40 ) 
 					{ 
 						// Si es una Nota Crédito Directa
-						calcula_nuevo_saldo_a_la_fecha();
+						calcular_nuevo_saldo_a_la_fecha();
 					}
 
-					// El registro se agrega al presionas Enter, si pasa las validaciones
-					var x = event.which || event.keyCode;
-					if( x==13)
+					var codigo_tecla_presionada = event.which || event.keyCode;
+					if( codigo_tecla_presionada == 13 )
 					{
-						if( $('#url_id_transaccion').val() == 40 ) 
-						{ 
-							// Si es una Nota Crédito Directa
-							validacion_saldo_movimientos_posteriores();
-						}else{
-							agregar_nueva_linea();
-						}
-						
+						/*$('#precio_unitario').removeAttr('disabled');
+						$('#precio_unitario').attr('style','background-color:white;');*/
+						$('#precio_unitario').select();
 						return true;
 						
 					}
 
-					// Si el costo_unitario del producto es cero (por algún motivo de la APP Inventarios, ejemplo al hacer ENSAMBLES) 
-					var costo_unitario = $('#linea_ingreso_default').find('.costo_unitario').html();
+					// Si el costo_unitario del producto es cero (por algún motivo de la APP Inventarios, ejemplo al hacer ENSAMBLES)
 					if ( costo_unitario == 0 || costo_unitario == "" ) 
 					{
-						$('#linea_ingreso_default').find('.costo_unitario').html( 0.0000001 );
+						costo_unitario = 0.0000001;
 					}
 
 					if ( !validar_existencia_actual() )
@@ -532,13 +450,100 @@
 
 					if ( $(this).val() != '')
 					{
-						calcula_precio_total();
+						calcular_valor_descuento();
+						calcular_impuestos();
+						calcular_precio_total();
 					}
 
 				}else{
 					return false;
 				}
 			});
+
+
+            // Al modificar el precio de compra
+            $('#precio_unitario').keyup(function(event){
+				
+				if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
+				{
+					precio_unitario = parseFloat( $(this).val() );
+
+					var codigo_tecla_presionada = event.which || event.keyCode;
+					if( codigo_tecla_presionada == 13 )
+					{
+						$('#tasa_descuento').focus();			
+					}
+					
+					calcular_valor_descuento();
+					calcular_impuestos();
+					calcular_precio_total();
+				}else{
+					$(this).focus();
+					return false;
+				}
+
+			});
+
+            // Valores unitarios
+			function calcular_impuestos()
+			{
+				var precio_compra = precio_unitario - valor_unitario_descuento;
+
+	            base_impuesto_unitario = precio_compra / ( 1 + tasa_impuesto / 100 );
+
+	            valor_impuesto_unitario = precio_compra - base_impuesto_unitario;
+
+	            costo_unitario = base_impuesto_unitario;
+			}
+
+
+            $('#tasa_descuento').keyup(function(){
+
+            	if( validar_input_numerico( $(this) ) )
+				{	
+					tasa_descuento = parseFloat( $(this).val() );
+
+					var codigo_tecla_presionada = event.which || event.keyCode;
+					if( codigo_tecla_presionada == 13 )
+					{
+						agregar_nueva_linea();
+						return true;
+					}
+
+					// máximo valor permitido = 100
+					if ( $(this).val() > 100 )
+					{ 
+						$(this).val(100);
+					}
+					
+					calcular_valor_descuento();
+					calcular_impuestos();
+					calcular_precio_total();
+
+				}else{
+
+					$(this).focus();
+					return false;
+				}
+			});
+
+
+			function calcular_valor_descuento()
+			{
+				// El descuento se calcula cuando el precio tiene el IVA incluido
+				valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
+				$('#valor_unitario_descuento').val( valor_unitario_descuento );
+
+				valor_total_descuento = valor_unitario_descuento * cantidad;
+				$('#valor_total_descuento').val( valor_total_descuento );
+			}
+
+
+			function reset_descuento()
+			{
+				$('#tasa_descuento').val( 0 );
+				calcular_valor_descuento();
+			}
 			
 
 		    function seleccionar_proveedor(item_sugerencia)
@@ -609,7 +614,7 @@
             	var fila = $('#linea_ingreso_default');
 
             	// Asignar ID del producto al campo oculto
-                fila.find('.inv_producto_id').html( item_sugerencia.attr('data-producto_id') );
+            	inv_producto_id = item_sugerencia.attr('data-producto_id');
 
                 // Asignar ID del motivo al campo oculto
                 var mov = $('#inv_motivo_id').val().split('-');
@@ -653,13 +658,14 @@
 							}
 						}
 
-						// Asignar datos a columnas invisibles (cantidades sin formatear)
-						$('#linea_ingreso_default').find('.inv_bodega_id').html( $('#inv_bodega_id').val() );
-						$('#linea_ingreso_default').find('.costo_unitario').html( respuesta.precio_compra );
-						$('#linea_ingreso_default').find('.base_impuesto').html( respuesta.base_impuesto );
-						$('#linea_ingreso_default').find('.tasa_impuesto').html( respuesta.tasa_impuesto );
-						$('#linea_ingreso_default').find('.valor_impuesto').html( respuesta.valor_impuesto );
-						$('#linea_ingreso_default').find('.precio_unitario').html( respuesta.precio_compra );
+						costo_unitario = respuesta.precio_compra;
+						precio_unitario = respuesta.precio_compra;
+						tasa_impuesto = respuesta.tasa_impuesto;
+
+						if ( tasa_impuesto > 0 )
+						{
+							costo_unitario = respuesta.base_impuesto;
+						}
 
 						// Asignar datos a los controles (formateados visualmente para el usuario)
 						//var precio_compra = 
@@ -667,9 +673,9 @@
 						$('#tasa_impuesto').val( respuesta.tasa_impuesto + '%' );
 
 						// Se pasa a ingresar las cantidades
-						$('#precio_unitario').removeAttr('disabled');
-						$('#precio_unitario').attr('style','background-color:white;');
-						$('#precio_unitario').select();
+						$('#cantidad').removeAttr('disabled');
+						$('#cantidad').attr('style','background-color:white;');
+						$('#cantidad').select();
 
 						return true;
 					});
@@ -700,18 +706,38 @@
 				return true;
 			}
 
-			/*
-			** Al presionar enter, luego de ingresar la cantidad y si se pasan la validaciones
-			*/
+
 			var numero_linea = 1;
 			function agregar_nueva_linea()
+			{
+				if ( !calcular_precio_total() )
+				{
+					return false;
+				}
+
+				if ( !validar_existencia_actual() )
+				{
+					return false;
+				}
+
+				if( $('#url_id_transaccion').val() == 40 ) 
+				{ 
+					// Si es una Nota Crédito Directa (salida de invetario)
+					validacion_saldo_movimientos_posteriores();
+				}else{
+					agregar_la_linea()
+				}
+
+				
+			}
+
+			function agregar_la_linea()
 			{
 				// Se escogen los campos de la fila ingresada
 				var fila = $('#linea_ingreso_default');
 
-				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
-
-				$('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="'+numero_linea+'"><td style="display: none;"><div class="inv_motivo_id">'+ fila.find('.inv_motivo_id').html() +'</div></td><td style="display: none;"><div class="inv_bodega_id">'+ fila.find('.inv_bodega_id').html() +'</div></td><td style="display: none;"><div class="inv_producto_id">'+ fila.find('.inv_producto_id').html() +'</div></td><td style="display: none;"><div class="costo_unitario">'+ fila.find('.costo_unitario').html() +'</div></td><td style="display: none;"><div class="precio_unitario">'+ fila.find('.precio_unitario').html() +'</div></td><td style="display: none;"><div class="base_impuesto">'+ fila.find('.base_impuesto').html() +'</div></td><td style="display: none;"><div class="tasa_impuesto">'+ fila.find('.tasa_impuesto').html() +'</div></td><td style="display: none;"><div class="valor_impuesto">'+ fila.find('.valor_impuesto').html() +'</div></td><td style="display: none;"><div class="cantidad">'+ $('#cantidad').val() +'</div></td><td style="display: none;"><div class="costo_total">'+ fila.find('.costo_total').html() +'</div></td><td style="display: none;"><div class="precio_total">'+ fila.find('.precio_total').html() +'</div></td><td> &nbsp; </td><td> <span style="background-color:#F7B2A3;">'+ fila.find('.inv_producto_id').html() + "</span> " + $('#inv_producto_id').val() + '</td> <td>'+ $('#inv_motivo_id option:selected').text() + '</td><td> '+ $('#existencia_actual').val() + '</td><td> '+ $('#precio_unitario').val() + '</td> <td>  '+ $('#tasa_impuesto').val() + ' </td> <td> '+ $('#cantidad').val() + ' </td> <td> '+ $('#precio_total').val() + ' </td><td>' + btn_borrar + '</td></tr>');
+				// agregar nueva fila a la tabla
+				$('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="'+numero_linea+'">' + generar_string_celdas( fila ) + '</tr>');
 				
 				// Se calculan los totales
 				calcular_totales();
@@ -719,17 +745,122 @@
 				hay_productos++;
 				$('#numero_lineas').text(hay_productos);
 
-				$('#proveedor_input').attr('disabled','disabled');
-				$('#fecha').attr('disabled','disabled');
-
 				// Bajar el Scroll hasta el final de la página
 				$("html, body").animate( { scrollTop: $(document).height()+"px"} );
-				
+
 				reset_linea_ingreso_default();
 
-				// !!    WARNING   !!!!!!!!!!!!!!!! Se DEBE INACTIVAR la bodega para que ya no se pueda cambiar, pues el motiviemto está amarrado a la bodega
-
 				numero_linea++;
+			}
+
+
+
+			// Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
+			// Debe ser complatible con las columnas de la tabla de ingreso de registros
+			function generar_string_celdas( fila )
+			{
+				var celdas = [];
+				var num_celda = 0;
+				
+				celdas[ num_celda ] = '<td style="display: none;"><div class="inv_motivo_id">'+ fila.find('.inv_motivo_id').html() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="inv_bodega_id">'+ $('#inv_bodega_id').val() +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="inv_producto_id">'+ inv_producto_id +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="costo_unitario">'+ costo_unitario +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="precio_unitario">'+ precio_unitario +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="base_impuesto">'+ base_impuesto_unitario * cantidad +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="tasa_impuesto">'+ tasa_impuesto +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="valor_impuesto">'+ valor_impuesto_unitario * cantidad +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="cantidad">'+ cantidad +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="costo_total">'+ costo_unitario * cantidad +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="precio_total">'+ precio_total +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="tasa_descuento">'+ tasa_descuento +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;"><div class="valor_total_descuento">'+ valor_total_descuento +'</div></td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td> &nbsp; </td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td> <span style="background-color:#F7B2A3;">'+ inv_producto_id + "</span> " + $('#inv_producto_id').val() + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td>'+ $('#inv_motivo_id option:selected').text() + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td> '+ $('#existencia_actual').val() + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td>'+ cantidad + ' </td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td> '+ '$ ' + new Intl.NumberFormat("de-DE").format( precio_unitario ) + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td>'+ $('#tasa_descuento').val() + ' </td>';
+				
+				num_celda++;
+				// ¿se va  amostrar valor del descuento?
+				celdas[ num_celda ] = '<td> '+ '$ ' + new Intl.NumberFormat("de-DE").format( valor_total_descuento.toFixed(2) ) + '</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td>'+ $('#tasa_impuesto').val() + '</td>';
+				
+				num_celda++;
+
+				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
+				celdas[ num_celda ] = '<td> '+ '$ ' + new Intl.NumberFormat("de-DE").format( precio_total.toFixed(2) ) + ' </td><td>' + btn_borrar + '</td>';
+
+				var cantidad_celdas = celdas.length;
+				var string_celdas = '';
+				for (var i = 0; i < cantidad_celdas; i++)
+				{
+					string_celdas = string_celdas + celdas[i];
+				}
+
+				return string_celdas;
 			}
 
 			/*
@@ -883,51 +1014,36 @@
 				$('#precio_unitario').removeAttr('style');
 				$('#precio_unitario').removeAttr('disabled');
 
+				$('#tasa_descuento').removeAttr('style');
+				$('#tasa_descuento').removeAttr('disabled');
+
+				$('#valor_total_descuento').removeAttr('style');
+				$('#valor_total_descuento').removeAttr('disabled');
+
+				$('#valor_unitario_descuento').removeAttr('style');
+				$('#valor_unitario_descuento').removeAttr('disabled');
+
 				$('#inv_producto_id').removeAttr('style');
 				$('#inv_producto_id').removeAttr('disabled');
 				$('#inv_producto_id').focus();
 				$("[data-toggle='tooltip']").tooltip('show');
+
+				producto_id = 0; precio_total = 0; costo_total = 0; base_impuesto_total = 0; valor_impuesto_total = 0; tasa_impuesto = 0; tasa_descuento = 0; valor_total_descuento = 0; cantidad = 0; costo_unitario = 0; precio_unitario = 0; base_impuesto_unitario = 0; valor_impuesto_unitario = 0; valor_unitario_descuento = 0;
 			}
 
-			function calcula_precio_total()
+			function calcular_precio_total()
 			{
-				var fila = $('#linea_ingreso_default');
+				precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
 				
-				var cantidad = $('#cantidad').val();
+				$('#precio_total').val(0);
 
-				if( $.isNumeric(cantidad) && cantidad > 0 )
+				if( $.isNumeric( precio_total ) && precio_total > 0 )
 				{
-				
-					var base_impuesto = parseFloat( fila.find('.base_impuesto').html() );
-					var base_impuesto_total = base_impuesto * cantidad;
-
-					var precio_unitario = parseFloat( fila.find('.precio_unitario').html() );
-					var precio_total = precio_unitario * cantidad;
-
-					var costo_unitario = parseFloat( fila.find('.costo_unitario').html() );
-					var costo_total = costo_unitario * cantidad;
-					
-					$('#precio_total').val('');
-					fila.find('.precio_total').html('');
-					
-					$('#costo_total').val('');
-					fila.find('.costo_total').html('');
-					
-					$('#base_impuesto_total').val('');
-					fila.find('.base_impuesto_total').html('');
-
-					if( $.isNumeric(precio_total) && precio_total > 0 )
-					{
-						$('#precio_total').val( '$ ' + new Intl.NumberFormat("de-DE").format( precio_total )  );
-						fila.find('.precio_total').html( precio_total );
-
-						fila.find('.base_impuesto_total').html( base_impuesto_total );
-						
-						fila.find('.costo_total').html( costo_total );
-					}else{
-						//alert('Error en precio, por favor verifique.');
-						$('#cantidad').select();
-					}
+					$('#precio_total').val( precio_total );
+					return true;
+				}else{
+					precio_total = 0;
+					return false;
 				}
 			}
 
@@ -940,8 +1056,8 @@
 				$('.linea_registro').each(function()
 				{
 				    cantidad += parseFloat( $(this).find('.cantidad').text() );
-				    subtotal += parseFloat( $(this).find('.base_impuesto').text() ) * parseFloat( $(this).find('.cantidad').text() );
-				    total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * parseFloat( $(this).find('.cantidad').text() );
+				    subtotal += parseFloat( $(this).find('.base_impuesto').text() );
+				    total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() );
 				    total_factura += parseFloat( $(this).find('.precio_total').text() );
 
 				});
@@ -1062,7 +1178,7 @@
 
 
 			// Para las notas crédito directas (salida de inventario)
-			function calcula_nuevo_saldo_a_la_fecha()
+			function calcular_nuevo_saldo_a_la_fecha()
 			{
 				// 0 es la cantidad_original
 				var nuevo_saldo = parseFloat( $('#saldo_original').val() ) + 0 - parseFloat( $('#cantidad').val() );
@@ -1076,7 +1192,7 @@
             	// Se escogen los campos de la fila ingresada
 				var fila = $('#linea_ingreso_default');
 
-                var url = '../inv_validacion_saldo_movimientos_posteriores/' + $('#inv_bodega_id').val() + '/' + fila.find('.inv_producto_id').html() + '/' + $('#fecha').val() + '/' + $('#cantidad').val() + '/' + $('#existencia_actual').val() + '/salida';
+                var url = '../inv_validacion_saldo_movimientos_posteriores/' + $('#inv_bodega_id').val() + '/' + inv_producto_id + '/' + $('#fecha').val() + '/' + cantidad + '/' + $('#existencia_actual').val() + '/salida';
 
                 $.get( url )
                     .done( function( data ) {
@@ -1085,8 +1201,8 @@
                             $('#popup_alerta_danger').show();
                             $('#popup_alerta_danger').text( data );
                         }else{
-							agregar_nueva_linea();
                             $('#popup_alerta_danger').hide();
+                            agregar_la_linea();
                         }
                     });
             }

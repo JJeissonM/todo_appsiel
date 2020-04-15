@@ -4,10 +4,25 @@
         position: relative;
     }
 
+    #services img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+
+    #services p{
+        color: #000;
+        font-weight: bold;  
+    }
+
     #services .container {
         position: relative;
         z-index: 1000;
     }
+
 
     .ilustracion {
         position: absolute;
@@ -17,11 +32,27 @@
         height: 550px;
     }
 
+    @media (max-width: 468px){
+        .container h2{
+            font-size: 28px !important;
+        }
+
+        .container p {
+            font-size: 16px !important;
+        }
+
+        #services img {
+            display: none;
+        }
+
+    }
+
 </style>
 @if($servicios->disposicion == 'DEFAULT')
-    <section id="services">
+    <section id="services" class="img">
         @else
-            <section id="services" style="background-image: url({{asset('img/corazon/Diseño_Appsiel_3.jpg')}})">
+            <section id="services">
+                <img src="{{asset('img/corazon/Diseño_Appsiel_3.jpg')}}" alt="">
                 @endif
                 <div class="container">
                     @if($servicios!=null)
@@ -31,7 +62,7 @@
                             <p class="text-center wow fadeInDown animated"
                                style="visibility: visible; animation-name: fadeInDown;">{{$servicios->descripcion}}</p>
                         </div>
-                        <div class="row" style="height: 484px">
+                        <div class="row">
                             @if(count($servicios->itemservicios) > 0)
                                 <div class="features d-flex justify-content-around flex-wrap">
                                     @foreach($servicios->itemservicios as $item)

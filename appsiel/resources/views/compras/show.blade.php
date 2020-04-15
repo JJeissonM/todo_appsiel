@@ -126,7 +126,9 @@
 						$('#cantidad').select();				
 					}
 
-					$('#precio_total').val( parseFloat( $('#precio_unitario').val() ) * parseFloat( $('#cantidad').val() ));
+					calcular_valor_descuento();
+
+					calcular_precio_total();
 
 				}else{
 					$(this).focus();
@@ -149,10 +151,12 @@
 						{
 							return false;
 						}
-						$('.btn_save_modal').focus();
+						$('#tasa_descuento').select();
 					}
 
-					$('#precio_total').val( parseFloat( $('#precio_unitario').val() ) * parseFloat( $('#cantidad').val() ));
+					calcular_valor_descuento();
+
+					calcular_precio_total();
 					
 				}else{
 					$(this).focus();
@@ -160,6 +164,57 @@
 				}
 
 			});
+
+
+            $(document).on('keyup','#tasa_descuento',function(event){
+            	if( validar_input_numerico( $(this) ) )
+				{	
+					// máximo valor de 100
+					if ( $(this).val() > 100 )
+					{ 
+						$(this).val(100);
+					}
+
+					var x = event.which || event.keyCode;
+					if( x == 13 )
+					{
+						$('.btn_save_modal').focus();
+						return true;
+					}
+					
+					calcular_valor_descuento();
+
+					calcular_precio_total();
+
+				}else{
+
+					$(this).focus();
+					return false;
+				}
+			});
+
+			function calcular_valor_descuento()
+			{
+				var valor_total_descuento = $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 * $('#cantidad').val();
+
+				$('#valor_total_descuento_no').val( valor_total_descuento );
+				$('#valor_total_descuento').val( valor_total_descuento );
+			}
+
+
+
+			function calcular_precio_total()
+			{
+				var valor_total_descuento = parseFloat( $('#valor_total_descuento').val() );
+
+				var precio_unitario = parseFloat( $('#precio_unitario').val() );
+
+				var cantidad = parseFloat( $('#cantidad').val() );
+				
+				var precio_total = precio_unitario * cantidad - valor_total_descuento;
+
+				$('#precio_total').val( precio_total );
+			}
 
             $('.btn_save_modal').click(function(){
             	if ( $.isNumeric( $('#precio_total').val() ) && $('#precio_total').val() > 0 )
@@ -217,6 +272,7 @@
 			*/
 			function validar_saldo_a_la_fecha()
 			{
+				if ( $('#tipo').val() == 'servicio' ) { return true; }
 
 				if ( parseFloat( $('#saldo_a_la_fecha').val() ) < 0 ) 
                 {

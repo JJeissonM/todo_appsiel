@@ -33,31 +33,47 @@
             $subtotal = 0;
             $total_impuestos = 0;
             $total_factura = 0;
+            $total_descuentos = 0;
             ?>
             @foreach($doc_registros as $linea )
+
+
+                <?php 
+                    $precio_original = $linea->precio_unitario + ( $linea->valor_total_descuento / $linea->cantidad );
+                    $subtotal_linea = ( $linea->cantidad * $precio_original ) - $linea->valor_impuesto;
+                ?>
+
                 <tr>
                     <td> {{ $linea->producto_id }} </td>
                     <td> {{ $linea->producto_descripcion }} </td>
-                    <td> {{ '$ '.number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
+                    <td> ${{ number_format( $precio_original, 0, ',', '.') }} </td>
                     <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
                     <td> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
-                    <td> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
+                    <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
                 </tr>
+
+                @if( $linea->valor_total_descuento != 0 )
+                    <tr>
+                        <td colspan="4" style="text-align: right;">(Dcto. línea</td>
+                        <td colspan="2"> -${{ number_format( $linea->valor_total_descuento, 0, ',', '.') }}) </td>
+                    </tr>                    
+                @endif
                 <?php 
                     $total_cantidad += $linea->cantidad;
-                    $subtotal += (float)$linea->base_impuesto;
+                    $subtotal += $subtotal_linea;
                     $total_impuestos += (float)$linea->valor_impuesto;
                     $total_factura += $linea->precio_total;
+                    $total_descuentos += $linea->valor_total_descuento;
                 ?>
             @endforeach
         </tbody>
-        <tfoot>
+        <!-- <tfoot>
             <tr>
                 <td colspan="4">&nbsp;</td>
-                <td> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
+                <td> { { number_format($total_cantidad, 0, ',', '.') }} </td>
                 <td>&nbsp;</td>
             </tr>
-        </tfoot>
+        </tfoot>-->
     </table>
 @endsection
 
@@ -65,9 +81,10 @@
 @section('tabla_registros_2')
     <table class="table table-bordered">
         <tr>
-            <td> <span style="text-align: right; font-weight: bold;"> Subtotal: </span> $ {{ number_format($subtotal, 0, ',', '.') }}</td>
-            <td> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> $ {{ number_format($total_impuestos, 0, ',', '.') }}</td>
-            <td> <span style="text-align: right; font-weight: bold;"> Total factura: </span> $ {{ number_format($total_factura, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> Subtotal: </span> ${{ number_format($subtotal, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> Dctos: </span> ${{ number_format($total_descuentos, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> ${{ number_format($total_impuestos, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> Total: </span> ${{ number_format($total_factura, 0, ',', '.') }}</td>
         </tr>
     </table>
 @endsection

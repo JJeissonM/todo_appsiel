@@ -13,25 +13,28 @@ class ComprasDocRegistro extends Model
     // cantidad_devuelta: Se actualiza en las facturas de compras al hacer una devolución con base en factura.
 
     // base_impuesto: precio_unitario * cantidad (se calcula sobre el costo total, NO es unitario)
-    // valor_impuesto: precio_total - base_impuesto (tambien es total, NO unitario)
+    // valor_impuesto: precio_total - base_impuesto (tambien es total, NO es unitario)
 
 	protected $fillable = ['compras_doc_encabezado_id', 'inv_doc_registro_id', 'inv_motivo_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'tasa_descuento', 'valor_total_descuento', 'cantidad_recibida', 'cantidad_devuelta', 'creado_por', 'modificado_por', 'estado'];
 
 	// En compras los impuestos se calculan con base en el costo_unitario (precio_compra)
-	public $campos_invisibles_linea_registro = ['inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','cantidad','costo_total','precio_total']; // 11 campos
+	public $campos_invisibles_linea_registro = ['inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','cantidad','costo_total','precio_total', 'tasa_descuento', 'valor_total_descuento']; // 11 campos
 
     public $campos_visibles_linea_registro = [ 
     											['&nbsp;','10px'],
     											['Producto','280px'],
     											['Motivo','200px'],
     											['Stock','35px'],
+                                                ['Cantidad',''],
                                                 ['Precio Compra (IVA incluido)',''],
+                                                ['Dcto. (%)',''],
+                                                ['Dcto. Tot. ($)',''],
                                                 ['IVA',''],
-    											['Cantidad',''],
     											['Total',''],
     											['&nbsp;','10px']
     										]; // 9 campos
 
+    // encabezado_tabla para la vista index
 	public $encabezado_tabla = ['Encabezado documento', 'Producto', 'Precio', 'Cantidad', 'Total', 'Base IVA', 'Tasa IVA', 'Total IVA', 'Cantidad recibida', 'Acción'];
 
 	public static function consultar_registros()
@@ -67,7 +70,10 @@ class ComprasDocRegistro extends Model
                                 'compras_doc_registros.precio_total',
                                 'compras_doc_registros.base_impuesto',
                                 'compras_doc_registros.tasa_impuesto',
-                                'compras_doc_registros.valor_impuesto'
+                                'compras_doc_registros.valor_impuesto',
+                                'compras_doc_registros.tasa_descuento',
+                                'compras_doc_registros.valor_total_descuento',
+                                'compras_doc_registros.estado'
                             )
                     ->get();
     }
@@ -93,7 +99,10 @@ class ComprasDocRegistro extends Model
                                 'compras_doc_registros.precio_total',
                                 'compras_doc_registros.base_impuesto',
                                 'compras_doc_registros.tasa_impuesto',
-                                'compras_doc_registros.valor_impuesto'
+                                'compras_doc_registros.valor_impuesto',
+                                'compras_doc_registros.tasa_descuento',
+                                'compras_doc_registros.valor_total_descuento',
+                                'compras_doc_registros.estado'
                             )
                     ->get()
                     ->first();

@@ -42,6 +42,7 @@
     <?php 
         $total_cantidad = 0;
         $subtotal = 0;
+        $total_descuentos = 0;
         $total_impuestos = 0;
         $total_factura = 0;
         $array_tasas = [];
@@ -80,6 +81,7 @@
             $subtotal += (float)$linea->base_impuesto * (float)$linea->cantidad;
             $total_impuestos += (float)$linea->valor_impuesto * (float)$linea->cantidad;
             $total_factura += $linea->precio_total;
+            $total_descuentos += $linea->valor_total_descuento;
         }
     ?>
     @include('ventas.incluir.lineas_registros_imprimir',compact('total_cantidad','total_factura'))
