@@ -108,7 +108,9 @@
 				<label class="radio-inline"> <button class="btn btn-default btn-xs" id="cargar_datos_producto"> Cargar productos </button> </label>
 			</div>
 		-->
-
+			@if( Input::get('id_transaccion') == 41 )
+				<h4 style="color: red;">¡¡¡Los precios serán almacenados con los precios de la lista de precios del cliente.!!!</h4>
+			@endif
 			{!! $tabla->dibujar() !!}
 
 

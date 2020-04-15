@@ -235,7 +235,8 @@ class InventarioController extends TransaccionController
 
             // Cuando el motivo de la transacción es de salida, 
             // las cantidades y costos totales restan del movimiento ( negativo )
-            if ($motivo->movimiento == 'salida') {
+            if ($motivo->movimiento == 'salida')
+            {
                 $cantidad = (float) $cantidad * -1;
                 $costo_total = (float) $costo_total * -1;
             }

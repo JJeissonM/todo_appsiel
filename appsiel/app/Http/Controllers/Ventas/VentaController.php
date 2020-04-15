@@ -818,6 +818,8 @@ class VentaController extends TransaccionController
 
     public function doc_registro_guardar( Request $request )
     {
+        dd( $request->inv_motivo_id );
+
         $linea_registro = VtasDocRegistro::find( $request->linea_factura_id );
         $doc_encabezado = VtasDocEncabezado::find( $linea_registro->vtas_doc_encabezado_id );
 

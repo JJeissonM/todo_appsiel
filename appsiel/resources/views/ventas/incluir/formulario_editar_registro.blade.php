@@ -42,6 +42,7 @@
   <input type="hidden" name="saldo_a_la_fecha2" id="saldo_a_la_fecha2" value="{{ $saldo_a_la_fecha }}">
   <input type="hidden" name="producto_id" id="producto_id" value="{{ $linea_remision->inv_producto_id}}">
   <input type="hidden" name="bodega_id" id="bodega_id" value="{{ $linea_remision->inv_bodega_id }}">
+  <input type="hidden" name="inv_motivo_id" id="inv_motivo_id" value="{{ $linea_remision->inv_motivo_id }}">
   <input type="hidden" name="fecha" id="fecha" value="{{ $remision->fecha }}">
   <input type="hidden" name="tipo" id="tipo" value="{{ $producto->tipo }}">
 
