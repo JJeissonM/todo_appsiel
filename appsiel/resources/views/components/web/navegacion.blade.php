@@ -61,11 +61,6 @@
                         @endforeach
                     </ul>
                 </div>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav mr-auto mu-navbar-nav">
-                        <a href="{{url('/login')}}" class="btn btn-outline-primary text-white ml-3" style="color: {{$nav->color}}">Iniciar Sesion</a>
-                    </ul>
-                </div>
             </nav>
         </div>
     </header>
