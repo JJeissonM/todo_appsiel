@@ -121,15 +121,17 @@ class ModeloController extends Controller
         $archivo_js = app($this->modelo->name_space)->archivo_js;
 
         $registros = [];
-        $vista = 'layouts.index';
 
         if (method_exists(app($this->modelo->name_space), 'consultar_registros')) {
             $registros = app($this->modelo->name_space)->consultar_registros();
         }
 
+        $vista = 'layouts.index';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if (!is_null($vistas)) {
-            if (isset($vistas->index)) {
+        if (!is_null($vistas))
+        {
+            if (isset($vistas->index))
+            {
                 $vista = $vistas->index;
                 $registros = app($this->modelo->name_space)->consultar_registros2();
                 $registros->setPath('?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion);
@@ -146,7 +148,6 @@ class ModeloController extends Controller
     {
         // Se obtienen los campos que el Modelo tiene asignados
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
-
 
         /*
             Agregar campos adicionales 
@@ -169,7 +170,8 @@ class ModeloController extends Controller
         // La vista layouts.create incluye a la vista core.vistas.form_create que es la que usa al array form_create para generar un formulario html
 
         $url_form_create = 'web';
-        if ($this->modelo->url_form_create != '') {
+        if ($this->modelo->url_form_create != '')
+        {
             $url_form_create = $this->modelo->url_form_create;
         }
 
@@ -182,18 +184,18 @@ class ModeloController extends Controller
 
         // Si el modelo tiene un archivo js particular
         $archivo_js = app($this->modelo->name_space)->archivo_js;
+
+
         $vista = 'layouts.create';
-
-
-        /*  Lo ideal es que las URLs se manejen desde cada modelo
-            y no, desde la base de datos
-                 */
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if (!is_null($vistas)) {
-            if (isset($vistas->create)) {
+        if (!is_null($vistas))
+        {
+            if (isset($vistas->create))
+            {
                 $vista = $vistas->create;
             }
         }
+        
         if (Input::get('vista') != null) {
             return view(Input::get('vista'), compact('form_create', 'miga_pan', 'archivo_js'));
         }
@@ -370,8 +372,10 @@ class ModeloController extends Controller
 
         $vista = 'layouts.edit';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if (!is_null($vistas)) {
-            if (isset($vistas->edit)) {
+        if (!is_null($vistas))
+        {
+            if (isset($vistas->edit))
+            {
                 $vista = $vistas->edit;
             }
         }
@@ -501,6 +505,18 @@ class ModeloController extends Controller
             }
         }
 
+
+
+        $vista = 'layouts.show';
+        $vistas = json_decode(app($this->modelo->name_space)->vistas);
+        if (!is_null($vistas))
+        {
+            if (isset($vistas->show))
+            {
+                $vista = $vistas->show;
+            }
+        }
+
         // Para lo modelos que tienen otro modelo relacionado. Ejemplo, El modelo Modelo tiene Campos. El modelo Cuestionario, tiene Preguntas
         $respuesta = ModeloController::get_tabla_relacionada($this->modelo, $registro);
 
@@ -509,7 +525,7 @@ class ModeloController extends Controller
         $registro_modelo_padre_id = $respuesta['registro_modelo_padre_id'];
         $titulo_tab = $respuesta['titulo_tab'];
 
-        return view('layouts.show', compact('form_create', 'miga_pan', 'registro', 'url_crear', 'url_edit', 'tabla', 'opciones', 'registro_modelo_padre_id', 'reg_anterior', 'reg_siguiente', 'titulo_tab', 'botones'));
+        return view( $vista, compact('form_create', 'miga_pan', 'registro', 'url_crear', 'url_edit', 'tabla', 'opciones', 'registro_modelo_padre_id', 'reg_anterior', 'reg_siguiente', 'titulo_tab', 'botones'));
     }
 
 
