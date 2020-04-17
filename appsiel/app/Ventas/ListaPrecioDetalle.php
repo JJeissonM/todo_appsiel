@@ -45,7 +45,7 @@ class ListaPrecioDetalle extends Model
 
 	public static function get_precios_productos_de_la_lista( $lista_precios_id )
 	{
-		return ListaPrecioDetalle::leftJoin('inv_productos','inv_productos.id','=','vtas_listas_precios_detalles.inv_producto_id')
+		$precios = ListaPrecioDetalle::leftJoin('inv_productos','inv_productos.id','=','vtas_listas_precios_detalles.inv_producto_id')
 								->leftJoin('contab_impuestos','contab_impuestos.id','=','inv_productos.impuesto_id')
 								->where('lista_precios_id', $lista_precios_id)
 								->select(
@@ -57,7 +57,24 @@ class ListaPrecioDetalle extends Model
 											'inv_productos.tipo',
 											'inv_productos.unidad_medida1',
 											'contab_impuestos.tasa_impuesto')
+                    			->orderBy('vtas_listas_precios_detalles.fecha_activacion','DESC')
 								->get();
+		//dd( $precios );
+
+		$productos = [];
+		$i = 0;
+		$precios2 = collect( [] );
+		foreach ($precios as $value)
+		{
+			if ( !in_array( $value->producto_codigo, $productos) )
+			{
+				$precios2[$i] = $value;
+				$productos[$i] = $value->producto_codigo;
+				$i++;
+			}
+		}
+
+		return $precios2;
 	}
 	
 }

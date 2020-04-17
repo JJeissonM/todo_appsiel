@@ -55,8 +55,20 @@
 		    <div class="container">
 			    <h3 style="width: 100%;text-align: center;">Detalle lista de precios "{{ $form_create['campos'][0]['value'] }}"</h3>
 			    <div class="row">
-			    	<div class="col-md-6" style="padding:5px;"> <b> ID: </b> {{$registro->id}} </div>
-			    	<div class="col-md-6" style="padding:5px;"> <b> Estado: </b> {{ $form_create['campos'][2]['value'] }} </div>
+			    	<div class="col-md-4" style="padding:5px;"> 
+			    		<b> ID: </b> {{$registro->id}} 
+			    	</div>
+			    	<div class="col-md-4" style="padding:5px;"> 
+			    		<b> Estado: </b> {{ $form_create['campos'][2]['value'] }} 
+			    	</div>
+			    	<div class="col-md-4" style="padding:5px;"> 
+			    		<button class="btn btn-primary btn-sm btn_agregar_precio" type="button"><i class="fa fa-plus"></i> Agregar precio de producto </button> 
+			    	</div>			    	
+			    </div>
+			    <div class="row">
+			    	<div class="col-md-12">
+			    		<b> Nota: solo se muestran los precios de la última fecha de activación. Para ver los precios de todas las fechas haga click <a href="{{ url( 'web?id=13&id_modelo=129&id_transaccion=' ) }}" title="Modificar" target="_blank"> aquí </a>. </b>
+			    	</div>
 			    </div>
 			    <hr>
 
@@ -70,9 +82,9 @@
 						<table class="table table-bordered table-striped" id="myTable">
 							<thead>
 								<tr>
-									<th>Fecha activación</th>
 									<th>Cód.</th>
-									<th>Producto</th>
+									<th>Producto (U.M.)</th>
+									<th>Fecha activación</th>
 									<th>Precio</th>
 									<th>Tipo</th>
 									<th>IVA</th>
@@ -82,9 +94,9 @@
 							<tbody>
 								@foreach( $precios as $linea)
 									<tr>
-										<td>{{ $linea->fecha_activacion }}</td>
 										<td>{{ $linea->producto_codigo }}</td>
-										<td>{{ $linea->producto_descripcion }} {{ $linea->unidad_medida1 }}</td>
+										<td>{{ $linea->producto_descripcion }} ({{ $linea->unidad_medida1 }})</td>
+										<td>{{ $linea->fecha_activacion }}</td>
 										<td>${{ number_format( $linea->precio, 0, ',', '.') }}</td>
 										<td>{{ $linea->tipo }}</td>
 										<td>{{ $linea->tasa_impuesto }}%</td>
@@ -140,13 +152,44 @@
 
 			$(".btn_agregar_precio").click(function(event){
 		        $("#myModal").modal({backdrop: "static"});
+		        $('#inv_producto_id').focus();
 		        $(".btn_edit_modal").hide();
 		    });
+
+
+			$('#inv_producto_id').on('change',function(){
+				if ( $(this).val() != '' )
+				{
+					$("#fecha_activacion").focus();
+				}
+			});
+
+			$('#fecha_activacion').on('keyup',function(event){
+				event.preventDefault();
+
+		    	var codigo_tecla_presionada = event.which || event.keyCode;
+
+		    	if ( codigo_tecla_presionada == 13 )
+		    	{
+		    		$("#precio").focus();
+		    	}
+			});
+
+			$('#precio').on('keyup',function(event){
+				event.preventDefault();
+
+		    	var codigo_tecla_presionada = event.which || event.keyCode;
+
+		    	if ( codigo_tecla_presionada == 13 && validar_input_numerico( $(this) ) )
+		    	{
+		    		$(".btn_save_modal").focus();
+		    	}
+			});
 
 			$('.btn_save_modal').on('click',function(event){
 				event.preventDefault();
 
-				if ( !validar_requeridos() )
+				if ( !validar_requeridos() && !validar_input_numerico( $(this) ) )
 				{
 					return false;
 				}

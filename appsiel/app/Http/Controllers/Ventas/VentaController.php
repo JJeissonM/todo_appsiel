@@ -1156,6 +1156,12 @@ class VentaController extends TransaccionController
 
     public function agregar_precio_lista( Request $request )
     {
+
+        if ( (float)$request->precio == 0)
+        {
+            return redirect( 'web/'.$request->lista_precios_id.'?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Precio incorrecto. Por favor ingréselo nuevamente.');
+        }
+
         ListaPrecioDetalle::create( $request->all() );
 
         return redirect( 'web/'.$request->lista_precios_id.'?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Precio agregado correctamente');
