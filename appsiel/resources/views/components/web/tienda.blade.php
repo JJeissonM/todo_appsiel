@@ -6,13 +6,17 @@
 
     .nav-search {
         height: 72px;
-        border-bottom: 1px solid #ffe800;
+        border-bottom: 1px solid #004080;
     }
 
     #search {
         width:100%;
         background-color: #F1F3F4;
         border: 1px solid #F1F3F4;
+    }
+
+    #carrito{
+        border: 1px solid #004080;
     }
 
 
@@ -126,6 +130,14 @@
         background-color: white;
     }
 
+    .nav-link{
+        background-color: #004080;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        color: #ffffff !important;
+    }
+
 
 </style>
 
@@ -181,7 +193,7 @@
         <ul class="nav nav-categorias" >
             @foreach( $grupos as $key => $value)
                 <li class="nav-item">
-                    <a class="nav-link " href="#">{{ $value }}</a>
+                    <a class="nav-link " href="#">{{ strtoupper($value) }}</a>
                 </li>
             @endforeach
         </ul>
@@ -231,7 +243,7 @@
                                 <h4> 
                                     {{ $item->descripcion }}
                                 </h4>
-                                <p>Unidad a $400</p>
+                                <p>Unidad a ${{ number_format( $item->precio_venta, 0, ',', '.') }}</p>
                                 <p class="precio">${{ number_format( $item->precio_venta, 0, ',', '.') }}  <span class="u-pull-right">${{ number_format( ($item->precio_venta - $item->precio_venta * $item->descuento / 100 ), 0, ',', '.') }}</span></p>
                                 <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="3">!Lo quiero!</a>
                                 <div class="button-opciones">
