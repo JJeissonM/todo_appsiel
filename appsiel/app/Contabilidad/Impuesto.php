@@ -14,6 +14,7 @@ class Impuesto extends Model
 {
     protected $table = 'contab_impuestos';
 	protected $fillable = ['descripcion', 'tasa_impuesto', 'cta_ventas_id', 'cta_ventas_devol_id', 'cta_compras_id', 'cta_compras_devol_id', 'estado'];
+    
 	public $encabezado_tabla = ['Descripción', 'Tasa', 'Cta. ventas', 'Cta. ventas devoluciones', 'Cta. compras', 'Cta. compras devoluciones', 'Estado', 'Acción'];
 	public static function consultar_registros()
 	{

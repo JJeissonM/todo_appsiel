@@ -83,7 +83,7 @@
 		        $("#div_spin").show();
 		        $(".btn_edit_modal").hide();
 
-		        var url = '../ventas_get_formulario_edit_registro';
+		        var url = '../vtas_get_formulario_edit_registro';
 
 		        console.log( $(this).attr('data-linea_registro_id') );
 

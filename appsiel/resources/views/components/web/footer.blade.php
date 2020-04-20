@@ -25,7 +25,7 @@
     </style>
 
     <div class="footerarea" style="padding-top: 20px;">
-        <img src="{{asset('img/corazon/Diseño_Appsiel_5.jpg')}}" alt="">
+        <img src="{{asset('img/backgrounds/one-way-street-1317587_1920.jpg')}}" alt="">
         <div class="container">
             <div class="row">
                 @if($footer->ubicacion == '')

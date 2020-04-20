@@ -818,6 +818,8 @@ class VentaController extends TransaccionController
 
     public function doc_registro_guardar( Request $request )
     {
+        dd( $request->inv_motivo_id );
+
         $linea_registro = VtasDocRegistro::find( $request->linea_factura_id );
         $doc_encabezado = VtasDocEncabezado::find( $linea_registro->vtas_doc_encabezado_id );
 
@@ -1152,6 +1154,18 @@ class VentaController extends TransaccionController
         return true;
     }
 
+    public function agregar_precio_lista( Request $request )
+    {
+
+        if ( (float)$request->precio == 0)
+        {
+            return redirect( 'web/'.$request->lista_precios_id.'?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Precio incorrecto. Por favor ingréselo nuevamente.');
+        }
+
+        ListaPrecioDetalle::create( $request->all() );
+
+        return redirect( 'web/'.$request->lista_precios_id.'?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Precio agregado correctamente');
+    }
 
     public function get_etiquetas()
     {

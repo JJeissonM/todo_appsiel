@@ -108,7 +108,9 @@
 				<label class="radio-inline"> <button class="btn btn-default btn-xs" id="cargar_datos_producto"> Cargar productos </button> </label>
 			</div>
 		-->
-
+			@if( Input::get('id_transaccion') == 41 )
+				<h4 style="color: red;">¡¡¡Los precios serán almacenados con los precios de la lista de precios del cliente.!!!</h4>
+			@endif
 			{!! $tabla->dibujar() !!}
 
 
@@ -119,6 +121,9 @@
             	<table style="display: inline;">
             		<tr>
             			<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td> <td> <div id="subtotal"> $ 0 </div> </td>
+            		</tr>
+            		<tr>
+            			<td style="text-align: right; font-weight: bold;"> Descuento: &nbsp; </td> <td> <div id="descuento"> $ 0 </div> </td>
             		</tr>
 					<tr>
             			<td style="text-align: right; font-weight: bold;"> Impuestos: &nbsp; </td> <td> <div id="total_impuestos"> $ 0 </div> </td>
@@ -1070,6 +1075,8 @@
 				// Subtotal (Sumatoria de base_impuestos por cantidad)
 				$('#subtotal').text( '$ 0' );
 
+				$('#descuento').text( '$ 0' );
+
 				// Total impuestos (Sumatoria de valor_impuesto por cantidad)
 				$('#total_impuestos').text( '$ 0' );
 
@@ -1136,12 +1143,14 @@
 			{	
 				var cantidad = 0.0;
 				var subtotal = 0.0;
+				var valor_total_descuento = 0.0;
 				var total_impuestos = 0.0;
 				var total_factura = 0.0;
 				$('.linea_registro').each(function()
 				{
 				    cantidad += parseFloat( $(this).find('.cantidad').text() );
 				    subtotal += parseFloat( $(this).find('.base_impuesto').text() ) * parseFloat( $(this).find('.cantidad').text() );
+				    valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
 				    total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * parseFloat( $(this).find('.cantidad').text() );
 				    total_factura += parseFloat( $(this).find('.precio_total').text() );
 
@@ -1150,7 +1159,9 @@
 
 				// Subtotal (Sumatoria de base_impuestos por cantidad)
 				//var valor = ;
-				$('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( subtotal.toFixed(2) )  );
+				$('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(2) )  );
+
+				$('#descuento').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_total_descuento.toFixed(2) )  );
 
 				// Total impuestos (Sumatoria de valor_impuesto por cantidad)
 				$('#total_impuestos').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_impuestos.toFixed(2) ) );

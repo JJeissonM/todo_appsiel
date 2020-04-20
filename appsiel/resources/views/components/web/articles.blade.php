@@ -30,16 +30,16 @@
                         <div class="row">
                             <div class="col-md-4" style="text-align: center;">
                                 @if($a->imagen != '')
-                                    <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-width: 100%; height: 180px; object-fit: cover;">
+                                    <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;">
                                 @else
-                                    <img src="{{ asset('img/blog-default.jpg')}}" style="width: 100%; max-width: 100%; height: 180px; object-fit: cover;">
+                                    <img src="{{ asset('img/blog-default.jpg')}}" style="width: 100%; max-height: 180px; object-fit: cover;">
                                 @endif
                             </div>
                             <div class="col-md-8">
                                 <h3 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h3>
                                 <p>{!! $a->descripcion !!}</p>
-                                <p><span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$a->updated_at}}</a></span></p>
-                                <p><span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$setup->titulo}}</a></span></p>
+                                <!-- <p><span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span></p> -->
+                                <!-- <p><span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span></p> -->
                                 <p><a target="_blank" href="{{route('article.show',$a->id)}}" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>
                             </div>
                         </div>
@@ -59,26 +59,28 @@
                             <div class=" media-body" style="height: 450px;">
                                 <div style="text-align: center;">
                                     @if($a->imagen != '')
-                                        <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-width: 100%; height: 180px; object-fit: cover;">
+                                        <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;" class="img-circle">
                                     @else
-                                        <img src="{{ asset('img/blog-default.jpg')}}" style="width: 100%; max-width: 100%; height: 180px; object-fit: cover;">
+                                        <img src="{{ asset('img/blog-default.jpg')}}" style="width: 100%; max-height: 180px; object-fit: cover;">
                                     @endif
                                 </div>
 
                                 <header class="entry-header">
-                                    <div class="entry-date">{{$a->created_at}}</div>
+                                    <!-- <div class="entry-date">{ {$a->created_at}}</div> -->
                                     <h2 class="entry-title"><a href="#">{{$a->titulo}}</a></h2>
                                 </header>
 
                                 <div class="entry-content" style="height: 100px;">
-                                    <P>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</P>
+                                    <p>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</p>
                                     <a class="btn btn-primary" target="_blank" href="{{route('article.show',$a->id)}}">Leer más...</a>
                                 </div>
 
+                                <!-- 
                                 <footer class="entry-meta">
-                                    <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$a->updated_at}}</a></span>
-                                    <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$setup->titulo}}</a></span>
+                                    <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span>
+                                    <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span>
                                 </footer>
+                            -->
                             </div>
 
                         </article>
