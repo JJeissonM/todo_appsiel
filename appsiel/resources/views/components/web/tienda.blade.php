@@ -6,13 +6,17 @@
 
     .nav-search {
         height: 72px;
-        border-bottom: 1px solid #ffe800;
+        border-bottom: 1px solid #004080;
     }
 
     #search {
         width:100%;
         background-color: #F1F3F4;
         border: 1px solid #F1F3F4;
+    }
+
+    #carrito{
+        border: 1px solid #004080;
     }
 
 
@@ -136,6 +140,14 @@
         .contenido-producto:hover img {
           transform: scale(1.4);
         }
+    .nav-link{
+        background-color: #004080;
+        padding: 10px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        color: #ffffff !important;
+    }
+
 
 </style>
 
@@ -191,7 +203,7 @@
         <ul class="nav nav-categorias" >
             @foreach( $grupos as $key => $value)
                 <li class="nav-item">
-                    <a class="nav-link " href="#">{{ $value }}</a>
+                    <a class="nav-link " href="#">{{ strtoupper($value) }}</a>
                 </li>
             @endforeach
         </ul>
@@ -214,7 +226,7 @@
             <div class="col-md-9">
                 <div class="row" id="filtros">
                     <div class="col-md-8">
-                        <span style="color: gray;">221 Resultados</span>
+                        <span style="color: gray;">{{count($items)}} Resultados</span>
                     </div>
                     <div class="col-md-4" id="filtro-ordenar">
                         <span>Ordenar por:</span>
@@ -232,7 +244,7 @@
                     @foreach( $items as $item)
                         <div class="contenido-producto" style="position: relative;">
                             <div>
-                                <img src="{{ asset( config('configuracion.url_instancia_cliente') . "/storage/app/inventarios/" . $item->imagen ) }}" loading="lazy"  class="imagen-curso u-full-width">
+                                <img src="{{ asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen ) }}" loading="lazy"  class="imagen-curso u-full-width">
                                 @if( $item->descuento != 0)
                                     <div style="color: red; z-index: 999; position: absolute;top: 0; right: 0;">{{ $item->descuento }}% </div>
                                 @endif
