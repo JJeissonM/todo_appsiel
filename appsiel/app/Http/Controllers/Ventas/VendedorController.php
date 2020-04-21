@@ -62,7 +62,7 @@ class VendedorController extends Controller
         $descripcion = $request->all()['apellido1']." ".$request->all()['apellido2']." ".$request->all()['nombre1']." ".$request->all()['otros_nombres'];
 
         $tercero = new Tercero;
-        $tercero->fill( array_merge( $request->all(), ['descripcion' => $descripcion] ) );
+        $tercero->fill( array_merge( $request->all(), ['core_empresa_id' => Auth::user()->empresa_id], ['tipo' => 'Persona natural'], ['descripcion' => $descripcion] , ['creado_por' => Auth::user()->email] ) );
         $tercero->save();
         
         // Datos del vendedor

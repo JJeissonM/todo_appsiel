@@ -8,7 +8,30 @@ $vencidas = ReportesController::pedidos_vencidos();
 $futuras = ReportesController::pedidos_futuros();
 $semana = ReportesController::pedidos_semana();
 ?>
+
+
 @extends('layouts.principal')
+
+@section('estilos_2')
+	<style>
+
+		div.boton {
+		  border: 1px solid #ddd;
+		  border-radius: 10px;
+		  background: linear-gradient(90deg, rgba(110,41,183,1) 0%, rgba(79,138,232,1) 44%, rgba(13,214,159,1) 100%);
+		  text-align: center;
+		  margin: 20px 20px;
+		}
+
+		a:hover {
+		  color: red;
+		}
+
+		a:link {
+		  color: white;
+		}
+	</style>
+@endsection
 
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
@@ -26,6 +49,32 @@ $semana = ReportesController::pedidos_semana();
 	@can('vtas_bloquear_vista_index')
 		<div class="container-fluid">
 			<div class="marco_formulario">
+				<div class="row">
+					<div class="col-sm-4">
+						<div class="boton">
+							<a href="{{url( 'vtas_pedidos/create?id=13&id_modelo=175' )}}">
+								<h1> <i class="fa fa-file"> </i> </h1>
+								Crear pedido
+							</a>							
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="boton">
+							<a href="{{url( 'web/create?id=13&id_modelo=216' )}}">
+								<h1> <i class="fa fa-smile-o"> </i> </h1>
+								Crear cliente
+							</a>							
+						</div>
+					</div>
+					<div class="col-sm-4">
+						<div class="boton">
+							<a href="{{url( 'vtas_pedidos/create?id=13&id_modelo=175' )}}">
+								<h1> <i class="fa fa-file"> </i> </h1>
+								Facturar pedidos
+							</a>							
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	@else

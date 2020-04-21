@@ -1,5 +1,9 @@
 <style>
 
+    #main-slider {
+        margin-top: 40px;
+    }
+
     #main-slider .item {
         height: 400px;
     }

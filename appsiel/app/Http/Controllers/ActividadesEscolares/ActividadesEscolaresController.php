@@ -153,7 +153,9 @@ class ActividadesEscolaresController extends ModeloController
 
         $actividad = ActividadEscolar::find($actividad_id);
 
-        $estudiantes = Matricula::estudiantes_matriculados( $actividad->curso_id, null, 'Activo' );
+        $periodo_lectivo = PeriodoLectivo::get_actual();
+
+        $estudiantes = Matricula::estudiantes_matriculados( $actividad->curso_id, $periodo_lectivo->id, 'Activo' );
 
         //$reg_anterior = ActividadEscolar::where('id', '<', $actividad->id)->max('id');
         //$reg_siguiente = ActividadEscolar::where('id', '>', $actividad->id)->min('id');

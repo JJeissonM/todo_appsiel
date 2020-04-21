@@ -4,7 +4,13 @@ namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
 
+/*
+        -------------------  OJO ----------------
+    CORREGIR PARA LOS CLIENTES NO LOGUEADOS EN LA WEB
+    SE COMENTÓ LA LÍNEA DE PEDIR AUTENCIACIÓN
+*/
 use Auth;
+
 
 use App\Inventarios\InvGrupo;
 
@@ -78,9 +84,10 @@ class InvProducto extends Model
 
         $productos = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                     ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
-                    ->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
+                    //->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
                     ->where('inv_productos.inv_grupo_id', $operador1, $grupo_inventario_id)
                     ->where('inv_productos.estado', $estado)
+                    ->where('inv_productos.mostrar_en_pagina_web', 1)
                     ->select(
                                 'inv_productos.id',
                                 'inv_productos.descripcion',

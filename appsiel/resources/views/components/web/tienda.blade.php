@@ -126,6 +126,16 @@
         background-color: white;
     }
 
+    
+        /* Colorize-zoom Container */
+        .contenido-producto img {
+          transition: transform .1s;
+        }
+
+        /* The Transformation */
+        .contenido-producto:hover img {
+          transform: scale(1.4);
+        }
 
 </style>
 
@@ -231,7 +241,7 @@
                                 <h4> 
                                     {{ $item->descripcion }}
                                 </h4>
-                                <p>Unidad a $400</p>
+                                <p>Precio por {{ $item->unidad_medida1 }}</p>
                                 <p class="precio">${{ number_format( $item->precio_venta, 0, ',', '.') }}  <span class="u-pull-right">${{ number_format( ($item->precio_venta - $item->precio_venta * $item->descuento / 100 ), 0, ',', '.') }}</span></p>
                                 <a href="#" class="u-full-width button-primary button input agregar-carrito" data-id="3">!Lo quiero!</a>
                                 <div class="button-opciones">

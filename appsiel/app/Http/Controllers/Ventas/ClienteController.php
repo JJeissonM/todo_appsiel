@@ -23,25 +23,8 @@ use App\Ventas\Vendedor;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasDocEncabezado;
 
-class ClienteController extends Controller
+class ClienteController extends ModeloController
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $general = new ModeloController();
-
-        return $general->create();
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -51,10 +34,19 @@ class ClienteController extends Controller
      */
     public function store(Request $request)
     {
+        $descripcion = '';
         // Almacenar datos básicos (Tercero)
-        $descripcion = $request->all()['apellido1']." ".$request->all()['apellido2']." ".$request->all()['nombre1']." ".$request->all()['otros_nombres'];
+        if( isset($request->all()['apellido1']) && isset($request->all()['apellido2']) && isset($request->all()['nombre1']) && isset($request->all()['otros_nombres']))
+        {
+            $descripcion = $request->all()['apellido1']." ".$request->all()['apellido2']." ".$request->all()['nombre1']." ".$request->all()['otros_nombres'];
+        }
 
-        if ( $request->all()['razon_social'] != '' )
+        if( isset($request->all()['descripcion']) )
+        {
+            $descripcion = $request->all()['descripcion'];
+        } 
+
+        if ( $request->all()['razon_social'] != '' && $descripcion == '' )
         {
             $descripcion = $request->all()['razon_social'];
         }
@@ -68,10 +60,12 @@ class ClienteController extends Controller
         $Cliente->fill( array_merge( $request->all(), ['core_tercero_id' => $tercero->id] ) );
         $Cliente->save();
 
-        return redirect( 'vtas_clientes/'.$Cliente->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
+        $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
+        
+        $url_ver = str_replace('id_fila', $registro->id, $acciones->show);
+
+        return redirect( $url_ver . '?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
     }
-
-
 
 
     /**
@@ -107,11 +101,11 @@ class ClienteController extends Controller
                         'campos' => $lista_campos
                     ];
 
-        $descripcion = $tercero->apellido1." ".$tercero->apellido2." ".$tercero->nombre1." ".$tercero->otros_nombres;
+        //$descripcion = $tercero->apellido1." ".$tercero->apellido2." ".$tercero->nombre1." ".$tercero->otros_nombres;
         $miga_pan = [
                         ['url'=>'ventas?id='.Input::get('id'),'etiqueta'=>'Ventas'],
                         ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $modelo->descripcion],
-                        ['url'=>'NO','etiqueta'=> $descripcion ]
+                        ['url'=>'NO','etiqueta'=> $tercero->descripcion ]
                     ];
 
         $url_crear = '';
@@ -183,7 +177,9 @@ class ClienteController extends Controller
 
         $lista_campos = $general->get_campos_modelo($modelo,$registro,'edit');
 
+
         $tercero = Tercero::find($registro->core_tercero_id);
+        $registro->descripcion = $tercero->descripcion;
         $registro->nombre1 = $tercero->nombre1;
         $registro->otros_nombres = $tercero->otros_nombres;
         $registro->apellido1 = $tercero->apellido1;
@@ -207,11 +203,10 @@ class ClienteController extends Controller
             $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
         }
 
-        $descripcion = $tercero->apellido1." ".$tercero->apellido2." ".$tercero->nombre1." ".$tercero->otros_nombres;
         $miga_pan = [
                         ['url'=>'ventas?id='.Input::get('id'),'etiqueta'=>'Ventas'],
                         ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $modelo->descripcion],
-                        ['url'=>'NO','etiqueta'=> $descripcion." > Modificar" ]
+                        ['url'=>'NO','etiqueta'=> $tercero->descripcion." > Modificar" ]
                     ];
 
         $archivo_js = app($modelo->name_space)->archivo_js;
@@ -228,6 +223,9 @@ class ClienteController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+        dd('uey');
+
         $modelo = Modelo::find($request->url_id_modelo);
 
         // Se obtinene el registro a modificar del modelo
