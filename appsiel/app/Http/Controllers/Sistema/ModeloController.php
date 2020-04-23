@@ -383,7 +383,7 @@ class ModeloController extends Controller
         */
         if (method_exists(app($this->modelo->name_space), 'store_adicional'))
         {
-            // Aquí mismo hace el return
+            // Aquí mismo se puede hacer el return
             app($this->modelo->name_space)->store_adicional($datos, $registro);
         }
 
@@ -974,7 +974,8 @@ class ModeloController extends Controller
                 }
 
                 // Si hay campo tipo imagen, se envía la URL de la imagen para mostrala
-                if ($lista_campos[$i]['tipo'] == 'imagen') {
+                if ($lista_campos[$i]['tipo'] == 'imagen')
+                {
                     $lista_campos[$i]['value'] = config('configuracion.url_instancia_cliente') . "/storage/app/" . $modelo->ruta_storage_imagen . $registro->$nombre_campo;
                 }
 

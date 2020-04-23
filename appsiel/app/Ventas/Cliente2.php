@@ -19,7 +19,7 @@ class Cliente2 extends Model
 	public $encabezado_tabla = ['ID','Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Lista de precios', 'Lista de descuentos', 'Zona', 'Acción'];
 
     // Las acciones tienen valores predeterminados, si el modelo no va a tener una acción, se debe asignar la palabra "no" a la acción.
-    public $urls_acciones = '{"index":"web","create":"web/create","edit":"vtas_clientes/id_fila/edit","store":"vtas_clientes","update":"vtas_clientes","imprimir":"no","show":"vtas_clientes/id_fila","eliminar":"no","cambiar_estado":"no","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
+    public $urls_acciones = '{"index":"web","create":"web/create","edit":"vtas_clientes/id_fila/edit","store":"vtas_clientes","update":"vtas_clientes/id_fila","imprimir":"no","show":"vtas_clientes/id_fila","eliminar":"no","cambiar_estado":"no","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
 // 
     public $vistas = '{"create":"ventas.clientes.create2"}';
 

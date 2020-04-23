@@ -30,6 +30,7 @@ class ListaPrecioDetalle extends Model
 		$registro = ListaPrecioDetalle::where('lista_precios_id', $lista_precios_id)
 									->where('fecha_activacion', '<=', $fecha_activacion)
 									->where('inv_producto_id', $inv_producto_id)
+									->orderBy('fecha_activacion')
 									->get()
 									->last();
 

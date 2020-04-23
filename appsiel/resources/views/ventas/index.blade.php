@@ -1,12 +1,20 @@
 <?php
 
-use App\Http\Controllers\Ventas\ReportesController;
+	use App\Http\Controllers\Ventas\ReportesController;
 
-$fecha_hoy = date('Y-m-d');
-$tabla = ReportesController::grafica_ventas_diarias(date("Y-m-d", strtotime($fecha_hoy . "- 30 days")), $fecha_hoy);
-$vencidas = ReportesController::pedidos_vencidos();
-$futuras = ReportesController::pedidos_futuros();
-$semana = ReportesController::pedidos_semana();
+	$fecha_hoy = date('Y-m-d');
+	$tabla = ReportesController::grafica_ventas_diarias(date("Y-m-d", strtotime($fecha_hoy . "- 30 days")), $fecha_hoy);
+	$vencidas = ReportesController::pedidos_vencidos();
+	$futuras = ReportesController::pedidos_futuros();
+	$semana = ReportesController::pedidos_semana();
+
+	$vendedor = App\Ventas\Vendedor::where( 'user_id', Auth::user()->id )->get()->first();
+
+	$vendedor_id = 0;
+	if ( !is_null( $vendedor ) )
+	{
+		$vendedor_id = $vendedor->id;
+	}
 ?>
 
 
@@ -52,7 +60,7 @@ $semana = ReportesController::pedidos_semana();
 				<div class="row">
 					<div class="col-sm-4">
 						<div class="boton">
-							<a href="{{url( 'vtas_pedidos/create?id=13&id_modelo=175' )}}">
+							<a href="{{url( 'vtas_pedidos/create?id=13&id_modelo=175&id_transaccion=42' )}}">
 								<h1> <i class="fa fa-file"> </i> </h1>
 								Crear pedido
 							</a>							
@@ -68,7 +76,7 @@ $semana = ReportesController::pedidos_semana();
 					</div>
 					<div class="col-sm-4">
 						<div class="boton">
-							<a href="{{url( 'vtas_pedidos/create?id=13&id_modelo=175' )}}">
+							<a href="{{ url( 'web?id=13&id_modelo=175&id_transaccion=42&vendedor_id='. $vendedor_id )}}">
 								<h1> <i class="fa fa-file"> </i> </h1>
 								Facturar pedidos
 							</a>							

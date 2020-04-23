@@ -240,8 +240,21 @@
                     </div>
                 </div>
                 <div class="row" id="productos">
-
+                    <?php 
+                        $grupo_anterior = '';
+                    ?>
                     @foreach( $items as $item)
+                        
+                        <!-- 
+                        @ if( $item->grupo_descripcion != $grupo_anterior )
+                            <br><br>
+                            <div style="display: block;">
+                                <h2> { { $item->grupo_descripcion }}</h2>
+                                <hr>
+                            </div>                                
+                        @ endif
+                        -->
+
                         <div class="contenido-producto" style="position: relative;">
                             <div>
                                 <img src="{{ asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen ) }}" loading="lazy"  class="imagen-curso u-full-width">
@@ -263,6 +276,10 @@
                                 </div>
                             </div>
                         </div>
+
+                        <?php 
+                            $grupo_anterior = $item->grupo_descripcion;
+                        ?>
                     @endforeach
 
                 </div> <!--.row-->
