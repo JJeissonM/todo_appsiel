@@ -4208,14 +4208,14 @@
       'core_app_id' => 13,
       'modelo_id' => 139,
       'name' => 'vtas_documentos_facturas',
-      'descripcion' => 'Facturas',
+      'descripcion' => 'Facturas de ventas',
       'url' => 'web',
       'parent' => 286,
       'orden' => 1,
       'enabled' => 1,
       'fa_icon' => 'list',
       'created_at' => '2019-10-21 22:28:30',
-      'updated_at' => '2019-10-21 22:29:05',
+      'updated_at' => '2020-04-21 05:42:59',
     ),
     281 => 
     array (
@@ -5326,6 +5326,51 @@
       'fa_icon' => '',
       'created_at' => '2020-04-13 08:59:26',
       'updated_at' => '2020-04-13 08:59:26',
+    ),
+    355 => 
+    array (
+      'id' => 381,
+      'core_app_id' => 13,
+      'modelo_id' => 173,
+      'name' => 'vtas_nota_credito_directa',
+      'descripcion' => 'Notas crédito directas',
+      'url' => 'web',
+      'parent' => 286,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2020-04-14 11:21:38',
+      'updated_at' => '2020-04-14 11:22:18',
+    ),
+    356 => 
+    array (
+      'id' => 382,
+      'core_app_id' => 13,
+      'modelo_id' => 215,
+      'name' => 'vtas_tercero_a_vendedor',
+      'descripcion' => 'Tercero a vendedor',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => 'users',
+      'created_at' => '2020-04-21 05:34:33',
+      'updated_at' => '2020-04-21 05:35:01',
+    ),
+    357 => 
+    array (
+      'id' => 383,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'contab_reasignar_grupos_cuentas_form',
+      'descripcion' => 'Arbol grupos de cuentas',
+      'url' => 'reasignar_grupos_cuentas_form',
+      'parent' => 168,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-04-24 09:27:15',
+      'updated_at' => '2020-04-24 09:28:04',
     ),
   ),
   'roles' => 
@@ -11755,6 +11800,48 @@
       'orden' => 0,
       'permission_id' => 380,
       'role_id' => 1,
+    ),
+    1053 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 381,
+      'role_id' => 1,
+    ),
+    1054 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 381,
+      'role_id' => 3,
+    ),
+    1055 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 382,
+      'role_id' => 1,
+    ),
+    1056 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 382,
+      'role_id' => 3,
+    ),
+    1057 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 383,
+      'role_id' => 1,
+    ),
+    1058 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 383,
+      'role_id' => 3,
+    ),
+    1059 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 383,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -26175,7 +26262,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2019-09-15 09:13:22',
-      'updated_at' => '2019-09-16 08:45:21',
+      'updated_at' => '2020-04-21 10:28:03',
     ),
     128 => 
     array (
@@ -27870,6 +27957,50 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-03-27 11:59:07',
       'updated_at' => '2020-03-27 11:59:07',
+    ),
+    205 => 
+    array (
+      'id' => 215,
+      'descripcion' => 'Tercero a vendedor',
+      'modelo' => 'tercero_vendedor',
+      'name_space' => 'App\\Ventas\\Vendedor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'na',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-04-20 12:35:55',
+      'updated_at' => '2020-04-21 05:34:20',
+    ),
+    206 => 
+    array (
+      'id' => 216,
+      'descripcion' => 'Clientes del vendedor',
+      'modelo' => 'vtas_clientes2',
+      'name_space' => 'App\\Ventas\\Cliente2',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'no',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-04-21 08:05:37',
+      'updated_at' => '2020-04-21 09:42:19',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -38436,6 +38567,244 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 16,
       'core_modelo_id' => 200,
       'core_campo_id' => 722,
+    ),
+    1509 => 
+    array (
+      'id' => 1740,
+      'orden' => 0,
+      'core_modelo_id' => 215,
+      'core_campo_id' => 39,
+    ),
+    1510 => 
+    array (
+      'id' => 1741,
+      'orden' => 2,
+      'core_modelo_id' => 215,
+      'core_campo_id' => 508,
+    ),
+    1511 => 
+    array (
+      'id' => 1742,
+      'orden' => 4,
+      'core_modelo_id' => 215,
+      'core_campo_id' => 509,
+    ),
+    1512 => 
+    array (
+      'id' => 1743,
+      'orden' => 6,
+      'core_modelo_id' => 215,
+      'core_campo_id' => 22,
+    ),
+    1513 => 
+    array (
+      'id' => 1744,
+      'orden' => 26,
+      'core_modelo_id' => 134,
+      'core_campo_id' => 161,
+    ),
+    1514 => 
+    array (
+      'id' => 1745,
+      'orden' => 24,
+      'core_modelo_id' => 134,
+      'core_campo_id' => 561,
+    ),
+    1515 => 
+    array (
+      'id' => 1746,
+      'orden' => 13,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 18,
+    ),
+    1516 => 
+    array (
+      'id' => 1747,
+      'orden' => 44,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 22,
+    ),
+    1517 => 
+    array (
+      'id' => 1748,
+      'orden' => 7,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 37,
+    ),
+    1518 => 
+    array (
+      'id' => 1749,
+      'orden' => 1,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 41,
+    ),
+    1519 => 
+    array (
+      'id' => 1750,
+      'orden' => 9,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 42,
+    ),
+    1520 => 
+    array (
+      'id' => 1751,
+      'orden' => 5,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 43,
+    ),
+    1521 => 
+    array (
+      'id' => 1752,
+      'orden' => 8,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 44,
+    ),
+    1522 => 
+    array (
+      'id' => 1753,
+      'orden' => 2,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 45,
+    ),
+    1523 => 
+    array (
+      'id' => 1754,
+      'orden' => 4,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 46,
+    ),
+    1524 => 
+    array (
+      'id' => 1755,
+      'orden' => 5,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 47,
+    ),
+    1525 => 
+    array (
+      'id' => 1756,
+      'orden' => 10,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 50,
+    ),
+    1526 => 
+    array (
+      'id' => 1757,
+      'orden' => 14,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 53,
+    ),
+    1527 => 
+    array (
+      'id' => 1758,
+      'orden' => 12,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 55,
+    ),
+    1528 => 
+    array (
+      'id' => 1759,
+      'orden' => 6,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 58,
+    ),
+    1529 => 
+    array (
+      'id' => 1760,
+      'orden' => 99,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 94,
+    ),
+    1530 => 
+    array (
+      'id' => 1761,
+      'orden' => 99,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 95,
+    ),
+    1531 => 
+    array (
+      'id' => 1762,
+      'orden' => 99,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 386,
+    ),
+    1532 => 
+    array (
+      'id' => 1763,
+      'orden' => 27,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 448,
+    ),
+    1533 => 
+    array (
+      'id' => 1764,
+      'orden' => 32,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 495,
+    ),
+    1534 => 
+    array (
+      'id' => 1765,
+      'orden' => 20,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 496,
+    ),
+    1535 => 
+    array (
+      'id' => 1766,
+      'orden' => 22,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 497,
+    ),
+    1536 => 
+    array (
+      'id' => 1767,
+      'orden' => 34,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 498,
+    ),
+    1537 => 
+    array (
+      'id' => 1768,
+      'orden' => 36,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 499,
+    ),
+    1538 => 
+    array (
+      'id' => 1769,
+      'orden' => 38,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 500,
+    ),
+    1539 => 
+    array (
+      'id' => 1770,
+      'orden' => 40,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 501,
+    ),
+    1540 => 
+    array (
+      'id' => 1771,
+      'orden' => 5,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 118,
+    ),
+    1541 => 
+    array (
+      'id' => 1774,
+      'orden' => 0,
+      'core_modelo_id' => 138,
+      'core_campo_id' => 140,
+    ),
+    1542 => 
+    array (
+      'id' => 1775,
+      'orden' => 0,
+      'core_modelo_id' => 216,
+      'core_campo_id' => 140,
     ),
   ),
   'sys_reportes' => 

@@ -93,6 +93,7 @@ class InvProducto extends Model
                                 'inv_productos.descripcion',
                                 'inv_productos.unidad_medida1',
                                 'inv_grupos.descripcion AS grupo_descripcion',
+                                'inv_grupos.imagen AS grupo_imagen',
                                 'inv_productos.precio_compra',
                                 'inv_productos.precio_venta',
                                 'contab_impuestos.tasa_impuesto',
@@ -101,7 +102,7 @@ class InvProducto extends Model
                                 'inv_productos.imagen',
                                 'inv_productos.mostrar_en_pagina_web',
                                 'inv_productos.codigo_barras')
-                    ->orderBy('grupo_descripcion')
+                    ->orderBy('grupo_descripcion', 'ASC')
                     ->get();
                     
         foreach ($productos as $item)

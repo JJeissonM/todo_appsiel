@@ -215,12 +215,14 @@
         <div class="row">
             <div class="col-md-2 col-sm-12">
                 <div class="card" style="width: 18rem;">
-                    <img class="card-img-top" src="..." alt="Card image cap">
-                    <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                        <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
+                    <!--
+                        <img class="card-img-top" src="..." alt="Card image cap">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    -->
                 </div>
             </div>
             <div class="col-md-9">
@@ -257,7 +259,7 @@
 
                         <div class="contenido-producto" style="position: relative;">
                             <div>
-                                <img src="{{ asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen ) }}" loading="lazy"  class="imagen-curso u-full-width">
+                                <img src="{{ asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen ) }}" loading="lazy"  class="imagen-curso u-full-width" style="border-radius: 10px;">
                                 @if( $item->descuento != 0)
                                     <div style="color: red; z-index: 999; position: absolute;top: 0; right: 0;">{{ $item->descuento }}% </div>
                                 @endif

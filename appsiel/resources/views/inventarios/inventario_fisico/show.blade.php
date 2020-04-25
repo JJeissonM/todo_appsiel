@@ -6,7 +6,7 @@
 
 @section('botones_acciones')
 	{{ Form::bsBtnCreate( 'inv_fisico/create'.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion ) }}
-	<a class="btn btn-warning btn-xs btn-detail" href="{{ url('inv_fisico_hacer_ajuste?id=8&id_modelo=25&id_transaccion=28&doc_inv_fisico_id='.$id) }}"><i class="fa fa-btn fa-cog"></i> Hacer Ajuste </a>
+	<a class="btn btn-warning btn-xs btn-detail" href="{{ url('inv_fisico_hacer_ajuste?id=8&id_modelo=25&id_transaccion=28&doc_inv_fisico_id='.$id) }}" target="_blank"><i class="fa fa-btn fa-cog"></i> Hacer Ajuste </a>
 @endsection
 
 @section('botones_imprimir_email')

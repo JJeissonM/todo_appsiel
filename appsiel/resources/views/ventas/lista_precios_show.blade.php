@@ -160,6 +160,7 @@
 			$('#inv_producto_id').on('change',function(){
 				if ( $(this).val() != '' )
 				{
+					$("#fecha_activacion").val( get_fecha_hoy() );
 					$("#fecha_activacion").focus();
 				}
 			});

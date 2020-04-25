@@ -14,6 +14,10 @@ class ListaPrecioDetalle extends Model
     protected $table = 'vtas_listas_precios_detalles';
 	protected $fillable = ['lista_precios_id', 'inv_producto_id', 'fecha_activacion', 'precio'];
 	public $encabezado_tabla = ['Lista de precios', 'Producto', 'Fecha activación', 'Precio', 'Acción'];
+
+	// Las acciones tienen valores predeterminados, si el modelo no va a tener una acción, se debe asignar la palabra "no" a la acción.
+    public $urls_acciones = '{"imprimir":"no","cambiar_estado":"no","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
+
 	public static function consultar_registros()
 	{
 	    $registros = ListaPrecioDetalle::leftJoin('vtas_listas_precios_encabezados','vtas_listas_precios_encabezados.id','=','vtas_listas_precios_detalles.lista_precios_id')
@@ -30,7 +34,7 @@ class ListaPrecioDetalle extends Model
 		$registro = ListaPrecioDetalle::where('lista_precios_id', $lista_precios_id)
 									->where('fecha_activacion', '<=', $fecha_activacion)
 									->where('inv_producto_id', $inv_producto_id)
-									->orderBy('fecha_activacion')
+									->orderBy('fecha_activacion','ASC')
 									->get()
 									->last();
 

@@ -13,6 +13,9 @@ class ContabCuentaGrupo extends Model
 
     public $encabezado_tabla = ['ID','Clase','Padre','Descripción','Acción'];
 
+    // El archivo js debe estar en la carpeta public
+    public $archivo_js = 'assets/js/contabilidad/funciones.js';
+
     public static function consultar_registros()
     {
         $registros = ContabCuentaGrupo::leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuenta_grupos.contab_cuenta_clase_id')
@@ -24,8 +27,21 @@ class ContabCuentaGrupo extends Model
         return $registros;
     }
 
-    // El archivo js debe estar en la carpeta public
-    public $archivo_js = 'assets/js/contabilidad/funciones.js';
+    public static function opciones_campo_select()
+    {
+
+        // MEJORAR PARA QUE MUESTRE LOS GRUPOS PADRES
+        
+        $opciones = ContabCuentaGrupo::where('core_empresa_id', Auth::user()->empresa_id)->get();
+
+        $vec[''] = '';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
 
     public static function get_registros_select_hijo($id_select_padre)
     {
