@@ -11,9 +11,25 @@
             <h4 style="color: gray;"> <i class="fa fa-btn fa-bullhorn"></i> Conversación: {{ $thread->subject }}</h4>
             <hr>
 
-	        @each('core.messenger.partials.messages', $thread->messages, 'message')
+            <ul class="chat-list" style="font-size: 16px !important;">
+				<div class="col-md-12">
+            		@each('core.messenger.partials.messages', $thread->messages, 'message')	
+            	</div>
+            </ul>        
 
 	        @include('core.messenger.partials.form-message')
 		</div>
 	</div>
-@stop
+@endsection
+
+@section('scripts')
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			// Bajar el Scroll hasta el final de la página
+			$("html, body").animate( { scrollTop: $(document).height()+"px"} );
+
+		});
+	</script>
+@endsection

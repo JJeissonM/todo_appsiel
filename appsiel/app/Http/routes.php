@@ -81,10 +81,7 @@ Route::get('core/validar_email/{email}', 'Core\TerceroController@validar_email')
 Route::resource('core/usuarios', 'UserController');
 Route::resource('core/roles', 'Core\RoleController');
 //Route::resource('/core/permisos', 'Core\PermissionController');
-Route::get('core/colegios/create', 'Core\ColegioController@create');
-//});
 
-Route::resource('core/colegios', 'Core\ColegioController', ['except' => ['create']]);
 
 // Los usuarios administradores pueden cambiar la contraseña de cualquier usuario
 Route::get('core/usuario/cambiarpasswd/{user_id}', 'UserController@form_cambiarpasswd');

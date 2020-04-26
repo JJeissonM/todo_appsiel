@@ -206,6 +206,34 @@
 					</div>
 
 				</div>
+
+				<br>
+				<h4> Otras configuraciones </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['usar_mensajes_internos'] ) )
+								{
+									$usar_mensajes_internos = $parametros['usar_mensajes_internos'];
+								}else{
+									$usar_mensajes_internos = 0;
+								}
+							?>
+							{{ Form::bsSelect('usar_mensajes_internos', $usar_mensajes_internos, 'Manejar mensajes internos', ['0'=>'No','1'=>'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				
 				<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
 

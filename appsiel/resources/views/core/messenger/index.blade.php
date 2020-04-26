@@ -2,9 +2,9 @@
 
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
-		@can('messenger_crear')
+
 			&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate( url('messages/create') ) }}
-		@endcan
+			
 	<hr>
 
 	@include('layouts.mensajes')

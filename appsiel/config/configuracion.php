@@ -10,5 +10,6 @@
   'cta_por_pagar_default' => '131',
   'cta_anticipo_proveedores_default' => '29',
   'cta_ingresos_default' => '229',
+  'usar_mensajes_internos' => '1',
   'url_id_modelo' => '0',
 ) ;

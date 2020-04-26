@@ -238,7 +238,7 @@ class ActividadesEscolaresController extends ModeloController
 
         $cuestionario = (object)[];
         $preguntas = (object)[];
-        $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
+        $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','updated_at'=>''];
 
         if ( $actividad->cuestionario_id > 0 ) 
         {
