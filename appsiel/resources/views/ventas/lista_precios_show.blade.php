@@ -252,7 +252,12 @@
 				var valor_nuevo = document.getElementById('valor_nuevo').value;
 
 				// Si no cambió el valor_nuevo, no pasa nada
-				if ( valor_nuevo == valor_actual) { return false; }
+				if ( valor_nuevo == valor_actual)
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+					elemento_modificar.show();
+					return false;
+				}
 
 				// almacenar el valor_nuevo
 				$.get( '../actualizar_campos_modelos_relacionados', { modelo_id: elemento_modificar.attr('data-modelo_id'), registro_modelo_padre_id: elemento_modificar.attr('data-registro_modelo_padre_id'), registro_modelo_hijo_id: elemento_modificar.attr('data-registro_modelo_hijo_id'), valor_nuevo: valor_nuevo } )

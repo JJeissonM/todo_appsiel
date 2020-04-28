@@ -250,7 +250,7 @@ class ActividadesEscolaresController extends ModeloController
 
             if( is_null( $respuestas ) )
             {   
-                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
+                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','updated_at'=>''];
             }
         }
 
@@ -259,7 +259,7 @@ class ActividadesEscolaresController extends ModeloController
 
         if ( is_null( $respuesta ) )
         {
-            $respuesta = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','adjunto'=>''];
+            $respuesta = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','adjunto'=>'','updated_at'=>''];
         }
 
         return view('calificaciones.actividades_escolares.hacer_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','estudiante','modelo','respuestas','respuesta','asignatura'));        

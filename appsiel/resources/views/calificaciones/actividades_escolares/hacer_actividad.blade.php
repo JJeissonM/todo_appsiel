@@ -133,11 +133,11 @@
 
 												<br><br>
 												<hr>
-												<b> Anotación: </b>
-												<br>
-												<p>
+												<div class="well">
+													<b> Anotación del profesor: </b>
+													<br>
 													{{ $respuesta->calificacion }}
-												</p>
+												</div>
 											</div>
 										
 									@endif

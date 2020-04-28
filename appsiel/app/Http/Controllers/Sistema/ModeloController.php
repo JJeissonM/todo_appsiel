@@ -137,7 +137,7 @@ class ModeloController extends Controller
                                 'edit' => '',
                                 'store' => 'web' . $parametros_url,
                                 'update' => 'web/id_fila' . $parametros_url,
-                                'show' => '',
+                                'show' => 'web/id_fila',
                                 'imprimir' => '',
                                 'eliminar' => '',
                                 'cambiar_estado' => '',

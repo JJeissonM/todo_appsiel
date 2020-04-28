@@ -171,7 +171,7 @@
 
 				elemento_modificar.hide();
 
-				elemento_modificar.after( '<textarea name="valor_nuevo" id="valor_nuevo" class="form-control input-sm"></textarea> ');
+				elemento_modificar.after( '<textarea name="valor_nuevo" id="valor_nuevo" class="form-control"></textarea>');
 
 				document.getElementById('valor_nuevo').value = valor_actual;
 				document.getElementById('valor_nuevo').select();
@@ -208,7 +208,12 @@
 				var valor_nuevo = document.getElementById('valor_nuevo').value;
 
 				// Si no cambió el valor_nuevo, no pasa nada
-				if ( valor_nuevo == valor_actual) { return false; }
+				if ( valor_nuevo == valor_actual)
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+					elemento_modificar.show();
+					return false;
+				}
 
 				// Se llama al método en ActividadesEscolaresController
 				var url = "{{url('almacenar_calificacion_a_respuesta_estudiante')}}";
