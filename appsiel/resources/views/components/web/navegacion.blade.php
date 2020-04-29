@@ -11,9 +11,9 @@
       }
 
     .icono img{
+        width:150px !important;
         max-height: 250px !important;
-        border-radius: 4px;
-        /*width:150px !important;
+        /*border-radius: 4px;
         height:35px !important;
         object-fit: cover;*/
     }
@@ -28,6 +28,7 @@
     if($nav->fixed)
     {
         $clase_header = 'fixed-top';
+        //$estilo = 'clear: both;';
     }else{
         $clase_header = 'no-fixed';
     }
@@ -36,10 +37,10 @@
 <header class="{{ $clase_header }}" style="background-color: {{$nav->background}};">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light d-flex "><!-- mu-navbar -->
-            <!-- Text based logo -->
-            @if(!$nav->fixed)
-                <a class="navbar-brand p-0 icono" href="{{url('/')}}"><img src="{{asset($nav->logo)}}" alt=""></a>
-            @endif
+            <!-- Text based logo 
+            @ if(!$nav->fixed)
+            @ endif-->
+            <a class="navbar-brand p-0 icono" href="{{url('/')}}"><img src="{{asset($nav->logo)}}" alt=""></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
