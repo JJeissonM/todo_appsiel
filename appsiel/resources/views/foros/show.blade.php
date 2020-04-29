@@ -149,29 +149,29 @@
 								@foreach($respuestas as $r)
 								<div class="col-md-12">
 									@if($r->user_id==Auth::user()->id)
-									<li class="in">
-										<div class="chat-img">
-											<img alt="Avtar" src="https://bootdey.com/img/Content/avatar/avatar1.png">
-										</div>
-										<div class="chat-body">
-											<div class="chat-message">
-												<h4 style="text-decoration: underline;">{{$r->user->name}}</h4>
-												<p>{{$r->contenido}}</p>
+										<li class="in">
+											<div class="chat-img">
+												<img alt="Avtar" src="https://bootdey.com/img/Content/avatar/avatar1.png">
 											</div>
-										</div>
-									</li>
+											<div class="chat-body">
+												<div class="chat-message">
+													<h4 style="text-decoration: underline;">{{$r->user->name}}</h4>
+													<p>{{$r->contenido}}</p>
+												</div>
+											</div>
+										</li>
 									@else
-									<li class="out">
-										<div class="chat-img">
-											<img alt="Avtar" src="https://bootdey.com/img/Content/avatar/avatar6.png">
-										</div>
-										<div class="chat-body">
-											<div class="chat-message">
-												<h4 style="text-decoration: underline;">{{$r->user->name}}</h4>
-												<p>{{$r->contenido}}</p>
+										<li class="out">
+											<div class="chat-img">
+												<img alt="Avtar" src="https://bootdey.com/img/Content/avatar/avatar6.png">
 											</div>
-										</div>
-									</li>
+											<div class="chat-body">
+												<div class="chat-message">
+													<h4 style="text-decoration: underline;">{{$r->user->name}}</h4>
+													<p>{{$r->contenido}}</p>
+												</div>
+											</div>
+										</li>
 									@endif
 								</div>
 								@endforeach

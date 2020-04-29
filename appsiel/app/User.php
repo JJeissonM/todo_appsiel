@@ -54,19 +54,19 @@ class User extends Authenticatable
     public static function consultar_registros()
     {
         return UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
-            ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
-            ->leftJoin('core_empresas', 'core_empresas.id', '=', 'users.empresa_id')
-            ->where('users.id', '<>', 1)
-            ->select(
-                'core_empresas.descripcion AS campo1',
-                'users.name AS campo2',
-                'users.email As campo3',
-                'users.created_at AS campo4',
-                'roles.name AS campo5',
-                'users.id AS campo6'
-            )
-            ->get()
-            ->toArray();
+                            ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
+                            ->leftJoin('core_empresas', 'core_empresas.id', '=', 'users.empresa_id')
+                            ->where('users.id', '<>', 1)
+                            ->select(
+                                'core_empresas.descripcion AS campo1',
+                                'users.name AS campo2',
+                                'users.email As campo3',
+                                'users.created_at AS campo4',
+                                'roles.name AS campo5',
+                                'users.id AS campo6'
+                            )
+                            ->get()
+                            ->toArray();
     }
 
     public function empresa()

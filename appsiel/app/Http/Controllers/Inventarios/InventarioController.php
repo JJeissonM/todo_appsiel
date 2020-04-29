@@ -235,7 +235,8 @@ class InventarioController extends TransaccionController
 
             // Cuando el motivo de la transacción es de salida, 
             // las cantidades y costos totales restan del movimiento ( negativo )
-            if ($motivo->movimiento == 'salida') {
+            if ($motivo->movimiento == 'salida')
+            {
                 $cantidad = (float) $cantidad * -1;
                 $costo_total = (float) $costo_total * -1;
             }
@@ -800,7 +801,9 @@ class InventarioController extends TransaccionController
         $id_modelo = Input::get('id_modelo');
         $id_transaccion = Input::get('id_transaccion');
 
-        $formulario = View::make('inventarios.incluir.formulario_editar_registro', compact('linea_registro', 'id', 'id_modelo', 'id_transaccion', 'saldo_a_la_fecha', 'doc_encabezado'))->render();
+        $producto = InvProducto::find( $linea_registro->producto_id );
+
+        $formulario = View::make('inventarios.incluir.formulario_editar_registro', compact('linea_registro', 'id', 'id_modelo', 'id_transaccion', 'saldo_a_la_fecha', 'doc_encabezado','producto'))->render();
 
         return $formulario;
     }
@@ -937,6 +940,13 @@ class InventarioController extends TransaccionController
 
     public function get_validacion_saldo_movimientos_posteriores($bodega_id, $producto_id, $fecha, $cantidad_nueva, $saldo_a_la_fecha, $movimiento)
     {
+        $producto = InvProducto::find( $producto_id );
+
+        if ( $producto->tipo == 'servicio' )
+        {
+            return 0;
+        }
+
         // $saldo_original_a_la_fecha: es el saldo a la fecha como si no hubiese existido la cantidad de la línea que se está validando.
         $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores($bodega_id, $producto_id, $fecha, $cantidad_nueva, $saldo_a_la_fecha, $movimiento);
 

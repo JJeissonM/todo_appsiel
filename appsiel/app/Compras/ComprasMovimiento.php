@@ -14,7 +14,7 @@ class ComprasMovimiento extends Model
     // valor_impuesto es UNITARIO
     // base_impuesto = valor_impuesto * cantidad => Equivale al total de la compra SIN IVA
     // precio_total = precio_unitario * cantidad => Equivale al total de la compra IVA incluido
-    protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'estado', 'creado_por', 'modificado_por', 'cotizacion_id', 'compras_doc_encabezado_id', 'entrada_almacen_id', 'proveedor_id', 'comprador_id', 'fecha_recepcion', 'clase_proveedor_id', 'forma_pago', 'fecha_vencimiento', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'codigo_referencia_tercero', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto'];
+    protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'estado', 'creado_por', 'modificado_por', 'cotizacion_id', 'compras_doc_encabezado_id', 'entrada_almacen_id', 'proveedor_id', 'comprador_id', 'fecha_recepcion', 'clase_proveedor_id', 'forma_pago', 'fecha_vencimiento', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'codigo_referencia_tercero', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'tasa_descuento', 'valor_total_descuento'];
 
     public $encabezado_tabla = ['Fecha', 'Documento', 'Producto', 'Proveedor', 'Precio unit.', 'Cantidad', 'Precio total', 'IVA', 'Base IVA Total', 'Acción'];
 

@@ -33,6 +33,7 @@
   <input type="hidden" name="bodega_id" id="bodega_id" value="{{ $linea_registro->inv_bodega_id }}">
   <input type="hidden" name="motivo_movimiento"  id="motivo_movimiento" value="{{ $linea_registro->motivo_movimiento }}">
   <input type="hidden" name="fecha" id="fecha" value="{{ $doc_encabezado->fecha }}">
+  <input type="hidden" name="tipo" id="tipo" value="{{ $producto->tipo }}">
 
   {{ Form::hidden('linea_registro_id', $linea_registro->id ) }}
 

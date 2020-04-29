@@ -119,8 +119,8 @@ class CompraController extends TransaccionController
         $ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
         
         $lineas_registros = json_decode($request->lineas_registros);
-        // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
 
+        // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
         $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
         $core_tipo_doc_app_id_original = $request['core_tipo_doc_app_id'];
 
@@ -165,6 +165,9 @@ class CompraController extends TransaccionController
         $total_documento = 0;
         // Por cada entrada de almacén pendiente
         $cantidad_registros = count( $lineas_registros );
+
+        $lineas_registros_originales = json_decode( $datos['lineas_registros'] );
+        
         $entrada_almacen_id = '';
         $primera = true;
         for ($i=0; $i < $cantidad_registros ; $i++)
@@ -172,6 +175,8 @@ class CompraController extends TransaccionController
             $doc_entrada_id = (int)$lineas_registros[$i]->id_doc;
 
             $registros_entrada = InvDocRegistro::where( 'inv_doc_encabezado_id', $doc_entrada_id )->get();
+
+            $linea = 0;
             foreach ($registros_entrada as $un_registro)
             {
                 // Nota: $un_registro contiene datos de inventarios 
@@ -180,9 +185,18 @@ class CompraController extends TransaccionController
 
                 $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $doc_encabezado->proveedor_id, 0 );
 
+                // El costo_unitario se guardó con los descuentos restados
                 $precio_unitario = $un_registro->costo_unitario * ( 1 + $tasa_impuesto  / 100 );
 
                 $precio_total = $precio_unitario * $cantidad;
+
+                $tasa_descuento = 0;
+                $valor_total_descuento = 0;
+                if ( isset( $lineas_registros_originales[ $linea ]->tasa_descuento ) )
+                {
+                    $tasa_descuento = $lineas_registros_originales[ $linea ]->tasa_descuento;
+                    $valor_total_descuento = $lineas_registros_originales[ $linea ]->valor_total_descuento;
+                }
 
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
@@ -193,6 +207,8 @@ class CompraController extends TransaccionController
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
                                 [ 'valor_impuesto' => ( $precio_total - $total_base_impuesto ) ] +
+                                [ 'tasa_descuento' => $tasa_descuento ] +
+                                [ 'valor_total_descuento' => $valor_total_descuento ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
 
@@ -215,6 +231,8 @@ class CompraController extends TransaccionController
                 CompraController::contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
 
                 $total_documento += $precio_total;
+
+                $linea++;
             } // Fin por cada registro de la entrada
 
             // Marcar la entrada como facturada
@@ -236,7 +254,7 @@ class CompraController extends TransaccionController
         $doc_encabezado->save();
         
         // Un solo registro de la cuenta por pagar (CR)
-        $forma_pago = 'credito'; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
+        $forma_pago = $datos['forma_pago']; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
 
         CompraController::contabilizar_movimiento_credito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
 
@@ -743,7 +761,9 @@ class CompraController extends TransaccionController
         $id_modelo = Input::get('id_modelo');
         $id_transaccion = Input::get('id_transaccion');
 
-        $formulario = View::make( 'compras.incluir.formulario_editar_registro', compact('linea_factura','id','id_modelo','id_transaccion','linea_entrada_almacen','entrada_almacen','saldo_a_la_fecha') )->render();
+        $producto = InvProducto::find( $linea_entrada_almacen->inv_producto_id );
+
+        $formulario = View::make( 'compras.incluir.formulario_editar_registro', compact('linea_factura','id','id_modelo','id_transaccion','linea_entrada_almacen','entrada_almacen','saldo_a_la_fecha','producto') )->render();
 
         return $formulario;
     }
@@ -762,8 +782,12 @@ class CompraController extends TransaccionController
             return redirect( 'compras/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los registros de la Factura NO pueden ser modificados. Factura tiene Pagos de CXP aplicados (Tesorería).');
         }
 
-        $precio_unitario = $request->precio_unitario;
         $cantidad = $request->cantidad;
+        $valor_total_descuento = $request->valor_total_descuento;
+        $tasa_descuento = $request->tasa_descuento;
+
+        $precio_unitario = $request->precio_unitario - ( $valor_total_descuento / $cantidad );
+
         $precio_total = $precio_unitario * $cantidad;
 
         $base_impuesto = $precio_total / ( 1 + $linea_registro->tasa_impuesto / 100);
@@ -796,7 +820,9 @@ class CompraController extends TransaccionController
                                     'cantidad' => $cantidad,
                                     'precio_total' => $precio_total,
                                     'base_impuesto' => $base_impuesto,
-                                    'valor_impuesto' => $valor_impuesto
+                                    'valor_impuesto' => $valor_impuesto,
+                                    'tasa_descuento' => $tasa_descuento,
+                                    'valor_total_descuento' => $valor_total_descuento
                                 ] );
 
         // 4. Actualizar movimiento contable del registro de la factura
@@ -866,7 +892,7 @@ class CompraController extends TransaccionController
         //$costo_total_actual = $costo_unitario_actual * $linea_registro->cantidad;
 
         $costo_total_actual = $linea_registro->precio_total / ( 1 + $linea_registro->tasa_impuesto / 100 );
-        $costo_unitario = $request->precio_unitario / ( 1 + $linea_registro->tasa_impuesto / 100);
+        $costo_unitario = $precio_unitario / ( 1 + $linea_registro->tasa_impuesto / 100);
         $costo_total = $costo_unitario * $cantidad;
         $inv_doc_registro = InvDocRegistro::where('inv_doc_encabezado_id', $doc_encabezado->entrada_almacen_id)
                     ->where('inv_producto_id',$linea_registro->inv_producto_id)
@@ -946,7 +972,9 @@ class CompraController extends TransaccionController
                                     'cantidad' => $cantidad,
                                     'precio_total' => $precio_total,
                                     'base_impuesto' => $base_impuesto,
-                                    'valor_impuesto' => $valor_impuesto
+                                    'valor_impuesto' => $valor_impuesto,
+                                    'tasa_descuento' => $tasa_descuento,
+                                    'valor_total_descuento' => $valor_total_descuento
                                 ] );
 
 

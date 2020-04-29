@@ -213,7 +213,7 @@ class ContabReportesController extends Controller
 
         foreach ($grupos as $fila) 
         {
-            $tabla.=$this->get_arbol_movimiento_grupo_cuenta($fila['pivot']['contab_grupo_cuenta_id'], $this->lapso1_ini,$this->lapso1_fin);         
+            $tabla .= $this->get_arbol_movimiento_grupo_cuenta($fila['pivot']['contab_grupo_cuenta_id'], $this->lapso1_ini,$this->lapso1_fin);            
         }
 
         $tabla.='<tr>
@@ -225,7 +225,7 @@ class ContabReportesController extends Controller
             $tabla.='<td style="text-align: right;">'.number_format( $this->total2_reporte , 0, ',', '.').'</td>';
         }
 
-        $tabla.='</tr>';
+        $tabla.='<td></td></tr>';
 
         $tabla.='</tbody> </table>';
 
@@ -281,7 +281,7 @@ class ContabReportesController extends Controller
             $tabla.='<td style="text-align: right;">'.number_format( $this->total2_reporte , 0, ',', '.').'</td>';
         }
 
-        $tabla.='</tr>';
+        $tabla.='<td></td></tr>';
 
         $tabla.='</tbody> </table>';
 
@@ -362,9 +362,9 @@ class ContabReportesController extends Controller
         if ( $this->lapso2_lbl != '' ) 
         {
             // Cuando tiene lapso2
-            $bloque_tabla = $this->printtd_2($this->ordenar_2($cuentas));
+            $bloque_tabla = $this->printtd_2( $this->ordenar_2($cuentas) );
         }else{
-            $bloque_tabla = $this->printtd($this->ordenar($cuentas));
+            $bloque_tabla = $this->printtd( $this->ordenar($cuentas) );
         }
 
         return $bloque_tabla;
@@ -378,10 +378,12 @@ class ContabReportesController extends Controller
         foreach ($cuentas as $cuenta) 
         {
             // Mostrar valores en positivo
-            $valor = $cuenta["valor"];
+            $valor = round( $cuenta["valor"], 3);
+            $lbl_saldo = '';
             if( $valor < 0 )
             {
                 $valor = $valor * -1;
+                $lbl_saldo = 'CR';
             }
 
             $la_etiqueta = $cuenta["etiqueta"];
@@ -397,7 +399,8 @@ class ContabReportesController extends Controller
             $tr.='<tr class="'.$clase.'">
                     <td>'.$la_etiqueta.'</td>
                     <td></td>
-                    <td style="text-align: right;">'.number_format( $valor , 0, ',', '.').'</td>';
+                    <td style="text-align: right;">'.number_format( $valor , 0, ',', '.').'</td>
+                    <td>'.$lbl_saldo.'</td>';
 
             if ( $this->lapso2_lbl != '' ) 
             {
@@ -411,10 +414,12 @@ class ContabReportesController extends Controller
         return $tr;
     }
 
-    function ordenar($cuentas) {
+    function ordenar($cuentas)
+    {
         $arr = [];
 
-        foreach ($cuentas as $fila) {
+        foreach ($cuentas as $fila)
+        {
             
             $abuelo = $fila["abuelo_id"];
             $this->acumular(
@@ -440,22 +445,26 @@ class ContabReportesController extends Controller
                 $fila["valor_saldo"]
             );
             
-            array_push($arr[$abuelo]["hijos"][$padre]["hijos"][$hijo]["hijos"], [
-                "etiqueta" =>  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$fila["cuenta_codigo"] . ' ' . $fila["cuenta_descripcion"],
-                "valor" =>  $fila["valor_saldo"],
-                "hijos" => []
-            ]);
+            array_push(
+                            $arr[$abuelo]["hijos"][$padre]["hijos"][$hijo]["hijos"],
+                            [ 
+                                "etiqueta" =>  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$fila["cuenta_codigo"] . ' ' . $fila["cuenta_descripcion"],
+                                "valor" =>  $fila["valor_saldo"],
+                                "hijos" => []
+                            ]  
+                        );
             
 
-            $this->total1_reporte+=$fila["valor_saldo"];
-        }
-        
+            $this->total1_reporte += $fila["valor_saldo"];
+        }        
+
         return $arr;
     }
 
     function acumular(&$collection, $key, $descripcion, $valor) 
     {
-        if(!array_key_exists($key, $collection)) {
+        if( !array_key_exists($key, $collection) )
+        {
             $collection[$key] = [
                 "etiqueta" =>  $descripcion,
                 "valor" =>  $valor,
@@ -852,14 +861,6 @@ class ContabReportesController extends Controller
         }
           
         $numero_identificacion = '%'.Input::get('core_tercero_id').'%';
-
-        /*echo "contab_cuenta_id: ".$contab_cuenta_id.'<br/>';
-        echo "fecha_inicial: ".$fecha_inicial.'<br/>';
-        echo "fecha_final: ".$fecha_final.'<br/>';
-        echo "codigo_referencia_tercero: ".$codigo_referencia_tercero.'<br/>';
-        echo "operador: ".$operador.'<br/>';
-        echo "numero_identificacion: ".$numero_identificacion.'<br/>';
-        */
         
         $core_empresa_id = Auth::user()->empresa_id;   
 
@@ -897,6 +898,8 @@ class ContabReportesController extends Controller
                 ->get()
                 ->toArray()[0]['valor_saldo'] + $saldo_inicial;
     }
+
+
 
     public function get_saldo_cuentas_entre_fechas($fecha_ini,$fecha_fin,$cuenta_id)
     {
@@ -1060,50 +1063,43 @@ class ContabReportesController extends Controller
         return [ $vector_encabezado, $vector_movimiento ];
     }
 
+
+
     public function reasignar_grupos_cuentas_form()
     {
         $empresa_id = Auth::user()->empresa_id;
-        $tabla = '<table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th> Código </th>
-                            <th> Cuenta </th>
-                            <th> Grupo </th>
-                        </tr>
-                    </thead>
-                    <tbody>';
+
+        $grupos_cuentas = ContabArbolGruposCuenta::orderBy('abuelo_id')
+                                                //->orderBy('padre_id')
+                                                //->orderBy('hijo_id')
+                                                ->get();
 
         $cuentas = ContabCuenta::where('core_empresa_id', $empresa_id)->orderBy('codigo','ASC')->get();
 
-        foreach ($cuentas as $fila) {
-            $tabla .= '<tr>
-                        <td>'.$fila->codigo.'</td>
-                        <td>'.$fila->descripcion.'</td>
-                        <td>'.$this->get_select_grupo_cuentas($fila->contab_cuenta_grupo_id, $fila->id).'<span id="span_'.$fila->id.'" style="color:red;"></span></td>
-                        </tr>';
-        }
-
-
         $miga_pan = [
                 ['url'=>'contabilidad?id='.Input::get('id'),'etiqueta'=>'Contabilidad'],
-                ['url'=>'NO','etiqueta'=>'Configuración'],
-                ['url'=>'NO','etiqueta'=>'Reasignar grupos a cuentas']
+                ['url'=>'NO','etiqueta'=>'Listados'],
+                ['url'=>'NO','etiqueta'=>'Árbol de grupos de cuentas']
             ];
 
-        return view('contabilidad.reasignar_grupos_cuentas', compact('tabla','miga_pan'));
+        return view('contabilidad.reasignar_grupos_cuentas', compact('cuentas', 'grupos_cuentas','miga_pan'));
 
     }
 
-    function get_select_grupo_cuentas( $grupo_id, $cuenta_id )
+
+    public static function get_select_grupo_cuentas( $grupo_id, $cuenta_id )
     {
         $grupos = ContabCuentaGrupo::where('core_empresa_id', Auth::user()->empresa_id)->get();
 
-        foreach ($grupos as $fila) {
+        foreach ($grupos as $fila)
+        {
             $vec[$fila->id] = $fila->descripcion;
         }
 
         return Form::select('cuenta_id_'.$cuenta_id, $vec, $grupo_id, ['id' => $cuenta_id, 'class' => 'combobox2']);
     }
+
+
 
     public function reasignar_grupos_cuentas_save($cuenta_id, $grupo_id)
     {

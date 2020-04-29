@@ -208,6 +208,45 @@
 
 				</div>
 
+
+
+				<br>
+				<h4> Validaciones de ventas  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['permitir_venta_menor_costo'] ) )
+								{
+									$permitir_venta_menor_costo = $parametros['permitir_venta_menor_costo'];
+								}else{
+									$permitir_venta_menor_costo = 0;
+								}
+							?>
+							{{ Form::bsSelect('permitir_venta_menor_costo', $permitir_venta_menor_costo, 'Permitir ventas menor que el costo', [ '0' => 'No', '1' => 'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['permitir_inventarios_negativos'] ) )
+								{
+									$permitir_inventarios_negativos = $parametros['permitir_inventarios_negativos'];
+								}else{
+									$permitir_inventarios_negativos = 0;
+								}
+							?>
+							{{ Form::bsSelect('permitir_inventarios_negativos', $permitir_inventarios_negativos, 'Permitir inventarios negativos', [ '0' => 'No', '1' => 'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+
+
 				<br>
 				<h4> Etiquetas para formatos de impresión  </h4>
 				<hr>

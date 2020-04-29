@@ -1,5 +1,7 @@
 <?php
 
+
+Route::post('vtas_agregar_precio_lista', 'Ventas\VentaController@agregar_precio_lista');
 Route::post('vtas_doc_registro_guardar', 'Ventas\VentaController@doc_registro_guardar');
 Route::get('vtas_get_formulario_edit_registro', 'Ventas\VentaController@get_formulario_edit_registro');
 

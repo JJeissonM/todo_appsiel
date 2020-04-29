@@ -8,12 +8,14 @@
   'dvc_tipo_transaccion_id' => '34',
   'dvc_tipo_doc_app_id' => '35',
   'pv_tipo_doc_app_id' => '41',
-  'modo_liquidacion_precio' => 'ultimo_precio',
+  'modo_liquidacion_precio' => 'lista_de_precios',
+  'permitir_venta_menor_costo' => '1',
+  'permitir_inventarios_negativos' => '1',
   'encabezado_linea_1' => 'SERVIMOS CON CALIDAD.',
   'encabezado_linea_2' => '',
   'encabezado_linea_3' => '',
   'pie_pagina_linea_1' => 'GRACIAS POR SU COMPRA.',
   'pie_pagina_linea_2' => '',
   'pie_pagina_linea_3' => '',
-  'url_id_modelo' => '0'
+  'url_id_modelo' => '0',
 ) ;

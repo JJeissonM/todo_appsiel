@@ -16,4 +16,22 @@ class ListaDctoDetalle extends Model
 	    ->toArray();
 	    return $registros;
 	}
+
+
+	public static function get_descuento_producto( $lista_descuentos_id, $fecha_activacion, $inv_producto_id )
+	{
+		$registro = ListaDctoDetalle::where('lista_descuentos_id', $lista_descuentos_id)
+									->where('fecha_activacion', '<=', $fecha_activacion)
+									->where('inv_producto_id', $inv_producto_id)
+									->get()
+									->last();
+
+		if ( is_null($registro) )
+		{
+			//return InvProducto::find($inv_producto_id)->precio_venta;
+			return 0;
+		}else{
+			return $registro->descuento1;
+		}
+	}
 }

@@ -13,7 +13,9 @@ class VtasPedido extends Model
 
     public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente',  'Fecha entrega', 'Detalle', 'Estado', 'Acción'];
 
-    public $vistas = '{"index":"layouts.index3"}';
+    //public $vistas = '{"index":"layouts.index3"}';
+
+    public $archivo_js = 'assets/js/ventas/pedidos.js';
 
     public static function consultar_registros()
     {
@@ -33,10 +35,6 @@ class VtasPedido extends Model
             )
             ->get()
             ->toArray();
-        /*
-                    ->leftJoin('vtas_doc_registros', 'vtas_doc_registros.vtas_doc_encabezado_id', '=', 'vtas_doc_encabezados.id')
-                                DB::raw( 'SUM(vtas_doc_registros.precio_total) AS campo5' ),
-                    */
     }
 
     public static function consultar_registros2()
@@ -50,9 +48,10 @@ class VtasPedido extends Model
                 'vtas_doc_encabezados.fecha AS campo1',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'vtas_doc_encabezados.descripcion AS campo4',
-                'vtas_doc_encabezados.estado AS campo5',
-                'vtas_doc_encabezados.id AS campo6'
+                'vtas_doc_encabezados.fecha_entrega AS campo4',
+                'vtas_doc_encabezados.descripcion AS campo5',
+                'vtas_doc_encabezados.estado AS campo6',
+                'vtas_doc_encabezados.id AS campo7'
             )
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->paginate(100);

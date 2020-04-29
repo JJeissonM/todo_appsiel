@@ -31,7 +31,6 @@
         $nom_curso=DB::table('sga_cursos')->where('id',$matricula[0]->curso_id)->value('descripcion');
 
         $estudiante = App\Matriculas\Estudiante::get_datos_basicos($cartera->id_estudiante);
-        $nombre_completo = $estudiante->apellido1." ".$estudiante->apellido2." ".$estudiante->nombres;
 
         $empresa = App\Core\Empresa::find($colegio->empresa_id);
 
@@ -45,8 +44,7 @@
                 <tr align="center">
                     <td>
                         {{ $colegio->descripcion }} <br/>
-                        {{ $empresa->nombre1 }} {{ $empresa->otros_nombres }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }} <br/>
-                        NIT {{ $empresa->numero_identificacion }}<br/>
+                        NIT {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}<br/>
                         {{ $colegio->direccion }} Tel. {{ $colegio->telefonos }} {{ $colegio->ciudad }}
                     </td>
                     <td>
@@ -62,7 +60,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <b>Estudiante:</b> {{ $nombre_completo }}
+                        <b>Estudiante:</b> {{ $estudiante->nombre_completo }}
                     </td>
                     <td>
                         <b>Matrícula: </b> {{ $matricula[0]->codigo }}

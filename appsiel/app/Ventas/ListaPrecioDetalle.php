@@ -14,6 +14,10 @@ class ListaPrecioDetalle extends Model
     protected $table = 'vtas_listas_precios_detalles';
 	protected $fillable = ['lista_precios_id', 'inv_producto_id', 'fecha_activacion', 'precio'];
 	public $encabezado_tabla = ['Lista de precios', 'Producto', 'Fecha activación', 'Precio', 'Acción'];
+
+	// Las acciones tienen valores predeterminados, si el modelo no va a tener una acción, se debe asignar la palabra "no" a la acción.
+    public $urls_acciones = '{"imprimir":"no","cambiar_estado":"no","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
+
 	public static function consultar_registros()
 	{
 	    $registros = ListaPrecioDetalle::leftJoin('vtas_listas_precios_encabezados','vtas_listas_precios_encabezados.id','=','vtas_listas_precios_detalles.lista_precios_id')
@@ -30,15 +34,52 @@ class ListaPrecioDetalle extends Model
 		$registro = ListaPrecioDetalle::where('lista_precios_id', $lista_precios_id)
 									->where('fecha_activacion', '<=', $fecha_activacion)
 									->where('inv_producto_id', $inv_producto_id)
+									->orderBy('fecha_activacion','ASC')
 									->get()
 									->last();
 
 		if ( is_null($registro) )
 		{
-			return InvProducto::find($inv_producto_id)->precio_venta;
+			//return InvProducto::find($inv_producto_id)->precio_venta;
+			return 0;
 		}else{
 			return $registro->precio;
 		}
+	}
+
+
+	public static function get_precios_productos_de_la_lista( $lista_precios_id )
+	{
+		$precios = ListaPrecioDetalle::leftJoin('inv_productos','inv_productos.id','=','vtas_listas_precios_detalles.inv_producto_id')
+								->leftJoin('contab_impuestos','contab_impuestos.id','=','inv_productos.impuesto_id')
+								->where('lista_precios_id', $lista_precios_id)
+								->select(
+											'vtas_listas_precios_detalles.id',
+											'vtas_listas_precios_detalles.precio',
+											'vtas_listas_precios_detalles.fecha_activacion',
+											'inv_productos.descripcion as producto_descripcion',
+											'inv_productos.id as producto_codigo',
+											'inv_productos.tipo',
+											'inv_productos.unidad_medida1',
+											'contab_impuestos.tasa_impuesto')
+                    			->orderBy('vtas_listas_precios_detalles.fecha_activacion','DESC')
+								->get();
+		//dd( $precios );
+
+		$productos = [];
+		$i = 0;
+		$precios2 = collect( [] );
+		foreach ($precios as $value)
+		{
+			if ( !in_array( $value->producto_codigo, $productos) )
+			{
+				$precios2[$i] = $value;
+				$productos[$i] = $value->producto_codigo;
+				$i++;
+			}
+		}
+
+		return $precios2;
 	}
 	
 }

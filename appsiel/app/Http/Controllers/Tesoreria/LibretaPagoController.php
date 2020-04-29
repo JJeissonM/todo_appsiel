@@ -175,7 +175,7 @@ class LibretaPagoController extends ModeloController
      */
     public function store( Request $request )
     {   
-        $parametros = config('core'); // Llamar al archivo de configuración del core
+        $parametros = config('configuracion'); // Llamar al archivo de configuración del core
 
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
         $request['id_estudiante'] = $matricula_estudiante->id_estudiante;
@@ -229,7 +229,7 @@ class LibretaPagoController extends ModeloController
         $valor_debito = $valor;
         $valor_credito = 0;
 
-        ContabMovimiento::create(  $datos +
+        $reg_contab = ContabMovimiento::create(  $datos +
                                     [ 'contab_cuenta_id' => $cxc_cuenta_id ] +
                                     [ 'detalle_operacion' => $detalle_operacion] + 
                                     [ 'valor_operacion' => $valor_operacion] + 
@@ -359,7 +359,7 @@ class LibretaPagoController extends ModeloController
      */
     public function update(Request $request, $id)
     {
-        $parametros = config('core'); // Llamar al archivo de configuración del core
+        $parametros = config('configuracion'); // Llamar al archivo de configuración del core
 
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
 
@@ -508,6 +508,11 @@ class LibretaPagoController extends ModeloController
 
         $formato = config('tesoreria.formato_libreta_pago_defecto');
 
+        if( is_null($formato) )
+        {
+            $formato = 'pdf_libreta';
+        }
+        
         $view =  View::make('tesoreria.'.$formato, compact('registro','colegio','empresa','cuenta'))->render();
 
         //crear PDF   echo $view;
@@ -672,7 +677,7 @@ class LibretaPagoController extends ModeloController
 
     public function ver_recaudos($id_libreta){
         $libreta = TesoLibretasPago::find($id_libreta);
-        $estudiante = Estudiante::find($libreta->id_estudiante);
+        $estudiante = Estudiante::get_datos_basicos( $libreta->id_estudiante );
 
         $recaudos = TesoRecaudosLibreta::where('id_libreta',$id_libreta)->get();
 
@@ -739,6 +744,7 @@ class LibretaPagoController extends ModeloController
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
         return $pdf->stream('comprobante_recaudo.pdf');
     }
+
 
     public function eliminar_recaudo_libreta($recaudo_id)
     {

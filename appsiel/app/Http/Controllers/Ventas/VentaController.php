@@ -169,6 +169,8 @@ class VentaController extends TransaccionController
                             [ 'tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto ] +
                             [ 'valor_impuesto' => (float)$lineas_registros[$i]->valor_impuesto ] +
                             [ 'base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total ] +
+                            [ 'tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento ] +
+                            [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
                             [ 'creado_por' => Auth::user()->email ] +
                             [ 'estado' => 'Activo' ];
 
@@ -196,7 +198,7 @@ class VentaController extends TransaccionController
         $doc_encabezado->save();
 
         // Un solo registro contable débito
-        $forma_pago = 'credito'; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
+        $forma_pago = $request->forma_pago; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
 
         // Cartera ó Caja (DB)
         VentaController::contabilizar_movimiento_debito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
@@ -240,7 +242,7 @@ class VentaController extends TransaccionController
 
     public static function contabilizar_movimiento_credito( $una_linea_registro, $detalle_operacion )
     {
-        //dd( $una_linea_registro['tasa_impuesto'] );
+        
         // IVA generado (CR)
         // Si se ha liquidado impuestos en la transacción
         $valor_total_impuesto = 0;
@@ -807,7 +809,9 @@ class VentaController extends TransaccionController
         $id_modelo = Input::get('id_modelo');
         $id_transaccion = Input::get('id_transaccion');
 
-        $formulario = View::make( 'ventas.incluir.formulario_editar_registro', compact('linea_factura','linea_remision','remision','id','id_modelo','id_transaccion','saldo_a_la_fecha') )->render();
+        $producto = InvProducto::find( $linea_remision->inv_producto_id );
+
+        $formulario = View::make( 'ventas.incluir.formulario_editar_registro', compact('linea_factura','linea_remision','remision','id','id_modelo','id_transaccion','saldo_a_la_fecha','producto') )->render();
 
         return $formulario;
     }
@@ -828,16 +832,21 @@ class VentaController extends TransaccionController
         // Se pasaron las validaciones
         $precio_unitario = $request->precio_unitario;
         $cantidad = $request->cantidad;
-        $precio_total = $precio_unitario * $cantidad;
+        $valor_total_descuento = $request->valor_total_descuento;
+        $tasa_descuento = $request->tasa_descuento;
 
-        $base_impuesto = $precio_unitario / ( 1 + $linea_registro->tasa_impuesto / 100);
-        $valor_impuesto = $precio_unitario - $base_impuesto;
+        $precio_total = $precio_unitario * $cantidad - $valor_total_descuento;
+
+        $precio_venta = $precio_unitario - ( $valor_total_descuento / $cantidad );
+
+        $base_impuesto = $precio_venta / ( 1 + $linea_registro->tasa_impuesto / 100);
+        $valor_impuesto = $precio_venta - $base_impuesto;
         $base_impuesto_total = $base_impuesto * $cantidad;
         $valor_impuesto_total = $valor_impuesto * $cantidad;
 
         // 1. Actualizar total del encabezado de la factura
         $nuevo_total_encabezado = $doc_encabezado->valor_total - $linea_registro->precio_total + $precio_total;
-        //dd( $nuevo_total_encabezado );
+
         $doc_encabezado->update(
                                     ['valor_total' => $nuevo_total_encabezado]
                                 );
@@ -864,7 +873,9 @@ class VentaController extends TransaccionController
                                     'precio_total' => $precio_total,
                                     'base_impuesto' => $base_impuesto,
                                     'valor_impuesto' => $valor_impuesto,
-                                    'base_impuesto_total' => $base_impuesto_total
+                                    'base_impuesto_total' => $base_impuesto_total,
+                                    'tasa_descuento' => $tasa_descuento,
+                                    'valor_total_descuento' => $valor_total_descuento
                                 ] );
 
         // 4. Actualizar movimiento contable del registro de la factura
@@ -989,7 +1000,9 @@ class VentaController extends TransaccionController
                                     'precio_total' => $precio_total,
                                     'base_impuesto' => $base_impuesto,
                                     'valor_impuesto' => $valor_impuesto,
-                                    'base_impuesto_total' => $base_impuesto_total
+                                    'base_impuesto_total' => $base_impuesto_total,
+                                    'tasa_descuento' => $tasa_descuento,
+                                    'valor_total_descuento' => $valor_total_descuento
                                 ] );
 
 
@@ -1139,6 +1152,18 @@ class VentaController extends TransaccionController
         return true;
     }
 
+    public function agregar_precio_lista( Request $request )
+    {
+
+        if ( (float)$request->precio == 0)
+        {
+            return redirect( 'web/'.$request->lista_precios_id.'?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Precio incorrecto. Por favor ingréselo nuevamente.');
+        }
+
+        ListaPrecioDetalle::create( $request->all() );
+
+        return redirect( 'web/'.$request->lista_precios_id.'?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Precio agregado correctamente');
+    }
 
     public function get_etiquetas()
     {
