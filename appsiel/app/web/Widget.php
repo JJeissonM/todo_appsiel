@@ -69,4 +69,9 @@ class Widget extends Model
     {
         return $this->hasMany(Tienda::class);
     }
+
+    public function customhtml()
+    {
+        return $this->hasMany(CustomHtml::class);
+    }
 }

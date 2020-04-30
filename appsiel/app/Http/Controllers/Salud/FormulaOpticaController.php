@@ -229,7 +229,7 @@ class FormulaOpticaController extends ModeloController
         $tam_hoja = 'Letter';//array(0, 0, 612.00, 792.00);//
         $orientacion='portrait';
 
-        $view =  View::make('consultorio_medico.formula_optica_print_pdf', compact('consulta','datos_historia_clinica','examenes','anamnesis','resultados','profesional_salud','empresa','formula','firma_autorizada'))->render();
+        $view =  View::make('consultorio_medico.formula_optica_print_pdf', compact('consulta','datos_historia_clinica','examenes','profesional_salud','empresa','formula','firma_autorizada'))->render();
 
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);

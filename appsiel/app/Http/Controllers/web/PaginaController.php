@@ -213,10 +213,12 @@ class PaginaController extends Controller
 
         $widget = $pagina->widgets;
         $view = [];
-        if (count($widget) > 0) {
+        if (count($widget) > 0)
+        {
 
             $widgets = $pagina->widgets()->orderBy('orden')->get();
-            foreach ($widgets as $widget) {
+            foreach ($widgets as $widget)
+            {
                 $factory = new FactoryCompents($widget->seccion->nombre, $widget->id);
                 $componente = $factory();
                 if ($componente === false || $componente->DrawComponent() == false) continue;

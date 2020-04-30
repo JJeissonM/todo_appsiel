@@ -60,9 +60,6 @@ class FrontEndController extends Controller
 
         $page = new PaginaController();
         return $page->showPage($pagina->slug);
-
-        //return view( 'pagina_web.front_end.templates.'.$pagina_plantilla.'.index', compact( 'pagina', 'cadena_secciones' ) );
-
     }
 
 
