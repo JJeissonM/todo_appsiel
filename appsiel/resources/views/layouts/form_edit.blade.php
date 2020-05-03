@@ -29,9 +29,11 @@
 			{{ Form::hidden('url_id',Input::get('id'))}}
 			{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
 			{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+
 			{{ Form::hidden('datos_registro', $registro,['id'=>'datos_registro'])}}
 
-		@yield('campos_adicionales')
+			@yield('campos_adicionales')
+			
 		{{ Form::close() }}
 	</div>
 </div>

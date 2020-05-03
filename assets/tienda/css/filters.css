@@ -1,0 +1,84 @@
+.block {
+    margin: 0 0 30px;
+    clear: both;
+    border: 1px solid #eee;
+    padding: 15px 10px 10px 15px;
+}
+
+.block .block-title strong {
+    font-size: 14px;
+    word-wrap: break-word;
+    display: block;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.block-cart, .block-wishlist, .block-subscribe, .block-compare, .block-reorder, .block-poll, .block-gr-search, .block-viewed, .block-compared, .block-related, .block-tags, .block-login {
+    font-size: 11px;
+    line-height: 1.25;
+}
+
+.block-tags .block-content .tags-list {
+    background: none;
+    border: 0;
+    font-size: 12px;
+}
+
+.tags-list {
+    display: block;
+    font-size: 13px;
+    border: 1px solid #c1c4bc;
+    background: #f8f7f5;
+}
+
+.block-tags .block-content a {
+    font-size: 12px !important;
+    display: inline-block;
+    padding: 4px 6px;
+    margin: 0 0 7px;
+    border: 1px solid #ddd;
+    text-transform: capitalize;
+}
+
+#narrow-by-list dt {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+#narrow-by-list {
+    margin: 0;
+}
+
+#narrow-by-list dt {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+.block-layered-nav #narrow-by-list li {
+    font-size: 10px;
+    line-height: 29px;
+    text-transform: uppercase;
+    padding-left: 10px;
+    border-bottom: 1px dashed #eee;
+}
+
+.ajaxLayer {
+    cursor: pointer;
+}
+
+.block-layered-nav .block-subtitle {
+    display: none;
+}
+
+.block-layered-nav .block-subtitle {
+    margin: 0;
+    padding: 5px 0;
+    font-weight: normal;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f2f2f2;
+    font-family: SegoeUISemibold;
+}

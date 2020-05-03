@@ -1,11 +1,11 @@
 <style>
 
     #main-slider {
-        margin-top: 40px;
+        /*margin-top: 40px;*/
     }
 
     #main-slider .item {
-        height: 400px;
+        height: 450px;
     }
 
     .owl-carousel img {

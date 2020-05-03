@@ -56,6 +56,9 @@ class FactoryCompents
             case "Testimoniales":
                 $component = new TestimonialesComponent($this->widget);
                 break;
+            case "Html personalizado":
+                $component = new CustomHtmlComponent($this->widget);
+                break;
             default:
                 $component = false;
         }

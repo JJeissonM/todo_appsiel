@@ -506,6 +506,7 @@ class VistaController extends Controller
         switch ( $modo ) {
             case 'create':
                 
+                $salida = VistaController::dibujar_campo( $campo );
                 
                 break;
             case 'edit':

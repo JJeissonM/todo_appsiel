@@ -1,0 +1,128 @@
+.category-image {
+    width: 100%;
+    overflow: hidden;
+    text-align: center;
+    margin: 0 0 35px;
+}
+
+.main {
+    margin: 0 auto;
+    min-height: 400px;
+    padding: 30px 0 40px;
+    text-align: left;
+}
+
+.pager .pages li {
+    display: inline;
+    margin: 0 5px;
+}
+
+.products-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.products-grid .item {
+    position: relative;
+}
+
+.ma-box-content {
+    position: relative;
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #fff;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.label-pro-sale, .label-pro-new {
+    width: 68px;
+    height: 68px;
+    font-size: 0;
+    text-indent: -9999px;
+    background: url(http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/sale.png) no-repeat;
+    z-index: 1;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.label-pro-new {
+    background: url('http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/new.png') no-repeat;
+}
+
+.products {
+    position: relative;
+    display: block;
+    float: left;
+    overflow: hidden;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.products >a {
+    display: block;
+    float: left;
+    width: 100%;
+    z-index: 1;
+}
+
+.product-name {
+    margin: 0 0 2px;
+    line-height: 1.2;
+    clear: both;
+}
+
+h2 {
+    font-size: 16px;
+    font-weight: normal;
+}
+
+.product-name a {
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.ratings {
+    font-size: 11px;
+    line-height: 1.25;
+    margin: 4px 0 0;
+}
+
+.rating-box {
+    width: 69px;
+    height: 13px;
+    font-size: 0;
+    line-height: 0;
+    background: url(http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/bkg_rating.gif) 0 0 repeat-x;
+    text-indent: -999em;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.rating-box .rating {
+    float: left;
+    height: 13px;
+    background: url(http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/bkg_rating.gif) 0 100% repeat-x;
+}
+
+.ratings .amount {
+    vertical-align: text-bottom;
+    display: inline-block;
+    height: 14px;
+}
+
+.price-box {
+    margin: 5px 0;
+    font-size: 15px;
+}
+
+.ma-box-content ul.add-to-links {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.ma-box-content ul.add-to-links li {
+    display: inline-block;
+}

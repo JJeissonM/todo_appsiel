@@ -116,7 +116,9 @@ Route::get('testimonial/destroy/{testimonial}', 'web\TestimonialController@destr
 Route::post('testimonial/modificar/pregunta/', 'web\TestimonialController@updated')->name('testimonial.modificar');
 Route::put('testimonial/testimonial/seccion/modificar/{seccion}', 'web\TestimonialController@modificar')->name('testimonial.updated');
 
-//Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
+//		CUSTOM HTML
+Route::resource('custom_html', 'web\CustomHtmlController');
+
 
 
 // Página Web - BACK END

@@ -90,6 +90,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('preguntas', 'components.web.preguntas', ['pregunta']);
         Form::component('tienda', 'components.web.tienda', ['items','grupos']);
         Form::component('testimoniales', 'components.web.testimoniales', ['testimonial']);
+        Form::component('custom_html', 'components.web.custom_html', ['registro']);
     }
 
     /**

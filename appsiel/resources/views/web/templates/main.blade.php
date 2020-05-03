@@ -125,18 +125,13 @@
 
 <body>
 
-    <!-- END SCROLL TOP BUTTON -->
-
-    <!-- Start main content -->
-    <main>
-
         <?php
 
-        use App\Core\Menu;
-        use Illuminate\Support\Facades\Input;
+            use App\Core\Menu;
+            use Illuminate\Support\Facades\Input;
 
-        $id = Input::get('id');
-        $menus = Menu::menus($id);
+            $id = Input::get('id');
+            $menus = Menu::menus($id);
         ?>
 
         @if (!Auth::guest())
@@ -145,7 +140,7 @@
             <div class="container-fluid">
                 <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex">
                     <!-- Text based logo -->
-                    <a class="navbar-brand" href="{{ url('/inicio') }}" style="height: 60px; padding-top: 0px;">
+                    <a class="navbar-brand" href="{{ url('/inicio') }}">
                         <img src="{{ asset('assets/img/logo_appsiel.png') }}" height="60px" width="100px">
                     </a>
                     <!-- image based logo -->
@@ -154,20 +149,17 @@
                         <span class="fa fa-bars"></span>
                     </button>
 
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent" style="margin-left: 150px;">
-                        <ul class="navbar-nav mr-auto mu-navbar-nav">
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav navbar-right mu-navbar-nav">
                             @foreach ($menus as $key => $item)
-                            @if ($item['parent'] != 0)
-                            @break
-                            @endif
-                            @include('web.templates.menu', ['item' => $item])
+                                
+                                @if ($item['parent'] != 0)
+                                    @break
+                                @endif
+                                
+                                @include('web.templates.menu', ['item' => $item])
+                                
                             @endforeach
-                            <li class="nav-item">
-                                <a href="{{url('pagina_web/icons/view?id='.$id)}}"><i class="fa fa-exclamation-circle"></i> Íconos</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{url('pagina_web/nube/view?id='.$id)}}"><i class="fa fa-cloud"></i> Nube</a>
-                            </li>
                         </ul>
                     </div>
                 </nav>
@@ -179,9 +171,10 @@
 
         @include('web.templates.messages')
 
-        @yield('content')
 
-    </main>
+        <div class="container-fluid">
+            @yield('content')
+        </div>
 
     <!-- End main content -->
 
