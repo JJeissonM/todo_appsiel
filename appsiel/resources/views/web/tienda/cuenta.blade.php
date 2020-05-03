@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
 @endsection
 
-@section('contenido')
+@section('content')
 <header>
     <div class="top-link">
         <div class="container">
