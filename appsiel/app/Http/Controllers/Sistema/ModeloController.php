@@ -54,7 +54,8 @@ class ModeloController extends Controller
         $this->aplicacion = Aplicacion::find(Input::get('id'));
 
         // Se obtiene el modelo
-        if (!is_null(Input::get('id_modelo'))) {
+        if ( !is_null( Input::get('id_modelo') ) )
+        {
             $this->modelo = Modelo::find(Input::get('id_modelo'));
         }
     }
@@ -84,6 +85,8 @@ class ModeloController extends Controller
         $url_ver = $acciones->show;
         $url_estado = $acciones->cambiar_estado;
         $url_eliminar = $acciones->eliminar;
+
+
 
         $botones = [];
         $enlaces = json_decode( $acciones->otros_enlaces );
@@ -135,8 +138,8 @@ class ModeloController extends Controller
                                 'index' => 'web' . $parametros_url,
                                 'create' => '',
                                 'edit' => '',
-                                'store' => 'web' . $parametros_url,
-                                'update' => 'web/id_fila' . $parametros_url,
+                                'store' => 'web',
+                                'update' => 'web/id_fila',
                                 'show' => 'web/id_fila' . $parametros_url,
                                 'imprimir' => '',
                                 'eliminar' => '',
@@ -144,35 +147,81 @@ class ModeloController extends Controller
                                 'otros_enlaces' => ''
                             ];
 
+
+        // Se agregan los enlaces que tiene el modelo en la base de datos (ESTO DEBE DESAPARECER, PERO PRIMERO SE DEBEN MIGRAR LOS MODELOS ANTIGUOS)
+        if ($modelo->url_crear != '')
+        {
+            $acciones->create = $modelo->url_crear . $parametros_url;
+        }
+
+        if ($modelo->url_edit != '')
+        {
+            $acciones->edit = $modelo->url_edit . $parametros_url;
+        }
+
+        if ($modelo->url_form_create != '')
+        {
+            $acciones->store = $modelo->url_form_create;
+            $acciones->update = $modelo->url_form_create . '/id_fila';
+        }
+
+        if ($modelo->url_print != '')
+        {
+            $acciones->imprimir = $modelo->url_print . $parametros_url;
+        }
+
+        if ($modelo->url_ver != '')
+        {
+            $acciones->show = $modelo->url_ver . $parametros_url;
+        }
+
+        if ($modelo->url_estado != '')
+        {
+            $acciones->cambiar_estado = $modelo->url_estado . $parametros_url;
+        }
+
+        if ($modelo->url_eliminar != '')
+        {
+            $acciones->eliminar = $modelo->url_eliminar . $parametros_url;
+        }
+
+        // Otros enlaces en formato JSON
+        if ($modelo->enlaces != '')
+        {
+            $acciones->otros_enlaces = $modelo->enlaces;
+        }
+
+
+        // MANEJO DE URLs DESDE EL PROPIO MODELO
         // Se llaman las urls desde la class(name_space) del modelo
         $urls_acciones = json_decode( app( $modelo->name_space )->urls_acciones );
 
         if ( !is_null($urls_acciones) )
         {
             // Acciones predeterminadas, aunque esté vacía la variable $urls_acciones en formato JSON en la class del modelo
+            /*
             $acciones->create = 'web/create' . $parametros_url;
             $acciones->edit = 'web/id_fila/edit' . $parametros_url;
-            $acciones->store = 'web' . $parametros_url;
-            $acciones->update = 'web/id_fila' . $parametros_url;
+            $acciones->store = 'web';
+            $acciones->update = 'web/id_fila';
             $acciones->show = 'web/id_fila' . $parametros_url;
             $acciones->imprimir = 'web_imprimir/id_fila' . $parametros_url;
             $acciones->eliminar = 'web_eliminar/id_fila' . $parametros_url;
             $acciones->cambiar_estado = 'a_i/id_fila' . $parametros_url;
             $acciones->otros_enlaces = '';
+            */
 
             // Acciones particulares, si están definidas en la variable $urls_acciones de la class del modelo
             if ( isset( $urls_acciones->create ) )
             {
-                $acciones->create = '';
                 if ( $urls_acciones->create != 'no' )
                 {
                     $acciones->create = $urls_acciones->create . $parametros_url;
                 }
             }
-            
+
             if ( isset( $urls_acciones->edit ) )
             {
-                $acciones->edit = '';
                 if ( $urls_acciones->edit != 'no' )
                 {
                     $acciones->edit = $urls_acciones->edit . $parametros_url;
@@ -181,25 +230,22 @@ class ModeloController extends Controller
             
             if ( isset( $urls_acciones->store ) )
             {
-                $acciones->store = '';
                 if ( $urls_acciones->store != 'no' )
                 {
-                    $acciones->store = $urls_acciones->store . $parametros_url;
+                    $acciones->store = $urls_acciones->store;
                 }
             }
             
             if ( isset( $urls_acciones->update ) )
             {
-                $acciones->update = '';
                 if ( $urls_acciones->update != 'no' )
                 {
-                    $acciones->update = $urls_acciones->update . $parametros_url;
+                    $acciones->update = $urls_acciones->update;
                 }
             }
             
             if ( isset( $urls_acciones->show ) )
             {
-                $acciones->show = '';
                 if ( $urls_acciones->show != 'no' )
                 {
                     $acciones->show = $urls_acciones->show . $parametros_url;
@@ -208,7 +254,6 @@ class ModeloController extends Controller
             
             if ( isset( $urls_acciones->imprimir ) )
             {
-                $acciones->imprimir = '';
                 if ( $urls_acciones->imprimir != 'no' )
                 {
                     $acciones->imprimir = $urls_acciones->imprimir . $parametros_url;
@@ -217,7 +262,6 @@ class ModeloController extends Controller
             
             if ( isset( $urls_acciones->eliminar ) )
             {
-                $acciones->eliminar = '';
                 if ( $urls_acciones->eliminar != 'no' )
                 {
                     $acciones->eliminar = $urls_acciones->eliminar . $parametros_url;
@@ -226,7 +270,6 @@ class ModeloController extends Controller
             
             if ( isset( $urls_acciones->cambiar_estado ) )
             {
-                $acciones->cambiar_estado = '';
                 if ( $urls_acciones->cambiar_estado != 'no' )
                 {
                     $acciones->cambiar_estado = $urls_acciones->cambiar_estado . $parametros_url;
@@ -236,58 +279,12 @@ class ModeloController extends Controller
             // Otros enlaces en formato JSON
             if ( isset( $urls_acciones->otros_enlaces ) )
             {
-                $acciones->otros_enlaces = '';
                 if ( $urls_acciones->otros_enlaces != 'no' )
                 {
-                    $acciones->otros_enlaces = $urls_acciones->otros_enlaces . $parametros_url;
+                    $acciones->otros_enlaces = $urls_acciones->otros_enlaces;
                 }
             }
             
-        }else{ // Si la variable no existe en el modelo
-            // Se agregar los enlaces que tiene el modelo en la base de datos (ESTO DEBE DESAPARECER, SE DEBE MIGRAR LOS MODELOS ANTIGUOS)
-
-
-            if ($modelo->url_crear != '')
-            {
-                $acciones->create = $modelo->url_crear . $parametros_url;
-            }
-
-            if ($modelo->url_edit != '')
-            {
-                $acciones->edit = $modelo->url_edit . $parametros_url;
-            }
-
-            if ($modelo->url_form_create != '')
-            {
-                $acciones->store = $modelo->url_form_create . $parametros_url;
-                $acciones->update = $modelo->url_form_create . '/id_fila' . $parametros_url;
-            }
-
-            if ($modelo->url_print != '')
-            {
-                $acciones->imprimir = $modelo->url_print . $parametros_url;
-            }
-
-            if ($modelo->url_ver != '')
-            {
-                $acciones->show = $modelo->url_ver . $parametros_url;
-            }
-
-            if ($modelo->url_estado != '')
-            {
-                $acciones->cambiar_estado = $modelo->url_estado . $parametros_url;
-            }
-
-            if ($modelo->url_eliminar != '')
-            {
-                $acciones->eliminar = $modelo->url_eliminar . $parametros_url;
-            }
-
-            // Otros enlaces en formato JSON
-            if ($modelo->enlaces != '')
-            {
-                $acciones->otros_enlaces = $modelo->enlaces;
-            }
         }
 
         return $acciones;
@@ -324,9 +321,9 @@ class ModeloController extends Controller
         $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
 
         $form_create = [
-            'url' => $acciones->store,
-            'campos' => $lista_campos
-        ];
+                        'url' => $acciones->store,
+                        'campos' => $lista_campos
+                        ];
 
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, 'Crear nuevo');
 
@@ -344,7 +341,8 @@ class ModeloController extends Controller
             }
         }
         
-        if (Input::get('vista') != null) {
+        if (Input::get('vista') != null)
+        {
             return view(Input::get('vista'), compact('form_create', 'miga_pan', 'archivo_js'));
         }
 
@@ -358,7 +356,7 @@ class ModeloController extends Controller
     {
         $datos = $request->all(); // Datos originales
         // Se crea un nuevo registro para el ID del modelo enviado en el request 
-        $registro = $this->crear_nuevo_registro($request);
+        $registro = $this->crear_nuevo_registro( $request );
 
         // Si se está almacenando una transacción que maneja consecutivo
         if (isset($request->consecutivo) and isset($request->core_tipo_doc_app_id)) {
@@ -372,6 +370,7 @@ class ModeloController extends Controller
             $registro->save();
         }
 
+        // $this->modelo se actualiza en el método de arriba crear_nuevo_registro()
         $this->almacenar_imagenes($request, $this->modelo->ruta_storage_imagen, $registro);
 
         $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
@@ -398,7 +397,6 @@ class ModeloController extends Controller
     public function crear_nuevo_registro($request)
     {
         $this->modelo = Modelo::find($request->url_id_modelo);
-
 
         $this->validar_requeridos_y_unicos($request, $this->modelo);
 
@@ -535,6 +533,7 @@ class ModeloController extends Controller
     //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
     public function update(Request $request, $id)
     {
+
         $datos = $request->all(); // Datos originales
 
         // Se obtiene el modelo según la variable modelo_id de la url
@@ -589,8 +588,7 @@ class ModeloController extends Controller
             app($modelo->name_space)->update_adicional($datos, $id);
         }
 
-        $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
-        
+        $acciones = $this->acciones_basicas_modelo( $modelo, '' );
         $url_ver = str_replace('id_fila', $registro->id, $acciones->show);
 
         return redirect( $url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro MODIFICADO correctamente.');
@@ -674,7 +672,7 @@ class ModeloController extends Controller
         $registro_modelo_padre_id = $respuesta['registro_modelo_padre_id'];
         $titulo_tab = $respuesta['titulo_tab'];
 
-        return view( $vista, compact('form_create', 'miga_pan', 'registro', 'url_crear', 'url_edit', 'tabla', 'opciones', 'registro_modelo_padre_id', 'reg_anterior', 'reg_siguiente', 'titulo_tab', 'botones'));
+        return view( $vista , compact('form_create', 'miga_pan', 'registro', 'url_crear', 'url_edit', 'tabla', 'opciones', 'registro_modelo_padre_id', 'reg_anterior', 'reg_siguiente', 'titulo_tab', 'botones'));
     }
 
 

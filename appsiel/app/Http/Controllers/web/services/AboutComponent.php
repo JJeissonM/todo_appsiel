@@ -38,10 +38,11 @@ class AboutComponent implements IDrawComponent
             ],
             [
                 'url' => 'NO',
-                'etiqueta' => 'About Us'
+                'etiqueta' => 'Quiénes somos'
             ]
         ];
         $widget = $this->widget;
+
         $variables_url = '?id=' . Input::get('id');
         $aboutus = Aboutus::where('widget_id', $widget)->first();
         return view('web.components.about_us', compact('miga_pan', 'variables_url', 'widget', 'aboutus'));

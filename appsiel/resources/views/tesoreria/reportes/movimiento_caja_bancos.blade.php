@@ -6,6 +6,7 @@
         <tr>
             <th>Fecha</th>
             <th>Documento</th>
+            <th>Tercero</th>
             <th>Concepto</th>
             <th>Entradas</th>
             <th>Salidas</th>
@@ -15,6 +16,7 @@
     <tbody>
         <tr>
             <td>{{ $fecha_desde }}</td>
+            <td> &nbsp; </td>
             <td> &nbsp; </td>
             <td> &nbsp; </td>
             <td> &nbsp; </td>
@@ -53,6 +55,7 @@
             <tr>
                 <td> {{ $fila->fecha }}</td>
                 <td> {{ $fila->documento_transaccion_prefijo_consecutivo }} </td>
+                <td> {{ $fila->tercero_descripcion }} </td>
                 <td> {{ $fila->motivo_descripcion }} </td>
                 <td> {{ $entrada }} </td>
                 <td> {{ $salida}} </td>

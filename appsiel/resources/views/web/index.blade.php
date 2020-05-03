@@ -48,6 +48,13 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72"
           href="{{asset('images/ico/apple-touch-icon-72-precomposed.png')}}">
     <link rel="apple-touch-icon-precomposed" href="{{asset('images/ico/apple-touch-icon-57-precomposed.png')}}">
+
+
+
+    @foreach($links as $key => $value)
+        {!! $value !!}
+    @endforeach
+
     <style type="text/css">
         .article-ls {
             border: 1px solid;
@@ -171,16 +178,23 @@
             border-bottom: 1px solid {{$configuracion->color_terciario}}  !important;
         }
 
+
+        @foreach($estilos as $key => $value)
+            {{ $value }}
+        @endforeach
+
     </style>
 </head>
 
 <body style="padding:0;">
 
 <main>
-
-    @foreach($view as $item)
-        {!! $item !!}
-    @endforeach
+    
+    <div class="container-fluid">
+        @foreach($view as $item)
+            {!! $item !!}
+        @endforeach
+    </div>        
 
 </main>
 
@@ -242,6 +256,12 @@
         });
     });
 </script>
+
+
+        @foreach($scripts as $key => $value)
+            {{ $value }}
+        @endforeach
+        
 @yield('script')
 
 </body>

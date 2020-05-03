@@ -99,6 +99,7 @@ class TesoMovimiento extends Model
     {
         return TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
                             ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
+                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
                             ->where( 'teso_caja_id','=',$teso_caja_id)
                             ->where( 'teso_cuenta_bancaria_id','=', $teso_cuenta_bancaria_id)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
@@ -106,7 +107,8 @@ class TesoMovimiento extends Model
                                         DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS documento_transaccion_prefijo_consecutivo'),
                                         'teso_motivos.descripcion AS motivo_descripcion',
                                         'teso_movimientos.fecha',
-                                        'teso_movimientos.valor_movimiento' )
+                                        'teso_movimientos.valor_movimiento',
+                                        'core_terceros.descripcion as tercero_descripcion' )
                             ->orderBy('teso_movimientos.fecha')
                             ->orderBy('teso_movimientos.created_at')
                             ->get();

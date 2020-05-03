@@ -24,7 +24,7 @@
 
     </style>
 
-    <div class="footerarea" style="padding-top: 20px; background: {{$footer->color}}">
+    <div class="footerarea" style="padding-top: 20px; background: {{$footer->background}}; color: {{$footer->color}}">
         <img src="{{asset('img/backgrounds/sea-2755901_1920.jpg')}}" alt="">
         <div class="container">
             <div class="row">

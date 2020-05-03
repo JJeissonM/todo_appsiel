@@ -84,47 +84,47 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-                <h4>.:: En ésta Sección: Quiénes somos ::.</h4>
+                <h4>.:: En ésta Sección: Html personalizado ::.</h4>
+
+
+
+
             </div>
         </div>
     </div>
     <div class="card">
-        <div class="card-body d-flex justify-content-between flex-wrap">
+        <div class="body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
-                <h4 class="column-title" style="padding: 10px;">Menú Quiénes somos</h4>
-                <div class="col-md-12">
-                    @if($aboutus != null)
-                        <div class="contenido">
-                            @if($aboutus->disposicion == 'DEFAULT')
-                            <img src="{{url($aboutus->imagen)}}" alt="" class="imagen">
-                            @endif
-                            <div class="descripcion">
-                                <h5 class="titulo">{{$aboutus->titulo}}</h5>
-                                <p>{{str_limit($aboutus->descripcion,30)}}</p>
-                            </div>
-                        </div>
-                        <div class="add d-flex justify-content-end">
-                            <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}"
-                               class="btn btn-primary waves-effect btn-block btn-sm"
-                               style="color: white; font-weight: bold;"> Editar</a>
-                        </div>
-                    @else
-                        <div class="add d-flex justify-content-end">
-                            <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}"
-                               class="btn btn-primary waves-effect btn-block btn-sm"
-                               style="color: white; font-weight: bold;"> Configurar </a>
-                        </div>
-                    @endif
-                </div>
+                <h4 class="column-title" style="padding: 10px;">Editar Html personalizado</h4>
+                @if($registro != null)
+                    {{ Form::model($registro, ['url' => 'custom_html/'.$registro->id, 'method' => 'PUT','id'=>'form_create','files' => true]) }}
+                    <?php
+                        $contenido = $registro->contenido;
+                    ?>
+                @else
+                    {{ Form::open(['url'=>'custom_html','id'=>'form_create','files' => true]) }}
+                    <?php
+                        $contenido = '';
+                    ?>
+                @endif
+
+                    <label class="form-label">Contenido</label>
+                    <textarea name="contenido" class="form-control contenido" rows="15" required="required">{{ $contenido }}</textarea>
+
+                    {{ Form::hidden('widget_id', $widget) }}
+                    {{ Form::hidden('url_id',Input::get('id')) }}
+
+                    <div class="form-group">
+                        <br/><br/>
+                        {{ Form::bsButtonsForm( 'paginas?id=' . Input::get('id') ) }}
+                    </div>
+                    
+                {{ Form::close() }}
             </div>
-            <div class="widgets" id="widgets">
+            <div class="widgets" id="widgets" style="position: relative;">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                @if($aboutus != null)
-                    @if($aboutus->disposicion == 'DEFAULT')
-                        {!! Form::aboutus($aboutus)!!}
-                    @else
-                        {!! Form::aboutuspremiun($aboutus) !!}
-                    @endif
+                @if($registro != null)
+                    {!! Form::custom_html( $registro, '')!!}
                 @endif
             </div>
         </div>
@@ -132,5 +132,18 @@
 @endsection
 
 @section('script')
+    <script type="text/javascript">
+        $(document).ready(function(){
 
+            $('#bs_boton_guardar').on('click',function(event){
+                event.preventDefault();
+
+                // Desactivar el click del botón
+                $( this ).off( event );
+
+                $('#form_create').submit();
+            });
+
+        });
+    </script>
 @endsection
