@@ -31,17 +31,21 @@ class MessagesController extends Controller
     public function index()
     {
         // All threads, ignore deleted/archived participants
-        //$threads = Thread::getAllLatest()->get();
+        // $threads = Thread::getAllLatest()->get();
 
         // All threads that user is participating in
-        $threads = Thread::forUser(Auth::id())->latest('updated_at')->get();
+        $threads = Thread::forUser( (array)Auth::id() )->latest('updated_at')->get();
 
         // All threads that user is participating in, with new messages
-        // $threads = Thread::forUserWithNewMessages(Auth::id())->latest('updated_at')->get();
+        //$threads = Thread::forUserWithNewMessages(Auth::id())->latest('updated_at')->get();
 
+
+        // All threads that user is participating in
+        // $currentUserId = Auth::user()->id;
+        // $threads = Thread::forUser($currentUserId)->get();
 
         $miga_pan = [
-                        ['url'=>'/','etiqueta'=>'Inicio'],
+                        ['url'=>'/inicio','etiqueta'=>'Inicio'],
                         ['url'=>'NO','etiqueta'=>'Mensajería interna'],
                         ['url'=>'NO','etiqueta'=>'Buzón de entrada']
                     ];

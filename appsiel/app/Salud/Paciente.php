@@ -12,17 +12,21 @@ class Paciente extends Model
 	
     protected $fillable = ['core_tercero_id', 'codigo_historia_clinica', 'fecha_nacimiento', 'genero', 'ocupacion', 'estado_civil', 'grupo_sanguineo', 'remitido_por', 'nivel_academico'];
 
-	public $encabezado_tabla = ['Nombre completo', 'Doc. Identidad', 'Codigo historia clínica', 'Fecha nacimiento', 'Género', 'Grupo Sanguineo', 'Acción'];
+	public $encabezado_tabla = ['Codigo historia clínica', 'Nombre completo', 'Doc. Identidad', 'Fecha nacimiento', 'Género', 'Grupo Sanguineo', 'Acción'];
     public static function consultar_registros()
     {
-        $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
-
-        $registros = Paciente::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_pacientes.core_tercero_id')
-                    ->select(DB::raw($select_raw), 'core_terceros.numero_identificacion AS campo2', 'salud_pacientes.codigo_historia_clinica AS campo3', 'salud_pacientes.fecha_nacimiento AS campo4', 'salud_pacientes.genero AS campo5', 'salud_pacientes.grupo_sanguineo AS campo6', 'salud_pacientes.id AS campo7')
-        ->get()
-        ->take(20)
-        ->toArray();
-        return $registros;
+        return Paciente::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_pacientes.core_tercero_id')
+                    ->select(
+                                'salud_pacientes.codigo_historia_clinica AS campo1',
+                                DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo2' ),
+                                'core_terceros.numero_identificacion AS campo3',
+                                'salud_pacientes.fecha_nacimiento AS campo4',
+                                'salud_pacientes.genero AS campo5',
+                                'salud_pacientes.grupo_sanguineo AS campo6',
+                                'salud_pacientes.id AS campo7')
+                    ->get()
+                    ->take(20)
+                    ->toArray();
     }
 
     public static function consultar_datatable()

@@ -79,5 +79,9 @@
 		});
 	</script>
 
+	@if( isset($archivo_js) )
+		<script src="{{ asset( $archivo_js ) }}"></script>
+	@endif
+
 @endsection
 

@@ -175,7 +175,7 @@ class LibretaPagoController extends ModeloController
      */
     public function store( Request $request )
     {   
-        $parametros = config('core'); // Llamar al archivo de configuración del core
+        $parametros = config('configuracion'); // Llamar al archivo de configuración del core
 
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
         $request['id_estudiante'] = $matricula_estudiante->id_estudiante;
@@ -229,7 +229,7 @@ class LibretaPagoController extends ModeloController
         $valor_debito = $valor;
         $valor_credito = 0;
 
-        ContabMovimiento::create(  $datos +
+        $reg_contab = ContabMovimiento::create(  $datos +
                                     [ 'contab_cuenta_id' => $cxc_cuenta_id ] +
                                     [ 'detalle_operacion' => $detalle_operacion] + 
                                     [ 'valor_operacion' => $valor_operacion] + 
@@ -359,7 +359,7 @@ class LibretaPagoController extends ModeloController
      */
     public function update(Request $request, $id)
     {
-        $parametros = config('core'); // Llamar al archivo de configuración del core
+        $parametros = config('configuracion'); // Llamar al archivo de configuración del core
 
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
 

@@ -210,6 +210,7 @@ class VistaController extends Controller
                 }
                 $control = Form::hidden($campo['name'],$valor, array_merge(['id' => $campo['name']], $campo['atributos']));
                 break;
+
             case 'imagen':
                 // Si se manda como valor la ubicación de la imagen, se muestra
                 if ($campo['value']==null) {
@@ -505,6 +506,7 @@ class VistaController extends Controller
         switch ( $modo ) {
             case 'create':
                 
+                $salida = VistaController::dibujar_campo( $campo );
                 
                 break;
             case 'edit':

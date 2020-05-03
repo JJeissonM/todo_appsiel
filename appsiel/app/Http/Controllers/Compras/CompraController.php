@@ -167,7 +167,7 @@ class CompraController extends TransaccionController
         $cantidad_registros = count( $lineas_registros );
 
         $lineas_registros_originales = json_decode( $datos['lineas_registros'] );
-
+        
         $entrada_almacen_id = '';
         $primera = true;
         for ($i=0; $i < $cantidad_registros ; $i++)
@@ -190,6 +190,14 @@ class CompraController extends TransaccionController
 
                 $precio_total = $precio_unitario * $cantidad;
 
+                $tasa_descuento = 0;
+                $valor_total_descuento = 0;
+                if ( isset( $lineas_registros_originales[ $linea ]->tasa_descuento ) )
+                {
+                    $tasa_descuento = $lineas_registros_originales[ $linea ]->tasa_descuento;
+                    $valor_total_descuento = $lineas_registros_originales[ $linea ]->valor_total_descuento;
+                }
+
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
                                 [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
@@ -199,8 +207,8 @@ class CompraController extends TransaccionController
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
                                 [ 'valor_impuesto' => ( $precio_total - $total_base_impuesto ) ] +
-                                [ 'tasa_descuento' => $lineas_registros_originales[ $linea ]->tasa_descuento ] +
-                                [ 'valor_total_descuento' => $lineas_registros_originales[ $linea ]->valor_total_descuento ] +
+                                [ 'tasa_descuento' => $tasa_descuento ] +
+                                [ 'valor_total_descuento' => $valor_total_descuento ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
 

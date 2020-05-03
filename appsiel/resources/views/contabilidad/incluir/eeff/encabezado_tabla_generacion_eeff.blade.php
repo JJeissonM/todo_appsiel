@@ -26,12 +26,12 @@ if ( $lapso3_lbl != '' ) {
     $cols = 3;
 }
 
-$tabla.='</thead>
+$tabla.='<th></th></thead>
             <tbody>';
 
 // una fila en blanco
 $tabla.='<tr>
-            '.str_repeat('<td>&nbsp;</td>',$cols+2).'
+            '.str_repeat('<td>&nbsp;</td>',$cols+3).'
         </tr>';
 
 echo $tabla;

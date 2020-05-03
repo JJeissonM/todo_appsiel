@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
-class VtasPedido extends VtasDocEncabezado
+class VtasPedido extends Model
 {
     protected $table = 'vtas_doc_encabezados';
 
     public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente',  'Fecha entrega', 'Detalle', 'Estado', 'Acción'];
 
-    public $vistas = '{"index":"layouts.index3"}';
+    //public $vistas = '{"index":"layouts.index3"}';
+
+    public $archivo_js = 'assets/js/ventas/pedidos.js';
 
     public static function consultar_registros()
     {
@@ -33,10 +35,6 @@ class VtasPedido extends VtasDocEncabezado
             )
             ->get()
             ->toArray();
-        /*
-                    ->leftJoin('vtas_doc_registros', 'vtas_doc_registros.vtas_doc_encabezado_id', '=', 'vtas_doc_encabezados.id')
-                                DB::raw( 'SUM(vtas_doc_registros.precio_total) AS campo5' ),
-                    */
     }
 
     public static function consultar_registros2()

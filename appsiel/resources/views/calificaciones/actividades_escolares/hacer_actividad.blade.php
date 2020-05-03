@@ -56,9 +56,7 @@
 							break;
 					}
 
-					echo $mostrar;
-
-					
+					echo $mostrar;					
 				?>
 				
 				<br>
@@ -81,7 +79,7 @@
 				@else
 
 					<div class="container-fluid" id="div_ingresar_respuesta">
-						<div class="row">
+						<div class="row" style="font-size: 15px;">
 							<div class="col-md-12">
 								{{ Form::open( [ 'url' => 'sin_cuestionario_guardar_respuesta?id='.Input::get('id'), 'id' => 'form_create', 'files' => true]) }}
 
@@ -91,14 +89,14 @@
 									{{ Form::hidden('actividad_id', $actividad->id ) }}
 									{{ Form::hidden('respuesta_id', $respuesta->id, ['id' => 'respuesta_id'] ) }}
 
-									@if( (float)$respuesta->calificacion == 0 || $respuesta->calificacion == '')
+									@if( $respuesta->calificacion == '')
 										<textarea class="form-control" rows="4" name="respuesta_enviada_2" id="respuesta_enviada_2" cols="250" required="required">{{ $respuesta->respuesta_enviada }}</textarea>
 
 										<br><br>
 										@if( $respuesta->adjunto == '')
 											<h4>Adjuntar un archivo</h4>
 											<input type="file" name="adjunto" id="adjunto" accept=".xlsx,.pdf,.docx,.ppt,.pptx,.doc,.xls,.jpg,.png,.jpeg" class="form-control">
-											<b style="color: red;"> El tamaño máximo del archivo debe ser de 2M </b>
+											<b style="color: red;"> El tamaño máximo del archivo debe ser de 20M </b>
 										@else
 											<div class="row">
 												<div class="col-md-8">
@@ -134,9 +132,26 @@
 												@endif
 
 												<br><br>
-												<b> Calificación: </b> {{ $respuesta->calificacion }}
+												<hr>
+												<div class="well">
+													<b> Anotación del profesor: </b>
+													<br>
+													{{ $respuesta->calificacion }}
+												</div>
 											</div>
 										
+									@endif
+									@if( $respuesta->updated_at != '')
+
+										<br>
+										<u>Fecha envío</u>
+										<br>
+										<?php
+											$fecha = explode(" ", $respuesta->updated_at);
+										?>
+										Fecha: {{ $fecha[0] }}
+										<br>
+										Hora: {{ $fecha[1] }}
 									@endif
 
 								{{ Form::close() }}
@@ -287,7 +302,7 @@
 		    // Validar tamaño archivos
 			$(document).on('change', '#adjunto', function(e) {
 				var file = e.target.files[0];
-				if ( file.size < 2106000 ) {
+				if ( file.size < 21060000 ) {
 					//addImage(e);
 				}else{
 					alert('El tamaño (peso) del archivo supera el maximo permitido.');

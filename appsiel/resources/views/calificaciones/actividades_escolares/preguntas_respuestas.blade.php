@@ -9,9 +9,12 @@
 				$respuesta_enviada = json_decode( $respuestas->respuesta_enviada );
 				$vec_respuestas = [];
 				//dd($respuestas);
+
 				// Crear array con base en el JSON
-				if ( !is_null($respuesta_enviada) ) {
-					foreach ($respuesta_enviada as $key => $value) {
+				if ( !is_null($respuesta_enviada) )
+				{
+					foreach ($respuesta_enviada as $key => $value)
+					{
 						// $key corresponde a la pregunta_id
 						$vec_respuestas[$key]['respuesta'] = $value;
 						$vec_respuestas[$key]['descripcion'] = '';
@@ -39,7 +42,8 @@
 							// Si la pregunta_id está en el array de respuestas, se le asigna su valor_respuesta almacenado y se oculta 
 							$ocultar = 'block';
 							$valor_respuesta = null;
-							if ( array_key_exists($pregunta->id, $vec_respuestas) ) {
+							if ( array_key_exists($pregunta->id, $vec_respuestas) )
+							{
 								$ocultar = 'none';
 								$valor_respuesta = $vec_respuestas[$pregunta->id]['respuesta'];
 								$vec_respuestas[$pregunta->id]['descripcion'] = $pregunta->descripcion;

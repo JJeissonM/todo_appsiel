@@ -1,13 +1,14 @@
 <div class="row">
 	<div class="col-md-12">
-        <div>
-            <table class="table table-striped table-bordered" id="ingreso_registros">
+		<div class="table-responsive" id="table_content">
+			<table class="table table-bordered table-striped" id="myTable">
                 <thead>
                     <tr>
                         <th>Estudiante</th>
                         <th>Respuesta enviada</th>
+                        <th>Fecha envio</th>
                         <th>Archivo adjunto</th>
-                        <th>Calificación asignada</th>
+                        <th>Anotación</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -20,7 +21,7 @@
 
 							if( is_null( $respuestas ) )
 				            {   
-				                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','adjunto'=>''];
+				                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','adjunto'=>'','updated_at'=>''];
 				            }
 
 						?>
@@ -31,6 +32,16 @@
 							</td>
 							<td> 
 								{!! $respuestas->respuesta_enviada !!}
+							</td>
+							<td>
+								@if( $respuestas->updated_at != '')
+									<?php
+										$fecha = explode(" ", $respuestas->updated_at);
+									?>
+									Fecha: {{ $fecha[0] }}
+									<br>
+									Hora: {{ $fecha[1] }}
+								@endif
 							</td>
 							<td>
 								@if( $respuestas->adjunto != '' )
@@ -55,9 +66,9 @@
 	<div class="col-md-12">
 		<div class="container-fluid">
 	        <div class="alert alert-success">
-	            NOTA: Cuando se le asigna una calificación a un estudiante, este ya no podrá modificar la respuesta enviada.
+	            NOTA: Cuando se le registra una anotación a un estudiante, este ya no podrá modificar la respuesta enviada.
 				<br>
-				Mientras la calificación sea cero (0) ó está vacía, el estudiante podrá seguir modificando la respuesta.
+				Mientras la anotación sea cero (0) ó está vacía, el estudiante podrá seguir modificando la respuesta.
 	        </div>
 	    </div>
 				

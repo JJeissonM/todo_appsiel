@@ -98,6 +98,27 @@
 
 @section('scripts')
 
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$('#fecha').val( get_fecha_hoy() );
+
+			$('#bs_boton_guardar').on('click',function(event){
+				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+
+				// Desactivar el click del botón
+				$( this ).off( event );
+
+				$('#form_create').submit();
+			});
+
+		});
+	</script>
 	@if( isset($archivo_js) )
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif
