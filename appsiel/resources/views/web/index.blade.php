@@ -20,9 +20,8 @@
     <!-- Skills Circle CSS  -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/circlebars@1.0.3/dist/circle.css">
 
-    <!--Main Style
+    <!--Main Style-->
     <link href="{{asset('assets/style.css')}}" rel="stylesheet">
-     -->
     <!-- Fonts -->
 
     <!-- Google Fonts Raleway -->
