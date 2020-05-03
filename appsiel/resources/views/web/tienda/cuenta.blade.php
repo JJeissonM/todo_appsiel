@@ -1,10 +1,12 @@
-@extends('web.index')
+@extends('web.templates.index')
+
 @section('style')
     <link rel="stylesheet" href="{{asset('assets/tienda/css/skeleton.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/normalize.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/custom.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
 @endsection
+
 @section('contenido')
 <header>
     <div class="top-link">
@@ -604,6 +606,7 @@
     </div>
 </footer>
 @endsection
+
 @section('script')
 <script src="{{asset('assets/tienda/js/categories.js')}}"></script>
 @endsection
