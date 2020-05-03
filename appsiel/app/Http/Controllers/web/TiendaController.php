@@ -197,4 +197,12 @@ class TiendaController extends Controller
         }
         return $returnArray;
     }
+
+    /*
+     * Muestra el panel de la cuenta del cliente en la parte publica
+     * @param un $id usuario logueado
+     */
+    public function cuenta(){
+        return view('web.tienda.cuenta');
+    }
 }
