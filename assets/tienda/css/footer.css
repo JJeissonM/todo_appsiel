@@ -1,0 +1,121 @@
+.ma-footer-static-top {
+    background-color: #f1f1f1;
+}
+
+.footer-static-top {
+    padding: 30px 0;
+}
+
+.footer-static-title {
+    margin-bottom: 10px;
+}
+
+.footer-static-title h3 {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin: 0;
+    font-weight: bold;
+}
+
+.footer-static-content ul li {
+    line-height: 28px;
+    text-transform: uppercase;
+    font-size: 10px;
+}
+
+.ma-footer-static {
+    background-color: #000 !important;
+    border-bottom: 1px solid #262626;
+}
+
+.footer-static {
+    padding: 30px 0;
+}
+
+.footer-static-title {
+    margin-bottom: 10px;
+}
+
+.ma-footer-static .footer-static-title h3 {
+    color: #fff !important;
+}
+
+ul.link-follow li {
+    float: left;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+
+
+
+ul.link-follow li a {
+    color: #fff !important;
+}
+
+ul.link-follow a {
+    position: relative;
+    display: block;
+    height: 40px;
+    line-height: 40px;
+    width: 40px;
+    text-align: left;
+    color: #fff;
+    font-size: 30px;
+    padding: 0;
+}
+
+.ma-footer-static .footer-static-content ul li a {
+    color: #aaaaaa;
+}
+
+.subscribe-title {
+    display: none;
+}
+
+.footer-static-content form {
+    display: inline;
+}
+
+.subscribe-content {
+    padding: 10px 0 0;
+}
+
+.block-subscribe .input-box {
+    width: 100%;
+}
+
+.block-subscribe input.input-text {
+    display: block;
+    border: none;
+    background: none;
+    padding: 12px 10px;
+    color: #333;
+    border-radius: 0;
+    background-color: #fff;
+    width: 100%;
+}
+
+.block-subscribe .actions {
+    margin: 10px 0 0;
+}
+
+.block-subscribe .actions button.button  {
+    text-align: center;
+    border-radius: 3px;
+    text-transform: uppercase;
+    background-color: #ff8441;
+    color: #fff;
+}
+
+
+@media (max-width: 992px){
+
+    .footer-static-content {
+        margin: 0 0 20px;
+    }
+
+    .footer-static .footer-static-content ul li a {
+        line-height: 25px;
+    }
+
+}
