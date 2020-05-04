@@ -23,6 +23,11 @@
     flex-wrap: wrap;
 }
 
+.product-image  {
+    width: 100%;
+}
+
+
 .products-grid .item {
     position: relative;
 }

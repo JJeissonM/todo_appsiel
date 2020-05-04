@@ -76,7 +76,6 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
-
                                         <a href="#" id="vaciar-carrito" class="button u-full-width">Vaciar
                                             Carrito</a>
                                     </div>
@@ -116,60 +115,14 @@
                                     </a>
                                 </div>
                                 <ul id="ma-mobilemenu" class="mobilemenu nav-collapse collapse">
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
+                                    @foreach($grupos as $key => $value)
+                                        <li class="level0 nav-1 level-top first parent">
+                                            <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                               class="level-top">
+                                                <span>{{$key}}</span>
+                                            </a>
+                                        </li>
+                                    @endforeach
                                 </ul>
                             </div>
                         </div>
@@ -253,12 +206,11 @@
                                             <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
                                                 <div class="item-inner">
                                                     <div class="ma-box-content">
-                                                        <div class="label-pro-new">new</div>
                                                         <div class="products clearfix">
                                                             <a href=""
                                                                title="Fusce aliquam" class="product-image">
                                                                 <span class="product-image">
-                                                                    <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/0/4/04.jpg"
+                                                                    <img src="{{ asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen ) }} " loading="lazy"
                                                                          width="300" height="350" alt="{{$item->descripcion}}">
                                                                 </span>
                                                             </a>
