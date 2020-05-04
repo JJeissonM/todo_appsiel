@@ -47,6 +47,9 @@
                             <div class="box-search-bar clearfix">
                                 <select class="btn" name="" id="">
                                     <option value="">Categorias</option>
+                                    @foreach($grupos as $key => $value)
+                                        <option value="">{{strtolower($key)}}</option>
+                                    @endforeach
                                 </select>
                                 <input type="text" class="input-text" autocomplete="off" id="search"
                                        placeholder="Search entire store here...">
@@ -95,11 +98,9 @@
                         </div>
                         <div id="pt_vmegamenu" class="pt_vmegamenu" style="overflow: visible; display: none;">
                             <ul class="pt_nav">
-                                <li><a href="">Newarrivals</a></li>
-                                <li><a href="">Clothing</a></li>
-                                <li><a href="">footwear</a></li>
-                                <li><a href="">jewellery</a></li>
-                                <li><a href="">accessories</a></li>
+                                @foreach($grupos as $key => $value)
+                                    <li><a href="">{{$key}}</a></li>
+                                @endforeach
                             </ul>
                         </div>
                     </div>
@@ -221,35 +222,21 @@
                             <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                 <div class="block block-layered-nav">
                                     <div class="block-title">
-                                        <strong><span>Shop By</span></strong>
+                                        <strong><span>Filtrar Por</span></strong>
                                     </div>
                                     <div class="block-content">
-
                                         <p class="block-subtitle">Shopping Options</p>
                                         <dl id="narrow-by-list">
                                             <dt class="odd" style="margin:20px 0;">Categorias</dt>
                                             <dd class="odd">
                                                 <ol>
-                                                    <li>
-                                                        <a class="ajaxLayer"
-                                                           onclick="ajaxFilter('http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html?cat=8')">Dresses</a>
-                                                        (4)
-                                                    </li>
-                                                    <li>
-                                                        <a class="ajaxLayer"
-                                                           onclick="ajaxFilter('http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html?cat=9')">shoes</a>
-                                                        (6)
-                                                    </li>
-                                                    <li>
-                                                        <a class="ajaxLayer"
-                                                           onclick="ajaxFilter('http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html?cat=10')">Handbags</a>
-                                                        (1)
-                                                    </li>
-                                                    <li>
-                                                        <a class="ajaxLayer"
-                                                           onclick="ajaxFilter('http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html?cat=11')">Clothing</a>
-                                                        (3)
-                                                    </li>
+                                                    @foreach($grupos as $key => $value)
+                                                        <li>
+                                                            <a class="ajaxLayer"
+                                                               onclick="">{{$key}}</a>
+                                                            ({{$value->count()}})
+                                                        </li>
+                                                    @endforeach
                                                 </ol>
                                             </dd>
                                         </dl>
@@ -258,383 +245,45 @@
                             </div>
                             <div class="col-main col-lg-9 col-md-9 col-sm-12 col-xs-12">
                                 <div class="page-title category-title">
-                                    <h1>New arrivals</h1>
+                                    <h1>Nuestros Productos</h1>
                                 </div>
                                 <div class="category-products">
                                     <ul class="products-grid row first odd">
-
-                                        <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
-                                            <div class="item-inner">
-                                                <div class="ma-box-content">
-                                                    <div class="label-pro-new">new</div>
-                                                    <div class="products clearfix">
-                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/fusce-aliquam.html"
-                                                           title="Fusce aliquam" class="product-image">
-                                                                <span class="product-image">
-                                                                    <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/0/6/06.jpg"
-                                                                         width="300" height="350" alt="Fusce aliquam">
-                                                                </span>
-                                                        </a>
-                                                    </div>
-                                                    <h2 class="product-name"><a
-                                                                href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/fusce-aliquam.html"
-                                                                title="Fusce aliquam">Fusce aliquam</a></h2>
-                                                    <div class="ratings">
-                                                        <div class="rating-box">
-                                                            <div class="rating" style="width:67%"></div>
-                                                        </div>
-                                                        <span class="amount"><a href="#"
-                                                                                onclick="var t = opener ? opener.window : window; t.location.href='http://www.plazathemes.com/demo/ma_dicove/index.php/review/product/list/id/1/category/3/'; return false;">1
-                                                                    Review(s)</a></span>
-                                                    </div>
-
-                                                    <div class="price-box">
-                                                            <span class="regular-price" id="product-price-1">
-                                                                <span class="price">$170.00</span> </span>
-
-                                                    </div>
-
-                                                    <div class="actions">
-                                                        <button type="button" class="button btn-cart"
-                                                                data-original-title="Add to Cart" rel="tooltip"><i
-                                                                    class="fa fa-shopping-cart"></i><span>Add to
-                                                                    Cart</span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item">
-                                            <div class="item-inner">
-                                                <div class="ma-box-content">
-                                                    <div class="label-pro-new">new</div>
-                                                    <div class="products clearfix">
-                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/accumsan-elit.html"
-                                                           title="Accumsan elit " class="product-image">
+                                        @foreach($items as $item)
+                                            <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
+                                                <div class="item-inner">
+                                                    <div class="ma-box-content">
+                                                        <div class="label-pro-new">new</div>
+                                                        <div class="products clearfix">
+                                                            <a href=""
+                                                               title="Fusce aliquam" class="product-image">
                                                                 <span class="product-image">
                                                                     <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/0/4/04.jpg"
-                                                                         width="300" height="350" alt="Accumsan elit ">
+                                                                         width="300" height="350" alt="{{$item->descripcion}}">
                                                                 </span>
-                                                        </a>
-                                                    </div>
-                                                    <h2 class="product-name"><a
-                                                                href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/accumsan-elit.html"
-                                                                title="Accumsan elit ">Accumsan elit </a></h2>
-                                                    <div class="ratings">
-                                                        <div class="rating-box">
-                                                            <div class="rating" style="width:80%"></div>
+                                                            </a>
                                                         </div>
-                                                        <span class="amount"><a href="#"
-                                                                                onclick="var t = opener ? opener.window : window; t.location.href='http://www.plazathemes.com/demo/ma_dicove/index.php/review/product/list/id/12/category/3/'; return false;">1
-                                                                    Review(s)</a></span>
-                                                    </div>
-
-                                                    <div class="price-box">
-                                                            <span class="regular-price" id="product-price-12">
-                                                                <span class="price">$333.00</span> </span>
-
-                                                    </div>
-
-                                                    <div class="actions">
-                                                        <button type="button" class="button btn-cart"
-                                                                data-original-title="Add to Cart" rel="tooltip"><i
-                                                                    class="fa fa-shopping-cart"></i><span>Add to
-                                                                    Cart</span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item last">
-                                            <div class="item-inner">
-                                                <div class="ma-box-content">
-                                                    <div class="label-pro-new">new</div>
-                                                    <div class="products clearfix">
-                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/primis-in-faucibus.html"
-                                                           title="Primis in faucibus" class="product-image">
-                                                                <span class="product-image">
-                                                                    <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/w/h/wholesale-men-s-skate-board-shoes-sport-shoes-sneakers-bicycles-electric-embroider-brown-white-blue-green.jpg"
-                                                                         width="300" height="350"
-                                                                         alt="Primis in faucibus">
-                                                                </span>
-                                                        </a>
-                                                    </div>
-                                                    <h2 class="product-name"><a
-                                                                href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/primis-in-faucibus.html"
-                                                                title="Primis in faucibus">Primis in faucibus</a></h2>
-                                                    <div class="ratings">
-                                                        <div class="rating-box">
-                                                            <div class="rating" style="width:40%"></div>
+                                                        <h2 class="product-name"><a
+                                                                    href="#"
+                                                                    title="Fusce aliquam">{{$item->descripcion}}</a></h2>
+                                                        <div class="ratings">
+                                                            <div class="rating-box">
+                                                                <div class="rating" style="width:67%"></div>
+                                                            </div>
                                                         </div>
-                                                        <span class="amount"><a href="#"
-                                                                                onclick="var t = opener ? opener.window : window; t.location.href='http://www.plazathemes.com/demo/ma_dicove/index.php/review/product/list/id/11/category/3/'; return false;">1
-                                                                    Review(s)</a></span>
-                                                    </div>
-
-                                                    <div class="price-box">
-                                                            <span class="regular-price" id="product-price-11">
-                                                                <span class="price">$111.00</span> </span>
-
-                                                    </div>
-
-                                                    <div class="actions">
-                                                        <button type="button" class="button btn-cart"
-                                                                data-original-title="Add to Cart" rel="tooltip"><i
-                                                                    class="fa fa-shopping-cart"></i><span>Add to
-                                                                    Cart</span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
-                                            <div class="item-inner">
-                                                <div class="ma-box-content">
-                                                    <div class="label-pro-new">new</div>
-                                                    <div class="products clearfix">
-                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/fusce-aliquam.html"
-                                                           title="Fusce aliquam" class="product-image">
-                                                                <span class="product-image">
-                                                                    <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/0/6/06.jpg"
-                                                                         width="300" height="350" alt="Fusce aliquam">
-                                                                </span>
-                                                        </a>
-                                                    </div>
-                                                    <h2 class="product-name"><a
-                                                                href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/fusce-aliquam.html"
-                                                                title="Fusce aliquam">Fusce aliquam</a></h2>
-                                                    <div class="ratings">
-                                                        <div class="rating-box">
-                                                            <div class="rating" style="width:67%"></div>
-                                                        </div>
-                                                        <span class="amount"><a href="#"
-                                                                                onclick="var t = opener ? opener.window : window; t.location.href='http://www.plazathemes.com/demo/ma_dicove/index.php/review/product/list/id/1/category/3/'; return false;">1
-                                                                    Review(s)</a></span>
-                                                    </div>
-
-                                                    <div class="price-box">
+                                                        <div class="price-box">
                                                             <span class="regular-price" id="product-price-1">
-                                                                <span class="price">$170.00</span> </span>
-
-                                                    </div>
-
-                                                    <div class="actions">
-                                                        <button type="button" class="button btn-cart"
-                                                                data-original-title="Add to Cart" rel="tooltip"><i
-                                                                    class="fa fa-shopping-cart"></i><span>Add to
-                                                                    Cart</span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item">
-                                            <div class="item-inner">
-                                                <div class="ma-box-content">
-                                                    <div class="label-pro-new">new</div>
-                                                    <div class="products clearfix">
-                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/accumsan-elit.html"
-                                                           title="Accumsan elit " class="product-image">
-                                                                <span class="product-image">
-                                                                    <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/0/4/04.jpg"
-                                                                         width="300" height="350" alt="Accumsan elit ">
-                                                                </span>
-                                                        </a>
-                                                    </div>
-                                                    <h2 class="product-name"><a
-                                                                href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/accumsan-elit.html"
-                                                                title="Accumsan elit ">Accumsan elit </a></h2>
-                                                    <div class="ratings">
-                                                        <div class="rating-box">
-                                                            <div class="rating" style="width:80%"></div>
+                                                                <span class="price">${{$item->precio_compra}}</span></span>
                                                         </div>
-                                                        <span class="amount"><a href="#"
-                                                                                onclick="var t = opener ? opener.window : window; t.location.href='http://www.plazathemes.com/demo/ma_dicove/index.php/review/product/list/id/12/category/3/'; return false;">1
-                                                                    Review(s)</a></span>
-                                                    </div>
-
-                                                    <div class="price-box">
-                                                            <span class="regular-price" id="product-price-12">
-                                                                <span class="price">$333.00</span> </span>
-
-                                                    </div>
-
-                                                    <div class="actions">
-                                                        <button type="button" class="button btn-cart"
-                                                                data-original-title="Add to Cart" rel="tooltip"><i
-                                                                    class="fa fa-shopping-cart"></i><span>Add to
-                                                                    Cart</span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item last">
-                                            <div class="item-inner">
-                                                <div class="ma-box-content">
-                                                    <div class="label-pro-new">new</div>
-                                                    <div class="products clearfix">
-                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/primis-in-faucibus.html"
-                                                           title="Primis in faucibus" class="product-image">
-                                                                <span class="product-image">
-                                                                    <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/w/h/wholesale-men-s-skate-board-shoes-sport-shoes-sneakers-bicycles-electric-embroider-brown-white-blue-green.jpg"
-                                                                         width="300" height="350"
-                                                                         alt="Primis in faucibus">
-                                                                </span>
-                                                        </a>
-                                                    </div>
-                                                    <h2 class="product-name"><a
-                                                                href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/primis-in-faucibus.html"
-                                                                title="Primis in faucibus">Primis in faucibus</a></h2>
-                                                    <div class="ratings">
-                                                        <div class="rating-box">
-                                                            <div class="rating" style="width:40%"></div>
+                                                        <div class="actions">
+                                                            <button type="button" class="button btn-cart"
+                                                                    data-original-title="Add to Cart" rel="tooltip"><i
+                                                                        class="fa fa-shopping-cart"></i><span>Comprar</span></button>
                                                         </div>
-                                                        <span class="amount"><a href="#"
-                                                                                onclick="var t = opener ? opener.window : window; t.location.href='http://www.plazathemes.com/demo/ma_dicove/index.php/review/product/list/id/11/category/3/'; return false;">1
-                                                                    Review(s)</a></span>
-                                                    </div>
-
-                                                    <div class="price-box">
-                                                            <span class="regular-price" id="product-price-11">
-                                                                <span class="price">$111.00</span> </span>
-
-                                                    </div>
-
-                                                    <div class="actions">
-                                                        <button type="button" class="button btn-cart"
-                                                                data-original-title="Add to Cart" rel="tooltip"><i
-                                                                    class="fa fa-shopping-cart"></i><span>Add to
-                                                                    Cart</span></button>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
-                                            <div class="item-inner">
-                                                <div class="ma-box-content">
-                                                    <div class="label-pro-new">new</div>
-                                                    <div class="products clearfix">
-                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/fusce-aliquam.html"
-                                                           title="Fusce aliquam" class="product-image">
-                                                                <span class="product-image">
-                                                                    <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/0/6/06.jpg"
-                                                                         width="300" height="350" alt="Fusce aliquam">
-                                                                </span>
-                                                        </a>
-                                                    </div>
-                                                    <h2 class="product-name"><a
-                                                                href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/fusce-aliquam.html"
-                                                                title="Fusce aliquam">Fusce aliquam</a></h2>
-                                                    <div class="ratings">
-                                                        <div class="rating-box">
-                                                            <div class="rating" style="width:67%"></div>
-                                                        </div>
-                                                        <span class="amount"><a href="#"
-                                                                                onclick="var t = opener ? opener.window : window; t.location.href='http://www.plazathemes.com/demo/ma_dicove/index.php/review/product/list/id/1/category/3/'; return false;">1
-                                                                    Review(s)</a></span>
-                                                    </div>
-
-                                                    <div class="price-box">
-                                                            <span class="regular-price" id="product-price-1">
-                                                                <span class="price">$170.00</span> </span>
-
-                                                    </div>
-
-                                                    <div class="actions">
-                                                        <button type="button" class="button btn-cart"
-                                                                data-original-title="Add to Cart" rel="tooltip"><i
-                                                                    class="fa fa-shopping-cart"></i><span>Add to
-                                                                    Cart</span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item">
-                                            <div class="item-inner">
-                                                <div class="ma-box-content">
-                                                    <div class="label-pro-new">new</div>
-                                                    <div class="products clearfix">
-                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/accumsan-elit.html"
-                                                           title="Accumsan elit " class="product-image">
-                                                                <span class="product-image">
-                                                                    <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/0/4/04.jpg"
-                                                                         width="300" height="350" alt="Accumsan elit ">
-                                                                </span>
-                                                        </a>
-                                                    </div>
-                                                    <h2 class="product-name"><a
-                                                                href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/accumsan-elit.html"
-                                                                title="Accumsan elit ">Accumsan elit </a></h2>
-                                                    <div class="ratings">
-                                                        <div class="rating-box">
-                                                            <div class="rating" style="width:80%"></div>
-                                                        </div>
-                                                        <span class="amount"><a href="#"
-                                                                                onclick="var t = opener ? opener.window : window; t.location.href='http://www.plazathemes.com/demo/ma_dicove/index.php/review/product/list/id/12/category/3/'; return false;">1
-                                                                    Review(s)</a></span>
-                                                    </div>
-
-                                                    <div class="price-box">
-                                                            <span class="regular-price" id="product-price-12">
-                                                                <span class="price">$333.00</span> </span>
-
-                                                    </div>
-
-                                                    <div class="actions">
-                                                        <button type="button" class="button btn-cart"
-                                                                data-original-title="Add to Cart" rel="tooltip"><i
-                                                                    class="fa fa-shopping-cart"></i><span>Add to
-                                                                    Cart</span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item last">
-                                            <div class="item-inner">
-                                                <div class="ma-box-content">
-                                                    <div class="label-pro-new">new</div>
-                                                    <div class="products clearfix">
-                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/primis-in-faucibus.html"
-                                                           title="Primis in faucibus" class="product-image">
-                                                                <span class="product-image">
-                                                                    <img src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/product/cache/1/small_image/300x350/9df78eab33525d08d6e5fb8d27136e95/w/h/wholesale-men-s-skate-board-shoes-sport-shoes-sneakers-bicycles-electric-embroider-brown-white-blue-green.jpg"
-                                                                         width="300" height="350"
-                                                                         alt="Primis in faucibus">
-                                                                </span>
-                                                        </a>
-                                                    </div>
-                                                    <h2 class="product-name"><a
-                                                                href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals/primis-in-faucibus.html"
-                                                                title="Primis in faucibus">Primis in faucibus</a></h2>
-                                                    <div class="ratings">
-                                                        <div class="rating-box">
-                                                            <div class="rating" style="width:40%"></div>
-                                                        </div>
-                                                        <span class="amount"><a href="#"
-                                                                                onclick="var t = opener ? opener.window : window; t.location.href='http://www.plazathemes.com/demo/ma_dicove/index.php/review/product/list/id/11/category/3/'; return false;">1
-                                                                    Review(s)</a></span>
-                                                    </div>
-
-                                                    <div class="price-box">
-                                                            <span class="regular-price" id="product-price-11">
-                                                                <span class="price">$111.00</span> </span>
-
-                                                    </div>
-
-                                                    <div class="actions">
-                                                        <button type="button" class="button btn-cart"
-                                                                data-original-title="Add to Cart" rel="tooltip"><i
-                                                                    class="fa fa-shopping-cart"></i><span>Add to
-                                                                    Cart</span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </li>
-
+                                            </li>
+                                        @endforeach
                                     </ul>
                                 </div>
                             </div>
