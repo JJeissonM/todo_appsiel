@@ -203,6 +203,7 @@ class TiendaController extends Controller
      * @param un $id usuario logueado
      */
     public function cuenta(){
-        return view('web.tienda.cuenta');
+        $paises = DB::table('core_paises')->get();
+        return view('web.tienda.cuenta',compact('paises'));
     }
 }
