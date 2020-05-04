@@ -23,10 +23,9 @@ class TiendaComponent implements IDrawComponent
     {
         $todos = InvProducto::get_datos_pagina_web('', 'Activo');
         
-        $items = $todos->where('mostrar_en_pagina_web',1)->all();
+        $items = $todos->where('mostrar_en_pagina_web',1);
+        $grupos = $todos->groupBy('grupo_descripcion')->all();
 
-        $grupos = $todos->groupBy('grupo_descripcion')->keys()->all();
-        
         return Form::tienda($items,$grupos);
     }
 
