@@ -64,20 +64,16 @@ class PqrFormController extends Controller
         $headers .= "Content-Type: multipart/mixed; boundary=\"=A=G=R=O=\"\r\n\r\n";
 
 
-            
+        
         $message = "--=A=G=R=O=\r\n";
+        $message .= "Content-type:text/html; charset=utf-8\r\n";
+        $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+        $message .= $cuerpo_mensaje . "\r\n\r\n";
 
         $archivos_enviados = $request->file();
 
-        if( empty( $archivos_enviados ) )
+        if( !empty( $archivos_enviados ) )
         {
-            // Armando mensaje del email
-            $message .= "Content-type:text/html; charset=utf-8\r\n";
-            $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-            $message .= $cuerpo_mensaje . "\r\n\r\n";
-
-        }else{
-
             foreach ($archivos_enviados as $key => $value)
             {
 
@@ -97,6 +93,7 @@ class PqrFormController extends Controller
                 $url = Storage::getAdapter()->applyPathPrefix('pdf_email/'.$nombrearchivo);
                 $file = chunk_split(base64_encode(file_get_contents( $url )));
 
+                $message .= "--=A=G=R=O=\r\n";
                 $message .= "Content-Type: application/octet-stream; name=\"" . $nombrearchivo . "\"\r\n";
                 $message .= "Content-Transfer-Encoding: base64\r\n";
                 $message .= "Content-Disposition: attachment; filename=\"" . $nombrearchivo . "\"\r\n\r\n";
@@ -106,7 +103,7 @@ class PqrFormController extends Controller
         }
 
         //if(true)
-        if (mail($to,$subject,$message, $headers))
+        if ( mail( $to, $subject, $message, $headers) )
         {
             $tipo_msj = 'flash_message';
             $alerta = '<strong>¡El mensaje se ha enviado correctamente!</strong> Nos comunicaremos con usted los más pronto posible.';
