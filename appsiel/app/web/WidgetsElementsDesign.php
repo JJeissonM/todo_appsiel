@@ -40,16 +40,19 @@ class WidgetsElementsDesign extends Model
         return $registros;
     }
 
-
-
     public function generar_array_links()
     {
-    	$enlaces = json_decode( $this->links );
-    	$links = [];
-    	foreach ($enlaces as $enlace)
-    	{
-    	 	$links[] = '<link href="'.$enlace->href.'" rel="'.$enlace->rel.'">';
-    	} 
+        $links = [];
+
+        if ( $this->links != '' )
+        {
+            $enlaces = json_decode( $this->links );
+            foreach ($enlaces as $enlace)
+            {
+                $links[] = '<link href="'.$enlace->href.'" rel="'.$enlace->rel.'">';
+            }
+        }
+        	 
         return $links;
     }
 

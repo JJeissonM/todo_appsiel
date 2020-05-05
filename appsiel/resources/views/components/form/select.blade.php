@@ -3,7 +3,12 @@
 		$attributes['class'] = 'form-control'.' '.$attributes['class'];
 	}else{
 		$attributes['class'] = 'form-control';
-	}	
+	}
+	
+	if ( !is_array( $opciones ) )
+	{
+		$opciones = [];
+	}
 ?>
 
 <div class="form-group">

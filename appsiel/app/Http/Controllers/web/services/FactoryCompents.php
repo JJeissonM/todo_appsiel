@@ -59,6 +59,9 @@ class FactoryCompents
             case "Html personalizado":
                 $component = new CustomHtmlComponent($this->widget);
                 break;
+            case "PQR":
+                $component = new PqrComponent($this->widget);
+                break;
             default:
                 $component = false;
         }

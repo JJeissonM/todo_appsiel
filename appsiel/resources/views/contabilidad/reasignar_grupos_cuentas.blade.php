@@ -10,14 +10,15 @@
 
 	@include('layouts.mensajes')
 
-	<div class="container-fluid">
+	<!-- <div class="container-fluid">
 		<div class="marco_formulario">
-			@foreach( $grupos_cuentas as $grupo )
-				{{ $grupo->nivel }} | {{ $grupo->abuelo_descripcion }} | {{ $grupo->padre_descripcion }} | {{ $grupo->hijo_descripcion }}
+			@ foreach( $grupos_cuentas as $grupo )
+				{ { $grupo->nivel }} | { { $grupo->abuelo_descripcion }} | { { $grupo->padre_descripcion }} | { { $grupo->hijo_descripcion }}
 				<br>
-			@endforeach
+			@ endforeach
 		</div>
 	</div>
+-->
 	<div class="table-responsive" id="table_content">
 		<table class="table table-bordered table-striped">
             <thead>

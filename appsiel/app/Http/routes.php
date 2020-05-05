@@ -21,6 +21,7 @@ Route::get('/', 'PaginaWeb\FrontEndController@inicio');
 Route::get('pagina_no_encontrada/{url}', 'PaginaWeb\FrontEndController@pagina_no_encontrada');
 
 Route::get('dashboard', 'HomeController@index');
+Route::get('custom_route', 'HomeController@index');
 Route::get('inicio', 'HomeController@inicio'); // Cambiar la palabra "inicio" por "appsiel"... o crear automatización de rutas, vistas, acciones
 
 

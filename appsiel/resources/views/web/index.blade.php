@@ -178,6 +178,12 @@
             border-bottom: 1px solid {{$configuracion->color_terciario}}  !important;
         }
 
+        #formulario_pqr .control-label {
+            display: none;
+            background: #ddd !important;
+            width: 100% !important;
+            margin-bottom: 5px !important;
+        }
 
         @foreach($estilos as $key => $value)
             {{ $value }}
@@ -259,7 +265,7 @@
 
 
         @foreach($scripts as $key => $value)
-            {{ $value }}
+            {!! $value !!}
         @endforeach
         
 @yield('script')

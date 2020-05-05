@@ -6,7 +6,7 @@
      }
 
     .article:hover {
-        transform: scale(1.1);
+        transform: scale(1.05);
         box-shadow: 0px 0px 5px 1px #3d6983;
         cursor: pointer;
     }
@@ -24,69 +24,75 @@
         <div class="row col-md-12 wow fadeInDown">
             @if($setup->formato=='LISTA')
             @foreach($articles as $a)
-            <div class="col-md-12 article-ls" style="line-height: 5px; margin-bottom: 20px;">
-                <div class="media service-box" style="margin: 10px !important; font-size: 14px;">
-                    <div class="media-body">
-                        <div class="row">
-                            <div class="col-md-4" style="text-align: center;">
-                                @if($a->imagen != '')
-                                    <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;">
-                                @else
-                                    <img src="{{ asset('img/blog-default.jpg')}}" style="width: 100%; max-height: 180px; object-fit: cover;">
-                                @endif
-                            </div>
-                            <div class="col-md-8">
-                                <h3 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h3>
-                                <p>{!! $a->descripcion !!}</p>
-                                <!-- <p><span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span></p> -->
-                                <!-- <p><span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span></p> -->
-                                <p><a target="_blank" href="{{route('article.show',$a->id)}}" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-            @endif
-            @if($setup->formato=='BLOG')
-            @foreach($articles as $a)
-                <div class="col-md-4">
-                    <div class="article blog-post blog-media">
-                        <article class="media clearfix">
-                            <!-- <div class="entry-thumbnail pull-left">
-                                <span class="post-format post-format-gallery"><i class="fa fa-bullhorn"></i></span>
-                            </div> -->
-                            <div class=" media-body" style="height: 450px;">
-                                <div style="text-align: center;">
+                <div class="col-md-12 article-ls" style="line-height: 5px; margin-bottom: 20px;">
+                    <div class="media service-box" style="margin: 10px !important; font-size: 14px;">
+                        <div class="media-body">
+                            <div class="row">
+                                <div class="col-md-4" style="text-align: center;">
                                     @if($a->imagen != '')
-                                        <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;" class="img-circle">
+                                        <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;">
                                     @else
                                         <img src="{{ asset('img/blog-default.jpg')}}" style="width: 100%; max-height: 180px; object-fit: cover;">
                                     @endif
                                 </div>
-
-                                <header class="entry-header">
-                                    <!-- <div class="entry-date">{ {$a->created_at}}</div> -->
-                                    <h2 class="entry-title"><a href="#">{{$a->titulo}}</a></h2>
-                                </header>
-
-                                <div class="entry-content" style="height: 100px;">
-                                    <p>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</p>
-                                    <a class="btn btn-primary" target="_blank" href="{{route('article.show',$a->id)}}">Leer más...</a>
+                                <div class="col-md-8">
+                                    <h3 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h3>
+                                    <p>{!! $a->descripcion !!}</p>
+                                    <!-- <p><span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span></p> -->
+                                    <!-- <p><span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span></p> -->
+                                    <p><a target="_blank" href="{{route('article.show',$a->id)}}" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>
                                 </div>
-
-                                <!-- 
-                                <footer class="entry-meta">
-                                    <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span>
-                                    <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span>
-                                </footer>
-                            -->
                             </div>
-
-                        </article>
+                        </div>
                     </div>
                 </div>
             @endforeach
+            @endif
+            @if($setup->formato=='BLOG')
+                <div class="row">
+                @foreach($articles as $a)
+
+                    <div class="col-md-4">
+                        <div class="article blog-post blog-media">
+                            <article class="media clearfix">
+                                <!-- <div class="entry-thumbnail pull-left">
+                                    <span class="post-format post-format-gallery"><i class="fa fa-bullhorn"></i></span>
+                                </div> -->
+                                <a target="_blank" href="{{route('article.show',$a->id)}}" style="text-decoration: none;">
+
+                                <div class=" media-body">
+                                    <div style="text-align: center;">
+                                        @if($a->imagen != '')
+                                            <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;">
+                                        @else
+                                            <img src="{{ asset('img/blog-default.jpg')}}" style="width: 100%; max-height: 180px; object-fit: cover;">
+                                        @endif
+                                    </div>
+
+                                    <header class="entry-header">
+                                        <!-- <div class="entry-date">{ {$a->created_at}}</div> -->
+                                        <h2 class="entry-title"> {{$a->titulo}} </h2>
+                                    </header>
+
+                                    <div class="entry-content">
+                                        <p>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</p>
+                                        <hr>
+                                    </div>
+
+                                    <!-- 
+                                    <footer class="entry-meta">
+                                        <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span>
+                                        <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span>
+                                    </footer>
+                                -->
+                                </div>
+                                        </a>
+
+                            </article>
+                        </div>
+                    </div>
+                @endforeach
+                </div>
             @endif
             <div class="col-md-12">
                 {{$articles->render()}}

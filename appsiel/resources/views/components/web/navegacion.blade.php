@@ -11,8 +11,7 @@
       }
 
     .icono img{
-        width: 70% !important;
-        max-height: 250px !important;
+        max-height: 120px !important;
         /*border-radius: 4px;
         height:35px !important;
         object-fit: cover;*/
@@ -40,7 +39,9 @@
             <!-- Text based logo 
             @ if(!$nav->fixed)
             @ endif-->
-            <a class="navbar-brand p-0 icono" href="{{url('/')}}" style="width: 50%;"><img src="{{asset($nav->logo)}}" alt=""></a>
+            <a class="navbar-brand p-0 icono" href="{{url('/')}}">
+                <img src="{{asset($nav->logo)}}">
+            </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -73,3 +74,8 @@
         </nav>
     </div>
 </header>
+
+
+@if($nav->fixed)
+    <div style="height: 120px;">&nbsp;</div>
+@endif

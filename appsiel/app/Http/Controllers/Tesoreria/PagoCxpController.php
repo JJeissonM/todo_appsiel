@@ -285,6 +285,8 @@ class PagoCxpController extends TransaccionController
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
     }
 
+
+
     public function get_documentos_pendientes_cxp()
     {                
         $operador = '=';
