@@ -105,8 +105,8 @@ class PqrFormController extends Controller
             }                
         }
 
-        if(true)
-        //if (mail($to,$subject,$message, $headers))
+        //if(true)
+        if (mail($to,$subject,$message, $headers))
         {
             $tipo_msj = 'flash_message';
             $alerta = '<strong>¡El mensaje se ha enviado correctamente!</strong> Nos comunicaremos con usted los más pronto posible.';
