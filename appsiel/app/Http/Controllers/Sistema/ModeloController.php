@@ -450,7 +450,8 @@ class ModeloController extends Controller
         $nombre_es_el_primero = true;
         // Si se envía archivos tipo file (imagenes, adjuntos)
         $archivos_enviados = $request->file();
-        foreach ($archivos_enviados as $key => $value) {
+        foreach ($archivos_enviados as $key => $value)
+        {
             // Si se envía un nuevo archivo, se borran el archivo anterior del disco
             if ($modo == 'edit' && $request->file($key) != '') {
                 Storage::delete($ruta_storage_imagen . $registro->$key);

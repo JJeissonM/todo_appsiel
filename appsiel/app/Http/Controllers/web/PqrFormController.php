@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 
 use Input;
 use View;
+use Storage;
 
 use App\Core\Empresa;
 
@@ -63,13 +64,48 @@ class PqrFormController extends Controller
         $headers .= "Content-Type: multipart/mixed; boundary=\"=A=G=R=O=\"\r\n\r\n";
 
 
-        // Armando mensaje del email
+            
         $message = "--=A=G=R=O=\r\n";
-        $message .= "Content-type:text/html; charset=utf-8\r\n";
-        $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-        $message .= $cuerpo_mensaje . "\r\n\r\n";
 
-        if(false)
+        $archivos_enviados = $request->file();
+
+        if( empty( $archivos_enviados ) )
+        {
+            // Armando mensaje del email
+            $message .= "Content-type:text/html; charset=utf-8\r\n";
+            $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+            $message .= $cuerpo_mensaje . "\r\n\r\n";
+
+        }else{
+
+            foreach ($archivos_enviados as $key => $value)
+            {
+
+                // ALMACENAR TEMPORALMENTE EL ARCHIVO EN DISCO
+                $archivo = $request->file($key);
+                $extension =  $archivo->clientExtension();
+
+                $nombrearchivo = str_slug($archivo->getClientOriginalName()) . '-' . uniqid() . '.' . $extension;
+
+                // Guardar en disco
+                Storage::put( 'pdf_email/' . $nombrearchivo, file_get_contents($archivo->getRealPath()));
+
+
+
+                // LEER EL ARCHIVO Y ADJUNTARLO AL CUERPO DEL MENSAJE
+
+                $url = Storage::getAdapter()->applyPathPrefix('pdf_email/'.$nombrearchivo);
+                $file = chunk_split(base64_encode(file_get_contents( $url )));
+
+                $message .= "Content-Type: application/octet-stream; name=\"" . $nombrearchivo . "\"\r\n";
+                $message .= "Content-Transfer-Encoding: base64\r\n";
+                $message .= "Content-Disposition: attachment; filename=\"" . $nombrearchivo . "\"\r\n\r\n";
+                $message .= $file . "\r\n\r\n";
+                $message .= "--=A=G=R=O=--";
+            }                
+        }
+
+        if(true)
         //if (mail($to,$subject,$message, $headers))
         {
             $tipo_msj = 'flash_message';
