@@ -1,7 +1,7 @@
 <?php
  return array (
   'titulo' => '',
-  'url_instancia_cliente' => 'http://localhost/appsiel_2020/appsiel/',
+  'url_instancia_cliente' => 'http://localhost/Appsiel/appsiel/',
   'alto_logo_formatos' => '110',
   'ancho_logo_formatos' => '110',
   'liquidacion_impuestos' => '1',

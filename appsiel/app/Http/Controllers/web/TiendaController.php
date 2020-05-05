@@ -197,4 +197,13 @@ class TiendaController extends Controller
         }
         return $returnArray;
     }
+
+    /*
+     * Muestra el panel de la cuenta del cliente en la parte publica
+     * @param un $id usuario logueado
+     */
+    public function cuenta(){
+        $paises = DB::table('core_paises')->get();
+        return view('web.tienda.cuenta',compact('paises'));
+    }
 }
