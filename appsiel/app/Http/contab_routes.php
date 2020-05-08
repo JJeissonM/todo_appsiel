@@ -26,7 +26,10 @@ Route::get('contab_balance_comprobacion','Contabilidad\ContabReportesController@
 Route::post('contab_ajax_generacion_eeff', 'Contabilidad\ContabReportesController@contab_ajax_generacion_eeff');
 Route::get('contab_pdf_eeff', 'Contabilidad\ContabReportesController@contab_pdf_eeff');
 Route::get('contab_generacion_eeff','Contabilidad\ContabReportesController@generacion_eeff');
+
 // Reportes del Menú Automático
+Route::post('contab_cuadre_contabilidad_vs_tesoreria', 'Contabilidad\ContabReportesController@cuadre_contabilidad_vs_tesoreria');
+Route::post('contab_lista_documentos_descuadrados', 'Contabilidad\ContabReportesController@lista_documentos_descuadrados');
 Route::post('contab_impuestos', 'Contabilidad\ContabReportesController@impuestos');
 Route::post('contab_ajax_balance_comprobacion', 'Contabilidad\ContabReportesController@contab_ajax_balance_comprobacion');
 

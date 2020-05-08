@@ -5,6 +5,9 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="keywords" content="{{ $pagina->meta_keywords }}">
+
     <title> {{ $pagina->descripcion }} </title>
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/icon" href="{{asset( $pagina->favicon )}}"/>
@@ -48,6 +51,16 @@
           href="{{asset('images/ico/apple-touch-icon-72-precomposed.png')}}">
     <link rel="apple-touch-icon-precomposed" href="{{asset('images/ico/apple-touch-icon-57-precomposed.png')}}">
 
+    @if($pagina->codigo_google_analitics != '')
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{$pagina->codigo_google_analitics}}"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '{{$pagina->codigo_google_analitics}}');
+        </script>
+      @endif
 
 
     @foreach($links as $key => $value)
@@ -194,7 +207,7 @@
 <body style="padding:0;">
 
 <main>
-    
+
     <div class="container-fluid">
         @foreach($view as $item)
             {!! $item !!}

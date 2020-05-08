@@ -11,7 +11,7 @@
       }
 
     .icono img{
-        max-height: 120px !important;
+        max-height: 100px !important;
         /*border-radius: 4px;
         height:35px !important;
         object-fit: cover;*/
@@ -77,5 +77,5 @@
 
 
 @if($nav->fixed)
-    <div style="height: 120px;">&nbsp;</div>
+    <div style="height: 70px;">&nbsp;</div>
 @endif

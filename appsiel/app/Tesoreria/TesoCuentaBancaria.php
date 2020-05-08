@@ -32,6 +32,22 @@ class TesoCuentaBancaria extends Model
         return $registros;
     }
 
+    public static function opciones_campo_select()
+    {
+        $opciones = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
+                            ->where('teso_cuentas_bancarias.estado','Activo')
+                            ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_entidades_financieras.descripcion AS entidad_financiera')
+                            ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->entidad_financiera . ' - ' . $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
     public static function get_cuenta_por_defecto()
     {
         $cuenta_por_defecto = ['tipo_cuenta'=>'Sin Cta. por defecto','descripcion'=>'Sin Cta. por defecto','entidad_financiera'=>'Sin Cta. por defecto'];
