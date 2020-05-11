@@ -44,7 +44,7 @@
 					<table class="table table-striped" id="ingreso_registros">
 				        <thead>
 				            <tr>
-				                <th data-override="teso_motivo_id" width="200px">Concepto</th>
+				                <th data-override="teso_motivo_id" width="200px">Motivo</th>
 				                <th data-override="linea_tercero_id" width="200px">Tercero</th>
 				                <th data-override="detalle">Detalle</th>
 				                <th data-override="valor">Valor</th>
@@ -278,7 +278,7 @@
 						ok = false;
 					}
 				}else{
-					alert('Debe seleccionar una concepto.');
+					alert('Debe seleccionar una motivo.');
 					$('#combobox_motivos').focus();
 					ok = false;
 				}

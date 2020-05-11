@@ -90,11 +90,12 @@ class Tercero extends Model
     {
         $opciones = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
             ->select('core_terceros.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
+            ->orderBy('core_terceros.descripcion')
             ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
-            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->descripcion;
+            $vec[$opcion->id] = $opcion->descripcion . ' ' . $opcion->numero_identificacion;
         }
 
         return $vec;

@@ -208,11 +208,9 @@
 
 <main>
 
-    <div class="container-fluid">
         @foreach($view as $item)
             {!! $item !!}
         @endforeach
-    </div>        
 
 </main>
 

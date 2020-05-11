@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
 
 <header>
+    <!-- -->
     <div class="top-link">
         <div class="container">
             <div class="top-link-inner">
@@ -15,7 +16,7 @@
                         <p class="welcome-msg">Bienvenido a Avipoulet </p>
                         <ul class="links">
                             <li class="first"><a
-                                        href="{{route('tienda.micuenta')}}"
+                                        href="{{ route( 'tienda.micuenta' , [ 'cliente_id' => 0 ] ) }}"
                                         title="My Account">Mi Cuenta</a></li>
                             <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/wishlist/"
                                    title="My Wishlist">Mi Lista</a></li>
@@ -26,13 +27,17 @@
                             <li class=" last"><a
                                         href="{{route('tienda.login')}}"
                                         title="Log In">Iniciar Sesión</a></li>
+                            <li class=" last"><a
+                                        href="{{url('/web/create?id=10&id_modelo=218')}}"
+                                        title="Registrarse">Registrarse</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="header">
+
+    <div class="header" style="background: #571c9b;">
         <div class="container">
             <div class="header-inner">
                 <div class="row">
@@ -40,7 +45,7 @@
                         <div class="top-logo col-xs-12 col-md-3 col-sm-12">
                             <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/" title="Magento Commerce"
                                class="logo"><strong>Magento Commerce</strong><img
-                                        src="http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/logo.gif"
+                                        src="http://avipoulet.com/img/logos/1584208639logo-png2png"
                                         alt="Magento Commerce"></a>
                         </div>
                         <form class="col-xs-12 col-md-6 col-sm-12 serach" action="" method="GET">
@@ -129,6 +134,7 @@
                     </div>
                     <div class="nav-container visible-lg visible-md">
                         <div class="container-inner">
+                            <!-- 
                             <div id="pt_custommenu" class="pt_custommenu">
                                 <div id="pt_menu_home" class="pt_menu act">
                                     <div class="parentMenu">
@@ -154,6 +160,7 @@
                                 </div>
                                 <div class="clearBoth"></div>
                             </div>
+                        -->
                         </div>
                     </div>
                 </div>
@@ -167,9 +174,9 @@
             <div class="container-inner">
                 <div class="main">
                     <!-- Category Image-->
-                    <p class="category-image"><img
+                    <!--<p class="category-image"><img
                                 src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/category/category.jpg"
-                                alt="New arrivals" title="New arrivals"></p> <!--   -->
+                                alt="New arrivals" title="New arrivals"></p>    -->
                     <div class="main-inner">
                         <div class="row">
                             <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -225,7 +232,7 @@
                                                         </div>
                                                         <div class="price-box">
                                                             <span class="regular-price" id="product-price-1">
-                                                                <span class="price">${{$item->precio_compra}}</span></span>
+                                                                <span class="price">${{$item->precio_venta}}</span></span>
                                                         </div>
                                                         <div class="actions">
                                                             <button type="button" class="button btn-cart"

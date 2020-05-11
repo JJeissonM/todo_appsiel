@@ -120,7 +120,10 @@ Route::put('testimonial/testimonial/seccion/modificar/{seccion}', 'web\Testimoni
 Route::resource('custom_html', 'web\CustomHtmlController');
 Route::resource('pqr_form', 'web\PqrFormController');
 
+
+
 // Página Web - BACK END
+
 Route::post('pagina_web/crear_nuevo_modulo', 'PaginaWeb\ModuloController@crear_nuevo');
 Route::resource('pagina_web/modulos', 'PaginaWeb\ModuloController');
 
@@ -129,10 +132,12 @@ Route::resource('pagina_web/secciones', 'PaginaWeb\SeccionController');
 Route::get('pagina_web/be/{modulo}/{accion}/{registro_id?}', 'PaginaWeb\BackEndController@gestionar_modulos');
 Route::resource('pagina_web', 'PaginaWeb\BackEndController');
 
+
 Route::get('pw_barra_navegacion', 'PaginaWeb\FrontEndController@micrositio');
 
 Route::get('/mweb/{id}/microsites', 'PaginaWeb\FrontEndController@micrositio');
 Route::get('generar_slug/{cadena}', 'PaginaWeb\SlugController@generar_slug');
+
 
 // MÓDULOS
 Route::resource('pagina_web/carousel', 'PaginaWeb\CarouselController');
@@ -160,6 +165,8 @@ Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@
 Route::get('tienda/publica/cuenta','web\TiendaController@cuenta')->name('tienda.micuenta');
 Route::get('tienda/publica/login','web\TiendaController@login')->name('tienda.login');
 Route::get('tienda/publica/nuevacuenta','web\TiendaController@crearCuenta')->name('tienda.cuenta');
+
+Route::get('tienda/publica/cuenta/{cliente_id}','web\TiendaController@cuenta')->name('tienda.micuenta');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');

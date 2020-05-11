@@ -27,6 +27,9 @@ use App\Contabilidad\ContabDocEncabezado;
 use App\Contabilidad\ContabDocRegistro;
 use App\Contabilidad\ContabMovimiento;
 
+use App\CxP\CxpMovimiento;
+use App\CxC\CxcMovimiento;
+
 class ContabilidadController extends TransaccionController
 {
     protected $datos = [];
@@ -48,13 +51,15 @@ class ContabilidadController extends TransaccionController
     public function store( Request $request )
     {
 
+        //dd( $request->all() );
         $registro_encabezado_doc = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
 
         // 1ro. se guardan los registros asociados al encabezado del documento
         // Se recorre la tabla enviada en el request, descartando las DOS últimas filas
-        for ($i=0; $i < count($tabla_registros_documento)-2; $i++) {
+        for ($i=0; $i < count($tabla_registros_documento)-2; $i++)
+        {
             // Se obtienen las id de los campos que se van a almacenar. Los campos vienen separados por "-" en cada columna de la tabla 
             $vec_1 = explode("-", $tabla_registros_documento[$i]->Cuenta);
             $contab_cuenta_id = $vec_1[0];
@@ -96,6 +101,29 @@ class ContabilidadController extends TransaccionController
             $this->datos = array_merge( $request->all(), ['core_tercero_id' => $core_tercero_id , 'consecutivo' => $registro_encabezado_doc->consecutivo] );
 
             $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+
+            // Generar CxP.
+            if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_cxp' )
+            {
+                $this->datos['valor_documento'] = $valor_credito;
+                $this->datos['valor_pagado'] = 0;
+                $this->datos['saldo_pendiente'] = $valor_credito;
+                $this->datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
+                $this->datos['doc_proveedor_consecutivo'] = $tabla_registros_documento[$i]->documento_soporte_tercero;
+                $this->datos['estado'] = 'Pendiente';
+                CxpMovimiento::create( $this->datos );
+            }
+
+            // Generar CxC.
+            if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_cxc' )
+            {
+                $this->datos['valor_documento'] = $valor_debito;
+                $this->datos['valor_pagado'] = 0;
+                $this->datos['saldo_pendiente'] = $valor_debito;
+                $this->datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
+                $this->datos['estado'] = 'Pendiente';
+                CxcMovimiento::create( $this->datos );
+            }
 
         }
 
@@ -303,22 +331,17 @@ class ContabilidadController extends TransaccionController
     // AJAX: enviar fila para el ingreso de registros al elaborar documento contable
     public static function contab_get_fila( $id_fila )
     {
-        $registros = ContabCuenta::where('core_empresa_id','=',Auth::user()->empresa_id)->orderBy('codigo')->get();
-        $cuentas[''] = '';
-        foreach ($registros as $fila) {
-            $cuentas[$fila->id]=$fila->codigo." ".$fila->descripcion; 
-        }
+        $cuentas = ContabCuenta::opciones_campo_select();
 
-        $registros_2 = Tercero::where('core_empresa_id','=',Auth::user()->empresa_id )->get();
-        $terceros[''] = '';
-        foreach ($registros_2 as $fila2) {
-            $terceros[$fila2->id]=$fila2->numero_identificacion." ".$fila2->descripcion; 
-        }
+        $terceros = Tercero::opciones_campo_select();
 
-        $btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='glyphicon glyphicon-trash'></i></button>";
-        $btn_confirmar = "<button type='button' class='btn btn-success btn-xs btn_confirmar'><i class='glyphicon glyphicon-ok'></i></button>";
+        $btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-trash'></i></button>";
+        $btn_confirmar = "<button type='button' class='btn btn-success btn-xs btn_confirmar'><i class='fa fa-check'></i></button>";
 
-        $tr = '<tr>
+        $tr = '<tr id="linea_ingreso_datos">
+                    <td style="display: none;"> <input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="' . date('Y-m-d') . '"> </td>
+                    <td style="display: none;"> <input type="hidden" name="documento_soporte_tercero" id="documento_soporte_tercero" value=""> </td>
+                    <td> <input type="text" name="tipo_transaccion_linea" id="tipo_transaccion_linea" value="causacion" style="background: transparent;" readonly="readonly"> </td>
                     <td>
                         '.Form::select( 'campo_cuentas', $cuentas, null, [ 'id' => 'combobox_cuentas', 'class' => 'lista_desplegable' ] ).'
                     </td>
@@ -457,14 +480,38 @@ class ContabilidadController extends TransaccionController
     }
 
 
-    public static function contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito )
+    public static function contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cta_bancaria_id = 0 )
     {
         ContabMovimiento::create( $datos + 
                             [ 'contab_cuenta_id' => $contab_cuenta_id ] +
                             [ 'detalle_operacion' => $detalle_operacion] + 
                             [ 'valor_debito' => $valor_debito] + 
                             [ 'valor_credito' => ($valor_credito * -1) ] + 
-                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
+                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ] + 
+                            [ 'teso_caja_id' => $teso_caja_id]  + 
+                            [ 'teso_cta_bancaria_id' => $teso_cta_bancaria_id] 
                         );
     }
+
+    public function get_formulario_cxc()
+    {
+        $cuentas = ContabCuenta::opciones_campo_select();
+        $terceros = Tercero::opciones_campo_select();
+
+        $formulario = View::make( 'contabilidad.incluir.formulario_cxc', compact('cuentas','terceros') )->render();
+
+        return $formulario;
+    }
+
+    public function get_formulario_cxp()
+    {
+        $cuentas = ContabCuenta::opciones_campo_select();
+        $terceros = Tercero::opciones_campo_select();
+
+        $formulario = View::make( 'contabilidad.incluir.formulario_cxp', compact('cuentas','terceros') )->render();
+
+        return $formulario;
+    }
+
+
 }

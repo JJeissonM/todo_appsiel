@@ -8,7 +8,7 @@
 </div>
 
 <table class="table table-bordered table-striped">
-    {{ Form::bsTableHeader(['Fecha','Documento','Detalle operación','Cód. Cuenta','Mov. débito','Mov. crédito','Saldo','Actualizar movimiento de Tesorería']) }}
+    {{ Form::bsTableHeader(['Fecha','Documento','Suma débitos','Suma créditos','Suma saldos']) }}
     <tbody>
         <?php 
         
@@ -21,30 +21,23 @@
             <tr>
                 <td> {{ $linea->fecha }} </td>
                 <td> {{ $linea->documento }} </td>
-                <td> {{ $linea->detalle_operacion }} </td>
-                <td> {{ $linea->codigo_cuenta }} </td>
-                <td style="text-align: right;"> $ {{ number_format( $linea->valor_debito, 2, ',', '.') }} </td>
-                <td style="text-align: right;"> $ {{ number_format( $linea->valor_credito, 2, ',', '.') }} </td>
-                <td style="text-align: right;"> $ {{ number_format( $linea->valor_saldo, 2, ',', '.') }} </td>
-                <td> 
-                    {{ Form::select('caja_id',$cajas, null, []) }}
-                    <button class="btn btn-primary btn-xs btn_actualizar_movimiento" title="Agregar este registro"> <i class="fa fa-refresh"></i> </button>
-                </td>
+                <td style="text-align: right;"> $ {{ number_format( $linea->suma_debitos, 2, ',', '.') }} </td>
+                <td style="text-align: right;"> $ {{ number_format( $linea->suma_creditos, 2, ',', '.') }} </td>
+                <td style="text-align: right;"> $ {{ number_format( $linea->suma_saldos, 2, ',', '.') }} </td>
             </tr>
             <?php 
-                $total_debito += $linea->valor_debito;
-                $total_credito += $linea->valor_credito;
-                $total_saldo += $linea->valor_saldo;
+                $total_debito += $linea->suma_debitos;
+                $total_credito += $linea->suma_creditos;
+                $total_saldo += $linea->suma_saldos;
             ?>
         @endforeach
     </tbody>
     <tfoot>
         <tr>
-            <td colspan="4"> &nbsp; </td>
+            <td colspan="2"> &nbsp; </td>
             <td style="text-align: right;"> $ {{ number_format($total_debito, 2, ',', '.') }} </td>
             <td style="text-align: right;"> $ {{ number_format($total_credito, 2, ',', '.') }} </td>
             <td style="text-align: right;"> $ {{ number_format($total_saldo, 2, ',', '.') }} </td>
-            <td> &nbsp; </td>
         </tr>
     </tfoot>
 </table>
