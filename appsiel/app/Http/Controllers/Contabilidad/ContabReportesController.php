@@ -1173,23 +1173,20 @@ class ContabReportesController extends Controller
                                     'contab_movimientos.valor_saldo',
                                     'contab_movimientos.teso_caja_id',
                                     'contab_movimientos.teso_cuenta_bancaria_id',
+                                    'contab_movimientos.core_tercero_id',
+                                    'contab_movimientos.contab_cuenta_id',
+                                    'contab_movimientos.core_empresa_id',
                                     'contab_movimientos.detalle_operacion' )
                         ->orderBy('contab_movimientos.fecha')
                         ->get();
-
-
         
 
-        dd( $movimiento->toArray() );
-
-
-
         $registros = $movimiento->filter(function ($value, $key) {
-            $cajas = array_keys( \App\Tesoreria\TesoCaja::opciones_campo_select() );
+            /*$cajas = array_keys( \App\Tesoreria\TesoCaja::opciones_campo_select() );
             array_shift( $cajas );
 
             $bancos = array_keys( \App\Tesoreria\TesoCuentaBancaria::opciones_campo_select() );
-            array_shift( $bancos );
+            array_shift( $bancos );*/
 
             return \App\Tesoreria\TesoMovimiento::where(
                                                         [ 
@@ -1200,14 +1197,35 @@ class ContabReportesController extends Controller
                                                             'valor_movimiento' => $value->valor_saldo,
                                                         ]
                                                         )
-                                                ->orWhereIn('teso_caja_id', $cajas)
-                                                ->orWhereIn('teso_cuenta_bancaria_id', $bancos)
                                                 ->get()->first() == null;
         });
 
+        /*
         $cajas = \App\Tesoreria\TesoCaja::opciones_campo_select();
+
+        $motivos_tesoreria = \App\Tesoreria\TesoMotivo::select('id','descripcion','movimiento')->get();
         
-        $vista = View::make( 'contabilidad.incluir.listado_documentos_descuadrados', compact('registros', 'cajas') )->render();
+        $motivos_tesoreria_salida = [];
+        foreach( $motivos_tesoreria as $fila )
+        {
+            if( $fila->movimiento == 'salida')
+            {
+                $motivos_tesoreria_salida[$fila->id] = $fila->descripcion;
+            }            
+        }
+        
+        
+        $motivos_tesoreria_entrada = [];
+        foreach( $motivos_tesoreria as $fila )
+        {
+            if( $fila->movimiento == 'entrada')
+            {
+                $motivos_tesoreria_entrada[$fila->id] = $fila->descripcion;
+            }            
+        }
+        */
+
+        $vista = View::make( 'contabilidad.incluir.listado_cuadre_contabilidad_vs_tesoreria', compact('registros', 'cajas','motivos_tesoreria_salida','motivos_tesoreria_entrada') )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

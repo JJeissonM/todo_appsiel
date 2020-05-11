@@ -26,6 +26,22 @@ class TesoMotivo extends Model
         return $registros;
     }
 
+    public static function opciones_campo_select()
+    {
+        $opciones = TesoMotivo::where('teso_motivos.estado','Activo')
+                    ->select('teso_motivos.id','teso_motivos.descripcion')
+                    ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
+
     public function cuenta_contable()
     {
         return $this->belongsTo('App\Contabilidad\ContabCuenta');

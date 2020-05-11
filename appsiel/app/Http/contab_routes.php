@@ -3,6 +3,9 @@
 
 Route::get('contab_consultar_cuentas', 'Contabilidad\ContabilidadController@consultar_cuentas');
 
+Route::get('contab_get_formulario_cxc', 'Contabilidad\ContabilidadController@get_formulario_cxc');
+Route::get('contab_get_formulario_cxp', 'Contabilidad\ContabilidadController@get_formulario_cxp');
+
 Route::get('contabilidad_print/{id_transaccion}','Contabilidad\ContabilidadController@imprimir');
 Route::get('contab_get_fila/{id_fila}','Contabilidad\ContabilidadController@contab_get_fila');
 Route::get('contab_anular_documento/{id_fila}','Contabilidad\ContabilidadController@contab_anular_documento');

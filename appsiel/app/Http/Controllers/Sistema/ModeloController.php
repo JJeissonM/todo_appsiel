@@ -49,15 +49,26 @@ class ModeloController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
-
-        $this->aplicacion = Aplicacion::find(Input::get('id'));
-
         // Se obtiene el modelo
         if ( !is_null( Input::get('id_modelo') ) )
         {
             $this->modelo = Modelo::find(Input::get('id_modelo'));
         }
+
+        // No requiere autenticación para el CRUD del modelo ClienteWeb (id_modelo=218)
+        if ( !is_null( $this->modelo ) )
+        {
+            if ( $this->modelo->id != 218 )
+            {
+                $this->middleware('auth');
+            }
+        }else{
+            //$this->middleware('auth');
+        }
+                    
+
+        $this->aplicacion = Aplicacion::find(Input::get('id'));
+
     }
 
     /*

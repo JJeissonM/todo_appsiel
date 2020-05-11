@@ -12,7 +12,7 @@ $(document).ready(function(){
 	*/
 
 
-	$('#numero_identificacion').keyup(function(){
+	$('#numero_identificacion').on('blur',function(){
 		var documento = $("#numero_identificacion").val();
 
 		/* Cuando el javascript está dentro de una vista blade se puede llamar la url de la siguiente forma:
@@ -24,8 +24,6 @@ $(document).ready(function(){
 		}else{
 			url = '../../../core/validar_numero_identificacion/';
 		}
-
-		
 		
 		$.get( url + documento, function( datos ) 
 		{
@@ -35,21 +33,25 @@ $(document).ready(function(){
 	        	{
 	        		// No hay problema
 	        		$('#bs_boton_guardar').show();
+	        		$('#email').show();
 	        	}else{
-	        		alert( "Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro." );
 	        		$('#bs_boton_guardar').hide();
+	        		$('#email').hide();
+	        		alert( "Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro." );
+	        		//$('#numero_identificacion').focus();
 	        	}
 	        	
 	        }else{
 	        	// Número de identificación
 	        	$('#bs_boton_guardar').show();
+	        	$('#email').show();
 	        }
 	        
 		});
 	});
 
 
-	
+	// !!!! Solo valida en la tabla core_tereceros
 	$('#email').keyup(function(){
 		var email = $("#email").val();
 
@@ -79,6 +81,8 @@ $(document).ready(function(){
 	        
 		});
 	});
+
+
 
 	/*
 	$(document).on('keyup keypress', 'form input[type="text"]', function(e) {

@@ -106,8 +106,7 @@ class PlanClaseEncabezado extends Model
                                     "value" => '<div class="form-group">                    
                                                     <label class="control-label col-sm-3" style="color: red;" > <b> No se pueden ingresar registros desde esta opción. </b> </label>
                                                     <br>
-                                                    <a href="'.url( 'academico_docente?id='.Input::get('id') ).'" class="btn btn-sm btn-info"> <i class="fa fa-th-large"></i> Ir a mi listado de asignaturas. </a>
-                                                    <input name="plantilla_plan_clases_id" id="plantilla_plan_clases_id" type="hidden" value="" required="required"/>       
+                                                    <a href="'.url( 'academico_docente?id='.Input::get('id') ).'" class="btn btn-sm btn-info"> <i class="fa fa-th-large"></i> Ir a mi listado de asignaturas. </a>      
                                                 </div>',
                                     "atributos" => [],
                                     "definicion" => "",

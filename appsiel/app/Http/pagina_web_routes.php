@@ -162,7 +162,8 @@ Route::put('tienda/inventario/updated/{tienda}','web\TiendaController@inventario
 Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@terminos')->name('tienda.terminos');
 
 //TIENDA PUBLICA
-Route::get('tienda/publica/cuenta','web\TiendaController@cuenta')->name('tienda.micuenta');
+Route::get('tienda/publica/cuenta/{cliente_id}','web\TiendaController@cuenta')->name('tienda.micuenta');
+
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');
 Route::post('pagina_web/nube/ruta/get', 'web\NubeController@listPath')->name('nube.list');

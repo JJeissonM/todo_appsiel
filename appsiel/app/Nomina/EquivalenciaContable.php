@@ -11,10 +11,9 @@ class EquivalenciaContable extends Model
 	public $encabezado_tabla = ['', 'Concepto', 'Grupo de empleados', 'Cuenta contable', 'Tipo Movimiento', 'Tercero contrapartida', 'Entidad contrapartida', 'Acción'];
 	public static function consultar_registros()
 	{
-	    $registros = EquivalenciaContable::select(, 'nom_equivalencias_contables.nom_concepto_id AS campo1', 'nom_equivalencias_contables.nom_grupo_empleado_id AS campo2', 'nom_equivalencias_contables.contab_cuenta_id AS campo3', 'nom_equivalencias_contables.tipo_movimiento AS campo4', 'nom_equivalencias_contables.core_tercero_id AS campo5', 'nom_equivalencias_contables.nom_entidad_id AS campo6', 'nom_equivalencias_contables.id AS campo7')
+	    return EquivalenciaContable::select('nom_equivalencias_contables.nom_concepto_id AS campo1', 'nom_equivalencias_contables.nom_grupo_empleado_id AS campo2', 'nom_equivalencias_contables.contab_cuenta_id AS campo3', 'nom_equivalencias_contables.tipo_movimiento AS campo4', 'nom_equivalencias_contables.core_tercero_id AS campo5', 'nom_equivalencias_contables.nom_entidad_id AS campo6', 'nom_equivalencias_contables.id AS campo7')
 	    ->get()
 	    ->toArray();
-	    return $registros;
 	}
 
 	public static function opciones_campo_select()

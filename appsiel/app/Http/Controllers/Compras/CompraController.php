@@ -320,7 +320,7 @@ class CompraController extends TransaccionController
             // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
             $caja = TesoCaja::get()->first();
             $cta_caja_id = $caja->contab_cuenta_id;
-            ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, 0, abs($total_documento) );
+            ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, 0, abs($total_documento), $caja->id, 0 );
         }
     }
 

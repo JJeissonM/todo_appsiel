@@ -9,6 +9,31 @@
 @endsection
 
 @section('content')
+
+<?php
+    if ( is_null( $cliente ) )
+    {
+        $cliente = (object)[ 
+                                'nombre_completo' => 'SIN REGISTRAR',
+                                'tipo_y_numero_documento_identidad' => 0,
+                                'user_id' => 0,
+                                'imagen' => 0,
+                                'nombre1' => 0,
+                                'otros_nombres' => 0,
+                                'apellido1' => 0,
+                                'apellido2' => 0,
+                                'telefono1' => 0,
+                                'id_tipo_documento_id' => 0,
+                                'numero_identificacion' => 0,
+                                'direccion1' => 0,
+                                'barrio' => 0,
+                                'ciudad' => 0,
+                                'email' => 0,
+                                'id' => 0 
+                            ];
+    }
+?>
+
 <header>
     <div class="top-link">
         <div class="container">
@@ -21,7 +46,7 @@
                         <p class="welcome-msg">Bienvenido a Avipoulet </p>
                         <ul class="links">
                             <li class="first"><a
-                                        href="{{route('tienda.micuenta')}}"
+                                        href="{{route('tienda.micuenta', [ 'cliente_id' => $cliente->id ] )}}"
                                         title="My Account">Mi Cuenta</a></li>
                             <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/wishlist/"
                                    title="My Wishlist">Mi Lista</a></li>
@@ -44,7 +69,7 @@
                 <div class="row">
                     <div class="header-content clearfix">
                         <div class="top-logo col-xs-12 col-md-3 col-sm-12">
-                            <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/" title="Magento Commerce"
+                            <a href="{{url('/')}}" title="Magento Commerce"
                                class="logo"><strong>Magento Commerce</strong><img
                                         src="http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/logo.gif"
                                         alt="Magento Commerce"></a>
@@ -250,7 +275,7 @@
                                             <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit; text-align: left !important;">MI TABLERO</font></font></h1>
                                         </div>
                                         <div class="welcome-msg">
-                                            <p class="hello"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Hola Jordan Cuadro!</font></font></strong></p>
+                                            <p class="hello"><strong><font style="vertical-align: inherit; background: yellow; color:black;"><font style="vertical-align: inherit;">Hola {{ $cliente->nombre_completo }}!</font></font></strong></p>
                                             <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Desde el Panel de control de Mi cuenta, puede ver una instantánea de la actividad reciente de su cuenta y actualizar la información de su cuenta. </font><font style="vertical-align: inherit;">Seleccione un enlace a continuación para ver o editar información.</font></font></p>
                                         </div>
                                         <div class="box-account box-info">

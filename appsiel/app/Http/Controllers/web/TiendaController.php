@@ -202,8 +202,12 @@ class TiendaController extends Controller
      * Muestra el panel de la cuenta del cliente en la parte publica
      * @param un $id usuario logueado
      */
-    public function cuenta(){
+    public function cuenta( $cliente_id = 0 )
+    {
         $paises = DB::table('core_paises')->get();
-        return view('web.tienda.cuenta',compact('paises'));
+
+        $cliente = \App\Ventas\ClienteWeb::get_datos_basicos( $cliente_id );
+        
+        return view( 'web.tienda.cuenta', compact('paises','cliente') );
     }
 }

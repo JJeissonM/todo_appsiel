@@ -35,6 +35,8 @@ use App\Core\Empresa;
 use App\CxP\CxpMovimiento;
 use App\CxP\CxpAbono;
 
+use App\CxC\CxcMovimiento;
+
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMotivo;
@@ -152,7 +154,7 @@ class PagoController extends TransaccionController
                                 [ 'estado' => 'Activo' ] );
             
 
-            // 1.1. Para cada registro del documento de recaudo, se va actualizando el movimiento de tesorería (teso_movimientos)
+            // 1.1. Para cada registro del documento, se va actualizando el movimiento de tesorería (teso_movimientos)
             $this->datos = array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo, 'core_tercero_id' => $core_tercero_id ] );            
 
             // Datos la caja o el la cuenta bancaria
@@ -203,7 +205,7 @@ class PagoController extends TransaccionController
             $this->contabilizar_registro( $cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
 
 
-            // Solo los anticipos se guardan en el movimiento de CxP (saldo a favor del proveedor)
+            // Generar CxP a favor. Saldo negativo por pagar (a favor de la empresa)
             if ( $motivo->teso_tipo_motivo == 'Anticipo proveedor' )
             {
                 $this->datos['valor_documento'] = $valor * -1;
@@ -213,6 +215,29 @@ class PagoController extends TransaccionController
                 $this->datos['estado'] = 'Pendiente';
                 CxpMovimiento::create( $this->datos );
             }
+
+            // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
+            if ( $motivo->teso_tipo_motivo == 'Prestamo financiero' )
+            {
+                $this->datos['valor_documento'] = $valor;
+                $this->datos['valor_pagado'] = 0;
+                $this->datos['saldo_pendiente'] = $valor;
+                $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
+                $this->datos['estado'] = 'Pendiente';
+                CxpMovimiento::create( $this->datos );
+            }
+
+            // Generar CxC por algún dinero prestado o anticipado a trabajadores o clientes.
+            if ( $motivo->teso_tipo_motivo == 'Pago anticipado' )
+            {
+                $this->datos['valor_documento'] = $valor;
+                $this->datos['valor_pagado'] = 0;
+                $this->datos['saldo_pendiente'] = $valor;
+                $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
+                $this->datos['estado'] = 'Pendiente';
+                CxcMovimiento::create( $this->datos );
+            }
+
 
             $total_documento += $valor;
 
@@ -341,6 +366,7 @@ class PagoController extends TransaccionController
         $registros = TesoMotivo::where('teso_tipo_motivo',$teso_tipo_motivo)
                             ->where('estado','Activo')
                             ->where('core_empresa_id',Auth::user()->empresa_id)
+                            ->orderBy('descripcion')
                             ->get();
         $motivos[''] = '';
         foreach ($registros as $fila) {

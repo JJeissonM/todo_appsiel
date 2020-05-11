@@ -51,18 +51,22 @@
             @foreach($doc_pagados as $linea )
 
                 <?php 
-            
-                    $el_documento = app( App\Sistema\TipoTransaccion::find( $linea->doc_cxc_transacc_id )->modelo_encabezados_documentos )->where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
+                    
+                    $modelo_transaccion = App\Sistema\TipoTransaccion::find( $linea->doc_cxc_transacc_id )->modelo_encabezados_documentos;
+
+                    $el_documento = app( $modelo_transaccion )->where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
                     ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                     ->where('consecutivo',$linea->doc_cxc_consecutivo)
                     ->get()->first();
 
+                    //$url = url( 'tesoreria/pagos/'.$el_documento->id.'?id='.Input::get('id').'&id_modelo=139&id_transaccion=23');
                 ?>
 
                 <tr>
                     <td> {{ $linea->tercero_nombre_completo }} </td>
                     <td> 
-                        <a href="{{ url('ventas/'.$el_documento->id.'?id=13&id_modelo=139&id_transaccion=23') }}" target="_blank"> {{ $linea->documento_prefijo_consecutivo }}</a>  
+                        <!-- <a href="{ { $url }}" target="_blank"> { { $linea->documento_prefijo_consecutivo }}</a>  -->
+                        {{ $linea->documento_prefijo_consecutivo }}
                     </td>
                     <td> {{ $el_documento->fecha }} </td>
                     <td> {{ $el_documento->descripcion }} </td>
