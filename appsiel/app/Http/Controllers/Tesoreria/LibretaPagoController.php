@@ -596,7 +596,6 @@ class LibretaPagoController extends ModeloController
                 $libreta->save();
             }
 
-
             // MOVIMIENTO DE TESORERIA
             // Datos la caja o el la cuenta bancaria
             // Tambien se asigna el ID de la cuenta contable para el movimiento CREDITO

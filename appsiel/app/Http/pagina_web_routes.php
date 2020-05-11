@@ -118,6 +118,7 @@ Route::put('testimonial/testimonial/seccion/modificar/{seccion}', 'web\Testimoni
 
 //		CUSTOM HTML
 Route::resource('custom_html', 'web\CustomHtmlController');
+Route::resource('pqr_form', 'web\PqrFormController');
 
 // Página Web - BACK END
 Route::post('pagina_web/crear_nuevo_modulo', 'PaginaWeb\ModuloController@crear_nuevo');

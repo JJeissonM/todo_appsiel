@@ -450,7 +450,8 @@ class ModeloController extends Controller
         $nombre_es_el_primero = true;
         // Si se envía archivos tipo file (imagenes, adjuntos)
         $archivos_enviados = $request->file();
-        foreach ($archivos_enviados as $key => $value) {
+        foreach ($archivos_enviados as $key => $value)
+        {
             // Si se envía un nuevo archivo, se borran el archivo anterior del disco
             if ($modo == 'edit' && $request->file($key) != '') {
                 Storage::delete($ruta_storage_imagen . $registro->$key);
@@ -723,10 +724,12 @@ class ModeloController extends Controller
     public static function personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, $accion, $tipo_tranferencia = null)
     {
 
+        $opciones = [];
         // Se crea un select SOLO con las opciones asignadas a la transacción
         //if ($tipo_transaccion != 0) {
         $tipo_docs_app = $tipo_transaccion->tipos_documentos;
-        foreach ($tipo_docs_app as $fila) {
+        foreach ($tipo_docs_app as $fila)
+        {
             $opciones[$fila->id] = $fila->prefijo . " - " . $fila->descripcion;
         }
         //} 

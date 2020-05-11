@@ -70,7 +70,7 @@ class EmailController extends Controller
 
     $nombrearchivo = uniqid().'.pdf';
 
-    Storage::put('pdf_email/'.$nombrearchivo, $pdf->output());      
+    Storage::put('pdf_email/'.$nombrearchivo, $pdf->output());
     
     $tipo_mensaje = 'flash_message';
     $texto_mensaje = 'Correo enviado correctamente.';

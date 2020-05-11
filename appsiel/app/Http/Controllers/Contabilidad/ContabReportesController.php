@@ -1108,5 +1108,111 @@ class ContabReportesController extends Controller
         return "  Grupo Actualizado.";
     }
 
+    public function lista_documentos_descuadrados( Request $request )
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
+
+        $movimiento = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
+                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                        
+                        ->select( 
+                                    DB::raw('SUM(contab_movimientos.valor_saldo) AS suma_saldos'),
+                                    DB::raw('SUM(contab_movimientos.valor_debito) AS suma_debitos'),
+                                    DB::raw('SUM(contab_movimientos.valor_credito) AS suma_creditos'),
+                                    DB::raw('CONCAT(contab_movimientos.core_tipo_transaccion_id,contab_movimientos.core_tipo_doc_app_id,contab_movimientos.consecutivo) AS llave_primaria_documento'),
+                                    'contab_movimientos.core_tipo_transaccion_id',
+                                    'contab_movimientos.core_tipo_doc_app_id',
+                                    'contab_movimientos.consecutivo',
+                                    'contab_movimientos.fecha',
+                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento') )
+                        ->groupBy('llave_primaria_documento')
+                        ->orderBy('contab_movimientos.fecha')
+                        ->get();
+
+        $registros = $movimiento->filter(function ($value, $key) {
+            return round( $value->suma_saldos ) != 0;
+        });
+        
+        $vista = View::make( 'contabilidad.incluir.listado_documentos_descuadrados', compact('registros') )->render();
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        return $vista;
+    }
+
+
+    public function cuadre_contabilidad_vs_tesoreria( Request $request )
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
+
+        $cuentas_tesoreria = [];
+
+        $cuentas_tesoreria = array_merge ( $cuentas_tesoreria, \App\Tesoreria\TesoCaja::groupBy('contab_cuenta_id')->get()->pluck('contab_cuenta_id')->toArray() );
+
+        $cuentas_tesoreria = array_merge ( $cuentas_tesoreria, \App\Tesoreria\TesoCuentaBancaria::groupBy('contab_cuenta_id')->get()->pluck('contab_cuenta_id')->toArray() );
+
+        $movimiento = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
+                        ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                        ->whereIn( 'contab_cuenta_id', $cuentas_tesoreria )
+                        ->where( 'teso_caja_id', 0 )
+                        ->where( 'teso_cuenta_bancaria_id', 0 )
+                        ->select( 
+                                    'contab_movimientos.id AS contab_movimiento_id',
+                                    DB::raw('CONCAT(contab_movimientos.core_tipo_transaccion_id,contab_movimientos.core_tipo_doc_app_id,contab_movimientos.consecutivo) AS llave_primaria_documento'),
+                                    'contab_movimientos.core_tipo_transaccion_id',
+                                    'contab_movimientos.core_tipo_doc_app_id',
+                                    'contab_movimientos.consecutivo',
+                                    'contab_movimientos.fecha',
+                                    'contab_cuentas.codigo AS codigo_cuenta',
+                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento'),
+                                    'contab_movimientos.valor_debito',
+                                    'contab_movimientos.valor_credito',
+                                    'contab_movimientos.valor_saldo',
+                                    'contab_movimientos.teso_caja_id',
+                                    'contab_movimientos.teso_cuenta_bancaria_id',
+                                    'contab_movimientos.detalle_operacion' )
+                        ->orderBy('contab_movimientos.fecha')
+                        ->get();
+
+
+        
+
+        dd( $movimiento->toArray() );
+
+
+
+        $registros = $movimiento->filter(function ($value, $key) {
+            $cajas = array_keys( \App\Tesoreria\TesoCaja::opciones_campo_select() );
+            array_shift( $cajas );
+
+            $bancos = array_keys( \App\Tesoreria\TesoCuentaBancaria::opciones_campo_select() );
+            array_shift( $bancos );
+
+            return \App\Tesoreria\TesoMovimiento::where(
+                                                        [ 
+                                                            'fecha' => $value->fecha, 
+                                                            'core_tipo_transaccion_id' => $value->core_tipo_transaccion_id,
+                                                            'core_tipo_doc_app_id' => $value->core_tipo_doc_app_id,
+                                                            'consecutivo' => $value->consecutivo,
+                                                            'valor_movimiento' => $value->valor_saldo,
+                                                        ]
+                                                        )
+                                                ->orWhereIn('teso_caja_id', $cajas)
+                                                ->orWhereIn('teso_cuenta_bancaria_id', $bancos)
+                                                ->get()->first() == null;
+        });
+
+        $cajas = \App\Tesoreria\TesoCaja::opciones_campo_select();
+        
+        $vista = View::make( 'contabilidad.incluir.listado_documentos_descuadrados', compact('registros', 'cajas') )->render();
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        return $vista;
+    }
+
 
 }

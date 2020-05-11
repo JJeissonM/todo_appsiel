@@ -49,6 +49,8 @@ class RegistroCxpController extends Controller
     {
         $request['core_tipo_transaccion_id'] = $request->url_id_transaccion;
 
+        // TRUCO PARA CREAR EL TERCERO COMO PROVEEDOR, PUES PARA EL PAGO EN TESORERIA SE LLAMA AL PROVEEDOR
+
         // Se crea un nuevo registro
         $registro = CrudController::crear_nuevo_registro( $request, $request->url_id_modelo );
 
