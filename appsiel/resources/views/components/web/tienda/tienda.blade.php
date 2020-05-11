@@ -24,7 +24,7 @@
                             <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/checkout/onepage"
                                    title="Checkout" class="top-link-checkout">Revisa</a></li>
                             <li class=" last"><a
-                                        href="/login.html"
+                                        href="{{route('tienda.login')}}"
                                         title="Log In">Iniciar Sesión</a></li>
                         </ul>
                     </div>

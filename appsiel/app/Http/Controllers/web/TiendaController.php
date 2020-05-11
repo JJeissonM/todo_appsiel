@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers\web;
 
-use App\Http\Controllers\Salud\ResultadoExamenMedicoController;
 use App\web\Tienda;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
@@ -206,4 +203,14 @@ class TiendaController extends Controller
         $paises = DB::table('core_paises')->get();
         return view('web.tienda.cuenta',compact('paises'));
     }
+
+    public function  login (){
+        return view('web.tienda.login');
+    }
+
+    public function crearCuenta(){
+        $tipos = DB::table('core_tipos_docs_id')->get();
+        return view('web.tienda.crearCuenta',compact('tipos'));
+    }
+
 }
