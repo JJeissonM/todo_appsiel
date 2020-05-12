@@ -163,7 +163,7 @@ Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@
 
 //TIENDA PUBLICA
 Route::get('tienda/publica/cuenta','web\TiendaController@cuenta')->name('tienda.micuenta');
-Route::get('tienda/publica/login','web\TiendaController@login')->name('tienda.login');
+Route::get('tienda/publica/signIn','web\TiendaController@login')->name('tienda.login');
 Route::get('tienda/publica/nuevacuenta','web\TiendaController@crearCuenta')->name('tienda.cuenta');
 
 Route::get('tienda/publica/cuenta/{cliente_id}','web\TiendaController@cuenta')->name('tienda.micuenta');

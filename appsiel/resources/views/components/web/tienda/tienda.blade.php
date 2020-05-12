@@ -16,7 +16,7 @@
                         <p class="welcome-msg">Bienvenido a Avipoulet </p>
                         <ul class="links">
                             <li class="first"><a
-                                        href="{{ route( 'tienda.micuenta' , [ 'cliente_id' => 0 ] ) }}"
+                                        href="{{ route( 'tienda.micuenta' ,[ 'cliente_id' => 0  ] ) }}"
                                         title="My Account">Mi Cuenta</a></li>
                             <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/wishlist/"
                                    title="My Wishlist">Mi Lista</a></li>
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <div class="header" style="background: #571c9b;">
+    <div class="header">
         <div class="container">
             <div class="header-inner">
                 <div class="row">
