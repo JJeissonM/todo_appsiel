@@ -308,8 +308,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group row">
-                                        <div class="col-md-4"><label>Ciudad <strong>({{$tienda->ciudad}}
-                                                    )</strong></label></div>
+                                        <div class="col-md-4"><label>Ciudad <strong>({{$tienda->ciudad}})</strong></label></div>
                                         <div class="col-md-8">
                                             <select class="form-control" id="ciudad" name="ciudad">
 
