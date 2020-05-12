@@ -149,6 +149,19 @@ ul,ol         { list-style:none; margin: 0;}
 .fieldset { border:1px solid #f2f2f2;padding:22px 25px 12px 33px; margin:28px 0; }
 .fieldset .legend { float:left; font-weight:normal; font-size:13px; border:1px solid #f2f2f2; background:#fff; color:#444443; margin:-33px 0 0 -10px; padding:0 8px; position:relative; }
 
+/* Address Book */
+.addresses-list h2 {font-weight:normal;font-size:13px;color:#333;text-transform:uppercase;}
+.addresses-list h3 { font-weight:normal; font-size:13px; }
+.addresses-list address { margin:0 0 3px; }
+.addresses-list p { margin:0; }
+.addresses-list a { font-weight:normal; }
+.addresses-list .link-remove { color:#646464; }
+.addresses-list .separator { margin:0 3px; }
+.addresses-list li.item {border:1px solid #f2f2f2;padding:10px 13px;margin:0 0 10px;}
+.addresses-list li.empty { background:none; border:0; padding:0; }
+.addresses-list li.empty p { font-weight:normal; }
+.addresses-list .addresses-additional li.item { background:none; border:0; padding:0; }
+
 /* Base Columns */
 .col-left {  }
 .col-main {  }

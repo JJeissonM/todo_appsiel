@@ -51,9 +51,11 @@ class ClienteWeb extends Model
                             ->leftJoin('users', 'users.id', '=', 'core_terceros.user_id')
                             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
                             ->leftJoin('core_ciudades', 'core_ciudades.id', '=', 'core_terceros.codigo_ciudad')
+                            ->leftJoin('core_departamentos', 'core_departamentos.id', '=', 'core_ciudades.core_departamento_id')
+                            ->leftJoin('core_paises', 'core_paises.id', '=', 'core_departamentos.codigo_pais')
                             ->where('vtas_clientes.id',$cliente_id)
                             ->select( 
-                                        DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo' ),
+                                        DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo' ),
                                         DB::raw( 'CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS tipo_y_numero_documento_identidad' ),
                                         'core_terceros.user_id',
                                         'core_terceros.imagen',
@@ -65,8 +67,12 @@ class ClienteWeb extends Model
                                         'core_terceros.id_tipo_documento_id',
                                         'core_terceros.numero_identificacion',
                                         'core_terceros.direccion1',
+                                        'core_terceros.direccion2',
                                         'core_terceros.barrio',
+                                        'core_terceros.codigo_postal',
                                         'core_ciudades.descripcion AS ciudad',
+                                        'core_departamentos.descripcion AS departamento',
+                                        'core_paises.descripcion AS pais',
                                         'users.email',
                                         'vtas_clientes.id')
                             ->get()

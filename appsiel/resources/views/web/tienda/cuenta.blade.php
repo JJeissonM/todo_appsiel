@@ -28,9 +28,13 @@
                                             <ul>
                                                 <li><a id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Panel de cuenta</font></font></strong></a></li>
                                                 <li><a id="nav-infor-tab" data-toggle="tab" href="#nav-infor" role="tab" aria-controls="nav-infor" aria-selected="true"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Información de la cuenta</font></font></a></li>
+                                                @if($cliente->direccion1 !== 0)
                                                 <li><a id="nav-directorio-tab" data-toggle="tab"
                                                        href="#nav-directorio" role="tab" aria-controls="nav-directorio"
                                                        aria-selected="false"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Direcciones</font></font></a></li>
+                                                @else
+                                                    <li><a id="nav-directorio-edit" data-toggle="tab" href="#nav-directorioedit" role="tab" aria-controls="nav-directorioedit" aria-selected="false"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Direcciones</font></font></a></li>
+                                                @endif
                                                 <li class="last"><a id="nav-ordenes-tab" data-toggle="tab" href="#nav-ordenes" role="tab" aria-controls="nav-ordenes" aria-selected="false"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Mis ordenes</font></font></a></li>
                                             </ul>
                                         </div>
@@ -59,13 +63,11 @@
                                                     <div class="box">
                                                         <div class="box-title">
                                                             <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Información del contacto</font></font></h3>
-                                                            <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/customer/account/edit/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Editar</font></font></a>
                                                         </div>
                                                         <div class="box-content">
                                                             <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                        Jordan Cuadro </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                        jordan_j9@hotmail.com </font></font><br>
-                                                                <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/customer/account/edit/changepass/1/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Cambiar contraseña</font></font></a>
+                                                                        {{$cliente->nombre_completo}}</font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                        {{$cliente->email}} </font></font><br>
                                                             </p>
                                                         </div>
                                                     </div>
@@ -77,8 +79,7 @@
                                                             <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/newsletter/manage/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Editar</font></font></a>
                                                         </div>
                                                         <div class="box-content">
-                                                            <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                        Actualmente no estás suscrito a ningún boletín.                                    </font></font></p>
+                                                            <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Actualmente no estás suscrito a ningún boletín.</font></font></p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -91,17 +92,55 @@
                                                     </div>
                                                     <div class="box-content">
                                                         <div class="col-1" style="max-width: 50%">
-                                                            <h4><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">direccion de FACTURACION por defecto</font></font></h4>
-                                                            <address><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                        No ha establecido una dirección de facturación predeterminada. </font></font><br>
-                                                                <a href=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Editar dirección</font></font></a>
+                                                            <h4><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">direccion de FACTURACIÓN por defecto</font></font></h4>
+                                                            <address>
+                                                                @if($cliente->direccion1 === 0 || $cliente->direccion1 === null)
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                        No ha establecido una dirección de facturación predeterminada.
+                                                                    </font></font><br>
+                                                                @else
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            {{$cliente->nombre_completo}}
+                                                                    </font></font><br>
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            {{$cliente->direccion1}}, {{$cliente->barrio}}
+                                                                    </font></font><br>
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            {{$cliente->ciudad}}, {{$cliente->departamento}}, {{$cliente->codigo_postal}}
+                                                                        </font></font><br>
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            {{$cliente->pais}}
+                                                                        </font></font><br>
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            Tel. {{$cliente->telefono1}}
+                                                                        </font></font><br>
+                                                                @endif
                                                             </address>
                                                         </div>
                                                         <div class="col-2" style="max-width: 50%">
                                                             <h4><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Dirección de entrega por defecto</font></font></h4>
-                                                            <address><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                        No ha establecido una dirección de envío predeterminada. </font></font><br>
-                                                                <a href=""><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Editar dirección</font></font></a>
+                                                            <address>
+                                                                @if($cliente->direccion1 === 0 || $cliente->direccion1 === null)
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            No ha establecido una dirección de envío predeterminada.
+                                                                    </font></font><br>
+                                                                @else
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            {{$cliente->nombre_completo}}
+                                                                        </font></font><br>
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            {{$cliente->direccion1}}, {{$cliente->barrio}}
+                                                                        </font></font><br>
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            {{$cliente->ciudad}}, {{$cliente->departamento}}, {{$cliente->codigo_postal}}
+                                                                        </font></font><br>
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            {{$cliente->pais}}
+                                                                        </font></font><br>
+                                                                    <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                            Tel. {{$cliente->telefono1}}
+                                                                        </font></font><br>
+                                                                @endif
                                                             </address>
                                                         </div>
                                                     </div>
@@ -114,7 +153,7 @@
                                                 <div class="page-title">
                                                     <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">EDITAR INFORMACIÓN DE LA CUENTA</font></font></h1>
                                                 </div>
-                                                {!! Form::model(['route'=>'tienda.productoupdated','method'=>'POST','class'=>'form-horizontal','id'=>'form-validate','autocomplete'=>'off','files'=>'true'])!!}
+                                                {!! Form::model($cliente,['route'=>['tienda.informacionupdate',$cliente],'method'=>'PUT','class'=>'form-horizontal','id'=>'form-validate','autocomplete'=>'off','files'=>'true'])!!}
                                                 <div class="fieldset">
                                                     <h2 class="legend"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Información de la cuenta</font></font></h2>
                                                     <ul class="form-list">
@@ -123,13 +162,29 @@
                                                                 <div class="field name-firstname">
                                                                     <label for="firstname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Nombre</font></font></label>
                                                                     <div class="input-box">
-                                                                        <input type="text" id="firstname" name="firstname" value="Jordan" title="Nombre de pila" maxlength="255" class="input-text required-entry">
+                                                                        <input type="text" id="firstname" name="nombre1" value="{{$cliente->nombre1}}" title="Nombre de pila" maxlength="255" class="input-text required-entry">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="field name-firstname">
+                                                                    <label for="firstname" class="required"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Segundo Nombre</font></font></label>
+                                                                    <div class="input-box">
+                                                                        <input type="text" id="otros_nombres" name="otros_nombres" value="{{$cliente->otros_nombres}}" title="Segundo nombre" maxlength="255" class="input-text">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        <li class="fields">
+                                                            <div class="customer-name">
+                                                                <div class="field name-lastname">
+                                                                    <label for="lastname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Primer Apellido</font></font></label>
+                                                                    <div class="input-box">
+                                                                        <input type="text" id="lastname" name="apellido1" value="{{$cliente->apellido1}}" title="Primer Apellido" maxlength="255" class="input-text required-entry">
                                                                     </div>
                                                                 </div>
                                                                 <div class="field name-lastname">
-                                                                    <label for="lastname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Apellido</font></font></label>
+                                                                    <label for="lastname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Segundo Apellido</font></font></label>
                                                                     <div class="input-box">
-                                                                        <input type="text" id="lastname" name="lastname" value="Cuadro" title="Apellido" maxlength="255" class="input-text required-entry">
+                                                                        <input type="text" id="apellido2" name="apellido2" value="{{$cliente->apellido2}}" title="Apellido" maxlength="255" class="input-text required-entry">
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -137,11 +192,11 @@
                                                         <li>
                                                             <label for="email" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Dirección de correo electrónico</font></font></label>
                                                             <div class="input-box">
-                                                                <input type="text" name="email" id="email" value="jordan_j9@hotmail.com" title="Dirección de correo electrónico" class="input-text required-entry validate-email">
+                                                                <input type="text" name="email" id="email" value="{{$cliente->email}}" title="Dirección de correo electrónico" class="input-text required-entry validate-email">
                                                             </div>
                                                         </li>
                                                         <li class="control">
-                                                            <input type="checkbox" name="change_password" id="change_password" value="1" onclick="setPasswordForm(this.checked)" title="Cambia la contraseña" class="checkbox"><label for="change_password"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Cambia la contraseña</font></font></label>
+                                                            <br><input type="checkbox" name="change_password" id="change_password" value="1" onclick="setPasswordForm(this.checked)" title="Cambia la contraseña" class="checkbox"><label for="change_password"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Cambia la contraseña</font></font></label>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -174,53 +229,59 @@
                                                 </div>
                                                 <div class="buttons-set">
                                                     <p class="required"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">* Campos requeridos</font></font></p>
-                                                    <p class="back-link"><a href=""><small><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">«</font></font></small><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Volver</font></font></a></p>
+                                                    <p class="back-link"><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/customer/account/"><small><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">«</font></font></small><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Volver</font></font></a></p>
                                                     <button type="submit" title="Salvar" class="button"><span><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Salvar</font></font></span></span></button>
                                                 </div>
                                                 {!! Form::close() !!}
                                             </div>
-                                            <div class="tab-pane fade" id="nav-directorio" role="tabpanel"
-                                                 aria-labelledby="nav-directorio-tab">
-                                                <div class="page-title">
-                                                    <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">AGREGAR NUEVA DIRECCIÓN</font></font></h1>
-                                                </div>
-                                                {!! Form::model(['route'=>'tienda.productoupdated','method'=>'POST','class'=>'form-horizontal','id'=>'form-validate','autocomplete'=>'off','files'=>'true'])!!}
+                                            <div class="tab-pane fade" id="nav-directorioedit" role="tabpanel" aria-labelledby="nav-directorioedit-tab">
+                                                {!! Form::model($cliente,['route'=>['tienda.informacionupdate',$cliente],'method'=>'PUT','class'=>'form-horizontal','id'=>'form-validate','autocomplete'=>'off','files'=>'true'])!!}
                                                 <div class="fieldset">
                                                     <h2 class="legend"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Información del contacto</font></font></h2>
                                                     <ul class="form-list">
                                                         <li class="fields">
                                                             <div class="customer-name">
                                                                 <div class="field name-firstname">
-                                                                    <label for="firstname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Nombre</font></font></label>
+                                                                    <label for="firstname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Primer Nombre</font></font></label>
                                                                     <div class="input-box">
-                                                                        <input type="text" id="firstname" name="firstname" value="Jordan" title="Nombre de pila" maxlength="255" class="input-text required-entry">
+                                                                        <input type="text" id="firstname" name="nombre1" value="{{$cliente->nombre1}}" title="Nombre de pila" maxlength="255" class="input-text required-entry">
                                                                     </div>
                                                                 </div>
-                                                                <div class="field name-lastname">
-                                                                    <label for="lastname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Apellido</font></font></label>
+                                                                <div class="field name-firstname">
+                                                                    <label for="firstname"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Segundo Nombre</font></font></label>
                                                                     <div class="input-box">
-                                                                        <input type="text" id="lastname" name="lastname" value="Cuadro" title="Apellido" maxlength="255" class="input-text required-entry">
+                                                                        <input type="text" id="otros_nombres" name="otros_nombres" value="{{$cliente->otros_nombres}}" title="Segundo Nombre" maxlength="255" class="input-text">
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </li>
-                                                        <li class="wide">
-                                                            <label for="company"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Empresa</font></font></label>
-                                                            <div class="input-box">
-                                                                <input type="text" name="company" id="company" title="Empresa" value="" class="input-text ">
+                                                        <li class="fields">
+                                                            <div class="customer-name">
+                                                                <div class="field name-lastname">
+                                                                    <label for="lastname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Primer Apellido</font></font></label>
+                                                                    <div class="input-box">
+                                                                        <input type="text" id="lastname" name="apellido1" value="{{$cliente->apellido1}}" title="Apellido" maxlength="255" class="input-text required-entry">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="field name-lastname">
+                                                                    <label for="lastname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Segundo Apellido</font></font></label>
+                                                                    <div class="input-box">
+                                                                        <input type="text" id="apellido2" name="apellido2" value="{{$cliente->apellido2}}" title="Apellido" maxlength="255" class="input-text required-entry">
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </li>
                                                         <li class="fields">
                                                             <div class="field">
                                                                 <label for="telephone" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Teléfono</font></font></label>
                                                                 <div class="input-box">
-                                                                    <input type="text" name="telephone" value="" title="Teléfono" class="input-text   required-entry" id="telephone">
+                                                                    <input type="text" name="telefono1" value="{{$cliente->telefono1}}" title="Teléfono" class="input-text   required-entry" id="telephone">
                                                                 </div>
                                                             </div>
                                                             <div class="field">
-                                                                <label for="fax"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Fax</font></font></label>
+                                                                <label for="company"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Empresa</font></font></label>
                                                                 <div class="input-box">
-                                                                    <input type="text" name="fax" id="fax" title="Fax" value="" class="input-text ">
+                                                                    <input type="text" name="company" id="company" title="Empresa" value="" class="input-text ">
                                                                 </div>
                                                             </div>
                                                         </li>
@@ -232,12 +293,12 @@
                                                         <li class="wide">
                                                             <label for="street_1" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Dirección</font></font></label>
                                                             <div class="input-box">
-                                                                <input type="text" name="street[]" value="" title="Dirección" id="street_1" class="input-text  required-entry">
+                                                                <input type="text" name="direccion1" value="{{$cliente->direccion1}}" title="Dirección" id="direccion_1" class="input-text  required-entry">
                                                             </div>
                                                         </li>
                                                         <li class="wide" style="margin-top: 20px">
                                                             <div class="input-box">
-                                                                <input type="text" name="street[]" value="" title="Dirección 2" id="street_2" class="input-text" placeholder="Dirección 2">
+                                                                <input type="text" name="direccion2" value="{{$cliente->direccion2}}" title="Dirección 2" id="direccion_2" class="input-text" placeholder="Dirección 2">
                                                             </div>
                                                         </li>
                                                         <li class="fields">
@@ -263,6 +324,12 @@
                                                         </li>
                                                         <li class="fields">
                                                             <div class="field">
+                                                                <label for="zip" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Barrio</font></font></label>
+                                                                <div class="input-box">
+                                                                    <input type="text" name="barrio" value="{{$cliente->barrio}}" title="Barrio" id="barrio" class="input-text validate-zip-international  required-entry">
+                                                                </div>
+                                                            </div>
+                                                            <div class="field">
                                                                 <label for="zip" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Código postal</font></font></label>
                                                                 <div class="input-box">
                                                                     <input type="text" name="postcode" value="" title="Código postal" id="zip" class="input-text validate-zip-international  required-entry">
@@ -277,12 +344,67 @@
                                                         </li>
                                                     </ul>
                                                 </div>
+                                                <div class="buttons-set">
+                                                    <p class="required"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">* Campos requeridos</font></font></p>
+                                                    <button type="submit" title="Salvar" class="button"><span><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Salvar</font></font></span></span></button>
+                                                </div>
                                                     <div class="buttons-set">
                                                         <p class="required"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">* Campos requeridos</font></font></p>
                                                         <p class="back-link"><a href=""><small><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">«</font></font></small><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Volver</font></font></a></p>
                                                         <button type="submit" title="Salvar" class="button"><span><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Salvar</font></font></span></span></button>
                                                     </div>
                                                 {!! Form::close() !!}
+                                            </div>
+                                            <div class="tab-pane fade" id="nav-directorio" role="tabpanel"
+                                                 aria-labelledby="nav-directorio-tab">
+                                                <div class="page-title">
+                                                    <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">AGREGAR NUEVA DIRECCIÓN</font></font></h1>
+                                                </div>
+                                                    <div class="col2-set addresses-list">
+                                                        <div class="col-1 addresses-primary" style="max-width: 100%">
+                                                            <h2 style="text-transform: uppercase;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Direcciones predeterminadas</font></font></h2>
+                                                            <ol>
+                                                                <li class="item">
+                                                                    <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">direccion de FACTURACION por defecto</font></font></h3>
+                                                                    <address><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->nombre_completo}}
+                                                                            </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->direccion1}}
+                                                                            </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->barrio}}
+                                                                            </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->ciudad}}, {{$cliente->departamento}}, {{$cliente->codigo_postal}}
+                                                                            </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->pais}}
+                                                                            </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                T: {{$cliente->telefono1}}
+                                                                            </font></font>
+                                                                    </address>
+                                                                    <p><a id="nav-directorioedit-tab" data-toggle="tab" href="#nav-directorioedit" role="tab" aria-controls="nav-directorioedit" aria-selected="false"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Cambiar dirección de facturación</font></font></a></p>
+                                                                </li>
+                                                                <li class="item">
+                                                                    <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Dirección de entrega por defecto</font></font></h3>
+                                                                    <address><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->nombre_completo}} </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->direccion1}} </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->barrio}} </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->ciudad}}, {{$cliente->departamento}}, {{$cliente->codigo_postal}} </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                {{$cliente->pais}} </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+                                                                                T: {{$cliente->telefono1}}</font></font>
+                                                                    </address>
+                                                                    <p><a id="nav-directorioedit-tab" data-toggle="tab" href="#nav-directorioedit" role="tab" aria-controls="nav-directorioedit" aria-selected="false"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Cambiar la dirección de envío</font></font></a></p>
+                                                                </li>
+                                                            </ol>
+                                                        </div>
+                                                        <div class="col-2 addresses-additional" style="max-width: 100%">
+                                                            <h2 style="text-transform: uppercase;"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Entradas de direcciones adicionales</font></font></h2>
+                                                            <ol>
+                                                                <li class="item empty">
+                                                                    <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">No tiene entradas de direcciones adicionales en su libreta de direcciones.</font></font></p>
+                                                                </li>
+                                                            </ol>
+                                                        </div>
+                                                    </div>
                                             </div>
                                             <div class="tab-pane fade" id="nav-ordenes" role="tabpanel"
                                                  aria-labelledby="nav-ordenes-tab">
