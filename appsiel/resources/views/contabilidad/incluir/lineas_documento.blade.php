@@ -2,12 +2,20 @@
     $i = 1;
 ?>
 @foreach( $doc_registros as $linea )
-    
+
     <tr id="fila_{{$i}}" >
+        
+        <td style="display: none;"> <input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="{{$linea->fecha_vencimiento}}"> </td>
+
+        <td style="display: none;"> <input type="hidden" name="documento_soporte_tercero" id="documento_soporte_tercero" value="{{$linea->documento_soporte_tercero}}"> </td>
+        
+        <td> {{$linea->tipo_transaccion_linea}} </td>
+        
         <td id="cuenta_{{$i}}">
             <span style="color:white;"> {{ $linea->cuenta_id }}-</span>{{ $linea->cuenta_codigo }} 
             {{ $linea->cuenta }}
         </td>
+        
         <td id="tercero_{{$i}}">
             @if( $linea->numero_identificacion != $tercero_encabezado_numero_identificacion )
                 <span style="color:white;"> {{ $linea->tercero_id }}-</span>{{ $linea->numero_identificacion }} {{ $linea->tercero }}

@@ -9,9 +9,8 @@ use Auth;
 
 class ContabMovimiento extends Model
 {
-
-    protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_empresa_id','core_tercero_id', 'codigo_referencia_tercero','documento_soporte','contab_cuenta_id','valor_operacion','valor_debito','valor_credito','valor_saldo','detalle_operacion','inv_producto_id','cantidad','tasa_impuesto','base_impuesto','valor_impuesto','teso_caja_id','teso_cuenta_bancaria_id','estado','creado_por','modificado_por','fecha_vencimiento','inv_bodega_id'];
-    
+    // tipo_transaccion se refiere al tipo de transacción de la línea
+    protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id', 'consecutivo', 'id_registro_doc_tipo_transaccion', 'fecha','core_empresa_id','core_tercero_id', 'codigo_referencia_tercero','documento_soporte','contab_cuenta_id','valor_operacion','valor_debito','valor_credito','valor_saldo','detalle_operacion','tipo_transaccion','inv_producto_id','cantidad','tasa_impuesto','base_impuesto','valor_impuesto','teso_caja_id','teso_cuenta_bancaria_id','estado','creado_por','modificado_por','fecha_vencimiento','inv_bodega_id'];
 
     public $encabezado_tabla = ['Documento','Fecha','Tercero','Producto','Detalle','Cuenta','Tasa impuesto','Base impuesto','Débito','Crédito','Acción'];
 
