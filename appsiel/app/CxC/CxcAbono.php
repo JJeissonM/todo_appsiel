@@ -15,7 +15,7 @@ class CxcAbono extends Model
 
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','core_empresa_id','core_tercero_id','modelo_referencia_tercero_index','referencia_tercero_id','fecha','doc_cxc_transacc_id','doc_cxc_tipo_doc_id','doc_cxc_consecutivo', 'doc_cruce_transacc_id', 'doc_cruce_tipo_doc_id', 'doc_cruce_consecutivo', 'abono','creado_por','modificado_por'];
 
-	public $encabezado_tabla = ['Proveedor', 'Documento recaudo', 'Fecha', 'Documento CxC Abonado', 'Valor abono', 'Acción'];
+	public $encabezado_tabla = ['Fecha', 'Documento recaudo', 'Proveedor', 'Documento CxC Abonado', 'Valor abono', 'Acción'];
 
     public static function consultar_registros()
     {
@@ -23,9 +23,10 @@ class CxcAbono extends Model
                     ->leftJoin('core_tipos_docs_apps AS tipo_docs_cxc', 'tipo_docs_cxc.id', '=', 'cxc_abonos.doc_cxc_tipo_doc_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_abonos.core_tercero_id')
                     ->where('cxc_abonos.core_empresa_id', Auth::user()->empresa_id)
-                    ->select( DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo1' ),
+                    ->select( 
+                                'cxc_abonos.fecha AS campo1',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_abonos.consecutivo) AS campo2' ),
-                    			'cxc_abonos.fecha AS campo3',
+                                DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3' ),
                                 DB::raw( 'CONCAT(tipo_docs_cxc.prefijo," ",cxc_abonos.doc_cxc_consecutivo) AS campo4' ),
                                 'cxc_abonos.abono AS campo5',
                                 'cxc_abonos.id AS campo6')
