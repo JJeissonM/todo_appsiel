@@ -163,6 +163,7 @@ Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@
 
 //TIENDA PUBLICA
 Route::get('tienda/publica/cuenta/{cliente_id}','web\TiendaController@cuenta')->name('tienda.micuenta');
+Route::put('tienda/cuenta/informacion/updated/{clienteweb}','web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');

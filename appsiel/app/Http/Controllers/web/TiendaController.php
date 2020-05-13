@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\web;
 
+use App\Core\Tercero;
 use App\Http\Controllers\Salud\ResultadoExamenMedicoController;
+use App\User;
+use App\Ventas\ClienteWeb;
 use App\web\Tienda;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class TiendaController extends Controller
 {
@@ -118,13 +122,13 @@ class TiendaController extends Controller
         $tienda->email_destinatario = $request->email_destinatario;
         $tienda->umbral_inventario_agotado = $request->umbral_inventario_agotado;
         $tienda->umbral_existencia = $request->umbral_existencia;
-        $tienda->mostrar_inventario =$request->mostrar_inventario;
+        $tienda->mostrar_inventario = $request->mostrar_inventario;
         $result = $tienda->save();
-        if($result){
+        if ($result) {
             $message = "Las configuraciones de inventario de la tienda se modificaron correctamente";
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
-        }else{
+        } else {
             $message = "Las configuraciones de inventario no se modificaron correctamente";
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
@@ -136,15 +140,16 @@ class TiendaController extends Controller
      * @param Request $request, App\Tienda $id
      * @return Response
      */
-    public function terminos(Request $request,$id){
-        $tienda=Tienda::find($id);
+    public function terminos(Request $request, $id)
+    {
+        $tienda = Tienda::find($id);
         $tienda->terminos_condiciones = $request->terminos_condiciones;
         $result = $tienda->save();
-        if($result){
+        if ($result) {
             $message = "Los Terminos y Condiciones de la tienda se modificaron correctamente";
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
-        }else{
+        } else {
             $message = "Los Terminnos y Condiciones no se modificaron correctamente";
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
@@ -202,12 +207,64 @@ class TiendaController extends Controller
      * Muestra el panel de la cuenta del cliente en la parte publica
      * @param un $id usuario logueado
      */
-    public function cuenta( $cliente_id = 0 )
+    public function cuenta($cliente_id = 0)
     {
         $paises = DB::table('core_paises')->get();
 
-        $cliente = \App\Ventas\ClienteWeb::get_datos_basicos( $cliente_id );
-        
-        return view( 'web.tienda.cuenta', compact('paises','cliente') );
+        $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($cliente_id);
+
+        return view('web.tienda.cuenta', compact('paises', 'cliente'));
+    }
+
+    /*
+     * Edita la informacion general de la cuenta del clienteweb
+     * @param $reques Request, $id Clienteweb
+     */
+    public function informacionUpdate(Request $request, $id)
+    {
+        $cliente = ClienteWeb::find($id);
+        $tercero = Tercero::find($cliente->core_tercero_id);
+        $user = User::find($tercero->user_id);
+        //dd([$request->all(),$cliente,$tercero,$user]);
+        foreach ($tercero->attributesToArray() as $key => $value) {
+            if (isset($request->$key)) {
+                $tercero->$key = $request->$key;
+            }
+        }
+        $tercero->descripcion = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
+        $result = $tercero->save();
+        if ($result) {
+            $user->email = $tercero->email;
+            $user->name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
+            if(isset($request->change_password)){
+                if ($request->password != null && $request->current_password != null && $request->confirmation != null) {
+                    if (Hash::check($request->current_password, $user->password)) {
+                        if ($request->password === $request->confirmation) {
+                            $user->password = Hash::make($request->password);
+                        } else {
+                            //la nueva contraseña no coincide ;
+                            $message = 'Las contraseñas no coinciden.';
+                            return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+                        }
+                    } else {
+                        //la contraseña incorrecta lo devuelve
+                        $message = 'La contraseña actual ingresada no es correcta.';
+                        return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+                    }
+                } else {
+                    //debe completar todos los campos
+                    $message = 'Debe completar todos los campos para cambiar la contraseña';
+                    return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+                }
+            }
+            $result2 = $user->save();
+            if ($result2) {
+                $message = 'Datos modificados de forma exitosa!';
+                return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+            }
+        } else {
+            $message = 'Los datos no pudieron ser modificados.';
+            return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+        }
     }
 }
