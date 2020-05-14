@@ -37,9 +37,6 @@ class HomeController extends Controller
 
     public function inicio()
     {
-
-        dd( Auth::user()->hasRole('SuperAdmin') );
-
     	$modelo_empresa_id = 41;
 
     	$aplicaciones = Aplicacion::where('estado','Activo')->orderBy('orden','ASC')->get()->toArray();

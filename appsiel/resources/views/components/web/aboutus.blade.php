@@ -66,7 +66,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-6 wow fadeInLeft animated"
-                         style="visibility: visible; animation-name: fadeInLeft;">
+                         style="visibility: visible; animation-name: fadeInLeft; text-align: center;">
                         <img class="img-responsive" src="{{url($aboutus->imagen)}}" alt="">
                     </div>
                     <div class="col-sm-6">
