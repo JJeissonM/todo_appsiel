@@ -9,6 +9,7 @@ use App\Ventas\ClienteWeb;
 use App\web\Tienda;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -205,13 +206,23 @@ class TiendaController extends Controller
      * Muestra el panel de la cuenta del cliente en la parte publica
      * @param un $id usuario logueado
      */
-    public function cuenta($cliente_id = 0)
+    public function cuenta()
     {
         $paises = DB::table('core_paises')->get();
 
-        $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($cliente_id);
+        $cliente = null;
+
+        if(!Auth::guest()){
+            $user = Auth::user();
+            $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id,'users.id');
+        }
+
+        if($cliente == null){
+          return  redirect()->route('tienda.login');
+        }
 
         return view('web.tienda.cuenta', compact('paises', 'cliente'));
+
     }
 
     public function  login (){

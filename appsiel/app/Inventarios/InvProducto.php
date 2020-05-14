@@ -72,7 +72,7 @@ class InvProducto extends Model
     }
 
 
-    public static function get_datos_pagina_web($grupo_inventario_id, $estado)
+    public static function get_datos_pagina_web($grupo_inventario_id, $estado,$count = 9)
     {
         if ( $grupo_inventario_id == '')
         {
@@ -102,9 +102,10 @@ class InvProducto extends Model
                                 'inv_productos.imagen',
                                 'inv_productos.mostrar_en_pagina_web',
                                 'inv_productos.codigo_barras')
+                    ->where('inv_productos.mostrar_en_pagina_web',1)
                     ->orderBy('grupo_descripcion', 'ASC')
-                    ->get();
-                    
+                    ->paginate($count);
+
         foreach ($productos as $item)
         {
             $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), $item->id );
@@ -113,6 +114,7 @@ class InvProducto extends Model
         }
 
         return $productos;
+
     }
     
 

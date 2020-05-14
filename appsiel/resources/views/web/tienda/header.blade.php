@@ -10,7 +10,7 @@
                         <p class="welcome-msg">Bienvenido a Avipoulet </p>
                         <ul class="links">
                             <li class="first"><a
-                                        href="{{route('tienda.micuenta',[ 'cliente_id' => 0  ] )}}"
+                                        href="{{route('tienda.micuenta')}}"
                                         title="My Account">Mi Cuenta</a></li>
                             <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/wishlist/"
                                    title="My Wishlist">Mi Lista</a></li>
@@ -18,9 +18,21 @@
                                    title="My Cart" class="top-link-cart">Mi Carrito</a></li>
                             <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/checkout/onepage"
                                    title="Checkout" class="top-link-checkout">Revisa</a></li>
-                            <li class=" last"><a
+                            @if(Auth::guest())
+                                     <li class=" last"><a
                                         href="{{route('tienda.login')}}"
-                                        title="Log In">Iniciar Sesión</a></li>
+                                        title="Log In">Iniciar Sesión</a>
+                                     </li>
+                                <li class=" last"><a
+                                            href="{{url('/web/create?id=10&id_modelo=218')}}"
+                                            title="Registrarse">Registrarse</a>
+                                </li>
+                            @else
+                                <li class=" last"><a
+                                            href="{{url('/logout')}}"
+                                            title="Registrarse">Cerrar sesión</a>
+                                </li>
+                            @endif
                         </ul>
                     </div>
                 </div>

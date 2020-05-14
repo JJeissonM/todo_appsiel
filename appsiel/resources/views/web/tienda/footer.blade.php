@@ -112,7 +112,7 @@
                         <div class="footer-static-title">
                             <h3>
                                 <font style="vertical-align: inherit;">
-                                    <font style="vertical-align: inherit;">NUESTRO NEWSLETTER</font>
+                                    <font style="vertical-align: inherit;">Suscribete con nosotros</font>
                                 </font>
                             </h3>
                         </div>
@@ -125,9 +125,6 @@
                                         action="http://www.plazathemes.com/demo/ma_dicove/index.php/newsletter/subscriber/new/"
                                         method="post" id="newsletter-validate-detail">
                                     <div class="subscribe-content">
-                                        <!--<div class="form-subscribe-header">
-                    <label for="newsletter">Sign Up for Our Newsletter:</label>
-                </div>-->
                                         <div class="input-box">
                                             <input type="text" name="email" id="newsletter"
                                                    title="Suscríbase a nuestro boletín"
@@ -138,15 +135,11 @@
                                                             <font style="vertical-align: inherit;">
                                                                 <font style="vertical-align: inherit;">Suscribir</font>
                                                             </font>
-                                                        </span></span></button>
+                                                        </span></span>
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
-                                <script type="text/javascript">
-                                    //<![CDATA[
-                                    var newsletterSubscriberFormDetail = new VarienForm('newsletter-validate-detail');
-                                    //]]>
-                                </script>
                             </div>
                         </div>
                     </div>

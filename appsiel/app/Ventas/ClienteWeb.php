@@ -45,7 +45,7 @@ class ClienteWeb extends Model
         return $vec;
     }
 
-    public static function get_datos_basicos( $cliente_id )
+    public static function get_datos_basicos( $cliente_id,$query )
     {
         return ClienteWeb::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_clientes.core_tercero_id')
                             ->leftJoin('users', 'users.id', '=', 'core_terceros.user_id')
@@ -53,7 +53,7 @@ class ClienteWeb extends Model
                             ->leftJoin('core_ciudades', 'core_ciudades.id', '=', 'core_terceros.codigo_ciudad')
                             ->leftJoin('core_departamentos', 'core_departamentos.id', '=', 'core_ciudades.core_departamento_id')
                             ->leftJoin('core_paises', 'core_paises.id', '=', 'core_departamentos.codigo_pais')
-                            ->where('vtas_clientes.id',$cliente_id)
+                            ->where($query,$cliente_id)
                             ->select( 
                                         DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo' ),
                                         DB::raw( 'CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS tipo_y_numero_documento_identidad' ),
