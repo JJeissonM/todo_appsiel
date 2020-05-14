@@ -214,8 +214,12 @@ class PaginaController extends Controller
     {
         $pagina = Pagina::where('slug', $slug)->first();
 
-        $configuracion = Configuraciones::all()->first();
+        if( is_null( $pagina ) )
+        {
+            $pagina = Pagina::where('pagina_inicio',1)->get()->first();
+        }
 
+        $configuracion = Configuraciones::all()->first();
         
         $widgets = $pagina->widgets()->orderBy('orden')->get();
 
