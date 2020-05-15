@@ -2,11 +2,11 @@
 
      .article {
          background-color: white;
-         border-radius: 20px;
+         border: 0px;
      }
 
     .article:hover {
-        transform: scale(1.05);
+        transform: scale(1.02);
         box-shadow: 0px 0px 5px 1px #3d6983;
         cursor: pointer;
     }
@@ -16,12 +16,12 @@
 <section id="blog">
     <div class="container">
         @if($setup!=null)
+
         <div class="section-header">
             <h2 class="section-title text-center wow fadeInDown">{{$setup->titulo}}</h2>
             <p class="text-center wow fadeInDown">{{$setup->descripcion}}</p>
         </div>
 
-        <div class="row col-md-12 wow fadeInDown">
             @if($setup->formato=='LISTA')
             @foreach($articles as $a)
                 <div class="col-md-12 article-ls" style="line-height: 5px; margin-bottom: 20px;">
@@ -50,54 +50,51 @@
             @endif
             @if($setup->formato=='BLOG')
                 <div class="row">
-                @foreach($articles as $a)
+                    @foreach($articles as $a)
 
-                    <div class="col-md-4">
-                        <div class="article blog-post blog-media">
-                            <article class="media clearfix">
-                                <!-- <div class="entry-thumbnail pull-left">
-                                    <span class="post-format post-format-gallery"><i class="fa fa-bullhorn"></i></span>
-                                </div> -->
-                                <a target="_blank" href="{{route('article.show',$a->id)}}" style="text-decoration: none;">
+                        <div class="col-md-4">
+                            <div class="article blog-post blog-media">
+                                <article class="media clearfix">
+                                    <!-- <div class="entry-thumbnail pull-left">
+                                        <span class="post-format post-format-gallery"><i class="fa fa-bullhorn"></i></span>
+                                    </div> -->
+                                    <a target="_blank" href="{{route('article.show',$a->id)}}" style="text-decoration: none;">
 
-                                <div class=" media-body">
-                                    <div style="text-align: center;">
-                                        @if($a->imagen != '')
-                                            <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;">
-                                        @else
-                                            <img src="{{ asset('img/blog-default.jpg')}}" style="width: 100%; max-height: 180px; object-fit: cover;">
-                                        @endif
+                                    <div class=" media-body">
+                                        <div style="text-align: center;">
+                                            @if($a->imagen != '')
+                                                <img src="{{ asset( $a->imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;">
+                                            @else
+                                                <img src="{{ asset('img/blog-default.jpg')}}" style="width: 100%; max-height: 180px; object-fit: cover;">
+                                            @endif
+                                        </div>
+
+                                        <header class="entry-header">
+                                            <!-- <div class="entry-date">{ {$a->created_at}}</div> -->
+                                            <h2 class="entry-title"> {{$a->titulo}} </h2>
+                                        </header>
+
+                                        <div class="entry-content">
+                                            <p>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</p>
+                                            <hr>
+                                        </div>
+
+                                        <!-- 
+                                        <footer class="entry-meta">
+                                            <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span>
+                                            <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span>
+                                        </footer>
+                                    -->
                                     </div>
+                                            </a>
 
-                                    <header class="entry-header">
-                                        <!-- <div class="entry-date">{ {$a->created_at}}</div> -->
-                                        <h2 class="entry-title"> {{$a->titulo}} </h2>
-                                    </header>
-
-                                    <div class="entry-content">
-                                        <p>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</p>
-                                        <hr>
-                                    </div>
-
-                                    <!-- 
-                                    <footer class="entry-meta">
-                                        <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span>
-                                        <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span>
-                                    </footer>
-                                -->
-                                </div>
-                                        </a>
-
-                            </article>
+                                </article>
+                            </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
                 </div>
             @endif
-            <div class="col-md-12">
-                {{$articles->render()}}
-            </div>
-        </div>
+
         @else
         <div class="section-header">
             <h2 class="section-title text-center wow fadeInDown">Sección</h2>
