@@ -184,9 +184,9 @@
 				{
 					var item = $('a.list-group-item.active');
 					
-					if( item.attr('data-cliente_id') === undefined )
+					if( item.attr('data-tercero_id') === undefined )
 					{
-						alert('El cliente ingresado no existe.');
+						alert('El tercero ingresado no existe.');
 		            	return false;
 					}else{
 						seleccionar_cliente( item );
@@ -202,7 +202,8 @@
 		    	// Si la longitud es menor a dos, todavía no busca
 			    if ( $(this).val().length < 2 ) { return false; }
 
-		    	var url = '../../vtas_consultar_clientes';
+		    	//var url = '../../vtas_consultar_clientes';
+		    	var url = "{{ url('core_consultar_terceros') }}";
 
 				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
 					.done(function( data ) {
@@ -214,7 +215,7 @@
 
 
 		    //Al hacer click en alguna de las sugerencias (escoger un producto)
-		    $(document).on('click','.list-group-item-cliente', function(){
+		    $(document).on('click','.list-group-item-autocompletar', function(){
 		    	seleccionar_cliente( $(this) );
 		    	return false;
 		    });
@@ -228,10 +229,11 @@
 		        $('#cliente_input').css( 'background-color','white ' );
 
 		        // Asignar Campos ocultos
-		        $('#cliente_id').val( item_sugerencia.attr('data-cliente_id') );
-		        $('#referencia_tercero_id').val( item_sugerencia.attr('data-cliente_id') );
-		        $('#core_tercero_id').val( item_sugerencia.attr('data-core_tercero_id') );
+		        $('#cliente_id').val( item_sugerencia.attr('data-tercero_id') );
+		        $('#referencia_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
+		        $('#core_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
 
+		        /*
 
 		        var forma_pago = 'contado';
 		        var dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
@@ -254,7 +256,7 @@
 		        	dia = '0' + dia;
 		        }
 		        $('#fecha_vencimiento').val( fecha.getFullYear() + '-' +  mes + '-' + dia );
-
+				*/
 
 		        //Hacemos desaparecer el resto de sugerencias
 		        $('#clientes_suggestions').html('');
@@ -262,7 +264,7 @@
 
 		        $('#tabla_registros_documento').find('tbody').html( '' );
 		        $('#total_valor').text( "$0" );
-		        get_documentos_pendientes_cxc( item_sugerencia.attr('data-core_tercero_id') );
+		        get_documentos_pendientes_cxc( item_sugerencia.attr('data-tercero_id') );
 
 		        $('#teso_medio_recaudo_id').focus();
 

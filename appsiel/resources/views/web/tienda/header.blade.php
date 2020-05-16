@@ -1,10 +1,4 @@
-<link rel="stylesheet" href="{{asset('assets/tienda/css/skeleton.css')}}">
-<link rel="stylesheet" href="{{asset('assets/tienda/css/normalize.css')}}">
-<link rel="stylesheet" href="{{asset('assets/tienda/css/custom.css')}}">
-<link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
-
 <header>
-    <!-- -->
     <div class="top-link">
         <div class="container">
             <div class="top-link-inner">
@@ -16,7 +10,7 @@
                         <p class="welcome-msg">Bienvenido a Avipoulet </p>
                         <ul class="links">
                             <li class="first"><a
-                                        href="{{ route( 'tienda.micuenta') }}"
+                                        href="{{route('tienda.micuenta')}}"
                                         title="My Account">Mi Cuenta</a></li>
                             <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/wishlist/"
                                    title="My Wishlist">Mi Lista</a></li>
@@ -25,10 +19,10 @@
                             <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/checkout/onepage"
                                    title="Checkout" class="top-link-checkout">Revisa</a></li>
                             @if(Auth::guest())
-                                <li class=" last"><a
-                                            href="{{route('tienda.login')}}"
-                                            title="Log In">Iniciar Sesión</a>
-                                </li>
+                                     <li class=" last"><a
+                                        href="{{route('tienda.login')}}"
+                                        title="Log In">Iniciar Sesión</a>
+                                     </li>
                                 <li class=" last"><a
                                             href="{{url('/web/create?id=10&id_modelo=218')}}"
                                             title="Registrarse">Registrarse</a>
@@ -39,14 +33,12 @@
                                             title="Registrarse">Cerrar sesión</a>
                                 </li>
                             @endif
-
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <div class="header">
         <div class="container">
             <div class="header-inner">
@@ -55,16 +47,13 @@
                         <div class="top-logo col-xs-12 col-md-3 col-sm-12">
                             <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/" title="Magento Commerce"
                                class="logo"><strong>Magento Commerce</strong><img
-                                        src="http://avipoulet.com/img/logos/1584208639logo-png2png"
+                                        src="http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/logo.gif"
                                         alt="Magento Commerce"></a>
                         </div>
                         <form class="col-xs-12 col-md-6 col-sm-12 serach" action="" method="GET">
                             <div class="box-search-bar clearfix">
                                 <select class="btn" name="" id="">
                                     <option value="">Categorias</option>
-                                    @foreach($grupos as $key => $value)
-                                        <option value="">{{strtolower($key)}}</option>
-                                    @endforeach
                                 </select>
                                 <input type="text" class="input-text" autocomplete="off" id="search"
                                        placeholder="Search entire store here...">
@@ -91,6 +80,7 @@
                                             </thead>
                                             <tbody></tbody>
                                         </table>
+
                                         <a href="#" id="vaciar-carrito" class="button u-full-width">Vaciar
                                             Carrito</a>
                                     </div>
@@ -112,9 +102,11 @@
                         </div>
                         <div id="pt_vmegamenu" class="pt_vmegamenu" style="overflow: visible; display: none;">
                             <ul class="pt_nav">
-                                @foreach($grupos as $key => $value)
-                                    <li><a href="">{{$key}}</a></li>
-                                @endforeach
+                                <li><a href="">Newarrivals</a></li>
+                                <li><a href="">Clothing</a></li>
+                                <li><a href="">footwear</a></li>
+                                <li><a href="">jewellery</a></li>
+                                <li><a href="">accessories</a></li>
                             </ul>
                         </div>
                     </div>
@@ -130,21 +122,66 @@
                                     </a>
                                 </div>
                                 <ul id="ma-mobilemenu" class="mobilemenu nav-collapse collapse">
-                                    @foreach($grupos as $key => $value)
-                                        <li class="level0 nav-1 level-top first parent">
-                                            <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                               class="level-top">
-                                                <span>{{$key}}</span>
-                                            </a>
-                                        </li>
-                                    @endforeach
+                                    <li class="level0 nav-1 level-top first parent">
+                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                           class="level-top">
+                                            <span>New arrivals</span>
+                                        </a>
+                                    </li>
+                                    <li class="level0 nav-1 level-top first parent">
+                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                           class="level-top">
+                                            <span>New arrivals</span>
+                                        </a>
+                                    </li>
+                                    <li class="level0 nav-1 level-top first parent">
+                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                           class="level-top">
+                                            <span>New arrivals</span>
+                                        </a>
+                                    </li>
+                                    <li class="level0 nav-1 level-top first parent">
+                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                           class="level-top">
+                                            <span>New arrivals</span>
+                                        </a>
+                                    </li>
+                                    <li class="level0 nav-1 level-top first parent">
+                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                           class="level-top">
+                                            <span>New arrivals</span>
+                                        </a>
+                                    </li>
+                                    <li class="level0 nav-1 level-top first parent">
+                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                           class="level-top">
+                                            <span>New arrivals</span>
+                                        </a>
+                                    </li>
+                                    <li class="level0 nav-1 level-top first parent">
+                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                           class="level-top">
+                                            <span>New arrivals</span>
+                                        </a>
+                                    </li>
+                                    <li class="level0 nav-1 level-top first parent">
+                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                           class="level-top">
+                                            <span>New arrivals</span>
+                                        </a>
+                                    </li>
+                                    <li class="level0 nav-1 level-top first parent">
+                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                           class="level-top">
+                                            <span>New arrivals</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
                     <div class="nav-container visible-lg visible-md">
                         <div class="container-inner">
-                            <!-- 
                             <div id="pt_custommenu" class="pt_custommenu">
                                 <div id="pt_menu_home" class="pt_menu act">
                                     <div class="parentMenu">
@@ -170,7 +207,6 @@
                                 </div>
                                 <div class="clearBoth"></div>
                             </div>
-                        -->
                         </div>
                     </div>
                 </div>
@@ -178,92 +214,3 @@
         </div>
     </div>
 </header>
-<main>
-    <div class="main-container col2-left-layout">
-        <div class="container">
-            <div class="container-inner">
-                <div class="main">
-                    <!-- Category Image-->
-                    <!--<p class="category-image"><img
-                                src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/category/category.jpg"
-                                alt="New arrivals" title="New arrivals"></p>    -->
-                    <div class="main-inner">
-                        <div class="row">
-                            <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <div class="block block-layered-nav">
-                                    <div class="block-title">
-                                        <strong><span>Filtrar Por</span></strong>
-                                    </div>
-                                    <div class="block-content">
-                                        <p class="block-subtitle">Shopping Options</p>
-                                        <dl id="narrow-by-list">
-                                            <dt class="odd" style="margin:20px 0;">Categorias</dt>
-                                            <dd class="odd">
-                                                <ol>
-                                                    @foreach($grupos as $key => $value)
-                                                        <li>
-                                                            <a class="ajaxLayer"
-                                                               onclick="">{{$key}}</a>
-                                                            ({{$value->count()}})
-                                                        </li>
-                                                    @endforeach
-                                                </ol>
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-main col-lg-9 col-md-9 col-sm-12 col-xs-12">
-                                <div class="page-title category-title">
-                                    <h1>Nuestros Productos</h1>
-                                </div>
-                                <div class="category-products">
-                                    <ul class="products-grid row first odd">
-                                        @foreach($items as $item)
-                                            <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
-                                                <div class="item-inner">
-                                                    <div class="ma-box-content">
-                                                        <div class="products clearfix">
-                                                            <a href=""
-                                                               title="Fusce aliquam" class="product-image">
-                                                                <span class="product-image">
-                                                                    <img src="{{ asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen ) }} " loading="lazy"
-                                                                         width="300" height="350" alt="{{$item->descripcion}}">
-                                                                </span>
-                                                            </a>
-                                                        </div>
-                                                        <h2 class="product-name"><a
-                                                                    href="#"
-                                                                    title="Fusce aliquam">{{$item->descripcion}}</a></h2>
-                                                        <div class="ratings">
-                                                            <div class="rating-box">
-                                                                <div class="rating" style="width:67%"></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="price-box">
-                                                            <span class="regular-price" id="product-price-1">
-                                                                <span class="price">${{$item->precio_venta}}</span></span>
-                                                        </div>
-                                                        <div class="actions">
-                                                            <button type="button" class="button btn-cart"
-                                                                    data-original-title="Add to Cart" rel="tooltip"><i
-                                                                        class="fa fa-shopping-cart"></i><span>Comprar</span></button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                    <div class="col-md-12">
-                                        {{$items->render()}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</main>
-<script src="{{asset('assets/tienda/js/categories.js')}}"></script>

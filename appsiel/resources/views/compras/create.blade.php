@@ -221,6 +221,12 @@
 		    			break;
 
 		    		case 13:// Al presionar Enter
+
+		    			if ( $(this).val() == '' )
+						{
+							return false;
+						}
+
 		    			window[tecla_enter_on_keyup( $('a.list-group-item.active') ) ];
 		    			break;
 
@@ -366,6 +372,12 @@
 		    			break;
 
 		    		case 13:// Al presionar Enter
+
+		    			if ( $(this).val() == '' )
+						{
+							return false;
+						}
+
 		    			var item = $('a.list-group-item.active');
 						
 						if( item.attr('data-producto_id') === undefined )

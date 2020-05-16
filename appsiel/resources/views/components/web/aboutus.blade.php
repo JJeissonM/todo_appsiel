@@ -54,9 +54,6 @@
 </style>
 <div class="aboutus">
     <div class="container" style="margin-top: 40px;">
-        <div class="imgr">
-            <img src="{{asset('img/lading-page/faq-bg-1.png')}}" class="img-fluid" alt="">
-        </div>
         <div class="container">
             @if($aboutus!=null)
                 <div class="section-header">
@@ -69,7 +66,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-6 wow fadeInLeft animated"
-                         style="visibility: visible; animation-name: fadeInLeft;">
+                         style="visibility: visible; animation-name: fadeInLeft; text-align: center;">
                         <img class="img-responsive" src="{{url($aboutus->imagen)}}" alt="">
                     </div>
                     <div class="col-sm-6">

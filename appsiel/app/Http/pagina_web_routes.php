@@ -162,8 +162,12 @@ Route::put('tienda/inventario/updated/{tienda}','web\TiendaController@inventario
 Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@terminos')->name('tienda.terminos');
 
 //TIENDA PUBLICA
-Route::get('tienda/publica/cuenta/{cliente_id}','web\TiendaController@cuenta')->name('tienda.micuenta');
-Route::put('tienda/cuenta/informacion/updated/{clienteweb}','web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
+Route::get('ecommerce/public/cuenta','web\TiendaController@cuenta')->name('tienda.cuenta');
+Route::get('ecommerce/public/signIn','web\TiendaController@login')->name('tienda.login');
+Route::get('ecommerce/public/nuevacuenta','web\TiendaController@crearCuenta')->name('tienda.nuevacuenta');
+
+Route::get('ecommerce/public/account','web\TiendaController@cuenta')->name('tienda.micuenta');
+Route::put('ecommerce/account/informacion/updated/{clienteweb}','web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');
