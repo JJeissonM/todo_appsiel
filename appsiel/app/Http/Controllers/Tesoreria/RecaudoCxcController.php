@@ -167,6 +167,11 @@ class RecaudoCxcController extends Controller
                                                 ->where('valor_credito',0)
                                                 ->value('contab_cuenta_id');
 
+            if( is_null( $cta_x_cobrar_id ) )
+            {
+                $cta_x_cobrar_id = config('configuracion.cta_cartera_default');
+            }
+            
             ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cta_x_cobrar_id, $detalle_operacion, 0, $abono);
 
 

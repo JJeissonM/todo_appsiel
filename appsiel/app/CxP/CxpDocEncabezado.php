@@ -11,7 +11,7 @@ class CxpDocEncabezado extends Model
 {
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','fecha_vencimiento','core_empresa_id','core_tercero_id','tipo_documento','documento_soporte','descripcion','valor_total','estado','creado_por','modificado_por','codigo_referencia_tercero'];
 
-    public $encabezado_tabla = ['Documento','Fecha','Tercero','Detalle','Valor Total','Estado','Acción'];
+    public $encabezado_tabla = ['Fecha','Documento','Tercero','Detalle','Valor Total','Estado','Acción'];
 
     // Este array se puede usar para automatizar los campos que se muestran en la vista idex, permitiendo agregar o quitar campos a la tabla
     public $campos_vista_index = [
@@ -36,17 +36,15 @@ class CxpDocEncabezado extends Model
     // Se consultan los documentos para la empresa que tiene asignada el usuario
     public static function consultar_registros()
     {        
-        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxp_doc_encabezados.consecutivo) AS campo1';
-
         $core_tipo_transaccion_id = 39; // Cruce de cxp
 
-        $registros = CxpDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_doc_encabezados.core_tipo_doc_app_id')
+        return CxpDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_doc_encabezados.core_tercero_id')
                     ->where('cxp_doc_encabezados.core_empresa_id', Auth::user()->empresa_id )
                     ->where('cxp_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id )
                     ->select(
-                                DB::raw($select_raw),
-                                'cxp_doc_encabezados.fecha AS campo2',
+                                'cxp_doc_encabezados.fecha AS campo1',
+                                DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",cxp_doc_encabezados.consecutivo) AS campo2' ),
                                 'core_terceros.descripcion as campo3',
                                 'cxp_doc_encabezados.descripcion AS campo4',
                                 'cxp_doc_encabezados.valor_total AS campo5',
@@ -54,8 +52,6 @@ class CxpDocEncabezado extends Model
                                 'cxp_doc_encabezados.id AS campo7')
                     ->get()
                     ->toArray();
-
-        return $registros;
     }
 
     public function documentos()

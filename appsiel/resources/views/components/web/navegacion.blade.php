@@ -36,12 +36,14 @@
 <header class="{{ $clase_header }}" style="background-color: {{$nav->background}};">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light"><!-- mu-navbar  d-flex -->
-            <!-- Text based logo 
-            @ if(!$nav->fixed)
-            @ endif-->
-            <a class="navbar-brand p-0 icono" href="{{url('/')}}">
-                <img src="{{asset($nav->logo)}}">
-            </a>
+            
+            <!-- Text based logo -->
+            @if( $nav->logo != '' )
+                <a class="navbar-brand p-0 icono" href="{{url('/')}}">
+                    <img src="{{asset($nav->logo)}}">
+                </a>
+            @endif
+
             <button class="navbar-toggler" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -74,8 +76,3 @@
         </nav>
     </div>
 </header>
-
-
-@if($nav->fixed)
-    <div style="height: 70px;">&nbsp;</div>
-@endif

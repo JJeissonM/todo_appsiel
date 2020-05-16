@@ -1,7 +1,7 @@
 <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Registros contables </div>
 
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Cuenta',' NIT / Tercero','Detalle','Débito','Crédito']) }}
+        {{ Form::bsTableHeader(['Tipo transacción','Cuenta',' NIT / Tercero','Detalle','Débito','Crédito']) }}
         <tbody>
             <?php 
             
@@ -11,6 +11,7 @@
             ?>
             @foreach($doc_registros as $linea )
                 <tr>
+                    <td> {{ $linea->tipo_transaccion_linea }} </td>
                     <td> {{ $linea->cuenta }} </td>
                     <td> {{ number_format( $linea->numero_identificacion, 0, ',', '.') }} / {{ $linea->tercero }} </td>
                     <td> {{ $linea->detalle_operacion }} </td>
@@ -25,7 +26,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3"> &nbsp; </td>
+                <td colspan="4"> &nbsp; </td>
                 <td style="text-align: right;"> $ {{ number_format($total_debito, 2, ',', '.') }} </td>
                 <td style="text-align: right;"> $ {{ number_format($total_credito, 2, ',', '.') }} </td>
             </tr>

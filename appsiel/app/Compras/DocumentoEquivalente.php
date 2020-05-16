@@ -21,8 +21,8 @@ class DocumentoEquivalente extends ComprasDocEncabezado
                     ->where('compras_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
                     ->where('compras_doc_encabezados.core_tipo_transaccion_id',$core_tipo_transaccion_id)
                     ->select(
-                                DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS campo1' ),
-                                'compras_doc_encabezados.fecha AS campo2',
+                                'compras_doc_encabezados.fecha AS campo1',
+                                DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS campo2' ),
                                 DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3' ),
                                 DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo) AS campo4'),
                                 'compras_doc_encabezados.descripcion AS campo5',
