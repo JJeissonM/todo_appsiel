@@ -73,6 +73,12 @@ $(document).ready(function(){
 		    			break;
 
 		    		case 13:// Al presionar Enter
+
+		    			if ( $(this).val() == '' )
+						{
+							return false;
+						}
+
 						var item = $('a.list-group-item.active');
 						
 						if( item.attr('data-cliente_id') === undefined )
@@ -188,6 +194,13 @@ $(document).ready(function(){
 		    			break;
 
 		    		case 13: // Al presionar Enter
+
+
+
+		    			if ( $(this).val() == '' )
+						{
+							return false;
+						}
 
 		    			// Si el campo_busqueda es ID y el texto_busqueda coincide con el ID exacto del producto, en el listado de sugerencias ya viene marcado como Active el producto de la lista 
 		    		
