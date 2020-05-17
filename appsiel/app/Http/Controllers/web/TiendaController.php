@@ -298,7 +298,8 @@ class TiendaController extends Controller
         $items = InvProducto::get_datos_pagina_web($id, 'Activo');
         $grup = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')->select('inv_grupos.id', 'inv_grupos.descripcion AS grupo_descripcion')->where('inv_productos.mostrar_en_pagina_web', 1)->get();
         $grupos = $grup->groupBy('grupo_descripcion')->all();
-        return Form::tienda($items, $grupos);
+
+        return view('web.tienda.ecommerce',compact('items','grupos'));
     }
 
     public function busqueda(Request $request)
@@ -311,6 +312,7 @@ class TiendaController extends Controller
         $items = InvProducto::get_datos_pagina_web($grupo_inventario_id, 'Activo',9,$request->search);
         $grup = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')->select('inv_grupos.id', 'inv_grupos.descripcion AS grupo_descripcion')->where('inv_productos.mostrar_en_pagina_web', 1)->get();
         $grupos = $grup->groupBy('grupo_descripcion')->all();
-        return Form::tienda($items, $grupos);
+
+        return view('web.tienda.ecommerce',compact('items','grupos'));
     }
 }
