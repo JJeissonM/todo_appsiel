@@ -58,15 +58,15 @@
                                         src="http://avipoulet.com/img/logos/1584208639logo-png2png"
                                         alt="Magento Commerce"></a>
                         </div>
-                        <form class="col-xs-12 col-md-6 col-sm-12 serach" action="" method="GET">
+                        <form class="col-xs-12 col-md-6 col-sm-12 serach" action="{{route('tienda.busqueda')}}" method="GET">
                             <div class="box-search-bar clearfix">
-                                <select class="btn" name="" id="">
-                                    <option value="">Categorias</option>
+                                <select class="btn" name="categoria" id="categoria_id">
+                                    <option value="0">Categorias</option>
                                     @foreach($grupos as $key => $value)
-                                        <option value="">{{strtolower($key)}}</option>
+                                        <option value="{{$value[0]->id}}">{{strtolower($key)}}</option>
                                     @endforeach
                                 </select>
-                                <input type="text" class="input-text" autocomplete="off" id="search"
+                                <input type="text" class="input-text" autocomplete="off" id="search" name="search" required
                                        placeholder="Search entire store here...">
                                 <button type="submit" title="Search" class="btn"><i
                                             class="fa fa-search"></i></button>
@@ -113,7 +113,7 @@
                         <div id="pt_vmegamenu" class="pt_vmegamenu" style="overflow: visible; display: none;">
                             <ul class="pt_nav">
                                 @foreach($grupos as $key => $value)
-                                    <li><a href="">{{$key}}</a></li>
+                                    <li><a href="{{route('tienda.filtrocategoria',$value[0]->id)}}">{{$key}}</a></li>
                                 @endforeach
                             </ul>
                         </div>
@@ -132,7 +132,7 @@
                                 <ul id="ma-mobilemenu" class="mobilemenu nav-collapse collapse">
                                     @foreach($grupos as $key => $value)
                                         <li class="level0 nav-1 level-top first parent">
-                                            <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
+                                            <a href="{{route('tienda.filtrocategoria',$value[0]->id)}}"
                                                class="level-top">
                                                 <span>{{$key}}</span>
                                             </a>
@@ -203,7 +203,7 @@
                                                     @foreach($grupos as $key => $value)
                                                         <li>
                                                             <a class="ajaxLayer"
-                                                               onclick="">{{$key}}</a>
+                                                               href="{{route('tienda.filtrocategoria',$value[0]->id)}}">{{$key}}</a>
                                                             ({{$value->count()}})
                                                         </li>
                                                     @endforeach

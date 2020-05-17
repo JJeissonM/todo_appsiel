@@ -41,7 +41,6 @@ class InvProducto extends Model
 
     public static function get_datos_basicos($grupo_inventario_id, $estado)
     {
-
         if ( $grupo_inventario_id == '')
         {
           $grupo_inventario_id = '%'.$grupo_inventario_id.'%';
@@ -72,14 +71,18 @@ class InvProducto extends Model
     }
 
 
-    public static function get_datos_pagina_web($grupo_inventario_id, $estado,$count = 9)
+    public static function get_datos_pagina_web($grupo_inventario_id, $estado,$count = 9,$busqueda=false)
     {
+
         if ( $grupo_inventario_id == '')
         {
           $grupo_inventario_id = '%'.$grupo_inventario_id.'%';
           $operador1 = 'LIKE';
         }else{
           $operador1 = '=';
+        }
+        if(!$busqueda){
+            $busqueda = '';
         }
 
         $productos = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
@@ -103,9 +106,9 @@ class InvProducto extends Model
                                 'inv_productos.mostrar_en_pagina_web',
                                 'inv_productos.codigo_barras')
                     ->where('inv_productos.mostrar_en_pagina_web',1)
+                    ->where('inv_productos.descripcion','LIKE','%'.$busqueda.'%')
                     ->orderBy('grupo_descripcion', 'ASC')
-                    ->paginate($count);
-
+                    ->paginate(9);
         foreach ($productos as $item)
         {
             $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), $item->id );

@@ -168,6 +168,8 @@ Route::get('ecommerce/public/nuevacuenta','web\TiendaController@crearCuenta')->n
 
 Route::get('ecommerce/public/account','web\TiendaController@cuenta')->name('tienda.micuenta');
 Route::put('ecommerce/account/informacion/updated/{clienteweb}','web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
+Route::get('ecommerce/public/filtro/categoria/{categoria}','web\TiendaController@filtroCategoria')->name('tienda.filtrocategoria');
+Route::get('ecommerce/public/busqueda/','web\TiendaController@busqueda')->name('tienda.busqueda');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');
