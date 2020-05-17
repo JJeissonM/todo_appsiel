@@ -4,9 +4,13 @@ namespace App\Http\Controllers\web;
 
 use App\Core\Tercero;
 use App\Http\Controllers\Salud\ResultadoExamenMedicoController;
+use App\Inventarios\InvProducto;
 use App\User;
 use App\Ventas\ClienteWeb;
+use App\Ventas\ListaDctoDetalle;
+use App\Ventas\ListaPrecioDetalle;
 use App\web\Tienda;
+use Form;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -212,26 +216,28 @@ class TiendaController extends Controller
 
         $cliente = null;
 
-        if(!Auth::guest()){
+        if (!Auth::guest()) {
             $user = Auth::user();
-            $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id,'users.id');
+            $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
         }
 
-        if($cliente == null){
-          return  redirect()->route('tienda.login');
+        if ($cliente == null) {
+            return redirect()->route('tienda.login');
         }
 
         return view('web.tienda.cuenta', compact('paises', 'cliente'));
 
     }
 
-    public function  login (){
+    public function login()
+    {
         return view('web.tienda.login');
     }
 
-    public function crearCuenta(){
+    public function crearCuenta()
+    {
         $tipos = DB::table('core_tipos_docs_id')->get();
-        return view('web.tienda.crearCuenta',compact('tipos'));
+        return view('web.tienda.crearCuenta', compact('tipos'));
     }
 
 
@@ -255,7 +261,7 @@ class TiendaController extends Controller
         if ($result) {
             $user->email = $tercero->email;
             $user->name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
-            if(isset($request->change_password)){
+            if (isset($request->change_password)) {
                 if ($request->password != null && $request->current_password != null && $request->confirmation != null) {
                     if (Hash::check($request->current_password, $user->password)) {
                         if ($request->password === $request->confirmation) {
@@ -285,5 +291,26 @@ class TiendaController extends Controller
             $message = 'Los datos no pudieron ser modificados.';
             return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
         }
+    }
+
+    public function filtroCategoria($id)
+    {
+        $items = InvProducto::get_datos_pagina_web($id, 'Activo');
+        $grup = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')->select('inv_grupos.id', 'inv_grupos.descripcion AS grupo_descripcion')->where('inv_productos.mostrar_en_pagina_web', 1)->get();
+        $grupos = $grup->groupBy('grupo_descripcion')->all();
+        return Form::tienda($items, $grupos);
+    }
+
+    public function busqueda(Request $request)
+    {
+        if ($request->categoria == 0) {
+            $grupo_inventario_id = '';
+        } else {
+            $grupo_inventario_id = $request->categoria;
+        }
+        $items = InvProducto::get_datos_pagina_web($grupo_inventario_id, 'Activo',9,$request->search);
+        $grup = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')->select('inv_grupos.id', 'inv_grupos.descripcion AS grupo_descripcion')->where('inv_productos.mostrar_en_pagina_web', 1)->get();
+        $grupos = $grup->groupBy('grupo_descripcion')->all();
+        return Form::tienda($items, $grupos);
     }
 }

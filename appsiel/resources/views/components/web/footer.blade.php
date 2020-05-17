@@ -158,7 +158,7 @@
                 @endif
                 <div class="col-md-12 col-sm-12 d-flex justify-content-between flex-wrap"
                      style="margin-top: 20px;">
-                    <p style="font-size: 20px; color: {{$footer->color}}">
+                    <p style="font-size: 15px; color: {{$footer->color}}; text-align: right; width: 50%;">
                         &copy; {{$footer->texto.' '.$footer->copyright}}</p>
                     <ul style="" class="d-flex justify-content-between">
                         @foreach($redes as $red)
