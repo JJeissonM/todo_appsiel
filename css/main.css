@@ -112,14 +112,7 @@ hr {
   width: 40%;
   border-bottom: 1px solid #45aed6;
 }
-ul.nostyle {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 20px;
-}
-ul.nostyle i {
-  color: #45aed6;
-}
+
 .scaleIn {
   -webkit-animation-name: scaleIn;
   animation-name: scaleIn;
@@ -783,7 +776,7 @@ ul.nostyle i {
   color: #fff;
 }
 #blog {
-  padding: 100px 0;
+  padding: 10px 0;
 }
 #blog .blog-post {
   border: 1px solid #eee;

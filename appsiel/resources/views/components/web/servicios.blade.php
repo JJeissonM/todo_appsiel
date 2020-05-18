@@ -54,7 +54,12 @@
     <section id="services">
         <!-- <img src="{ {asset('img/corazon/Diseño_Appsiel_3.jpg')}}" alt=""> -->
 @endif
-        <div class="container">
+
+    <div id="visor_contenido">
+        
+    </div>
+
+    <div class="container" id="contenedor_seccion">
             @if($servicios!=null)
                 <div class="section-header">
                     <h2 class="section-title text-center wow fadeInDown animated"
@@ -76,13 +81,11 @@
                                         </div>
                                         <div class="media-body">
                                             <h4 class="media-heading">{{$item->titulo}}</h4>
-                                            <p>{!! str_limit($item->descripcion,150) !!} </p>
+                                            <p>{!! str_limit($item->descripcion,120) !!} </p>
                                         </div>
                                     </div>
-                                    <div class="col-md-12 d-flex justify-content-end">
-                                        <a class="btn btn-primary"
-                                           href="{{route('servicios.leer_servicio',$item->id)}}">Leer
-                                            más...</a>
+                                    <div class="pull-right">
+                                        <a class="btn btn-primary" onclick="visor_contenido({{ $item->id }})" href="#">Leer más...</a>
                                     </div>
                                 </div><!--/.col-md-4-->
                             @endforeach
@@ -100,3 +103,36 @@
             <!-- <img class="ilustracion" src="{ {asset('img/lading-page/bg-2.svg')}}" alt=""> -->
         @endif
     </section>
+    <script type="text/javascript">
+
+        function visor_contenido( item_id )
+        {   
+            $('#visor_contenido').html('');
+
+            $('#contenedor_seccion').fadeOut( 1000 );
+            
+            var url = "{{url('/servicios')}}" + '/' + item_id + '/index';
+
+            $.get( url )
+                .done(function( data ) {
+                    
+                    $('#visor_contenido').html( data );
+                    $('#visor_contenido').fadeIn( 500 );
+                })
+                .error(function(){
+
+                    $('#contenedor_seccion').fadeIn( 500 );
+                    $('#visor_contenido').show();
+                    $('#visor_contenido').html( '<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>' );
+                });
+        }
+
+
+        function ver_contenedor_seccion( )
+        {   
+            $('#contenedor_seccion').fadeIn( 500 );
+            $('#visor_contenido').html('');
+            $('#visor_contenido').hide();
+        }
+
+    </script>

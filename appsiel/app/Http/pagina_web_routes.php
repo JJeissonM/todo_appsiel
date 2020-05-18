@@ -90,6 +90,9 @@ Route::post('articles/article/update', 'web\ArticleController@articleupdate')->n
 Route::get('articles/article/{id}/viewfinder', 'web\ArticleController@show')->name('article.show');
 Route::get('article/delete/destroy/{id}','web\ArticleController@destroy');
 
+//Route::get('article/{id}','web\ArticleController@destroy');
+
+
 //ARCHIVOS
 Route::post('archivos/store', 'web\ArchivoController@store')->name('archivos.store');
 Route::resource('archivos', 'web\ArchivoController');

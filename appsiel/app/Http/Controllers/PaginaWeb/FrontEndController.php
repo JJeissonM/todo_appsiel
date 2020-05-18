@@ -45,7 +45,7 @@ class FrontEndController extends Controller
         $pagina = Pagina::where('pagina_inicio',1)->get()->first();
 
         // Si se envía el ID de una página, por url
-        if (!is_null(Input::get('pagina_id')))
+        if ( !is_null( Input::get('pagina_id') ) )
         {
             $pagina = Pagina::find(Input::get('pagina_id'));
         }

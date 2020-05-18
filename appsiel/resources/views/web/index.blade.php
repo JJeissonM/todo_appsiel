@@ -208,9 +208,9 @@
 
 <main>
 
-        @foreach($view as $item)
-            {!! $item !!}
-        @endforeach
+    @foreach($view as $item)
+        {!! $item !!}
+    @endforeach
 
 </main>
 

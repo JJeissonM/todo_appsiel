@@ -53,16 +53,23 @@
     }
 </style>
 <div class="aboutus">
-    <div class="container" style="margin-top: 40px;">
+
+    <div id="visor_contenido">
+        
+    </div>
+
+    <div class="container" id="contenedor_seccion">
         <div class="container">
             @if($aboutus!=null)
                 <div class="section-header">
                     <h2 class="section-title text-center wow fadeInDown animated"
                         style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->titulo}}</h2>
                     <p class="text-center wow fadeInDown animated"
-                       style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->descripcion}}
-                    <center><a class="btn btn-primary btn-md text-center"
-                               href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer todo</a></center>
+                       style="visibility: visible; animation-name: fadeInDown;">
+                       {{$aboutus->descripcion}}
+                    </p>
+                    <!-- <center><a class="btn btn-primary btn-md text-center"
+                               href="{ {route('aboutus.leer_institucional',$aboutus->id)}}">Leer todo</a></center> -->
                 </div>
                 <div class="row">
                     <div class="col-sm-6 wow fadeInLeft animated"
@@ -79,7 +86,7 @@
                                 <h4 class="media-heading">Misión</h4>
                                 <p>{!! str_limit($aboutus->mision,150) !!}</p>
 
-                                <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
+                                <a class="pull-right" onclick="visor_contenido({{ $aboutus->id }})" href="#">Leer
                                     mas...</a>
                             </div>
                         </div>
@@ -93,7 +100,7 @@
                                 <h4 class="media-heading">Visión</h4>
                                 <p>{!! str_limit($aboutus->vision,150) !!}</p>
 
-                                <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
+                                <a class="pull-right" onclick="visor_contenido({{ $aboutus->id }})" href="#">Leer
                                     mas...</a>
                             </div>
                         </div>
@@ -107,7 +114,7 @@
                                     <h4 class="media-heading">Valores</h4>
                                     <p>{!! str_limit($aboutus->valores,150) !!}</p>
 
-                                    <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
+                                    <a class="pull-right" onclick="visor_contenido({{ $aboutus->id }})" href="#">Leer
                                         mas...</a>
                                 </div>
                             </div>
@@ -122,7 +129,7 @@
                                     <h4 class="media-heading">Reseña Historica</h4>
                                     <p>{!! str_limit($aboutus->resenia,150) !!}</p>
 
-                                    <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
+                                    <a class="pull-right" onclick="visor_contenido({{ $aboutus->id }})" href="#">Leer
                                         mas...</a>
                                 </div>
                             </div>
@@ -138,3 +145,37 @@
         </div>
     </div>
 </div>
+
+    <script type="text/javascript">
+
+        function visor_contenido( item_id )
+        {   
+            $('#visor_contenido').html('');
+
+            $('#contenedor_seccion').fadeOut( 1000 );
+            
+            var url = "{{url('/aboutus')}}" + '/' + item_id + '/institucional/leer';
+
+            $.get( url )
+                .done(function( data ) {
+                    
+                    $('#visor_contenido').html( data );
+                    $('#visor_contenido').fadeIn( 500 );
+                })
+                .error(function(){
+
+                    $('#contenedor_seccion').fadeIn( 500 );
+                    $('#visor_contenido').show();
+                    $('#visor_contenido').html( '<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>' );
+                });
+        }
+
+
+        function ver_contenedor_seccion( )
+        {   
+            $('#contenedor_seccion').fadeIn( 500 );
+            $('#visor_contenido').html('');
+            $('#visor_contenido').hide();
+        }
+
+    </script>
