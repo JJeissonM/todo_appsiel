@@ -4,7 +4,7 @@
             
             <a href="{{url('/')}}"> <i class="fa fa-home"></i> </a>
             /
-            <a onclick="ver_contenedor_seccion()" href="#"> Todos los artículos </a>
+            <a onclick="ver_contenedor_seccion_articulos()" href="#"> Todos los artículos </a>
             
       </p>
       <div class="col-md-12 light-txt">

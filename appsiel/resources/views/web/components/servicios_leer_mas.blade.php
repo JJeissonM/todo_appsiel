@@ -4,7 +4,7 @@
             
             <a href="{{url('/')}}"> <i class="fa fa-home"></i> </a>
             &nbsp; / &nbsp; 
-            <a onclick="ver_contenedor_seccion()" href="#"> {!! $empresa->servicio->titulo !!} </a>
+            <a onclick="ver_contenedor_seccion_servicios()" href="#"> {!! $empresa->servicio->titulo !!} </a>
             &nbsp; / &nbsp; 
             {{$empresa->titulo}}
             
