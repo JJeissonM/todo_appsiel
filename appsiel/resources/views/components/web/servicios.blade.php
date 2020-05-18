@@ -55,11 +55,11 @@
         <!-- <img src="{ {asset('img/corazon/Diseño_Appsiel_3.jpg')}}" alt=""> -->
 @endif
 
-    <div id="visor_contenido">
+    <div id="visor_contenido_servicios">
         
     </div>
 
-    <div class="container" id="contenedor_seccion">
+    <div class="container" id="contenedor_seccion_servicios">
             @if($servicios!=null)
                 <div class="section-header">
                     <h2 class="section-title text-center wow fadeInDown animated"
@@ -85,7 +85,7 @@
                                         </div>
                                     </div>
                                     <div class="pull-right">
-                                        <a class="btn btn-primary" onclick="visor_contenido({{ $item->id }})" href="#">Leer más...</a>
+                                        <a class="btn btn-primary" onclick="visor_contenido_servicios({{ $item->id }})" href="#">Leer más...</a>
                                     </div>
                                 </div><!--/.col-md-4-->
                             @endforeach
@@ -105,34 +105,34 @@
     </section>
     <script type="text/javascript">
 
-        function visor_contenido( item_id )
+        function visor_contenido_servicios( item_id )
         {   
-            $('#visor_contenido').html('');
+            $('#visor_contenido_servicios').html('');
 
-            $('#contenedor_seccion').fadeOut( 1000 );
+            $('#contenedor_seccion_servicios').fadeOut( 1000 );
             
             var url = "{{url('/servicios')}}" + '/' + item_id + '/index';
 
             $.get( url )
                 .done(function( data ) {
                     
-                    $('#visor_contenido').html( data );
-                    $('#visor_contenido').fadeIn( 500 );
+                    $('#visor_contenido_servicios').html( data );
+                    $('#visor_contenido_servicios').fadeIn( 500 );
                 })
                 .error(function(){
 
-                    $('#contenedor_seccion').fadeIn( 500 );
-                    $('#visor_contenido').show();
-                    $('#visor_contenido').html( '<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>' );
+                    $('#contenedor_seccion_servicios').fadeIn( 500 );
+                    $('#visor_contenido_servicios').show();
+                    $('#visor_contenido_servicios').html( '<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>' );
                 });
         }
 
 
-        function ver_contenedor_seccion( )
+        function ver_contenedor_seccion_servicios( )
         {   
-            $('#contenedor_seccion').fadeIn( 500 );
-            $('#visor_contenido').html('');
-            $('#visor_contenido').hide();
+            $('#contenedor_seccion_servicios').fadeIn( 500 );
+            $('#visor_contenido_servicios').html('');
+            $('#visor_contenido_servicios').hide();
         }
 
     </script>

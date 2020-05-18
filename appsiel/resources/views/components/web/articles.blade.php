@@ -17,11 +17,11 @@
     
     {{ Form::Spin(128) }}
 
-    <div id="visor_contenido">
+    <div id="visor_contenido_articulos">
         
     </div>
 
-    <div class="container" id="contenedor_seccion">
+    <div class="container" id="contenedor_seccion_articulos">
 
 
         @if($setup!=null)
@@ -64,7 +64,7 @@
                                         <p>{!! $a->descripcion !!}</p>
                                         <!-- <p><span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span></p> -->
                                         <!-- <p><span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span></p> -->
-                                        <p><a onclick="visor_contenido({{ $a->id }})" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>
+                                        <p><a onclick="visor_contenido_articulos({{ $a->id }})" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>
                                     </div>
                                 </div>
                             </div>
@@ -85,7 +85,7 @@
                                     </div> 
                                     <a target="_blank" href="{ {route('article.show',$a->id)}}" style="text-decoration: none;">-->
 
-                                    <a onclick="visor_contenido({{ $a->id }})">
+                                    <a onclick="visor_contenido_articulos({{ $a->id }})">
 
                                     <div class=" media-body">
                                         <div style="text-align: center;">
@@ -138,34 +138,34 @@
 
     <script type="text/javascript">
 
-        function visor_contenido( item_id )
+        function visor_contenido_articulos( item_id )
         {   
-            $('#visor_contenido').html('');
+            $('#visor_contenido_articulos').html('');
 
-            $('#contenedor_seccion').fadeOut( 1000 );
+            $('#contenedor_seccion_articulos').fadeOut( 1000 );
             
             var url = "{{url('articles')}}" + '/' + item_id;
 
             $.get( url )
                 .done(function( data ) {
                     
-                    $('#visor_contenido').html( data );
-                    $('#visor_contenido').fadeIn( 500 );
+                    $('#visor_contenido_articulos').html( data );
+                    $('#visor_contenido_articulos').fadeIn( 500 );
                 })
                 .error(function(){
 
-                    $('#contenedor_seccion').fadeIn( 500 );
-                    $('#visor_contenido').show();
-                    $('#visor_contenido').html( '<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>' );
+                    $('#contenedor_seccion_articulos').fadeIn( 500 );
+                    $('#visor_contenido_articulos').show();
+                    $('#visor_contenido_articulos').html( '<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>' );
                 });
         }
 
 
-        function ver_contenedor_seccion( )
+        function ver_contenedor_seccion_articulos( )
         {   
-            $('#contenedor_seccion').fadeIn( 500 );
-            $('#visor_contenido').html('');
-            $('#visor_contenido').hide();
+            $('#contenedor_seccion_articulos').fadeIn( 500 );
+            $('#visor_contenido_articulos').html('');
+            $('#visor_contenido_articulos').hide();
         }
 
     </script>
