@@ -20,6 +20,12 @@ ul li {
    padding-right: 0;
 }
 
+.product-image:hover {
+        transform: scale(1.2);
+        box-shadow: 0px 0px 5px 1px #3d6983;
+        cursor: pointer;
+    }
+
 
 
 

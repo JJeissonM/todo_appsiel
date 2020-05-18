@@ -10,15 +10,13 @@
 
 @section('content')
     @include('web.tienda.header')
+
     <main>
         <div class="main-container col2-left-layout">
             <div class="container">
                 <div class="container-inner">
                     <div class="main">
-                        <!-- Category Image-->
-                        <!--<p class="category-image"><img
-                                    src="http://www.plazathemes.com/demo/ma_dicove/media/catalog/category/category.jpg"
-                                    alt="New arrivals" title="New arrivals"></p>    -->
+                        
                         <div class="main-inner">
                             <div class="row">
                                 <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">

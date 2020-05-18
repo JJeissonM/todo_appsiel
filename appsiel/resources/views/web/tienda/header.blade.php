@@ -1,22 +1,28 @@
-<header>
+<?php 
+    $empresa = App\Core\Empresa::find(1);
+    $configuracion = App\web\Configuraciones::all()->first();
+?>
+<header style="background: {{ $configuracion->color_primario }};">
     <div class="top-link">
         <div class="container">
             <div class="top-link-inner">
                 <div class="row">
                     <div class="col-md-3 col-sm-3 col-xs-12">
-                        <div class="toplink-static">LINEA DIRECTA:<span>(+800) 123 456 7890</span></div>
+                        <div class="toplink-static">
+                            Línea directa: &nbsp; <a href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}"><img class="alignnone wp-image-2180 lazyloaded" src="https://sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon-150x150.png" data-src="https://sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon-150x150.png" alt="" width="47" height="37" data-srcset="https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=2&amp;resize=97%2C107&amp;ssl=1 194w, https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=3&amp;resize=97%2C107&amp;ssl=1 291w" sizes="(max-width: 97px) 100vw, 97px" srcset="https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=2&amp;resize=97%2C107&amp;ssl=1 194w, https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=3&amp;resize=97%2C107&amp;ssl=1 291w"><noscript><img class="alignnone wp-image-2180 lazyload" src="https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?resize=97%2C107&#038;ssl=1" alt="" width="97" height="107" srcset="https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=2&amp;resize=97%2C107&amp;ssl=1 194w, https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=3&amp;resize=97%2C107&amp;ssl=1 291w" sizes="(max-width: 97px) 100vw, 97px" data-recalc-dims="1" /></noscript> <span>{{ $empresa->telefono1 }}</span> </a>
+                        </div>
                     </div>
-                    <div class="col-md-9 col-sm-9 col-xs-12">
-                        <p class="welcome-msg">Bienvenido a Avipoulet </p>
+                    <div class="col-md-9 col-sm-9 col-xs-12 toplink-static">
+                        <p class="welcome-msg">Bienvenido a {{ $empresa->descripcion }} </p>
                         <ul class="links">
                             <li class="first"><a
                                         href="{{route('tienda.micuenta')}}"
-                                        title="My Account">Mi Cuenta</a></li>
-                            <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/wishlist/"
+                                        title="Mi Cuenta">Mi Cuenta</a></li>
+                            <li><a href="#"
                                    title="My Wishlist">Mi Lista</a></li>
-                            <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/checkout/cart/"
+                            <li><a href="#"
                                    title="My Cart" class="top-link-cart">Mi Carrito</a></li>
-                            <li><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/checkout/onepage"
+                            <li><a href="#"
                                    title="Checkout" class="top-link-checkout">Revisa</a></li>
                             @if(Auth::guest())
                                      <li class=" last"><a
@@ -45,11 +51,12 @@
                 <div class="row">
                     <div class="header-content clearfix">
                         <div class="top-logo col-xs-12 col-md-3 col-sm-12">
-                            <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/" title="Magento Commerce"
-                               class="logo"><strong>Magento Commerce</strong><img
-                                        src="http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/logo.gif"
+                            <a href="{{url('/')}}" title="{{$empresa->descripcion}}"
+                               class="logo"><strong>{{$empresa->descripcion}}</strong><img
+                                        src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}"
                                         alt="Magento Commerce"></a>
                         </div>
+                        <!-- 
                         <form class="col-xs-12 col-md-6 col-sm-12 serach" action="" method="GET">
                             <div class="box-search-bar clearfix">
                                 <select class="btn" name="" id="">
@@ -87,127 +94,7 @@
                                 </li>
                             </ul>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="ma-menu clearfix">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12 col-md-3 col-sm-12 mega-menu">
-                    <div class="navleft-container visible-lg visible-md">
-                        <div class="megamenu-title">
-                            <h2>Categorias <em class="fa fa-caret-down"></em></h2>
-                        </div>
-                        <div id="pt_vmegamenu" class="pt_vmegamenu" style="overflow: visible; display: none;">
-                            <ul class="pt_nav">
-                                <li><a href="">Newarrivals</a></li>
-                                <li><a href="">Clothing</a></li>
-                                <li><a href="">footwear</a></li>
-                                <li><a href="">jewellery</a></li>
-                                <li><a href="">accessories</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="top-search col-xs-12 col-md-9 col-sm-12 custom-menu">
-                    <div class="ma-nav-mobile-container visible-xs">
-                        <div class="navbar">
-                            <div id="navbar-inner" class="navbar-inner navbar-inactive">
-                                <div class="menu-mobile">
-                                    <span class="brand navbar-brand">Categories</span>
-                                    <a class="btn btn-navbar navbar-toggle">
-                                        <i class="fas fa-bars"></i>
-                                    </a>
-                                </div>
-                                <ul id="ma-mobilemenu" class="mobilemenu nav-collapse collapse">
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                    <li class="level0 nav-1 level-top first parent">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/new-arrivals.html"
-                                           class="level-top">
-                                            <span>New arrivals</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="nav-container visible-lg visible-md">
-                        <div class="container-inner">
-                            <div id="pt_custommenu" class="pt_custommenu">
-                                <div id="pt_menu_home" class="pt_menu act">
-                                    <div class="parentMenu">
-                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/">
-                                            <span>Inicio</span>
-                                        </a>
-                                    </div>
-                                </div>
-                                <div id="pt_menu_link" class="pt_menu">
-                                    <div class="parentMenu">
-                                        <ul>
-                                            <li><a
-                                                        href="http://www.plazathemes.com/demo/ma_dicove/index.php/bestsellerproductlist/">Productos</a>
-                                            </li>
-                                            <li><a
-                                                        href="http://www.plazathemes.com/demo/ma_dicove/index.php/newproductlist">Quienes
-                                                    Somos</a></li>
-                                            <li><a
-                                                        href="http://www.plazathemes.com/demo/ma_dicove/index.php/contacts/">Blog
-                                                    Us</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="clearBoth"></div>
-                            </div>
-                        </div>
+                    -->
                     </div>
                 </div>
             </div>
