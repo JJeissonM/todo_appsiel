@@ -219,7 +219,7 @@
                 z-index: 9999999;
             }/**/
 
-            .sticky {
+            #navegacion > header.sticky {
               position: fixed;
               z-index: 99999;
               top: 0;
