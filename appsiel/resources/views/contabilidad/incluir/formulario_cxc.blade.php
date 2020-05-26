@@ -7,7 +7,7 @@
   </div>
 
   <div class="row" style="padding:5px;">
-    {{ Form::bsSelect('contab_cuenta_id_aux', null, 'Cuenta', $cuentas , [] ) }}
+    {{ Form::bsText( 'cuenta_input_aux', null, 'Cuenta', [ 'class' => 'form-control text_input_sugerencias', 'id' => 'cuenta_input_aux', 'data-url_busqueda' => url('contab_consultar_cuentas') ] ) }}    
   </div>
 
   <div class="row" style="padding:5px;">

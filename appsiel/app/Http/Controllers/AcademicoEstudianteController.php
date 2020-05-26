@@ -229,7 +229,7 @@ class AcademicoEstudianteController extends Controller
 
         $encabezado = PlanClaseEncabezado::get_registro_impresion( $plan_id );
 
-        $registros = PlanClaseRegistro::get_registros_impresion( $plan_id );
+        $registros = PlanClaseRegistro::get_registros_impresion_guia( $plan_id );
 
         $vista = View::make( 'academico_docente.planes_clases.vista_impresion', compact( 'encabezado', 'registros' ) )->render();
 

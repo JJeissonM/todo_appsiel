@@ -37,15 +37,27 @@ class PlanClaseRegistro extends Model
     public static function get_registros_impresion( $plan_clase_encabezado_id )
     {
         return PlanClaseRegistro::leftJoin('sga_plan_clases_struc_elementos', 'sga_plan_clases_struc_elementos.id', '=', 'sga_plan_clases_registros.plan_clase_estruc_elemento_id')
-                                ->where('plan_clase_encabezado_id', $plan_clase_encabezado_id)
-                                ->where('sga_plan_clases_struc_elementos.estado', 'Activo')
+                                ->where( 'sga_plan_clases_registros.plan_clase_encabezado_id', $plan_clase_encabezado_id )
+                                ->where( 'sga_plan_clases_struc_elementos.estado', 'Activo' )
                                 ->select(
                                             'sga_plan_clases_struc_elementos.descripcion AS elemento_descripcion',
                                             'sga_plan_clases_struc_elementos.id AS elemento_id',
+                                            'sga_plan_clases_registros.plan_clase_encabezado_id',
                                             'sga_plan_clases_registros.contenido',
                                             'sga_plan_clases_registros.estado',
-                                            'sga_plan_clases_registros.id')
+                                            'sga_plan_clases_registros.id' )
                                 ->orderBy('orden')
+                                ->get();
+    }
+   
+    public static function get_registros_impresion_guia( $plan_clase_encabezado_id )
+    {
+        return PlanClaseRegistro::where( 'sga_plan_clases_registros.plan_clase_encabezado_id', $plan_clase_encabezado_id )
+                                ->select(
+                                            'sga_plan_clases_registros.plan_clase_encabezado_id',
+                                            'sga_plan_clases_registros.contenido',
+                                            'sga_plan_clases_registros.estado',
+                                            'sga_plan_clases_registros.id' )
                                 ->get();
     }
 }

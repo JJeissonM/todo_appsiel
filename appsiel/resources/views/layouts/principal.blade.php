@@ -59,6 +59,11 @@
 			z-index: 9999;
 		}
 
+		a.list-group-item-sugerencia
+		{
+			cursor: pointer;
+		}
+
 		/*
 		#existencia_actual, #tasa_impuesto{
 			width: 35px;

@@ -109,6 +109,21 @@ class PensumController extends CalificacionController
         
     }
 
+
+    public function cambiar_orden_asignatura( $periodo_lectivo_id, $curso_id, $asignatura_id, $nueva_posicion )
+    {
+        
+        CursoTieneAsignatura::where( [
+                                    'periodo_lectivo_id' => $periodo_lectivo_id,
+                                    'curso_id' => $curso_id,
+                                    'asignatura_id' => $asignatura_id 
+                                    ] )
+                            ->update( [ 'orden_boletin' => $nueva_posicion ] );
+
+        return 'true';
+        
+    }
+
     /**
      * Revisar las Todas Asignaturas por curso con su intensidad horaria
      *

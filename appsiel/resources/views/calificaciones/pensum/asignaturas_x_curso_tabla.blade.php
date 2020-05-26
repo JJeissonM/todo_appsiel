@@ -1,3 +1,9 @@
+<h3>Lista de asignaturas del curso <small>({{ count($registros_asignados->toArray()) }} registros. )</small></h3>
+<hr>
+
+&nbsp;&nbsp;&nbsp;<button class="btn btn-xs btn-primary" id="btn_actualizar_lista" > <i class="fa fa-refresh"></i> Actualizar lista</button>
+<br><br>
+
 <div class="table-responsive">
     <table class="table table-bordered table-striped" id="lista_asignaciones">
     	{{ Form::bsTableHeader(['Orden boletín','Área','Descripción','Intensidad horaria','Maneja calificación','Acción']) }}

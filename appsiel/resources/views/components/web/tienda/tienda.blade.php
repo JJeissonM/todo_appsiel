@@ -5,6 +5,8 @@
 
 @include('web.tienda.header')
 
+@include('web.tienda.carousel')
+
 <main style="background: white;">
     <div class="main-container col2-left-layout">
         <div class="container">
@@ -38,6 +40,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-main col-lg-9 col-md-9 col-sm-12 col-xs-12">
                                 <div class="page-title category-title">
                                     <h1>Nuestros Productos</h1>

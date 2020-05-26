@@ -10,13 +10,13 @@
         <tr>
             <th style="display: none;">fecha_vencimiento</th>
             <th style="display: none;">documento_soporte_tercero</th>
-            <th data-override="tipo_transaccion" width="50px">Tipo transacción</th>
+            <th data-override="tipo_transaccion"></th>
             <th width="250px">Cuenta</th>
             <th width="250px">Tercero</th>
             <th>Detalle</th>
             <th data-override="debito">Débito</th>
             <th data-override="credito">Crédito</th>
-            <th width="10px">&nbsp;</th>
+            <th width="70px">&nbsp;</th>
         </tr>
     </thead>
     <tbody>

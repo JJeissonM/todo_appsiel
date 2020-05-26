@@ -420,7 +420,7 @@ class RecaudoCxcController extends Controller
         // Se reversan los abonos hecho por este documento de recaudo: aumenta el saldo_pendiente en el documento pendiente, si no existe el documento de cxc en documentos pendiente, se debe crear nuevamente su registro
         $documentos_abonados = CxcAbono::get_documentos_abonados( $recaudo );
 
-        foreach ($documentos_abonados as $linea)
+        foreach ( $documentos_abonados as $linea )
         {
             $documento_cxc_pendiente = DocumentosPendientes::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
                                                         ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
@@ -428,8 +428,6 @@ class RecaudoCxcController extends Controller
                                                         ->get()
                                                         ->first();
             
-            // Si no está el documento en cxc_documentos_pendiente, quiere decir que se eliminó con este recaudo
-            // Entonces, se debe crear nuevamente el registro en cxc_documentos_penedientes
             if ( $documento_cxc_pendiente->estado == 'Pagado' )
             {
                 // Se halla el total de todos los abonos que halla tenido el documento de cxc abonado (incluido el abono realizado por este recaudo)
@@ -445,7 +443,7 @@ class RecaudoCxcController extends Controller
                 $nuevo_valor_pagado = $valor_abonos_aplicados - $linea->abono; // el valor_abonos_aplicados es como mínimo el valor de $linea->abono
 
             }else{
-                // Si existe el documento_cxc_pendiente en cxc_documentos_pendientes, se actualiza el registro
+
                 $nuevo_saldo_pendiente = $documento_cxc_pendiente->saldo_pendiente + $linea->abono;
 
                 $nuevo_valor_pagado = $documento_cxc_pendiente->valor_pagado - $linea->abono;

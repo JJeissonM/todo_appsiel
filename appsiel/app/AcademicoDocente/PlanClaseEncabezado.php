@@ -32,7 +32,7 @@ class PlanClaseEncabezado extends Model
 	{
         $user = Auth::user();
 
-        $array_wheres = [ ['sga_plan_clases_encabezados.id' ,'>', 0] ];
+        $array_wheres = [ ['sga_plan_clases_encabezados.plantilla_plan_clases_id' ,'<>', 99999] ];
         
         if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') ) 
         {
@@ -368,6 +368,7 @@ class PlanClaseEncabezado extends Model
                                         'sga_cursos.descripcion AS curso_decripcion',
                                         'sga_asignaturas.descripcion AS asignatura_decripcion',
                                         'users.name AS usuario_decripcion',
+                                        'sga_plan_clases_encabezados.plantilla_plan_clases_id',
                                         'sga_plan_clases_encabezados.estado',
                                         'sga_plan_clases_encabezados.id')
                                     ->get()
@@ -378,7 +379,7 @@ class PlanClaseEncabezado extends Model
     
     public static function consultar_guias_estudiantes( $curso_id, $asignatura_id )
     {
-        $array_wheres = [ ['sga_plan_clases_encabezados.id' ,'>', 0] ];
+        $array_wheres = [ ['sga_plan_clases_encabezados.plantilla_plan_clases_id' ,'=', 99999] ];
         $array_wheres = array_merge($array_wheres, 
                                         ['sga_plan_clases_encabezados.curso_id' => $curso_id,'sga_plan_clases_encabezados.asignatura_id' => $asignatura_id ] );
 

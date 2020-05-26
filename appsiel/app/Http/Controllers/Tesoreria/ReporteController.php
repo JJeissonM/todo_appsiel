@@ -831,7 +831,10 @@ class ReporteController extends TesoreriaController
     */
     public static function reporte_cuentas( $fecha_corte )
     {
-        $cuentas = TesoCuentaBancaria::all();
+        $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
+                                    ->orderBy('contab_cuentas.codigo')
+                                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
+                                    ->get();
         $response = [
             'total' => 0,
             'data' => null

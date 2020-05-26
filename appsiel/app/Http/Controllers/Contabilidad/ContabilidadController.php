@@ -527,27 +527,25 @@ class ContabilidadController extends TransaccionController
     // AJAX: enviar fila para el ingreso de registros al elaborar documento contable
     public static function contab_get_fila( $id_fila )
     {
-        $cuentas = ContabCuenta::opciones_campo_select();
-
-        $terceros = Tercero::opciones_campo_select();
-
-        $btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-trash'></i></button>";
-        $btn_confirmar = "<button type='button' class='btn btn-success btn-xs btn_confirmar'><i class='fa fa-check'></i></button>";
+        $btn_confirmar = "<button class='btn btn-success btn-xs btn_confirmar' style='display: inline;'><i class='fa fa-check'></i></button>";
+        $btn_borrar = "<button class='btn btn-danger btn-xs btn_eliminar' style='display: inline;'><i class='fa fa-trash'></i></button>";
 
         $tr = '<tr id="linea_ingreso_datos">
                     <td style="display: none;"> <input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="' . date('Y-m-d') . '"> </td>
                     <td style="display: none;"> <input type="hidden" name="documento_soporte_tercero" id="documento_soporte_tercero" value=""> </td>
-                    <td> <input type="text" name="tipo_transaccion_linea" id="tipo_transaccion_linea" value="causacion" style="background: transparent;" readonly="readonly"> </td>
+                    <td> <input type="text" name="tipo_transaccion_linea" id="tipo_transaccion_linea" value="causacion" style="background: transparent; border:0; width:70px;" readonly="readonly"> </td>
                     <td>
-                        '.Form::select( 'campo_cuentas', $cuentas, null, [ 'id' => 'combobox_cuentas', 'class' => 'lista_desplegable' ] ).'
+                        '.Form::text( 'cuenta_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'cuenta_input', 'data-url_busqueda' => url('contab_consultar_cuentas'), 'autocomplete'  => 'off' ] ).'
+                        '.Form::hidden( 'campo_cuentas', null, [ 'id' => 'combobox_cuentas' ] ).'
                     </td>
                     <td>
-                        '.Form::select( 'campo_terceros', $terceros, null, [ 'id' => 'combobox_terceros', 'class' => 'lista_desplegable' ] ).'
+                        '.Form::text( 'tercero_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'tercero_input', 'data-url_busqueda' => url('core_consultar_terceros_v2'), 'autocomplete'  => 'off' ] ).'
+                        '.Form::hidden( 'campo_terceros', null, [ 'id' => 'combobox_terceros' ] ).'
                     </td>
-                    <td> '.Form::text( 'detalle', null, [ 'id' => 'col_detalle', 'class' => 'caja_texto' ] ).' </td>
-                    <td> '.Form::text( 'debito', null, [ 'id' => 'col_debito', 'class' => 'caja_texto' ] ).' </td>
-                    <td> '.Form::text( 'credito', null, [ 'id' => 'col_credito', 'class' => 'caja_texto' ] ).' </td>
-                    <td>'.$btn_confirmar.$btn_borrar.'</td>
+                    <td> '.Form::text( 'detalle', null, [ 'id' => 'col_detalle', 'class' => 'form-control' ] ).' </td>
+                    <td> '.Form::text( 'debito', null, [ 'id' => 'col_debito', 'class' => 'form-control' ] ).' </td>
+                    <td> '.Form::text( 'credito', null, [ 'id' => 'col_credito', 'class' => 'form-control' ] ).' </td>
+                    <td> <div class="btn-group">'.$btn_confirmar.$btn_borrar.'</div> </td>
                 </tr>';
 
         return $tr;
@@ -611,42 +609,67 @@ class ContabilidadController extends TransaccionController
     // Parámetro enviados por GET
     public function consultar_cuentas()
     {
-        $campo_busqueda = Input::get('campo_busqueda');
-        
-        switch ( $campo_busqueda ) 
+        $texto_busqueda_codigo = (int)Input::get('texto_busqueda');
+
+        if( $texto_busqueda_codigo == 0 )
         {
-            case 'descripcion':
-                $operador = 'LIKE';
-                $texto_busqueda = '%'.Input::get('texto_busqueda').'%';
-                break;
-            case 'codigo':
-                $operador = 'LIKE';
-                $texto_busqueda = Input::get('texto_busqueda').'%';
-                break;
-            
-            default:
-                # code...
-                break;
+            $campo_busqueda = 'descripcion';
+            $texto_busqueda = '%' . str_replace( " ", "%", Input::get('texto_busqueda') ) . '%';
+        }else{
+            $campo_busqueda = 'codigo';
+            $texto_busqueda = Input::get('texto_busqueda').'%';
         }
 
-        $datos = ContabCuenta::where('contab_cuentas.estado','Activo')->where('contab_cuentas.core_empresa_id',Auth::user()->empresa_id)->where('contab_cuentas.core_app_id','0')->where('contab_cuentas.'.$campo_busqueda,$operador,$texto_busqueda)->select('contab_cuentas.id AS cuenta_id','contab_cuentas.descripcion','contab_cuentas.codigo')->get()->take(7);
+        $texto_busqueda_descripcion = '%'.Input::get('texto_busqueda').'%';
 
-        //dd($datos);
+        $datos = ContabCuenta::where('contab_cuentas.estado','Activo')
+                                ->where('contab_cuentas.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('contab_cuentas.core_app_id','0')
+                                ->where('contab_cuentas.'.$campo_busqueda, 'LIKE', $texto_busqueda)
+                                ->select(
+                                            'contab_cuentas.id',
+                                            'contab_cuentas.descripcion',
+                                            'contab_cuentas.codigo')
+                                ->get()
+                                ->take(7);
 
-        $html = '<div class="list-group">';
+        $html = '<div class="list-group"><div style="width:100%;"><button href="#" class="close" data-dismiss="alert" aria-label="close">&times;</button></div>';
         $es_el_primero = true;
+        $ultimo_item = 0;
+        $num_item = 1;
+        $cantidad_datos = count( $datos->toArray() ); // si datos es null?
         foreach ($datos as $linea) 
         {
+            $primer_item = 0;
             $clase = '';
             if ($es_el_primero) {
                 $clase = 'active';
                 $es_el_primero = false;
+                $primer_item = 1;
             }
 
-            $html .= '<a class="list-group-item list-group-item-autocompletar '.$clase.'" data-tipo_campo="cuenta" data-cuenta_id="'.$linea->cuenta_id.
-                                '" data-id="'.$linea->cuenta_id.
-                                '" > '.$linea->codigo.' '.$linea->descripcion.'</a>';
+
+            if ( $num_item == $cantidad_datos )
+            {
+                $ultimo_item = 1;
+            }
+
+            $html .= '<a class="list-group-item list-group-item-sugerencia '.$clase.'" data-registro_id="'.$linea->id.
+                                '" data-primer_item="'.$primer_item.
+                                '" data-accion="na" '.
+                                '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
+
+            $html .=            '" data-tipo_campo="cuenta" ';
+
+            $html .=            '" > '.$linea->codigo.' '.$linea->descripcion.' </a>';
+
+            $num_item++;
         }
+
+        // Linea crear nuevo registro
+        $modelo_id = 49; // Cuentas contables
+        $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nueva </a>';
+
         $html .= '</div>';
 
         return $html;

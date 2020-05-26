@@ -295,7 +295,7 @@ class TiendaController extends Controller
 
     public function filtroCategoria($id)
     {
-        $items = InvProducto::get_datos_pagina_web($id, 'Activo');
+        $items = InvProducto::get_datos_pagina_web($id, 'Activo', 100);
         $grupos = InvProducto::get_grupos_pagina_web();
 
         return view('web.tienda.lista_productos',compact('items','grupos'));
