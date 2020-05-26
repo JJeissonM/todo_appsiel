@@ -204,14 +204,14 @@
                 padding-top: 50px;
                 width: 100%;
             }
+            
+            #navegacion > header {
+                color: #ffffff !important;
+                background: rgba(0, 0, 0, 0.54) !important;
+            }
 
             .mu-navbar-nav > li > a {
                 color: white !important;
-            }
-            
-            header {
-                color: #ffffff !important;
-                background: rgba(0, 0, 0, 0.54) !important;
             }
 
             .carousel-content {
