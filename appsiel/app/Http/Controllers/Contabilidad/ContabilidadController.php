@@ -542,9 +542,9 @@ class ContabilidadController extends TransaccionController
                         '.Form::text( 'tercero_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'tercero_input', 'data-url_busqueda' => url('core_consultar_terceros_v2'), 'autocomplete'  => 'off' ] ).'
                         '.Form::hidden( 'campo_terceros', null, [ 'id' => 'combobox_terceros' ] ).'
                     </td>
-                    <td> '.Form::text( 'detalle', null, [ 'id' => 'col_detalle', 'class' => 'form-control' ] ).' </td>
-                    <td> '.Form::text( 'debito', null, [ 'id' => 'col_debito', 'class' => 'form-control' ] ).' </td>
-                    <td> '.Form::text( 'credito', null, [ 'id' => 'col_credito', 'class' => 'form-control' ] ).' </td>
+                    <td> '.Form::text( 'detalle', null, [ 'id' => 'col_detalle', 'class' => 'form-control', 'autocomplete'  => 'off' ] ).' </td>
+                    <td> '.Form::text( 'debito', null, [ 'id' => 'col_debito', 'class' => 'form-control', 'autocomplete'  => 'off' ] ).' </td>
+                    <td> '.Form::text( 'credito', null, [ 'id' => 'col_credito', 'class' => 'form-control', 'autocomplete'  => 'off' ] ).' </td>
                     <td> <div class="btn-group">'.$btn_confirmar.$btn_borrar.'</div> </td>
                 </tr>';
 

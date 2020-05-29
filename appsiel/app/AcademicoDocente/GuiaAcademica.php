@@ -25,7 +25,7 @@ class GuiaAcademica extends Model
 	
     public $encabezado_tabla = ['Fecha', 'Semana académica', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Estado', 'Acción'];
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"sga_planes_clases/id_fila"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"sga_planes_clases/id_fila","eliminar":"sga_planes_clases_eliminar/id_fila"}';
     
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/academico_docente/planes_clases.js';

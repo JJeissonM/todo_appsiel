@@ -2,7 +2,7 @@
 <h4> Pase el mouse por encima de la nota para ver el detalle de la actividad calificada. </h4>
 
 @if( $observacion_boletin->puesto != '' )
-    <div class="pull-right">
+    <div>
         <code> Puesto: {{ $observacion_boletin->puesto }} </code>    
     </div>
 @endif

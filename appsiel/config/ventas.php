@@ -7,6 +7,7 @@
   'dvc_modelo_id' => '174',
   'dvc_tipo_transaccion_id' => '34',
   'dvc_tipo_doc_app_id' => '35',
+  'pv_tipo_transaccion_id' => '42',
   'pv_tipo_doc_app_id' => '41',
   'modo_liquidacion_precio' => 'lista_de_precios',
   'permitir_venta_menor_costo' => '1',

@@ -78,6 +78,8 @@
 
 		var LineaNum = 0;
 
+		var cantidad_keyup = 0;
+
 		var se_puede_quitar_lista = false;
 
             function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
@@ -120,34 +122,43 @@
 
 
 			$(document).on('focus', '.text_input_sugerencias', function(){
-		$(this).select();
-	});
+				$(this).select();
+			});
 
-	/*$(document).on('blur', '.text_input_sugerencias', function(){
+	$(document).on('blur', '.text_input_sugerencias', function(e){
 		
-		var codigo_tecla_presionada = event.which || event.keyCode;
+		//var codigo_tecla_presionada = event.which || event.keyCode;
 
-		console.log( event.keyCode );
+		console.log( document.activeElement );
 
-		if( codigo_tecla_presionada != 38 && codigo_tecla_presionada != 40 && se_puede_quitar_lista  ) // flecha arriba (38), flecha abajo (40)
+		/*if( codigo_tecla_presionada != 38 && codigo_tecla_presionada != 40 && se_puede_quitar_lista  ) // flecha arriba (38), flecha abajo (40)
 		{
 			$('#lista_sugerencias').remove();
+		}*/
+	});/**/
+
+	function closeAllLists( div_lista_sugerencias )
+	{
+		if( $('#lista_sugerencias').attr('class') !== div_lista_sugerencias.id )
+		{
+			$("#lista_sugerencias").remove();	
 		}
-	});*/
-
-	function closeAllLists(elmnt) {
-
-		console.log( elmnt );
-
-		//$("#lista_sugerencias").remove();
 	  }
 
 
 	document.addEventListener("click", function (e) {
-      closeAllLists( e.target );
-  });
+		
+		if( $('#lista_sugerencias').html() !== undefined )
+		{
+			// Se envía el elemento donde se hizo click
+			closeAllLists( e.target );
+		}
+
+	  });
 
 	$(document).on('keyup', '.text_input_sugerencias', function(){
+
+		//cantidad_keyup++;
 
 		crear_div_lista_sugerencias( $(this) );
 
@@ -196,10 +207,11 @@
     		default :
     			// Si no se presiona tecla especial, se muestra listado de sugerencias
 
-		    	// Si la longitud es menor a tres, todavía no busca
+		    	// Si la longitud es menor a dos, todavía no busca
 			    if ( $(this).val().length < 2 )
 			    { 
-			    	$('#lista_sugerencias').html('');
+			    	//$('#lista_sugerencias').html('');
+			    	$('#lista_sugerencias').remove();
 			    	return false;
 			    }
 
@@ -266,7 +278,8 @@
 	{
 		if( $('#lista_sugerencias').html() === undefined )
 		{
-			text_input_sugerencias.after('<div id="lista_sugerencias" style="position: absolute; z-index: 99999;"> </div>');
+			// Se le asigna como atributo CLASS el atributo ID del text_input para validar su remoción
+			text_input_sugerencias.after('<div id="lista_sugerencias" class="' + text_input_sugerencias.attr('id') + '" style="position: absolute; z-index: 99999;"> </div>');
 		}
 	}
 

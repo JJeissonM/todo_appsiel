@@ -74,7 +74,6 @@
 
 <?php
     use App\Http\Controllers\Sistema\VistaController;
-
 ?>
 
 @section('content')
