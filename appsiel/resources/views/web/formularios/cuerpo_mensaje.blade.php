@@ -19,7 +19,7 @@
         
         @foreach( $campos AS $fila )
           <p>
-            <span class="label"> {{ $fila[0] }} </span> 
+            <span class="label" style="background: #ddd;"> <b> {{ $fila[0] }}: </b> </span> 
             {{ $fila[1] }} 
           </p>
         @endforeach
