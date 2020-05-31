@@ -153,7 +153,9 @@ class ActividadesEscolaresController extends ModeloController
 
         $actividad = ActividadEscolar::find($actividad_id);
 
-        $estudiantes = Matricula::estudiantes_matriculados( $actividad->curso_id, null, 'Activo' );
+        $periodo_lectivo = PeriodoLectivo::get_actual();
+
+        $estudiantes = Matricula::estudiantes_matriculados( $actividad->curso_id, $periodo_lectivo->id, 'Activo' );
 
         //$reg_anterior = ActividadEscolar::where('id', '<', $actividad->id)->max('id');
         //$reg_siguiente = ActividadEscolar::where('id', '>', $actividad->id)->min('id');
@@ -236,7 +238,7 @@ class ActividadesEscolaresController extends ModeloController
 
         $cuestionario = (object)[];
         $preguntas = (object)[];
-        $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
+        $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','updated_at'=>''];
 
         if ( $actividad->cuestionario_id > 0 ) 
         {
@@ -248,7 +250,7 @@ class ActividadesEscolaresController extends ModeloController
 
             if( is_null( $respuestas ) )
             {   
-                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>''];
+                $respuestas = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','updated_at'=>''];
             }
         }
 
@@ -257,7 +259,7 @@ class ActividadesEscolaresController extends ModeloController
 
         if ( is_null( $respuesta ) )
         {
-            $respuesta = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','adjunto'=>''];
+            $respuesta = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','adjunto'=>'','updated_at'=>''];
         }
 
         return view('calificaciones.actividades_escolares.hacer_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','estudiante','modelo','respuestas','respuesta','asignatura'));        

@@ -41,6 +41,14 @@ class Proveedor extends Model
     public static function get_cuenta_por_pagar( $proveedor_id )
     {
         $clase_proveedor_id = Proveedor::where( 'id', $proveedor_id )->value( 'clase_proveedor_id' );
-        return ClaseProveedor::where( 'id', $clase_proveedor_id )->value( 'cta_x_pagar_id' );
+
+        $cta_x_pagar_id = ClaseProveedor::where( 'id', $clase_proveedor_id )->value( 'cta_x_pagar_id' );
+
+        if ( is_null($cta_x_pagar_id) )
+        {
+            $cta_x_pagar_id = config('configuracion.cta_por_pagar_default');
+        }
+
+        return $cta_x_pagar_id;
     }
 }

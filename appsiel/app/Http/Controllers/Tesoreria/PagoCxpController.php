@@ -164,6 +164,11 @@ class PagoCxpController extends TransaccionController
                                             ->where('valor_debito',0)
                                             ->value('contab_cuenta_id');
 
+            if( is_null( $cuenta_cxp_id ) )
+            {
+                $cuenta_cxp_id = config('configuracion.cta_por_pagar_default');
+            }
+
             ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cuenta_cxp_id, $detalle_operacion, $lineas_registros[$i]->abono, 0);
 
 
@@ -284,6 +289,8 @@ class PagoCxpController extends TransaccionController
 
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
     }
+
+
 
     public function get_documentos_pendientes_cxp()
     {                

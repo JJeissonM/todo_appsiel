@@ -79,7 +79,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('sliderpremiun', 'components.web.sliderpremiun', ['slider']);
         Form::component('aboutus', 'components.web.aboutus', ['aboutus']);
         Form::component('aboutuspremiun', 'components.web.aboutuspremiun', ['aboutus']);
-        Form::component('galeria', 'components.web.galeria', ['galeria']);
+        Form::component('galeria', 'components.web.galeria2', ['galeria']);
         Form::component('articles', 'components.web.articles', ['articles', 'setup']);
         Form::component('servicios', 'components.web.servicios', ['servicios']);
         Form::component('iconos', 'components.web.iconos', ['iconos']);
@@ -88,8 +88,10 @@ class FormServiceProvider extends ServiceProvider
         Form::component('archivos', 'components.web.archivos', ['items', 'archivo']);
         Form::component('footer', 'components.web.footer', ['footer', 'redes', 'contactenos', 'view']);
         Form::component('preguntas', 'components.web.preguntas', ['pregunta']);
-        Form::component('tienda', 'components.web.tienda', ['items','grupos']);
+        Form::component('tienda', 'components.web.tienda.tienda', ['items','grupos']);
         Form::component('testimoniales', 'components.web.testimoniales', ['testimonial']);
+        Form::component('custom_html', 'components.web.custom_html', ['registro']);
+        Form::component('pqr', 'components.web.pqr', [ 'registro', 'pagina']);
     }
 
     /**

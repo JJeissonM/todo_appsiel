@@ -103,6 +103,22 @@ class VistaController extends Controller
     }
 
 
+    /*
+        Pendiente por mejorar
+    */
+    public static function campos_una_linea(array $campos, $modo = null)
+    {
+        $linea = '<form class="form-inline">';
+        foreach ($campos as $campo)
+        {            
+            $linea .= '<div class="form-group">' . VistaController::dibujar_campo( $campo ).'</div>';
+        }
+        $linea .= '</form>';
+
+        echo $linea;
+    }
+
+
     // Esta es la funcion principal que se llama desde las vistas create y edit
     public static function dibujar_campo(array $campo){
         //print_r($campo);
@@ -161,7 +177,8 @@ class VistaController extends Controller
                 $control = Form::bsButtonsForm($campo['value'], $campo['atributos']);
                 break;
             case 'select':
-                $control = Form::bsSelect($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
+                $opciones = VistaController::get_opciones_campo_tipo_select( $campo );
+                $control = Form::bsSelect($campo['name'], $campo['value'], $campo['descripcion'], $opciones, $campo['atributos']);
                 break;
             case 'bsSelectCreate':
                 $control = Form::bsSelectCreate($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
@@ -210,6 +227,7 @@ class VistaController extends Controller
                 }
                 $control = Form::hidden($campo['name'],$valor, array_merge(['id' => $campo['name']], $campo['atributos']));
                 break;
+
             case 'imagen':
                 // Si se manda como valor la ubicación de la imagen, se muestra
                 if ($campo['value']==null) {
@@ -505,6 +523,7 @@ class VistaController extends Controller
         switch ( $modo ) {
             case 'create':
                 
+                $salida = VistaController::dibujar_campo( $campo );
                 
                 break;
             case 'edit':
@@ -546,7 +565,8 @@ class VistaController extends Controller
     public static function get_opciones_campo_tipo_select( array $campo )
     {   
         $texto_opciones = '';
-        if ( is_string( $campo['opciones'] ) ) {
+        if ( is_string( $campo['opciones'] ) )
+        {
             $texto_opciones = trim($campo['opciones']);
         }
 
@@ -556,7 +576,8 @@ class VistaController extends Controller
         
         $vec['']='';
 
-        if ( $texto_opciones == '') {
+        if ( $texto_opciones == '')
+        {
             return $vec;
         }
 
@@ -630,8 +651,12 @@ class VistaController extends Controller
 
                 // Cuando en opciones está la cadena en formato JSON
                 $vec = json_decode($texto_opciones,true);
+                
+                if ( is_null($vec) )
+                {
+                    $vec = ['Error en formato JSON del campo.'];
+                }
 
-                //dd($vec);
                 break;
         }
 

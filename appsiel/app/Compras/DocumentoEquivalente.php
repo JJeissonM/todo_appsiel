@@ -11,7 +11,7 @@ class DocumentoEquivalente extends ComprasDocEncabezado
 {
     protected $table = 'compras_doc_encabezados';
 
-	public $encabezado_tabla = ['Documento compra', 'Fecha', 'Proveedor', 'Factura', 'Detalle', 'Valor total', 'Estado', 'Acción'];
+	public $encabezado_tabla = ['Fecha', 'Documento compra', 'Proveedor', 'Factura', 'Detalle', 'Valor total', 'Estado', 'Acción'];
 
 	public static function consultar_registros()
 	{

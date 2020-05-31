@@ -4,6 +4,6 @@ namespace App\Http\Controllers\web\services;
 
 interface IDrawComponent
 {
-    function DrawComponent();
-    function viewComponent();
+    function DrawComponent(); // FrontEnd
+    function viewComponent(); // BackEnd
 }

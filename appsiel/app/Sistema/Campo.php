@@ -32,12 +32,13 @@ class Campo extends Model
     public static function opciones_campo_select()
     {
         $opciones = Campo::select('id','descripcion')
+                    ->orderBy('descripcion')
                     ->get();
 
         $vec['']='';
         foreach ($opciones as $opcion)
         {
-            $vec[$opcion->id] = $opcion->descripcion;
+            $vec[$opcion->id] = $opcion->descripcion . ' (' . $opcion->id . ')';
         }
 
         return $vec;

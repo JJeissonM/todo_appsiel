@@ -100,10 +100,13 @@
             </div>
             <div class="widgets" id="widgets">
                 <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                @if($slider->disposicion == 'DEFAULT')
-                    {!! Form::slider($slider) !!}
-                @else
-                    {!! Form::sliderpremiun($slider) !!}
+
+                @if($slider != null)
+                    @if($slider->disposicion == 'DEFAULT')
+                        {!! Form::slider($slider) !!}
+                    @else
+                        {!! Form::sliderpremiun($slider) !!}
+                    @endif
                 @endif
             </div>
         </div>

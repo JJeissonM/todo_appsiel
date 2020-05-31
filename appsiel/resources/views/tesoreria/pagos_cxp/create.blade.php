@@ -150,9 +150,9 @@
 				{
 					var item = $('a.list-group-item.active');
 					
-					if( item.attr('data-proveedor_id') === undefined )
+					if( item.attr('data-tercero_id') === undefined )
 					{
-						alert('El proveedor ingresado no existe.');
+						alert('El tercero ingresado no existe.');
 		            	return false;
 					}else{
 						seleccionar_proveedor( item );
@@ -168,7 +168,8 @@
 		    	// Si la longitud es menor a dos, todavía no busca
 			    if ( $(this).val().length < 2 ) { return false; }
 
-		    	var url = '../../compras_consultar_proveedores';
+		    	//var url = '../../compras_consultar_proveedores';
+		    	var url = "{{ url('core_consultar_terceros') }}";
 
 				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
 					.done(function( data ) {
@@ -180,7 +181,7 @@
 
 
 		    //Al hacer click en alguna de las sugerencias (escoger un producto)
-		    $(document).on('click','.list-group-item-proveedor', function(){
+		    $(document).on('click','.list-group-item-autocompletar', function(){
 		    	seleccionar_proveedor( $(this) );
 		    	return false;
 		    });
@@ -194,11 +195,11 @@
 		        $('#proveedor_input').css( 'background-color','white ' );
 
 		        // Asignar Campos ocultos
-		        $('#proveedor_id').val( item_sugerencia.attr('data-proveedor_id') );
-		        $('#referencia_tercero_id').val( item_sugerencia.attr('data-proveedor_id') );
-		        $('#core_tercero_id').val( item_sugerencia.attr('data-core_tercero_id') );
+		        $('#proveedor_id').val( item_sugerencia.attr('data-tercero_id') );
+		        $('#referencia_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
+		        $('#core_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
 
-
+		        /*
 		        var forma_pago = 'contado';
 		        var dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
 		        if ( dias_plazo > 0 ) { forma_pago = 'credito'; }
@@ -220,7 +221,7 @@
 		        	dia = '0' + dia;
 		        }
 		        $('#fecha_vencimiento').val( fecha.getFullYear() + '-' +  mes + '-' + dia );
-
+				*/
 
 		        //Hacemos desaparecer el resto de sugerencias
 		        $('#proveedores_suggestions').html('');
@@ -228,7 +229,7 @@
 
 		        $('#tabla_registros_documento').find('tbody').html( '' );
 		        $('#total_valor').text( "$0" );
-		        get_documentos_pendientes_cxp( item_sugerencia.attr('data-core_tercero_id') );
+		        get_documentos_pendientes_cxp( item_sugerencia.attr('data-tercero_id') );
 
 		        $('#teso_medio_recaudo_id').focus();
 

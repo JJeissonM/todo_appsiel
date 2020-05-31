@@ -25,6 +25,8 @@ use App\Calificaciones\Logro;
 use App\Calificaciones\EncabezadoCalificacion;
 use App\Calificaciones\CursoTieneAsignatura;
 
+use App\Calificaciones\ObservacionesBoletin;
+
 use App\AcademicoDocente\PlanClaseEncabezado;
 use App\AcademicoDocente\PlanClaseRegistro;
 
@@ -153,7 +155,16 @@ class AcademicoEstudianteController extends Controller
         $periodo_id = $request->periodo_id;
         $curso_id = $request->curso_id;
 
-        return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla', compact('registros','periodo_id','curso_id'))->render();
+        $observacion_boletin = ObservacionesBoletin::get_x_estudiante( $periodo_id, $curso_id, $this->estudiante->id );
+
+        if( $observacion_boletin == null )
+        {
+            $observacion_boletin = (object)['puesto'=>'','observacion'=>''];
+        }
+
+        $estudiante = Estudiante::get_datos_basicos( $this->estudiante->id );
+
+        return View::make( 'calificaciones.incluir.notas_estudiante_periodo_tabla', compact( 'registros', 'periodo_id', 'curso_id', 'observacion_boletin', 'estudiante') )->render();
     }
 
 
@@ -223,7 +234,7 @@ class AcademicoEstudianteController extends Controller
 
         $encabezado = PlanClaseEncabezado::get_registro_impresion( $plan_id );
 
-        $registros = PlanClaseRegistro::get_registros_impresion( $plan_id );
+        $registros = PlanClaseRegistro::get_registros_impresion_guia( $plan_id );
 
         $vista = View::make( 'academico_docente.planes_clases.vista_impresion', compact( 'encabezado', 'registros' ) )->render();
 

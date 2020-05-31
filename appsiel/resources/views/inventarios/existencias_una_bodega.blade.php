@@ -22,7 +22,7 @@
 					<div style="vertical-align: center;">
 						<br/>
 						<input type="hidden" name="bodega_id" value="{{ $bodega->id }}" id="bodega_id">
-						{{ Form::bsFecha('fecha_corte', $fecha_corte, 'Fecha corte:', null, ['id'=>'fecha_corte']) }}
+						{{ Form::bsFecha('fecha_corte', $fecha_corte, 'Fecha corte', null, ['id'=>'fecha_corte']) }}
 					</div>
 				</div>
 			</div>

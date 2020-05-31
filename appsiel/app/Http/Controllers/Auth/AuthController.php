@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
-use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
-use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;;
 
 class AuthController extends Controller
 {
@@ -70,4 +69,15 @@ class AuthController extends Controller
             'password' => bcrypt($data['password']),
         ]); // 'password' => bcrypt($data['password'])
     }
+
+    protected  function authenticated($request, $user){
+
+        if($user->hasRole('Cliente')){
+
+            return redirect()->intended('/');
+        }
+
+        return redirect()->intended(property_exists($this, 'redirectTo') ? $this->redirectTo : '/home');
+    }
+
 }

@@ -3,9 +3,15 @@
 use App\Http\Controllers\Tesoreria\ReporteController;
 
 $fecha_hoy = date('Y-m-d');
-$tabla = ReporteController::grafica_movimientos_diarios(date("Y-m-d", strtotime($fecha_hoy . "- 30 days")), $fecha_hoy);
-$cuentas = ReporteController::reporte_cuentas();
-$cajas = ReporteController::reporte_cajas();
+
+if ( !is_null( Input::get('fecha_corte') ) )
+{
+	$fecha_hoy = Input::get('fecha_corte');
+}
+
+$tabla = ReporteController::grafica_movimientos_diarios( date("Y-m-d", strtotime($fecha_hoy . "- 30 days") ), $fecha_hoy);
+$cuentas = ReporteController::reporte_cuentas( $fecha_hoy );
+$cajas = ReporteController::reporte_cajas( $fecha_hoy );
 ?>
 @extends('layouts.principal')
 
@@ -18,7 +24,23 @@ $cajas = ReporteController::reporte_cajas();
 <div class="container-fluid">
 	<div class="marco_formulario">
 		<div class="col-md-12">
-			<h3> Saldos en Cuentas Bancarias y Cajas hasta la fecha ({{$fecha_hoy}})</h3>
+			<div class="row">
+				<div class="col-md-6">
+					<h3> Saldos en Cuentas Bancarias y Cajas hasta la fecha <br> <span class="small">{{ $fecha_hoy }}</span> </h3>
+				</div>
+				<div class="col-md-6">
+					<h3> Cambiar fecha de corte </h3>
+					<div class="row">
+						<div class="col-md-8">
+							{{ Form::bsFecha('fecha_corte', $fecha_hoy, 'Fecha corte', null, ['id'=>'fecha_corte']) }}
+						</div>
+						<div class="col-md-4">
+							<a href="#" class="btn btn-primary btn-sm" id="btn_actualizar"> Actualizar saldos </a>
+						</div>
+					</div>
+				</div>
+			</div>
+			
 		</div>
 		<div class="row">
 			<div class="col-md-12">
@@ -96,10 +118,13 @@ $cajas = ReporteController::reporte_cajas();
 		$totales_entradas = 0;
 		$totales_salidas = 0;
 		?>
-		<div class="col-md-12">
-			<h3> Movimiento de tesorería de los últimos 30 días </h3>
+		<div class="row">
+			<div class="col-md-12">
+				<h3> Movimiento de tesorería 30 días hacia atrás de la fecha <span class="small">{{ $fecha_hoy }}</span> </h3>
+			</div>
+			<hr>
 		</div>
-		<hr>
+
 		<div id="grafica1"></div>
 
 		<br><br>
@@ -143,4 +168,29 @@ $cajas = ReporteController::reporte_cajas();
 </div>
 
 <br />
+@endsection
+
+@section('scripts')
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$('#btn_excel').show();
+
+			$('#fecha_corte').change(function(event){
+				var id = getParameterByName('id');
+				var fecha_corte = $('#fecha_corte').val();
+
+				$('#btn_actualizar').attr('href',"{{ url('/tesoreria')}}" + "?id=" + id + "&fecha_corte=" + fecha_corte);
+			});
+
+			function getParameterByName(name) {
+			    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+			    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+			    results = regex.exec(location.search);
+			    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+			}
+		});
+
+		
+	</script>
 @endsection

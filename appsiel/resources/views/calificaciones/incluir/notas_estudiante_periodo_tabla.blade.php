@@ -1,6 +1,12 @@
 <h3> Calificaciones </h3>
 <h4> Pase el mouse por encima de la nota para ver el detalle de la actividad calificada. </h4>
 
+@if( $observacion_boletin->puesto != '' )
+    <div>
+        <code> Puesto: {{ $observacion_boletin->puesto }} </code>    
+    </div>
+@endif
+
 <div class="table-responsive" id="table_content">
     <table class="table table-striped tabla_registros" style="margin-top: -4px;">
         <thead>
@@ -102,6 +108,13 @@
             @endfor
         </tbody>
     </table>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <label class="form-label">Observaciones del periodo</label>
+        <div class="well"> {{ $observacion_boletin->observacion }} </div>
+    </div>
 </div>
 
 <br>

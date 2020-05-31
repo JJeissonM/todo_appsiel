@@ -5,6 +5,9 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta name="keywords" content="{{ $pagina->meta_keywords }}">
+
     <title> {{ $pagina->descripcion }} </title>
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/icon" href="{{asset( $pagina->favicon )}}"/>
@@ -20,9 +23,8 @@
     <!-- Skills Circle CSS  -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/circlebars@1.0.3/dist/circle.css">
 
-    <!-- Main Style -->
+    <!--Main Style-->
     <link href="{{asset('assets/style.css')}}" rel="stylesheet">
-
     <!-- Fonts -->
 
     <!-- Google Fonts Raleway -->
@@ -48,6 +50,23 @@
     <link rel="apple-touch-icon-precomposed" sizes="72x72"
           href="{{asset('images/ico/apple-touch-icon-72-precomposed.png')}}">
     <link rel="apple-touch-icon-precomposed" href="{{asset('images/ico/apple-touch-icon-57-precomposed.png')}}">
+
+    @if($pagina->codigo_google_analitics != '')
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{$pagina->codigo_google_analitics}}"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '{{$pagina->codigo_google_analitics}}');
+        </script>
+      @endif
+
+
+    @foreach($links as $key => $value)
+        {!! $value !!}
+    @endforeach
+
     <style type="text/css">
         .article-ls {
             border: 1px solid;
@@ -171,12 +190,61 @@
             border-bottom: 1px solid {{$configuracion->color_terciario}}  !important;
         }
 
+        #formulario_pqr .control-label {
+            display: none;
+            background: #ddd !important;
+            width: 100% !important;
+            margin-bottom: 5px !important;
+        }
+
+
+            #navegacion {
+                position: fixed;
+                z-index: 999;
+                padding-top: 50px;
+                width: 100%;
+            }
+            
+            #navegacion > header {
+                color: #ffffff !important;
+                background: rgba(0, 0, 0, 0.54) !important;
+            }
+
+            .mu-navbar-nav > li > a {
+                color: white !important;
+            }
+
+            .carousel-content {
+                position: relative;
+                z-index: 9999999;
+            }/**/
+
+            #navegacion > header.sticky {
+              position: fixed;
+              z-index: 99999;
+              top: 0;
+              width: 100%;
+              background: #396b8e !important;
+            }
+
+            .sticky + .content {
+              padding-top: 102px;
+            }
+
+        @foreach($estilos as $key => $value)
+            {{ $value }}
+        @endforeach
+
     </style>
 </head>
 
 <body style="padding:0;">
 
-<main>
+<main id="contenedor_principal">
+
+    <!-- <div class="top-container">
+        HELLO
+    </div> -->
 
     @foreach($view as $item)
         {!! $item !!}
@@ -242,8 +310,28 @@
         });
     });
 </script>
-@yield('script')
 
+<script>
+    window.onscroll = function() {myFunction()};
+
+    var header = document.getElementById("myHeader");
+    var sticky = header.offsetTop;
+
+    function myFunction() {
+      if (window.pageYOffset > sticky) {
+        header.classList.add("sticky");
+      } else {
+        header.classList.remove("sticky");
+      }
+    }
+</script>
+
+
+        @foreach($scripts as $key => $value)
+            {!! $value !!}
+        @endforeach
+        
+@yield('script')
 </body>
 
 </html>

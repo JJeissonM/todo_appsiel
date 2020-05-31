@@ -4,7 +4,13 @@ namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
 
+/*
+        -------------------  OJO ----------------
+    CORREGIR PARA LOS CLIENTES NO LOGUEADOS EN LA WEB
+    SE COMENTÓ LA LÍNEA DE PEDIR AUTENCIACIÓN
+*/
 use Auth;
+
 
 use App\Inventarios\InvGrupo;
 
@@ -35,7 +41,6 @@ class InvProducto extends Model
 
     public static function get_datos_basicos($grupo_inventario_id, $estado)
     {
-
         if ( $grupo_inventario_id == '')
         {
           $grupo_inventario_id = '%'.$grupo_inventario_id.'%';
@@ -65,9 +70,16 @@ class InvProducto extends Model
                     ->get();
     }
 
-
-    public static function get_datos_pagina_web($grupo_inventario_id, $estado)
+    public static function get_grupos_pagina_web()
     {
+        $grup = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')->select('inv_grupos.id','inv_grupos.descripcion AS grupo_descripcion')->where('inv_productos.mostrar_en_pagina_web',1)->get();
+        return $grup->groupBy('grupo_descripcion')->all();
+    }
+
+
+    public static function get_datos_pagina_web($grupo_inventario_id, $estado, $count = 9, $busqueda=false)
+    {
+
         if ( $grupo_inventario_id == '')
         {
           $grupo_inventario_id = '%'.$grupo_inventario_id.'%';
@@ -75,17 +87,22 @@ class InvProducto extends Model
         }else{
           $operador1 = '=';
         }
+        if(!$busqueda){
+            $busqueda = '';
+        }
 
         $productos = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                     ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
-                    ->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
+                    //->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
                     ->where('inv_productos.inv_grupo_id', $operador1, $grupo_inventario_id)
                     ->where('inv_productos.estado', $estado)
+                    ->where('inv_productos.mostrar_en_pagina_web', 1)
                     ->select(
                                 'inv_productos.id',
                                 'inv_productos.descripcion',
                                 'inv_productos.unidad_medida1',
                                 'inv_grupos.descripcion AS grupo_descripcion',
+                                'inv_grupos.imagen AS grupo_imagen',
                                 'inv_productos.precio_compra',
                                 'inv_productos.precio_venta',
                                 'contab_impuestos.tasa_impuesto',
@@ -94,7 +111,10 @@ class InvProducto extends Model
                                 'inv_productos.imagen',
                                 'inv_productos.mostrar_en_pagina_web',
                                 'inv_productos.codigo_barras')
-                    ->get();
+                    ->where('inv_productos.mostrar_en_pagina_web',1)
+                    ->where('inv_productos.descripcion','LIKE','%'.$busqueda.'%')
+                    ->orderBy('grupo_descripcion', 'ASC')
+                    ->paginate( $count );
         foreach ($productos as $item)
         {
             $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), $item->id );
@@ -103,6 +123,7 @@ class InvProducto extends Model
         }
 
         return $productos;
+
     }
     
 

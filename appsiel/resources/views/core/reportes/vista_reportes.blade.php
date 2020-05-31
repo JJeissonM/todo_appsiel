@@ -171,7 +171,7 @@
 			    });
 			});
 
-			// Para algunos reportes de calificaciones
+
 			$('#teso_medio_recaudo_id').on('change',function()
 			{
 				$('#resultado_consulta').html('');

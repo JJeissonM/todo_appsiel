@@ -64,7 +64,7 @@ class GaleriaController extends Controller
     public function guardarseccion(Request $request)
     {
         $galeria = new Galeria($request->all());
-        $galeria->titulo = strtoupper($request->titulo);
+        $galeria->titulo = $request->titulo;
         $result = $galeria->save();
         if ($result) {
             $message = 'La sección fue almacenada correctamente.';
@@ -78,7 +78,7 @@ class GaleriaController extends Controller
     public function modificarseccion(Request $request, $id)
     {
         $galeria = Galeria::find($id);
-        $galeria->titulo = strtoupper($request->titulo);
+        $galeria->titulo = $request->titulo;
         $result = $galeria->save();
         if ($result) {
             $message = 'La sección fue modificada correctamente.';
@@ -111,7 +111,7 @@ class GaleriaController extends Controller
     {
         $galeria = Galeria::where('widget_id', $request->widget_id)->first();
         $album = new Album();
-        $album->titulo = strtoupper($request->titulo);
+        $album->titulo = $request->titulo;
         $album->descripcion = $request->descripcion;
         $album->galeria_id = $galeria->id;
         $result = $album->save();
@@ -176,7 +176,7 @@ class GaleriaController extends Controller
     public function updated(Request $request, $id)
     {
         $album = Album::find($id);
-        $album->titulo = strtoupper($request->titulo);
+        $album->titulo = $request->titulo;
         $album->descripcion = $request->descripcion;
         $result = $album->save();
         $response = null;
@@ -235,7 +235,10 @@ class GaleriaController extends Controller
         $album = $imagen->album;
         $result = $imagen->delete();
         if ($result) {
-            unlink($imagen->nombre);
+
+            if ( file_exists( $imagen->nombre ) )
+                { unlink( $imagen->nombre ); }
+            
             $message = 'Imagen eliminada de forma exitosa.';
             return redirect(url('galeria/edit/' . $album->id) . $variables_url)->with('flash_message', $message);
         } else {
@@ -250,8 +253,10 @@ class GaleriaController extends Controller
         $widget = $album->galeria->widget_id;
         $fotos = $album->fotos;
         if (count($fotos) > 0) {
-            foreach ($fotos as $img) {
-                unlink($img->nombre);
+            foreach ($fotos as $img)
+            {
+                if ( file_exists( $img->nombre ) )
+                { unlink( $img->nombre ); }
             }
         }
         $result = $album->delete();

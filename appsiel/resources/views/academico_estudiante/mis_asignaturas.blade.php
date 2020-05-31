@@ -27,7 +27,7 @@
 								&nbsp;&nbsp;&nbsp;
 
 
-								<a href="{{ url('academico_estudiante/guias_planes_clases/'.$curso_id.'/'.$fila->id.'?id='.Input::get('id'))}}" class="btn btn-sm btn-danger"><i class="fa fa-book"></i> Guías planes de clases </a>
+								<a href="{{ url('academico_estudiante/guias_planes_clases/'.$curso_id.'/'.$fila->id.'?id='.Input::get('id'))}}" class="btn btn-sm btn-danger"><i class="fa fa-book"></i> Guías académicas </a>
 
 								&nbsp;&nbsp;&nbsp;
 

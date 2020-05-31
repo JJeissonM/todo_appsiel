@@ -11,6 +11,7 @@ use Auth;
 use Storage;
 
 use App\Matriculas\Estudiante;
+use App\Sistema\Modelo;
 
 class Tercero extends Model
 {
@@ -80,7 +81,7 @@ class Tercero extends Model
         $modelo_tercero = Modelo::where('modelo', 'terceros')->first();
 
         // Esto vas a cambiar!!!!! Se va a llamar a ImagenController
-        $modelo_controller->almacenar_imagenes($request, $modelo_tercero, $tercero);
+        $modelo_controller->almacenar_imagenes($request, $modelo_tercero->ruta_storage_imagen, $tercero);
 
         return $tercero;
     }
@@ -89,11 +90,12 @@ class Tercero extends Model
     {
         $opciones = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
             ->select('core_terceros.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
+            ->orderBy('core_terceros.descripcion')
             ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
-            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->descripcion;
+            $vec[$opcion->id] = $opcion->descripcion . ' ' . $opcion->numero_identificacion;
         }
 
         return $vec;

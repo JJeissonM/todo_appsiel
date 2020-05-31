@@ -90,6 +90,9 @@ Route::post('articles/article/update', 'web\ArticleController@articleupdate')->n
 Route::get('articles/article/{id}/viewfinder', 'web\ArticleController@show')->name('article.show');
 Route::get('article/delete/destroy/{id}','web\ArticleController@destroy');
 
+//Route::get('article/{id}','web\ArticleController@destroy');
+
+
 //ARCHIVOS
 Route::post('archivos/store', 'web\ArchivoController@store')->name('archivos.store');
 Route::resource('archivos', 'web\ArchivoController');
@@ -116,7 +119,10 @@ Route::get('testimonial/destroy/{testimonial}', 'web\TestimonialController@destr
 Route::post('testimonial/modificar/pregunta/', 'web\TestimonialController@updated')->name('testimonial.modificar');
 Route::put('testimonial/testimonial/seccion/modificar/{seccion}', 'web\TestimonialController@modificar')->name('testimonial.updated');
 
-//Route::get('/{url?}', 'PaginaWeb\FrontEndController@direccionar_url');
+//		CUSTOM HTML
+Route::resource('custom_html', 'web\CustomHtmlController');
+Route::resource('pqr_form', 'web\PqrFormController');
+
 
 
 // Página Web - BACK END
@@ -157,6 +163,16 @@ Route::put('tienda/general/updated/{tienda}','web\TiendaController@generalUpdate
 Route::put('tienda/producto/updated/{tienda}','web\TiendaController@productoUpdated')->name('tienda.productoupdated');
 Route::put('tienda/inventario/updated/{tienda}','web\TiendaController@inventarioUpdated')->name('tienda.inventarioupdated');
 Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@terminos')->name('tienda.terminos');
+
+//TIENDA PUBLICA
+Route::get('ecommerce/public/cuenta','web\TiendaController@cuenta')->name('tienda.cuenta');
+Route::get('ecommerce/public/signIn','web\TiendaController@login')->name('tienda.login');
+Route::get('ecommerce/public/nuevacuenta','web\TiendaController@crearCuenta')->name('tienda.nuevacuenta');
+
+Route::get('ecommerce/public/account','web\TiendaController@cuenta')->name('tienda.micuenta');
+Route::put('ecommerce/account/informacion/updated/{clienteweb}','web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
+Route::get('ecommerce/public/filtro/categoria/{categoria}','web\TiendaController@filtroCategoria')->name('tienda.filtrocategoria');
+Route::get('ecommerce/public/busqueda/','web\TiendaController@busqueda')->name('tienda.busqueda');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');

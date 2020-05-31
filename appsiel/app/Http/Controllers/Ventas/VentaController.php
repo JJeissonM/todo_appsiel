@@ -236,13 +236,13 @@ class VentaController extends TransaccionController
             // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
             $caja = TesoCaja::get()->first();
             $cta_caja_id = $caja->contab_cuenta_id;
-            ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, $total_documento, 0);
+            ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, $total_documento, 0, $caja->id, 0);
         }
     }
 
     public static function contabilizar_movimiento_credito( $una_linea_registro, $detalle_operacion )
     {
-        //dd( $una_linea_registro['tasa_impuesto'] );
+        
         // IVA generado (CR)
         // Si se ha liquidado impuestos en la transacción
         $valor_total_impuesto = 0;
@@ -818,8 +818,6 @@ class VentaController extends TransaccionController
 
     public function doc_registro_guardar( Request $request )
     {
-        dd( $request->inv_motivo_id );
-
         $linea_registro = VtasDocRegistro::find( $request->linea_factura_id );
         $doc_encabezado = VtasDocEncabezado::find( $linea_registro->vtas_doc_encabezado_id );
 
@@ -848,7 +846,7 @@ class VentaController extends TransaccionController
 
         // 1. Actualizar total del encabezado de la factura
         $nuevo_total_encabezado = $doc_encabezado->valor_total - $linea_registro->precio_total + $precio_total;
-        //dd( $nuevo_total_encabezado );
+
         $doc_encabezado->update(
                                     ['valor_total' => $nuevo_total_encabezado]
                                 );

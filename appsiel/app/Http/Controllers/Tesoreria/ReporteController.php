@@ -829,11 +829,12 @@ class ReporteController extends TesoreriaController
     /*
     Reporte saldo de cuentas de bancos
     */
-    public static function reporte_cuentas()
+    public static function reporte_cuentas( $fecha_corte )
     {
-        $hoy = getdate();
-        $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $cuentas = TesoCuentaBancaria::all();
+        $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
+                                    ->orderBy('contab_cuentas.codigo')
+                                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
+                                    ->get();
         $response = [
             'total' => 0,
             'data' => null
@@ -842,7 +843,7 @@ class ReporteController extends TesoreriaController
         if (count($cuentas) > 0) {
             foreach ($cuentas as $c) {
                 $saldo = 0;
-                $movs = TesoMovimiento::where('teso_cuenta_bancaria_id', $c->id)->get();
+                $movs = TesoMovimiento::where('teso_cuenta_bancaria_id', $c->id)->where('fecha', '<=', $fecha_corte)->get();
                 if (count($movs) > 0) {
                     foreach ($movs as $m) {
                         $saldo = $saldo + $m->valor_movimiento;
@@ -862,10 +863,8 @@ class ReporteController extends TesoreriaController
     /*
     Reporte saldos de cajas
     */
-    public static function reporte_cajas()
+    public static function reporte_cajas( $fecha_corte )
     {
-        $hoy = getdate();
-        $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
         $cajas = TesoCaja::all();
         $response = [
             'total' => 0,
@@ -875,7 +874,7 @@ class ReporteController extends TesoreriaController
         if (count($cajas) > 0) {
             foreach ($cajas as $c) {
                 $saldo = 0;
-                $movs = TesoMovimiento::where('teso_caja_id', $c->id)->get();
+                $movs = TesoMovimiento::where('teso_caja_id', $c->id)->where('fecha', '<=', $fecha_corte)->get();
                 if (count($movs) > 0) {
                     foreach ($movs as $m) {
                         $saldo = $saldo + $m->valor_movimiento;

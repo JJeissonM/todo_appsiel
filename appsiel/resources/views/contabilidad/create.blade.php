@@ -11,7 +11,7 @@
 			/*right:0px; A la izquierda deje un espacio de 0px*/
 			bottom:0px; /*Abajo deje un espacio de 0px*/
 			/*height:50px; alto del div*/
-			z-index:0;
+			z-index: 2200;
 		}
 
 		#ingreso_registros select {
@@ -59,78 +59,646 @@
 			{{ Form::close() }}
 
 			<br/>
-			<!--
-		    <h4>Ingreso de registros</h4>
-		    <a class="btn btn-default btn-xs" href="#"> Crear CxC </a>
-		    <a class="btn btn-default btn-xs" href="#"> Aplicar CxC </a>
-		    <a class="btn btn-default btn-xs" href="#"> Crear CxP </a>
-		    <a class="btn btn-default btn-xs" href="#"> Aplicar CxP </a>
-		    -->
-		    <table class="table table-striped" id="ingreso_registros">
-		        <thead>
-		            <tr>
-		                <th width="250px">Cuenta</th>
-		                <th width="250px">Tercero</th>
-		                <th>Detalle</th>
-		                <th data-override="debito">Débito</th>
-		                <th data-override="credito">Crédito</th>
-		                <th width="10px">&nbsp;</th>
-		            </tr>
-		        </thead>
-		        <tbody>
-		        </tbody>
-		        <tfoot>
-		            <tr>
-		                <td>
-		                	<button id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none;"><i class="fa fa-btn fa-plus"></i> Agregar registro</button>
-		                </td>
-		                <td></td>
-		                <td></td>
-		                <td></td>
-		                <td></td>
-		                <td></td>
-		            </tr>
-		            <tr>
-		                <td colspan="3">&nbsp;</td>
-		                <td> <div id="total_debito" > $0 </div> </td>
-		                <td> <div id="total_credito"> $0 </div> </td>
-		                <td> <div id="sumas_iguales"> - </div> </td>
-		            </tr>
-		        </tfoot>
-		    </table>
+			@include('contabilidad.incluir.tabla_ingreso_registros', ['lineas_documento'=>''])
+
 		</div>
 	</div>
 	<br/><br/>
+
+	@include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
 
 	<div id="div_cargando">Cargando...</div>
 @endsection
 
 @section('scripts')
 	
-	<script src="{{asset('assets/js/contabilidad.js')}}"></script>
+	<!-- <script src="{ { asset('assets/js/input_lista_sugerencias.js') }}"></script> -->
 
 	<script type="text/javascript">
 
 		var LineaNum = 0;
 
+		var cantidad_keyup = 0;
+
+		var se_puede_quitar_lista = false;
+
+            function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+            {
+            	
+            	//$('#lista_sugerencias').remove();
+
+            	switch( item_sugerencia.attr('data-tipo_campo') )
+            	{
+            		case 'cuenta':
+            			$('#combobox_cuentas').val( obj_text_input.attr('data-registro_id') );
+            		break;
+
+            		case 'tercero':
+            			$('#combobox_terceros').val( obj_text_input.attr('data-registro_id') );
+            		break;
+            		
+            		default:
+            		break;
+            	}
+
+            	obj_text_input.parent().next().find(':input').focus();
+            	
+            }
+
+
+
 		$(document).ready(function(){
-			var today = new Date();
-			var dd = today.getDate();
-			var mm = today.getMonth()+1; //January is 0!
-			var yyyy = today.getFullYear();
 
-			if(dd<10) {
-			    dd = '0'+dd
-			} 
+			$('#fecha').val( get_fecha_hoy() );
+			$('#fecha').focus();
 
-			if(mm<10) {
-			    mm = '0'+mm
-			} 
+			var sumas_iguales = 0;
+			var debito, credito;
 
-			today = yyyy + '-' + mm + '-' + dd;
+			var direccion = location.href;
 
-			$('#fecha').val( today );
-			$('#fecha').focus();			
+
+
+
+
+			$(document).on('focus', '.text_input_sugerencias', function(){
+				$(this).select();
+			});
+
+	$(document).on('blur', '.text_input_sugerencias', function(e){
+		
+		//var codigo_tecla_presionada = event.which || event.keyCode;
+
+		console.log( document.activeElement );
+
+		/*if( codigo_tecla_presionada != 38 && codigo_tecla_presionada != 40 && se_puede_quitar_lista  ) // flecha arriba (38), flecha abajo (40)
+		{
+			$('#lista_sugerencias').remove();
+		}*/
+	});/**/
+
+	function closeAllLists( div_lista_sugerencias )
+	{
+		if( $('#lista_sugerencias').attr('class') !== div_lista_sugerencias.id )
+		{
+			$("#lista_sugerencias").remove();	
+		}
+	  }
+
+
+	document.addEventListener("click", function (e) {
+		
+		if( $('#lista_sugerencias').html() !== undefined )
+		{
+			// Se envía el elemento donde se hizo click
+			closeAllLists( e.target );
+		}
+
+	  });
+
+	$(document).on('keyup', '.text_input_sugerencias', function(){
+
+		//cantidad_keyup++;
+
+		crear_div_lista_sugerencias( $(this) );
+
+    	var codigo_tecla_presionada = event.which || event.keyCode;
+
+    	var item_activo = $("a.list-group-item.active");
+
+    	switch( codigo_tecla_presionada )
+    	{
+    		case 27:// 27 = ESC
+				$('#lista_sugerencias').html('');
+    			break;
+
+    		case 40:// Flecha hacia abajo
+
+				// Si es el útimo item, entonces no se mueve hacia abajo
+				if( item_activo.attr('data-ultimo_item') == 1 )
+				{
+					return false;
+				}
+			
+				item_activo.next().attr('class','list-group-item list-group-item-sugerencia active');
+				item_activo.attr('class','list-group-item list-group-item-sugerencia');
+				//$('#text_input_sugerencias').val( item_activo.next().html() );
+    			break;
+
+    		case 38:// Flecha hacia arriba
+
+				// Si es el útimo item, entonces no se mueve hacia abajo
+				if( item_activo.attr('data-primer_item') == 1 )
+				{
+					return false;
+				}
+
+				item_activo.prev().attr('class','list-group-item list-group-item-sugerencia active');
+				item_activo.attr('class','list-group-item list-group-item-sugerencia');
+				//$('#text_input_sugerencias').val( item_activo.prev().html() );
+    			break;
+
+    		case 13:// Al presionar Enter
+
+    			window[ejecutar_funcion_tecla_enter( item_activo, $(this) ) ];
+    			
+    			break;
+
+    		default :
+    			// Si no se presiona tecla especial, se muestra listado de sugerencias
+
+		    	// Si la longitud es menor a dos, todavía no busca
+			    if ( $(this).val().length < 2 )
+			    { 
+			    	//$('#lista_sugerencias').html('');
+			    	$('#lista_sugerencias').remove();
+			    	return false;
+			    }
+
+			    $('#div_cargando').show();
+	    		var url = $(this).attr('data-url_busqueda');
+
+				$.get( url, { texto_busqueda: $(this).val() } )
+					.done(function( data ) {
+			    		$('#div_cargando').hide();
+						// Se llena el DIV con las sugerencias que arooja la consulta
+		                $('#lista_sugerencias').show().html(data);
+		                
+		                $('a.list-group-item.active').focus();
+					});
+    			break;
+    	}	
+
+	});
+
+
+
+    function ejecutar_funcion_tecla_enter( item, obj_text_input )
+    {
+    	if( item.attr('data-registro_id') === undefined && obj_text_input.val() != '' )
+		{
+			obj_text_input.css( 'background-color', '#FF8C8C' );
+			$('#lista_sugerencias').html('');
+			alert('No existe ninguna coincidencia.');
+		}else{
+			seleccionar_sugerencia( item, obj_text_input );
+		}
+    }
+
+
+    //Al hacer click en alguna de las sugerencias (escoger un producto)
+    $(document).on('click','.list-group-item-sugerencia', function(){
+    	seleccionar_sugerencia( $(this), $(this).parent().parent().prev() );
+    });
+
+
+
+    function seleccionar_sugerencia( item_sugerencia, obj_text_input )
+    {
+		// Asignar descripción e ID al TextInput
+		obj_text_input.attr( 'data-registro_id', item_sugerencia.attr( 'data-registro_id' ) );
+        obj_text_input.val( item_sugerencia.html() );
+        obj_text_input.css( 'background-color','white ' );
+
+        $('#lista_sugerencias').remove();
+
+        /*
+			Nota: el siguiente método es própio de la transacción donde se esté usando el text_input_sugerencias
+			No usar alert() para que no se interrumpa la ejecución del código javascript.
+        */
+
+		// Función propia de cada formulario de creación
+        window[ ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input ) ];
+
+    }
+
+
+
+	function crear_div_lista_sugerencias( text_input_sugerencias )
+	{
+		if( $('#lista_sugerencias').html() === undefined )
+		{
+			// Se le asigna como atributo CLASS el atributo ID del text_input para validar su remoción
+			text_input_sugerencias.after('<div id="lista_sugerencias" class="' + text_input_sugerencias.attr('id') + '" style="position: absolute; z-index: 99999;"> </div>');
+		}
+	}
+
+
+
+			// Al presiona teclas en la caja de texto
+			$(document).on('keyup','#col_detalle,#col_debito',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	$(this).parent().next().find(':input').focus();
+				}
+			});
+
+			$(document).on('keyup','#col_credito',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	$('.btn_confirmar').focus();
+				}
+			});
+
+
+			$('#core_tipo_doc_app_id').change(function(){
+				$('#fecha').focus();
+			});
+
+
+			$('#fecha').keyup(function(event){
+				var x = event.which || event.keyCode;
+				if(x==13){
+					$('#core_tercero_id').focus();				
+				}		
+			});
+
+			/*
+			**	Agregar NUEVA línea de ingreso de datos
+			*/
+			$("#btn_nuevo").click(function(event){
+				event.preventDefault();
+				nueva_linea_ingreso_datos();
+		    });
+
+		    function nueva_linea_ingreso_datos(){
+		    	
+		    	$('#div_cargando').fadeIn();
+				
+				var url = '../contab_get_fila/' + 0;
+
+				// Si se está en la url de editar 
+				if( direccion.search("edit") >= 0 ) 
+				{
+					var url = '../../contab_get_fila/' + 0;
+				}
+
+				$.get( url, function( datos ) {
+			        $('#div_cargando').hide();
+
+			        $('#ingreso_registros').find('tbody:first').append( datos );
+
+			        $('#cuenta_input').focus();
+
+			        $('#btn_nuevo').hide();
+
+				});
+		    }
+
+
+			$(document).on('click', '.btn_confirmar', function(event) {
+				event.preventDefault();
+				
+				var fila = $(this).closest("tr");
+
+				if( validar_linea() )
+				{
+					agregar_linea_registro();
+			       	fila.remove();
+			       	nueva_linea_ingreso_datos();
+				}
+
+			});
+
+			function agregar_linea_registro()
+			{
+				LineaNum ++;
+				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-trash'></i></button>";
+		        var cuenta = '<span style="color:white;">' + $('#combobox_cuentas').val() + '-</span>' + $( "#cuenta_input" ).val();
+		        var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#tercero_input" ).val();
+		        var detalle = $('#col_detalle').val();
+
+
+		        var tipo_transaccion_linea = $('#tipo_transaccion_linea').val();
+		        var fecha_vencimiento = $('#fecha_vencimiento').val();
+		        var documento_soporte_tercero = $('#documento_soporte_tercero').val();
+
+		        var debito = $('#col_debito').val();
+		        var credito = $('#col_credito').val();
+		        
+		        if(debito == '')
+		        {
+		        	debito = 0; // Para no sumar una caja de texto vacía
+		        }
+		        
+		        if( credito == '')
+		        {
+		        	credito = 0;
+		        }
+
+		        var celda_debito = '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + debito + '</div> </div>';
+		        var celda_credito = '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + credito + '</div> </div>';
+		        var celda_detalle = '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + detalle + '</div> </div>';
+
+		        $('#ingreso_registros').find('tbody:last').append('<tr id="fila_'+LineaNum+'" >' +
+		        												'<td style="display: none;">' + fecha_vencimiento + '</td>' + 
+		        												'<td style="display: none;">' + documento_soporte_tercero + '</td>' + 
+		        												'<td>' + tipo_transaccion_linea + '</td>' + 
+																'<td id="cuenta_'+LineaNum+'">' + cuenta + '</td>'+
+																'<td id="tercero_'+LineaNum+'">' + tercero + '</td>'+
+																'<td id="detalle_'+LineaNum+'">' + celda_detalle + '</td>'+
+																'<td id="debito_'+LineaNum+'"  class="debito">$' + celda_debito + '</td>'+
+																'<td id="credito_'+LineaNum+'"  class="credito">$' + celda_credito + '</td>'+
+																'<td>'+btn_borrar+'</td>'+
+																'</tr>');
+		       	
+		       	calcular_totales();
+			}
+
+
+			/*
+			** Al eliminar una fila
+			*/
+			// Se utiliza otra forma con $(document) porque el $('#btn_eliminar') no funciona pues
+			// es un elemento agregado por ajax (despues de que se cargó la página)
+			$(document).on('click', '.btn_eliminar', function(event) {
+				event.preventDefault();
+				var fila = $(this).closest("tr");
+				fila.remove();
+				LineaNum --;
+				$('#btn_nuevo').show();
+				calcular_totales();
+				$('#btn_nuevo').focus();
+			});
+
+
+			// GUARDAR
+			$('#btn_guardar').click(function(event){
+				event.preventDefault();
+
+				if ( LineaNum <= 0 )
+				{
+					alert('No se han ingresado registros.')
+					return false;
+				}
+				
+
+				//$('#core_tercero_id').val( $('#ph_propiedad_id').val() );
+				$('#codigo_referencia_tercero').val( 0 );
+				
+				$('#valor_total').val( $('#total_debito').text().substring(1) )
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+
+				if ( $('#sumas_iguales').text( ) == 0 )
+				{
+					// Desactivar el click del botón
+					$( this ).off( event );
+
+					// Eliminar fila de ingreso de registro vacia
+					var object = $('#combobox_cuentas').val();	
+					if( typeof object == typeof undefined){
+						// Si no hay linea de ingreso de registros
+						// Todo bien
+						//alert('Todo bien.');
+					}else{
+						var fila = $('#combobox_cuentas').closest("tr");
+						fila.remove();
+					}
+
+					// Se asigna la tabla de ingreso de registros a un campo hidden
+					var tabla_registros_documento = $('#ingreso_registros').tableToJSON();
+					$('#tabla_registros_documento').val( JSON.stringify(tabla_registros_documento) );
+
+					// Enviar formulario
+					$('#form_create').submit();
+				}else{
+					alert('El asiento contable está descuadrado.')
+				}
+					
+			});
+
+			
+			function validar_linea(){
+				var ok;
+
+				if ( $('#combobox_cuentas').val() != '' ) {
+					var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#combobox_terceros option:selected" ).text();
+
+					var detalle = $('#col_detalle').val();
+
+					var debito = $('#col_debito').val();
+					
+					if ( debito == '' ) {
+						debito = 0;
+						var credito = $('#col_credito').val();
+						if ( credito == '' ) {
+
+							alert('Debe ingresar un valor Débito o Crédito');
+							$('#col_debito').focus();
+							ok = false;
+						}else{
+							if ( $.isNumeric(credito)  && credito > 0 ) {
+								ok = true;
+							}else{
+								$('#col_credito').attr('style','background-color:#FF8C8C;');
+								$('#col_credito').focus();
+								ok = false;
+							}	
+						}
+					}else{
+						credito = 0;
+						if ( $.isNumeric(debito) && debito > 0 ) {
+							ok = true;
+						}else{
+							$('#col_debito').attr('style','background-color:#FF8C8C;');
+							$('#col_debito').focus();
+							ok = false;
+						}
+					}
+				}else{
+					alert('Debe ingresar una cuenta.');
+					$('#cuenta_input').focus();
+					ok = false;
+				}
+				return ok;
+			}
+
+			function calcular_totales(){
+				var sum = 0.0;
+
+				// Sumar columna de los débitos
+				sum = 0.0;
+				$('.debito').each(function()
+				{
+				    var cadena = $(this).text();
+				    sum += parseFloat( cadena.substring(1) );
+				});
+				$('#total_debito').text("$"+sum.toFixed(2));
+				sumas_iguales = sum;
+
+				// Sumar columna de los créditos
+				sum = 0.0;
+				$('.credito').each(function()
+				{
+				    var cadena = $(this).text();
+				    sum += parseFloat( cadena.substring(1) );
+				});
+				$('#total_credito').text("$"+sum.toFixed(2));
+
+
+				sumas_iguales = sumas_iguales - sum;
+				$('#sumas_iguales').text( sumas_iguales.toFixed(0) );
+			}
+
+
+				var valor_actual, elemento_modificar, elemento_padre;
+					
+				// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
+				$(document).on('dblclick','.elemento_modificar',function(){
+					
+					elemento_modificar = $(this);
+
+					elemento_padre = elemento_modificar.parent();
+
+					valor_actual = $(this).html();
+
+					elemento_modificar.hide();
+
+					elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+
+					document.getElementById('valor_nuevo').value = valor_actual;
+					document.getElementById('valor_nuevo').select();
+
+				});
+
+				// Si la caja de texto pierde el foco
+				$(document).on('blur','#valor_nuevo',function(){
+					guardar_valor_nuevo();
+				});
+
+				// Al presiona teclas en la caja de texto
+				$(document).on('keyup','#valor_nuevo',function(){
+
+					var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+					// Abortar la edición
+					if( x == 27 ) // 27 = ESC
+					{
+						elemento_padre.find('#valor_nuevo').remove();
+			        	elemento_modificar.show();
+			        	return false;
+					}
+
+					// Guardar
+					if( x == 13 ) // 13 = ENTER
+					{
+			        	guardar_valor_nuevo();
+					}
+				});
+
+				function guardar_valor_nuevo()
+				{
+					var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+					// Si no cambió el valor_nuevo, no pasa nada
+					if ( valor_nuevo == valor_actual) { return false; }
+
+					elemento_modificar.html( valor_nuevo );
+					elemento_modificar.show();
+
+					elemento_padre.find('#valor_nuevo').remove();
+
+					calcular_totales();
+				}
+
+
+			$("#btn_crear_cxc").click(function(event){
+
+				var control_cuenta = $('#combobox_cuentas').val();
+
+				if( control_cuenta === undefined )
+				{
+					nueva_linea_ingreso_datos();
+				}
+
+		        $("#myModal").modal({backdrop: "static"});
+		        $("#div_spin").show();
+		        $(".btn_edit_modal").hide();
+
+		        var url = "{{url('contab_get_formulario_cxc')}}";
+
+				$.get( url )
+					.done(function( data ) {
+
+		                $('#contenido_modal').html(data);
+
+		                $("#div_spin").hide();
+
+		                $('#fecha_vencimiento_aux').focus( );
+		                $('#fecha_vencimiento_aux').val( get_fecha_hoy() );
+
+					});		        
+		    });
+
+			$("#btn_crear_cxp").click(function(event){
+
+				var control_cuenta = $('#combobox_cuentas').val();
+
+				if( control_cuenta === undefined )
+				{
+					nueva_linea_ingreso_datos();
+				}
+
+		        $("#myModal").modal({backdrop: "static"});
+		        $("#div_spin").show();
+		        $(".btn_edit_modal").hide();
+
+		        var url = "{{url('contab_get_formulario_cxp')}}";
+
+				$.get( url )
+					.done(function( data ) {
+
+		                $('#contenido_modal').html(data);
+
+		                $("#div_spin").hide();
+
+		                $('#fecha_vencimiento_aux').val( get_fecha_hoy() );
+
+					});		        
+		    });
+
+
+            $('.btn_save_modal').click(function(event){
+
+		        $('#fecha_vencimiento').val( $('#fecha_vencimiento_aux').val() );
+
+		        $('#documento_soporte_tercero').val( $('#documento_soporte_tercero_aux').val() );
+
+		        $('#tipo_transaccion_linea').val( $('#tipo_transaccion_linea_aux').val() );
+
+		        //$('#combobox_cuentas').val( $('#contab_cuenta_id_aux').val() );
+		        //$('#combobox_terceros').val( $('#core_tercero_id_aux').val() );
+		        $('#col_detalle').val( $('#detalle_aux').val() );
+		        $('#col_debito').val( $('#valor_debito_aux').val() );
+		        $('#col_credito').val( $('#valor_credito_aux').val() );
+
+		        if( validar_linea() )
+				{
+	                $('#contenido_modal').html( ' ' );
+	                $('#myModal').modal("hide");
+					agregar_linea_registro();
+
+					// Se retira la línea vieja y se agrega una nueva
+					$('#linea_ingreso_datos').remove();
+					nueva_linea_ingreso_datos();
+				}
+	                
+
+            });
+
+
 		});
 	</script>
 @endsection

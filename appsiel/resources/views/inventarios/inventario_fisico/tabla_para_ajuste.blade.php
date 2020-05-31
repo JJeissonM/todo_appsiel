@@ -28,7 +28,7 @@
                         <td class="nom_prod">'.$linea->producto_descripcion.'</td>
                         <td>'.$motivo.'</td>
                         <td>$'.number_format( $linea->costo_prom_sistema, 2, '.', '').'</td>
-                        <td class="cantidad">'.number_format( $cantidad_dif, 2, '.', ',').' '.$linea->unidad_medida1.'</td>
+                        <td class="cantidad">'.number_format( $cantidad_dif, 2, '.', '').' '.$linea->unidad_medida1.'</td>
                         <td class="costo_total">$'.$costo_total.'</td>
                         <td> <button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button>
                         </td>

@@ -27,6 +27,12 @@ use App\Contabilidad\ContabDocEncabezado;
 use App\Contabilidad\ContabDocRegistro;
 use App\Contabilidad\ContabMovimiento;
 
+use App\CxP\CxpMovimiento;
+use App\CxP\CxpAbono;
+
+use App\CxC\CxcMovimiento;
+use App\CxC\CxcAbono;
+
 class ContabilidadController extends TransaccionController
 {
     protected $datos = [];
@@ -48,13 +54,15 @@ class ContabilidadController extends TransaccionController
     public function store( Request $request )
     {
 
+        //dd( $request->all() );
         $registro_encabezado_doc = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
 
         // 1ro. se guardan los registros asociados al encabezado del documento
         // Se recorre la tabla enviada en el request, descartando las DOS últimas filas
-        for ($i=0; $i < count($tabla_registros_documento)-2; $i++) {
+        for ($i=0; $i < count($tabla_registros_documento)-2; $i++)
+        {
             // Se obtienen las id de los campos que se van a almacenar. Los campos vienen separados por "-" en cada columna de la tabla 
             $vec_1 = explode("-", $tabla_registros_documento[$i]->Cuenta);
             $contab_cuenta_id = $vec_1[0];
@@ -76,13 +84,14 @@ class ContabilidadController extends TransaccionController
             $valor_debito = substr($tabla_registros_documento[$i]->debito, 1);
             $valor_credito = substr($tabla_registros_documento[$i]->credito, 1);
 
-            ContabDocRegistro::create(
+            $registro_doc = ContabDocRegistro::create(
                             [ 'contab_doc_encabezado_id' => $registro_encabezado_doc->id ] + 
                             [ 'contab_cuenta_id' => (int)$contab_cuenta_id ] + 
                             [ 'core_tercero_id' => $core_tercero_id ] + 
                             [ 'detalle_operacion' => $detalle_operacion] + 
                             [ 'valor_debito' => (float)$valor_debito] + 
-                            [ 'valor_credito' => (float)$valor_credito]
+                            [ 'valor_credito' => (float)$valor_credito] + 
+                            [ 'tipo_transaccion' => $tabla_registros_documento[$i]->tipo_transaccion ]
                         );
 
 
@@ -93,9 +102,38 @@ class ContabilidadController extends TransaccionController
                 $detalle_operacion = $request->descripcion;
             }
 
-            $this->datos = array_merge( $request->all(), ['core_tercero_id' => $core_tercero_id , 'consecutivo' => $registro_encabezado_doc->consecutivo] );
+            $this->datos = array_merge( $request->all(), [
+                                                            'core_tercero_id' => $core_tercero_id,
+                                                            'consecutivo' => $registro_encabezado_doc->consecutivo,
+                                                            'id_registro_doc_tipo_transaccion' => $registro_doc->id,
+                                                            'fecha_vencimiento' => $tabla_registros_documento[$i]->fecha_vencimiento,
+                                                            'documento_soporte' => $tabla_registros_documento[$i]->documento_soporte_tercero,
+                                                            'tipo_transaccion' => $tabla_registros_documento[$i]->tipo_transaccion] );
 
             $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+
+            // Generar CxP.
+            if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_cxp' )
+            {
+                $this->datos['valor_documento'] = $valor_credito;
+                $this->datos['valor_pagado'] = 0;
+                $this->datos['saldo_pendiente'] = $valor_credito;
+                $this->datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
+                $this->datos['doc_proveedor_consecutivo'] = $tabla_registros_documento[$i]->documento_soporte_tercero;
+                $this->datos['estado'] = 'Pendiente';
+                CxpMovimiento::create( $this->datos );
+            }
+
+            // Generar CxC.
+            if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_cxc' )
+            {
+                $this->datos['valor_documento'] = $valor_debito;
+                $this->datos['valor_pagado'] = 0;
+                $this->datos['saldo_pendiente'] = $valor_debito;
+                $this->datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
+                $this->datos['estado'] = 'Pendiente';
+                CxcMovimiento::create( $this->datos );
+            }
 
         }
 
@@ -118,8 +156,17 @@ class ContabilidadController extends TransaccionController
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
+        $doc_registros = $this->modificar_doc_registros( $doc_registros, 'edit' );
+
+        if( is_null($doc_registros) )
+        {
+           return redirect( 'contabilidad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los documentos que tienen transacciones de CxP o CxC no pueden ser modificados.');
+        }
+
         $tercero_encabezado_numero_identificacion = $doc_encabezado->numero_identificacion; 
-        $lineas_documento = View::make( 'contabilidad.incluir.lineas_documento', compact('doc_registros', 'tercero_encabezado_numero_identificacion') )->render();//'';//
+
+        $lineas_documento = View::make( 'contabilidad.incluir.lineas_documento', compact('doc_registros', 'tercero_encabezado_numero_identificacion') )->render();
+
         $linea_num = count( $doc_registros->toArray() );
 
         $url_action = 'web/'.$id.$this->variables_url;
@@ -141,6 +188,46 @@ class ContabilidadController extends TransaccionController
     }
 
 
+    /*
+        A cada linea de registro se le asignan tres campos adicionales : tipo_transaccion_linea, fecha_vencimiento y documento_soporte_tercero
+    */
+    public function modificar_doc_registros( $doc_registros, $accion )
+    {   
+        $permitir_editar = true;
+
+        foreach ($doc_registros as $linea)
+        {
+            $tipo_transaccion_linea = 'causacion';
+            $fecha_vencimiento = date('Y-m-d');
+            $documento_soporte_tercero = '';
+
+            $mov_contab_linea_registro_doc = ContabMovimiento::where( 'id_registro_doc_tipo_transaccion', $linea->id )->get()->first();
+            
+            if ( !is_null( $mov_contab_linea_registro_doc ) )
+            {
+                $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
+                $fecha_vencimiento = $mov_contab_linea_registro_doc->fecha_vencimiento;
+                $documento_soporte_tercero = $mov_contab_linea_registro_doc->documento_soporte;
+            }
+            
+            $linea->tipo_transaccion_linea = $tipo_transaccion_linea;
+            $linea->fecha_vencimiento = $fecha_vencimiento;
+            $linea->documento_soporte_tercero = $documento_soporte_tercero;
+
+            if ( $tipo_transaccion_linea != 'causacion' && $accion == 'edit' )
+            {
+                $permitir_editar = false;
+            }
+
+        }
+
+        if ( !$permitir_editar )
+        {
+            return null;
+        }
+
+        return $doc_registros;
+    }
 
 
     //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
@@ -188,14 +275,15 @@ class ContabilidadController extends TransaccionController
             $valor_debito = substr($tabla_registros_documento[$i]->debito, 1);
             $valor_credito = substr($tabla_registros_documento[$i]->credito, 1);
 
-            ContabDocRegistro::create(
-                            [ 'contab_doc_encabezado_id' => $registro_encabezado_doc->id ] + 
-                            [ 'contab_cuenta_id' => (int)$contab_cuenta_id ] + 
-                            [ 'core_tercero_id' => $core_tercero_id ] + 
-                            [ 'detalle_operacion' => $detalle_operacion] + 
-                            [ 'valor_debito' => (float)$valor_debito] + 
-                            [ 'valor_credito' => (float)$valor_credito]
-                        );
+            $registro_doc = ContabDocRegistro::create(
+                                                        [ 'contab_doc_encabezado_id' => $registro_encabezado_doc->id ] + 
+                                                        [ 'contab_cuenta_id' => (int)$contab_cuenta_id ] + 
+                                                        [ 'core_tercero_id' => $core_tercero_id ] + 
+                                                        [ 'detalle_operacion' => $detalle_operacion] + 
+                                                        [ 'valor_debito' => (float)$valor_debito] + 
+                                                        [ 'valor_credito' => (float)$valor_credito] + 
+                                                        [ 'tipo_transaccion' => $tabla_registros_documento[$i]->tipo_transaccion ]
+                                                    );
 
 
             // 1.1. Para cada registro del documento, también se va actualizando el movimiento de contabilidad
@@ -206,9 +294,38 @@ class ContabilidadController extends TransaccionController
                 $detalle_operacion = $request->descripcion;
             }
 
-            $this->datos = array_merge( $request->all(), ['core_tercero_id' => $core_tercero_id , 'consecutivo' => $registro_encabezado_doc->consecutivo] );
+            $this->datos = array_merge( $request->all(), [
+                                                            'core_tercero_id' => $core_tercero_id,
+                                                            'consecutivo' => $registro_encabezado_doc->consecutivo,
+                                                            'id_registro_doc_tipo_transaccion' => $registro_doc->id,
+                                                            'fecha_vencimiento' => $tabla_registros_documento[$i]->fecha_vencimiento,
+                                                            'documento_soporte' => $tabla_registros_documento[$i]->documento_soporte_tercero,
+                                                            'tipo_transaccion' => $tabla_registros_documento[$i]->tipo_transaccion] );
 
             $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+
+            // Generar CxP.
+            if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_cxp' )
+            {
+                $this->datos['valor_documento'] = $valor_credito;
+                $this->datos['valor_pagado'] = 0;
+                $this->datos['saldo_pendiente'] = $valor_credito;
+                $this->datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
+                $this->datos['doc_proveedor_consecutivo'] = $tabla_registros_documento[$i]->documento_soporte_tercero;
+                $this->datos['estado'] = 'Pendiente';
+                CxpMovimiento::create( $this->datos );
+            }
+
+            // Generar CxC.
+            if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_cxc' )
+            {
+                $this->datos['valor_documento'] = $valor_debito;
+                $this->datos['valor_pagado'] = 0;
+                $this->datos['saldo_pendiente'] = $valor_debito;
+                $this->datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
+                $this->datos['estado'] = 'Pendiente';
+                CxcMovimiento::create( $this->datos );
+            }
         }
 
         $registro_encabezado_doc->fill( $request->all() );
@@ -227,9 +344,11 @@ class ContabilidadController extends TransaccionController
 
         $doc_encabezado = ContabDocEncabezado::get_registro_impresion( $id );
         $doc_registros = ContabDocRegistro::get_registros_impresion( $doc_encabezado->id );
+
+        $doc_registros = $this->modificar_doc_registros( $doc_registros, 'show' );
+
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
-        //$view_pdf = ContabilidadController::vista_preliminar($id,'show');
         $view_pdf = View::make('contabilidad.incluir.tabla_registros_documento', compact( 'doc_encabezado', 'doc_registros') )->render();
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo );
@@ -241,7 +360,7 @@ class ContabilidadController extends TransaccionController
     // VISTA PARA MOSTRAR UN DOCUMENTO DE TRANSACCION
     public function imprimir($id)
     {
-        $view_pdf = ContabilidadController::vista_preliminar($id,'imprimir');
+        $view_pdf = $this->vista_preliminar($id,'imprimir');
        
         // Se prepara el PDF
         $orientacion='portrait';
@@ -257,12 +376,14 @@ class ContabilidadController extends TransaccionController
 
 
     // Generar vista para SOHW  o IMPRIMIR
-    public static function vista_preliminar($id,$vista)
+    public function vista_preliminar($id,$vista)
     {
 
         $doc_encabezado = ContabDocEncabezado::get_registro_impresion( $id );
 
         $doc_registros = ContabDocRegistro::get_registros_impresion( $doc_encabezado->id );
+
+        $doc_registros = $this->modificar_doc_registros( $doc_registros, 'imprimir' );
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
@@ -273,13 +394,37 @@ class ContabilidadController extends TransaccionController
         return $documento_vista;         
     }
 
+
     // Generar vista para SOHW  o IMPRIMIR
     public function contab_anular_documento( $id )
     {
         $this->set_variables_globales();
 
         $doc_encabezado = ContabDocEncabezado::find( $id );
+        $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
         $modificado_por = Auth::user()->email;
+
+        $array_estado = $this->verificar_estados_lineas_registros( $doc_encabezado, $doc_registros );
+
+        if ( !$array_estado['permitir_eliminar'] )
+        {
+            return redirect( 'contabilidad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','El documento no se puede eliminar; tiene transacciones de CxP o CxC con abonos o pagos aplicados. Retire los abonos o pagos para poder eliminar el documento.');
+        }
+
+        // Elimimar movimientos de CxC y CxP, si los hubiere
+        foreach ( $array_estado['ids_registros_cxc_eliminar'] as $key => $value)
+        {
+            
+            $registro = CxcMovimiento::find( $value );;//;
+            $registro->delete();
+        }
+
+        foreach ( $array_estado['ids_registros_cxp_eliminar'] as $key => $value)
+        {
+            CxpMovimiento::find( $value )->delete();
+        }
+
+
 
         $array_wheres = ['core_empresa_id'=>$doc_encabezado->core_empresa_id, 
                             'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
@@ -299,42 +444,114 @@ class ContabilidadController extends TransaccionController
     }
 
 
+
+    public function verificar_estados_lineas_registros( $doc_encabezado, $doc_registros )
+    {
+        $permitir_eliminar = true;
+        $ids_registros_cxc_eliminar = [];
+        $ids_registros_cxp_eliminar = [];
+
+        foreach ($doc_registros as $linea)
+        {
+            $tipo_transaccion_linea = 'causacion';
+
+            $mov_contab_linea_registro_doc = ContabMovimiento::where( 'id_registro_doc_tipo_transaccion', $linea->id )->get()->first();
+            
+            if ( !is_null( $mov_contab_linea_registro_doc ) )
+            {
+                $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
+            }
+
+            if ( $tipo_transaccion_linea != 'causacion' )
+            {
+                switch ( $tipo_transaccion_linea ) {
+                    case 'crear_cxc':
+                        // Verificar si la linea tiene abonos, si tiene no se puede eliminar
+                        $abono_cxc = CxcAbono::where('doc_cxc_transacc_id',$doc_encabezado->core_tipo_transaccion_id)
+                                            ->where('doc_cxc_tipo_doc_id',$doc_encabezado->core_tipo_doc_app_id)
+                                            ->where('doc_cxc_consecutivo',$doc_encabezado->consecutivo)
+                                            ->get()
+                                            ->first();
+
+                        if( is_null( $abono_cxc ) )
+                        {
+
+                            $ids_registros_cxc_eliminar[] = CxcMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                                            ->where('consecutivo',$doc_encabezado->consecutivo)
+                                            ->get()
+                                            ->first()
+                                            ->id;
+                        }else{
+                            $permitir_eliminar = false;
+                        }
+
+                        break;
+                    case 'crear_cxp':
+                        // Verificar si la linea tiene abonos, si tiene no se puede eliminar
+                        $abono_cxp = CxpAbono::where('doc_cxp_transacc_id',$doc_encabezado->core_tipo_transaccion_id)
+                                            ->where('doc_cxp_tipo_doc_id',$doc_encabezado->core_tipo_doc_app_id)
+                                            ->where('doc_cxp_consecutivo',$doc_encabezado->consecutivo)
+                                            ->get()
+                                            ->first();
+
+                        if( is_null( $abono_cxp ) )
+                        {
+
+                            $ids_registros_cxp_eliminar[] = CxpMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                                            ->where('consecutivo',$doc_encabezado->consecutivo)
+                                            ->get()
+                                            ->first()
+                                            ->id;
+                        }else{
+                            $permitir_eliminar = false;
+                        }
+
+                        break;
+                    
+                    default:
+                        # code...
+                        break;
+                }
+            }
+
+        }
+
+        return [ 'permitir_eliminar' => $permitir_eliminar, 'ids_registros_cxc_eliminar' => $ids_registros_cxc_eliminar, 'ids_registros_cxp_eliminar' => $ids_registros_cxp_eliminar];
+                        
+    }
+
+
     //
     // AJAX: enviar fila para el ingreso de registros al elaborar documento contable
     public static function contab_get_fila( $id_fila )
     {
-        $registros = ContabCuenta::where('core_empresa_id','=',Auth::user()->empresa_id)->orderBy('codigo')->get();
-        $cuentas[''] = '';
-        foreach ($registros as $fila) {
-            $cuentas[$fila->id]=$fila->codigo." ".$fila->descripcion; 
-        }
+        $btn_confirmar = "<button class='btn btn-success btn-xs btn_confirmar' style='display: inline;'><i class='fa fa-check'></i></button>";
+        $btn_borrar = "<button class='btn btn-danger btn-xs btn_eliminar' style='display: inline;'><i class='fa fa-trash'></i></button>";
 
-        $registros_2 = Tercero::where('core_empresa_id','=',Auth::user()->empresa_id )->get();
-        $terceros[''] = '';
-        foreach ($registros_2 as $fila2) {
-            $terceros[$fila2->id]=$fila2->numero_identificacion." ".$fila2->descripcion; 
-        }
-
-        $btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='glyphicon glyphicon-trash'></i></button>";
-        $btn_confirmar = "<button type='button' class='btn btn-success btn-xs btn_confirmar'><i class='glyphicon glyphicon-ok'></i></button>";
-
-        $tr = '<tr>
+        $tr = '<tr id="linea_ingreso_datos">
+                    <td style="display: none;"> <input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="' . date('Y-m-d') . '"> </td>
+                    <td style="display: none;"> <input type="hidden" name="documento_soporte_tercero" id="documento_soporte_tercero" value=""> </td>
+                    <td> <input type="text" name="tipo_transaccion_linea" id="tipo_transaccion_linea" value="causacion" style="background: transparent; border:0; width:70px;" readonly="readonly"> </td>
                     <td>
-                        '.Form::select( 'campo_cuentas', $cuentas, null, [ 'id' => 'combobox_cuentas', 'class' => 'lista_desplegable' ] ).'
+                        '.Form::text( 'cuenta_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'cuenta_input', 'data-url_busqueda' => url('contab_consultar_cuentas'), 'autocomplete'  => 'off' ] ).'
+                        '.Form::hidden( 'campo_cuentas', null, [ 'id' => 'combobox_cuentas' ] ).'
                     </td>
                     <td>
-                        '.Form::select( 'campo_terceros', $terceros, null, [ 'id' => 'combobox_terceros', 'class' => 'lista_desplegable' ] ).'
+                        '.Form::text( 'tercero_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'tercero_input', 'data-url_busqueda' => url('core_consultar_terceros_v2'), 'autocomplete'  => 'off' ] ).'
+                        '.Form::hidden( 'campo_terceros', null, [ 'id' => 'combobox_terceros' ] ).'
                     </td>
-                    <td> '.Form::text( 'detalle', null, [ 'id' => 'col_detalle', 'class' => 'caja_texto' ] ).' </td>
-                    <td> '.Form::text( 'debito', null, [ 'id' => 'col_debito', 'class' => 'caja_texto' ] ).' </td>
-                    <td> '.Form::text( 'credito', null, [ 'id' => 'col_credito', 'class' => 'caja_texto' ] ).' </td>
-                    <td>'.$btn_confirmar.$btn_borrar.'</td>
+                    <td> '.Form::text( 'detalle', null, [ 'id' => 'col_detalle', 'class' => 'form-control', 'autocomplete'  => 'off' ] ).' </td>
+                    <td> '.Form::text( 'debito', null, [ 'id' => 'col_debito', 'class' => 'form-control', 'autocomplete'  => 'off' ] ).' </td>
+                    <td> '.Form::text( 'credito', null, [ 'id' => 'col_credito', 'class' => 'form-control', 'autocomplete'  => 'off' ] ).' </td>
+                    <td> <div class="btn-group">'.$btn_confirmar.$btn_borrar.'</div> </td>
                 </tr>';
 
         return $tr;
     }
 
-    public function get_saldo_grupo_cuentas_entre_fechas($fecha_ini,$fecha_fin,$grupo_cuenta_id)
+    public function get_saldo_grupo_cuentas_entre_fechas($fecha_ini, $fecha_fin, $grupo_cuenta_id)
     {
         $saldo_inicial = ContabMovimiento::where('contab_movimientos.core_empresa_id','=',Auth::user()->empresa_id)
                 ->where('contab_cuentas.contab_cuenta_grupo_id','=',$grupo_cuenta_id)
@@ -392,42 +609,67 @@ class ContabilidadController extends TransaccionController
     // Parámetro enviados por GET
     public function consultar_cuentas()
     {
-        $campo_busqueda = Input::get('campo_busqueda');
-        
-        switch ( $campo_busqueda ) 
+        $texto_busqueda_codigo = (int)Input::get('texto_busqueda');
+
+        if( $texto_busqueda_codigo == 0 )
         {
-            case 'descripcion':
-                $operador = 'LIKE';
-                $texto_busqueda = '%'.Input::get('texto_busqueda').'%';
-                break;
-            case 'codigo':
-                $operador = 'LIKE';
-                $texto_busqueda = Input::get('texto_busqueda').'%';
-                break;
-            
-            default:
-                # code...
-                break;
+            $campo_busqueda = 'descripcion';
+            $texto_busqueda = '%' . str_replace( " ", "%", Input::get('texto_busqueda') ) . '%';
+        }else{
+            $campo_busqueda = 'codigo';
+            $texto_busqueda = Input::get('texto_busqueda').'%';
         }
 
-        $datos = ContabCuenta::where('contab_cuentas.estado','Activo')->where('contab_cuentas.core_empresa_id',Auth::user()->empresa_id)->where('contab_cuentas.core_app_id','0')->where('contab_cuentas.'.$campo_busqueda,$operador,$texto_busqueda)->select('contab_cuentas.id AS cuenta_id','contab_cuentas.descripcion','contab_cuentas.codigo')->get()->take(7);
+        $texto_busqueda_descripcion = '%'.Input::get('texto_busqueda').'%';
 
-        //dd($datos);
+        $datos = ContabCuenta::where('contab_cuentas.estado','Activo')
+                                ->where('contab_cuentas.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('contab_cuentas.core_app_id','0')
+                                ->where('contab_cuentas.'.$campo_busqueda, 'LIKE', $texto_busqueda)
+                                ->select(
+                                            'contab_cuentas.id',
+                                            'contab_cuentas.descripcion',
+                                            'contab_cuentas.codigo')
+                                ->get()
+                                ->take(7);
 
-        $html = '<div class="list-group">';
+        $html = '<div class="list-group"><div style="width:100%;"><button href="#" class="close" data-dismiss="alert" aria-label="close">&times;</button></div>';
         $es_el_primero = true;
+        $ultimo_item = 0;
+        $num_item = 1;
+        $cantidad_datos = count( $datos->toArray() ); // si datos es null?
         foreach ($datos as $linea) 
         {
+            $primer_item = 0;
             $clase = '';
             if ($es_el_primero) {
                 $clase = 'active';
                 $es_el_primero = false;
+                $primer_item = 1;
             }
 
-            $html .= '<a class="list-group-item list-group-item-autocompletar '.$clase.'" data-tipo_campo="cuenta" data-cuenta_id="'.$linea->cuenta_id.
-                                '" data-id="'.$linea->cuenta_id.
-                                '" > '.$linea->codigo.' '.$linea->descripcion.'</a>';
+
+            if ( $num_item == $cantidad_datos )
+            {
+                $ultimo_item = 1;
+            }
+
+            $html .= '<a class="list-group-item list-group-item-sugerencia '.$clase.'" data-registro_id="'.$linea->id.
+                                '" data-primer_item="'.$primer_item.
+                                '" data-accion="na" '.
+                                '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
+
+            $html .=            '" data-tipo_campo="cuenta" ';
+
+            $html .=            '" > '.$linea->codigo.' '.$linea->descripcion.' </a>';
+
+            $num_item++;
         }
+
+        // Linea crear nuevo registro
+        $modelo_id = 49; // Cuentas contables
+        $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nueva </a>';
+
         $html .= '</div>';
 
         return $html;
@@ -457,14 +699,38 @@ class ContabilidadController extends TransaccionController
     }
 
 
-    public static function contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito )
+    public static function contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cta_bancaria_id = 0 )
     {
         ContabMovimiento::create( $datos + 
                             [ 'contab_cuenta_id' => $contab_cuenta_id ] +
                             [ 'detalle_operacion' => $detalle_operacion] + 
                             [ 'valor_debito' => $valor_debito] + 
                             [ 'valor_credito' => ($valor_credito * -1) ] + 
-                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
+                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ] + 
+                            [ 'teso_caja_id' => $teso_caja_id]  + 
+                            [ 'teso_cta_bancaria_id' => $teso_cta_bancaria_id] 
                         );
     }
+
+    public function get_formulario_cxc()
+    {
+        $cuentas = ContabCuenta::opciones_campo_select();
+        $terceros = Tercero::opciones_campo_select();
+
+        $formulario = View::make( 'contabilidad.incluir.formulario_cxc', compact('cuentas','terceros') )->render();
+
+        return $formulario;
+    }
+
+    public function get_formulario_cxp()
+    {
+        $cuentas = ContabCuenta::opciones_campo_select();
+        $terceros = Tercero::opciones_campo_select();
+
+        $formulario = View::make( 'contabilidad.incluir.formulario_cxp', compact('cuentas','terceros') )->render();
+
+        return $formulario;
+    }
+
+
 }

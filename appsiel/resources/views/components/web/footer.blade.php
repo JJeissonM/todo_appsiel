@@ -24,8 +24,8 @@
 
     </style>
 
-    <div class="footerarea" style="padding-top: 20px;">
-        <img src="{{asset('img/backgrounds/one-way-street-1317587_1920.jpg')}}" alt="">
+    <div class="footerarea" style="padding-top: 20px; background: linear-gradient(180deg, rgba(255,255,255,1) 0%, {{$footer->background}} 100%); color: {{$footer->color}}">
+        
         <div class="container">
             <div class="row">
                 @if($footer->ubicacion == '')
@@ -39,10 +39,9 @@
                                         <ul id="menu-menu4" class="menu">
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                            target="_blank"
-                                                            style="color: {{$footer->color}}; font-size: 14px"
-                                                            href="{{$enlace->enlace}}">
-                                                        {{$enlace->icono.' '.$enlace->texto}}
+                                                            style="color: {{$footer->color}};"
+                                                            href="{{$enlace->enlace}}" target="_blank"><i
+                                                                class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                                     </a>
                                                 </li>
                                             @endforeach
@@ -61,7 +60,7 @@
                                         <ul id="menu-menu4" class="menu">
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                            style="color: {{$footer->color}}; font-size: {{$enlace->icono=='' ? 14:20}}px"
+                                                            style="color: {{$footer->color}};"
                                                             target="_blank"
                                                             href="{{$enlace->enlace}}"><i
                                                                 class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
@@ -95,9 +94,9 @@
                                         <ul id="menu-menu4" class="menu">
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                            style="color: {{$footer->color}}; font-size: 14px"
-                                                            href="{{$enlace->enlace}}" target="_blank">
-                                                        {{$enlace->icono.' '.$enlace->texto}}
+                                                            style="color: {{$footer->color}};"
+                                                            href="{{$enlace->enlace}}" target="_blank"><i
+                                                                class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                                     </a>
                                                 </li>
                                             @endforeach
@@ -126,7 +125,7 @@
                                         <ul id="menu-menu4" class="menu">
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                            style="color: {{$footer->color}}; font-size: {{$enlace->icono=='' ? 14:20}}px"
+                                                            style="color: {{$footer->color}};"
                                                             href="{{$enlace->enlace}}" target="_blank"><i
                                                                 class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                                     </a>
@@ -159,13 +158,12 @@
                 @endif
                 <div class="col-md-12 col-sm-12 d-flex justify-content-between flex-wrap"
                      style="margin-top: 20px;">
-                    <p style="font-size: 20px; color: {{$footer->color}}">
+                    <p style="font-size: 15px; color: {{$footer->color}}; text-align: right; width: 50%;">
                         &copy; {{$footer->texto.' '.$footer->copyright}}</p>
                     <ul style="" class="d-flex justify-content-between">
                         @foreach($redes as $red)
                             <li style="list-style: none; margin-right: 10px;">
-                                <a href="{{$red->enlace}}" style="color:{{$footer->color}}; font-size: 30px;" target="_blank"><i
-                                            class="fa fa-{{$red->icono}}"></i></a>
+                                <a href="{{$red->enlace}}" style="color:{{$footer->color}}; font-size: 30px;" target="_blank"><i class="fa fa-{{$red->icono}}"></i></a>
                             </li>
                         @endforeach
                     </ul>

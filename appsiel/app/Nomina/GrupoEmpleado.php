@@ -11,10 +11,9 @@ class GrupoEmpleado extends Model
 	public $encabezado_tabla = ['', 'Grupo padre', 'Descripción', 'Nombre corto', 'Estado', 'Acción'];
 	public static function consultar_registros()
 	{
-	    $registros = GrupoEmpleado::select(, 'nom_grupos_empleados.grupo_padre_id AS campo1', 'nom_grupos_empleados.descripcion AS campo2', 'nom_grupos_empleados.nombre_corto AS campo3', 'nom_grupos_empleados.estado AS campo4', 'nom_grupos_empleados.id AS campo5')
+	    return GrupoEmpleado::select('nom_grupos_empleados.grupo_padre_id AS campo1', 'nom_grupos_empleados.descripcion AS campo2', 'nom_grupos_empleados.nombre_corto AS campo3', 'nom_grupos_empleados.estado AS campo4', 'nom_grupos_empleados.id AS campo5')
 	    ->get()
 	    ->toArray();
-	    return $registros;
 	}
 	public static function opciones_campo_select()
     {

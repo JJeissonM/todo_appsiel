@@ -8,7 +8,35 @@ use Illuminate\Database\Eloquent\Model;
 class Widget extends Model
 {
     protected $table = 'pw_widget';
+
     protected $fillable = ['id', 'orden', 'estado', 'pagina_id', 'seccion_id', 'created_at', 'updated_at'];
+
+    public static function opciones_campo_select()
+    {
+        $opciones = Widget::leftJoin('pw_paginas', 'pw_paginas.id', '=', 'pw_widget.pagina_id')
+                    ->leftJoin('pw_seccion', 'pw_seccion.id', '=', 'pw_widget.seccion_id')
+                    ->select(
+                            'pw_widget.id',
+                            'pw_paginas.descripcion AS pagina_descripcion',
+                            'pw_seccion.nombre AS seccion_descripcion' )
+                    ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = 'Página: ' . $opcion->pagina_descripcion . ' > Sección: ' . $opcion->seccion_descripcion;
+        }
+        
+        return $vec;
+    }
+
+
+
+    public function elements_design()
+    {
+        return $this->belongsTo(WidgetsElementsDesign::class, 'widget_id');
+    }
+
 
     public function pagina()
     {
@@ -68,5 +96,10 @@ class Widget extends Model
     public function tiendas()
     {
         return $this->hasMany(Tienda::class);
+    }
+
+    public function customhtml()
+    {
+        return $this->hasMany(CustomHtml::class);
     }
 }

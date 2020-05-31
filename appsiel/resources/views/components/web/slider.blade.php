@@ -1,7 +1,11 @@
 <style>
 
+    #main-slider {
+        /*margin-top: 40px;*/
+    }
+
     #main-slider .item {
-        height: 400px;
+        /*height: 550px;*/
     }
 
     .owl-carousel img {
@@ -13,7 +17,6 @@
     }
 
 </style>
-
 <section id="main-slider">
     @if($slider != null && $slider->items->count() > 0)
         <div class="owl-carousel">

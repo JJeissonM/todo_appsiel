@@ -15,29 +15,27 @@ class Matricula extends Model
 
     protected $fillable = ['periodo_lectivo_id','id_colegio','codigo','fecha_matricula','id_estudiante','curso_id','cedula_acudiente','acudiente','telefono_acudiente','email_acudiente','requisitos','estado'];
 
-    public $encabezado_tabla = ['Código','Fecha matricula','Año lectivo','Nom. Estudiante','Doc. Identidad','Acudiente','Curso','Estado','Acción'];
+    public $encabezado_tabla = [ 'Código', 'Fecha matricula', 'Año lectivo', 'Nombres', 'Apellidos', 'Doc. Identidad', 'Email/Usuario', 'Acudiente', 'Curso', 'Estado', 'Acción'];
 
     public static function consultar_registros()
     {
-        $select_raw = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4';
-
-        $registros = Matricula::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
+        return Matricula::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
                             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
                             ->leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_matriculas.periodo_lectivo_id')
                             ->select('sga_matriculas.codigo AS campo1',
                                     'sga_matriculas.fecha_matricula AS campo2',
                                     'sga_periodos_lectivos.descripcion AS campo3',
-                                    DB::raw($select_raw),
-                                    'core_terceros.numero_identificacion AS campo5',
-                                    'sga_matriculas.acudiente AS campo6',
-                                    'sga_cursos.descripcion AS campo7',
-                                    'sga_matriculas.estado AS campo8',
-                                    'sga_matriculas.id AS campo9')
+                                    DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4' ),
+                                    DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2) AS campo5' ),
+                                    'core_terceros.numero_identificacion AS campo6',
+                                    'core_terceros.email AS campo7',
+                                    'sga_matriculas.acudiente AS campo8',
+                                    'sga_cursos.descripcion AS campo9',
+                                    'sga_matriculas.estado AS campo10',
+                                    'sga_matriculas.id AS campo11')
                             ->get()
                             ->toArray();
-
-        return $registros;
     }
 	
 	/**

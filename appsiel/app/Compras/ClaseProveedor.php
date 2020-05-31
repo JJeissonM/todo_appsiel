@@ -9,8 +9,11 @@ use DB;
 class ClaseProveedor extends Model
 {
     protected $table = 'compras_clases_proveedores';
+	
 	protected $fillable = ['descripcion', 'cta_x_pagar_id', 'cta_anticipo_id', 'clase_padre_id', 'estado'];
+
 	public $encabezado_tabla = ['Tercero', 'Cta x pagar default', 'Cta anticipo default', 'Clase padre', 'Estado', 'Acción'];
+	
 	public static function consultar_registros()
 	{
 	    $registros = ClaseProveedor::leftJoin('contab_cuentas as cta_x_pagar','cta_x_pagar.id','=','compras_clases_proveedores.cta_x_pagar_id')

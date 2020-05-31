@@ -16,6 +16,12 @@ class DocumentosPendientes extends Model
 
 	public $encabezado_tabla = ['Proveedor', 'Documento', 'Fecha', 'Valor documento', 'Valor pagado', 'Saldo pendiente', 'Estado', 'Acción'];
 
+    public $urls_acciones = '{
+                                "create":"web/create",
+                                "store":"compras_registro_cxp",
+                                "update":"compras_registro_cxp/id_fila"
+                            }';
+
     public static function consultar_registros()
     {
 	    return DocumentosPendientes::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_movimientos.core_tipo_doc_app_id')

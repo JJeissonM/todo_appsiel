@@ -61,9 +61,7 @@ class ArticleController extends Controller
      */
     public function show($id)
     {
-        $a = Article::find($id);
-        return view('web.components.viewfinder.viewfinder')
-            ->with('a', $a);
+        return view('web.components.articles_show_one')->with( 'articulo' , Article::find( $id ) );
     }
 
     /**

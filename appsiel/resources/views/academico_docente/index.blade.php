@@ -45,7 +45,28 @@
 									  	<!--
 												PLAN DE CLASES
 									  	-->
-									  	{{ Form::bsBtnDropdown( 'Planes Clases', 'danger', 'edit', [ ['link' => 'web/create?id='.Input::get('id').'&id_modelo='.$modelo_plan_clases_id.'&curso_id='.$fila->curso_id.'&asignatura_id='.$fila->id_asignatura, 'etiqueta' => 'Ingresar'], ['link' => 'web?id='.Input::get('id').'&id_modelo='.$modelo_plan_clases_id, 'etiqueta' => 'Consultar' ] ] ) }}
+									  	{{ Form::bsBtnDropdown( 
+									  		'Planes Clases', 
+									  		'danger', 
+									  		'edit', 
+									  		[ 
+									  			[
+									  				'link' => 'web/create?id='.Input::get('id').'&id_modelo='.$modelo_plan_clases_id.'&curso_id='.$fila->curso_id.'&asignatura_id='.$fila->id_asignatura,
+									  				'etiqueta' => 'Ingresar plan de clases' ],
+									  			[
+									  				'link' => 'web?id='.Input::get('id').'&id_modelo='.$modelo_plan_clases_id, 
+									  				'etiqueta' => 'Consultar planes' ],
+									  			[
+									  				'link' => '#', 
+									  				'etiqueta' => '--------' ],
+									  			[
+									  				'link' => 'web/create?id='.Input::get('id').'&id_modelo='.$modelo_guia_academica_id.'&curso_id='.$fila->curso_id.'&asignatura_id='.$fila->id_asignatura, 
+									  				'etiqueta' => 'Ingresar guía académica' ],
+									  			[
+									  				'link' => 'web?id='.Input::get('id').'&id_modelo='.$modelo_guia_academica_id, 
+									  				'etiqueta' => 'Consultar guías' ]
+									  		] ) 
+									  	}}
 										
 									  	&nbsp;
 

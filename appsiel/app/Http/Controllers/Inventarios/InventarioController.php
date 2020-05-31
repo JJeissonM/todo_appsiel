@@ -801,7 +801,7 @@ class InventarioController extends TransaccionController
         $id_modelo = Input::get('id_modelo');
         $id_transaccion = Input::get('id_transaccion');
 
-        $producto = InvProducto::find( $linea_registro->inv_producto_id );
+        $producto = InvProducto::find( $linea_registro->producto_id );
 
         $formulario = View::make('inventarios.incluir.formulario_editar_registro', compact('linea_registro', 'id', 'id_modelo', 'id_transaccion', 'saldo_a_la_fecha', 'doc_encabezado','producto'))->render();
 

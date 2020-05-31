@@ -21,6 +21,7 @@ Route::get('/', 'PaginaWeb\FrontEndController@inicio');
 Route::get('pagina_no_encontrada/{url}', 'PaginaWeb\FrontEndController@pagina_no_encontrada');
 
 Route::get('dashboard', 'HomeController@index');
+Route::get('custom_route', 'HomeController@index');
 Route::get('inicio', 'HomeController@inicio'); // Cambiar la palabra "inicio" por "appsiel"... o crear automatización de rutas, vistas, acciones
 
 
@@ -71,7 +72,8 @@ Route::resource('configuracion', 'Core\ConfiguracionController');
 
 
 // validar_numero_identificacion de tercero
-Route::get('core_consultar_terceros', 'Core\TerceroController@consultar_terceros');
+Route::get('core_consultar_terceros_v2', 'Core\TerceroController@consultar_terceros_v2');
+Route::get('core_consultar_terceros', 'Core\TerceroController@consultar_terceros'); // reemplazar por la v2
 Route::get('core/validar_numero_identificacion/{numero_identificacion}', 'Core\TerceroController@validar_numero_identificacion');
 
 Route::get('core/validar_email/{email}', 'Core\TerceroController@validar_email');
@@ -81,10 +83,7 @@ Route::get('core/validar_email/{email}', 'Core\TerceroController@validar_email')
 Route::resource('core/usuarios', 'UserController');
 Route::resource('core/roles', 'Core\RoleController');
 //Route::resource('/core/permisos', 'Core\PermissionController');
-Route::get('core/colegios/create', 'Core\ColegioController@create');
-//});
 
-Route::resource('core/colegios', 'Core\ColegioController', ['except' => ['create']]);
 
 // Los usuarios administradores pueden cambiar la contraseña de cualquier usuario
 Route::get('core/usuario/cambiarpasswd/{user_id}', 'UserController@form_cambiarpasswd');

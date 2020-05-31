@@ -90,7 +90,6 @@ class CxcEstadoCartera extends Model
       // Verificar si el documento no tiene un registro de estado de cartera donde ya esté pagado
       $cant = CxcEstadoCartera::where('cxc_movimiento_id',$fila->cxc_movimiento_id)->where('estado','Pagado')->count();
 
-      i
       $movimiento_cxc[$i] = $fila->toArray();
 
       // Para la fecha_consulta pueden haber documentos con estado Pendiente, pero que ya estén vencidos

@@ -51,7 +51,8 @@ class NavegacionController extends Controller
 
        $menu = new Menunavegacion($request->all());
 
-        if($request->hasFile('icono')){
+        if($request->hasFile('icono'))
+        {
 
             $file = $request->file('icono');
             $name = time().$file->getClientOriginalName();
@@ -105,15 +106,21 @@ class NavegacionController extends Controller
 
         if($nav){
             $nav->fill($request->all());
-            if($request->hasFile('logo')){
+            if($request->hasFile('logo'))
+            {
 
                 $file = $request->file('logo');
-                $name = time().str_slug($file->getClientOriginalName());
+                //$name = time().str_slug($file->getClientOriginalName());
+
+                $extension =  $file->clientExtension();
+
+                $name = str_slug( $file->getClientOriginalName() ) . '-' . uniqid() . '.' . $extension;
 
                 $filename = 'img/logos/'.$name;
                 $flag = file_put_contents($filename,file_get_contents($file->getRealPath()),LOCK_EX);
 
-                if($flag !== false){
+                if($flag !== false)
+                {
                     $nav->fill(['logo' =>$filename]);
                 }else {
                     $message = 'Error inesperado al intentar guardar el logo, por favor intente nuevamente más tarde';
@@ -142,10 +149,15 @@ class NavegacionController extends Controller
 
         if($nav){
 
-            if($request->hasFile('logo')){
+            if($request->hasFile('logo'))
+            {
 
                 $file = $request->file('logo');
-                $name = time().str_slug($file->getClientOriginalName());
+                //$name = time().str_slug($file->getClientOriginalName());
+
+                $extension =  $file->clientExtension();
+
+                $name = str_slug( $file->getClientOriginalName() ) . '-' . uniqid() . '.' . $extension;
 
                 $filename = 'img/logos/'.$name;
                 $flag = file_put_contents($filename,file_get_contents($file->getRealPath()),LOCK_EX);

@@ -33,7 +33,7 @@ class ReportesController extends Controller
     public static function grafica_ventas_diarias($fecha_inicial, $fecha_final)
     {
         $registros = VtasMovimiento::whereBetween('fecha', [$fecha_inicial, $fecha_final])
-            ->select(DB::raw('SUM(base_impuesto_total) as total_ventas'), 'fecha')
+            ->select(DB::raw('SUM(precio_total) as total_ventas'), 'fecha', 'tasa_impuesto')
             ->groupBy('fecha')
             ->orderBy('fecha')
             ->get();
@@ -46,11 +46,13 @@ class ReportesController extends Controller
 
         $i = 0;
         $tabla = [];
-        foreach ($registros as $linea) {
-            $stocksTable1->addRow([$linea->fecha, (float) $linea->total_ventas]);
+        foreach ($registros as $linea)
+        {
+            $total_ventas = (float) $linea->total_ventas / (1 + (float)$linea->tasa_impuesto / 100 );
+            $stocksTable1->addRow([$linea->fecha, $total_ventas]);
 
             $tabla[$i]['fecha'] = $linea->fecha;
-            $tabla[$i]['valor'] = (float) $linea->total_ventas;
+            $tabla[$i]['valor'] = $total_ventas;
             $i++;
         }
 

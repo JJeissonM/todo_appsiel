@@ -63,7 +63,11 @@
 
 @foreach( $registros as $registro )
     
-    <h4> <b> {{ $registro->elemento_descripcion }} </b> </h4>
+    @if( $registro->elemento_descripcion != '' )
+        <h4> <b> {{ $registro->elemento_descripcion }} </b> </h4>
+    @else
+        <h4> <b> CONTENIDO </b> </h4>
+    @endif
     
     <hr>
 

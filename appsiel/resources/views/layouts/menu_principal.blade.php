@@ -60,11 +60,13 @@
                     @if (Auth::guest())
                         <li><a href="{{ url('/login') }}">Ingresar</a></li>
                     @else
-                        @can('mensajes_internos')
+                        
+                        @if( config('configuracion.usar_mensajes_internos') )
                             <li>
                                 <a href="{{url('/messages')}}"><i class="fa fa-btn fa-envelope"></i>  @include('core.messenger.unread-count')</a>
                             </li>
-                        @endcan
+                        @endif
+
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {{ Auth::user()->name }} <span class="caret"></span>

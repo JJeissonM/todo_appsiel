@@ -10,7 +10,7 @@ class ContabDocRegistro extends Model
 {
     //protected $table = 'teso_doc_registros_recaudos';
 
-    protected $fillable = [ 'contab_doc_encabezado_id', 'contab_cuenta_id', 'core_tercero_id', 'valor_debito', 'valor_credito', 'detalle_operacion', 'estado'];
+    protected $fillable = [ 'contab_doc_encabezado_id', 'contab_cuenta_id', 'core_tercero_id', 'tipo_transaccion', 'valor_debito', 'valor_credito', 'detalle_operacion', 'estado'];
 
     public $campos_invisibles_linea_registro = ['cuenta_id','tercero_id','valor_db','valor_cr']; // 4 campos
 
@@ -37,7 +37,8 @@ class ContabDocRegistro extends Model
                                         'contab_doc_registros.valor_credito',
                                         'contab_doc_registros.detalle_operacion',
                                         'contab_cuentas.id AS cuenta_id',
-                                        'contab_cuentas.codigo AS cuenta_codigo')
+                                        'contab_cuentas.codigo AS cuenta_codigo',
+                                        'contab_doc_registros.id')
                             ->get();
     }
 }

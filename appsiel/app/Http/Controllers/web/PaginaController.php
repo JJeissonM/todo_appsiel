@@ -10,6 +10,8 @@ use App\Http\Controllers\Controller;
 use App\web\RedesSociales;
 use App\web\Seccion;
 use App\web\Widget;
+use App\web\WidgetsElementsDesign;
+
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 
@@ -38,8 +40,10 @@ class PaginaController extends Controller
 
         $paginas = Pagina::all();
         $variables_url = '?id=' . Input::get('id');
+
         return view('web.paginas.index', compact('miga_pan', 'paginas', 'variables_url'));
     }
+
 
     public function admin()
     {
@@ -209,22 +213,45 @@ class PaginaController extends Controller
     public function showPage($slug)
     {
         $pagina = Pagina::where('slug', $slug)->first();
-        $configuracion = Configuraciones::all()->first();
 
-        $widget = $pagina->widgets;
-        $view = [];
-        if (count($widget) > 0) {
-
-            $widgets = $pagina->widgets()->orderBy('orden')->get();
-            foreach ($widgets as $widget) {
-                $factory = new FactoryCompents($widget->seccion->nombre, $widget->id);
-                $componente = $factory();
-                if ($componente === false || $componente->DrawComponent() == false) continue;
-                $view[] = '<div id="' . str_slug($widget->seccion->nombre) . '">' . $componente->DrawComponent() . '</div>';
-            }
-
+        if( is_null( $pagina ) )
+        {
+            $pagina = Pagina::where('pagina_inicio',1)->get()->first();
         }
-        return view('web.index', compact('view', 'pagina','configuracion'));
+
+        $configuracion = Configuraciones::all()->first();
+        
+        $widgets = $pagina->widgets()->orderBy('orden')->get();
+
+        $view = [];
+        $links = [];
+        $estilos = [];
+        $scripts = [];
+        if (count($widgets) > 0)
+        {
+            foreach ($widgets as $widget)
+            {
+                $factory = new FactoryCompents($widget->seccion->nombre, $widget->id);
+                
+                $componente = $factory();
+                
+                if ($componente === false || $componente->DrawComponent() == false) continue;
+                
+                $view[] = '<div id="' . str_slug($widget->seccion->nombre) . '">' . $componente->DrawComponent() . '</div>';
+
+                // Traer los elementos de diseño del widget
+                $elements_design = WidgetsElementsDesign::where('widget_id',$widget->id)->first();
+
+                if( $elements_design != null )
+                {
+                    $links = array_merge( $links, $elements_design->generar_array_links() );
+                    $estilos[] = $elements_design->estilos;
+                    $scripts[] = $elements_design->scripts;
+                }
+            }
+        }
+
+        return view('web.index', compact('view', 'pagina', 'configuracion', 'links','estilos','scripts'));
     }
 
     public function edit($id)

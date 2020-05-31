@@ -22,7 +22,8 @@ class SeccionController extends Controller
         $widget = Widget::find($id);
 
 
-        if($widget){
+        if($widget)
+        {
             $factory = new FactoryCompents($widget->seccion->nombre,$widget->id);
 
             $componente = $factory();

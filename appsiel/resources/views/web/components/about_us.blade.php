@@ -84,14 +84,14 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-                <h4>.:: En ésta Sección: About Us ::.</h4>
+                <h4>.:: En ésta Sección: Quiénes somos ::.</h4>
             </div>
         </div>
     </div>
     <div class="card">
         <div class="card-body d-flex justify-content-between flex-wrap">
             <div id="wrapper">
-                <h4 class="column-title" style="padding: 10px;">Menú About Us</h4>
+                <h4 class="column-title" style="padding: 10px;">Menú Quiénes somos</h4>
                 <div class="col-md-12">
                     @if($aboutus != null)
                         <div class="contenido">
@@ -112,7 +112,7 @@
                         <div class="add d-flex justify-content-end">
                             <a href="{{url('aboutus/create').'/'.$widget.$variables_url}}"
                                class="btn btn-primary waves-effect btn-block btn-sm"
-                               style="color: white; font-weight: bold;"> Agregar</a>
+                               style="color: white; font-weight: bold;"> Configurar </a>
                         </div>
                     @endif
                 </div>

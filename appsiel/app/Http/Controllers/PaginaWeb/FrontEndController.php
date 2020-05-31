@@ -32,7 +32,7 @@ class FrontEndController extends Controller
     public function inicio()
     {
 
-        // Se verifica que la Aplicación Página Web esté activao
+        // Se verifica que la Aplicación Página Web esté activa
         $estado_pagina_web = Aplicacion::where('app','pagina_web')->value('estado');
         if ($estado_pagina_web == 'Inactivo')
         {
@@ -44,25 +44,17 @@ class FrontEndController extends Controller
         // Obtener la página que está marcada como pagina_inicio (se debe validar que en la creación de páginas solo haya una)
         $pagina = Pagina::where('pagina_inicio',1)->get()->first();
 
-        
-        // Return TEMPORAL para mostrar página estática de información
-        //return View::make( 'pagina_web.front_end.templates.demo.index', compact('pagina') )->render();
-
-
-        if($pagina == null)
-            return redirect('inicio');
-
         // Si se envía el ID de una página, por url
-        if (!is_null(Input::get('pagina_id'))) {
+        if ( !is_null( Input::get('pagina_id') ) )
+        {
             $pagina = Pagina::find(Input::get('pagina_id'));
         }
 
+        if($pagina == null)
+            return view('pagina_no_encontrada', ['slug'=>''] );
 
         $page = new PaginaController();
         return $page->showPage($pagina->slug);
-
-        //return view( 'pagina_web.front_end.templates.'.$pagina_plantilla.'.index', compact( 'pagina', 'cadena_secciones' ) );
-
     }
 
 

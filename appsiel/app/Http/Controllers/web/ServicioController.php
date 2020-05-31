@@ -195,29 +195,6 @@ class ServicioController extends Controller
     //leer servicio
     public function leer_servicio($id)
     {
-        $empresa = Itemservicio::find($id);
-        $data = "<section style='background-image: url(".asset('img/corazon/Diseño_Appsiel_3.jpg')."'><div class='row'><div class='col-sm-12'>"
-            . "<div class='blog-post blog-large wow fadeInLeft' data-wow-duration='300ms' data-wow-delay='0ms'>"
-            . "<article>"
-            . "<header class='entry-header'><div class='entry-thumbnail'>";
-        $data = $data . "</div><div class='entry-date'>" . $empresa->created_at . "</div><h2 class='entry-title'><a href='#'>" . $empresa->titulo . "</a></h2>"
-            . "</header><div class='entry-content'><p><h4>RESUMEN</h4> " . $empresa->descripcion . "</p><p>" . $empresa->empresa . "</p></div>"
-            . "<footer class='entry-meta'><span class='entry-author'><i class='fa fa-user'></i> " . $empresa->servicio->titulo . "</span>"
-            . "</footer></article></div></div></div></section>";
-
-        dd($data);
-        $redes = RedesSociales::all();
-        $footer = Footer::all()->first();
-        $nav = Navegacion::all()->first();
-        
-        return view('web.container')
-            ->with('e', $empresa)
-            ->with('data', $data)
-            ->with('redes', $redes)
-            ->with('footer', $footer)
-            ->with('title', 'SERVICIOS - LEER SERVICIO')
-            ->with('slogan1', '')
-            ->with('slogan2', '')
-            ->with('nav',$nav);
+        return view('web.components.servicios_leer_mas')->with( 'empresa', Itemservicio::find($id) );
     }
 }

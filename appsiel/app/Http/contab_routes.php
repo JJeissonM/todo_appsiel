@@ -3,6 +3,9 @@
 
 Route::get('contab_consultar_cuentas', 'Contabilidad\ContabilidadController@consultar_cuentas');
 
+Route::get('contab_get_formulario_cxc', 'Contabilidad\ContabilidadController@get_formulario_cxc');
+Route::get('contab_get_formulario_cxp', 'Contabilidad\ContabilidadController@get_formulario_cxp');
+
 Route::get('contabilidad_print/{id_transaccion}','Contabilidad\ContabilidadController@imprimir');
 Route::get('contab_get_fila/{id_fila}','Contabilidad\ContabilidadController@contab_get_fila');
 Route::get('contab_anular_documento/{id_fila}','Contabilidad\ContabilidadController@contab_anular_documento');
@@ -26,7 +29,10 @@ Route::get('contab_balance_comprobacion','Contabilidad\ContabReportesController@
 Route::post('contab_ajax_generacion_eeff', 'Contabilidad\ContabReportesController@contab_ajax_generacion_eeff');
 Route::get('contab_pdf_eeff', 'Contabilidad\ContabReportesController@contab_pdf_eeff');
 Route::get('contab_generacion_eeff','Contabilidad\ContabReportesController@generacion_eeff');
+
 // Reportes del Menú Automático
+Route::post('contab_cuadre_contabilidad_vs_tesoreria', 'Contabilidad\ContabReportesController@cuadre_contabilidad_vs_tesoreria');
+Route::post('contab_lista_documentos_descuadrados', 'Contabilidad\ContabReportesController@lista_documentos_descuadrados');
 Route::post('contab_impuestos', 'Contabilidad\ContabReportesController@impuestos');
 Route::post('contab_ajax_balance_comprobacion', 'Contabilidad\ContabReportesController@contab_ajax_balance_comprobacion');
 
