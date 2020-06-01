@@ -373,6 +373,11 @@ class VistaController extends Controller
             case 'frame_ajax':
                 $control = '<div id="frame_ajax" class="frame_ajax" > hello </div>';
                 break;
+
+            case 'input_lista_sugerencias':
+                $control = Form::bsInputListaSugerencias( $campo['name'], $campo['value'], $campo['descripcion'], $campo['atributos']);
+                break;
+            
             default:
                 $control = '<div class="alert alert-danger">
                               <strong>¡Error!</strong> Tipo de campo (elemento input) no existe.</div>';

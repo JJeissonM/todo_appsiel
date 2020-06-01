@@ -564,6 +564,71 @@ class InventarioController extends TransaccionController
 
         return $html;
     }
+    
+    // Parámetro enviados por GET
+    public function consultar_productos_v2()
+    {
+        $texto_busqueda_codigo = (int)Input::get('texto_busqueda');
+
+        if( $texto_busqueda_codigo == 0 )
+        {
+            $campo_busqueda = 'descripcion';
+            $texto_busqueda = '%' . str_replace( " ", "%", Input::get('texto_busqueda') ) . '%';
+        }else{
+            $campo_busqueda = 'id';
+            $texto_busqueda = Input::get('texto_busqueda').'%';
+        }
+
+        $texto_busqueda_descripcion = '%'.Input::get('texto_busqueda').'%';
+
+        $datos = InvProducto::where('estado', 'Activo')
+                            ->where('core_empresa_id', Auth::user()->empresa_id)
+                            ->where( $campo_busqueda, 'LIKE', $texto_busqueda)
+                            ->select(
+                                        'id',
+                                        'descripcion')
+                            ->get()
+                            ->take(7);
+
+        $html = '<div class="list-group">';
+        $es_el_primero = true;
+        $ultimo_item = 0;
+        $num_item = 1;
+        $cantidad_datos = count( $datos->toArray() ); // si datos es null?
+        foreach ($datos as $linea) 
+        {
+            $primer_item = 0;
+            $clase = '';
+            if ($es_el_primero) {
+                $clase = 'active';
+                $es_el_primero = false;
+                $primer_item = 1;
+            }
+
+
+            if ( $num_item == $cantidad_datos )
+            {
+                $ultimo_item = 1;
+            }
+
+            $html .= '<a class="list-group-item list-group-item-sugerencia '.$clase.'" data-registro_id="'.$linea->id.
+                                '" data-primer_item="'.$primer_item.
+                                '" data-accion="na" '.
+                                '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
+
+            $html .=            '" > '.$linea->id.' '.$linea->descripcion.' </a>';
+
+            $num_item++;
+        }
+
+        // Linea crear nuevo registro
+        $modelo_id = 22; // Items
+        $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
+
+        $html .= '</div>';
+
+        return $html;
+    }
 
 
 
@@ -608,12 +673,13 @@ class InventarioController extends TransaccionController
         $producto = InvProducto::find($request->inv_producto_id)->toArray();
 
         $costo_prom = InvCostoPromProducto::where('inv_bodega_id', '=', $request->id_bodega)
-            ->where('inv_producto_id', '=', $request->inv_producto_id)
-            ->value('costo_promedio');
-        if ($costo_prom > 0) {
+                                            ->where('inv_producto_id', '=', $request->inv_producto_id)
+                                            ->value('costo_promedio');
+
+        if ($costo_prom > 0)
+        {
             $producto = array_merge($producto, ['precio_compra' => $costo_prom]);
         }
-
 
         // Obtener existencia actual
         $existencia_actual = InvMovimiento::get_existencia_actual($request->inv_producto_id, $request->id_bodega, $request->fecha_aux);

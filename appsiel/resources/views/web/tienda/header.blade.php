@@ -9,7 +9,9 @@
                 <div class="row">
                     <div class="col-md-3 col-sm-3 col-xs-12">
                         <div class="toplink-static">
-                            Línea directa: &nbsp; <a href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}"><img class="alignnone wp-image-2180 lazyloaded" src="https://sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon-150x150.png" data-src="https://sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon-150x150.png" alt="" width="47" height="37" data-srcset="https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=2&amp;resize=97%2C107&amp;ssl=1 194w, https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=3&amp;resize=97%2C107&amp;ssl=1 291w" sizes="(max-width: 97px) 100vw, 97px" srcset="https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=2&amp;resize=97%2C107&amp;ssl=1 194w, https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=3&amp;resize=97%2C107&amp;ssl=1 291w"><noscript><img class="alignnone wp-image-2180 lazyload" src="https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?resize=97%2C107&#038;ssl=1" alt="" width="97" height="107" srcset="https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=2&amp;resize=97%2C107&amp;ssl=1 194w, https://i2.wp.com/sherpadigital.es/wp-content/uploads/2017/10/whatsapp-icon.png?zoom=3&amp;resize=97%2C107&amp;ssl=1 291w" sizes="(max-width: 97px) 100vw, 97px" data-recalc-dims="1" /></noscript> <span>{{ $empresa->telefono1 }}</span> </a>
+                            <span style="line-height: 40px; color: white;">
+                                Línea directa: &nbsp; <a href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}" target="_blank"><i style="font-size: 16px; color: green;" class="fa fa-whatsapp" aria-hidden="true"></i> {{ $empresa->telefono1 }}</a>
+                            </span>
                         </div>
                     </div>
 
@@ -29,16 +31,21 @@
                             @if(Auth::guest())
                                      <li class=" last"><a
                                         href="{{route('tienda.login')}}"
-                                        title="Log In">Iniciar Sesión</a>
+                                        title="Iniciar sesión">Iniciar Sesión</a>
                                      </li>
                                 <li class=" last"><a
                                             href="{{url('/web/create?id=10&id_modelo=218')}}"
-                                            title="Registrarse">Registrarse</a>
+                                            title="Registrarse"
+                                            onclick="registrarse( event )">Registrarse</a>
+                                </li>
+                                <li class=" last"><button
+                                            title="Registrarse"
+                                            onclick="registrarse( event )">Registrarse 2</button>
                                 </li>
                             @else
                                 <li class=" last"><a
                                             href="{{url('/logout')}}"
-                                            title="Registrarse">Cerrar sesión</a>
+                                            title="Cerra sesión">Cerrar Sesión</a>
                                 </li>
                             @endif
                         </ul>
@@ -48,25 +55,28 @@
         </div>
     </div>
 
-                        <!-- 
+                        
     <div class="header">
         <div class="container">
             <div class="header-inner">
                 <div class="row">
                     <div class="header-content clearfix">
                         <div class="top-logo col-xs-12 col-md-3 col-sm-12">
-                            <a href="{ {url('/')}}" title="{ {$empresa->descripcion}}"
-                               class="logo"><strong>{ {$empresa->descripcion}}</strong><img
-                                        src="{ {asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}"
-                                        alt="Magento Commerce"></a>
+                            <a href="{{url('/')}}" title="{{$empresa->descripcion}}"
+                               class="logo"><strong>{{$empresa->descripcion}}</strong><img
+                                        src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}"
+                                        alt="Tienda Online"></a>
                         </div>
-                        <form class="col-xs-12 col-md-6 col-sm-12 serach" action="" method="GET">
-                            <div class="box-search-bar clearfix">
-                                <select class="btn" name="" id="">
-                                    <option value="">Categorias</option>
+                        <form class="col-xs-12 col-md-6 col-sm-12 search" action="{{route('tienda.busqueda')}}" method="GET" onsubmit="buscar_descripcion(event)" id="form_consulta">
+                            <div class="box-search-bar clearfix" style="color: black !important;">
+                                <select class="btn" name="categoria" id="categoria_id" onchange="filtrar_categoria(value, this.options[this.selectedIndex] )">
+                                    <option value="0">Categorias</option>
+                                    @foreach($grupos as $key => $value)
+                                        <option value="{{$value[0]->id}}">{{strtolower($key)}}</option>
+                                    @endforeach
                                 </select>
-                                <input type="text" class="input-text" autocomplete="off" id="search"
-                                       placeholder="Search entire store here...">
+                                <input type="text" class="input-text" autocomplete="off" id="search" name="search" required
+                                       placeholder="Buscar por producto, categoría... ">
                                 <button type="submit" title="Search" class="btn"><i
                                             class="fa fa-search"></i></button>
                             </div>
@@ -102,6 +112,6 @@
             </div>
         </div>
     </div>
-                    -->
+                <!--     -->
 
 </header>

@@ -586,26 +586,25 @@ class ReporteController extends TesoreriaController
 
         $total_columna = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-        foreach ( $todas_las_matriculas_del_curso as $una_matricula) 
+        foreach ( $todas_las_matriculas_del_curso as $una_matricula ) 
         {
             $total_linea = 0;
             $num_columna = 0;
             
-            // PRIMERAS DOS COLUMNAS DE LA TABLA
-            $tabla.='<tr>
-                        <td>'.$fila.'</td>
-                        <td>'.$una_matricula->nombre_completo.' ('.$una_matricula->codigo.')'.'</td>';
 
             // Se obtiene la libreta Activa de ese estudiante para el año de la matríula activa
             $libreta_pagos = TesoLibretasPago::where('estado','Activo')
-            									->where('matricula_id', $una_matricula->matricula_id )
-            									->get()
-            									->first();
-
+                                                ->where('matricula_id', $una_matricula->matricula_id )
+                                                ->get()
+                                                ->first();
 
             // Se obtiene la cartera de ese estudiante para el año de la matríula activa
             if ( !is_null($libreta_pagos) ) 
             {
+                // PRIMERAS DOS COLUMNAS DE LA TABLA
+                $tabla.='<tr>
+                            <td>'.$fila.'</td>
+                            <td>'.$una_matricula->nombre_completo.' ('.$una_matricula->codigo.')'.'</td>';
 
                 //Matrícula
                 $cartera_matricula = TesoCarteraEstudiante::where('id_libreta', $libreta_pagos->id)
@@ -706,21 +705,24 @@ class ReporteController extends TesoreriaController
                         $num_columna++;
                     }
                 }
+            
+
+                if ( $total_linea == 0) 
+                {
+                    $total_linea = '';
+                }else{
+                    $total_linea = '$'.number_format( $total_linea, 0, ',', '.');
+                }
+
+                $tabla.='<td>'.$total_linea.'</td></tr>';
+                $fila++;
 
             }else{
-                $tabla.='<td colspan="11">El estudiante no tiene libreta de pagos Activa.</td>';
+                // Para Descomentar abajo, se debe validar que la matricula no sea de un año lectivo anterior
+                //$tabla.='<tr><td colspan="14">El estudiante no tiene libreta de pagos Activa.</td></tr>';
             }
 
-            if ( $total_linea == 0) 
-            {
-                $total_linea = '';
-            }else{
-                $total_linea = '$'.number_format( $total_linea, 0, ',', '.');
-            }
-
-            $tabla.='<td>'.$total_linea.'</td></tr>';
-            $fila++;
-        }
+        } // Fin foreach $todas_las_matriculas_del_curso
 
         $tabla.='</tbody>
         			<tfoot>

@@ -772,7 +772,7 @@ $(document).ready(function(){
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td> '+ $('#existencia_actual').val() + '</td>';
+				celdas[ num_celda ] = '<td> '+ new Intl.NumberFormat("de-DE").format( $('#existencia_actual').val() ) + '</td>';
 				
 				num_celda++;
 

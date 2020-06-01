@@ -284,6 +284,7 @@
 <script src="{{asset('js/wow.min.js')}}"></script>
 <script src="{{asset('js/main.js')}}"></script>
 <script src="{{asset('js/jquery.jscroll.min.js')}}"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
         $('.client-single').on('click', function (event) {
@@ -308,6 +309,7 @@
 
             }
         });
+
     });
 </script>
 
@@ -324,6 +326,7 @@
         header.classList.remove("sticky");
       }
     }
+
 </script>
 
 

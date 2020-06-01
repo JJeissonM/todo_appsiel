@@ -5,7 +5,7 @@
 
 @include('web.tienda.header')
 
-@include('web.tienda.carousel')
+@include( 'web.tienda.carousel' )
 
 <main style="background: white;">
     <div class="main-container col2-left-layout">
@@ -103,6 +103,9 @@
         </div>
     </div>
 </main>
+
+@include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
+
 <script src="{{asset('assets/tienda/js/categories.js')}}"></script>
 
     <script type="text/javascript">
@@ -113,9 +116,38 @@
             
             var url = "{{ url('ecommerce/public/filtro/categoria/') }}" + "/" + categoria_id;
 
-            console.log( enlace.innerHTML );
+            //console.log( enlace );
 
             $.get( url )
+                .done(function( data ) {
+                    
+                    $('#lista_productos').html( data );
+                    $('#lista_productos').fadeIn( 1000 );
+
+                    $('#categoria_filtrada').html( '<div style="border: 1px solid; border-radius: 4px; padding: 3px;"> Filtado por: <a href="javascript:location.reload()" class="close" aria-label="close">&times;</a> <br>' + enlace.innerHTML + ' </div><hr>' );
+
+                })
+                .error(function(){
+                    $('#lista_productos').fadeIn( 500 );
+
+                    $('#lista_productos').html( '<p style="color:red;">Categoría no pudo ser cargada. Por favor, intente nuevamente.</p>' );
+                });
+        }
+
+        function buscar_descripcion( event )
+        {   
+            event.preventDefault();
+
+            $('#lista_productos').fadeOut( 1000 );
+            
+            //var url = "{{ url('ecommerce/public/busqueda/') }}";
+            var form_consulta = $('#form_consulta');
+            var url = form_consulta.attr('action');
+            var datos = form_consulta.serialize();
+
+            //console.log( enlace );
+
+            $.get( url, datos )
                 .done(function( data ) {
                     
                     $('#lista_productos').html( data );

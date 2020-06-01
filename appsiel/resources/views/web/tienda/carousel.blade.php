@@ -12,7 +12,12 @@
 
   <!-- Wrapper for slides -->
   <div class="carousel-inner">
+
     <div class="carousel-item active">
+      <img src="http://avipoulet.com./nube/imagenes_banner/banners-9jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
+    </div>
+
+    <div class="carousel-item">
       <img src="http://avipoulet.com./nube/imagenes_banner/banners-1jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
     </div>
 
@@ -25,12 +30,25 @@
     </div>
   
     <div class="carousel-item">
-      <img src="http://avipoulet.com./nube/imagenes_banner/banners-4jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
+      <img src="http://avipoulet.com./nube/imagenes_banner/banners-4-1jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
     </div>
   
     <div class="carousel-item">
       <img src="http://avipoulet.com./nube/imagenes_banner/banners-5jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
     </div>
+  
+    <div class="carousel-item">
+      <img src="http://avipoulet.com./nube/imagenes_banner/banners-6jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
+    </div>
+  
+    <div class="carousel-item">
+      <img src="http://avipoulet.com./nube/imagenes_banner/banners-7jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
+    </div>
+  
+    <div class="carousel-item">
+      <img src="http://avipoulet.com./nube/imagenes_banner/banners-8jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
+    </div>
+
   </div>
 
   <!-- Left and right controls -->

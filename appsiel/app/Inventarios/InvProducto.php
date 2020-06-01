@@ -77,7 +77,7 @@ class InvProducto extends Model
     }
 
 
-    public static function get_datos_pagina_web($grupo_inventario_id, $estado, $count = 9, $busqueda=false)
+    public static function get_datos_pagina_web( $grupo_inventario_id, $estado, $count = 9, $busqueda=false)
     {
 
         if ( $grupo_inventario_id == '')
@@ -87,7 +87,9 @@ class InvProducto extends Model
         }else{
           $operador1 = '=';
         }
-        if(!$busqueda){
+        
+        if(!$busqueda)
+        {
             $busqueda = '';
         }
 

@@ -93,6 +93,12 @@
 @section('scripts')
 
 	<script type="text/javascript">
+
+		function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+        {
+        	obj_text_input.parent().next().find(':input').focus();
+        }
+
 		$(document).ready(function(){
 			$('#teso_caja_id').parent().hide();
 			$('#teso_cuenta_bancaria_id').parent().hide();
@@ -101,6 +107,43 @@
 			$('#fecha').val( get_fecha_hoy() );
 			$('#fecha').focus();
 
+			$('#fecha').keyup(function(event){
+				var x = event.which || event.keyCode;
+				if(x==13){
+					$('#core_tercero_id').focus();				
+				}		
+			});
+
+			$('#valor_total').keyup(function(event){
+				var x = event.which || event.keyCode;
+				if(x==13){
+					$('#btn_nuevo').focus();				
+				}		
+			});
+
+
+			$(document).on('keyup','#col_detalle',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	$(this).parent().next().find(':input').focus();
+				}
+			});
+
+
+			$(document).on('keyup','#col_valor',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	$('.btn_confirmar').focus();
+				}
+			});
 
 			var LineaNum = 0;
 
@@ -132,7 +175,7 @@
 			$("#btn_nuevo").click(function(event){
 				event.preventDefault();
 		        nueva_linea_ingreso_datos();
-		    });
+		    });		    
 
 
 		    function nueva_linea_ingreso_datos(){
@@ -144,7 +187,7 @@
 
 			        $('#ingreso_registros').find('tbody:first').append( datos );
 
-			        $('#combobox_motivos').focus();
+			        $('#motivo_input').focus();
 
 			        $('#btn_nuevo').hide();
 				});
@@ -157,8 +200,13 @@
 				var ok = validar_linea();
 				if( ok ) {
 					var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='glyphicon glyphicon-trash'></i></button>";
+
 			        var cuenta = '<span style="color:white;">' + $('#combobox_motivos').val() + '-</span>' + $( "#combobox_motivos option:selected" ).text();
-			        var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#combobox_terceros option:selected" ).text();
+
+			        var cuenta = '<span style="color:white;">' + $('#combobox_motivos').val() + '-</span>' + $( "#motivo_input" ).val();
+			        
+			        var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#tercero_input" ).val();
+
 			        var detalle = $('#col_detalle').val();
 			        var valor = $('#col_valor').val();
 

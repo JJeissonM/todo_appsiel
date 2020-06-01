@@ -884,7 +884,15 @@ class ModeloController extends Controller
             // El campo Atributos se ingresa en  formato JSON {"campo1":"valor1","campo2":"valor2"}
             // Luego se tranforma a un array para que pueda ser aceptado por el Facade Form:: de LaravelCollective
             if ($lista_campos[$i]['atributos'] != '') {
+                
                 $lista_campos[$i]['atributos'] = json_decode($lista_campos[$i]['atributos'], true);
+                
+                // Para el tipo de campo Input Lista Sugerencias
+                if( isset( $lista_campos[$i]['atributos']['data-url_busqueda'] ) )
+                {
+                    $lista_campos[$i]['atributos']['data-url_busqueda'] = url( $lista_campos[$i]['atributos']['data-url_busqueda'] );
+                }
+
             } else {
                 $lista_campos[$i]['atributos'] = [];
             }
@@ -917,6 +925,7 @@ class ModeloController extends Controller
             $nombre_campo = $lista_campos[$i]['name'];
 
             if ($accion == 'create') {
+
                 // Valores predeterminados para Algunos campos ocultos
                 switch ($lista_campos[$i]['name']) {
                     case 'creado_por':
@@ -932,6 +941,13 @@ class ModeloController extends Controller
                         # code...
                         break;
                 }
+
+                if ($lista_campos[$i]['tipo'] == 'input_lista_sugerencias')
+                {
+                    // value es un array con los valores para text_input y para el input hidden
+                    $lista_campos[$i]['value'] = ['',''];
+                }
+
             } else { // Si se está editando
 
                 // asignar valor almacenado en la BD al cada campo
@@ -1006,6 +1022,18 @@ class ModeloController extends Controller
                         $lista_campos[$i]['value'] = $registro->$lista_campos[$i]['name'];
                     }
                 }
+
+
+
+                if ($lista_campos[$i]['tipo'] == 'input_lista_sugerencias')
+                {
+                    $campo_del_modelo = $lista_campos[$i]['name'];
+                    $registro_input = app( $lista_campos[$i]['atributos']['data-clase_modelo'] )->find( $registro->$campo_del_modelo );
+
+                    // value es un array con los valores para text_input y para el input hidden
+                    $lista_campos[$i]['value'] = [ $registro_input->descripcion.' ('.number_format($registro_input->numero_identificacion,0,',','.').')', $registro->$campo_del_modelo ];
+                }
+
             }
         }
         return $lista_campos;
