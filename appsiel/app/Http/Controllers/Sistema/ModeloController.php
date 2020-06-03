@@ -89,15 +89,13 @@ class ModeloController extends Controller
         $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
 
         $acciones = $this->acciones_basicas_modelo( $this->modelo, $variables_url );
-
+        
         $url_crear = $acciones->create;
         $url_edit = $acciones->edit;
         $url_print = $acciones->imprimir;
         $url_ver = $acciones->show;
         $url_estado = $acciones->cambiar_estado;
         $url_eliminar = $acciones->eliminar;
-
-
 
         $botones = [];
         $enlaces = json_decode( $acciones->otros_enlaces );
@@ -141,6 +139,7 @@ class ModeloController extends Controller
 
 
     /*
+        NOTA: Para evitar resultados inesperados, se debe comprobar que la variable $urls_acciones tenga un formato JSON correcto.
     */
     public function acciones_basicas_modelo( $modelo, $parametros_url )
     {
@@ -203,26 +202,15 @@ class ModeloController extends Controller
         }
 
 
-        // MANEJO DE URLs DESDE EL PROPIO MODELO
-        // Se llaman las urls desde la class(name_space) del modelo
+        // MANEJO DE URLs DESDE EL ARCHIVO CLASS DEL PROPIO MODELO 
+        // Se llaman las urls desde la class (name_space) del modelo
         $urls_acciones = json_decode( app( $modelo->name_space )->urls_acciones );
 
         if ( !is_null($urls_acciones) )
         {
-            // Acciones predeterminadas, aunque esté vacía la variable $urls_acciones en formato JSON en la class del modelo
-            /*
-            $acciones->create = 'web/create' . $parametros_url;
-            $acciones->edit = 'web/id_fila/edit' . $parametros_url;
-            $acciones->store = 'web';
-            $acciones->update = 'web/id_fila';
-            $acciones->show = 'web/id_fila' . $parametros_url;
-            $acciones->imprimir = 'web_imprimir/id_fila' . $parametros_url;
-            $acciones->eliminar = 'web_eliminar/id_fila' . $parametros_url;
-            $acciones->cambiar_estado = 'a_i/id_fila' . $parametros_url;
-            $acciones->otros_enlaces = '';
-            */
 
             // Acciones particulares, si están definidas en la variable $urls_acciones de la class del modelo
+            
             if ( isset( $urls_acciones->create ) )
             {
                 if ( $urls_acciones->create != 'no' )
@@ -1171,11 +1159,13 @@ class ModeloController extends Controller
 
         return Datatables::of($datos_consulta)
             ->addColumn('action', function ($datos_consulta) {
-                //if ($modelo->url_edit!='') {
+
                 $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo');
-                $url_edit = $this->modelo->url_edit . $variables_url;
-                $url_ver = $this->modelo->url_ver . $variables_url;
-                //}
+                $acciones = $this->acciones_basicas_modelo( $this->modelo, $variables_url );
+
+                $url_edit = $acciones->edit;
+                $url_ver = $acciones->show;
+
                 return '<a class="btn btn-warning btn-xs btn-detail" href="' . url(str_replace('id_fila', $datos_consulta->id, $url_edit)) . '" title="Modificar"><i class="fa fa-btn fa-edit"></i>&nbsp;</a> &nbsp;&nbsp;&nbsp;<a class="btn btn-primary btn-xs btn-detail" href="' . url(str_replace('id_fila', $datos_consulta->id, $url_ver)) . '" title="Ver"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>';
             })
             ->editColumn('id', 'ID: {{$id}}')

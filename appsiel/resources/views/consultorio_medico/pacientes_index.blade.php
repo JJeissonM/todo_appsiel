@@ -20,7 +20,9 @@
 
 @section('scripts')
 	<script>
-		var SITEURL = '{{URL::to('')}}';
+		//var SITEURL = '{{URL::to('')}}';
+
+		var url = "{{url('ajax_datatable')}}";
 
 		$(document).ready( function () {
 
@@ -32,7 +34,7 @@
 				"processing": true,
 		        "serverSide": true,
 		        "ajax": {
-		            "url": SITEURL + "/ajax_datatable",
+		            "url": url,
 		            "data": function ( d ) {
 		                d.id_modelo = getParameterByName('id_modelo');
 		                d.id = getParameterByName('id');
@@ -41,9 +43,9 @@
 		            }
 		        },
 		        columns: [
+							{ data: 'codigo_historia_clinica', name: 'codigo_historia_clinica' },
 							{data: 'nombre_completo', name: 'nombre_completo' },
 							{ data: 'numero_identificacion', name: 'numero_identificacion' },
-							{ data: 'codigo_historia_clinica', name: 'codigo_historia_clinica' },
 							{ data: 'fecha_nacimiento', name: 'fecha_nacimiento' },
 							{data: 'genero', name: 'genero', orderable: false},
 							{ data: 'grupo_sanguineo', name: 'grupo_sanguineo' },

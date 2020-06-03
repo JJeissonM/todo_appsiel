@@ -118,8 +118,8 @@ class ConsultaController extends Controller
 
         $miga_pan = [
                 ['url'=>'consultorio_medico?id='.Input::get('id'),'etiqueta'=>'Consultorio Médico'],
-                ['url'=>'consultorio_medico/pacientes/?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=>'Pacientes'],
-                ['url'=>'NO', 'etiqueta' => $paciente->nombres." ".$paciente->apellidos.": Modificar consulta"]
+                ['url'=>'consultorio_medico/pacientes/'.Input::get('paciente_id').'?id='.Input::get('id').'&id_modelo=95','etiqueta'=>'Historia Clínica ' . $paciente->nombres." ".$paciente->apellidos ],
+                ['url'=>'NO', 'etiqueta' => "Modificar consulta"]
             ];
 
         $archivo_js = app($modelo->name_space)->archivo_js;

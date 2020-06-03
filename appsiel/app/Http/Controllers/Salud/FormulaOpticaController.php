@@ -56,7 +56,13 @@ class FormulaOpticaController extends ModeloController
             $url_action = $modelo->url_form_create.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
         }
 
-        $miga_pan = $this->get_miga_pan($modelo,'Crear nuevo');
+        $paciente = Paciente::datos_basicos_historia_clinica( Input::get('paciente_id') );
+
+        $miga_pan = [
+                ['url'=>'consultorio_medico?id='.Input::get('id'),'etiqueta'=>'Consultorio Médico'],
+                ['url'=>'consultorio_medico/pacientes/'.Input::get('paciente_id').'?id='.Input::get('id').'&id_modelo=95','etiqueta'=>'Historia Clínica ' . $paciente->nombres." ".$paciente->apellidos ],
+                ['url'=>'NO', 'etiqueta' => "Crear fórmula"]
+            ];
 
         $examen = ExamenMedico::find( Input::get('examen_id') );
 
@@ -75,23 +81,16 @@ class FormulaOpticaController extends ModeloController
     public function store(Request $request)
     {
         $general = new ModeloController();
-        $general->crear_nuevo_registro( $request );
+        $registro = $general->crear_nuevo_registro( $request );
 
         $modelo_pacientes = Modelo::where('modelo','salud_pacientes')->first();
+
+        $this->asociar_examen_a_formula( $registro->id, $request->examen_id );
 
         return redirect( 'consultorio_medico/pacientes/'.$request->paciente_id.'?id='.$request->url_id.'&id_modelo='.$modelo_pacientes->id )->with( 'flash_message','Registro CREADO correctamente.' );
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+   
 
     /**
      * Show the form for editing the specified resource.
@@ -156,7 +155,7 @@ class FormulaOpticaController extends ModeloController
         $registro->fill( $request->all() );
         $registro->save();
 
-        return redirect('consultorio_medico/pacientes/'.$request->paciente_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Fórmula MODIFICADA correctamente.');
+        return redirect('consultorio_medico/pacientes/'.$request->paciente_id.'?id='.$request->url_id.'&id_modelo=95')->with('flash_message','Fórmula MODIFICADA correctamente.');
     }
 
     /**
@@ -188,6 +187,7 @@ class FormulaOpticaController extends ModeloController
 
     public function imprimir($id)
     {
+
         $paciente_id = Input::get('paciente_id');
         $consulta_id = Input::get('consulta_id');
         $formula_id = $id;
@@ -196,23 +196,35 @@ class FormulaOpticaController extends ModeloController
 
         $datos_historia_clinica = Paciente::datos_basicos_historia_clinica( $paciente_id );
 
-        $formula = FormulaOptica::find( $formula_id );
-
         // EXÁMENES
         $examenes = '';
-        $opciones = ExamenMedico::where('estado','Activo')->orderBy('orden')->get();
+        //$opciones = ExamenMedico::where('estado','Activo')->orderBy('orden')->get();
+        $opciones = ExamenMedico::examenes_del_paciente2( $paciente_id, $consulta_id );
         $i = 0;
-        foreach ($opciones as $opcion){
-            $esta = DB::table('salud_formula_tiene_examenes')->where( ['formula_id' => $formula_id, 'examen_id'=>$opcion->id] )->first();
-            if ( !empty($esta) )
+        foreach ($opciones as $opcion)
+        {
+            $formula = FormulaOptica::leftJoin('salud_formula_tiene_examenes','salud_formula_tiene_examenes.formula_id','=','salud_formulas_opticas.id')
+                        ->where('salud_formulas_opticas.paciente_id', $paciente_id)
+                        ->where('salud_formulas_opticas.consulta_id', $consulta_id)
+                        ->where('salud_formula_tiene_examenes.examen_id', $opcion->id)
+                        ->get()
+                        ->first();
+            
+            $formula_id = 0;
+            $vista_formula = '';
+            if( !is_null( $formula ) )
             {
-               $examen_id = $opcion->id;
+              $vista_formula = View::make( 'consultorio_medico.formula_optica_show_tabla', compact('formula') )->render();
+              $formula_id = $formula->id;
+
+              $examen_id = $opcion->id;
 
               $organos = ExamenTieneOrganos::leftJoin('salud_organos_del_cuerpo','salud_organos_del_cuerpo.id','=','salud_examen_tiene_organos.organo_id')->where( 'examen_id', $examen_id )->select('salud_organos_del_cuerpo.id','salud_organos_del_cuerpo.descripcion')->orderBy('salud_examen_tiene_organos.orden')->get();
 
               $variables = ExamenTieneVariables::leftJoin('salud_catalogo_variables_examenes','salud_catalogo_variables_examenes.id','=','salud_examen_tiene_variables.variable_id')->where( 'examen_id', $examen_id )->select('salud_catalogo_variables_examenes.id','salud_catalogo_variables_examenes.descripcion','salud_examen_tiene_variables.tipo_campo')->orderBy('salud_examen_tiene_variables.orden')->get();
 
-              $examenes .= '<b>'.$opcion->descripcion.'</b>'.View::make('consultorio_medico.resultado_examen_show_tabla', compact('variables','organos','paciente_id','consulta_id','examen_id'))->render();// .'<br>'
+              $examenes .= '<b style="width:100%; background: #ddd;">'.$opcion->descripcion.'</b>'.View::make('consultorio_medico.resultado_examen_show_tabla', compact('variables','organos','paciente_id','consulta_id','examen_id'))->render().$vista_formula;// .'<br>'
+              $vista_formula = '';
             }
         }
         
@@ -235,6 +247,6 @@ class FormulaOpticaController extends ModeloController
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
 
         //return $view;
-        return $pdf->download('formula_optica.pdf');//stream();
+        return $pdf->stream('formula_optica.pdf');//stream();
     }
 }   

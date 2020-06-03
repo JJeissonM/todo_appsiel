@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 class Propietario extends Model
 {
     protected $table = 'cte_propietarios';
+    
     protected $fillable = ['id', 'genera_planilla', 'tercero_id', 'created_at', 'updated_at'];
 
     public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Propietario', 'Genera Planilla', 'Estado', 'Acción'];

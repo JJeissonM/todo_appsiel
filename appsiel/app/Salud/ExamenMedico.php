@@ -11,15 +11,21 @@ use App\Sistema\Modelo;
 
 class ExamenMedico extends Model
 {
+    /*
+        Una consulta debe tener mínimo un exámen llamado "Chequeo"
+    */
+
     protected $table = 'salud_examenes';
-	protected $fillable = ['descripcion', 'detalle', 'orden', 'estado'];
-	public $encabezado_tabla = ['Código', 'Descripción', 'Estado', 'Acción'];
-	public static function consultar_registros()
+	
+    protected $fillable = ['descripcion', 'detalle', 'orden', 'estado'];
+	
+    public $encabezado_tabla = ['Código', 'Descripción', 'Estado', 'Acción'];
+	
+    public static function consultar_registros()
 	{
-	    $registros = ExamenMedico::select('salud_examenes.descripcion AS campo1', 'salud_examenes.detalle AS campo2', 'salud_examenes.estado AS campo3', 'salud_examenes.id AS campo4')
+	    return ExamenMedico::select('salud_examenes.descripcion AS campo1', 'salud_examenes.detalle AS campo2', 'salud_examenes.estado AS campo3', 'salud_examenes.id AS campo4')
 	    ->get()
 	    ->toArray();
-	    return $registros;
 	}
 
     public static function opciones_campo_select()
@@ -57,6 +63,17 @@ class ExamenMedico extends Model
         }
 
         return $vec;
+    }
+
+    public static function examenes_del_paciente2( $paciente_id, $consulta_id )
+    {   
+        return ExamenMedico::leftJoin('salud_resultados_examenes', 'salud_resultados_examenes.examen_id','=','salud_examenes.id')
+                            ->where('salud_resultados_examenes.paciente_id', $paciente_id)
+                            ->where('salud_resultados_examenes.consulta_id', $consulta_id)
+                            ->select( 'salud_examenes.id', 'salud_examenes.descripcion' )
+                            ->orderBy('salud_examenes.orden')
+                            ->groupBy('salud_resultados_examenes.examen_id')
+                            ->get();
     }
 
 	/*

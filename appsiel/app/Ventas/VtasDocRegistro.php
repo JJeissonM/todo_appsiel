@@ -21,7 +21,7 @@ class VtasDocRegistro extends Model
 
     public $campos_visibles_linea_registro = [ 
     											['&nbsp;','10px'],
-    											['Producto','280px'],
+    											['Item','280px'],
     											['Motivo','200px'],
     											['Stock','35px'],
                                                 ['Cantidad',''],
