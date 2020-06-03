@@ -46,7 +46,7 @@
 						<td>
 
 							@can('salud_consultas_edit')
-								&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'consultorio_medico/formulas_opticas/'.$formula->id.'/edit?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
+								&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'web/'.$formula->id.'/edit?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
 
 								{{ Form::open( [ 'url' => 'consultorio_medico/eliminar_formula_optica?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'style' => 'display:inline;', 'class' => 'form_eliminar' ] ) }}
 									{{ Form::hidden( 'formula_id', $formula->id ) }}

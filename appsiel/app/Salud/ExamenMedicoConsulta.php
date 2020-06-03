@@ -17,8 +17,8 @@ class ExamenMedicoConsulta extends ExamenMedico
     public static function opciones_campo_select()
     {
         $opciones = ExamenMedicoConsulta::leftJoin('salud_resultados_examenes','salud_resultados_examenes.examen_id','=','salud_examenes.id')
-                                        ->leftJoin('salud_formula_tiene_examenes','salud_formula_tiene_examenes.examen_id','=','salud_resultados_examenes.examen_id')
-                                        ->whereNull('salud_formula_tiene_examenes.examen_id')
+                                        //->leftJoin('salud_formula_tiene_examenes','salud_formula_tiene_examenes.examen_id','=','salud_resultados_examenes.examen_id')
+                                        //->whereNull('salud_formula_tiene_examenes.examen_id')
                                         ->where('salud_resultados_examenes.paciente_id', Input::get('paciente_id') )
                                         ->where('salud_resultados_examenes.consulta_id', Input::get('consulta_id') )
                                         ->select('salud_examenes.id','salud_examenes.descripcion')
@@ -27,7 +27,12 @@ class ExamenMedicoConsulta extends ExamenMedico
         $vec['']='';
         foreach ($opciones as $opcion)
         {
-            $vec[$opcion->id] = $opcion->descripcion;
+            $esta = DB::table('salud_formula_tiene_examenes')->where( 'examen_id', $opcion->id )->first();
+            
+            if ( is_null($esta) ) 
+            {
+                $vec[$opcion->id] = $opcion->descripcion;
+            }
         }
 
         return $vec;
