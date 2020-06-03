@@ -13,35 +13,64 @@ class Paciente extends Model
     protected $fillable = ['core_tercero_id', 'codigo_historia_clinica', 'fecha_nacimiento', 'genero', 'ocupacion', 'estado_civil', 'grupo_sanguineo', 'remitido_por', 'nivel_academico'];
 
 	public $encabezado_tabla = ['Codigo historia clínica', 'Nombre completo', 'Doc. Identidad', 'Fecha nacimiento', 'Género', 'Grupo Sanguineo', 'Acción'];
-    public static function consultar_registros()
-    {
-        return Paciente::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_pacientes.core_tercero_id')
-                    ->select(
-                                'salud_pacientes.codigo_historia_clinica AS campo1',
-                                DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo2' ),
-                                'core_terceros.numero_identificacion AS campo3',
-                                'salud_pacientes.fecha_nacimiento AS campo4',
-                                'salud_pacientes.genero AS campo5',
-                                'salud_pacientes.grupo_sanguineo AS campo6',
-                                'salud_pacientes.id AS campo7')
-                    ->get()
-                    ->take(20)
-                    ->toArray();
-    }
+
+    public $vistas = '{"index":"consultorio_medico.pacientes_index"}';
+
+    public $urls_acciones = '{
+                                "create":"web/create",
+                                "edit":"web/id_fila/edit",
+                                "show":"consultorio_medico/pacientes/id_fila",
+                                "store":"consultorio_medico/pacientes",
+                                "update":"consultorio_medico/pacientes/id_fila"}';
 
     public static function consultar_datatable()
     {
         $select_raw = "TRIM(CONCAT(core_terceros.nombre1,' ',core_terceros.otros_nombres,' ',core_terceros.apellido1,' ',core_terceros.apellido2)) AS nombre_completo";
 
-        $registros = Paciente::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_pacientes.core_tercero_id')
-                    ->select(DB::raw($select_raw), 
+        return Paciente::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_pacientes.core_tercero_id')
+                    ->select(
+                            'salud_pacientes.codigo_historia_clinica',
+                            DB::raw($select_raw), 
                             'core_terceros.numero_identificacion', 
-                            'salud_pacientes.codigo_historia_clinica', 
                             'salud_pacientes.fecha_nacimiento', 
                             'salud_pacientes.genero', 
                             'salud_pacientes.grupo_sanguineo', 
-                            'salud_pacientes.id');
-        return $registros;
+                            'salud_pacientes.id')->get();
+
+    }
+
+    public static function get_campos_adicionales_edit( $lista_campos, &$registro )
+    {
+        $registro->nombre1 = $registro->tercero->nombre1;
+        $registro->otros_nombres = $registro->tercero->otros_nombres;
+        $registro->apellido1 = $registro->tercero->apellido1;
+        $registro->apellido2 = $registro->tercero->apellido2;
+        $registro->id_tipo_documento_id = $registro->tercero->id_tipo_documento_id;
+        $registro->numero_identificacion = $registro->tercero->numero_identificacion;
+        $registro->direccion1 = $registro->tercero->direccion1;
+        $registro->telefono1 = $registro->tercero->telefono1;
+        $registro->email = $registro->tercero->email;
+
+        return $lista_campos;
+    }
+
+
+    public static function update_adicional( $datos, $cliente_id )
+    {   
+        $registro = Paciente::find( $id );
+
+        // Actualizar datos del Tercero
+        $registro->tercero->fill( $datos );
+        $registro->tercero->save();
+
+        return true;
+    }
+
+    public static function consultar_registros2()
+    {
+        /* Esto no se va a usar, solo es para que enviar algo en este método */
+        return Paciente::find(1)->paginate(10);
+                    
     }
 
     // El archivo js debe estar en la carpeta public

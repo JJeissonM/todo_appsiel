@@ -363,36 +363,22 @@ class PagoController extends TransaccionController
     // AJAX: enviar fila para el ingreso de registros al elaborar pago
     public static function ajax_get_fila( $teso_tipo_motivo )
     {
-        $registros = TesoMotivo::where('teso_tipo_motivo',$teso_tipo_motivo)
-                            ->where('estado','Activo')
-                            ->where('core_empresa_id',Auth::user()->empresa_id)
-                            ->orderBy('descripcion')
-                            ->get();
-        $motivos[''] = '';
-        foreach ($registros as $fila) {
-            $motivos[$fila->id] = $fila->descripcion; 
-        }
 
-        $registros_2 = Tercero::where('core_empresa_id',Auth::user()->empresa_id)->orderBy('descripcion','ASC')->get();
-        $terceros[''] = '';
-        foreach ($registros_2 as $fila2) {
-            //$terceros[$fila2->id]=$fila2->numero_identificacion." ".$fila2->descripcion; 
-            $terceros[$fila2->id] = $fila2->descripcion; 
-        }
-
-        $btn_borrar = "<a type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='glyphicon glyphicon-trash'></i></a>";
-        $btn_confirmar = "<a type='button' class='btn btn-success btn-xs btn_confirmar'><i class='glyphicon glyphicon-ok'></i></a>";
+        $btn_confirmar = "<button class='btn btn-success btn-xs btn_confirmar' style='display: inline;'><i class='fa fa-check'></i></button>";
+        $btn_borrar = "<button class='btn btn-danger btn-xs btn_eliminar' style='display: inline;'><i class='fa fa-trash'></i></button>";
 
         $tr = '<tr id="linea_ingreso_default" class="linea_ingreso_default">
                     <td>
-                        '.Form::select( 'campo_motivos', $motivos, null, [ 'id' => 'combobox_motivos', 'class' => 'lista_desplegable' ] ).'
+                        '.Form::text( 'motivo_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'motivo_input', 'data-url_busqueda' => url( 'teso_consultar_motivos' ), 'autocomplete'  => 'off' ] ).'
+                        '.Form::hidden( 'campo_motivos', null, [ 'id' => 'combobox_motivos' ] ).'
                     </td>
                     <td>
-                        '.Form::select( 'campo_terceros', $terceros, null, [ 'id' => 'combobox_terceros', 'class' => 'lista_desplegable' ] ).'
+                        '.Form::text( 'tercero_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'tercero_input', 'data-url_busqueda' => url('core_consultar_terceros_v2'), 'autocomplete'  => 'off' ] ).'
+                        '.Form::hidden( 'campo_terceros', null, [ 'id' => 'combobox_terceros' ] ).'
                     </td>
-                    <td> '.Form::text( 'detalle_operacion', null, [ 'id' => 'col_detalle', 'class' => 'caja_texto' ] ).' </td>
-                    <td> '.Form::text( 'valor', null, [ 'id' => 'col_valor', 'class' => 'caja_texto' ] ).' </td>
-                    <td>'.$btn_confirmar.$btn_borrar.'</td>
+                    <td> '.Form::text( 'detalle_operacion', null, [ 'id' => 'col_detalle', 'class' => 'form-control' ] ).' </td>
+                    <td> '.Form::text( 'valor', null, [ 'id' => 'col_valor', 'class' => 'form-control' ] ).' </td>
+                    <td> <div class="btn-group">'.$btn_confirmar.$btn_borrar.'</div> </td>
                 </tr>';
 
         return $tr;

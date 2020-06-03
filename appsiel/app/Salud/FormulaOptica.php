@@ -12,7 +12,7 @@ class FormulaOptica extends Model
 {
     protected $table = 'salud_formulas_opticas';
 	
-	protected $fillable = ['paciente_id', 'consulta_id', 'proximo_control', 'tipo_de_lentes', 'material', 'recomendaciones','uso'];
+	protected $fillable = ['paciente_id', 'consulta_id', 'proximo_control', 'tipo_de_lentes', 'material', 'recomendaciones','uso','diagnostico','filtro'];
 
 	public $encabezado_tabla = ['Nombre Completo', 'Control', 'Tipo de Lentes', 'Material', 'Recomendaciones', 'Acción'];
 	public static function consultar_registros()

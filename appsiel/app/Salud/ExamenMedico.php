@@ -11,15 +11,21 @@ use App\Sistema\Modelo;
 
 class ExamenMedico extends Model
 {
+    /*
+        Una consulta debe tener mínimo un exámen llamado "Chequeo"
+    */
+
     protected $table = 'salud_examenes';
-	protected $fillable = ['descripcion', 'detalle', 'orden', 'estado'];
-	public $encabezado_tabla = ['Código', 'Descripción', 'Estado', 'Acción'];
-	public static function consultar_registros()
+	
+    protected $fillable = ['descripcion', 'detalle', 'orden', 'estado'];
+	
+    public $encabezado_tabla = ['Código', 'Descripción', 'Estado', 'Acción'];
+	
+    public static function consultar_registros()
 	{
-	    $registros = ExamenMedico::select('salud_examenes.descripcion AS campo1', 'salud_examenes.detalle AS campo2', 'salud_examenes.estado AS campo3', 'salud_examenes.id AS campo4')
+	    return ExamenMedico::select('salud_examenes.descripcion AS campo1', 'salud_examenes.detalle AS campo2', 'salud_examenes.estado AS campo3', 'salud_examenes.id AS campo4')
 	    ->get()
 	    ->toArray();
-	    return $registros;
 	}
 
     public static function opciones_campo_select()
@@ -43,20 +49,31 @@ class ExamenMedico extends Model
         // Advertencia: ¿Cómo se revisan los resultados de los exámenes INACTIVOS?
         
         $opciones = ExamenMedico::where('estado','Activo')->orderBy('orden')->get();
-        $i = 0;
-        foreach ($opciones as $opcion){
+        $vec = [];
+        foreach ($opciones as $opcion)
+        {
             $esta = DB::table('salud_resultados_examenes')->where('examen_id',$opcion->id)->where('paciente_id',$paciente_id)->where('consulta_id',$consulta_id)->first();
             
             if ( is_null($esta) ) 
             {
-                $vec[$i] = '<a class="btn btn-primary btn-xs" href="'.url( 'consultorio_medico/resultado_examen_medico/create?id='.Input::get('id').'&id_modelo='.$modelo_resultados_examenes->id.'&paciente_id='.$paciente_id.'&consulta_id='.$consulta_id.'&examen_id='.$opcion->id ).'"> <i class="fa fa-plus"></i> '.$opcion->descripcion.' </a> &nbsp;&nbsp;&nbsp;';
+                $vec[] = '<a class="btn btn-primary btn-xs" href="'.url( 'consultorio_medico/resultado_examen_medico/create?id='.Input::get('id').'&id_modelo='.$modelo_resultados_examenes->id.'&paciente_id='.$paciente_id.'&consulta_id='.$consulta_id.'&examen_id='.$opcion->id ).'"> <i class="fa fa-plus"></i> '.$opcion->descripcion.' </a> &nbsp;&nbsp;&nbsp;';
             }else{
-                $vec[$i] = '<button class="btn btn-default btn-xs btn_ver_examen" data-paciente_id="'.$paciente_id.'" data-consulta_id="'.$consulta_id.'" data-examen_id="'.$opcion->id.'" data-examen_descripcion="'.$opcion->descripcion.'"> <i class="fa fa-eye"></i> '.$opcion->descripcion.' </button> &nbsp;&nbsp;&nbsp;';
+                $vec[] = '<button class="btn btn-default btn-xs btn_ver_examen" data-paciente_id="'.$paciente_id.'" data-consulta_id="'.$consulta_id.'" data-examen_id="'.$opcion->id.'" data-examen_descripcion="'.$opcion->descripcion.'"> <i class="fa fa-eye"></i> '.$opcion->descripcion.' </button> &nbsp;&nbsp;&nbsp;';
             }
-
-            $i++;
         }
+
         return $vec;
+    }
+
+    public static function examenes_del_paciente2( $paciente_id, $consulta_id )
+    {   
+        return ExamenMedico::leftJoin('salud_resultados_examenes', 'salud_resultados_examenes.examen_id','=','salud_examenes.id')
+                            ->where('salud_resultados_examenes.paciente_id', $paciente_id)
+                            ->where('salud_resultados_examenes.consulta_id', $consulta_id)
+                            ->select( 'salud_examenes.id', 'salud_examenes.descripcion' )
+                            ->orderBy('salud_examenes.orden')
+                            ->groupBy('salud_resultados_examenes.examen_id')
+                            ->get();
     }
 
 	/*

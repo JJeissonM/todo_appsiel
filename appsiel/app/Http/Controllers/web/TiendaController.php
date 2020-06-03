@@ -231,7 +231,8 @@ class TiendaController extends Controller
 
     public function login()
     {
-        return view('web.tienda.login');
+        $grupos = InvProducto::get_grupos_pagina_web();
+        return view('web.tienda.login', compact( 'grupos' ) );
     }
 
     public function crearCuenta()
@@ -296,22 +297,29 @@ class TiendaController extends Controller
     public function filtroCategoria($id)
     {
         $items = InvProducto::get_datos_pagina_web($id, 'Activo', 100);
-        $grupos = InvProducto::get_grupos_pagina_web();
+        //$grupos = InvProducto::get_grupos_pagina_web();
 
-        return view('web.tienda.lista_productos',compact('items','grupos'));
+        $texto = '';
+
+        return view('web.tienda.lista_productos',compact('items','texto'));
     }
 
     public function busqueda(Request $request)
     {
-        if ($request->categoria == 0)
+
+        if ( $request->categoria == 0 )
         {
             $grupo_inventario_id = '';
         } else {
             $grupo_inventario_id = $request->categoria;
         }
-        $items = InvProducto::get_datos_pagina_web($grupo_inventario_id, 'Activo',9,$request->search);
-        $grupos = InvProducto::get_grupos_pagina_web();
 
-        return view('web.tienda.ecommerce',compact('items','grupos'));
+        $items = InvProducto::get_datos_pagina_web( $grupo_inventario_id, 'Activo',9,$request->search);
+        //$grupos = InvProducto::get_grupos_pagina_web();
+
+        $texto = $request->search;
+
+        //dd( $items->toArray()['data'] );
+        return view('web.tienda.lista_productos',compact('items', 'texto'));
     }
 }

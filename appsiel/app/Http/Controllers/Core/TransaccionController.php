@@ -105,14 +105,19 @@ class TransaccionController extends Controller
     {
         // Botón crear con el listado de las transacciones asociadas a la aplicación
         $tipos_transacciones = $app->tipos_transacciones()->where('estado','Activo')->get();
-
+        
+        
         //dd($tipos_transacciones);
         $opciones = [];
         $key = 0;
         foreach($tipos_transacciones as $fila)
         {
             $modelo = Modelo::find( $fila->core_modelo_id );
-            $opciones[$key]['link'] = url( $modelo->url_crear.'?id='.Input::get('id').'&id_modelo='.$modelo->id.'&id_transaccion='.$fila->id);
+
+            $variables_url = '?id='.Input::get('id').'&id_modelo='.$modelo->id.'&id_transaccion='.$fila->id;
+            $acciones = $this->acciones_basicas_modelo( $modelo, $variables_url );
+
+            $opciones[$key]['link'] = url( $acciones->create );
             $opciones[$key]['etiqueta'] = $fila->descripcion;
             $key++;
         }
@@ -123,6 +128,12 @@ class TransaccionController extends Controller
     public function get_array_miga_pan( $app, $modelo_crud, $etiqueta_final )
     {
         return MigaPan::get_array( $app, $modelo_crud, $etiqueta_final );
+    }
+
+    public function acciones_basicas_modelo( $modelo, $variables_url )
+    {
+        $model = new ModeloController();
+        return $model->acciones_basicas_modelo( $modelo, $variables_url );
     }
 
     // FORMULARIO PARA CREAR UN NUEVO REGISTRO
@@ -150,7 +161,7 @@ class TransaccionController extends Controller
                     ];
 
         $miga_pan = $this->get_array_miga_pan( $app, $modelo, 'Crear: '.$transaccion->descripcion );
-
+        
         return view( $vista, compact('form_create','miga_pan','tabla'));
     }
 

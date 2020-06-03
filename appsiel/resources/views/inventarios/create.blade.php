@@ -99,6 +99,89 @@
 
 @section('scripts')
 	<script type="text/javascript">
+
+		function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+        {
+        	reset_form_producto();
+			$('#spin').show();
+
+			// Si no se seleccionó un producto, salir
+			if ( $('#inv_producto_id').val() === '' || $('#inv_producto_id').val() === undefined )
+			{
+				$('#spin').hide();
+				return false;
+			}
+
+			// Preparar datos de los controles para enviar formulario de ingreso de productos
+			var form_producto = $('#form_producto');
+			var url = form_producto.attr('action');
+			$('#id_bodega').val($('#inv_bodega_id').val());
+			var datos = form_producto.serialize();
+
+
+			// Enviar formulario de ingreso de productos vía POST
+			$.post(url,datos,function(respuesta){
+				
+				var mov = $('#motivo').val().split('-');
+				$('#spin').hide();
+				
+				// Se valida la existencia actual
+				$('#existencia_actual').val(respuesta.existencia_actual);
+				$('#saldo_original').val(respuesta.existencia_actual);
+
+				$('#tipo_producto').val(respuesta.tipo);
+
+				if ( respuesta.existencia_actual >= 0) {
+					$('#existencia_actual').attr('style','background-color:#97D897;');
+				}else{
+					
+					$('#existencia_actual').attr('style','background-color:#FF8C8C;');
+					
+					// Si el tipo de producto es "producto" y el movimiento NO es de entrada, no se permite seguir con existencia 0
+					if ( respuesta.tipo == 'producto' && mov[1] != 'entrada' )
+					{
+						$('#btn_agregar').hide(500);
+						return false;
+					}
+				}
+				
+				// Asignar datos a los controles
+				$('#costo_unitario').val(parseFloat(respuesta.precio_compra).toFixed(2));
+				$('#unidad_medida1').val(respuesta.unidad_medida1);
+
+				$('#inv_producto_id_aux').val( respuesta.descripcion );
+
+				
+				// Si la TRANSACCIÓN es una Entrada Directa o Entrada por compras o el producto es tipo servicio, se puede modificar el costo unitario			
+				if ( $('#id_transaccion').val() == 1 || $('#id_transaccion').val() == 35 || respuesta.tipo == 'servicio' )
+				{
+					$('#costo_unitario').removeAttr('disabled');
+					$('#costo_unitario').attr('style','background-color:white;');
+					$('#costo_unitario').select();
+				}else{
+					// Se pasa a ingresar las cantidades
+					$('#cantidad').removeAttr('disabled');
+					$('#cantidad').attr('style','background-color:white;');
+					$('#cantidad').select();
+				}			
+			});
+        }
+
+        
+
+		function reset_form_producto(){
+			$('#form_producto input[type="text"]').val('');
+			$('#form_producto input[type="text"]').attr('style','background-color:#ECECE5;');
+			$('#form_producto input[type="text"]').attr('disabled','disabled');
+
+			$('#inv_producto_id_aux').removeAttr('disabled');
+			$('#inv_producto_id_aux').attr('style','background-color:#ffffff;');
+
+			$('#spin').hide();
+			$('#btn_agregar').hide();
+			$('#inv_producto_id_aux').focus();
+		}
+
 		$(document).ready(function(){
 			$('#core_empresa_id').val(1);
 			
@@ -151,6 +234,7 @@
 			*/
 			$("#btn_nuevo").click(function(event){
 				event.preventDefault();
+		    	$('#inv_producto_id_aux').val('')
 		    	$('#inv_producto_id').val('')
 		        reset_form_producto();
 		        $("#myModal").modal({backdrop: "static"});
@@ -158,7 +242,7 @@
 		    	
 		    	// Al mostrar la ventana modal
 		    $("#myModal,#myModal2").on('shown.bs.modal', function () {
-		    	$('#inv_producto_id').focus();
+		    	$('#inv_producto_id_aux').focus();
 		    	$('#fecha_aux').val( $('#fecha').val() );
 		    });
 			// Al OCULTAR la ventana modal
@@ -168,7 +252,7 @@
 
 			/**
 				* Al seleccionar un producto
-			**/
+			
 			$('#inv_producto_id').on('change',function(){
 
 				reset_form_producto();
@@ -231,7 +315,7 @@
 					}			
 				});
 			});
-
+			**/
 
 			/*
 			** Al dejar el control del costo unitario, se valida lo ingresado, se inactiva el control
@@ -334,6 +418,7 @@
 			// Al cambiar de motivo
 			$('#motivo').change(function(){
 				reset_form_producto();
+		    	$('#inv_producto_id_aux').val('')
 				$('#inv_producto_id').val('');
 			});
 
@@ -351,7 +436,7 @@
 
 				var costo_total = $('#costo_total').val(); // ya está asignado con la funcion calcular_costo_total
 				var producto = $('#inv_producto_id');
-				var nombre_producto = $( "#inv_producto_id option:selected" ).text();
+				var nombre_producto = producto.val() + ' ' + $( "#inv_producto_id_aux" ).val();
 				var costo_unitario = $('#costo_unitario').val();
 				var cantidad = $('#cantidad').val();
 				var mov = $('#motivo').val().split('-');
@@ -411,6 +496,7 @@
 					// Se retira el producto del select
 					$("#inv_producto_id option[value='"+producto.val()+"']").remove();
 					reset_form_producto();
+					$('#inv_producto_id_aux').val('');
 					$('#inv_producto_id').val('');
 
 					// Se incrementa variable auxiliar para llevar control del ingreso 
@@ -451,12 +537,13 @@
 				var fila = $(this).closest("tr");
 
 				// Se agrega nuevamente el producto al select
-				var id_producto = fila.attr("id");
-				var nombre_producto = fila.find("td.nom_prod").html();
-				$('#inv_producto_id').append($('<option>', { value: id_producto, text: nombre_producto}));
+				//var id_producto = fila.attr("id");
+				//var nombre_producto = fila.find("td.nom_prod").html();
+				//$('#inv_producto_id').append($('<option>', { value: id_producto, text: nombre_producto}));
 
 				fila.remove();
 				reset_form_producto();
+				$('#inv_producto_id_aux').val('');
 				$('#inv_producto_id').val('');
 
 				// Se DECREMENTA variable auxiliar para llevar control del ingreso 
@@ -569,7 +656,7 @@
 					}else{
 						$(this).removeAttr('disabled');
 						alert('No ha ingresado productos.');
-						$('#inv_producto_id').focus();
+						$('#inv_producto_id_aux').focus();
 					}
 				}
 					
@@ -606,15 +693,6 @@
 					alert('Datos incompletos para calcular el costo unitario. Recuerde que Costo unitario = costo_total_productos_salidas / cantidades_productos_entradas');
 				}
 			});
-
-			function reset_form_producto(){
-				$('#form_producto input[type="text"]').val('');
-				$('#form_producto input[type="text"]').attr('style','background-color:#ECECE5;');
-				$('#form_producto input[type="text"]').attr('disabled','disabled');
-				$('#spin').hide();
-				$('#btn_agregar').hide();
-				$('#inv_producto_id').focus();
-			}
 
 			function calcula_costo_total(){
 				var costo_unitario = $('#costo_unitario').val();

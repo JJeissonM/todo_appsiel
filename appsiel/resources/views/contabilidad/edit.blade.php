@@ -66,38 +66,18 @@
 
 @section('scripts')
 	
-	<script src="{{ asset('assets/js/input_lista_sugerencias.js') }}"></script> <!-- -->
+	<!--<script src="{ { asset('assets/js/input_lista_sugerencias.js') }}"></script>  -->
 
 	<script type="text/javascript">
 		
 		var LineaNum = {{ $linea_num }};
 
 		calcular_totales();
-
 		
-            function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
-            {
-            	// Asignar descripción al TextInput
-                obj_text_input.val( item_sugerencia.html() );
-                obj_text_input.css( 'background-color','white ' );
-
-            	switch( item_sugerencia.attr('data-tipo_campo') )
-            	{
-            		case 'cuenta':
-            			$('#combobox_cuentas').val( item_sugerencia.attr('data-registro_id') );
-            		break;
-
-            		case 'tercero':
-            			$('#combobox_terceros').val( item_sugerencia.attr('data-registro_id') );
-            		break;
-            		
-            		default:
-            		break;
-            	}
-
-            	obj_text_input.parent().next().find(':input').focus();
-            	
-            }
+        function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+        {
+        	obj_text_input.parent().next().find(':input').focus();
+        }
 		
 		$(document).ready(function(){
 			$('#fecha').focus();
@@ -457,6 +437,7 @@
 
 		                $("#div_spin").hide();
 
+		                $('#fecha_vencimiento_aux').focus( );
 		                $('#fecha_vencimiento_aux').val( get_fecha_hoy() );
 
 					});		        
@@ -485,6 +466,7 @@
 
 		                $("#div_spin").hide();
 
+		                $('#fecha_vencimiento_aux').focus( );
 		                $('#fecha_vencimiento_aux').val( get_fecha_hoy() );
 
 					});		        
@@ -495,12 +477,16 @@
 
 		        $('#fecha_vencimiento').val( $('#fecha_vencimiento_aux').val() );
 
+		        $('#cuenta_input').val( $('#cuenta_input_aux').val() );
+		        $('#combobox_cuentas').val( $('#combobox_cuentas_aux').val() );
+
+		        $('#tercero_input').val( $('#tercero_input_aux').val() );
+		        $('#combobox_terceros').val( $('#combobox_terceros_aux').val() );
+
 		        $('#documento_soporte_tercero').val( $('#documento_soporte_tercero_aux').val() );
 
 		        $('#tipo_transaccion_linea').val( $('#tipo_transaccion_linea_aux').val() );
 
-		        $('#combobox_cuentas').val( $('#contab_cuenta_id_aux').val() );
-		        $('#combobox_terceros').val( $('#core_tercero_id_aux').val() );
 		        $('#col_detalle').val( $('#detalle_aux').val() );
 		        $('#col_debito').val( $('#valor_debito_aux').val() );
 		        $('#col_credito').val( $('#valor_credito_aux').val() );
