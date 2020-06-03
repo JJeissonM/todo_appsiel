@@ -305,7 +305,7 @@ class ContratoTransporteController extends Controller
                     'etiqueta' => 'Contratos transporte'
                 ],
                 [
-                    'url' => 'cte_contratos_propietarios'.$variables_url,
+                    'url' => 'cte_contratos_propietarios' . $variables_url,
                     'etiqueta' => 'Mis Contratos'
                 ],
                 [
@@ -324,7 +324,7 @@ class ContratoTransporteController extends Controller
                     'etiqueta' => 'Contratos'
                 ],
                 [
-                    'url' => 'cte_contratos/' . $id . '/show'.$variables_url,
+                    'url' => 'cte_contratos/' . $id . '/show' . $variables_url,
                     'etiqueta' => 'Ver Contrato'
                 ],
                 [
@@ -333,11 +333,11 @@ class ContratoTransporteController extends Controller
                 ]
             ];
         }
-        $c=Contrato::find($id);
+        $c = Contrato::find($id);
         return view('contratos_transporte.contratos.planillas')
             ->with('variables_url', $variables_url)
             ->with('miga_pan', $miga_pan)
             ->with('c', $c)
-            ->with('source',$source);
+            ->with('source', $source);
     }
 }
