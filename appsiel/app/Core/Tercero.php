@@ -3,6 +3,7 @@
 namespace App\Core;
 
 use App\Contratotransporte\Conductor;
+use App\Contratotransporte\Contratante;
 use App\Contratotransporte\Propietario;
 use Illuminate\Database\Eloquent\Model;
 
@@ -310,5 +311,10 @@ class Tercero extends Model
     public function conductor()
     {
         return $this->hasOne(Conductor::class);
+    }
+
+    public function contratantes()
+    {
+        return $this->hasMany(Contratante::class);
     }
 }

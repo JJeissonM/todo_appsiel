@@ -8,11 +8,13 @@ use Illuminate\Support\Facades\DB;
 class Contrato extends Model
 {
     protected $table = 'cte_contratos';
-    protected $fillable = ['id', 'codigo', 'version', 'fecha', 'numero_contrato', 'objeto', 'origen', 'destino', 'fecha_inicio', 'fecha_fin', 'valor_contrato', 'valor_empresa', 'valor_propietario', 'direccion_notificacion', 'telefono_notificacion', 'dia_contrato', 'mes_contrato', 'pie_uno', 'pie_dos', 'pie_tres', 'pie_cuatro', 'contratante_id', 'vehiculo_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'codigo', 'version', 'fecha', 'numero_contrato', 'rep_legal', 'representacion_de', 'objeto', 'origen', 'destino', 'fecha_inicio', 'fecha_fin', 'valor_contrato', 'valor_empresa', 'valor_propietario', 'direccion_notificacion', 'telefono_notificacion', 'dia_contrato', 'mes_contrato', 'pie_uno', 'pie_dos', 'pie_tres', 'pie_cuatro', 'contratante_id', 'vehiculo_id', 'conductor_id', 'created_at', 'updated_at'];
 
     public $encabezado_tabla = ['Nro.', 'Objeto', 'Fecha Celebrado', 'Origen - Destino', 'Vigencia', 'Contratante', 'Vehículo', 'Propietario', 'Acción'];
 
     public $vistas = '{"index":"layouts.index3"}';
+
+    public $urls_acciones = '{"create":"cte_contratos/create","show":"cte_contratos/id_fila/show","imprimir":"cte_contratos/id_fila/imprimir"}';
 
     public static function opciones_campo_select()
     {
@@ -31,13 +33,14 @@ class Contrato extends Model
 
     public static function consultar_registros2()
     {
+        //t1 es contratante, t2 es propietario
         return Contrato::leftJoin('cte_contratantes', 'cte_contratantes.id', '=', 'cte_contratos.contratante_id')
             ->leftJoin('core_terceros as t1', 't1.id', '=', 'cte_contratantes.tercero_id')
             ->leftJoin('cte_vehiculos', 'cte_vehiculos.id', '=', 'cte_contratos.vehiculo_id')
             ->leftJoin('cte_propietarios', 'cte_propietarios.id', '=', 'cte_vehiculos.propietario_id')
             ->leftJoin('core_terceros as t2', 't2.id', '=', 'cte_propietarios.tercero_id')
             ->select(
-                'core_tipos_docs_id.numero_contrato AS campo1',
+                'cte_contratos.numero_contrato AS campo1',
                 'cte_contratos.objeto AS campo2',
                 DB::raw('CONCAT("DÍA: ",cte_contratos.dia_contrato," - MES: ",cte_contratos.mes_contrato) AS campo3'),
                 DB::raw('CONCAT(cte_contratos.origen," - ",cte_contratos.destino) AS campo4'),
@@ -49,5 +52,31 @@ class Contrato extends Model
             )
             ->orderBy('cte_contratos.created_at', 'DESC')
             ->paginate(100);
+    }
+
+
+    public function contratante()
+    {
+        return $this->belongsTo(Contratante::class);
+    }
+
+    public function vehiculo()
+    {
+        return $this->belongsTo(Vehiculo::class);
+    }
+
+    public function conductor()
+    {
+        return $this->belongsTo(Conductor::class);
+    }
+
+    public function contratogrupous()
+    {
+        return $this->hasMany(Contratogrupou::class);
+    }
+
+    public function planillacs()
+    {
+        return $this->hasMany(Planillac::class);
     }
 }

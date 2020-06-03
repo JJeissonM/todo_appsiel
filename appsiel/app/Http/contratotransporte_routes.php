@@ -8,6 +8,16 @@ Route::resource('cte_plantillas', 'ContratoTransporte\ContratoTransporteControll
 
 Route::resource('contratos_transporte', 'ContratoTransporte\ContratoTransporteController');
 
+
+Route::get('cte_contratos/{id}/show', 'ContratoTransporte\ContratoTransporteController@show');
+Route::get('cte_contratos/{id}/imprimir', 'ContratoTransporte\ContratoTransporteController@imprimir');
+Route::get('cte_contratos/{id}/gestion/grupousuarios', 'ContratoTransporte\ContratoTransporteController@grupousuarios');
+Route::get('cte_contratos/gestion/grupousuarios/{id}/delete', 'ContratoTransporte\ContratoTransporteController@deletegrupousuario')->name('cte_contratos.deletegu');
+Route::post('cte_contratos/gestion/grupousuarios/store', 'ContratoTransporte\ContratoTransporteController@storegrupousuario')->name('cte_contratos.storegu');
+Route::get('cte_contratos_propietarios', 'ContratoTransporte\ContratoTransporteController@miscontratos');
+Route::get('cte_contratos/{id}/planillas/{source}/index', 'ContratoTransporte\ContratoTransporteController@planillaindex')->name('cte_contratos.planillaindex');
+
+
 //VEHICULOS
 Route::get('cte_vehiculos/{id}/show', 'ContratoTransporte\VehiculoController@show')->name('cte_vehiculo.show');
 Route::get('cte_documentos_vehiculo/{id}/show', 'ContratoTransporte\VehiculoController@showDocuments')->name('cte_vehiculo.showDocuments');
