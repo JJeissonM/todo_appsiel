@@ -18,7 +18,7 @@
 		&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'core/eav/'.$modelo_entidad_id.'/edit?id='.Input::get('id').'&id_modelo='.$modelo_entidad_id.'&modelo_padre_id='.$modelo_padre_id.'&registro_modelo_padre_id='.$registro_modelo_padre_id.'&modelo_entidad_id='.$modelo_entidad_id ) }}
 	@endcan
 
-	{{ Form::open( [ 'url' => 'core/eliminar_registros_eav?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'style' => 'display:inline;' ] ) }}
+	{{ Form::open( [ 'url' => 'core/eliminar_registros_eav?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'style' => 'display:inline;', 'class' => 'form_eliminar' ] ) }}
 		{{ Form::hidden( 'modelo_padre_id', $modelo_padre_id ) }}
 		{{ Form::hidden( 'registro_modelo_padre_id', $registro_modelo_padre_id ) }}
 		{{ Form::hidden( 'modelo_entidad_id', $modelo_entidad_id ) }}
