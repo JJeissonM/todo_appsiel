@@ -168,7 +168,7 @@ Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@
 Route::get('ecommerce/public/cuenta','web\TiendaController@cuenta')->name('tienda.cuenta');
 Route::get('ecommerce/public/signIn','web\TiendaController@login')->name('tienda.login');
 Route::get('ecommerce/public/nuevacuenta','web\TiendaController@crearCuenta')->name('tienda.nuevacuenta');
-
+Route::get('ecommerce/comprar','web\TiendaController@comprar')->name('tienda.comprar');
 Route::get('ecommerce/public/account','web\TiendaController@cuenta')->name('tienda.micuenta');
 Route::put('ecommerce/account/informacion/updated/{clienteweb}','web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
 Route::get('ecommerce/public/filtro/categoria/{categoria}','web\TiendaController@filtroCategoria')->name('tienda.filtrocategoria');

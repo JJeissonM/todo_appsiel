@@ -29,7 +29,6 @@
                                                         <li>
                                                             <a class="ajaxLayer"
                                                                onclick="filtrar_categoria({{ $value[0]->id }}, this)" > {{$key}} ({{$value->count()}})</a>
-                                                            
                                                         </li>
                                                     @endforeach
                                                 </ol>
@@ -48,7 +47,7 @@
                                             @foreach($items as $item)
                                                 <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
                                                     <div class="item-inner">
-                                                        <div class="ma-box-content">
+                                                        <div class="ma-box-content" data-id="{{$item->id}}">
                                                             <div class="products clearfix">
                                                                 <a href="#"
                                                                    title="{{$item->descripcion}}" class="product-image">
@@ -77,10 +76,11 @@
                                                                 <span class="regular-price" id="product-price-1">
                                                                     <span class="price">${{$item->precio_venta}}</span></span>
                                                             </div>
-                                                            <div class="actions">
-                                                                <button type="button" class="button btn-cart"
+                                                            <div class="actions agregar-carrito">
+                                                                <button type="button" class="button btn-cart "
                                                                         data-original-title="Agregar al carro de compras" rel="tooltip"><i
-                                                                            class="fa fa-shopping-cart"></i><span>Comprar</span></button>
+                                                                            class="fa fa-shopping-cart"></i><span> Comprar</span>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -100,17 +100,13 @@
         </div>
     </div>
 </main>
-<script src="{{asset('assets/tienda/js/categories.js')}}"></script>
-
-    <script type="text/javascript">
-
-        function filtrar_categoria( categoria_id, enlace )
-        {   
+<script src="{{asset('js/carrito/app.js')}}"></script>
+<script type="text/javascript">
+    function filtrar_categoria( categoria_id, enlace )
+    {
             $('#lista_productos').fadeOut( 1000 );
             
             var url = "{{ url('ecommerce/public/filtro/categoria/') }}" + "/" + categoria_id;
-
-            console.log( enlace.innerHTML );
 
             $.get( url )
                 .done(function( data ) {
@@ -126,6 +122,5 @@
 
                     $('#lista_productos').html( '<p style="color:red;">Categoría no pudo ser cargada. Por favor, intente nuevamente.</p>' );
                 });
-        }
-
-    </script>
+    }
+</script>

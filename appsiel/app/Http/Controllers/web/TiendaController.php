@@ -314,4 +314,10 @@ class TiendaController extends Controller
 
         return view('web.tienda.ecommerce',compact('items','grupos'));
     }
+
+    function comprar(){
+        return view('web.tienda.comprar');
+    }
+
+
 }
