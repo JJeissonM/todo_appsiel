@@ -8,7 +8,7 @@ class Planillac extends Model
 {
     // Este es el documento FUEC como tal (el PDF)
     protected $table = 'cte_planillacs';
-    protected $fillable = ['id', 'contrato_id', 'razon_social', 'nit', 'convenio', 'plantilla_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'nro', 'contrato_id', 'razon_social', 'nit', 'convenio', 'plantilla_id', 'created_at', 'updated_at'];
 
     public static function opciones_campo_select()
     {
@@ -33,5 +33,10 @@ class Planillac extends Model
     public function contrato()
     {
         return $this->belongsTo(Contrato::class);
+    }
+
+    public function plantilla()
+    {
+        return $this->belongsTo(Plantilla::class);
     }
 }

@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    //var url = "/ajax-crud/public/tareas";
+    //var url = "/ajax-crud/public/tareas"; 
 	var url = "tareas";
 
     //display modal form for task editing
