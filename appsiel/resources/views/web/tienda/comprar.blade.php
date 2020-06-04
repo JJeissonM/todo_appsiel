@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>
-        Web - APPSIEL
+       Finalizar la compra
     </title>
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/icon" href="{{asset('assets/images/favicon.ico')}}" />
@@ -21,9 +21,6 @@
 <header>
     <div class="checkoutHeader">
         <div class="checkoutHeader__logoHeader">
-            <a href="/">
-                <img src="{{asset('img/carrito/cart.png')}}" alt="logo Avipoulet">
-            </a>
         </div>
         <div class="checkoutHeader__safePurchase">
             <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
@@ -31,9 +28,9 @@
     </div>
 </header>
 <main>
-    <div class="container-fluid">
+    <div class="container-fluid" >
         <div class="row">
-            <div class="col-md-8 col-sm-12">
+            <div class="col-md-8 col-sm-12" id="products" style="overflow-y: scroll; height: 70vh;">
                <table id="lista-productos">
                    <thead>
                        <tr>
@@ -44,11 +41,32 @@
                            <th  width="150px"><center>Total</center></th>
                        </tr>
                    </thead>
+
                    <tbody>
                    </tbody>
                </table>
             </div>
             <div class="col-md-4 col-sm-12">
+                <div class="contenido">
+                    <p>Subtotal</p>
+                    <p>$ 19.000</p>
+                </div>
+
+                <div class="total_compra">
+                    <p>Total: </p>
+                    <p><span style="color: red">$ 19.000</span></p>
+                </div>
+
+                <div class="terminos">
+                    <input class="select" type="checkbox">
+                    <a href="">Acepto términos y condiciones, términos y condiciones marketplace y autorizo el tratamiento de mis datos personales con las siguientes condiciones.</a>
+                </div>
+
+                <div class="acciones">
+                    <button class="btn-block" id="comprar">finalizar compra</button>
+                    <a href=""><center>Seguir comprando</center></a>
+                </div>
+
             </div>
         </div>
     </div>

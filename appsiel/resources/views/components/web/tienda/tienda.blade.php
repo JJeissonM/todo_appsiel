@@ -30,7 +30,7 @@
                                                     @foreach($grupos as $key => $value)
                                                         <li>
                                                             <a class="ajaxLayer"
-                                                               onclick="filtrar_categoria({{ $value[0]->id }}, this)" > {{$key}} ({{$value->count()}})</a>
+                                                               onclick="filtrar_categoria('{{ $value[0]->id }}', this)" > {{$key}} ({{$value->count()}})</a>
                                                         </li>
                                                     @endforeach
                                                 </ol>
@@ -108,7 +108,9 @@
 
 <script src="{{asset('assets/tienda/js/categories.js')}}"></script>
 
-    <script type="text/javascript">
+<script src="{{asset('js/carrito/app.js')}}"></script>
+
+<script type="text/javascript">
 
         function filtrar_categoria( categoria_id, enlace )
         {   

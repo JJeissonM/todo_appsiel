@@ -26,6 +26,7 @@ function cargarEventListeners() {
 // Funciones
 // Función que añade el curso al carrito
 function comprarProducto(e) {
+
      e.preventDefault();
      // Delegation para agregar-carrito
      if(e.target.parentElement.classList.contains('agregar-carrito')) {
@@ -177,7 +178,7 @@ function obtenerProductosLocalStorage() {
 
 }
 
-// Imprime los cursos de Local Storage en el carrito
+// Imprime los productos de Local Storage en el carrito
 
 function leerLocalStorage() {
 
@@ -205,7 +206,7 @@ function leerLocalStorage() {
 
     });
 }
-// Elimina el curso por el ID en Local Storage
+// Elimina el producto por el ID en Local Storage
 
 function eliminarProductoLocalStorage(producto) {
     let productosLS;

@@ -8,8 +8,7 @@ img {
     max-width: 100%;
     height: auto;
     order: 0;
-    vertical-align: top;
-    vertical-align: middle;
+    vertical-align:middle;
 }
 
 .header {
@@ -26,9 +25,12 @@ img {
     width: 100%;
     z-index: 100;
     min-height: 100px;
-    height: auto !important;
-    height: 100px;
-    padding: 30px 0 10px;
+    height: 40px;
+    padding: 5px 0;
+}
+
+::-webkit-input-placeholder { /* Edge */
+    color: white;
 }
 
 .header .logo strong {
