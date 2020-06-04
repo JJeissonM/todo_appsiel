@@ -19,7 +19,7 @@
 
     $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
 ?>
-<table border="0" style="margin-top: 12px !important;" width="100%">
+<table border="0" width="100%">
 	<tr>
 		<td width="20%">
 			<img src="{{ $url }}" height="{{ config('configuracion.alto_logo_formatos') }}" />
