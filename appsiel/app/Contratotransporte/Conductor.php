@@ -53,4 +53,14 @@ class Conductor extends Model
     {
         return $this->belongsTo(Tercero::class);
     }
+
+    public function contratos()
+    {
+        return $this->hasMany(Contrato::class);
+    }
+
+    public function planillaconductors()
+    {
+        return $this->hasMany(Planillaconductor::class);
+    }
 }

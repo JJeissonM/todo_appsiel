@@ -19,7 +19,15 @@
             </div>
 
             <div class="row" style="padding:5px;">
-                {{ Form::bsSelect('inv_producto_id', null, 'Producto', $productos, []) }}
+
+                <div class="form-group">
+                  <label class="control-label col-sm-3" for="inv_producto_id_aux">Producto:</label>
+                  <div class="col-sm-9">
+                    {{ Form::text( 'inv_producto_id_aux_2', 'null', [ 'class' => 'form-control text_input_sugerencias', 'id' => 'inv_producto_id_aux', 'data-url_busqueda' => url('inv_consultar_productos_v2'), 'autocomplete'  => 'off' ] ) }}
+                    {{ Form::hidden( 'inv_producto_id', null, [ 'id' => 'inv_producto_id' ] ) }}
+                  </div>
+                </div>
+                
             </div>
 
             <div class="row" id="spin" style="display: none;">

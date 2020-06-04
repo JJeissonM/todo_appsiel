@@ -772,7 +772,7 @@ $(document).ready(function(){
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td> '+ $('#existencia_actual').val() + '</td>';
+				celdas[ num_celda ] = '<td> '+ new Intl.NumberFormat("de-DE").format( $('#existencia_actual').val() ) + '</td>';
 				
 				num_celda++;
 
@@ -784,7 +784,7 @@ $(document).ready(function(){
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td>'+ $('#tasa_descuento').val() + ' </td>';
+				celdas[ num_celda ] = '<td>'+ $('#tasa_descuento').val(0) + ' </td>';
 				
 				num_celda++;
 				// ¿se va  amostrar valor del descuento?

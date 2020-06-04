@@ -51,7 +51,8 @@ class ResultadoExamenMedicoController extends ModeloController
 
         // Si tiene una accion diferente para el envío del formulario
         $url_action = 'web';
-        if ($modelo->url_form_create != '') {
+        if ($modelo->url_form_create != '')
+        {
             $url_action = $modelo->url_form_create.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
         }
 
@@ -81,16 +82,21 @@ class ResultadoExamenMedicoController extends ModeloController
 
         // Armar los datos
 
-        // Se guarda un registro por cada par variable, organo_del_cuerpo
-        foreach ( $request->all() as $key => $value ) 
-        {
-            $datos = [ 
+        $datos = [ 
                     'paciente_id' => $request->paciente_id,
                     'consulta_id' => $request->consulta_id,
                     'examen_id' => $request->examen_id
                 ];
 
+        // Se guarda un registro por cada par: { variable: organo_del_cuerpo }
+        foreach ( $request->all() as $key => $value ) 
+        {
+             /* 
+                El del tag "name" de cada input del form create tiene un valor como la siguiente estructura:
+                    campo_variable_organo-(variable_id)-(organo_del_cuerpo_id)
+             */
             $campo = explode("-", $key);
+
             if ( $campo[0] == 'campo_variable_organo') 
             {
                 $datos['variable_id'] = $campo[1];

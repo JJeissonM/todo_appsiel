@@ -197,6 +197,40 @@
             margin-bottom: 5px !important;
         }
 
+
+            #navegacion {
+                position: fixed;
+                z-index: 999;
+                padding-top: 50px;
+                width: 100%;
+            }
+            
+            #navegacion > header {
+                color: #ffffff !important;
+                background: rgba(0, 0, 0, 0.54) !important;
+            }
+
+            .mu-navbar-nav > li > a {
+                color: white !important;
+            }
+
+            .carousel-content {
+                position: relative;
+                z-index: 9999999;
+            }/**/
+
+            #navegacion > header.sticky {
+              position: fixed;
+              z-index: 99999;
+              top: 0;
+              width: 100%;
+              background: #396b8e !important;
+            }
+
+            .sticky + .content {
+              padding-top: 102px;
+            }
+
         @foreach($estilos as $key => $value)
             {{ $value }}
         @endforeach
@@ -206,7 +240,11 @@
 
 <body style="padding:0;">
 
-<main>
+<main id="contenedor_principal">
+
+    <!-- <div class="top-container">
+        HELLO
+    </div> -->
 
     @foreach($view as $item)
         {!! $item !!}
@@ -246,6 +284,7 @@
 <script src="{{asset('js/wow.min.js')}}"></script>
 <script src="{{asset('js/main.js')}}"></script>
 <script src="{{asset('js/jquery.jscroll.min.js')}}"></script>
+
 <script type="text/javascript">
     $(document).ready(function () {
         $('.client-single').on('click', function (event) {
@@ -270,7 +309,24 @@
 
             }
         });
+
     });
+</script>
+
+<script>
+    window.onscroll = function() {myFunction()};
+
+    var header = document.getElementById("myHeader");
+    var sticky = header.offsetTop;
+
+    function myFunction() {
+      if (window.pageYOffset > sticky) {
+        header.classList.add("sticky");
+      } else {
+        header.classList.remove("sticky");
+      }
+    }
+
 </script>
 
 

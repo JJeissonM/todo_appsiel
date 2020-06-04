@@ -235,7 +235,10 @@ class GaleriaController extends Controller
         $album = $imagen->album;
         $result = $imagen->delete();
         if ($result) {
-            unlink($imagen->nombre);
+
+            if ( file_exists( $imagen->nombre ) )
+                { unlink( $imagen->nombre ); }
+            
             $message = 'Imagen eliminada de forma exitosa.';
             return redirect(url('galeria/edit/' . $album->id) . $variables_url)->with('flash_message', $message);
         } else {
@@ -250,8 +253,10 @@ class GaleriaController extends Controller
         $widget = $album->galeria->widget_id;
         $fotos = $album->fotos;
         if (count($fotos) > 0) {
-            foreach ($fotos as $img) {
-                unlink($img->nombre);
+            foreach ($fotos as $img)
+            {
+                if ( file_exists( $img->nombre ) )
+                { unlink( $img->nombre ); }
             }
         }
         $result = $album->delete();

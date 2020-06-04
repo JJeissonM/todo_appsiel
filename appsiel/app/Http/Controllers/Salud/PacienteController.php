@@ -14,6 +14,8 @@ use DB;
 use Input;
 use Storage;
 
+use App\Sistema\Html\MigaPan;
+
 use App\Sistema\Aplicacion;
 use App\Sistema\Modelo;
 use App\Core\Tercero;
@@ -29,91 +31,6 @@ class PacienteController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        // Se obtiene el modelo según la variable modelo_id  de la url
-        $modelo = Modelo::find(Input::get('id_modelo'));
-
-        //echo $modelo->name_space;
-
-        $registros = app($modelo->name_space)->consultar_registros();//->take(20);
-
-        // Se genera la miga de pan
-
-        $app = Aplicacion::find(Input::get('id'));
-
-        //$home = explode(',', $modelo->home_miga_pan);
-        $urls = [$app->app.'?id='.Input::get('id'), 'NO'];
-        $etiquetas = [$app->descripcion,$modelo->descripcion];
-
-        $miga_pan = [];
-        $cant = count($urls);
-        for ($i=0; $i < $cant; $i++) { 
-            $miga_pan[$i] = ['url'=>$urls[$i],'etiqueta'=>$etiquetas[$i]];
-        }
-        
-        $titulo_tabla = 'Lista de '.$modelo->descripcion;
-
-        $encabezado_tabla = app($modelo->name_space)->encabezado_tabla;
-
-        // Se le asigna a cada variable url, su valor en el modelo correspondiente
-        $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
-        
-        $url_crear = '';
-        $url_edit = '';
-        $url_print = '';
-        $url_ver = '';
-        $url_estado = '';
-        $url_eliminar = '';
-        $botones = [];
-        
-        // @can('crear_'.$modelo->modelo)
-        if ($modelo->url_crear!='') {
-            $url_crear = $modelo->url_crear.$variables_url;    
-        }
-        // @endcan
-
-        if ($modelo->url_edit!='') {
-            $url_edit = $modelo->url_edit.$variables_url;
-        }
-        if ($modelo->url_print!='') {
-            $url_print = $modelo->url_print.$variables_url;
-        }
-        if ($modelo->url_ver!='') {
-            $url_ver = $modelo->url_ver.$variables_url;
-        }
-        if ($modelo->url_custom!='') {
-            $url_custom = $modelo->url_custom.$variables_url;
-        }
-        if ($modelo->url_estado!='') {
-            $url_estado = $modelo->url_estado.$variables_url;
-        }
-        if ($modelo->url_eliminar!='') {
-            $url_eliminar = $modelo->url_eliminar.$variables_url;
-        }
-
-        // Si el modelo tiene un archivo js particular
-        $archivo_js = app($modelo->name_space)->archivo_js;
-
-        return view('consultorio_medico.pacientes_index', compact('registros','miga_pan','url_crear','titulo_tabla','encabezado_tabla','url_edit','url_print','url_ver','url_estado','url_eliminar','archivo_js'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $general = new ModeloController();
-
-        return $general->create();
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -143,7 +60,6 @@ class PacienteController extends Controller
 
         $registro_creado->save();
 
-
         return redirect( 'consultorio_medico/pacientes/'.$registro_creado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
     }
 
@@ -155,7 +71,6 @@ class PacienteController extends Controller
      */
     public function show($id)
     {
-        //return "lallala";
         $secciones_consulta = json_decode( config('consultorio_medico.secciones_consulta') );
 
         $general = new ModeloController();
@@ -173,11 +88,7 @@ class PacienteController extends Controller
         
         //$miga_pan = $general->get_miga_pan($modelo,$registro->descripcion);
 
-        $miga_pan = [
-                        ['url'=>'consultorio_medico?id='.Input::get('id'),'etiqueta'=>'Consultorio Médico'],
-                        ['url'=>'consultorio_medico/pacientes?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $modelo->descripcion],
-                        ['url'=>'NO','etiqueta'=> 'Historia Clínica' ]
-                    ];
+        $miga_pan = MigaPan::get_array( Aplicacion::find( Input::get('id') ), $modelo, 'Historia Clínica' );
 
         $url_crear = '';
         $url_edit = '';
@@ -203,59 +114,6 @@ class PacienteController extends Controller
         return view('consultorio_medico.pacientes_show',compact('secciones_consulta','miga_pan','registro','url_crear','url_edit','reg_anterior','reg_siguiente','consultas','modelo_consultas','datos_historia_clinica','modelo_formulas_opticas','id'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $general = new ModeloController();
-
-        $modelo = Modelo::find(Input::get('id_modelo'));
-
-        // Se obtiene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id);
-
-        $lista_campos = $general->get_campos_modelo($modelo,$registro,'edit');
-
-        //$paciente = new Paciente;
-        $registro->nombre1 = $registro->tercero->nombre1;
-        $registro->otros_nombres = $registro->tercero->otros_nombres;
-        $registro->apellido1 = $registro->tercero->apellido1;
-        $registro->apellido2 = $registro->tercero->apellido2;
-        $registro->id_tipo_documento_id = $registro->tercero->id_tipo_documento_id;
-        $registro->numero_identificacion = $registro->tercero->numero_identificacion;
-        $registro->direccion1 = $registro->tercero->direccion1;
-        $registro->telefono1 = $registro->tercero->telefono1;
-        $registro->email = $registro->tercero->email;
-        
-        //
-        //dd( array_merge(  $registro->getOriginal(), $registro->tercero->getOriginal() ) );
-        
-        $form_create = [
-                        'url' => $modelo->url_form_create,
-                        'campos' => $lista_campos
-                    ];
-
-        $url_action = 'web/'.$id;
-        if ($modelo->url_form_create != '') {
-            $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
-        }
-
-        //$miga_pan = $general->get_miga_pan($modelo,$registro->descripcion);
-
-        $miga_pan = [
-                        ['url'=>'consultorio_medico?'.Input::get('id'),'etiqueta'=>'Consultorio Médico'],
-                        ['url'=>'consultorio_medico/pacientes?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $modelo->descripcion],
-                        ['url'=>'NO','etiqueta'=> $registro->tercero->nombre1." ".$registro->tercero->otros_nombres." ".$registro->tercero->apellido1." ".$registro->tercero->apellido2 ]
-                    ];
-
-        $archivo_js = app($modelo->name_space)->archivo_js;
-
-        return view('layouts.edit',compact('form_create','miga_pan','registro','archivo_js','url_action')); 
-    }
 
     /**
      * Update the specified resource in storage.
@@ -282,7 +140,8 @@ class PacienteController extends Controller
         // y los que son únicos
         $lista_campos = $modelo->campos->toArray();
         $cant = count($lista_campos);
-        for ($i=0; $i < $cant; $i++) {
+        for ($i=0; $i < $cant; $i++)
+        {
             if ( $lista_campos[$i]['editable'] == 1 ) 
             { 
                     // Se valida solo si el campo pertenece al Modelo directamente

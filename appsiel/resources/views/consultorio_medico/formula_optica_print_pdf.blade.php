@@ -11,7 +11,7 @@
 
 @section('content')
 
-	<div class="row lbl_historia_clinica" style="border: solid 1px;">
+	<div class="row lbl_historia_clinica" style="border: solid 1px; font-size: 14px;">
 			
 			@include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', ['vista'=>'imprimir'] )
 
@@ -24,7 +24,11 @@
 						<b>Fecha/Hora consulta: </b> {{ $consulta->fecha }} / {{ $consulta->created_at->format('h:i:s a') }}
 					</td>
 					<td>
-						<b>Fórmula No. </b> <span class="formula_id">{{ $formula->id }}</span>
+						@if( !is_null( $formula ) )
+							<b>Fórmula No. </b> <span class="formula_id">{{ $formula->id }}</span>
+						@else
+							<b>Fórmula No. </b> <span class="formula_id"> XXXXXXXX </span>
+						@endif
 					</td>
 				</tr>
 				<tr>
@@ -41,8 +45,6 @@
 			</table>
 
 			{!! $examenes !!}
-
-			@include('consultorio_medico.formula_optica_show_tabla' )
 			
 			<p style="text-align: right;">
 

@@ -5,6 +5,8 @@
 
 <header>
     <div class="top-link">
+<header style="background: {{ $configuracion->color_primario }};">
+    <div class="top-link" style="background: {{ $configuracion->color_primario }};">
         <div class="container">
             <div class="top-link-inner">
                 <div class="row">
@@ -13,10 +15,15 @@
                             <span style="line-height: 40px; color: white;">
                                 Linea Directa : <a href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}" target="_blank"><i style="font-size: 16px; color: green;" class="fa fa-whatsapp" aria-hidden="true"></i> {{ $empresa->telefono1 }}</a>
                             </span>
+                            <span style="line-height: 40px; color: white;">
+                                Línea directa: &nbsp; <a href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}" target="_blank"><i style="font-size: 16px; color: green;" class="fa fa-whatsapp" aria-hidden="true"></i> {{ $empresa->telefono1 }}</a>
+                            </span>
                         </div>
                     </div>
+
                     <div class="col-md-9 col-sm-9 col-xs-12 toplink-static">
                         <p class="welcome-msg">Bienvenido a {{ $empresa->descripcion }} </p>
+
                         <ul class="links">
                             <li class="first"><a
                                         href="{{route('tienda.micuenta')}}"
@@ -30,16 +37,21 @@
                             @if(Auth::guest())
                                      <li class=" last"><a
                                         href="{{route('tienda.login')}}"
-                                        title="Log In">Iniciar Sesión</a>
+                                        title="Iniciar sesión">Iniciar Sesión</a>
                                      </li>
                                 <li class=" last"><a
                                             href="{{url('/web/create?id=10&id_modelo=218')}}"
-                                            title="Registrarse">Registrarse</a>
+                                            title="Registrarse"
+                                            onclick="registrarse( event )">Registrarse</a>
+                                </li>
+                                <li class=" last"><button
+                                            title="Registrarse"
+                                            onclick="registrarse( event )">Registrarse 2</button>
                                 </li>
                             @else
                                 <li class=" last"><a
                                             href="{{url('/logout')}}"
-                                            title="Registrarse">Cerrar sesión</a>
+                                            title="Cerra sesión">Cerrar Sesión</a>
                                 </li>
                             @endif
                         </ul>
@@ -48,6 +60,8 @@
             </div>
         </div>
     </div>
+
+
     <div class="header">
         <div class="container">
             <div class="header-inner">
@@ -59,14 +73,16 @@
                                         src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}"
                                         alt="Magento Commerce"></a>
                         </div>
-
-                        <form class="col-xs-12 col-md-6 col-sm-12 serach" action="" method="GET">
-                            <div class="box-search-bar clearfix">
-                                <select class="btn" name="" id="">
-                                    <option value="">Categorias</option>
+                        <form class="col-xs-12 col-md-6 col-sm-12 search" action="{{route('tienda.busqueda')}}" method="GET" onsubmit="buscar_descripcion(event)" id="form_consulta">
+                            <div class="box-search-bar clearfix" style="color: black !important;">
+                                <select class="btn" name="categoria" id="categoria_id" onchange="filtrar_categoria(value, this.options[this.selectedIndex] )">
+                                    <option value="0">Categorias</option>
+                                    @foreach($grupos as $key => $value)
+                                        <option value="{{$value[0]->id}}">{{strtolower($key)}}</option>
+                                    @endforeach
                                 </select>
-                                <input type="text" class="input-text" autocomplete="off" id="search"
-                                       placeholder="Search entire store here...">
+                                <input type="text" class="input-text" autocomplete="off" id="search" name="search" required
+                                       placeholder="Buscar por producto, categoría... ">
                                 <button type="submit" title="Search" class="btn"><i
                                             class="fa fa-search"></i></button>
                             </div>
@@ -100,10 +116,12 @@
                                 </li>
                             </ul>
                         </div>
-
+                    -->
                     </div>
                 </div>
             </div>
         </div>
     </div>
+                <!--     -->
+
 </header>

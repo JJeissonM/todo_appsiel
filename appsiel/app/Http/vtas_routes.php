@@ -11,7 +11,10 @@ Route::get('vtas_consultar_clientes', 'Ventas\VentaController@consultar_clientes
 Route::get('vtas_consultar_existencia_producto', 'Ventas\VentaController@consultar_existencia_producto');
 
 Route::post('factura_remision_pendiente', 'Ventas\VentaController@factura_remision_pendiente');
+
+// FACTURAS
 Route::resource('ventas', 'Ventas\VentaController');
+Route::resource('factura_medica', 'Ventas\FacturaMedicaController');
 
 // PEDIDOS
 Route::get('vtas_pedidos_enviar_por_email/{id}', 'Ventas\PedidoController@enviar_por_email');

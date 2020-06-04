@@ -12,6 +12,7 @@ use View;
 use Storage;
 
 use App\Core\Empresa;
+use App\Sistema\Campo;
 
 use App\web\PqrForm;
 
@@ -45,7 +46,6 @@ class PqrFormController extends Controller
 
     public function enviar_formulario( Request $request )
     {
-
         $empresa = Empresa::find(1);
 
         // Email interno. Debe estar creado en Hostinger
@@ -54,22 +54,33 @@ class PqrFormController extends Controller
         // Datos requeridos por hostinger
         $from = "Pagina Web <".$email_interno."> \r\n";
         $headers = "From:" . $from." \r\n";
-        $to = $request->parametros;
-        $subject = "Pagina Web: ".$request->asunto;
+        $to = $request->email_recepcion;
+        $subject = "Comentario desde página Web";
 
+        
         // El mensaje
-        $cuerpo_mensaje = View::make('web.formularios.cuerpo_mensaje',compact('request','empresa'))->render();
+        $formulario = PqrForm::where( 'widget_id', $request->widget_id )->get()->first();
+        $campos_mostrar = json_decode( $formulario->campos_mostrar );        
+        $campos = [];
+        foreach ($campos_mostrar as $key => $value) {
+            $el_campo = Campo::find( $key );
+            $variable = $el_campo->name;
+            $campos[] = [ $el_campo->descripcion, $request->$variable ];
+        }
+        $cuerpo_mensaje = View::make('web.formularios.cuerpo_mensaje',compact('request','empresa','campos'))->render();
 
+
+        // Encabezados
         $headers .= "MIME-Version: 1.0\r\n";
         $headers .= "Content-Type: multipart/mixed; boundary=\"=A=G=R=O=\"\r\n\r\n";
-
-
         
         $message = "--=A=G=R=O=\r\n";
         $message .= "Content-type:text/html; charset=utf-8\r\n";
         $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
         $message .= $cuerpo_mensaje . "\r\n\r\n";
 
+
+        // Manjeo de archivos adjuntos
         $archivos_enviados = $request->file();
 
         if( !empty( $archivos_enviados ) )
@@ -101,6 +112,8 @@ class PqrFormController extends Controller
                 $message .= "--=A=G=R=O=--";
             }                
         }
+
+        //dd( [ $to, $subject, $message, $headers ] );
 
         //if(true)
         if ( mail( $to, $subject, $message, $headers) )

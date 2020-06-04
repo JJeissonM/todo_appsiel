@@ -2,12 +2,12 @@
 
       li.active a{
            color: black !important;
-           background-color: transparent !important;
+           background-color: white !important;
       }
 
       li a:hover {
           color: black !important;
-          background-color:transparent !important;
+          background-color: white !important;
       }
 
     .icono img{
@@ -33,7 +33,7 @@
     }
 ?>
 
-<header class="{{ $clase_header }}" style="background-color: {{$nav->background}};">
+<header class="no" style="background-color: {{$nav->background}};" id="myHeader">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light"><!-- mu-navbar  d-flex -->
             

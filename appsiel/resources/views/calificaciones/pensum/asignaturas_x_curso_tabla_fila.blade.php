@@ -1,5 +1,5 @@
 <tr>
-    <td> {{ $orden_boletin }} </td>
+    <td> <div class="elemento_modificar" title="Doble click para modificar." data-asignatura_id="{{ $asignatura_id }}"> {{ $orden_boletin }} </div>  </td>
     <td> {{ $area_descripcion }} </td>
     <td> {{ $asignatura_descripcion }} </td>
     <td> {{ $intensidad_horaria }} </td>

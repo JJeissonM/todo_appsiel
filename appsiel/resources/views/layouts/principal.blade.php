@@ -39,6 +39,8 @@
 
 	<link rel="stylesheet" href="{{ asset('assets/css/mis_estilos.css') }}">
 	<link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
+	<!-- Select2 -->
+	<link rel="stylesheet" href="{{ asset('assets/bower_components/select2/dist/css/select2.min.css')}}">
 
 
 
@@ -57,6 +59,10 @@
 		#proveedores_suggestions {
 			position: absolute;
 			z-index: 9999;
+		}
+
+		a.list-group-item-sugerencia {
+			cursor: pointer;
 		}
 
 		/*
@@ -204,6 +210,8 @@
 	<script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
 
 	<script src="{{asset('js/sweetAlert2.min.js')}}"></script>
+	<!-- Select2 -->
+	<script src="{{ asset('assets/bower_components/select2/dist/js/select2.full.min.js')}}"></script>
 
 	<script>
 		var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
@@ -448,6 +456,8 @@
 		});
 	</script>
 
+	<script src="{{ asset('assets/js/input_lista_sugerencias.js') }}"></script> <!-- -->
+	
 	@yield('scripts')
 	@yield('scripts2')
 	@yield('scripts3')

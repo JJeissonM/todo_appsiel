@@ -1,49 +1,78 @@
 
 <br>
 
-<?php
-	$formula = App\Salud\FormulaOptica::where('paciente_id', $consulta->paciente_id)->where('consulta_id', $consulta->id)->get()->first();
-?>
-
-@if( is_null($formula) )
 	@can('salud_consultas_create')
 		&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate( 'consultorio_medico/formulas_opticas/create?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$registro->id.'&consulta_id='.$consulta->id ) }}
 	@endcan
-@else
 
 	<?php 
 		//$formula = $formulas[0]; 
-		$examenes = DB::table('salud_formula_tiene_examenes')->leftJoin('salud_examenes','salud_examenes.id','=','salud_formula_tiene_examenes.examen_id')->where('formula_id', $formula->id)->select('salud_examenes.descripcion','salud_formula_tiene_examenes.formula_id','salud_formula_tiene_examenes.examen_id')->get();
+		
+		/*$examenes = DB::table('salud_formula_tiene_examenes')->leftJoin('salud_examenes','salud_examenes.id','=','salud_formula_tiene_examenes.examen_id')
+												->where('formula_id', $formula->id)
+												->select('salud_examenes.descripcion','salud_formula_tiene_examenes.formula_id','salud_formula_tiene_examenes.examen_id')
+												->get();*/
+		$examenes = App\Salud\ExamenMedico::examenes_del_paciente2( $consulta->paciente_id, $consulta->id );
+
+		//dd( $examenes );
 	?>
 	
-	@can('salud_consultas_edit')
-		&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'consultorio_medico/formulas_opticas/'.$formula->id.'/edit?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$registro->id.'&consulta_id='.$consulta->id ) }}
-	@endcan
 	
-	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnPrint( 'consultorio_medico/formulas_opticas/'.$formula->id.'/print?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$registro->id.'&consulta_id='.$consulta->id ) }}
-
-	&nbsp;&nbsp;&nbsp;
-	{{ Form::open( [ 'url' => 'consultorio_medico/eliminar_formula_optica?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'style' => 'display:inline;' ] ) }}
-		{{ Form::hidden( 'formula_id', $formula->id ) }}
-		{{ Form::hidden( 'ruta_redirect', 'consultorio_medico/pacientes/'.$registro->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
-		
-		<button class="btn btn-danger btn-xs btn-detail btn_eliminar" title="Eliminar"> <i class="fa fa-trash"></i> &nbsp; </button>
-	{{ Form::close() }}
+	
+	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnPrint( 'consultorio_medico/formulas_opticas/9999/print?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
 
 	<br><br>
 	
-	@include('consultorio_medico.formula_optica_show_tabla' )
+	
 
-	<b>Exámenes asociados: </b> &nbsp;&nbsp;
+	<b>Fórmulas para los exámenes del paciente: </b> &nbsp;&nbsp;
 	<div class="btns_examenes_asignados" style="display: inline;">
-		@foreach( $examenes as $examen )
-			<span class="label label-default label-md"> <span> {{ $examen->descripcion }} </span> <button class="desasociar_examen" style="background-color: transparent;" data-formula_id="{{$examen->formula_id}}" data-examen_id="{{$examen->examen_id}}">&times;</button> </span> &nbsp;&nbsp;&nbsp;
-		@endforeach
+		<table style="width: 100%;">
+			@foreach( $examenes as $examen )
+				<?php
+					$formula = App\Salud\FormulaOptica::leftJoin('salud_formula_tiene_examenes','salud_formula_tiene_examenes.formula_id','=','salud_formulas_opticas.id')
+												->where('salud_formulas_opticas.paciente_id', $consulta->paciente_id)
+												->where('salud_formulas_opticas.consulta_id', $consulta->id)
+												->where('salud_formula_tiene_examenes.examen_id', $examen->id)
+												->get()
+												->first();
+				?>
+				@if( !is_null( $formula ) )
+					<tr>
+						<td>
+							<h5 style="width: 100%; text-align: center; font-weight: bold;">{{ $examen->descripcion }}</h5>
+							@include( 'consultorio_medico.formula_optica_show_tabla', [ 'formula' => $formula ] )
+						</td>
+						<td>
+
+							@can('salud_consultas_edit')
+								&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'web/'.$formula->id.'/edit?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
+
+								{{ Form::open( [ 'url' => 'consultorio_medico/eliminar_formula_optica?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'style' => 'display:inline;', 'class' => 'form_eliminar' ] ) }}
+									{{ Form::hidden( 'formula_id', $formula->id ) }}
+									{{ Form::hidden( 'ruta_redirect', 'consultorio_medico/pacientes/'.$consulta->paciente_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}		
+
+									&nbsp;&nbsp;<button class="btn btn-danger btn-xs btn-detail btn_eliminar" title="Eliminar"> <i class="fa fa-trash"></i> &nbsp; </button>
+								{{ Form::close() }}
+
+									<!-- 
+										&nbsp;&nbsp;<button class="btn btn-danger btn-xs desasociar_examen" data-formula_id="{ {$examen->formula_id}}" data-examen_id="{ {$examen->examen_id}}">&times;</button>
+									-->
+							@endcan
+
+						</td>
+					</tr>
+				@endif
+
+				<!-- <span class="label label-default label-md"> <span> { { $examen->descripcion }} </span> <button class="desasociar_examen" style="background-color: transparent;" data-formula_id="{ {$examen->formula_id}}" data-examen_id="{ {$examen->examen_id}}">&times;</button> </span> &nbsp;&nbsp;&nbsp; -->
+			@endforeach
+		</table>
+			
 	</div>
-	<button class="btn btn-primary btn-xs agregar_examen"><i class="fa fa-btn fa-plus"></i></button>
 
-@endif
-
+	<!--
+		<button class="btn btn-primary btn-xs agregar_examen"><i class="fa fa-btn fa-plus"></i></button>
+	-->
 
 
 @section('scripts3')
@@ -51,6 +80,17 @@
 		$(document).ready(function(){
 			
 			var elementos_consulta_actual;
+
+
+			$(".btn_eliminar").click(function(event){
+				event.preventDefault();
+				var r = confirm("¿Desea eliminar la formula para este exámen?");
+				if (r == true) {
+				  $(this).parents('.form_eliminar').submit();
+				}
+			});
+
+			
 
 			$(".agregar_examen").click(function(event){
 				event.preventDefault();

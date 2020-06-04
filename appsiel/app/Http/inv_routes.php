@@ -12,6 +12,7 @@ Route::post('post_ajax','Inventarios\InventarioController@post_ajax');
 
 // CONSULTAS GENERALES
 Route::get('inv_consultar_productos','Inventarios\InventarioController@consultar_productos');
+Route::get('inv_consultar_productos_v2','Inventarios\InventarioController@consultar_productos_v2');
 Route::get('inv_consultar_existencia_producto','Inventarios\InventarioController@consultar_existencia_producto');
 Route::get('inv_validacion_saldo_movimientos_posteriores/{bodega_id}/{producto_id}/{fecha}/{cantidad_nueva}/{saldo_a_la_fecha}/{movimiento}/{cantidad_anterior?}','Inventarios\InventarioController@get_validacion_saldo_movimientos_posteriores');
 

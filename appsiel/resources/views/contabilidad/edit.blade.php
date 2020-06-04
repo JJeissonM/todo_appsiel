@@ -65,12 +65,19 @@
 @endsection
 
 @section('scripts')
+	
+	<!--<script src="{ { asset('assets/js/input_lista_sugerencias.js') }}"></script>  -->
 
 	<script type="text/javascript">
 		
 		var LineaNum = {{ $linea_num }};
 
 		calcular_totales();
+		
+        function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+        {
+        	obj_text_input.parent().next().find(':input').focus();
+        }
 		
 		$(document).ready(function(){
 			$('#fecha').focus();
@@ -79,6 +86,30 @@
 			var debito, credito;
 
 			var direccion = location.href;
+
+
+			// Al presiona teclas en la caja de texto
+			$(document).on('keyup','#col_detalle,#col_debito',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	$(this).parent().next().find(':input').focus();
+				}
+			});
+
+			$(document).on('keyup','#col_credito',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	$('.btn_confirmar').focus();
+				}
+			});
 
 			$('#core_tipo_doc_app_id').change(function(){
 				$('#fecha').focus();
@@ -116,21 +147,13 @@
 
 			        $('#ingreso_registros').find('tbody:first').append( datos );
 
-			        $('#combobox_cuentas').focus();
+			        $('#cuenta_input').focus();
 
 			        $('#btn_nuevo').hide();
 
 				});
 		    }
 
-		   	$(document).on('change', '#combobox_cuentas', function() {
-				if ( $(this).val() != '' ) {
-					$('#combobox_terceros').focus();
-				}else{ 
-					$(this).focus();
-				}
-
-			} );
 
 			$(document).on('click', '.btn_confirmar', function(event) {
 				event.preventDefault();
@@ -150,8 +173,8 @@
 			{
 				LineaNum ++;
 				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-trash'></i></button>";
-		        var cuenta = '<span style="color:white;">' + $('#combobox_cuentas').val() + '-</span>' + $( "#combobox_cuentas option:selected" ).text();
-		        var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#combobox_terceros option:selected" ).text();
+		        var cuenta = '<span style="color:white;">' + $('#combobox_cuentas').val() + '-</span>' + $( "#cuenta_input" ).val();
+		        var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#tercero_input" ).val();
 		        var detalle = $('#col_detalle').val();
 
 
@@ -204,6 +227,7 @@
 				LineaNum --;
 				$('#btn_nuevo').show();
 				calcular_totales();
+				$('#btn_nuevo').focus();
 			});
 
 
@@ -413,6 +437,7 @@
 
 		                $("#div_spin").hide();
 
+		                $('#fecha_vencimiento_aux').focus( );
 		                $('#fecha_vencimiento_aux').val( get_fecha_hoy() );
 
 					});		        
@@ -441,6 +466,7 @@
 
 		                $("#div_spin").hide();
 
+		                $('#fecha_vencimiento_aux').focus( );
 		                $('#fecha_vencimiento_aux').val( get_fecha_hoy() );
 
 					});		        
@@ -451,12 +477,16 @@
 
 		        $('#fecha_vencimiento').val( $('#fecha_vencimiento_aux').val() );
 
+		        $('#cuenta_input').val( $('#cuenta_input_aux').val() );
+		        $('#combobox_cuentas').val( $('#combobox_cuentas_aux').val() );
+
+		        $('#tercero_input').val( $('#tercero_input_aux').val() );
+		        $('#combobox_terceros').val( $('#combobox_terceros_aux').val() );
+
 		        $('#documento_soporte_tercero').val( $('#documento_soporte_tercero_aux').val() );
 
 		        $('#tipo_transaccion_linea').val( $('#tipo_transaccion_linea_aux').val() );
 
-		        $('#combobox_cuentas').val( $('#contab_cuenta_id_aux').val() );
-		        $('#combobox_terceros').val( $('#core_tercero_id_aux').val() );
 		        $('#col_detalle').val( $('#detalle_aux').val() );
 		        $('#col_debito').val( $('#valor_debito_aux').val() );
 		        $('#col_credito').val( $('#valor_credito_aux').val() );

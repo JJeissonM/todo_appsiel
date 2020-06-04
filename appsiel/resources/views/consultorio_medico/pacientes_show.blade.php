@@ -8,26 +8,36 @@
 
 	{{ Form::bsMigaPan($miga_pan) }}
 
-	@if($url_crear!='')
-		&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate($url_crear) }}
-	@endif
+	<div class="row">
+		<div class="col-md-6">
+			&nbsp;&nbsp;&nbsp;
+			<div class="btn-group">
 
-	@if($url_edit!='')
-		{{ Form::bsBtnEdit2(str_replace('id_fila', $registro->id, $url_edit),'Editar') }}
-	@endif
+				@if($url_crear!='')
+					&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate($url_crear) }}
+				@endif
 
-	@if( is_null($consultas->first()) )
-		{{ Form::formEliminar( 'consultorio_medico/eliminar_paciente', $registro->id ) }}
-	@endif
+				@if($url_edit!='')
+					{{ Form::bsBtnEdit2(str_replace('id_fila', $registro->id, $url_edit),'Editar') }}
+				@endif
 
-	<div class="pull-right">
-		@if($reg_anterior!='')
-			{{ Form::bsBtnPrev('consultorio_medico/pacientes/'.$reg_anterior.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}
-		@endif
+				@if( is_null($consultas->first()) )
+					{{ Form::formEliminar( 'consultorio_medico/eliminar_paciente', $registro->id ) }}
+				@endif
+			</div>
+		</div>
 
-		@if($reg_siguiente!='')
-			{{ Form::bsBtnNext('consultorio_medico/pacientes/'.$reg_siguiente.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}
-		@endif
+		<div class="col-md-6">
+				<div class="btn-group pull-right">
+					@if($reg_anterior!='')
+						{{ Form::bsBtnPrev('consultorio_medico/pacientes/'.$reg_anterior.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}
+					@endif
+
+					@if($reg_siguiente!='')
+						{{ Form::bsBtnNext('consultorio_medico/pacientes/'.$reg_siguiente.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}
+					@endif
+				</div>
+		</div>
 	</div>
 
 	<hr>

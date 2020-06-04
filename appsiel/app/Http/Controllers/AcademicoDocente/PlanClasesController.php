@@ -95,7 +95,12 @@ class PlanClasesController extends ModeloController
     {
     	$encabezado = PlanClaseEncabezado::get_registro_impresion( $id );
 
-    	$registros = PlanClaseRegistro::get_registros_impresion( $id );
+        if( $encabezado->plantilla_plan_clases_id == 99999 )
+        {
+            $registros = PlanClaseRegistro::get_registros_impresion_guia( $id );
+        }else{
+            $registros = PlanClaseRegistro::get_registros_impresion( $id );
+        }
 
     	return View::make( 'academico_docente.planes_clases.vista_impresion', compact( 'encabezado', 'registros' ) )->render();
 

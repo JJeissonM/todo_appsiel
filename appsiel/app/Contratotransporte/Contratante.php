@@ -2,6 +2,7 @@
 
 namespace App\Contratotransporte;
 
+use App\Core\Tercero;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -17,18 +18,17 @@ class Contratante extends Model
     public static function opciones_campo_select()
     {
         $opciones = Contratante::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_contratantes.tercero_id')
-                            ->select('cte_contratantes.id','core_terceros.descripcion','core_terceros.numero_identificacion')
-                            ->get();
+            ->select('cte_contratantes.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
+            ->get();
 
-        $vec['']='';
-        foreach ($opciones as $opcion)
-        {
-            $vec[$opcion->id] = $opcion->numero_identificacion.' '.$opcion->descripcion;
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
+            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->descripcion;
         }
 
         return $vec;
     }
-    
+
     public static function consultar_registros2()
     {
         return Contratante::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_contratantes.tercero_id')
@@ -42,5 +42,15 @@ class Contratante extends Model
             )
             ->orderBy('cte_contratantes.created_at', 'DESC')
             ->paginate(100);
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo(Tercero::class);
+    }
+
+    public function contratos()
+    {
+        return $this->hasMany(Contrato::class);
     }
 }

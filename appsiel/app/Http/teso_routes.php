@@ -36,6 +36,7 @@ Route::get('tesoreria/get_ctas_bancarias_to_select','Tesoreria\TesoreriaControll
 
 
 
+Route::get('teso_consultar_motivos', 'Tesoreria\TesoreriaController@consultar_motivos');
 Route::get('tesoreria/ajax_get_motivos/{teso_tipo_motivo}', 'Tesoreria\TesoreriaController@ajax_get_motivos');
 
 Route::get('tesoreria/recaudos_imprimir/{id}', 'Tesoreria\RecaudoController@imprimir');

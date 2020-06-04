@@ -38,6 +38,8 @@ class CreateContratosTable extends Migration
             $table->foreign('contratante_id')->references('id')->on('cte_contratantes')->onDelete('CASCADE');
             $table->unsignedInteger('vehiculo_id'); //vehiculo
             $table->foreign('vehiculo_id')->references('id')->on('cte_vehiculos')->onDelete('CASCADE');
+            $table->unsignedInteger('conductor_id')->nullable(); //conductor cuando es el quien crea el contrato
+            $table->foreign('conductor_id')->references('id')->on('cte_conductors')->onDelete('CASCADE');
             $table->timestamps();
         });
     }

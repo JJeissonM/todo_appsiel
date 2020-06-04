@@ -55,4 +55,9 @@ class Vehiculo extends Model
     {
         return $this->hasMany(Documentosvehiculo::class);
     }
+
+    public function contratos()
+    {
+        return $this->hasMany(Contrato::class);
+    }
 }

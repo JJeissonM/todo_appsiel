@@ -77,7 +77,7 @@ class InvProducto extends Model
     }
 
 
-    public static function get_datos_pagina_web($grupo_inventario_id, $estado,$count = 9,$busqueda=false)
+    public static function get_datos_pagina_web( $grupo_inventario_id, $estado, $count = 9, $busqueda=false)
     {
 
         if ( $grupo_inventario_id == '')
@@ -87,7 +87,9 @@ class InvProducto extends Model
         }else{
           $operador1 = '=';
         }
-        if(!$busqueda){
+        
+        if(!$busqueda)
+        {
             $busqueda = '';
         }
 
@@ -114,7 +116,7 @@ class InvProducto extends Model
                     ->where('inv_productos.mostrar_en_pagina_web',1)
                     ->where('inv_productos.descripcion','LIKE','%'.$busqueda.'%')
                     ->orderBy('grupo_descripcion', 'ASC')
-                    ->paginate(9);
+                    ->paginate( $count );
         foreach ($productos as $item)
         {
             $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), $item->id );

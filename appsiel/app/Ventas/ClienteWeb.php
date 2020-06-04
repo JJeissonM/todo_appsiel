@@ -14,7 +14,7 @@ class ClienteWeb extends Model
 	
 	protected $fillable = ['core_tercero_id', 'encabezado_dcto_pp_id', 'clase_cliente_id', 'lista_precios_id', 'lista_descuentos_id', 'vendedor_id','inv_bodega_id', 'zona_id', 'liquida_impuestos', 'condicion_pago_id', 'cupo_credito', 'bloquea_por_cupo', 'bloquea_por_mora', 'estado'];
 
-    public $urls_acciones = '{"create":"web/create","show":"tienda/publica/cuenta/id_fila"}';
+    public $urls_acciones = '{"create":"web/create","show":"ecommerce/public/account"}';
 
     public $archivo_js = 'assets/tienda/js/cliente_web.js';
 

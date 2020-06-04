@@ -13,7 +13,7 @@ class PqrForm extends Model
 {
     protected $table = 'pw_pqr_form';
 
-    // Por lo pornto el campo "parametros" está almacenando el email en el que se recibiran los correos
+    // Por lo pronto el campo "parametros" está almacenando el email en el que se recibiran los correos
     protected $fillable = [ 'contenido_encabezado', 'contenido_pie_formulario', 'campos_mostrar', 'parametros', 'widget_id'];
 
     public function widget()

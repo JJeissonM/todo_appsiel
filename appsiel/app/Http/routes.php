@@ -72,7 +72,8 @@ Route::resource('configuracion', 'Core\ConfiguracionController');
 
 
 // validar_numero_identificacion de tercero
-Route::get('core_consultar_terceros', 'Core\TerceroController@consultar_terceros');
+Route::get('core_consultar_terceros_v2', 'Core\TerceroController@consultar_terceros_v2');
+Route::get('core_consultar_terceros', 'Core\TerceroController@consultar_terceros'); // reemplazar por la v2
 Route::get('core/validar_numero_identificacion/{numero_identificacion}', 'Core\TerceroController@validar_numero_identificacion');
 
 Route::get('core/validar_email/{email}', 'Core\TerceroController@validar_email');

@@ -524,8 +524,7 @@ class CompraController extends TransaccionController
 
         // Linea crear nuevo registro
         //$modelo_id = 146;
-        //$html .= '<a class="list-group-item list-group-item-proveedor boton_crear list-group-item-info" data-modelo_id="'.$modelo_id.
-                                '" > + Crear nuevo </a>';
+        //$html .= '<a class="list-group-item list-group-item-proveedor boton_crear list-group-item-info" data-modelo_id="'.$modelo_id.  '" > + Crear nuevo </a>';
 
         $html .= '</div>';
 

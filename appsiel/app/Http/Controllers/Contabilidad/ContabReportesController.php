@@ -1225,7 +1225,7 @@ class ContabReportesController extends Controller
         }
         */
 
-        $vista = View::make( 'contabilidad.incluir.listado_cuadre_contabilidad_vs_tesoreria', compact('registros', 'cajas','motivos_tesoreria_salida','motivos_tesoreria_entrada') )->render();
+        $vista = View::make( 'contabilidad.incluir.listado_cuadre_contabilidad_vs_tesoreria', compact('registros') )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

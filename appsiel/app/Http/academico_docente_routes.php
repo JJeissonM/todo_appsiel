@@ -75,4 +75,7 @@ Route::get( 'sga_planes_clases_remover_archivo_adjunto/{encabezado_id}', 'Academ
 Route::resource('sga_planes_clases', 'AcademicoDocente\PlanClasesController');
 
 
+Route::resource('sga_guias_academicas', 'AcademicoDocente\GuiasAcademicasController');
+
+
 Route::resource('academico_docente', 'AcademicoDocente\AcademicoDocenteController');

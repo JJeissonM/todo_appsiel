@@ -24,6 +24,8 @@ class Servicio extends Model
 
     public $encabezado_tabla = ['Código','Descripción','UM-1', 'Grupo inventario','Precio compra','Precio venta','IVA','Tipo','Estado','Acción'];
 
+    public $urls_acciones = '{"create":"web/create"}';
+
     public static function consultar_registros()
     {
         $registros = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')

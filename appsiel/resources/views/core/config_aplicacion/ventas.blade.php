@@ -36,6 +36,128 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
+				<h4> Parámetros por defecto creación de clientes  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['lista_precios_id'] ) )
+								{
+									$lista_precios_id = $parametros['lista_precios_id'];
+								}else{
+									$lista_precios_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('lista_precios_id', $lista_precios_id, 'Lista de precios', App\Ventas\ListaPrecioEncabezado::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['lista_descuentos_id'] ) )
+								{
+									$lista_descuentos_id = $parametros['lista_descuentos_id'];
+								}else{
+									$lista_descuentos_id = 24;
+								}
+							?>
+							{{ Form::bsSelect('lista_descuentos_id', $lista_descuentos_id, 'Lista de descuentos', App\Ventas\ListaDctoEncabezado::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['clase_cliente_id'] ) )
+								{
+									$clase_cliente_id = $parametros['clase_cliente_id'];
+								}else{
+									$clase_cliente_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('clase_cliente_id', $clase_cliente_id, 'Clase de cliente', App\Ventas\ClaseCliente::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['vendedor_id'] ) )
+								{
+									$vendedor_id = $parametros['vendedor_id'];
+								}else{
+									$vendedor_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('vendedor_id', $vendedor_id, 'Vendedor', App\Ventas\Vendedor::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['inv_bodega_id'] ) )
+								{
+									$inv_bodega_id = $parametros['inv_bodega_id'];
+								}else{
+									$inv_bodega_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('inv_bodega_id', $inv_bodega_id, 'Bodega', App\Inventarios\InvBodega::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['zona_id'] ) )
+								{
+									$zona_id = $parametros['zona_id'];
+								}else{
+									$zona_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('zona_id', $zona_id, 'Zona', App\Ventas\Zona::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['condicion_pago_id'] ) )
+								{
+									$condicion_pago_id = $parametros['condicion_pago_id'];
+								}else{
+									$condicion_pago_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('condicion_pago_id', $condicion_pago_id, 'Condicion de pago', App\Ventas\CondicionPago::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros por defecto para las remisiones  </h4>
 				<hr>
 				<div class="row">
@@ -155,6 +277,38 @@
 
 				<h4> Parámetros por defecto para Pedidos  </h4>
 				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['pv_modelo_id'] ) )
+								{
+									$pv_modelo_id = $parametros['pv_modelo_id'];
+								}else{
+									$pv_modelo_id = 175;
+								}
+							?>
+							{{ Form::bsSelect('pv_modelo_id', $pv_modelo_id, 'Modelo para devoluciones', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['pv_tipo_transaccion_id'] ) )
+								{
+									$pv_tipo_transaccion_id = $parametros['pv_tipo_transaccion_id'];
+								}else{
+									$pv_tipo_transaccion_id = 42;
+								}
+							?>
+							{{ Form::bsSelect('pv_tipo_transaccion_id', $pv_tipo_transaccion_id, 'Tipo de transacción para pedidos', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
 
 				<div class="row">
 
