@@ -42,4 +42,11 @@ class ConsultaMedica extends Model
                     ->select( DB::raw( $select_raw ), 'salud_consultas.tipo_consulta AS tipo', DB::raw( $select_raw2 ), 'salud_pacientes.codigo_historia_clinica', 'salud_consultas.id', 'salud_pacientes.id AS paciente_id' )
                     ->get();
 	}
+
+
+
+    public function formulas()
+    {
+        return $this->hasMany('App\Salud\FormulaOptica','consulta_id');
+    }
 }

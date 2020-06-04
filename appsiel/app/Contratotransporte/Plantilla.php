@@ -39,4 +39,9 @@ class Plantilla extends Model
     {
         return $this->hasMany(Plantillaarticulo::class);
     }
+
+    public function planillacs()
+    {
+        return $this->hasMany(Planillac::class);
+    }
 }

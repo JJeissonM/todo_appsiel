@@ -191,7 +191,11 @@
 				<td width="50px">&nbsp;</td>
 			</tr>
 		</table>
+
+		
 		<div class="page-break"></div>
+
+
 	@endforeach {{-- Estudiante --}}
 @else
 	No existen datos.

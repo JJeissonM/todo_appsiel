@@ -25,6 +25,7 @@ use App\Salud\ConsultaMedica;
 use App\Salud\Paciente;
 use App\Salud\ProfesionalSalud;
 use App\Salud\FormulaOptica;
+use App\Salud\TipoLente;
 
 class FormulaOpticaController extends ModeloController
 {
@@ -249,4 +250,42 @@ class FormulaOpticaController extends ModeloController
         //return $view;
         return $pdf->stream('formula_optica.pdf');//stream();
     }
+
+    public function form_agregar_formula_factura()
+    {
+
+        $consultas = Paciente::find( Input::get('paciente_id') )->consultas;
+
+        $tabla = '<table class="table table-striped">
+                    <thead>
+                        <th>Fecha</th>
+                        <th>Consulta</th>
+                        <th>Formula</th>
+                        <th>Exámen</th>
+                        <th>Seleccionar</th>
+                    </thead>
+                    <tbody>';
+
+        foreach ($consultas as $una_consulta)
+        {
+            foreach ( $una_consulta->formulas as $una_formula )
+            {
+                foreach ( $una_formula->examenes as $un_examen )
+                {
+                    
+                    $tabla .= '<tr>
+                                <td>'.$una_consulta->fecha.'</td>
+                                <td> #'.$una_consulta->id.'</td>
+                                <td>'.TipoLente::find( $una_formula->tipo_de_lentes )->descripcion.'</td>
+                                <td>'.$un_examen->descripcion.'</td>
+                                <td> <button class="btn btn-success btn-xs btn_confirmar" style="display: inline;"><i class="fa fa-check"></i></button> </td>
+                            </tr>';
+                }
+            }
+        }
+
+        $tabla .= '</tbody> </table>';
+
+        return $tabla;        
+    } 
 }   

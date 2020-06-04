@@ -124,6 +124,9 @@ Route::resource('custom_html', 'web\CustomHtmlController');
 Route::resource('pqr_form', 'web\PqrFormController');
 
 
+Route::get('formulario_campana', 'web\CustomHtmlController@formulario_campana');
+
+
 
 // Página Web - BACK END
 

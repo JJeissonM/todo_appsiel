@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\ContratoTransporte;
 
+use App\Contratotransporte\Conductor;
 use App\Contratotransporte\Contratante;
 use App\Contratotransporte\Contrato;
 use App\Contratotransporte\Contratogrupou;
+use App\Contratotransporte\Planillac;
+use App\Contratotransporte\Planillaconductor;
+use App\Contratotransporte\Plantilla;
 use App\Contratotransporte\Propietario;
 use App\Contratotransporte\Vehiculo;
 use App\Core\Empresa;
@@ -192,7 +196,7 @@ class ContratoTransporteController extends Controller
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML($documento_vista);//->setPaper( $tam_hoja, $orientacion );
+        $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;
         return $pdf->stream('contrato.pdf');
@@ -334,10 +338,206 @@ class ContratoTransporteController extends Controller
             ];
         }
         $c = Contrato::find($id);
+        $planillas = $c->planillacs;
         return view('contratos_transporte.contratos.planillas')
             ->with('variables_url', $variables_url)
             ->with('miga_pan', $miga_pan)
             ->with('c', $c)
-            ->with('source', $source);
+            ->with('source', $source)
+            ->with('planillas', $planillas);
+    }
+
+
+    //crear planilla
+    public function planillacreate($id, $source)
+    {
+        $idapp = Input::get('id');
+        $modelo = Input::get('id_modelo');
+        $transaccion = Input::get('id_transaccion');
+        $miga_pan = null;
+        $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
+        if ($source == 'MISCONTRATOS') {
+            $miga_pan = [
+                [
+                    'url' => 'contratos_transporte' . '?id=' . $idapp,
+                    'etiqueta' => 'Contratos transporte'
+                ],
+                [
+                    'url' => 'cte_contratos_propietarios' . $variables_url,
+                    'etiqueta' => 'Mis Contratos'
+                ],
+                [
+                    'url' => 'cte_contratos/' . $id . '/planillas/' . $source . '/index' . $variables_url,
+                    'etiqueta' => 'Planillas FUEC'
+                ],
+                [
+                    'url' => 'NO',
+                    'etiqueta' => 'Generar Planilla'
+                ]
+            ];
+        } else {
+            $miga_pan = [
+                [
+                    'url' => 'contratos_transporte' . '?id=' . $idapp,
+                    'etiqueta' => 'Contratos transporte'
+                ],
+                [
+                    'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
+                    'etiqueta' => 'Contratos'
+                ],
+                [
+                    'url' => 'cte_contratos/' . $id . '/show' . $variables_url,
+                    'etiqueta' => 'Ver Contrato'
+                ],
+                [
+                    'url' => 'cte_contratos/' . $id . '/planillas/' . $source . '/index' . $variables_url,
+                    'etiqueta' => 'Planillas FUEC'
+                ],
+                [
+                    'url' => 'NO',
+                    'etiqueta' => 'Generar Planilla'
+                ]
+            ];
+        }
+        $co = Contrato::find($id);
+        $p = Plantilla::where('estado', 'SI')->first();
+        if ($p == null) {
+            return redirect('cte_contratos/' . $id . '/planillas/' . $source . '/index' . $variables_url)->with('mensaje_error', 'No hay plantilla para generar planilla, contacte al administrador del sistema.');
+        }
+        $cond = Conductor::all();
+        $conductores = null;
+        if (count($cond) > 0) {
+            foreach ($cond as $c) {
+                $conductores[$c->id] = $c->tercero->descripcion;
+            }
+        }
+        $emp = Empresa::find(1);
+        $docs = $co->vehiculo->documentosvehiculos;
+        $to = null;
+        if (count($docs) > 0) {
+            foreach ($docs as $d) {
+                if ($d->tarjeta_operacion == 'SI') {
+                    $to = $d;
+                }
+            }
+        }
+        $hoy = getdate();
+        $consecutivo = count(Planillac::all());
+        $nro_planilla = config('contrato_transporte.numero_territorial') . config('contrato_transporte.resolucion_habilitacion') . config('contrato_transporte.anio_creacion_empresa');
+        $nro_planilla = $nro_planilla . $hoy['year'] . $co->numero_contrato . ($consecutivo + 1);
+        $fi = explode('-', $co->fecha_inicio);
+        $ff = explode('-', $co->fecha_fin);
+        return view('contratos_transporte.contratos.generaplanilla')
+            ->with('variables_url', $variables_url)
+            ->with('miga_pan', $miga_pan)
+            ->with('c', $co)
+            ->with('source', $source)
+            ->with('v', $p)
+            ->with('conductores', $conductores)
+            ->with('e', $emp)
+            ->with('to', $to)
+            ->with('nro', $nro_planilla)
+            ->with('fi', $fi)
+            ->with('ff', $ff);
+    }
+
+    public static function mes()
+    {
+        return [
+            '01' => 'ENERO',
+            '02' => 'FEBRERO',
+            '03' => 'MARZO',
+            '04' => 'ABRIL',
+            '05' => 'MAYO',
+            '06' => 'JUNIO',
+            '07' => 'JULIO',
+            '08' => 'AGOSTO',
+            '09' => 'SEPTIEMBRE',
+            '10' => 'OCTUBRE',
+            '11' => 'NOVIEMBRE',
+            '12' => 'DICIEMBRE'
+        ];
+    }
+
+
+    //guarda una planilla
+    public function planillastore(Request $request)
+    {
+        $p = new Planillac();
+        $e = Empresa::find(1);
+        $p->razon_social = $e->descripcion;
+        $p->nit = $e->numero_identificacion . "-" . $e->digito_verificacion;
+        $p->convenio = " -- ";
+        $p->contrato_id = $request->id;
+        $p->plantilla_id = $request->plantilla_id;
+        $p->nro = $request->nro;
+        $result = false;
+        if ($p->save()) {
+            $result = true;
+            if (isset($request->conductor_id)) {
+                foreach ($request->conductor_id as $c) {
+                    if ($c != '') {
+                        $pc = new Planillaconductor();
+                        $pc->conductor_id = $c;
+                        $pc->planillac_id = $p->id;
+                        $pc->save();
+                    }
+                }
+            }
+        }
+        $idapp = Input::get('id');
+        $modelo = Input::get('id_modelo');
+        $transaccion = Input::get('id_transaccion');
+        $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
+        if ($result) {
+            return redirect('cte_contratos/' . $request->id . '/planillas/' . $request->source . '/index' . $variables_url)->with('flash_message', 'Planilla generada con éxito.');
+        } else {
+            return redirect('cte_contratos/' . $request->id . '/planillas/' . $request->source . '/index' . $variables_url)->with('mensaje_error', 'La planilla no pudo ser generada.');
+        }
+    }
+
+
+    //imprime una planilla FUEC a partir del id
+    public function planillaimprimir($id)
+    {
+        $p = Planillac::find($id);
+        $c = $p->contrato;
+        //$contratante = $c->contratante;
+        $conductores = $p->planillaconductors;
+        $v = $p->plantilla;
+        $fi = explode('-', $c->fecha_inicio);
+        $ff = explode('-', $c->fecha_fin);
+        $docs = $c->vehiculo->documentosvehiculos;
+        $to = null;
+        if (count($docs) > 0) {
+            foreach ($docs as $d) {
+                if ($d->tarjeta_operacion == 'SI') {
+                    $to = $d;
+                }
+            }
+        }
+        if (count($conductores) > 0) {
+            foreach ($conductores as $cond) {
+                $cond->licencia = null;
+                $docs = null;
+                $docs = $cond->conductor->documentosconductors;
+                if (count($docs) > 0) {
+                    foreach ($docs as $do) {
+                        if ($do->licencia == 'SI') {
+                            $cond->licencia = $do;
+                        }
+                    }
+                }
+            }
+        }
+
+        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'conductores', 'v', 'c', 'fi', 'ff', 'to'))->render();
+
+        // Se prepara el PDF
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
+
+        //echo $documento_vista;
+        return $pdf->stream('fuec.pdf');
     }
 }

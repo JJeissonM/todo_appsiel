@@ -26,7 +26,7 @@
 	<style>
 		body {
 			font-family: 'Lato';
-			background-color: #FAFAFA !important;
+			background-color: #FFFFFF !important;
 			/*width: 98%;*/
 		}
 
