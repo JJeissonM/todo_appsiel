@@ -23,6 +23,11 @@ Route::get('consultorio_medico/asociar_examen/formulas_opticas/{formula_id}/{exa
 Route::get('consultorio_medico/quitar_examen/formulas_opticas/{formula_id}/{examen_id}', 'Salud\FormulaOpticaController@quitar_examen_de_formula');
 Route::resource('consultorio_medico/formulas_opticas', 'Salud\FormulaOpticaController');
 
+
+Route::get('form_agregar_formula_factura', 'Salud\FormulaOpticaController@form_agregar_formula_factura');
+
+
+
 Route::resource('consultorio_medico/anamnesis', 'Salud\AnamnesisController');
 
 

@@ -101,6 +101,8 @@
 
 			<h4>Facturación de formula</h4>
 	        <hr>
+	        <button class="btn btn-primary btn-xs agregar_examen"><i class="fa fa-btn fa-plus"></i> Agregar fórmula </button>
+
 
 			{!! $tabla->dibujar() !!}
 
@@ -146,11 +148,110 @@
 			<br><br>
 		</div>
 	</div>
+
+	@include( 'components.design.ventana_modal',['titulo'=>'Agregar precio de producto','texto_mensaje'=>'','contenido_modal' => $contenido_modal] )
+
 	<br/><br/>
 @endsection
 
 @section('scripts')
 	
 	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$(".btn_agregar_precio").click(function(event){
+		        $("#myModal").modal({backdrop: "static"});
+		        $('#inv_producto_id').focus();
+		        $(".btn_edit_modal").hide();
+		    });
+
+			$(".agregar_examen").click(function(event){
+				event.preventDefault();
+
+				elementos_consulta_actual = $(this).parents(".secciones_consulta");
+
+				// El ID de la formula lo tiene una etiqueta div en el título
+				var formula_id = elementos_consulta_actual.find(".formula_id").html();
+
+				// Se reutiliza la caja modal, se oculta el botón editar y se cambia el título
+				$(".btn_edit_examen").hide();
+				$("#myModal").modal(
+		        	{keyboard: 'true'}
+		        );
+		        $(".modal-title").html( "Haga click sobre los exámenes que quiera asociar a la fórmula." );
+		        $("#alert_mensaje").hide();
+
+		        // Se recorren los botones de la pestaña Exámenes, pues estos son los exámenes que realmente tiene el paciente en esta consulta
+		        var botones = '';
+		        elementos_consulta_actual.find(".btns_examenes button").each(function(){
+
+		        	var texto_boton = $(this).attr('data-examen_descripcion');
+		        	var examen_realizado_id = $(this).attr('data-examen_id');
+
+		        	// Se valida que ya no esté asociado el exámen
+		        	// Se recorren los botones YA asociados a la fórmula y se valida si ya está
+		        	var esta = false;
+		        	elementos_consulta_actual.find(".desasociar_examen").each(function(){
+		        		if ( examen_realizado_id == $(this).attr('data-examen_id')) {
+		        			esta = true;
+		        		}
+		        	});
+		        	if ( !esta ) {
+		        		botones = botones + '<p data-examen_descripcion="' + texto_boton + '">' + texto_boton + '  <button class="asociar_examen btn btn-xs btn-default" data-formula_id="' + formula_id + '" data-examen_id="' + examen_realizado_id + '" > <i class="fa fa-check"></i> </button></p>';
+		        	}						
+				});
+
+		        // Se agrega al cuerpo de la ventana modal el listado de los exámenes que se le han practicado al paciente y que no se hayan asignado a la fórmula.
+				$("#info_examen").html( botones );
+			});
+
+
+			// Al presionar el botón "check". Nota: este botón fue creado dinámicamente, no se puede acceder a él directamente desde su ID o CLASS, sino a través de document()
+			$(document).on('click', '.asociar_examen', function() {
+				$("#div_spin").show();
+
+				console.log( elementos_consulta_actual );
+
+				var linea = $(this).parent('p');
+				var examen_descripcion = linea.attr('data-examen_descripcion');
+				var formula_id = $(this).attr('data-formula_id');
+				var examen_id = $(this).attr('data-examen_id');
+
+				var url = "../../consultorio_medico/asociar_examen/formulas_opticas/" + formula_id + "/" + examen_id;
+
+				$.get( url, function( respuesta ){
+					$("#div_spin").hide();
+					alert( "El exámen fue asignado correctamente!" );
+					linea.remove();
+
+					elementos_consulta_actual.find(".btns_examenes_asignados").append( '<span class="label label-default label-md"> <span> ' +  examen_descripcion + ' </span> <button class="desasociar_examen" style="background-color: transparent;" data-formula_id="' + formula_id + '" data-examen_id="' + examen_id + '">&times;</button> </span> &nbsp;&nbsp;&nbsp;' );
+				});				
+			});
+
+			// Al presionar el botón X del exámen asociado.
+			$(document).on('click', '.desasociar_examen', function() {
+				event.preventDefault();
+
+				elementos_consulta_actual = $(this).parents(".secciones_consulta");
+
+				var linea = $(this).parent('span');
+
+				if (confirm("Realmente quiere quitar el examen " + $(this).prev().html() + " de la formula?" )) {			
+
+					$("#div_cargando").show();
+
+					var url = "../../consultorio_medico/quitar_examen/formulas_opticas/" + $(this).attr('data-formula_id') + "/" + $(this).attr('data-examen_id');
+
+					$.get( url, function( respuesta ){
+						$("#div_cargando").hide();
+						linea.remove();
+						alert( "El exámen fue removido correctamente!" );
+					});					  	
+				}
+			});
+		});
+	</script>
 
 @endsection

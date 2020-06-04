@@ -179,7 +179,7 @@ class PagoController extends TransaccionController
             }
 
             // Los pagos son movimiento de salida, se registran con signo negativo en el movimiento
-            $valor_movimiento = $valor * -1;
+            $valor_movimiento = $valor * -1; // No se tiene en cuenta el motivo
 
             TesoMovimiento::create( $this->datos +  
                             [ 'teso_motivo_id' => $teso_motivo_id] + 
