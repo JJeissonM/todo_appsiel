@@ -39,13 +39,10 @@
                                             title="Registrarse"
                                             onclick="registrarse( event )">Registrarse</a>
                                 </li>
-<<<<<<< HEAD
                                 <li class=" last">
                                     <button onclick="document.getElementById('id01').style.display='block'" title="Registrarse" class="_no_abrir_modal" data-elemento_id="218" style="background: transparent; border: 0px;">Registrarse 2</button>
 
                                 </li>
-=======
->>>>>>> 0966808172018bed1a4c71f6108f6215abcc2dd2
                             @else
                                 <li class=" last"><a
                                             href="{{url('/logout')}}"
