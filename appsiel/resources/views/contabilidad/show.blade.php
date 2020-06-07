@@ -15,9 +15,13 @@
 				{{ Form::bsBtnCreate( 'contabilidad/create'.$variables_url ) }}
 
 				@if( $doc_encabezado->estado != 'Anulado' )
+
 					{{ Form::bsBtnEdit2( 'contabilidad/'.$id.'/edit'.$variables_url,'Editar') }}
+					
+					<a class="btn btn-default btn-xs" id="btn_duplicar" href="{{ url( 'contab_duplicar_documento/'.$id.$variables_url ) }}"><i class="fa fa-btn fa-clone"></i> Duplicar </a>
 
 				    <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
+				    
 				@endif
 				
 			</div>

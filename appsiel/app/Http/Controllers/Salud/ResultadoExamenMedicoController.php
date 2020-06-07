@@ -127,6 +127,15 @@ class ResultadoExamenMedicoController extends ModeloController
         return View::make( 'consultorio_medico.resultado_examen_show_form', [ 'paciente_id' => $datos[1], 'consulta_id' => $datos[0], 'examen_id' => $datos[2], 'organos' => $organos, 'variables' => $variables ] );
     }
 
+    public function get_tabla_resultado_examen( $consulta_id, $paciente_id, $examen_id)
+    {
+        $organos = ExamenTieneOrganos::leftJoin('salud_organos_del_cuerpo','salud_organos_del_cuerpo.id','=','salud_examen_tiene_organos.organo_id')->where( 'examen_id', $examen_id )->select('salud_organos_del_cuerpo.id','salud_organos_del_cuerpo.descripcion')->orderBy('salud_examen_tiene_organos.orden')->get();
+
+        $variables = ExamenTieneVariables::leftJoin('salud_catalogo_variables_examenes','salud_catalogo_variables_examenes.id','=','salud_examen_tiene_variables.variable_id')->where( 'examen_id', $examen_id )->select('salud_catalogo_variables_examenes.id','salud_catalogo_variables_examenes.descripcion','salud_examen_tiene_variables.tipo_campo')->orderBy('salud_examen_tiene_variables.orden')->get();
+
+        return View::make( 'consultorio_medico.resultado_examen_show_tabla', compact( 'paciente_id', 'consulta_id', 'examen_id', 'organos', 'variables') );
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

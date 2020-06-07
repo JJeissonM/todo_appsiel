@@ -1009,7 +1009,6 @@ class ModeloController extends Controller
                     {
                         $lista_campos[$i]['value'] = ModeloEavValor::where(["modelo_padre_id" => Input::get('modelo_padre_id'), "registro_modelo_padre_id" => Input::get('registro_modelo_padre_id'), "modelo_entidad_id" => Input::get('modelo_entidad_id'), "core_campo_id" => $lista_campos[$i]['id']])->value('valor');
                     } else {
-                        //dd( [ $lista_campos, $registro ] );
                         $lista_campos[$i]['value'] = $registro->$nombre_campo;
                     }
                 }
@@ -1192,4 +1191,30 @@ class ModeloController extends Controller
         }
         return $randomString;
     }
+
+
+
+    public function create_registro_modelo( $modelo_id )
+    {
+        $modelo = Modelo::find( $modelo_id );
+
+        $lista_campos = $this->get_campos_modelo( $modelo, '', 'create');
+
+        if ( method_exists(app( $modelo->name_space ), 'get_campos_adicionales_create') )
+        {
+            $lista_campos = app( $modelo->name_space )->get_campos_adicionales_create($lista_campos);
+        }
+
+        $form_create = [
+                        'url' => 'web', // Siempre se almacenará con ModeloController@store()
+                        'campos' => $lista_campos
+                        ];
+
+        $miga_pan = [];
+
+        $vista = 'layouts.registro_modelo_create';
+
+        return view( $vista, compact( 'modelo', 'form_create', 'miga_pan', 'archivo_js') );
+    }
+
 }

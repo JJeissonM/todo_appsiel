@@ -106,8 +106,6 @@ class TransaccionController extends Controller
         // Botón crear con el listado de las transacciones asociadas a la aplicación
         $tipos_transacciones = $app->tipos_transacciones()->where('estado','Activo')->get();
         
-        
-        //dd($tipos_transacciones);
         $opciones = [];
         $key = 0;
         foreach($tipos_transacciones as $fila)
@@ -149,14 +147,11 @@ class TransaccionController extends Controller
 
         $lista_campos = ModeloController::personalizar_campos($transaccion->id, $transaccion, $lista_campos, $cantidad_campos, 'create', null);
 
-        $url_form_create = 'web';
-        if ( $this->modelo->url_form_create != '')
-        {
-            $url_form_create = $this->modelo->url_form_create;
-        }
+        $modelo_controller = new ModeloController;
+        $acciones = $modelo_controller->acciones_basicas_modelo( $modelo, '' );
         
         $form_create = [
-                        'url' => $url_form_create,
+                        'url' => $acciones->store,
                         'campos' => $lista_campos
                     ];
 

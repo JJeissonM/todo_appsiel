@@ -38,6 +38,8 @@ class ContabilidadController extends TransaccionController
     protected $datos = [];
     protected $grupos_cuentas = [];
 
+    protected $duplicado = false;
+
     /* El método index() está en TransaccionController */
 
 
@@ -146,6 +148,7 @@ class ContabilidadController extends TransaccionController
      */
     public function edit($id)
     {
+
         $this->set_variables_globales();
 
         // Se obtiene el registro a modificar del modelo
@@ -156,12 +159,12 @@ class ContabilidadController extends TransaccionController
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
-        $doc_registros = $this->modificar_doc_registros( $doc_registros, 'edit' );
-
-        if( is_null($doc_registros) )
+        if( !$this->verificar_permitir_editar_duplicar( $doc_registros ) )
         {
            return redirect( 'contabilidad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los documentos que tienen transacciones de CxP o CxC no pueden ser modificados.');
         }
+
+        $doc_registros = $this->modificar_lineas_doc_registros( $doc_registros, 'edit' );
 
         $tercero_encabezado_numero_identificacion = $doc_encabezado->numero_identificacion; 
 
@@ -184,17 +187,28 @@ class ContabilidadController extends TransaccionController
 
         $archivo_js = app($this->modelo->name_space)->archivo_js;
 
-        return view( 'contabilidad.edit', compact( 'form_create', 'miga_pan', 'registro', 'archivo_js', 'lineas_documento', 'linea_num') );
+        $mensaje_duplicado = '';
+        if ( $this->duplicado )
+        {
+            $mensaje_duplicado = '<div class="alert alert-success">
+                                      <strong> ¡Documento duplicado correctamente! </strong>
+                                    </div>
+
+                                    <div class="alert alert-warning">
+                                      <strong> ¡Nota! </strong> Debe guardar el documento para afectar el movimiento contable.
+                                    </div>';
+            $this->duplicado = false;
+        }
+
+        return view( 'contabilidad.edit', compact( 'form_create', 'miga_pan', 'registro', 'archivo_js', 'lineas_documento', 'linea_num', 'mensaje_duplicado') );
     }
 
 
     /*
         A cada linea de registro se le asignan tres campos adicionales : tipo_transaccion_linea, fecha_vencimiento y documento_soporte_tercero
     */
-    public function modificar_doc_registros( $doc_registros, $accion )
-    {   
-        $permitir_editar = true;
-
+    public function modificar_lineas_doc_registros( $doc_registros, $accion )
+    {
         foreach ($doc_registros as $linea)
         {
             $tipo_transaccion_linea = 'causacion';
@@ -214,19 +228,35 @@ class ContabilidadController extends TransaccionController
             $linea->fecha_vencimiento = $fecha_vencimiento;
             $linea->documento_soporte_tercero = $documento_soporte_tercero;
 
-            if ( $tipo_transaccion_linea != 'causacion' && $accion == 'edit' )
+        }
+
+        return $doc_registros;
+    }
+
+
+    public function verificar_permitir_editar_duplicar( $doc_registros )
+    {   
+        $permitir_editar = true;
+
+        foreach ($doc_registros as $linea)
+        {
+            $tipo_transaccion_linea = 'causacion';
+
+            $mov_contab_linea_registro_doc = ContabMovimiento::where( 'id_registro_doc_tipo_transaccion', $linea->id )->get()->first();
+            
+            if ( !is_null( $mov_contab_linea_registro_doc ) )
+            {
+                $tipo_transaccion_linea = $mov_contab_linea_registro_doc->tipo_transaccion;
+            }
+
+            if ( $tipo_transaccion_linea != 'causacion' )
             {
                 $permitir_editar = false;
             }
 
         }
 
-        if ( !$permitir_editar )
-        {
-            return null;
-        }
-
-        return $doc_registros;
+        return $permitir_editar;
     }
 
 
@@ -345,7 +375,7 @@ class ContabilidadController extends TransaccionController
         $doc_encabezado = ContabDocEncabezado::get_registro_impresion( $id );
         $doc_registros = ContabDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
-        $doc_registros = $this->modificar_doc_registros( $doc_registros, 'show' );
+        $doc_registros = $this->modificar_lineas_doc_registros( $doc_registros, 'show' );
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
@@ -383,7 +413,7 @@ class ContabilidadController extends TransaccionController
 
         $doc_registros = ContabDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
-        $doc_registros = $this->modificar_doc_registros( $doc_registros, 'imprimir' );
+        $doc_registros = $this->modificar_lineas_doc_registros( $doc_registros, 'imprimir' );
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
@@ -395,7 +425,42 @@ class ContabilidadController extends TransaccionController
     }
 
 
-    // Generar vista para SOHW  o IMPRIMIR
+
+    public function duplicar_documento( $doc_encabezado_id )
+    {
+        $doc_encabezado = ContabDocEncabezado::find( $doc_encabezado_id );
+
+        $registros_doc_encabezado = ContabDocRegistro::where( 'contab_doc_encabezado_id', $doc_encabezado->id )->get();
+
+        if( !$this->verificar_permitir_editar_duplicar( $registros_doc_encabezado ) )
+        {
+           return redirect( 'contabilidad/'.$doc_encabezado_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los documentos que tienen transacciones de CxP o CxC no pueden ser duplicados.');
+        }
+
+        // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
+        $consecutivo = TipoDocApp::get_consecutivo_actual( $doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id) + 1;
+
+        // Se incementa el consecutivo para ese tipo de documento y la empresa
+        TipoDocApp::aumentar_consecutivo($doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
+
+        $nuevo_doc_encabezado = $doc_encabezado->replicate();
+        $nuevo_doc_encabezado->consecutivo = $consecutivo;
+        $nuevo_doc_encabezado->save();
+
+        foreach ($registros_doc_encabezado as $linea )
+        {
+            $nueva_linea = $linea->toArray();
+            $nueva_linea['contab_doc_encabezado_id'] = $nuevo_doc_encabezado->id;
+
+            $nueva_linea_registro = ContabDocRegistro::create( $nueva_linea );
+        }
+
+        $this->duplicado = true;
+
+        return $this->edit( $nuevo_doc_encabezado->id );
+    }
+
+
     public function contab_anular_documento( $id )
     {
         $this->set_variables_globales();

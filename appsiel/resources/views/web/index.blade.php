@@ -201,7 +201,7 @@
             #navegacion {
                 position: fixed;
                 z-index: 999;
-                padding-top: 50px;
+                top: 50px;
                 width: 100%;
             }
             
@@ -256,7 +256,7 @@
 
 <!-- JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
         integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
         crossorigin="anonymous"></script>
@@ -274,7 +274,7 @@
 <!-- Ajax contact form  -->
 <script type="text/javascript" src="{{asset('assets/web/js/app.js')}}"></script>
 
-<script src="{{asset('js/jquery.js')}}"></script>
+<!-- <script src="{ {asset('js/jquery.js')}}"></script> -->
 <script src="{{asset('js/owl.carousel.min.js')}}"></script>
 <script src="{{asset('js/mousescroll.js')}}"></script>
 <script src="{{asset('js/smoothscroll.js')}}"></script>
@@ -335,6 +335,29 @@
         @endforeach
         
 @yield('script')
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    
+    $(".abrir_modal").click(function(){
+      $("#myModal").attr('data-elemento_id', $(this).attr('data-elemento_id') );
+      $("#myModal").modal("show");
+    });
+
+    $("#myModal").on('show.bs.modal', function () {
+      //alert( $(this).attr('data-album_id') );
+      var url = $("#myModal").attr('data-url_busqueda') + "/" + $(this).attr('data-elemento_id');
+      $.get( url )
+            .done(function( data ) {
+                
+                $('#modal-body').html( data );
+
+            })
+    });
+
+  });
+</script>
+
 </body>
 
 </html>

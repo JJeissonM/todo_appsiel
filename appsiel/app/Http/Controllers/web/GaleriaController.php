@@ -13,6 +13,8 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 
+use View;
+
 use App\web\RedesSociales;
 use App\web\Footer;
 
@@ -399,5 +401,13 @@ class GaleriaController extends Controller
                 }
             }
         }
+    }
+
+
+    public function ver_album_carousel( $album_id )
+    {
+        $album = Album::find( $album_id );
+        $fotos = $album->fotos;
+        return View::make( 'web.galeria.carousel', compact('fotos') )->render();
     }
 }

@@ -67,6 +67,9 @@
 		        @yield('filas_adicionales_encabezado')
 		    </table>
 
+
+		    @yield('encabezado2')
+
 		    <!-- se usa yield porque es una estructura particular para la vista de cada transacción -->
 		    @yield('documento_vista')
 		    

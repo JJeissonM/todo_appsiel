@@ -44,6 +44,8 @@ Route::get('/galeria/{id}/albums/index', 'web\GaleriaController@albums')->name('
 Route::get('/galeria/{id}/ver/album/index', 'web\GaleriaController@veralbum')->name('galeria.veralbum');
 Route::get('/galeria/crear/','web\GaleriaController@importar')->name('galeria.importar');
 
+Route::get('galeria_ver_album_carousel/{album_id}', 'web\GaleriaController@ver_album_carousel')->name('galeria.veralbumcarousel');
+
 Route::resource('sociales','web\RedesSocialesController');
 Route::resource('footer','web\FooterController');
 Route::post('footerstoreCategoria','web\FooterController@footerstoreCategoria')->name('footerstoreCategoria');
