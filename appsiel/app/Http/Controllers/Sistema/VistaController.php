@@ -102,6 +102,14 @@ class VistaController extends Controller
         }
     }
 
+    public static function campos_una_colummna(array $campos, $modo = null)
+    {
+        foreach ($campos as $campo)
+        {            
+            echo '<div>'.VistaController::dibujar_campo( $campo ).'</div>';
+        }
+    }
+
 
     /*
         Pendiente por mejorar

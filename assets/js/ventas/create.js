@@ -912,6 +912,12 @@ $(document).ready(function(){
                 $('#lista_precios_id').val( '' );
                 $('#lista_descuentos_id').val( '' );
                 $('#liquida_impuestos').val( '' );
+
+                $('#equipo_ventas_id').val( '' );
+                $('#core_tercero_id').val( '' );
+                $('#lineas_registros').val( 0 );
+                $('#zona_id').val( '' );
+                $('#clase_cliente_id').val( '' );
 			}
 
 			function reset_tabla_ingreso()

@@ -25,6 +25,7 @@ use App\Salud\ConsultaMedica;
 use App\Salud\Paciente;
 use App\Salud\ProfesionalSalud;
 use App\Salud\FormulaOptica;
+use App\Salud\TipoLente;
 
 class FormulaOpticaController extends ModeloController
 {
@@ -249,4 +250,46 @@ class FormulaOpticaController extends ModeloController
         //return $view;
         return $pdf->stream('formula_optica.pdf');//stream();
     }
+
+
+    public function form_agregar_formula_factura()
+    {
+
+        $consultas = Paciente::where( 'core_tercero_id', Input::get('core_tercero_id') )->first()->consultas;
+
+        $tabla = '<table class="table table-striped">
+                    <thead>
+                        <th style="display: none;">formula_id</th>
+                        <th>Fecha</th>
+                        <th>Consulta</th>
+                        <th>Formula</th>
+                        <th>Exámen</th>
+                        <th>Seleccionar</th>
+                    </thead>
+                    <tbody>';
+
+        foreach ($consultas as $una_consulta)
+        {
+            foreach ( $una_consulta->formulas as $una_formula )
+            {
+                foreach ( $una_formula->examenes as $un_examen )
+                {
+                    $btn_ver_examen = '<button class="btn btn-default btn-xs btn_ver_examen" data-paciente_id="'.$una_consulta->paciente_id.'" data-consulta_id="'.$una_consulta->id.'" data-examen_id="'.$un_examen->id.'" data-examen_descripcion="'.$un_examen->descripcion.'"> <i class="fa fa-eye"></i> '.$un_examen->descripcion.' </button>';
+
+                    $tabla .= '<tr>
+                                <td style="display: none;"><input type="hidden" name="formula_id" value="'.$una_formula->id.'"></td>
+                                <td>'.$una_consulta->fecha.'</td>
+                                <td> #'.$una_consulta->id.'</td>
+                                <td>'.TipoLente::find( $una_formula->tipo_de_lentes )->descripcion.'</td>
+                                <td>'.$btn_ver_examen.'</td>
+                                <td> <button class="btn btn-success btn-xs btn_confirmar" style="display: inline;"><i class="fa fa-check"></i></button> </td>
+                            </tr>';
+                }
+            }
+        }
+
+        $tabla .= '</tbody> </table>';
+
+        return $tabla;        
+    } 
 }   

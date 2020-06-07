@@ -23,7 +23,7 @@
                                     <h1>Create an Account</h1>
                                 </div>
                                 <form action="" method="post" id="form-validate">
-                                    <div class="fieldset">
+                                    <div class="fieldset col-sm-12">
                                         <input type="hidden" name="success_url" value="">
                                         <input type="hidden" name="error_url" value="">
                                         <h2 class="legend">Información Personal</h2>
@@ -58,7 +58,7 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="fieldset">
+                                    <div class="fieldset col-sm-12">
                                         <h2 class="legend">Login Information</h2>
                                         <ul class="form-list">
                                             <li class="fields">

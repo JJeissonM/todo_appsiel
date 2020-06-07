@@ -17,6 +17,7 @@ class Widget extends Model
                     ->leftJoin('pw_seccion', 'pw_seccion.id', '=', 'pw_widget.seccion_id')
                     ->select(
                             'pw_widget.id',
+                            'pw_paginas.titulo AS pagina_titulo',
                             'pw_paginas.descripcion AS pagina_descripcion',
                             'pw_seccion.nombre AS seccion_descripcion' )
                     ->get();
@@ -24,7 +25,7 @@ class Widget extends Model
         $vec['']='';
         foreach ($opciones as $opcion)
         {
-            $vec[$opcion->id] = 'Página: ' . $opcion->pagina_descripcion . ' > Sección: ' . $opcion->seccion_descripcion;
+            $vec[$opcion->id] = 'Página: ' . $opcion->pagina_titulo . '(' . $opcion->pagina_descripcion . ') > Sección: ' . $opcion->seccion_descripcion;
         }
         
         return $vec;

@@ -1,4 +1,4 @@
-<div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Registros contables </div>
+<div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Registros del documento </div>
 
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Tipo transacción','Cuenta',' NIT / Tercero','Detalle','Débito','Crédito']) }}

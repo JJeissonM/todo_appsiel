@@ -7,17 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Ventas\DocEncabezadoTieneFormulaMedica;
+
 class VtasFacturaMedica extends VtasDocEncabezado
 {
     protected $table = 'vtas_doc_encabezados';
 
     public $encabezado_tabla = ['Fecha','Documento','Paciente','Detalle','Acción'];
 
-    public $urls_acciones = '{"create":"factura_medica/create"}';
+    public $vistas = '{}';
+
+    public $urls_acciones = '{"create":"factura_medica/create","show":"factura_medica/id_fila","store":"ventas"}';
 
     public static function consultar_registros()
     {
-        $core_tipo_transaccion_id = 30; // Cotización ventas
+        $core_tipo_transaccion_id = 44; // Facturas Médicas
         return VtasFacturaMedica::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
                     ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
@@ -34,5 +38,18 @@ class VtasFacturaMedica extends VtasDocEncabezado
                     ->leftJoin('vtas_doc_registros', 'vtas_doc_registros.vtas_doc_encabezado_id', '=', 'vtas_doc_encabezados.id')
                                 DB::raw( 'SUM(vtas_doc_registros.precio_total) AS campo5' ),
                     */
+    }
+
+    // Solo se creó un registro vacío en la tabla clientes
+    public function store_adicional($datos, $doc_encabezado)
+    {
+        if ( isset( $datos['formula_id'] ) )
+        {
+            DocEncabezadoTieneFormulaMedica::create(
+                                                    [
+                                                        'vtas_doc_encabezado_id'=> $doc_encabezado->id,
+                                                        'formula_medica_id'=> $datos['formula_id']
+                                                    ]);
+        }
     }
 }

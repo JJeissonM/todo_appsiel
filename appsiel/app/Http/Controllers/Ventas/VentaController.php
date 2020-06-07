@@ -93,6 +93,8 @@ class VentaController extends TransaccionController
     public function store(Request $request)
     {
 
+        $datos = $request->all(); // Datos originales
+
         $lineas_registros = json_decode($request->lineas_registros);
 
         // TRES TRANSACCIONES
@@ -109,7 +111,22 @@ class VentaController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
         VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
-        return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+        $modelo = Modelo::find( $request->url_id_modelo );
+
+        /*
+            Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)
+        */
+
+        if (method_exists(app($modelo->name_space), 'store_adicional'))
+        {
+            // Aquí mismo se puede hacer el return
+            app($modelo->name_space)->store_adicional($datos, $doc_encabezado);
+
+            return redirect( 'factura_medica/'.$doc_encabezado->id.'?id='.$datos['url_id'].'&id_modelo='.$datos['url_id_modelo'].'&id_transaccion='.$datos['url_id_transaccion'] );
+            
+        }else{
+            return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+        }
     }
 
     /*

@@ -24,6 +24,22 @@ class FormulaOptica extends Model
 	    return $registros;
 	}
 
+	public static function get_formulas_del_paciente( $paciente_id )
+	{
+		return FormulaOptica::leftJoin( 'salud_consultas', 'salud_consultas.id', '=', 'salud_formulas_opticas.consulta_id' )
+							->leftJoin( 'salud_formula_tiene_examenes', 'salud_formula_tiene_examenes.formula_id', '=', 'salud_formulas_opticas.id' )
+							->leftJoin( 'salud_examenes', 'salud_examenes.id', '=', 'salud_formulas_opticas.id' )
+							->where( 'salud_formulas_opticas.paciente_id', $paciente_id )
+							->select( 
+										'salud_consultas.fecha',
+										'salud_consultas.id AS consulta_id',
+										'salud_formulas_opticas.id AS formula_id',
+										'salud_examenes.id AS examen_id',
+										'salud_examenes.descripcion' )
+							->get()
+							->toArray();
+	} 
+
 	/*
 	  * Citas de control vencidas a la fecha
 	*/
@@ -79,4 +95,10 @@ class FormulaOptica extends Model
 
         return $registros;
 	}
+
+    public function examenes()
+    {
+        return $this->belongsToMany( 'App\Salud\ExamenMedico', 'salud_formula_tiene_examenes', 'formula_id', 'examen_id' );
+    }
+
 }

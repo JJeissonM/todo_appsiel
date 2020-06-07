@@ -44,6 +44,8 @@ Route::get('/galeria/{id}/albums/index', 'web\GaleriaController@albums')->name('
 Route::get('/galeria/{id}/ver/album/index', 'web\GaleriaController@veralbum')->name('galeria.veralbum');
 Route::get('/galeria/crear/','web\GaleriaController@importar')->name('galeria.importar');
 
+Route::get('galeria_ver_album_carousel/{album_id}', 'web\GaleriaController@ver_album_carousel')->name('galeria.veralbumcarousel');
+
 Route::resource('sociales','web\RedesSocialesController');
 Route::resource('footer','web\FooterController');
 Route::post('footerstoreCategoria','web\FooterController@footerstoreCategoria')->name('footerstoreCategoria');
@@ -171,7 +173,7 @@ Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@
 Route::get('ecommerce/public/cuenta','web\TiendaController@cuenta')->name('tienda.cuenta');
 Route::get('ecommerce/public/signIn','web\TiendaController@login')->name('tienda.login');
 Route::get('ecommerce/public/nuevacuenta','web\TiendaController@crearCuenta')->name('tienda.nuevacuenta');
-
+Route::get('ecommerce/comprar','web\TiendaController@comprar')->name('tienda.comprar');
 Route::get('ecommerce/public/account','web\TiendaController@cuenta')->name('tienda.micuenta');
 Route::put('ecommerce/account/informacion/updated/{clienteweb}','web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
 Route::get('ecommerce/public/filtro/categoria/{categoria}','web\TiendaController@filtroCategoria')->name('tienda.filtrocategoria');

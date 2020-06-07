@@ -63,6 +63,9 @@ use App\Tesoreria\TesoMotivo;
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Impuesto;
 
+use App\Ventas\DocEncabezadoTieneFormulaMedica;
+use App\Salud\FormulaOptica;
+use App\Http\Controllers\Salud\ResultadoExamenMedicoController;
 
 class FacturaMedicaController extends VentaController
 {
@@ -82,216 +85,7 @@ class FacturaMedicaController extends VentaController
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros( VtasTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
 
-        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'ventas.create_factura_medica', $tabla );
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-
-        $lineas_registros = json_decode($request->lineas_registros);
-
-        // TRES TRANSACCIONES
-
-        // 1ra. Crear documento de salida de inventarios (REMISIÓN)
-        // WARNING. HECHO MANUALMENTE
-        $remision_doc_encabezado_id = $this->crear_remision_ventas( $request );
-
-        // 2da. Crear documento de Ventas
-        $request['remision_doc_encabezado_id'] = $remision_doc_encabezado_id;
-        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-
-        // 3ra. Crear Registro del documento de ventas
-        $request['creado_por'] = Auth::user()->email;
-        VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
-
-        return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
-    }
-
-    /*
-        Este método crea el documento de salida de inventarios de los productos vendidos (Remisión de ventas)
-        WARNING: Se asignan manualmente algunos campos de a tablas inv_doc_inventarios  
-    */
-    public function crear_remision_ventas(Request $request)
-    {
-        // Llamar a los parámetros del archivo de configuración
-        $parametros = config('ventas');
-
-        // Modelo del encabezado del documento
-        $rm_modelo_id = $parametros['rm_modelo_id'];
-        $rm_tipo_transaccion_id = $parametros['rm_tipo_transaccion_id'];
-        $rm_tipo_doc_app_id = $parametros['rm_tipo_doc_app_id'];
-
-        $lineas_registros = json_decode($request->lineas_registros);
-
-        // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
-        $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
-        $core_tipo_doc_app_id_original = $request['core_tipo_doc_app_id'];
-
-        $request['core_tipo_transaccion_id'] = $rm_tipo_transaccion_id;
-        $request['core_tipo_doc_app_id'] = $rm_tipo_doc_app_id;
-        $request['estado'] = 'Facturada';
-        $remision_creada_id = InventarioController::crear_documento($request, $lineas_registros, $rm_modelo_id);
-
-        // Se revierten los datos cambiados
-        $request['core_tipo_transaccion_id'] = $tipo_transaccion_id_original;
-        $request['core_tipo_doc_app_id'] = $core_tipo_doc_app_id_original;
-
-        return $remision_creada_id;
-    }
-
-
-    /*
-        Crea los registros, el movimiento y la contabilización de un documento. 
-        Todas estas operaciones se crean juntas porque se almacenena en cada iteración de las lineas de registros
-        No Devuelve nada
-    */
-    public static function crear_registros_documento( Request $request, $doc_encabezado, array $lineas_registros )
-    {
-        // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
-        $datos = $request->all();
-
-        $total_documento = 0;
-
-        $cantidad_registros = count($lineas_registros);
-        for ($i=0; $i < $cantidad_registros; $i++) 
-        {
-            $linea_datos = [ 'vtas_motivo_id' => (int)$lineas_registros[$i]->inv_motivo_id ] +
-                            [ 'inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id ] +
-                            [ 'precio_unitario' => (float)$lineas_registros[$i]->precio_unitario ] +
-                            [ 'cantidad' => (float)$lineas_registros[$i]->cantidad ] +
-                            [ 'precio_total' => (float)$lineas_registros[$i]->precio_total ] +
-                            [ 'base_impuesto' => (float)$lineas_registros[$i]->base_impuesto ] +
-                            [ 'tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto ] +
-                            [ 'valor_impuesto' => (float)$lineas_registros[$i]->valor_impuesto ] +
-                            [ 'base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total ] +
-                            [ 'tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento ] +
-                            [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
-                            [ 'creado_por' => Auth::user()->email ] +
-                            [ 'estado' => 'Activo' ];
-
-            VtasDocRegistro::create( 
-                                    $datos + 
-                                    [ 'vtas_doc_encabezado_id' => $doc_encabezado->id ] +
-                                    $linea_datos
-                                );
-
-            $datos['consecutivo'] = $doc_encabezado->consecutivo;
-            VtasMovimiento::create( 
-                                    $datos +
-                                    $linea_datos
-                                );
-
-            // CONTABILIZAR
-            $detalle_operacion = $datos['descripcion'];
-            VentaController::contabilizar_movimiento_credito( $datos + $linea_datos, $detalle_operacion );
-
-            $total_documento += (float)$lineas_registros[$i]->precio_total;
-
-        } // Fin por cada registro
-
-        $doc_encabezado->valor_total = $total_documento;
-        $doc_encabezado->save();
-
-        // Un solo registro contable débito
-        $forma_pago = $request->forma_pago; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
-
-        // Cartera ó Caja (DB)
-        VentaController::contabilizar_movimiento_debito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
-
-        // Crear registro del pago: cuenta por cobrar(cartera) o recaudo
-        VentaController::crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
-        
-    }
-
-    public static function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion )
-    {
-        /*
-            WARNING. Esto debe ser un parámetro de la configuración. Si se quiere llevar la factura contado a la caja directamente o si se causa una cuenta por cobrar
-        */
-        
-        if ( $forma_pago == 'credito')
-        {
-            // Se resetean estos campos del registro
-            $datos['inv_producto_id'] = 0;
-            $datos['cantidad '] = 0;
-            $datos['tasa_impuesto'] = 0;
-            $datos['base_impuesto'] = 0;
-            $datos['valor_impuesto'] = 0;
-            $datos['inv_bodega_id'] = 0;
-
-            // La cuenta de CARTERA se toma de la clase del cliente
-            $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $datos['cliente_id'] );
-            ContabilidadController::contabilizar_registro2( $datos, $cta_x_cobrar_id, $detalle_operacion, $total_documento, 0);
-        }
-        
-        // Agregar el movimiento a tesorería
-        if ( $forma_pago == 'contado')
-        {
-            // WARNING: Esta cuenta en realidad la debe tomar de la caja por defecto asociada al ususario,
-            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            $caja = TesoCaja::get()->first();
-            $cta_caja_id = $caja->contab_cuenta_id;
-            ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, $total_documento, 0, $caja->id, 0);
-        }
-    }
-
-    public static function contabilizar_movimiento_credito( $una_linea_registro, $detalle_operacion )
-    {
-        
-        // IVA generado (CR)
-        // Si se ha liquidado impuestos en la transacción
-        $valor_total_impuesto = 0;
-        if ( $una_linea_registro['tasa_impuesto'] > 0 )
-        {
-            $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_ventas( $una_linea_registro['inv_producto_id'] );
-            $valor_total_impuesto = abs( $una_linea_registro['valor_impuesto'] * $una_linea_registro['cantidad'] );
-
-            ContabilidadController::contabilizar_registro2( $una_linea_registro, $cta_impuesto_ventas_id, $detalle_operacion, 0, abs($valor_total_impuesto) );
-        }
-
-        // Contabilizar Ingresos (CR)
-        // La cuenta de ingresos se toma del grupo de inventarios
-        $cta_ingresos_id = InvProducto::get_cuenta_ingresos( $una_linea_registro['inv_producto_id'] );
-        ContabilidadController::contabilizar_registro2( $una_linea_registro, $cta_ingresos_id, $detalle_operacion, 0, $una_linea_registro['base_impuesto_total']);
-    }
-
-    public static function crear_registro_pago( $forma_pago, $datos, $total_documento, $detalle_operacion )
-    {
-        /*
-            WARNING. Esto debe ser un parámetro de la configuración. Si se quiere llevar la factura contado a la caja directamente o si se causa una cuenta por cobrar
-        */
-        
-        // Cargar la cuenta por cobrar (CxC)
-        if ( $forma_pago == 'credito')
-        {
-            $datos['modelo_referencia_tercero_index'] = 'App\Ventas\Cliente';
-            $datos['referencia_tercero_id'] = $datos['cliente_id'];
-            $datos['valor_documento'] = $total_documento;
-            $datos['valor_pagado'] = 0;
-            $datos['saldo_pendiente'] = $total_documento;
-            $datos['estado'] = 'Pendiente';
-            DocumentosPendientes::create( $datos );
-        }
-        
-        // Agregar el movimiento a tesorería
-        if ( $forma_pago == 'contado')
-        {
-            // WARNING: La caja la debe tomar de la caja por defecto asociada al usuario,
-            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            $caja = TesoCaja::get()->first();
-            // El motivo lo debe traer de unparámetro de la configuración
-            $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
-            $datos['teso_caja_id'] = $caja->id;
-            $datos['teso_cuenta_bancaria_id'] = 0;
-            $datos['valor_movimiento'] = $total_documento;
-            TesoMovimiento::create( $datos );
-        }
+        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'ventas.factura_medica.create', $tabla );
     }
 
     /**
@@ -322,16 +116,24 @@ class FacturaMedicaController extends VentaController
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo );
 
-        $url_crear = $this->modelo->url_crear.$this->variables_url;
+        $modelo_controller = new ModeloController;
+        $acciones = $modelo_controller->acciones_basicas_modelo( $this->modelo, $this->variables_url );
+
+        $url_crear = $acciones->create;
         
-        $vista = 'ventas.show';
+        $vista = 'ventas.factura_medica.show';
 
-        if( !is_null( Input::get('vista') ) )
+        $formula_id = DocEncabezadoTieneFormulaMedica::where( 'vtas_doc_encabezado_id', $doc_encabezado->id )->value('formula_medica_id');
+        $formula_medica = '';
+        $examen = '';
+        if( !is_null($formula_id) )
         {
-            $vista = Input::get('vista');
-        }
+            $formula_medica = FormulaOptica::find( $formula_id );
+            $resultado = new ResultadoExamenMedicoController();
+            $examen = $resultado->get_tabla_resultado_examen( $formula_medica->consulta_id, $formula_medica->paciente_id, $formula_medica->examenes->first()->id);
+        }            
 
-        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito') );
+        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito','formula_medica','examen') );
     }
 
 

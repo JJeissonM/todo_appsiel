@@ -30,6 +30,8 @@
 	<hr>
 
 	@include('layouts.mensajes')
+	
+	{!! $mensaje_duplicado !!}
 
 	<div class="container-fluid">
 		<div class="marco_formulario">

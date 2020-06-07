@@ -52,6 +52,7 @@
 			<hr>
 			{{ Form::open([ 'url' => $form_create['url'], 'id'=>'form_create']) }}
 				<?php
+
 				  if (count($form_create['campos'])>0) {
 				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
 				  	echo '<div class="row" style="margin: 5px;">'.Form::bsButtonsForm2($url).'</div>';
@@ -89,6 +90,26 @@
 				<input type="hidden" name="saldo_original" id="saldo_original" value="0">
 
 				<div id="popup_alerta"> </div>
+
+
+				<h4>Facturación de formula</h4>
+		        <hr>
+		        <button class="btn btn-primary btn-xs" id="agregar_examen"><i class="fa fa-btn fa-plus"></i> Agregar fórmula </button>
+
+		        <table class="table table-striped" id="tabla_formula" style="display: none;">
+	                <thead>
+	                    <tr>
+	                        <th>Fecha</th>
+	                        <th>Consulta</th>
+	                        <th>Formula</th>
+	                        <th>Exámen</th>
+	                        <th></th>
+	                    </tr>
+	                </thead>
+	                <tbody>
+	                </tbody>
+	            </table>
+
 				
 			{{ Form::close() }}
 
@@ -99,8 +120,6 @@
 			<br/>
 
 
-			<h4>Facturación de formula</h4>
-	        <hr>
 
 			{!! $tabla->dibujar() !!}
 
@@ -146,11 +165,88 @@
 			<br><br>
 		</div>
 	</div>
+
+	@include( 'components.design.ventana_modal',['titulo'=>'Asignar formula a la factura','texto_mensaje'=>'','contenido_modal' => ''] )
+	@include( 'components.design.ventana_modal2',['titulo'=>'Consulta del exámen','texto_mensaje'=>'','contenido_modal' => ''] )
+
 	<br/><br/>
 @endsection
 
 @section('scripts')
 	
 	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$("#agregar_examen").click(function(event){
+
+				event.preventDefault();
+
+				if ( $("#core_tercero_id").val() == '' )
+				{
+					alert('Debe ingresar un tercero.');
+					return false;
+				}
+
+				$('#tabla_formula').find('tbody').html('');
+				$('#tabla_formula').fadeOut();
+
+		        $("#myModal").modal({backdrop: "static"});
+		        $("#div_spin").show();
+		        $(".btn_edit_modal").hide();
+		        $(".btn_save_modal").hide();
+
+		        var url = "{{url('form_agregar_formula_factura')}}" + "?core_tercero_id=" + $('#core_tercero_id').val();
+
+				$.get( url )
+					.done(function( respuesta ) {
+
+		                $('#contenido_modal').html( respuesta );
+
+		                $("#div_spin").hide();
+
+					});		        
+		    });
+
+
+			// Al presionar el botón "check". Nota: este botón fue creado dinámicamente, no se puede acceder a él directamente desde su ID o CLASS, sino a través de document()
+			$(document).on('click', '.btn_confirmar', function(event) {
+				
+				event.preventDefault();
+
+				$('#tabla_formula').fadeIn();
+				$('#tabla_formula').find('tbody:last').append( $(this).closest("tr") );
+
+				$(this).attr('style','display: none;');
+
+				$('#contenido_modal').html( ' ' );
+	            $('#myModal').modal("hide");
+
+	            $("inv_producto_id").select();
+
+			});
+
+
+			$(document).on('click',".btn_ver_examen",function(event){
+				event.preventDefault();
+
+		        $('#contenido_modal2').html('');
+				$('#div_spin').fadeIn();
+
+		        $("#myModal2").modal(
+		        	{keyboard: 'true'}
+		        );
+
+		        var url = "{{ url('consultorio_medico_get_tabla_resultado_examen/') }}" + "/" + $(this).attr('data-consulta_id') + '/' + $(this).attr('data-paciente_id') + '/' + $(this).attr('data-examen_id');
+
+		        $.get( url, function( respuesta ){
+		        	$('#div_spin').hide();
+		        	$('#contenido_modal2').html( respuesta );
+		        });/**/
+		    });
+
+		});
+	</script>
 
 @endsection

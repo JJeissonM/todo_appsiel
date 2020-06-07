@@ -8,8 +8,7 @@ img {
     max-width: 100%;
     height: auto;
     order: 0;
-    vertical-align: top;
-    vertical-align: middle;
+    vertical-align:middle;
 }
 
 .header {
@@ -26,9 +25,12 @@ img {
     width: 100%;
     z-index: 100;
     min-height: 100px;
-    height: auto !important;
-    height: 100px;
-    padding: 30px 0 10px;
+    height: 40px;
+    padding: 5px 0;
+}
+
+::-webkit-input-placeholder { /* Edge */
+    color: white;
 }
 
 .header .logo strong {
@@ -122,6 +124,7 @@ img {
     }
 
     .item-nav {
+        position:relative;
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
@@ -137,6 +140,20 @@ img {
         font-size: 14px;
         margin-bottom: 0 !important;
     }
+
+.item-nav span {
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: red;
+    position: absolute;
+    text-align: center;
+    top:-10px;
+    right: 0;
+    line-height: 1.5;
+    display: none;
+}
 
     .ma-menu {
         background-color: #ecf0f5;

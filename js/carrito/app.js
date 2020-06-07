@@ -1,19 +1,19 @@
 // Variables
 const carrito = document.getElementById('carrito');
-const cursos = document.getElementById('lista-cursos');
-const listaCursos = document.querySelector('#lista-carrito tbody');
+const productos = document.getElementById('lista_productos');
+const listaProductos = document.querySelector('#lista-carrito tbody');
 const vaciarCarritoBtn = document.getElementById('vaciar-carrito'); 
-
 
 // Listeners
 cargarEventListeners();
 
 function cargarEventListeners() {
+
      // Dispara cuando se presiona "Agregar Carrito"
-     cursos.addEventListener('click', comprarCurso);
+     productos.addEventListener('click', comprarProducto);
 
      // Cuando se elimina un curso del carrito
-     carrito.addEventListener('click', eliminarCurso);
+     carrito.addEventListener('click', eliminarProducto);
 
      // Al Vaciar el carrito
      vaciarCarritoBtn.addEventListener('click', vaciarCarrito);
@@ -23,75 +23,104 @@ function cargarEventListeners() {
 
 }
 
-
-
-
 // Funciones
 // Función que añade el curso al carrito
-function comprarCurso(e) {
+function comprarProducto(e) {
+
      e.preventDefault();
      // Delegation para agregar-carrito
-     if(e.target.classList.contains('agregar-carrito')) {
-          e.target.style.display = 'none';
-          let button =  e.target.parentElement.querySelector('.button-opciones');
-          button.style.display = 'flex';
-          const curso = e.target.parentElement.parentElement;
+     if(e.target.parentElement.classList.contains('agregar-carrito')) {
+         //e.target.style.backgroundColor = 'rgb(249, 123, 0)';
+          let producto = e.target.parentElement.parentElement;
           // Enviamos el curso seleccionado para tomar sus datos
-          leerDatosCurso(curso);
+          leerDatosProducto(producto);
      }
 }
 // Lee los datos del curso
-function leerDatosCurso(curso) {
-     const infoCurso = {
-          imagen: curso.querySelector('img').src,
-          titulo: curso.querySelector('h4').textContent,
-          precio: curso.querySelector('.precio span').textContent,
-          id: curso.querySelector('a').getAttribute('data-id')
+function leerDatosProducto(producto) {
+
+     const infoProducto = {
+          imagen: producto.querySelector('.product-image img').src,
+          titulo: producto.querySelector('.product-name a').textContent,
+          precio: producto.querySelector('.price-box .price').textContent,
+          cantidad: 1,
+          id: producto.getAttribute('data-id')
      }
 
-     insertarCarrito(infoCurso);
-
+     insertarCarrito(infoProducto);
 }
 
 // Muestra el curso seleccionado en el Carrito
-function insertarCarrito(curso) {
-     const row = document.createElement('tr');
-     row.innerHTML = `
+function insertarCarrito(producto) {
+
+    listaProductos.innerHTML = '';
+    guardarProductoLocalStorage(producto);
+    let productos = obtenerProductosLocalStorage();
+    productos.forEach(item => {
+
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
           <td>  
-               <img src="${curso.imagen}" width=100>
+               <img src="${item.imagen}" width=100>
           </td>
-          <td>${curso.titulo}</td>
-          <td>${curso.precio}</td>
+          <td>${item.titulo}</td>
+          <td>${item.precio}</td>
+          <td>${item.cantidad}</td>
           <td>
-               <a href="#" class="borrar-curso" data-id="${curso.id}">X</a>
+               <a href="#" class="borrar-curso" data-id="${item.id}">X</a>
           </td>
-     `;
-     listaCursos.appendChild(row);
-     guardarCursoLocalStorage(curso);
+        `;
+
+        listaProductos.appendChild(row);
+
+    });
+    let element  =  document.querySelector('.item-nav .item');
+    let count = productos.length;
+    element.style.display = 'block';
+    element.innerHTML = `${count}`;
+
+
 }
 // Elimina el curso del carrito en el DOM
-function eliminarCurso(e) {
+function eliminarProducto(e) {
+
      e.preventDefault();
 
-     let curso,
-        cursoId;
+     let producto,
+        productoId;
      if(e.target.classList.contains('borrar-curso') ) {
           e.target.parentElement.parentElement.remove();
-          curso = e.target.parentElement.parentElement;
-          cursoId = curso.querySelector('a').getAttribute('data-id');
-
+          producto = e.target.parentElement.parentElement;
+          productoId = producto.querySelector('a').getAttribute('data-id');
      }
-     eliminarCursoLocalStorage(cursoId);
+     eliminarProductoLocalStorage(productoId);
+    let element  =  document.querySelector('.item-nav .item');
+    let count = element.textContent;
+    if( count != 0 ){
+        count = parseInt(count)-1;
+        element.style.display = count == 0 ? 'none':'block';
+        element.innerHTML = `${count}`;
+    }else{
+        element.style.display = 'none';
+        element.innerHTML = `${count}`;
+    }
+
 }
 // Elimina los cursos del carrito en el DOM
 function vaciarCarrito() {
      // forma lenta
      // listaCursos.innerHTML = '';
      // forma rapida (recomendada)
-     while(listaCursos.firstChild) {
-          listaCursos.removeChild(listaCursos.firstChild);
+     while(listaProductos.firstChild) {
+         listaProductos.removeChild(listaProductos.firstChild);
      }
-     
+
+    let element  =  document.querySelector('.item-nav .item');
+    let count = element.textContent;
+    count = 0;
+    element.style.display = count == 0 ? 'none' : 'block';
+    element.innerHTML = `${count}`;
 
      // Vaciar Local Storage
      vaciarLocalStorage();
@@ -101,70 +130,96 @@ function vaciarCarrito() {
 
 // Almacena cursos en el carrito a Local Storage
 
-function guardarCursoLocalStorage(curso) {
-    let cursos;
+function guardarProductoLocalStorage(producto) {
+
+    let productos = [];
      // Toma el valor de un arreglo con datos de LS o vacio
-    cursos = obtenerCursosLocalStorage();
+    productos = obtenerProductosLocalStorage();
+    let exist = false;
+
+    productos.forEach(item => {
+        if(item.id == producto.id){
+            item.cantidad++;
+            exist = true;
+        }
+    });
 
     // el curso seleccionado se agrega al arreglo
-    cursos.push(curso);
+    if(!exist){
+        productos.push(producto);
+    }
 
-     localStorage.setItem('cursos', JSON.stringify(cursos) );
+    localStorage.setItem('productos', JSON.stringify(productos));
 }
 
 
 // Comprueba que haya elementos en Local Storage
-function obtenerCursosLocalStorage() {
-     let cursosLS;
+function obtenerProductosLocalStorage() {
+
+     let productosLS;
 
      // comprobamos si hay algo en localStorage
-     if(localStorage.getItem('cursos') === null) {
-          cursosLS = [];
+     if(localStorage.getItem('productos') === null) {
+         productosLS = [];
      } else {
-          cursosLS = JSON.parse( localStorage.getItem('cursos') );
+         productosLS = JSON.parse( localStorage.getItem('productos') );
      }
-     return cursosLS;
+
+     if(productosLS.length > 0){
+         let count  =  document.querySelector('.item-nav .item');
+         count.style.display = 'block';
+         count.innerHTML = `${productosLS.length}`;
+     }else {
+         let count  =  document.querySelector('.item-nav .item');
+         count.style.display = 'none';
+     }
+
+     return productosLS;
 
 }
 
-// Imprime los cursos de Local Storage en el carrito
+// Imprime los productos de Local Storage en el carrito
 
 function leerLocalStorage() {
-    let cursosLS;
 
-    cursosLS = obtenerCursosLocalStorage();
+    let productosLS;
 
-    cursosLS.forEach(function(curso){
+    productosLS = obtenerProductosLocalStorage();
+
+    productosLS.forEach(function(producto){
+
         // constrir el template
         const row = document.createElement('tr');
         row.innerHTML = `
              <td>  
-                  <img src="${curso.imagen}" width=100>
+                 <center><img src="${producto.imagen}" width=100></center> 
              </td>
-             <td>${curso.titulo}</td>
-             <td>${curso.precio}</td>
+             <td><center>${producto.titulo}</center></td>
+             <td><center>${producto.precio}</center></td>
+             <td><center>${producto.cantidad}</center></td>         
              <td>
-                  <a href="#" class="borrar-curso" data-id="${curso.id}">X</a>
+                  <center><a href="#" class="borrar-curso" data-id="${producto.id}">X</a></center>
              </td>
         `;
-        listaCursos.appendChild(row);
+
+        listaProductos.appendChild(row);
 
     });
 }
-// Elimina el curso por el ID en Local Storage
+// Elimina el producto por el ID en Local Storage
 
-function eliminarCursoLocalStorage(curso) {
-    let cursosLS;
+function eliminarProductoLocalStorage(producto) {
+    let productosLS;
     // Obtenemos el arreglo de cursos
-    cursosLS = obtenerCursosLocalStorage();
+    productosLS = obtenerProductosLocalStorage();
     // Iteramos comparando el ID del curso borrado con los del LS
-    cursosLS.forEach(function(cursoLS, index) {
-        if(cursoLS.id === curso) {
-            cursosLS.splice(index, 1);
+    productosLS.forEach(function(productoLS, index) {
+        if(productoLS.id === producto) {
+            productosLS.splice(index, 1);
         }
     });
     // Añadimos el arreglo actual a storage
-    localStorage.setItem('cursos', JSON.stringify(cursosLS) );
+    localStorage.setItem('productos', JSON.stringify(productosLS) );
 }
 
 // Elimina todos los cursos de Local Storage
