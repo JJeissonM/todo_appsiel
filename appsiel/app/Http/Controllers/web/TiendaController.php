@@ -322,4 +322,10 @@ class TiendaController extends Controller
         //dd( $items->toArray()['data'] );
         return view('web.tienda.lista_productos',compact('items', 'texto'));
     }
+
+    function comprar(){
+        return view('web.tienda.comprar');
+    }
+
+
 }

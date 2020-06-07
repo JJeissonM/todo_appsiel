@@ -30,8 +30,7 @@
                                                     @foreach($grupos as $key => $value)
                                                         <li>
                                                             <a class="ajaxLayer"
-                                                               onclick="filtrar_categoria({{ $value[0]->id }}, this)" > {{$key}} ({{$value->count()}})</a>
-                                                            
+                                                               onclick="filtrar_categoria('{{ $value[0]->id }}', this)" > {{$key}} ({{$value->count()}})</a>
                                                         </li>
                                                     @endforeach
                                                 </ol>
@@ -51,7 +50,7 @@
                                             @foreach($items as $item)
                                                 <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
                                                     <div class="item-inner">
-                                                        <div class="ma-box-content">
+                                                        <div class="ma-box-content" data-id="{{$item->id}}">
                                                             <div class="products clearfix">
                                                                 <a href="#"
                                                                    title="{{$item->descripcion}}" class="product-image">
@@ -80,10 +79,11 @@
                                                                 <span class="regular-price" id="product-price-1">
                                                                     <span class="price">${{$item->precio_venta}}</span></span>
                                                             </div>
-                                                            <div class="actions">
-                                                                <button type="button" class="button btn-cart"
+                                                            <div class="actions agregar-carrito">
+                                                                <button type="button" class="button btn-cart "
                                                                         data-original-title="Agregar al carro de compras" rel="tooltip"><i
-                                                                            class="fa fa-shopping-cart"></i><span>Comprar</span></button>
+                                                                            class="fa fa-shopping-cart"></i><span> Comprar</span>
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -123,7 +123,9 @@
 
 <script src="{{asset('assets/tienda/js/categories.js')}}"></script>
 
-    <script type="text/javascript">
+<script src="{{asset('js/carrito/app.js')}}"></script>
+
+<script type="text/javascript">
 
         function filtrar_categoria( categoria_id, enlace )
         {   
@@ -135,7 +137,7 @@
 
             $.get( url )
                 .done(function( data ) {
-                    
+
                     $('#lista_productos').html( data );
                     $('#lista_productos').fadeIn( 1000 );
 
@@ -150,11 +152,11 @@
         }
 
         function buscar_descripcion( event )
-        {   
+        {
             event.preventDefault();
 
             $('#lista_productos').fadeOut( 1000 );
-            
+
             //var url = "{{ url('ecommerce/public/busqueda/') }}";
             var form_consulta = $('#form_consulta');
             var url = form_consulta.attr('action');
@@ -164,7 +166,7 @@
 
             $.get( url, datos )
                 .done(function( data ) {
-                    
+
                     $('#lista_productos').html( data );
                     $('#lista_productos').fadeIn( 1000 );
 
@@ -176,6 +178,5 @@
 
                     $('#lista_productos').html( '<p style="color:red;">Categoría no pudo ser cargada. Por favor, intente nuevamente.</p>' );
                 });
-        }
-
-    </script>
+    }
+</script>

@@ -10,7 +10,6 @@
 
 @section('content')
     @include('web.tienda.header')
-
     <main>
         <div class="main-container col2-left-layout">
             <div class="container">
@@ -75,8 +74,7 @@
                                                                 <span class="price">${{$item->precio_venta}}</span></span>
                                                             </div>
                                                             <div class="actions">
-                                                                <button type="button" class="button btn-cart"
-                                                                        data-original-title="Add to Cart" rel="tooltip"><i
+                                                                <button type="button" class="button btn-cart agregar-carrito"                                                                        data-original-title="Add to Cart" rel="tooltip"><i
                                                                             class="fa fa-shopping-cart"></i><span>Comprar</span></button>
                                                             </div>
                                                         </div>
@@ -100,7 +98,7 @@
 @endsection
 
 @section('script')
-    <script src="{{asset('assets/tienda/js/categories.js')}}"></script>
+    <script src="{{asset('js/carrito/app.js')}}"></script>
     <script type="text/javascript">
     </script>
 @endsection
