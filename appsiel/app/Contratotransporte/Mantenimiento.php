@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Mantenimiento extends Model
 {
     protected $table = 'cte_mantenimientos';
-    protected $fillable = ['id', 'anioperiodo_id', 'fecha', 'sede', 'revisado', 'vehiculo_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'anioperiodo_id', 'fecha', 'sede','documento', 'revisado', 'vehiculo_id', 'created_at', 'updated_at'];
 
     public static function opciones_campo_select()
     {

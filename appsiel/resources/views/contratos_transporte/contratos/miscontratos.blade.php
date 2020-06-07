@@ -56,7 +56,7 @@
 								<td>{{$c['contrato']->contratante->tercero->descripcion}}</td>
 								<td>{{"INTERNO: ".$c['vehiculo']->int." - PLACA: ".$c['vehiculo']->placa." - MODELO: ".$c['vehiculo']->modelo." - MARCA: ".$c['vehiculo']->marca." - CLASE: ".$c['vehiculo']->clase}}</td>
 								<td>{{$c['tipo']}}</td>
-								<td>@if($c['genera']=='SI')<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn btn-xs btn-primary"><i class="fa fa-arrow-right"></i></a>@else -- No puede generar planillas -- @endif</td>
+								<td>@if($c['genera']=='SI')<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn btn-xs btn-primary"><i class="fa fa-arrow-right"></i></a>@else -- Usted no se encuentra activo en el sistema, no tiene licencia registrada o su licencia está vencida. No puede generar planillas -- @endif</td>
 							</tr>
 							@endforeach
 							@endif

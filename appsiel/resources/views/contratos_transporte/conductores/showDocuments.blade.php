@@ -38,6 +38,7 @@
 						<p>
 							<b>Nro. Documento:</b> {{$v->nro_documento}}<br>
 							<b>Documento:</b> {{$v->documento}}<br>
+							<b>Categoría:</b> {{$v->categoria}}<br>
 							<b>Inicio Vigencia:</b> {{$v->vigencia_inicio}}<br>
 							<b>Vence:</b> {{$v->vigencia_fin}}<br>
 							<b onclick="ir(this.id)" id="{{$v->recurso}}" style="cursor: pointer; color: blue;">Ver Documento</b>
