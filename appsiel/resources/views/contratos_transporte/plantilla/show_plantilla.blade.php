@@ -207,7 +207,7 @@
 						<table style="width: 100%;">
 							<tbody>
 								<tr>
-									<td class="border" style="width: 40%; text-align: center; font-weight: bold; padding: 10px;">{{$v->direccion}}<br>{{$v->telefono}}<br><a>{{$v->correo}}</a></td>
+									<td class="border" style="width: 40%; text-align: center; font-weight: bold; padding: 10px;">@if($empresa!=null) {{$empresa->direccion1." - "}} @endif {{$v->direccion}}<br> @if($empresa!=null) {{$empresa->telefono1." - "}} @endif {{$v->telefono}}<br><a> @if($empresa!=null) {{$empresa->email." - "}} @endif {{$v->correo}}</a></td>
 									<td class="border" style="width: 20%; text-align: center; font-weight: bold;" valign="bottom">Sello</td>
 									<td class="border" style="width: 40%; text-align: center; font-weight: bold; font-size: 14px;" valign="bottom">FIRMA<br>{{$v->firma}}</td>
 								</tr>
