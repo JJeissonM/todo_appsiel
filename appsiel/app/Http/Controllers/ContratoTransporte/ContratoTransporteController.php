@@ -592,8 +592,9 @@ class ContratoTransporteController extends Controller
                 }
             }
         }
-
-        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'conductores', 'v', 'c', 'fi', 'ff', 'to'))->render();
+        $empresa = null;
+        $empresa = Empresa::find(1);
+        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'conductores', 'v', 'c', 'fi', 'ff', 'to', 'empresa'))->render();
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
