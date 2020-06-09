@@ -12,6 +12,8 @@ class InvCostoPromProducto extends Model
 
 	public $encabezado_tabla = ['Bodega','Producto', 'Costo promedio','Fecha actualización','Acción'];
 
+    public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
+
 	// Se consultan los documentos para la empresa que tiene asignada el usuario
     public static function consultar_registros()
     {
@@ -31,5 +33,21 @@ class InvCostoPromProducto extends Model
                                     ->value('costo_promedio');
 
         return $costo_prom;
+    }
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{}';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
     }
 }
