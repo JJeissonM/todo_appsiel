@@ -5,7 +5,6 @@ $(document).ready(function(){
 	var direccion = location.href;
 
 	var documento_inicial = parseInt( $("#numero_identificacion").val() );
-	var email_inicial = $("#email").val();
 
 	/*
 		WARNING: FALTA VALIDAR UN TERCERO DE UNA EMPRESA DIFERENTE
@@ -49,39 +48,6 @@ $(document).ready(function(){
 	        
 		});
 	});
-
-
-	// !!!! Solo valida en la tabla core_tereceros
-	$('#email').keyup(function(){
-		var email = $("#email").val();
-
-		if( direccion.search("edit") == -1) {
-			url = '../core/validar_email/';
-		}else{
-			url = '../../../core/validar_email/';
-		}
-
-		$.get( url + email, function( datos ) 
-		{
-	        if ( datos != '') 
-	        {
-	        	if ( datos == email_inicial ) 
-	        	{
-	        		// No hay problema
-	        		$('#bs_boton_guardar').show();
-	        	}else{
-	        		alert( "Ya existe una persona con ese EMAIL. Cambié el EMAIL o no podrá guardar el registro." );
-	        		$('#bs_boton_guardar').hide();
-	        	}
-	        	
-	        }else{
-	        	// Número de identificación
-	        	$('#bs_boton_guardar').show();
-	        }
-	        
-		});
-	});
-
 
 
 	/*

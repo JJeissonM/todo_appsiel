@@ -75,13 +75,12 @@ class User extends Authenticatable
         return $this->belongsTo('App\Core\Empresa');
     }
 
-    public static function crear_y_asignar_role($request, $role_id)
+    public static function crear_y_asignar_role( $name, $email, $role_id)
     {
-        $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
         $user = User::create([
             'empresa_id' => Auth::user()->empresa_id,
             'name' => $name,
-            'email' => $request->email,
+            'email' => $email,
             'password' => Hash::make('colombia1')
         ]);
         $role_id = $role_id;

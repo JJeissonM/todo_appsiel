@@ -24,6 +24,8 @@ use App\Salud\ConsultaMedica;
 use App\Salud\ExamenMedico;
 use App\Salud\Paciente;
 
+use App\Ventas\Cliente;
+
 class PacienteController extends Controller
 {
     public function __construct()
@@ -46,7 +48,8 @@ class PacienteController extends Controller
 
         /* Almacenar datos del Tercero y ... 
             Asignar datos adicionales al Paciente creado */
-        $registro_creado->core_tercero_id = Tercero::crear_nuevo_tercero($general, $request)->id;
+        $tercero = Tercero::crear_nuevo_tercero($general, $request);
+        $registro_creado->core_tercero_id = $tercero->id;
 
         // Consecutivo Historia Clínica
         // Se obtiene el consecutivo para actualizar el logro creado
@@ -59,6 +62,14 @@ class PacienteController extends Controller
         $registro_creado->codigo_historia_clinica = $consecutivo;
 
         $registro_creado->save();
+
+        // Crear Tercero como cliente
+        // Datos del Cliente
+        $cliente = new Cliente;
+        $cliente->fill( 
+                        ['core_tercero_id' => $tercero->id, 'encabezado_dcto_pp_id' => 1, 'clase_cliente_id' => 1, 'lista_precios_id' => 1, 'lista_descuentos_id' => 1, 'vendedor_id' => 1,'inv_bodega_id' => 1, 'zona_id' => 1, 'liquida_impuestos' => 1, 'condicion_pago_id' => 1, 'estado' => 'Activo' ]
+                         );
+        $cliente->save();
 
         return redirect( 'consultorio_medico/pacientes/'.$registro_creado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
     }

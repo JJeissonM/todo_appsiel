@@ -276,11 +276,18 @@ class FormulaOpticaController extends ModeloController
                 {
                     $btn_ver_examen = '<button class="btn btn-default btn-xs btn_ver_examen" data-paciente_id="'.$una_consulta->paciente_id.'" data-consulta_id="'.$una_consulta->id.'" data-examen_id="'.$un_examen->id.'" data-examen_descripcion="'.$un_examen->descripcion.'"> <i class="fa fa-eye"></i> '.$un_examen->descripcion.' </button>';
 
+                    $tipo_de_lentes = TipoLente::find( $una_formula->tipo_de_lentes );
+
+                    if ( is_null( $tipo_de_lentes ) )
+                    {
+                        $tipo_de_lentes = (object)['descripcion'=>''];
+                    }
+
                     $tabla .= '<tr>
                                 <td style="display: none;"><input type="hidden" name="formula_id" value="'.$una_formula->id.'"></td>
                                 <td>'.$una_consulta->fecha.'</td>
                                 <td> #'.$una_consulta->id.'</td>
-                                <td>'.TipoLente::find( $una_formula->tipo_de_lentes )->descripcion.'</td>
+                                <td>'.$tipo_de_lentes->descripcion.'</td>
                                 <td>'.$btn_ver_examen.'</td>
                                 <td> <button class="btn btn-success btn-xs btn_confirmar" style="display: inline;"><i class="fa fa-check"></i></button> </td>
                             </tr>';
