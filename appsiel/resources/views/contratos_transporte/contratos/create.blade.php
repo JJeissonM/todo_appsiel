@@ -105,7 +105,7 @@
 											<b>TRANSPORTE DE GRUPO DE USUARIOS</b>, el cual se regirá por las siguientes clausula, y en lo no previsto en ellas, por lo dispuesto en la ley.
 											<b>CLAUSULA PRIMERA - OBJETO DEL CONTRATO:</b> <input type="text" style="width: 100%;" required name="objeto" value="el objeto del contrato consiste en el transporte terrestre de pasajeros, mediante un servicio expreso al grupo específico descrito anteriormente" /> <b>CLAUSULA SEGUNDA: CARACTERISTICA DEL SERVICIO.</b>
 											<b>ORIGEN </b><input type="text" name="origen" required /> <b>DESTINO </b><input type="text" name="destino" required />
-											<b>FECHA DE INICIAL </b><input type="date" name="fecha_inicio" required /> <b>FECHA VENCIMIENTO</b> <input type="date" name="fecha_fin" required />
+											<b>FECHA DE INICIAL </b><input type="date" name="fecha_inicio" required /> <b>FECHA VENCIMIENTO</b> <input onchange="validar()" type="date" name="fecha_fin" id="fecha_fin" required />
 											<b>CLAUSULA TERCERA. OBLIGACION DEL CONTRATANTE:</b> El <b>CONTARTANTE</b> se
 											obliga con el <b>CONTARISTA</b>, a lo siguiente: <b>A)</b> Dar aviso de los servicios de transporte
 											requerido con la suficiente anticipación, indicando claramente número de pasajeros,
@@ -242,6 +242,21 @@
 	function addRow(tabla) {
 		var html = "<tr><td><input type='text' class='form-control' name='identificacion[]' required /></td><td><input type='text' class='form-control' name='persona[]' required /></td><td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td></tr>";
 		$('#' + tabla + ' tr:last').after(html);
+	}
+
+	function validar() {
+		var f = $("#fecha_fin").val();
+		var v = f.split("-");
+		var hoy = new Date();
+		var mes = hoy.getMonth() + 1;
+		if (mes != parseInt(v[1])) {
+			Swal.fire({
+				icon: 'error',
+				title: 'Oh no!',
+				text: 'La fecha final no puede ser de un mes diferente al actual, si continua sin corregir el contrato no será guardado y perderá los datos',
+				footer: '<a href>¿Desea continuar?</a>'
+			});
+		}
 	}
 </script>
 @endsection
