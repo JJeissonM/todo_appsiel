@@ -38,6 +38,8 @@
     <link href="{{asset('css/prettyPhoto.css')}}" rel="stylesheet">
     <link href="{{asset('css/main.css')}}" rel="stylesheet">
     <link href="{{asset('css/responsive.css')}}" rel="stylesheet">
+
+
     <!--[if lt IE 9]>
     <script src="{{asset('js/html5shiv.js')}}"></script>
     <script src="{{asset('js/respond.min.js')}}"></script>
@@ -198,26 +200,13 @@
         }
 
 
-            #navegacion {
-                position: fixed;
-                z-index: 999;
-                top: 50px;
-                width: 100%;
-            }
-            
+
+            /*
+                       
             #navegacion > header {
                 color: #ffffff !important;
                 background: rgba(0, 0, 0, 0.54) !important;
             }
-
-            .mu-navbar-nav > li > a {
-                color: white !important;
-            }
-
-            .carousel-content {
-                position: relative;
-                z-index: 9999999;
-            }/**/
 
             #navegacion > header.sticky {
               position: fixed;
@@ -226,6 +215,18 @@
               width: 100%;
               background: #396b8e !important;
             }
+
+            
+
+            .mu-navbar-nav > li > a {
+                color: white !important;
+            }*/
+
+            .carousel-content {
+                position: relative;
+                z-index: 9999999;
+            }/**/
+
 
             .sticky + .content {
               padding-top: 102px;
@@ -354,6 +355,14 @@
 
             })
     });
+
+    $("#showAlpha").spectrum({
+            showAlpha: true
+        });
+
+    $("#showAlpha2").spectrum({
+            showAlpha: true
+        });
 
   });
 </script>

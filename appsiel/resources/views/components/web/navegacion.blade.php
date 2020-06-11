@@ -1,4 +1,45 @@
+
+<?php  
+
+    $fondos = json_decode($nav->background,true);
+                                    
+    if ( is_null($fondos) )
+    {
+        $fondos['background_0'] = $nav->background;
+        $fondos['background_1'] = $nav->background;
+    }
+
+    if($nav->fixed)
+    {
+        $clase_header = 'fixed-top';
+        //$estilo = 'clear: both;';
+    }else{
+        $clase_header = 'no-fixed';
+    }
+?>
+
 <style>
+
+        header {
+                color: {{ $nav->color }};
+                background: {{ $fondos['background_0'] }};
+            }
+
+        #navegacion > header.sticky {
+              position: fixed;
+              z-index: 99999;
+              top: 0;
+              width: 100%;
+              background: {{ $fondos['background_1'] }} !important;
+            }
+
+            
+            #navegacion {
+                position: fixed;
+                z-index: 999;
+                top: 50px;
+                width: 100%;
+            }
 
       li.active a{
            color: black !important;
@@ -23,17 +64,8 @@
 
 </style>
 
-<?php  
-    if($nav->fixed)
-    {
-        $clase_header = 'fixed-top';
-        //$estilo = 'clear: both;';
-    }else{
-        $clase_header = 'no-fixed';
-    }
-?>
 
-<header class="no" style="background-color: {{$nav->background}};" id="myHeader">
+<header class="no" id="myHeader">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light"><!-- mu-navbar  d-flex -->
             

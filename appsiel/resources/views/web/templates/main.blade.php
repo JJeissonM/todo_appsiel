@@ -46,6 +46,12 @@
     <script src="{{asset('js/html5shiv.js')}}"></script>
     <script src="{{asset('js/respond.min.js')}}"></script>
 -->
+
+
+
+    <link rel="stylesheet" href="{{ asset('assets/css/spectrum.css') }}" />
+
+
     @yield('style')
 
     <style type="text/css">
@@ -216,6 +222,10 @@
 
     <script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
 
+
+    <script src="{{ asset('assets/js/spectrum.js') }}" ></script>
+
+
     <!-- About us Skills Circle progress  -->
 
     @yield('script')
@@ -230,6 +240,22 @@
                 ]
             });
         });
+    </script>
+
+    <script type="text/javascript">
+      $(document).ready(function(){
+
+        $("#background").spectrum({
+                showAlpha: true,
+                preferredFormat: "rgb"
+            });
+
+        $("#background2").spectrum({
+                showAlpha: true,
+                preferredFormat: "rgb"
+            });
+
+      });
     </script>
 
 </body>

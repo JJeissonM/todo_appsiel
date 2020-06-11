@@ -20,52 +20,44 @@
                                 <h5 class="column-title">Configuraciones Generales</h5>
                             </div>
                             <div class="card-body">
-                                @if($nav == null)
-                                    {!! Form::open(['url' => route('navegacion.storenav'), 'method' => 'POST','files' => 'true']) !!}
+
+                                <?php 
+
+                                    $fondos = json_decode($nav->background,true);
+                                    
+                                    if ( is_null($fondos) )
+                                    {
+                                        $fondos['background_0'] = $nav->background;
+                                        $fondos['background_1'] = $nav->background;
+                                    }
+
+                                    if($nav == null)
+                                    {
+                                        echo Form::open(['url' => route('navegacion.storenav'), 'method' => 'POST','files' => 'true']);
+                                    }else{
+                                        echo Form::open(['url' => route('navegacion.update',$nav->id), 'method' => 'put','files'=>'true'] );
+
+                                        $checked = '';
+                                        if ( $nav->fixed == true )
+                                        {
+                                            $checked = 'checked';
+                                        }
+                                    }
+                                ?>
+                                        
                                         <div class="form-group">
-                                            <label for="">Background</label>
-                                            <input type="color" id="background" onchange="selectColor(event)"
-                                                   class="form-control"
-                                                   name="background" value="{{$nav->background}}" required>
+                                            <label for="">Color Fondo</label>
+                                            <input type="text" name="background[]" id="background" style="display: none;" value="{{ $fondos['background_0'] }}">
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="">Color</label>
-                                            <input type="color" id="color" onchange="selectColor(event)"
-                                                   class="form-control"
-                                                   name="color" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="">Logo</label>
-                                            <input type="file" class="form-control" name="logo">
+                                            <label for="">Color Fondo 2</label>
+                                            <input type="text" name="background[]" id="background2" style="display: none;" value="{{ $fondos['background_1'] }}">
                                         </div>
 
                                         <div class="form-group">
-                                            <div class="checkbox">
-                                                <label><input class="" type="checkbox" name="fixed" value="">
-                                                    Fixed</label>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-12 d-flex justify-content-end">
-                                            <button class="btn btn-info">Guardar</button>
-                                        </div>
-                                   {!! Form::close() !!}
-                                @else
-                                    {!! Form::open(['url' => route('navegacion.update',$nav->id), 'method' => 'put','files'=>'true']) !!}
-                                        <input type="hidden" name="_method" value="PUT">
-                                        <div class="form-group">
-                                            <label for="">Background</label>
-                                            <input type="color" id="background" onchange="selectColor(event)"
-                                                   class="form-control"
-                                                   name="background" value="{{$nav->background}}" required>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="">Color</label>
-                                            <input type="color" id="color" onchange="selectColor(event)"
-                                                   class="form-control"
-                                                   name="color" value="{{$nav->color}}" required>
+                                            <label for="">Color texto</label>
+                                            <input type="color" id="color" onchange="selectColor(event)" class="form-control" name="color" value="{{ $nav->color }}" required>
                                         </div>
 
                                         <div class="form-group">
@@ -76,11 +68,7 @@
                                         <div class="form-group">
                                             <div class="checkbox">
                                                 <label>
-                                                    @if($nav->fixed == true)
-                                                        <input class="" type="checkbox" name="fixed" checked>
-                                                    @else
-                                                        <input class="" type="checkbox" name="fixed">
-                                                    @endif
+                                                    <input class="" type="checkbox" name="fixed" {{$checked}}>
                                                     Fixed</label>
                                             </div>
                                         </div>
@@ -88,8 +76,8 @@
                                         <div class="col-md-12 d-flex justify-content-end">
                                             <button class="btn btn-info">Guardar</button>
                                         </div>
-                                    {!! Form::close() !!}
-                                @endif
+
+                                   {!! Form::close() !!}
                             </div>
                         </div>
                     </div>
@@ -171,7 +159,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="formGroupExampleInput">Descripción</label>
-                                    <input type="text" required class="form-control" id="formGroupExampleInput"
+                                    <input type="text" required class="form-control" id="formGroupExampleInput2"
                                            placeholder="" name="descripcion">
                                 </div>
                             </div>
@@ -276,8 +264,8 @@
             rellenarSelect(select);
             const color = document.getElementById('color');
             color.style.backgroundColor = color.getAttribute('value');
-            const background = document.getElementById('background');
-            background.style.backgroundColor = background.getAttribute('value');
+            /*const background = document.getElementById('background');
+            background.style.backgroundColor = background.getAttribute('value');*/
         });
 
         function selectColor(event) {
@@ -301,7 +289,6 @@
                     let secciones = data.secciones;
                     $html = `<option value="principio">Principio de la página</option>`;
                     secciones.forEach(function (item) {
-                        console.log(item);
                         $html += `<option value="${item.widget_id}">${item.seccion}</option>`;
                     });
                     tbody.innerHTML = $html;
