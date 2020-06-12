@@ -133,6 +133,15 @@ class NavegacionController extends Controller
 
         $nav = Navegacion::find($id);
 
+        $logo = json_decode($nav->logo,true);
+                                    
+        if ( is_null($logo) )
+        {
+            $logo['imagen_logo'] = $nav->logo;
+            $logo['altura_logo'] = 100;
+            $logo['anchura_logo'] = 100;
+        }
+
         if($nav){
 
             $nav->fill($request->all());
@@ -151,17 +160,23 @@ class NavegacionController extends Controller
 
                 $filename = 'img/logos/'.$name;
                 $flag = file_put_contents($filename,file_get_contents($file->getRealPath()),LOCK_EX);
-
+                
                 if($flag !== false)
                 {
-                    $nav->fill(['logo' =>$filename]);
+                    $logo['imagen_logo'] = $filename;
                 }else {
                     $message = 'Error inesperado al intentar guardar el logo, por favor intente nuevamente más tarde';
                     return redirect()->back()->withInput($request->input())
                         ->with('mensaje_error',$message);
                 }
-
             }
+
+            // PARÁMETROS LOGO
+            $nav->logo = '{
+                            "imagen_logo":"'.$logo['imagen_logo'].'",
+                            "altura_logo":"'.$request->all()['altura_logo'].'",
+                            "anchura_logo":"'.$request->all()['anchura_logo'].'" 
+                          }';
 
             $nav->fixed = $request->fixed == 'on' ? 1 : 0;
 

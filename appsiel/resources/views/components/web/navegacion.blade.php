@@ -9,6 +9,16 @@
         $fondos['background_1'] = $nav->background;
     }
 
+
+    $logo = json_decode($nav->logo,true);
+                                    
+    if ( is_null($logo) )
+    {
+        $logo['imagen_logo'] = $nav->logo;
+        $logo['altura_logo'] = 100;
+        $logo['anchura_logo'] = 100;
+    }
+
     if($nav->fixed)
     {
         $clase_header = 'fixed-top';
@@ -20,26 +30,41 @@
 
 <style>
 
-        header {
-                color: {{ $nav->color }};
-                background: {{ $fondos['background_0'] }};
-            }
+    #navegacion {
+        position: fixed;
+        z-index: 999;
+        top: 50px;
+        width: 100%;
+    }
 
-        #navegacion > header.sticky {
-              position: fixed;
-              z-index: 99999;
-              top: 0;
-              width: 100%;
-              background: {{ $fondos['background_1'] }} !important;
-            }
+    header {
+            color: {{ $nav->color }};
+            background: {{ $fondos['background_0'] }};
+        }
 
-            
-            #navegacion {
-                position: fixed;
-                z-index: 999;
-                top: 50px;
-                width: 100%;
-            }
+    #navegacion > header.sticky {
+          position: fixed;
+          z-index: 99999;
+          top: 0;
+          width: 100%;
+          background: {{ $fondos['background_1'] }};
+          -webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.75);
+            -moz-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.75);
+            box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.75);
+        }
+
+
+    a.icono img{
+        height: {{ $logo['altura_logo'] }}px;
+        width: {{ $logo['anchura_logo'] }}px;
+    }
+
+
+    #navegacion > header.sticky .icono img{
+        max-height: 80px;
+        width: auto;
+    }
+        
 
       li.active a{
            color: black !important;
@@ -50,13 +75,6 @@
           color: black !important;
           background-color: white !important;
       }
-
-    .icono img{
-        max-height: 100px !important;
-        /*border-radius: 4px;
-        height:35px !important;
-        object-fit: cover;*/
-    }
 
     @media (max-width: 468px){
 
@@ -72,7 +90,7 @@
             <!-- Text based logo -->
             @if( $nav->logo != '' )
                 <a class="navbar-brand p-0 icono" href="{{url('/')}}">
-                    <img src="{{asset($nav->logo)}}">
+                    <img src="{{asset( $logo['imagen_logo'] )}}">
                 </a>
             @endif
 

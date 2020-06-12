@@ -31,6 +31,15 @@
                                         $fondos['background_1'] = $nav->background;
                                     }
 
+                                    $logo = json_decode($nav->logo,true);
+                                    
+                                    if ( is_null($logo) )
+                                    {
+                                        $logo['imagen_logo'] = $nav->logo;
+                                        $logo['altura_logo'] = 100;
+                                        $logo['anchura_logo'] = 100;
+                                    }
+
                                     if($nav == null)
                                     {
                                         echo Form::open(['url' => route('navegacion.storenav'), 'method' => 'POST','files' => 'true']);
@@ -61,8 +70,21 @@
                                         </div>
 
                                         <div class="form-group">
-                                            <label for="">Logo</label>
-                                            <input type="file" class="form-control" name="logo" value="">
+                                            <label for="imagen_logo">Logo</label> <br>
+                                            @if( $logo['imagen_logo'] != '' )
+                                                <img src="{{asset($logo['imagen_logo'])}}" height="150px" width="150px">
+                                            @endif
+                                            <input type="file" class="form-control" name="imagen_logo">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="altura_logo">Altura Logo (px)</label>
+                                            <input type="number" min="0" class="form-control" name="altura_logo" value="{{$logo['altura_logo']}}">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="anchura_logo">Anchura Logo (px)</label>
+                                            <input type="number" min="0"  class="form-control" name="anchura_logo" value="{{$logo['anchura_logo']}}">
                                         </div>
 
                                         <div class="form-group">
