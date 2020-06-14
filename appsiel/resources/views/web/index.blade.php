@@ -348,35 +348,6 @@
     </script>
 
 
-    @foreach($scripts as $key => $value)
-    {!! $value !!}
-    @endforeach
-
-    @yield('script')
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-
-<<<<<<< HEAD
-            $(".abrir_modal").click(function() {
-                $("#myModal").attr('data-elemento_id', $(this).attr('data-elemento_id'));
-                $("#myModal").modal("show");
-            });
-
-            $("#myModal").on('show.bs.modal', function() {
-                //alert( $(this).attr('data-album_id') );
-                var url = $("#myModal").attr('data-url_busqueda') + "/" + $(this).attr('data-elemento_id');
-                $.get(url)
-                    .done(function(data) {
-
-                        $('#modal-body').html(data);
-
-                    })
-            });
-
-        });
-    </script>
-=======
         @foreach($scripts as $key => $value)
             {!! $value !!}
         @endforeach
@@ -412,7 +383,6 @@
 
   });
 </script>
->>>>>>> 431bb0b2cba534fd13757c818e262c18b4d53360
 
 </body>
 
