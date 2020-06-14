@@ -42,7 +42,8 @@ class NavegacionController extends Controller
        ];
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
         $this->validate($request,[
             'titulo' => 'required|string',
@@ -70,7 +71,8 @@ class NavegacionController extends Controller
 
         }
 
-       if($request->tipo_enlace == 'pagina' ){
+       if($request->tipo_enlace == 'pagina' )
+       {
            if($request->seccion == 'principio' ){
              $pagina = Pagina::find($request->pagina);
              $menu->enlace = url('/'.$pagina->slug);
@@ -87,6 +89,8 @@ class NavegacionController extends Controller
 
        $flag = $menu->save();
 
+       $this->guardar_backgrounds( $request, $nav );
+
        if($flag){
            $message = 'item almacenado correctamente';
            $variables_url = '?id='.Input::get('id');
@@ -100,12 +104,50 @@ class NavegacionController extends Controller
 
     }
 
+    public function guardar_backgrounds( $request, &$nav )
+    {
+      $fondos = $request->all()['background'];
+
+      $parametros_a_guardar = '{';
+      $primero = true;
+      $cant = count($fondos);
+      for($i=0;$i<$cant;$i++)
+      {
+          // 
+          $nombre_campo = 'background_'.$i;
+          $valor = $fondos[$i];
+
+          if( $primero ) {
+              $parametros_a_guardar .= '"'.$nombre_campo.'":"'.$valor.'"';
+              $primero = false;
+          }else{
+              $parametros_a_guardar .= ',"'.$nombre_campo.'":"'.$valor.'"';
+          }            
+      }
+      $parametros_a_guardar .= '}';
+
+      $nav->background = $parametros_a_guardar;
+    }
+
     public function update(Request $request, $id){
 
         $nav = Navegacion::find($id);
 
+        $logo = json_decode($nav->logo,true);
+                                    
+        if ( is_null($logo) )
+        {
+            $logo['imagen_logo'] = $nav->logo;
+            $logo['altura_logo'] = 100;
+            $logo['anchura_logo'] = 100;
+        }
+
         if($nav){
+
             $nav->fill($request->all());
+            
+            $this->guardar_backgrounds( $request, $nav );
+
             if($request->hasFile('logo'))
             {
 
@@ -118,20 +160,26 @@ class NavegacionController extends Controller
 
                 $filename = 'img/logos/'.$name;
                 $flag = file_put_contents($filename,file_get_contents($file->getRealPath()),LOCK_EX);
-
+                
                 if($flag !== false)
                 {
-                    $nav->fill(['logo' =>$filename]);
+                    $logo['imagen_logo'] = $filename;
                 }else {
                     $message = 'Error inesperado al intentar guardar el logo, por favor intente nuevamente más tarde';
                     return redirect()->back()->withInput($request->input())
                         ->with('mensaje_error',$message);
                 }
-
             }
 
+            // PARÁMETROS LOGO
+            $nav->logo = '{
+                            "imagen_logo":"'.$logo['imagen_logo'].'",
+                            "altura_logo":"'.$request->all()['altura_logo'].'",
+                            "anchura_logo":"'.$request->all()['anchura_logo'].'" 
+                          }';
 
             $nav->fixed = $request->fixed == 'on' ? 1 : 0;
+
             $flag = $nav->save();
 
             if($flag){

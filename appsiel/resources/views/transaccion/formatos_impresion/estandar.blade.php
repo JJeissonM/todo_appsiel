@@ -84,15 +84,12 @@
     @yield('tabla_registros_3')
 
     <table style="width: 100%;">
-        <tr>
-            <td style="border: solid 1px black;"> <b> @yield('lbl_firma') </b> <br><br><br><br> </td>
+        <!-- <tr>
+            <td style="border: solid 1px black;"> <b> @ yield('lbl_firma') </b> <br><br><br><br> </td>
         </tr>
+        -->
         @yield('firma_fila_adicional')
     </table>
-
-    <p style="text-align: right;">
-        {{ $doc_encabezado->created_at }}    
-    </p>
     
     <br><br><br>
 

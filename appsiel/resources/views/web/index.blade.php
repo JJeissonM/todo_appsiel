@@ -37,6 +37,8 @@
     <link href="{{asset('css/prettyPhoto.css')}}" rel="stylesheet">
     <link href="{{asset('css/main.css')}}" rel="stylesheet">
     <link href="{{asset('css/responsive.css')}}" rel="stylesheet">
+
+
     <!--[if lt IE 9]>
     <script src="{{asset('js/html5shiv.js')}}"></script>
     <script src="{{asset('js/respond.min.js')}}"></script>
@@ -355,6 +357,7 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+<<<<<<< HEAD
             $(".abrir_modal").click(function() {
                 $("#myModal").attr('data-elemento_id', $(this).attr('data-elemento_id'));
                 $("#myModal").modal("show");
@@ -373,6 +376,43 @@
 
         });
     </script>
+=======
+        @foreach($scripts as $key => $value)
+            {!! $value !!}
+        @endforeach
+        
+@yield('script')
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    
+    $(".abrir_modal").click(function(){
+      $("#myModal").attr('data-elemento_id', $(this).attr('data-elemento_id') );
+      $("#myModal").modal("show");
+    });
+
+    $("#myModal").on('show.bs.modal', function () {
+      //alert( $(this).attr('data-album_id') );
+      var url = $("#myModal").attr('data-url_busqueda') + "/" + $(this).attr('data-elemento_id');
+      $.get( url )
+            .done(function( data ) {
+                
+                $('#modal-body').html( data );
+
+            })
+    });
+
+    $("#showAlpha").spectrum({
+            showAlpha: true
+        });
+
+    $("#showAlpha2").spectrum({
+            showAlpha: true
+        });
+
+  });
+</script>
+>>>>>>> 431bb0b2cba534fd13757c818e262c18b4d53360
 
 </body>
 

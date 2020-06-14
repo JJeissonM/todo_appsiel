@@ -22,9 +22,9 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Estándar'],null, [ 'id' =>'formato_impresion_id' ]) }}
-	{{ Form::bsBtnPrint( 'vtas_imprimir/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
-	{{ Form::bsBtnEmail( 'vtas_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
+	Formato: {{ Form::select('formato_impresion_id',['estandar_medica'=>'Estándar'],null, [ 'id' =>'formato_impresion_id' ]) }}
+	{{ Form::bsBtnPrint( 'vtas_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar_medica' ) }}
+	{{ Form::bsBtnEmail( 'vtas_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
 @endsection
 
 @section('botones_anterior_siguiente')
@@ -43,7 +43,7 @@
 	<table class="table table-bordered">
 		<tr>
 	        <td style="border: solid 1px #ddd;" colspan="2">
-	            <b>Cliente:</b> {{ $doc_encabezado->tercero_nombre_completo }}
+	            <b>Paciente:</b> {{ $doc_encabezado->tercero_nombre_completo }}
 	        </td>
 	        <td style="border: solid 1px #ddd;">
 	            <b>C.C. o NIT: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
@@ -51,7 +51,7 @@
 	    </tr>
 	    <tr>
 	        <td style="border: solid 1px #ddd;">
-	            <b>Historia No.: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
+	            <b>Historia clínica No.: &nbsp;&nbsp;</b> {{ App\Salud\Paciente::where( 'core_tercero_id', $doc_encabezado->core_tercero_id )->value('codigo_historia_clinica') }}
 	        </td>
 	        <td style="border: solid 1px #ddd;">
 	            <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
