@@ -249,12 +249,8 @@
             padding-top: 102px;
         }
 
-        @foreach($estilos as $key=> $value) {
-                {
-                $value
-            }
-        }
-
+        @foreach($estilos as $key=> $value) 
+         {{ $value }}
         @endforeach
     </style>
 </head>
