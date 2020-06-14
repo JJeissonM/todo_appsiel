@@ -201,7 +201,7 @@
         }
 
         .dropdown-item:hover {
-            background-color: #0091ea !important;
+            background-color: #45aed6 !important;
             color: #ffffff !important;
         }
 
@@ -223,7 +223,7 @@
         }
 
         .mu-navbar-nav>li > a:hover {
-            background-color: #0091ea !important;
+            background-color: #45aed6 !important;
             color: #ffffff !important;
             border-radius: none !important;
         }
