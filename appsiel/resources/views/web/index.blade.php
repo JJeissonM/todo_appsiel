@@ -207,19 +207,6 @@
             color: #ffffff !important;
         }
 
-
-        #navegacion {
-            position: fixed;
-            z-index: 999;
-            top: 50px;
-            width: 100%;
-        }
-
-        #navegacion>header {
-            color: #ffffff;
-            background: rgba(0, 0, 0, 0.54);
-        }
-
         .mu-navbar-nav>li>a {
             color: white;
         }
@@ -235,16 +222,6 @@
             z-index: 9999999;
         }
 
-        /**/
-
-        #navegacion>header.sticky {
-            position: fixed;
-            z-index: 99999;
-            top: 0;
-            width: 100%;
-            background: #396b8e !important;
-        }
-
         .sticky+.content {
             padding-top: 102px;
         }
@@ -258,10 +235,6 @@
 <body style="padding:0;">
 
     <main id="contenedor_principal">
-
-        <!-- <div class="top-container">
-        HELLO
-    </div> -->
 
         @foreach($view as $item)
         {!! $item !!}
