@@ -70,6 +70,7 @@ class EmailController extends Controller
 
     $nombrearchivo = uniqid().'.pdf';
 
+    // Se almacena el archivo en el dico duro
     Storage::put('pdf_email/'.$nombrearchivo, $pdf->output());
     
     $tipo_mensaje = 'flash_message';
@@ -78,15 +79,14 @@ class EmailController extends Controller
     if ( !EmailController::enviar_email( $nombre_remitente, $email_destino, $asunto, $cuerpo_mensaje, $nombrearchivo) )
     {
       $tipo_mensaje = 'mensaje_error';
-      $texto_mensaje = 'Correo no pudo ser enviado.';
-      
+      $texto_mensaje = 'Correo no pudo ser enviado. Verifique la dirección de email del destinatario e intente nuevamente.';      
     }
 
     return [ 'tipo_mensaje' => $tipo_mensaje, 'texto_mensaje' => $texto_mensaje];
 
   }
 
-  public function enviar_email_lote($empresa_id,$core_tipo_doc_app_id,$consec_desde,$consec_hasta)
+  public function enviar_email_lote( $empresa_id, $core_tipo_doc_app_id, $consec_desde, $consec_hasta )
   {
       $view_pdf = '';
       $vista = 'imprimir';

@@ -192,4 +192,46 @@ $(document).ready(function(){
 		    tA.parentNode.removeChild(tA)
 		}
 	});
+
+	$(document).on('change','#tipo',function(){
+
+		console.log( $(this).val() );
+
+		switch( $(this).val() )
+		{
+			case 'Persona natural':
+				$('#razon_social').parent().parent().fadeOut();
+				$('#nombre1').parent().parent().fadeIn();
+				$('#otros_nombres').parent().parent().fadeIn();
+				$('#apellido1').parent().parent().fadeIn();
+				$('#apellido2').parent().parent().fadeIn();
+				break;
+
+			case 'Persona jurídica':
+				$('#razon_social').parent().parent().fadeIn();
+				$('#nombre1').parent().parent().fadeOut();
+				$('#otros_nombres').parent().parent().fadeOut();
+				$('#apellido1').parent().parent().fadeOut();
+				$('#apellido2').parent().parent().fadeOut();	
+
+				break;
+
+			case 'Interno':
+				$('#razon_social').parent().parent().fadeOut();
+				$('#nombre1').parent().parent().fadeOut();
+				$('#otros_nombres').parent().parent().fadeOut();
+				$('#apellido1').parent().parent().fadeOut();
+				$('#apellido2').parent().parent().fadeOut();	
+
+				break;
+				
+			default:
+				$('#razon_social').parent().parent().fadeIn();
+				$('#nombre1').parent().parent().fadeIn();
+				$('#otros_nombres').parent().parent().fadeIn();
+				$('#apellido1').parent().parent().fadeIn();
+				$('#apellido2').parent().parent().fadeIn();	
+				break;
+		}
+	});
 });
