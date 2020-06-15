@@ -62,6 +62,9 @@ class FactoryCompents
             case "PQR":
                 $component = new PqrComponent($this->widget);
                 break;
+            case "Parallax":
+                $component = new ParallaxComponent($this->widget);
+                break;
             default:
                 $component = false;
         }
