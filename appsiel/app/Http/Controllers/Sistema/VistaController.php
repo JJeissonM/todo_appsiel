@@ -66,7 +66,22 @@ class VistaController extends Controller
         $i=2;
         $cantidad_campos = 0;
         foreach ($campos as $campo)
-        {            
+        {
+
+            /*
+
+                    echo '<div class="column">';
+                        if ( $modo == 'show')
+                        {
+                            echo '<div class="row" style="padding:5px;">'.VistaController::mostrar_campo( $campo['id'], $campo['value'], 'show' ).'</div>';
+                        }else{
+                            // Si el campo tiene el name core_campo_id-ID, se reemplaza por el ID del campo en la tabla sys_campos
+                            echo '<div class="row" style="padding:5px;">'.str_replace("core_campo_id-ID", 'core_campo_id-'.$campo['id'], VistaController::dibujar_campo($campo) ).'</div>';
+                        }
+                    echo '</div>';
+
+            */
+
             if( $i%2 == 0 ) // Si $i es par
             {
                 echo '<div class="row">';

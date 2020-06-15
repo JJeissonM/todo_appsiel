@@ -4,6 +4,8 @@ namespace App\Salud;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Salud\Paciente;
+
 use DB;
 
 use App\Salud\ConsultaMedica;

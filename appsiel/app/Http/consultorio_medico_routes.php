@@ -23,6 +23,9 @@ Route::post('consultorio_medico/eliminar_formula_optica', 'Salud\FormulaOpticaCo
 Route::get('consultorio_medico/formulas_opticas/{formula_id}/print', 'Salud\FormulaOpticaController@imprimir');
 Route::get('consultorio_medico/asociar_examen/formulas_opticas/{formula_id}/{examen_id}', 'Salud\FormulaOpticaController@asociar_examen_a_formula');
 Route::get('consultorio_medico/quitar_examen/formulas_opticas/{formula_id}/{examen_id}', 'Salud\FormulaOpticaController@quitar_examen_de_formula');
+
+Route::get('formula_optica_enviar_email/{formula_id}', 'Salud\FormulaOpticaController@enviar_por_email');
+
 Route::resource('consultorio_medico/formulas_opticas', 'Salud\FormulaOpticaController');
 
 

@@ -84,8 +84,6 @@ class PacienteController extends Controller
     {
         $secciones_consulta = json_decode( config('consultorio_medico.secciones_consulta') );
 
-        $general = new ModeloController();
-
         // Se obtiene el modelo según la variable modelo_id de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
 
@@ -97,21 +95,16 @@ class PacienteController extends Controller
         
         $datos_historia_clinica = Paciente::datos_basicos_historia_clinica( $id );
         
-        //$miga_pan = $general->get_miga_pan($modelo,$registro->descripcion);
 
         $miga_pan = MigaPan::get_array( Aplicacion::find( Input::get('id') ), $modelo, 'Historia Clínica' );
 
-        $url_crear = '';
-        $url_edit = '';
+        $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo');
+        
+        $model_controller = new ModeloController();
+        $acciones = $model_controller->acciones_basicas_modelo( $modelo, $variables_url );
 
-        // Se le asigna a cada variable url, su valor en el modelo correspondiente
-        $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
-        if ($modelo->url_crear!='') {
-            $url_crear = $modelo->url_crear.$variables_url;    
-        }
-        if ($modelo->url_edit!='') {
-            $url_edit = $modelo->url_edit.$variables_url;
-        }
+        $url_crear = $acciones->create;
+        $url_edit = $acciones->edit;
 
         // RELATIVO A CONSULTAS
         $modelo_consultas = Modelo::where('modelo','salud_consultas')->first();
