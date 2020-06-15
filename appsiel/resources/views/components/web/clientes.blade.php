@@ -15,7 +15,7 @@
                     <div class="swiper-container">
                         <div class="swiper-wrapper">
                             @foreach($clientes as $cli)
-                                <div class="swiper-slide"><img style="object-fit: cover; width: 100%" src="{{url($cli->logo)}}" alt="{{$cli->nombre}}"></div>
+                                <div class="swiper-slide"><img style="object-fit: cover; width: 100%" src="{{url($cli->logo)}}" alt="{{$cli->nombre}}"><p style="text-align: center; background-color: #45aed6 !important; color: #FFF !important;">{{$cli->nombre}}</p></div>
                             @endforeach
                         </div>
                         <!-- Add Pagination -->

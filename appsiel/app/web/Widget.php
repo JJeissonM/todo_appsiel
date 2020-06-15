@@ -108,4 +108,9 @@ class Widget extends Model
     {
         return $this->hasMany(Comparallax::class);
     }
+
+    public function stickies()
+    {
+        return $this->hasMany(Sticky::class);
+    }
 }

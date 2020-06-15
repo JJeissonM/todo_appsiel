@@ -65,6 +65,9 @@ class FactoryCompents
             case "Parallax":
                 $component = new ParallaxComponent($this->widget);
                 break;
+            case "Sticky":
+                $component = new StickyComponent($this->widget);
+                break;
             default:
                 $component = false;
         }

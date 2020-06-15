@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateComparallaxesTable extends Migration
+class CreateStickiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,14 +12,10 @@ class CreateComparallaxesTable extends Migration
      */
     public function up()
     {
-        Schema::create('pw_comparallaxes', function (Blueprint $table) {
+        Schema::create('pw_stickies', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('titulo');
-            $table->string('descripcion');
-            $table->string('fondo');
-            $table->string('modo', 50);
-            $table->string('textcolor', 50);
-            $table->text('content_html');
+            $table->string('posicion'); // derecha, izquierda, arriba, abajo
+            $table->integer('ancho_boton'); //ancho en pixeles de cada boton
             $table->unsignedInteger('widget_id');
             $table->foreign('widget_id')->references('id')->on('pw_widget')->onDelete('CASCADE');
             $table->timestamps();
@@ -33,6 +29,6 @@ class CreateComparallaxesTable extends Migration
      */
     public function down()
     {
-        Schema::drop('pw_comparallaxes');
+        Schema::drop('pw_stickies');
     }
 }

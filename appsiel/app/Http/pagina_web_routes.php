@@ -72,6 +72,14 @@ Route::post('parallax/store', 'web\ParallaxController@store')->name('parallax.st
 Route::put('parallax/updated/{id}', 'web\ParallaxController@updated')->name('parallax.updated');
 Route::get('parallax/destroy/{id}', 'web\ParallaxController@delete');
 
+//STICKY
+Route::get('sticky/create/{widget}', 'web\StickyController@create');
+Route::post('sticky/store', 'web\StickyController@store')->name('sticky.store');
+Route::put('sticky/updated/{id}', 'web\StickyController@updated')->name('sticky.updated');
+Route::get('sticky/destroy/{id}', 'web\StickyController@delete');
+Route::post('sticky/store/boton', 'web\StickyController@storeboton')->name('sticky.storeboton');
+Route::get('sticky/destroy/{id}/boton', 'web\StickyController@deleteboton');
+
 
 //CONTACTENOS
 Route::get('contactenos/create/{widget}', 'web\ContactenosController@create');

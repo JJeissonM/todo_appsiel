@@ -146,6 +146,10 @@
                         <input name="descripcion" type="text" placeholder="Descripción" required class="form-control">
                     </div>
                     <div class="form-group">
+                        <label>Color del Texto</label>
+                        <input name="textcolor" type="color" required class="form-control">
+                    </div>
+                    <div class="form-group">
                         <label>¿Color o Imágen de Fondo?</label>
                         <select class="form-control" id="color" name="modo" required onchange="cambiarColor()">
                             <option value="fondo">-- Selecciona una opción --</option>
@@ -197,14 +201,18 @@
                         <input name="descripcion" value="{{$parallax->descripcion}}" type="text" placeholder="Descripción" required class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>¿Color o Imágen de Fondo? (Actual: {{$parallax->fondo}})</label>
-                        <select class="form-control" id="color" name="modo" required onchange="cambiarColor()">
+                        <label>Color del Texto</label>
+                        <input name="textcolor" type="color" value="{{$parallax->textcolor}}" required class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>¿Color o Imágen de Fondo? (Actual: {{$parallax->modo." - ".$parallax->fondo}})</label>
+                        <select class="form-control" id="color2" name="modo" required onchange="cambiarColor2()">
                             <option value="fondo">-- Selecciona una opción --</option>
                             <option value="COLOR">COLOR DE FONDO</option>
                             <option value="IMAGEN">IMÁGEN DE FONDO</option>
                         </select>
                     </div>
-                    <div class="form-group" id="fondo">
+                    <div class="form-group" id="fondo2">
 
                     </div>
                     <div class="form-group">
@@ -242,6 +250,21 @@
                 break;
             case 'fondo':
                 $("#fondo").html("");
+                break;
+        }
+    }
+
+    function cambiarColor2() {
+        var c = $("#color2").val();
+        switch (c) {
+            case 'COLOR':
+                $("#fondo2").html("<label>Color de Fondo</label><input name='fondo' type='color' required class='form-control'>");
+                break;
+            case 'IMAGEN':
+                $("#fondo2").html("<label>Imágen de Fondo</label><input name='fondo' type='file' required class='form-control'>");
+                break;
+            case 'fondo':
+                $("#fondo2").html("");
                 break;
         }
     }
