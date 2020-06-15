@@ -90,7 +90,6 @@ class NavegacionController extends Controller
        $flag = $menu->save();
 
        $this->guardar_backgrounds( $request, $nav );
-
        if($flag){
            $message = 'item almacenado correctamente';
            $variables_url = '?id='.Input::get('id');
@@ -127,6 +126,7 @@ class NavegacionController extends Controller
       $parametros_a_guardar .= '}';
 
       $nav->background = $parametros_a_guardar;
+      $nav->save();
     }
 
     public function update(Request $request, $id){
