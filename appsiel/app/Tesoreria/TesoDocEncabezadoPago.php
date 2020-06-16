@@ -16,6 +16,8 @@ class TesoDocEncabezadoPago extends Model
 
     public $encabezado_tabla = ['Fecha','Documento','Tercero','Detalle','Valor total','Estado','Acción'];
 
+    public $urls_acciones = '{"create":"tesoreria/pagos/create","store":"tesoreria/pagos","show":"tesoreria/pagos/id_fila","edit":"tesoreria/pagos/id_fila/edit","update":"tesoreria/pagos/id_fila","imprimir":"tesoreria/pagos_imprimir/id_fila"}';
+
     public static function consultar_registros()
     {
         $core_tipo_transaccion_id = 17;
@@ -46,5 +48,37 @@ class TesoDocEncabezadoPago extends Model
                     ->where('teso_doc_encabezados.id', $id)
                     ->select(DB::raw($select_raw),'teso_doc_encabezados.fecha','core_terceros.descripcion AS tercero','teso_doc_encabezados.descripcion AS detalle','teso_doc_encabezados.documento_soporte','teso_doc_encabezados.core_tipo_transaccion_id','teso_doc_encabezados.core_tipo_doc_app_id','teso_doc_encabezados.id','teso_doc_encabezados.creado_por','teso_doc_encabezados.consecutivo','teso_doc_encabezados.core_empresa_id','teso_doc_encabezados.core_tercero_id','teso_doc_encabezados.teso_tipo_motivo')
                     ->get()[0];
+    }
+
+    /*
+        Obtener un registro de encabezado de documento con sus datos relacionados
+    */
+    public static function get_registro_impresion($id)
+    {
+        
+        return TesoDocEncabezadoPago::where('teso_doc_encabezados.id',$id)
+                    ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
+                    ->select(
+                                'teso_doc_encabezados.id',
+                                'teso_doc_encabezados.core_empresa_id',
+                                'teso_doc_encabezados.core_tercero_id',
+                                'teso_doc_encabezados.core_tipo_transaccion_id',
+                                'teso_doc_encabezados.core_tipo_doc_app_id',
+                                'teso_doc_encabezados.consecutivo',
+                                'teso_doc_encabezados.fecha',
+                                'teso_doc_encabezados.descripcion',
+                                'teso_doc_encabezados.estado',
+                                'teso_doc_encabezados.creado_por',
+                                'teso_doc_encabezados.modificado_por',
+                                'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
+                                DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' ),
+                                DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero_nombre_completo' ),
+                                'core_terceros.numero_identificacion',
+                                'core_terceros.direccion1',
+                                'core_terceros.telefono1'
+                            )
+                    ->get()
+                    ->first();
     }
 }

@@ -55,15 +55,21 @@ class ContabilidadController extends TransaccionController
 
     public function store( Request $request )
     {
-
-        //dd( $request->all() );
         $registro_encabezado_doc = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
+        
+        $this->almacenar_lineas_registros( $request, $tabla_registros_documento, $registro_encabezado_doc );
 
-        // 1ro. se guardan los registros asociados al encabezado del documento
-        // Se recorre la tabla enviada en el request, descartando las DOS últimas filas
-        for ($i=0; $i < count($tabla_registros_documento)-2; $i++)
+        return redirect( 'contabilidad/'.$registro_encabezado_doc->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+    }
+
+
+
+    public function almacenar_lineas_registros( $request, $tabla_registros_documento, $registro_encabezado_doc )
+    {
+        $cantidad = count($tabla_registros_documento) - 2;
+        for ($i=0; $i < $cantidad; $i++)
         {
             // Se obtienen las id de los campos que se van a almacenar. Los campos vienen separados por "-" en cada columna de la tabla 
             $vec_1 = explode("-", $tabla_registros_documento[$i]->Cuenta);
@@ -138,8 +144,6 @@ class ContabilidadController extends TransaccionController
             }
 
         }
-
-        return redirect( 'contabilidad/'.$registro_encabezado_doc->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
 
@@ -148,7 +152,6 @@ class ContabilidadController extends TransaccionController
      */
     public function edit($id)
     {
-
         $this->set_variables_globales();
 
         // Se obtiene el registro a modificar del modelo
@@ -195,7 +198,7 @@ class ContabilidadController extends TransaccionController
                                     </div>
 
                                     <div class="alert alert-warning">
-                                      <strong> ¡Nota! </strong> Debe guardar el documento para afectar el movimiento contable.
+                                      <strong> ¡Nota! </strong> Debe guardar el documento para afectar el movimiento contable. Además, todos los registros de <b>cxc</b> y <b>cxp</b> se cambiaron por registros de <b>causacion</b>.
                                     </div>';
             $this->duplicado = false;
         }
@@ -268,11 +271,12 @@ class ContabilidadController extends TransaccionController
         $registro_encabezado_doc = app( $modelo->name_space )->find($id);
 
         // Borrar registros viejos del documento
-        $registros_doc = ContabDocRegistro::where( 'contab_doc_encabezado_id', $id )->delete();
-        $registros_doc = ContabMovimiento::where( 'core_tipo_transaccion_id', $registro_encabezado_doc->core_tipo_transaccion_id )
-                                            ->where( 'core_tipo_doc_app_id', $registro_encabezado_doc->core_tipo_doc_app_id )
-                                            ->where( 'consecutivo', $registro_encabezado_doc->consecutivo )
-                                            ->delete();
+        ContabDocRegistro::where( 'contab_doc_encabezado_id', $id )->delete();
+
+        ContabMovimiento::where( 'core_tipo_transaccion_id', $registro_encabezado_doc->core_tipo_transaccion_id )
+                        ->where( 'core_tipo_doc_app_id', $registro_encabezado_doc->core_tipo_doc_app_id )
+                        ->where( 'consecutivo', $registro_encabezado_doc->consecutivo )
+                        ->delete();
 
 
         $request['core_tipo_transaccion_id'] = $registro_encabezado_doc->core_tipo_transaccion_id;
@@ -281,82 +285,8 @@ class ContabilidadController extends TransaccionController
 
         // Contabilizar nuevos registros
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
-        // 1ro. se guardan los registros asociados al encabezado del documento
-        // Se recorre la tabla enviada en el request, descartando las DOS últimas filas
-        for ($i=0; $i < count($tabla_registros_documento)-2; $i++)
-        {
-            // Se obtienen las id de los campos que se van a almacenar. Los campos vienen separados por "-" en cada columna de la tabla 
-            $vec_1 = explode("-", $tabla_registros_documento[$i]->Cuenta);
-            $contab_cuenta_id = $vec_1[0];
-
-            $vec_2 = explode("-", $tabla_registros_documento[$i]->Tercero);
-
-
-            $core_tercero_id = (int)$vec_2[0];            
-            if ( $core_tercero_id == 0 )
-            {
-                $core_tercero_id = (int)$request->core_tercero_id;
-            }
-
-            $detalle_operacion = $tabla_registros_documento[$i]->Detalle;
-
-            // Se les quita la etiqueta de signo peso a los textos monetarios recibidos
-            // en la tabla de movimiento
-            $valor_debito = substr($tabla_registros_documento[$i]->debito, 1);
-            $valor_credito = substr($tabla_registros_documento[$i]->credito, 1);
-
-            $registro_doc = ContabDocRegistro::create(
-                                                        [ 'contab_doc_encabezado_id' => $registro_encabezado_doc->id ] + 
-                                                        [ 'contab_cuenta_id' => (int)$contab_cuenta_id ] + 
-                                                        [ 'core_tercero_id' => $core_tercero_id ] + 
-                                                        [ 'detalle_operacion' => $detalle_operacion] + 
-                                                        [ 'valor_debito' => (float)$valor_debito] + 
-                                                        [ 'valor_credito' => (float)$valor_credito] + 
-                                                        [ 'tipo_transaccion' => $tabla_registros_documento[$i]->tipo_transaccion ]
-                                                    );
-
-
-            // 1.1. Para cada registro del documento, también se va actualizando el movimiento de contabilidad
-            
-            // Para el movimiento contable se guarda en detalle_operacion el detalle del encabezado del documento
-            if ($detalle_operacion == '')
-            {
-                $detalle_operacion = $request->descripcion;
-            }
-
-            $this->datos = array_merge( $request->all(), [
-                                                            'core_tercero_id' => $core_tercero_id,
-                                                            'consecutivo' => $registro_encabezado_doc->consecutivo,
-                                                            'id_registro_doc_tipo_transaccion' => $registro_doc->id,
-                                                            'fecha_vencimiento' => $tabla_registros_documento[$i]->fecha_vencimiento,
-                                                            'documento_soporte' => $tabla_registros_documento[$i]->documento_soporte_tercero,
-                                                            'tipo_transaccion' => $tabla_registros_documento[$i]->tipo_transaccion] );
-
-            $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
-
-            // Generar CxP.
-            if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_cxp' )
-            {
-                $this->datos['valor_documento'] = $valor_credito;
-                $this->datos['valor_pagado'] = 0;
-                $this->datos['saldo_pendiente'] = $valor_credito;
-                $this->datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
-                $this->datos['doc_proveedor_consecutivo'] = $tabla_registros_documento[$i]->documento_soporte_tercero;
-                $this->datos['estado'] = 'Pendiente';
-                CxpMovimiento::create( $this->datos );
-            }
-
-            // Generar CxC.
-            if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_cxc' )
-            {
-                $this->datos['valor_documento'] = $valor_debito;
-                $this->datos['valor_pagado'] = 0;
-                $this->datos['saldo_pendiente'] = $valor_debito;
-                $this->datos['fecha_vencimiento'] = $tabla_registros_documento[$i]->fecha_vencimiento;
-                $this->datos['estado'] = 'Pendiente';
-                CxcMovimiento::create( $this->datos );
-            }
-        }
+        
+        $this->almacenar_lineas_registros( $request, $tabla_registros_documento, $registro_encabezado_doc );
 
         $registro_encabezado_doc->fill( $request->all() );
         $registro_encabezado_doc->save();
@@ -432,10 +362,9 @@ class ContabilidadController extends TransaccionController
 
         $registros_doc_encabezado = ContabDocRegistro::where( 'contab_doc_encabezado_id', $doc_encabezado->id )->get();
 
-        if( !$this->verificar_permitir_editar_duplicar( $registros_doc_encabezado ) )
-        {
-           return redirect( 'contabilidad/'.$doc_encabezado_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los documentos que tienen transacciones de CxP o CxC no pueden ser duplicados.');
-        }
+        /*
+            Al duplicar el documento no se realiza contabilización, por tanto se puede duplicar aunque tenga movimientos de cxc o cxp. Pero los registros de con estos movimientos, se llamaran como registros de causacion en el formulario de editar.
+        */
 
         // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
         $consecutivo = TipoDocApp::get_consecutivo_actual( $doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id) + 1;

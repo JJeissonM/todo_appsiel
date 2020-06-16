@@ -734,7 +734,8 @@ class ModeloController extends Controller
         //} 
 
         //Personalización de la lista de campos
-        for ($i = 0; $i < $cantidad_campos; $i++) {
+        for ($i = 0; $i < $cantidad_campos; $i++)
+        {
 
             if ($lista_campos[$i]['name'] == 'core_tipo_doc_app_id') {
                 $lista_campos[$i]['opciones'] = $opciones;
@@ -767,8 +768,8 @@ class ModeloController extends Controller
                 }
             }
 
-            if ($lista_campos[$i]['name'] == 'teso_medio_recaudo_id') {
-
+            if ($lista_campos[$i]['name'] == 'teso_medio_recaudo_id')
+            {
                 $registros = TesoMedioRecaudo::all();
                 $vec_m[''] = '';
                 foreach ($registros as $fila) {
@@ -776,6 +777,13 @@ class ModeloController extends Controller
                 }
 
                 $lista_campos[$i]['opciones'] = $vec_m;
+                
+
+                if ($accion == 'edit')
+                {
+                    $medio_recaudo = TesoMedioRecaudo::find( $lista_campos[$i]['value'] );
+                    $lista_campos[$i]['value'] = $lista_campos[$i]['value'] . '-' . $medio_recaudo->comportamiento;
+                }
             }
 
             unset($vec_m);

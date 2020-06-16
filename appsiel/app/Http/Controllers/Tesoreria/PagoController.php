@@ -26,6 +26,7 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 // Modelos
 use App\Sistema\Modelo;
 use App\Core\Tercero;
+use App\Core\TipoDocApp;
 
 use App\Matriculas\Grado;
 use App\Matriculas\Estudiante;
@@ -51,6 +52,8 @@ use App\Contabilidad\ContabCuenta;
 class PagoController extends TransaccionController
 {
     protected $datos = [];
+
+    protected $duplicado = false;
 
     /**
      * Display a listing of the resource.
@@ -79,7 +82,7 @@ class PagoController extends TransaccionController
         $lista_campos = ModeloController::personalizar_campos($id_transaccion,$this->transaccion,$lista_campos,$cantidad_campos,'create');
 
         $form_create = [
-                      'url' => $this->modelo->url_form_create,
+                      'url' => json_decode( app( $this->modelo->name_space )->urls_acciones )->store,
                       'campos' => $lista_campos
                   ];
 
@@ -89,23 +92,22 @@ class PagoController extends TransaccionController
               [ 'url' => 'NO', 'etiqueta' => 'Crear: '.$this->transaccion->descripcion]
           ];
 
+        $archivo_js = app($this->modelo->name_space)->archivo_js;
 
-
-        $motivos = [''];//PagoController::get_motivos($id_transaccion);
+        /*
         $medios_recaudo = PagoController::get_medios_recaudo();
         $cajas = PagoController::get_cajas();
         $cuentas_bancarias = PagoController::get_cuentas_bancarias();
+        'medios_recaudo','cajas','cuentas_bancarias',
+        */
+        
+        $lineas_tabla_ingreso_registros = '';
 
-        /*$registros = Tercero::all();
-        //$vec_m[''] = ''; // si quito esto queda seleccionado el primer registro por defecto, entonces no tengo que hacer validaciones para evitar que este campo se vaya vacío 
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id]=$fila->apellido1.' '.$fila->apellido2.' '.$fila->nombre1.' '.$fila->razon_social; 
-        }*/        
-        $terceros = [''];//$vec_m;
+        $registro = null;
+        $linea_num = 0;
+        $mensaje_duplicado = '';
 
-
-
-        return view('tesoreria.pagos.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros' ) );
+        return view('tesoreria.pagos.create', compact( 'form_create','miga_pan', 'registro', 'archivo_js', 'lineas_tabla_ingreso_registros', 'linea_num', 'mensaje_duplicado' ) );
     }
 
     /**
@@ -120,18 +122,30 @@ class PagoController extends TransaccionController
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
 
-        // 1ro. se guardan los registros asociados al encabezado del documento
-        // Se recorre la tabla enviada en el request, descartando las DOS últimas filas
+        $vec = $this->almacenar_lineas_registros( $request, $tabla_registros_documento, $doc_encabezado );
+
+        // Un solo movimiento contable de (CR) CAJA O BANCO
+        // MOVIMIENTO CREDITO (CAJA/BANCO)
+        $this->contabilizar_registro( $vec[0], '', 0, $vec[1]);
+
+        // se llama la vista de PagoController@show
+        return redirect( 'tesoreria/pagos/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+    }
+
+
+    public function almacenar_lineas_registros( $request, $tabla_registros_documento, $doc_encabezado )
+    {
         $total_documento = 0;
+
+        // Se recorre la tabla enviada en el request, descartando las TRES últimas filas
         $cant = count($tabla_registros_documento)-3;
-        for ($i=1; $i < $cant; $i++) 
+
+        for ($i=0; $i < $cant; $i++) 
         {
             // Se obtienen las id de los campos que se van a almacenar. Los campos vienen separados por "-" en cada columna de la tabla 
             $vec_1 = explode("-", $tabla_registros_documento[$i]->teso_motivo_id);
             $teso_motivo_id = $vec_1[0];
             $motivo = TesoMotivo::find( $teso_motivo_id );
-              //
-
 
             $vec_2 = explode("-", $tabla_registros_documento[$i]->linea_tercero_id);
             $core_tercero_id = $vec_2[0];
@@ -215,7 +229,7 @@ class PagoController extends TransaccionController
                 $this->datos['estado'] = 'Pendiente';
                 CxpMovimiento::create( $this->datos );
             }
-
+ 
             // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
             if ( $motivo->teso_tipo_motivo == 'Prestamo financiero' )
             {
@@ -241,20 +255,9 @@ class PagoController extends TransaccionController
 
             $total_documento += $valor;
 
-          } // FIN FOR CADA LINEA DEL PAGO
+        } // FIN FOR - CADA LINEA DEL PAGO
 
-
-        // Un solo movimiento contable de (CR) CAJA O BANCO
-        // MOVIMIENTO CREDITO (CAJA/BANCO)
-        $cuenta = ContabCuenta::find($contab_cuenta_id);
-
-        $valor_debito = 0;
-        $valor_credito = $total_documento;
-
-        $this->contabilizar_registro( $cuenta->id, $detalle_operacion, $valor_debito, $valor_credito);
-
-        // se llama la vista de PagoController@show
-        return redirect( 'tesoreria/pagos/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+        return [ $contab_cuenta_id, $total_documento];
     }
 
 
@@ -274,8 +277,6 @@ class PagoController extends TransaccionController
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
 
         $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
-
-        //dd( $doc_registros );
 
         $empresa = $this->empresa;
 
@@ -301,30 +302,116 @@ class PagoController extends TransaccionController
      */
     public function edit($id)
     {
-        //
+
+        $this->set_variables_globales();
+
+        // Se obtiene el registro a modificar del modelo
+        $registro = app($this->modelo->name_space)->find($id);
+
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro,'edit');
+
+        $cantidad_campos = count( $lista_campos );
+        $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos,'edit');
+
+        $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
+        $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
+
+        if ( !$this->duplicado )
+        {
+            if( !$this->verificar_permitir_editar( $doc_registros ) )
+            {
+               return redirect( 'tesoreria/pagos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los documentos que tienen MOTIVOS que afectan movimientos de CxP o CxC no pueden ser modificados.');
+            }
+        }
+
+        $tercero_encabezado_numero_identificacion = $doc_encabezado->numero_identificacion;
+
+        $lineas_tabla_ingreso_registros = View::make( 'tesoreria.pagos.lineas_tabla_ingreso_registros', compact('doc_registros', 'tercero_encabezado_numero_identificacion') )->render();
+
+        $linea_num = count( $doc_registros->toArray() );
+
+        $form_create = [
+                        'url' => str_replace( 'id_fila', $registro->id, json_decode( app( $this->modelo->name_space )->urls_acciones )->update ),
+                        'campos' => $lista_campos
+                    ];
+
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Modificar: '.$doc_encabezado->documento_transaccion_prefijo_consecutivo );
+
+        $archivo_js = app($this->modelo->name_space)->archivo_js;
+
+        $mensaje_duplicado = '';
+        if ( $this->duplicado )
+        {
+            $mensaje_duplicado = '<div class="alert alert-success">
+                                      <strong> ¡Documento duplicado correctamente! </strong>
+                                    </div>
+
+                                    <div class="alert alert-warning">
+                                      <strong> ¡Nota! </strong> Debe guardar el documento para agregar los registros al movimiento de tesorería.
+                                    </div>';
+            $this->duplicado = false;
+        }
+        
+        return view( 'tesoreria.pagos.create', compact( 'form_create','miga_pan', 'registro', 'archivo_js', 'lineas_tabla_ingreso_registros', 'linea_num', 'mensaje_duplicado' ) );
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
+
+    public function verificar_permitir_editar( $doc_registros )
+    {   
+        $permitir_editar = true;
+
+        foreach ($doc_registros as $linea)
+        {
+            $motivo = TesoMotivo::find( $linea->motivo_id );
+
+            if ( $motivo->teso_tipo_motivo == 'Anticipo proveedor' || $motivo->teso_tipo_motivo == 'Prestamo financiero' ||  $motivo->teso_tipo_motivo == 'Pago anticipado' )
+            {
+                $permitir_editar = false;
+            }
+
+        }
+
+        return $permitir_editar;
+    }
+
+
+
     public function update(Request $request, $id)
     {
-       //
-    }
+       $modelo = Modelo::find( $request->url_id_modelo );
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $doc_encabezado = app( $modelo->name_space )->find($id);
+
+        // Borrar registros viejos asociados al documento
+        TesoDocRegistro::where( 'teso_encabezado_id', $id )->delete();
+
+        TesoMovimiento::where( 'core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id )
+                        ->where( 'core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id )
+                        ->where( 'consecutivo', $doc_encabezado->consecutivo )
+                        ->delete();
+
+        ContabMovimiento::where( 'core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id )
+                        ->where( 'core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id )
+                        ->where( 'consecutivo', $doc_encabezado->consecutivo )
+                        ->delete();
+
+
+        $request['core_tipo_transaccion_id'] = $doc_encabezado->core_tipo_transaccion_id;
+        $request['core_tipo_doc_app_id'] = $doc_encabezado->core_tipo_doc_app_id;
+        $request['consecutivo'] = $doc_encabezado->consecutivo;
+
+        // Contabilizar nuevos registros
+        $tabla_registros_documento = json_decode($request->tabla_registros_documento);
+        
+        $vec = $this->almacenar_lineas_registros( $request, $tabla_registros_documento, $doc_encabezado );
+
+        $this->contabilizar_registro( $vec[0], '', 0, $vec[1]);
+
+        $doc_encabezado->fill( $request->all() );
+        $doc_encabezado->save();
+
+        return redirect( 'tesoreria/pagos/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
 
@@ -338,8 +425,6 @@ class PagoController extends TransaccionController
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
 
         $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
-
-        //dd( $doc_pagados );
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
@@ -477,5 +562,34 @@ class PagoController extends TransaccionController
         $documento->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
 
       return redirect( 'tesoreria/pagos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Documento de pago anulado correctamente.');
+    }
+
+    public function duplicar_documento( $doc_encabezado_id )
+    {
+        $doc_encabezado = TesoDocEncabezado::find( $doc_encabezado_id );
+
+        $registros_doc_encabezado = TesoDocRegistro::where( 'teso_encabezado_id', $doc_encabezado->id )->get();
+
+        // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
+        $consecutivo = TipoDocApp::get_consecutivo_actual( $doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id) + 1;
+
+        // Se incementa el consecutivo para ese tipo de documento y la empresa
+        TipoDocApp::aumentar_consecutivo($doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
+
+        $nuevo_doc_encabezado = $doc_encabezado->replicate();
+        $nuevo_doc_encabezado->consecutivo = $consecutivo;
+        $nuevo_doc_encabezado->save();
+
+        foreach ($registros_doc_encabezado as $linea )
+        {
+            $nueva_linea = $linea->toArray();
+            $nueva_linea['teso_encabezado_id'] = $nuevo_doc_encabezado->id;
+
+            $nueva_linea_registro = TesoDocRegistro::create( $nueva_linea );
+        }
+
+        $this->duplicado = true;
+
+        return $this->edit( $nuevo_doc_encabezado->id );
     }
 }
