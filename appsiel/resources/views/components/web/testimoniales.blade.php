@@ -1,7 +1,7 @@
 <style>
     #testimonial-area {
         padding: 115px 0 0;
-        background-image: url({{asset('img/lading-page/'.$testimonial->imagen_fondo)}});
+        background-image: url({{asset($testimonial->imagen_fondo)}});
         background-repeat: no-repeat;
         background-position: center;
     }
