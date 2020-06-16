@@ -1,7 +1,7 @@
 <style>
     #testimonial-area {
         padding: 115px 0 0;
-        background-image: url({{asset('img/lading-page/map.png')}});
+        background-image: url({{asset($testimonial->imagen_fondo)}});
         background-repeat: no-repeat;
         background-position: center;
     }
@@ -397,7 +397,7 @@
             <!--start section heading-->
             <div class="col-md-8 offset-md-2">
                 <div class="section-heading text-center">
-                    <h5>Trusted by 50,000+ User</h5>
+                    <h5></h5>
                     <h2>{{$testimonial->titulo}}</h2>
                     <p>{{$testimonial->descripcion}}</p>
                 </div>
