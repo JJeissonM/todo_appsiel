@@ -161,11 +161,17 @@ class AcademicoDocenteController extends Controller
         // Se le asigna a cada variable url, su valor en el modelo correspondiente
         $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
 
+        $urls_acciones = json_decode( app( $modelo->name_space )->urls_acciones );
+
         $url_crear = '';
         
         $url_edit = 'academico_docente/modificar_logros/'.$curso_id.'/'.$asignatura_id.'/id_fila'.$variables_url;
 
-        $url_eliminar = 'academico_docente/eliminar_logros/'.$curso_id.'/'.$asignatura_id.'/id_fila'.$variables_url;
+        $url_eliminar = '';
+        if( $modelo->id == 70 )
+        {
+            $url_eliminar = 'academico_docente/eliminar_logros/'.$curso_id.'/'.$asignatura_id.'/id_fila'.$variables_url;
+        }
         
 
         return view('layouts.index', compact('registros','miga_pan','url_crear','titulo_tabla','encabezado_tabla','url_edit','url_print','url_ver','url_estado','url_eliminar'));
@@ -176,19 +182,22 @@ class AcademicoDocenteController extends Controller
     public function modificar_logros( $curso_id, $asignatura_id, $logro_id )
     {
         
-        $registro = Logro::find($logro_id);
+        $registro = Logro::find( $logro_id );
 
         // Se obtiene el modelo según la variable modelo_id  de la url
         $modelo = Modelo::find( Input::get('id_modelo') );
 
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','edit');
 
+        $url_update = json_decode( app( $modelo->name_space )->urls_acciones )->update;
+
+        $url_action = str_replace('id_fila', $logro_id, $url_update);
+
         $form_create = [
-                        'url' => json_decode( app( $modelo->name_space )->urls_acciones )->update,
+                        'url' => $url_action,
                         'campos' => $lista_campos
                     ];
 
-        $url_action = $modelo->url_form_create.'/'.$logro_id;
 
         // NO se usa el ModeloController para cambiar la $miga_pan
         $miga_pan = [

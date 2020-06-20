@@ -503,12 +503,12 @@ class ModeloController extends Controller
         
         $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
 
+        $url_action = str_replace('id_fila', $registro->id, $acciones->update);
+        
         $form_create = [
-            'url' => str_replace('id_fila', $registro->id, $acciones->update),
+            'url' => $url_action,
             'campos' => $lista_campos
         ];
-
-        $url_action = str_replace('id_fila', $registro->id, $acciones->update);
 
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, $registro->descripcion);
 
