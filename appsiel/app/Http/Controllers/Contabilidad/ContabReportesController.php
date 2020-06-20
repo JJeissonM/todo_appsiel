@@ -1181,12 +1181,8 @@ class ContabReportesController extends Controller
                         ->get();
         
 
+        // Se filtran los registros del movimiento ontable que no están en el movimiento de tesorería
         $registros = $movimiento->filter(function ($value, $key) {
-            /*$cajas = array_keys( \App\Tesoreria\TesoCaja::opciones_campo_select() );
-            array_shift( $cajas );
-
-            $bancos = array_keys( \App\Tesoreria\TesoCuentaBancaria::opciones_campo_select() );
-            array_shift( $bancos );*/
 
             return \App\Tesoreria\TesoMovimiento::where(
                                                         [ 

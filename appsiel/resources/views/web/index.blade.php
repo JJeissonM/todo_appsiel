@@ -207,6 +207,7 @@
             color: #ffffff !important;
         }
 
+        /*
         .mu-navbar-nav>li>a {
             color: white;
         }
@@ -216,6 +217,7 @@
             color: #ffffff !important;
             border-radius: none !important;
         }
+        */
 
         .carousel-content {
             position: relative;

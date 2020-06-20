@@ -215,7 +215,11 @@ class LogroController extends Controller
 	
     public function consultar($asignatura)
     {
-        $logros=DB::table('logros')->where('id_asignatura', $asignatura)->where('estado','Activo')->get();
+        $logros = Logro::where('asignatura_id', $asignatura)
+                        ->where('estado','Activo')
+                        ->where('escala_valoracion_id',0)
+                        ->get();
+
 		return view('calificaciones.logros.consultar',['logros'=>$logros,'id_asignatura'=>$asignatura]);
     }
 	

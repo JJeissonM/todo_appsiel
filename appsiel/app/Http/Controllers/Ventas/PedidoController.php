@@ -97,7 +97,7 @@ class PedidoController extends TransaccionController
     }
 
     /*
-        Crea un documento completo: encabezados, registros, movimiento y contabilización
+        Crea un documento completo: encabezados y registros
         Devuelve en ID del documento creado
     */
     public function crear_documento(Request $request, array $lineas_registros, $modelo_id)

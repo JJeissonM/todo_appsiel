@@ -32,11 +32,9 @@
 
     #navegacion {
         position: fixed;
-        z-index: 999;
+        z-index: 99999;
         /*top: 50px;*/
         width: 100%;
-        background-color: #FFF;
-        opacity: 0.8;
     }
 
     header {

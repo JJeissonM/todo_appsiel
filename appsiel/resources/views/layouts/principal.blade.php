@@ -493,6 +493,12 @@
 	@yield('scripts')
 	@yield('scripts2')
 	@yield('scripts3')
+
+	<script src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+	    window.google.charts.load('46', {packages: ['corechart']});
+	</script>
+
 </body>
 
 </html>

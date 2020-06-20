@@ -60,13 +60,15 @@ class TesoDocEncabezadoTraslado extends Model
 
         $registros = json_decode($datos['lineas_registros']);
         $total = 0;
-        foreach ($registros as $item) {
+        foreach ($registros as $item)
+        {
             $motivo = explode('-', $item->teso_motivo_id);
             $aux = TesoMotivo::where([['teso_tipo_motivo', 'Traslado'], ['movimiento', $motivo[0]]])->first();
             $medio_recaudo = explode('-', $item->teso_medio_recaudo_id);
             $caja = explode('-', $item->teso_caja_id);
             $cuenta = explode('-', $item->teso_cuenta_bancaria_id);
             $valor = explode('$', $item->valor);
+            
             $teso_registro = new TesoDocRegistro();
             $teso_registro->teso_encabezado_id = $registro->id;
             $teso_registro->teso_motivo_id = $aux->id;
@@ -107,10 +109,12 @@ class TesoDocEncabezadoTraslado extends Model
             /*
                 **  Determinar la cuenta contable DB (CAJA O BANCOS)
             */
-            if ($teso_registro->teso_caja_id != 0) {
+            if ($teso_registro->teso_caja_id != 0) 
+            {
                 $sql_contab_cuenta_id = TesoCaja::find($teso_registro->teso_caja_id);
                 $contab_cuenta_id = $sql_contab_cuenta_id->contab_cuenta_id;
             }
+
             if ( $teso_registro->teso_cuenta_bancaria_id != 0) {
                 $sql_contab_cuenta_id = TesoCuentaBancaria::find( $teso_registro->teso_cuenta_bancaria_id);
                 $contab_cuenta_id = $sql_contab_cuenta_id->contab_cuenta_id;
@@ -136,11 +140,15 @@ class TesoDocEncabezadoTraslado extends Model
             $this->contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
 
         }
+        
         $registro->valor_total = $total / 2;
         $registro->estado = 'Activo';
         $registro->save();
+
         return redirect('web' . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro CREADO correctamente.');
     }
+
+
 
     public function contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
     {
