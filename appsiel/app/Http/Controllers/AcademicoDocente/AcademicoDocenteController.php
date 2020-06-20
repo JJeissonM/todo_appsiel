@@ -140,15 +140,17 @@ class AcademicoDocenteController extends Controller
     public function revisar_logros($curso_id, $asignatura_id)
     {
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+
+        $modelo = Modelo::find( Input::get('id_modelo') );
         
-        $registros = Logro::get_logros( $colegio->id, $curso_id, $asignatura_id );
+        $registros = app( $modelo->name_space )->get_logros( $colegio->id, $curso_id, $asignatura_id );
 
         $miga_pan = [
-                        ['url'=>'academico_docente?id='.Input::get('id'),'etiqueta'=>'Académico docente'],
-                        ['url'=>'NO','etiqueta'=>'Logros']
+                        ['url' => 'academico_docente?id='.Input::get('id'), 'etiqueta' => 'Académico docente'],
+                        ['url' => 'NO', 'etiqueta' => $modelo->descripcion ]
                     ];
 
-        $modelo = Modelo::find( 70 );
+        $modelo = Modelo::find( Input::get('id_modelo') );
 
         $encabezado_tabla = app($modelo->name_space)->encabezado_tabla;
         $titulo_tabla = '';
@@ -160,13 +162,6 @@ class AcademicoDocenteController extends Controller
         $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
 
         $url_crear = '';
-        /*if ($modelo->url_eliminar!='') {
-            $url_eliminar = $modelo->url_eliminar.$variables_url;
-        }
-        if ($modelo->url_edit!='') {
-            $url_edit = $modelo->url_edit.$variables_url;
-        }
-        */
         
         $url_edit = 'academico_docente/modificar_logros/'.$curso_id.'/'.$asignatura_id.'/id_fila'.$variables_url;
 
@@ -184,7 +179,7 @@ class AcademicoDocenteController extends Controller
         $registro = Logro::find($logro_id);
 
         // Se obtiene el modelo según la variable modelo_id  de la url
-        $modelo = Modelo::find( 70 );
+        $modelo = Modelo::find( Input::get('id_modelo') );
 
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','edit');
 
@@ -195,12 +190,11 @@ class AcademicoDocenteController extends Controller
 
         $url_action = $modelo->url_form_create.'/'.$logro_id;
 
+        // NO se usa el ModeloController para cambiar la $miga_pan
         $miga_pan = [
                         ['url'=>'academico_docente?id='.Input::get('id'),'etiqueta'=>'Académico docente'],
                         ['url'=>'NO','etiqueta'=>'Modificar logros']
                     ];
-
-        //return view('academico_docente.ingresar_logros',compact('form_create','miga_pan'));
 
         return view('layouts.edit',compact('form_create','miga_pan','registro','url_action'));
     }
@@ -235,7 +229,6 @@ class AcademicoDocenteController extends Controller
     //Selección de datos para calificar
     public function calificar1($curso_id, $asignatura_id)
     {
-        
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
 
         $periodos = Periodo::opciones_campo_select();
@@ -267,6 +260,8 @@ class AcademicoDocenteController extends Controller
 
         return view('layouts.index', compact('registros','encabezado_tabla','miga_pan'));
     }
+
+
 
     public function revisar_estudiantes($curso_id,$id_asignatura)
     {

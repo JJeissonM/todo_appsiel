@@ -31,6 +31,8 @@ class Logro extends Model
                         "show":null
                     }';
 
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","store":"calificaciones_logros","update":"calificaciones_logros/id_fila","cambiar_estado":"a_i/id_fila","eliminar":"calificaciones_eliminar_logro/id_fila"}';
+
     public static function consultar_registros()
     {
         $select_raw = 'CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")") AS campo6';
@@ -82,6 +84,7 @@ class Logro extends Model
         $select_raw = 'CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")") AS campo6';
 
         $registros = Logro::where($array_wheres)
+                        ->where('sga_logros.escala_valoracion_id','<>',0)
                         ->leftJoin('sga_periodos','sga_periodos.id','=','sga_logros.periodo_id')
                         ->leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_periodos.periodo_lectivo_id')
                         ->leftJoin('sga_cursos','sga_cursos.id','=','sga_logros.curso_id')

@@ -17,7 +17,7 @@ class LogroAdicional extends Model
     
     protected $fillable = ['id_colegio','codigo','asignatura_id', 'descripcion','estado','ocupado','escala_valoracion_id','curso_id','periodo_id'];
 
-    public $encabezado_tabla = ['Cód.','Año lectivo','Periodo','Curso','Asignatura','Escala de valoración','Descripción','Estado','Acción'];
+    public $encabezado_tabla = ['Cód.','Año lectivo','Periodo','Curso','Asignatura','Descripción','Estado','Acción'];
 
 
     // El archivo js debe estar en la carpeta public
@@ -49,10 +49,46 @@ class LogroAdicional extends Model
                                 'sga_periodos.descripcion AS campo3',
                                 'sga_cursos.descripcion AS campo4',
                                 'sga_asignaturas.descripcion AS campo5',
-                                DB::raw( 'CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")") AS campo6' ),
-                                'sga_logros.descripcion AS campo7',
-                                'sga_logros.estado AS campo8',
-                                'sga_logros.id AS campo9')
+                                'sga_logros.descripcion AS campo6',
+                                'sga_logros.estado AS campo7',
+                                'sga_logros.id AS campo8')
+                        ->get()
+                        ->toArray();
+    }
+
+    public static function get_logros($id_colegio, $curso_id, $asignatura_id, $periodo_id = null)
+    {
+
+        $array_wheres = ['sga_logros.id_colegio' => $id_colegio];
+
+        if ( $curso_id != null ) {
+            $array_wheres = array_merge($array_wheres, ['sga_logros.curso_id' => $curso_id]);
+        }
+
+        if ( $asignatura_id != null ) {
+            $array_wheres = array_merge( $array_wheres, ['sga_logros.asignatura_id' => $asignatura_id] );
+        }
+
+        if ( $periodo_id != null ) {
+            $array_wheres = array_merge( $array_wheres, ['sga_logros.periodo_id' => $periodo_id] );
+        }
+
+        return Logro::where($array_wheres)
+                        ->where('sga_logros.escala_valoracion_id', 0)
+                        ->leftJoin('sga_periodos','sga_periodos.id','=','sga_logros.periodo_id')
+                        ->leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_periodos.periodo_lectivo_id')
+                        ->leftJoin('sga_cursos','sga_cursos.id','=','sga_logros.curso_id')
+                        ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_logros.asignatura_id')
+                        ->leftJoin('sga_escala_valoracion','sga_escala_valoracion.id','=','sga_logros.escala_valoracion_id')
+                        ->select('sga_logros.codigo AS campo1',
+                                'sga_periodos_lectivos.descripcion AS campo2',
+                                'sga_periodos.descripcion AS campo3',
+                                'sga_cursos.descripcion AS campo4',
+                                'sga_asignaturas.descripcion AS campo5',
+                                'sga_logros.descripcion AS campo6',
+                                'sga_logros.estado AS campo7',
+                                'sga_logros.id AS campo8')
+                        ->orderBy('sga_logros.codigo','DESC')
                         ->get()
                         ->toArray();
     }
