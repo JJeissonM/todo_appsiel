@@ -44,6 +44,7 @@ class Logro extends Model
                         ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_logros.asignatura_id')
                         ->leftJoin('sga_escala_valoracion','sga_escala_valoracion.id','=','sga_logros.escala_valoracion_id')
                         ->where('sga_periodos.periodo_lectivo_id',$periodo_lectivo_id)
+                        ->where('sga_logros.escala_valoracion_id','<>',0)
                         ->select('sga_logros.codigo AS campo1',
                                 'sga_periodos_lectivos.descripcion AS campo2',
                                 'sga_periodos.descripcion AS campo3',

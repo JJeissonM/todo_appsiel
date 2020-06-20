@@ -124,7 +124,7 @@ class AcademicoDocenteController extends Controller
         $archivo_js = app($modelo->name_space)->archivo_js;
 
         $form_create = [
-                        'url' => $modelo->url_form_create,
+                        'url' => json_decode( app( $modelo->name_space )->urls_acciones )->store,
                         'campos' => $lista_campos
                     ];
 
@@ -189,7 +189,7 @@ class AcademicoDocenteController extends Controller
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','edit');
 
         $form_create = [
-                        'url' => $modelo->url_form_create,
+                        'url' => json_decode( app( $modelo->name_space )->urls_acciones )->update,
                         'campos' => $lista_campos
                     ];
 
