@@ -6,6 +6,7 @@ use App\Contratotransporte\Conductor;
 use App\Contratotransporte\Contratante;
 use App\Contratotransporte\Contrato;
 use App\Contratotransporte\Contratogrupou;
+use App\Contratotransporte\Documentosconductor;
 use App\Contratotransporte\Planillac;
 use App\Contratotransporte\Planillaconductor;
 use App\Contratotransporte\Plantilla;
@@ -28,7 +29,32 @@ class ContratoTransporteController extends Controller
         $miga_pan = [
             ['url' => 'NO', 'etiqueta' => 'Contratos Transporte']
         ];
-        return view('contratos_transporte.index', compact('miga_pan'));
+        $hoy = getdate();
+        $mes_actual = $hoy['mon'];
+        $cont = Contrato::all();
+        $contratos = null;
+        if (count($cont) > 0) {
+            foreach ($cont as $c) {
+                if ((int) explode('-', $c->fecha_inicio)[1] == $mes_actual) {
+                    $contratos[] = $c;
+                }
+            }
+        }
+        if ($mes_actual < 10) {
+            $mes_actual = "0" . $mes_actual;
+        }
+        $mes_actual = $this->mes()[$mes_actual];
+        //valido documentos vencidos
+        $docs = Documentosconductor::all();
+        $documentos = null;
+        if (count($docs) > 0) {
+            foreach ($docs as $d) {
+                if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                    $documentos[] = $d;
+                }
+            }
+        }
+        return view('contratos_transporte.index', compact('miga_pan', 'contratos', 'mes_actual', 'documentos'));
     }
 
     //crear contrato
@@ -78,6 +104,12 @@ class ContratoTransporteController extends Controller
 
     public function store(Request $request)
     {
+        $hoy = getdate();
+        $mes_actual = $hoy['mon'];
+        $mes_fecha_fin = explode('-', $request->fecha_fin)[1];
+        if ((int) $mes_fecha_fin > (int) $mes_actual) {
+            return redirect("web/" . $request->variables_url)->with('mensaje_error', 'El contrato no puede tener fecha de terminación del siguiente mes');
+        }
         $result = $this->storeContract($request);
         if ($result) {
             return redirect("web" . $request->variables_url)->with('flash_message', 'Almacenado con exito');
@@ -256,6 +288,22 @@ class ContratoTransporteController extends Controller
                                 if ($c->estado == 'Activo') {
                                     $genera = "SI";
                                 }
+                                //si tiene licencia vencida o no tiene no puede generar
+                                $docs = $c->documentosconductors;
+                                if (count($docs) > 0) {
+                                    foreach ($docs as $d) {
+                                        if ($d->licencia == 'SI') {
+                                            //tiene licencia, se revisa si esta vencida
+                                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                                                $genera = 'NO';
+                                            } else {
+                                                $genera = 'SI';
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    $genera = 'NO';
+                                }
                                 $contratos[] = [
                                     'identificacion' => $t->numero_identificacion,
                                     'persona' => $t->descripcion,
@@ -408,7 +456,21 @@ class ContratoTransporteController extends Controller
         $conductores = null;
         if (count($cond) > 0) {
             foreach ($cond as $c) {
-                $conductores[$c->id] = $c->tercero->descripcion;
+                $licencia = "[XX] SIN LICENCIA";
+                $docs = $c->documentosconductors;
+                if (count($docs) > 0) {
+                    foreach ($docs as $d) {
+                        if ($d->licencia == 'SI') {
+                            //tiene licencia, se revisa si esta vencida
+                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                                $licencia = "[XX] LICENCIA VENCIDA";
+                            } else {
+                                $licencia = '[OK] LICENCIA VIGENTE';
+                            }
+                        }
+                    }
+                }
+                $conductores[$c->id] =  $licencia . " - " . $c->tercero->descripcion;
             }
         }
         $emp = Empresa::find(1);
@@ -530,8 +592,9 @@ class ContratoTransporteController extends Controller
                 }
             }
         }
-
-        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'conductores', 'v', 'c', 'fi', 'ff', 'to'))->render();
+        $empresa = null;
+        $empresa = Empresa::find(1);
+        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'conductores', 'v', 'c', 'fi', 'ff', 'to', 'empresa'))->render();
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');

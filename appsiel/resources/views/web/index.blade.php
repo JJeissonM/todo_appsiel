@@ -10,12 +10,11 @@
 
     <title> {{ $pagina->descripcion }} </title>
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/icon" href="{{asset( $pagina->favicon )}}"/>
+    <link rel="shortcut icon" type="image/icon" href="{{asset( $pagina->favicon )}}" />
     <!-- Font Awesome -->
     <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <!-- Slick slider -->
     <link href="{{asset('assets/css/slick.css')}}" rel="stylesheet">
     <!-- Gallery Lightbox -->
@@ -38,33 +37,35 @@
     <link href="{{asset('css/prettyPhoto.css')}}" rel="stylesheet">
     <link href="{{asset('css/main.css')}}" rel="stylesheet">
     <link href="{{asset('css/responsive.css')}}" rel="stylesheet">
+
+
     <!--[if lt IE 9]>
     <script src="{{asset('js/html5shiv.js')}}"></script>
     <script src="{{asset('js/respond.min.js')}}"></script>
     <![endif]-->
 
-    <link rel="apple-touch-icon-precomposed" sizes="144x144"
-          href="{{asset('images/ico/apple-touch-icon-144-precomposed.png')}}">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114"
-          href="{{asset('images/ico/apple-touch-icon-114-precomposed.png')}}">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72"
-          href="{{asset('images/ico/apple-touch-icon-72-precomposed.png')}}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{asset('images/ico/apple-touch-icon-144-precomposed.png')}}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{asset('images/ico/apple-touch-icon-114-precomposed.png')}}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{asset('images/ico/apple-touch-icon-72-precomposed.png')}}">
     <link rel="apple-touch-icon-precomposed" href="{{asset('images/ico/apple-touch-icon-57-precomposed.png')}}">
 
     @if($pagina->codigo_google_analitics != '')
-        <!-- Global site tag (gtag.js) - Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{$pagina->codigo_google_analitics}}"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '{{$pagina->codigo_google_analitics}}');
-        </script>
-      @endif
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{$pagina->codigo_google_analitics}}"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', '{{$pagina->codigo_google_analitics}}');
+    </script>
+    @endif
 
 
     @foreach($links as $key => $value)
-        {!! $value !!}
+    {!! $value !!}
     @endforeach
 
     <style type="text/css">
@@ -89,12 +90,12 @@
             border-radius: 4px;
         }
 
-        .pagination > li {
+        .pagination>li {
             display: inline;
         }
 
-        .pagination > li > a,
-        .pagination > li > span {
+        .pagination>li>a,
+        .pagination>li>span {
             position: relative;
             float: left;
             padding: 6px 12px;
@@ -106,34 +107,34 @@
             border: 1px solid #ddd;
         }
 
-        .pagination > li:first-child > a,
-        .pagination > li:first-child > span {
+        .pagination>li:first-child>a,
+        .pagination>li:first-child>span {
             margin-left: 0;
             border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
         }
 
-        .pagination > li:last-child > a,
-        .pagination > li:last-child > span {
+        .pagination>li:last-child>a,
+        .pagination>li:last-child>span {
             border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
         }
 
-        .pagination > li > a:hover,
-        .pagination > li > span:hover,
-        .pagination > li > a:focus,
-        .pagination > li > span:focus {
+        .pagination>li>a:hover,
+        .pagination>li>span:hover,
+        .pagination>li>a:focus,
+        .pagination>li>span:focus {
             color: #2a6496;
             background-color: #eee;
             border-color: #ddd;
         }
 
-        .pagination > .active > a,
-        .pagination > .active > span,
-        .pagination > .active > a:hover,
-        .pagination > .active > span:hover,
-        .pagination > .active > a:focus,
-        .pagination > .active > span:focus {
+        .pagination>.active>a,
+        .pagination>.active>span,
+        .pagination>.active>a:hover,
+        .pagination>.active>span:hover,
+        .pagination>.active>a:focus,
+        .pagination>.active>span:focus {
             z-index: 2;
             color: #fff;
             cursor: default;
@@ -141,12 +142,12 @@
             border-color: #428bca;
         }
 
-        .pagination > .disabled > span,
-        .pagination > .disabled > span:hover,
-        .pagination > .disabled > span:focus,
-        .pagination > .disabled > a,
-        .pagination > .disabled > a:hover,
-        .pagination > .disabled > a:focus {
+        .pagination>.disabled>span,
+        .pagination>.disabled>span:hover,
+        .pagination>.disabled>span:focus,
+        .pagination>.disabled>a,
+        .pagination>.disabled>a:hover,
+        .pagination>.disabled>a:focus {
             color: #999;
             cursor: not-allowed;
             background-color: #fff;
@@ -154,40 +155,44 @@
         }
 
         .section-header .section-title:after {
-            background-color: {{$configuracion->color_primario}}  !important;
+            background-color: {{ $configuracion->color_primario }} !important;
         }
 
         .btn.btn-primary {
-            background: {{$configuracion->color_primario}}  !important;
-            border-color: {{$configuracion->color_terciario}}  !important;
+            background: {{ $configuracion->color_primario }} !important;
+
+            border-color: {{ $configuracion->color_terciario }} !important;
         }
 
-        .media.service-box .pull-left > i {
-            color: {{$configuracion->color_primario}}  !important;
+        .media.service-box .pull-left>i {
+            color: {{ $configuracion->color_primario }} !important;
         }
 
-        .media.service-box .pull-left > i:after {
-            background-color: {{$configuracion->color_primario}}  !important;
+        .media.service-box .pull-left>i:after {
+            background-color: {{ $configuracion->color_primario }} !important;
         }
 
-        .pagination > li > a, .pagination > li > span {
-            color: {{$configuracion->color_primario}}  !important;
+        .pagination>li>a,
+        .pagination>li>span {
+            color: {{ $configuracion->color_primario }} !important;
         }
 
-        .pagination > .active > a,
-        .pagination > .active > span,
-        .pagination > .active > a:hover,
-        .pagination > .active > span:hover,
-        .pagination > .active > a:focus,
-        .pagination > .active > span:focus {
-            color: {{$configuracion->color_segundario}}  !important;
+        .pagination>.active>a,
+        .pagination>.active>span,
+        .pagination>.active>a:hover,
+        .pagination>.active>span:hover,
+        .pagination>.active>a:focus,
+        .pagination>.active>span:focus {
+            color: {{ $configuracion->color_segundario}} !important;
             cursor: default;
-            background-color: {{$configuracion->color_primario}};
-            border-color: {{$configuracion->color_primario}};
+
+            background-color: {{ $configuracion->color_primario}};
+
+            border-color: {{ $configuracion->color_primario }};
         }
 
         .column-title:after {
-            border-bottom: 1px solid {{$configuracion->color_terciario}}  !important;
+            border-bottom: 1px solid {{ $configuracion->color_terciario}} !important;
         }
 
         #formulario_pqr .control-label {
@@ -197,137 +202,121 @@
             margin-bottom: 5px !important;
         }
 
+        .dropdown-item:hover {
+            background-color: #45aed6 !important;
+            color: #ffffff !important;
+        }
 
-            #navegacion {
-                position: fixed;
-                z-index: 999;
-                padding-top: 50px;
-                width: 100%;
-            }
-            
-            #navegacion > header {
-                color: #ffffff !important;
-                background: rgba(0, 0, 0, 0.54) !important;
-            }
+        /*
+        .mu-navbar-nav>li>a {
+            color: white;
+        }
 
-            .mu-navbar-nav > li > a {
-                color: white !important;
-            }
+        .mu-navbar-nav>li > a:hover {
+            background-color: #45aed6 !important;
+            color: #ffffff !important;
+            border-radius: none !important;
+        }
+        */
 
-            .carousel-content {
-                position: relative;
-                z-index: 9999999;
-            }/**/
+        .carousel-content {
+            position: relative;
+            z-index: 9999999;
+        }
 
-            #navegacion > header.sticky {
-              position: fixed;
-              z-index: 99999;
-              top: 0;
-              width: 100%;
-              background: #396b8e !important;
-            }
+        .sticky+.content {
+            padding-top: 102px;
+        }
 
-            .sticky + .content {
-              padding-top: 102px;
-            }
-
-        @foreach($estilos as $key => $value)
-            {{ $value }}
+        @foreach($estilos as $key=> $value) 
+         {{ $value }}
         @endforeach
-
     </style>
 </head>
 
 <body style="padding:0;">
 
-<main id="contenedor_principal">
+    <main id="contenedor_principal">
 
-    <!-- <div class="top-container">
-        HELLO
-    </div> -->
-
-    @foreach($view as $item)
+        @foreach($view as $item)
         {!! $item !!}
-    @endforeach
+        @endforeach
 
-</main>
+    </main>
 
-<!-- End main content -->
+    <!-- End main content -->
 
-<!-- JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
-        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
-        crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
-        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
-        crossorigin="anonymous"></script>
-<!-- Slick slider -->
-<script type="text/javascript" src="{{asset('assets/web/js/slick.min.js')}}"></script>
-<!-- Progress Bar -->
-<script src="https://unpkg.com/circlebars@1.0.3/dist/circle.js"></script>
+    <!-- JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <!-- Slick slider -->
+    <script type="text/javascript" src="{{asset('assets/web/js/slick.min.js')}}"></script>
+    <!-- Progress Bar -->
+    <script src="https://unpkg.com/circlebars@1.0.3/dist/circle.js"></script>
 
-<!-- Gallery Lightbox -->
-<script type="text/javascript" src="{{asset('assets/web/js/jquery.magnific-popup.min.js')}}"></script>
+    <!-- Gallery Lightbox -->
+    <script type="text/javascript" src="{{asset('assets/web/js/jquery.magnific-popup.min.js')}}"></script>
 
-<!-- Ajax contact form  -->
-<script type="text/javascript" src="{{asset('assets/web/js/app.js')}}"></script>
+    <!-- Ajax contact form  -->
+    <script type="text/javascript" src="{{asset('assets/web/js/app.js')}}"></script>
 
-<script src="{{asset('js/jquery.js')}}"></script>
-<script src="{{asset('js/owl.carousel.min.js')}}"></script>
-<script src="{{asset('js/mousescroll.js')}}"></script>
-<script src="{{asset('js/smoothscroll.js')}}"></script>
-<script src="{{asset('js/jquery.prettyPhoto.js')}}"></script>
-<script src="{{asset('js/jquery.isotope.min.js')}}"></script>
-<script src="{{asset('js/jquery.inview.min.js')}}"></script>
-<script src="{{asset('js/wow.min.js')}}"></script>
-<script src="{{asset('js/main.js')}}"></script>
-<script src="{{asset('js/jquery.jscroll.min.js')}}"></script>
+    <!-- <script src="{ {asset('js/jquery.js')}}"></script> -->
+    <script src="{{asset('js/owl.carousel.min.js')}}"></script>
+    <script src="{{asset('js/mousescroll.js')}}"></script>
+    <script src="{{asset('js/smoothscroll.js')}}"></script>
+    <script src="{{asset('js/jquery.prettyPhoto.js')}}"></script>
+    <script src="{{asset('js/jquery.isotope.min.js')}}"></script>
+    <script src="{{asset('js/jquery.inview.min.js')}}"></script>
+    <script src="{{asset('js/wow.min.js')}}"></script>
+    <script src="{{asset('js/main.js')}}"></script>
+    <script src="{{asset('js/jquery.jscroll.min.js')}}"></script>
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('.client-single').on('click', function (event) {
-            event.preventDefault();
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.client-single').on('click', function(event) {
+                event.preventDefault();
 
-            var active = $(this).hasClass('active');
+                var active = $(this).hasClass('active');
 
-            var parent = $(this).parents('.testi-wrap');
+                var parent = $(this).parents('.testi-wrap');
 
-            if (!active) {
-                var activeBlock = parent.find('.client-single.active');
+                if (!active) {
+                    var activeBlock = parent.find('.client-single.active');
 
-                var currentPos = $(this).attr('data-position');
+                    var currentPos = $(this).attr('data-position');
 
-                var newPos = activeBlock.attr('data-position');
+                    var newPos = activeBlock.attr('data-position');
 
-                activeBlock.removeClass('active').removeClass(newPos).addClass('inactive').addClass(currentPos);
-                activeBlock.attr('data-position', currentPos);
+                    activeBlock.removeClass('active').removeClass(newPos).addClass('inactive').addClass(currentPos);
+                    activeBlock.attr('data-position', currentPos);
 
-                $(this).addClass('active').removeClass('inactive').removeClass(currentPos).addClass(newPos);
-                $(this).attr('data-position', newPos);
+                    $(this).addClass('active').removeClass('inactive').removeClass(currentPos).addClass(newPos);
+                    $(this).attr('data-position', newPos);
 
-            }
+                }
+            });
+
         });
+    </script>
 
-    });
-</script>
+    <script>
+        window.onscroll = function() {
+            myFunction()
+        };
 
-<script>
-    window.onscroll = function() {myFunction()};
+        var header = document.getElementById("myHeader");
+        var sticky = header.offsetTop;
 
-    var header = document.getElementById("myHeader");
-    var sticky = header.offsetTop;
-
-    function myFunction() {
-      if (window.pageYOffset > sticky) {
-        header.classList.add("sticky");
-      } else {
-        header.classList.remove("sticky");
-      }
-    }
-
-</script>
+        function myFunction() {
+            if (window.pageYOffset > sticky) {
+                header.classList.add("sticky");
+            } else {
+                header.classList.remove("sticky");
+            }
+        }
+    </script>
 
 
         @foreach($scripts as $key => $value)
@@ -335,6 +324,37 @@
         @endforeach
         
 @yield('script')
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    
+    $(".abrir_modal").click(function(){
+      $("#myModal").attr('data-elemento_id', $(this).attr('data-elemento_id') );
+      $("#myModal").modal("show");
+    });
+
+    $("#myModal").on('show.bs.modal', function () {
+      //alert( $(this).attr('data-album_id') );
+      var url = $("#myModal").attr('data-url_busqueda') + "/" + $(this).attr('data-elemento_id');
+      $.get( url )
+            .done(function( data ) {
+                
+                $('#modal-body').html( data );
+
+            })
+    });
+
+    $("#showAlpha").spectrum({
+            showAlpha: true
+        });
+
+    $("#showAlpha2").spectrum({
+            showAlpha: true
+        });
+
+  });
+</script>
+
 </body>
 
 </html>

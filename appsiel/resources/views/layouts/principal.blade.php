@@ -229,6 +229,7 @@
 			return control_requeridos;
 		}
 
+
 		function validar_input_numerico(obj) {
 			var control = true;
 			var valor = obj.val();
@@ -289,6 +290,8 @@
 			return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 		}
 
+		var email_inicial = $("#email").val();
+
 		$(document).ready(function() {
 
 			// Para Autocompletar
@@ -308,6 +311,35 @@
 			});
 
 
+			// !!!! Solo valida en la tabla core_terceros
+			$('#email').keyup(function(){
+				
+				var email = $("#email").val();
+
+				url_2 = "{{ url('/core/validar_email/') }}" + "/" + email;
+
+				console.log( url_2 );
+
+				$.get( url_2 , function( datos ) 
+				{
+			        if ( datos != '') 
+			        {
+			        	if ( datos == email_inicial ) 
+			        	{
+			        		// No hay problema
+			        		$('#bs_boton_guardar').show();
+			        	}else{
+			        		alert( "Ya existe una persona con ese EMAIL. Cambié el EMAIL o no podrá guardar el registro." );
+			        		$('#bs_boton_guardar').hide();
+			        	}
+			        	
+			        }else{
+			        	// Número de identificación
+			        	$('#bs_boton_guardar').show();
+			        }
+			        
+				});
+			});
 
 
 
@@ -461,6 +493,12 @@
 	@yield('scripts')
 	@yield('scripts2')
 	@yield('scripts3')
+
+	<script src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+	    window.google.charts.load('46', {packages: ['corechart']});
+	</script>
+
 </body>
 
 </html>

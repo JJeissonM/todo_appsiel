@@ -6,6 +6,7 @@ use App\Contratotransporte\Numeraltabla;
 use App\Contratotransporte\Plantilla;
 use App\Contratotransporte\Plantillaarticulo;
 use App\Contratotransporte\Plantillaarticulonumeral;
+use App\Core\Empresa;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -139,10 +140,13 @@ class PlantillaController extends Controller
                 'etiqueta' => 'Ver Plantilla'
             ]
         ];
+        $emp = null;
+        $emp = Empresa::find(1);
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
         return view('contratos_transporte.plantilla.show_plantilla')
             ->with('v', $v)
             ->with('variables_url', $variables_url)
-            ->with('miga_pan', $miga_pan);
+            ->with('miga_pan', $miga_pan)
+            ->with('empresa', $emp);
     }
 }

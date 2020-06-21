@@ -202,7 +202,9 @@ class MatriculaController extends ModeloController
         if ( $request->estudiante_existe == false ) 
         {
 
-            $user = User::crear_y_asignar_role( $request, 4); // 4 = Role Estudiante
+            $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
+            $email = $request->email;
+            $user = User::crear_y_asignar_role( $name, $email, 4); // 4 = Role Estudiante
 
             $datos = array_merge($request->all(), 
                             ['user_id'=> $user->id ] );

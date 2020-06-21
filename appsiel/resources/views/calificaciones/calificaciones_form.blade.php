@@ -115,6 +115,22 @@
 @endsection
 
 @section('scripts')
+
+
+	<script language="javascript">
+		
+		function ventana(id,id_textbox){
+			document.getElementById("caja_logro").value = id_textbox;
+			
+			window.open("{{ url('calificaciones_logros/consultar' )}}" + "/" + id, "Consulta de logros","width=800,height=600,menubar=no")
+		}
+
+		function getChildVar(a_value){
+			var caja
+			caja = document.getElementById("caja_logro").value;
+			document.getElementById("logros"+caja).value = a_value;
+		}
+	</script>
 	
 	<script language="javascript">
 
@@ -170,6 +186,11 @@
 			// Cuando se presiona una caja de texto
 			$("input[type=text]").keyup(function(e) 
 			{
+				if( $(this).attr('class') == 'caja_logros' )
+				{
+					return false;
+				}
+
 				if(e.keyCode!=40){ //Si NO se presiona flecha hacia abajo
 				   if(e.keyCode!=38){ // Si NO se presiona flecha hacia arriba
 				   		if ( $.inArray(e.keyCode,teclas_especiales) < 0 )

@@ -59,7 +59,7 @@ class AcademicoEstudianteController extends Controller
         if( Auth::check() ) 
         {
             $this->colegio = Colegio::where( 'empresa_id', Auth::user()->empresa_id )->get()->first();
-            $this->estudiante = Estudiante::where( 'user_id', Auth::user()->id)->get()->first();
+            $this->estudiante = Estudiante::where( 'user_id', Auth::user()->id )->get()->first();
         }
     }
     
@@ -276,5 +276,22 @@ class AcademicoEstudianteController extends Controller
 
         return view('academico_estudiante.mi_plan_de_pagos',compact('libreta','estudiante','cartera','miga_pan','codigo_matricula','curso'));
     }
+
+    public function consultar_preinforme( $periodo_id, $curso_id, $estudiante_id )
+    {
+        
+        $periodo = Periodo::find( $periodo_id );
+        $anio = PeriodoLectivo::find( $periodo->periodo_lectivo_id )->descripcion;
+
+        $estudiante = Estudiante::get_datos_basicos( $estudiante_id );
+
+        $curso = Curso::find( $curso_id );
+
+        $asignaturas = CursoTieneAsignatura::asignaturas_del_curso( $curso_id, null, null, null );
+
+        return view('academico_estudiante.preinforme_academico',compact( 'estudiante','periodo','anio','curso','asignaturas'));
+    }
+
+
     
 }

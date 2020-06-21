@@ -9,6 +9,10 @@ Route::get('contab_get_formulario_cxp', 'Contabilidad\ContabilidadController@get
 Route::get('contabilidad_print/{id_transaccion}','Contabilidad\ContabilidadController@imprimir');
 Route::get('contab_get_fila/{id_fila}','Contabilidad\ContabilidadController@contab_get_fila');
 Route::get('contab_anular_documento/{id_fila}','Contabilidad\ContabilidadController@contab_anular_documento');
+
+
+Route::get('contab_duplicar_documento/{doc_encabezado_id}','Contabilidad\ContabilidadController@duplicar_documento');
+
 Route::resource('contabilidad','Contabilidad\ContabilidadController');
 
 

@@ -11,6 +11,8 @@ use App\Core\Tercero;
 use Auth;
 use Input;
 
+use App\User;
+
 class TerceroController extends Controller
 {
     public function __construct()
@@ -24,9 +26,11 @@ class TerceroController extends Controller
         return Tercero::where('numero_identificacion',$numero_identificacion)->value('numero_identificacion');
     }
 
+
     public function validar_email( $email )
     {
-        return Tercero::where('email',$email)->value('email');
+
+        return User::where('email',$email)->value('email');
     }
     
     // Parámetro enviados por GET - para la nueva version lista_sugerencias

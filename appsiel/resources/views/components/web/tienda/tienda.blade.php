@@ -77,7 +77,7 @@
                                                             </div>
                                                             <div class="price-box">
                                                                 <span class="regular-price" id="product-price-1">
-                                                                    <span class="price">${{$item->precio_venta}}</span></span>
+                                                                    <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
                                                             </div>
                                                             <div class="actions agregar-carrito">
                                                                 <button type="button" class="button btn-cart "
@@ -102,6 +102,21 @@
             </div>
         </div>
     </div>
+
+    <!-- The Modal -->
+    <div class="modal fade" id="myModal" data-url_busqueda="{{ url('core_create_registro_modelo') }}">
+      <div class="modal-dialog modal-lg modal-dialog-centered" style="height: 100% !important;">
+        <div class="modal-content">    
+          
+          <!-- Modal body -->
+          <div id="modal-body" style="margin: 15px;">
+            Modal body..
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
 </main>
 
 @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])

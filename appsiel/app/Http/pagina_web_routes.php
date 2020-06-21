@@ -35,23 +35,25 @@ Route::get('galeria/create/{widget}', 'web\GaleriaController@create');
 Route::get('galeria/edit/{album}', 'web\GaleriaController@edit');
 Route::post('galeria/guardar/seccion', 'web\GaleriaController@guardarseccion')->name('galeria.guardar');
 Route::put('galeria/modificar/seccion/{id}', 'web\GaleriaController@modificarseccion')->name('galeria.modificar');
-Route::get('galeria/eliminar/{galeria_id}','web\GaleriaController@destroy');
+Route::get('galeria/eliminar/{galeria_id}', 'web\GaleriaController@destroy');
 Route::get('galeria/delete/foto/{imagen}', 'web\GaleriaController@destroyImg')->name('galeria.deleteimagen');
 Route::get('galeria/destroy/album/{album}', 'web\GaleriaController@destroyAlbum');
 Route::post('galeria/store', 'web\GaleriaController@store')->name('galeria.store');
 Route::put('galeria/updated/{id}', 'web\GaleriaController@updated')->name('galeria.updated');
 Route::get('/galeria/{id}/albums/index', 'web\GaleriaController@albums')->name('galeria.albums');
 Route::get('/galeria/{id}/ver/album/index', 'web\GaleriaController@veralbum')->name('galeria.veralbum');
-Route::get('/galeria/crear/','web\GaleriaController@importar')->name('galeria.importar');
+Route::get('/galeria/crear/', 'web\GaleriaController@importar')->name('galeria.importar');
 
-Route::resource('sociales','web\RedesSocialesController');
-Route::resource('footer','web\FooterController');
-Route::post('footerstoreCategoria','web\FooterController@footerstoreCategoria')->name('footerstoreCategoria');
-Route::get('footer/{id}/categorias','web\FooterController@categorias');
-Route::put('footer/edit/categoria/{id}','web\FooterController@updateCategoria')->name('updateCategoria');
-Route::post('footer/categoria/enlace','web\FooterController@newEnlace')->name('newEnlace');
-Route::get('footer/eliminar/enlace/{id}','web\FooterController@eliminarEnlace');
-Route::get('footer/eliminar/seccion/{id}','web\FooterController@eliminarSeccion');
+Route::get('galeria_ver_album_carousel/{album_id}', 'web\GaleriaController@ver_album_carousel')->name('galeria.veralbumcarousel');
+
+Route::resource('sociales', 'web\RedesSocialesController');
+Route::resource('footer', 'web\FooterController');
+Route::post('footerstoreCategoria', 'web\FooterController@footerstoreCategoria')->name('footerstoreCategoria');
+Route::get('footer/{id}/categorias', 'web\FooterController@categorias');
+Route::put('footer/edit/categoria/{id}', 'web\FooterController@updateCategoria')->name('updateCategoria');
+Route::post('footer/categoria/enlace', 'web\FooterController@newEnlace')->name('newEnlace');
+Route::get('footer/eliminar/enlace/{id}', 'web\FooterController@eliminarEnlace');
+Route::get('footer/eliminar/seccion/{id}', 'web\FooterController@eliminarSeccion');
 
 //SERVICIOS
 Route::get('servicios/create/{widget}', 'web\ServicioController@create');
@@ -63,6 +65,21 @@ Route::put('servicios/updated/item/{id}', 'web\ServicioController@modificar')->n
 Route::get('servicios/destroy/item/{itemservicio}', 'web\ServicioController@destroy');
 Route::get('servicios/destroy/{servicio}', 'web\ServicioController@delete');
 Route::get('/servicios/{id}/index', 'web\ServicioController@leer_servicio')->name('servicios.leer_servicio');
+
+//PARALLAX
+Route::get('parallax/create/{widget}', 'web\ParallaxController@create');
+Route::post('parallax/store', 'web\ParallaxController@store')->name('parallax.store');
+Route::put('parallax/updated/{id}', 'web\ParallaxController@updated')->name('parallax.updated');
+Route::get('parallax/destroy/{id}', 'web\ParallaxController@delete');
+
+//STICKY
+Route::get('sticky/create/{widget}', 'web\StickyController@create');
+Route::post('sticky/store', 'web\StickyController@store')->name('sticky.store');
+Route::put('sticky/updated/{id}', 'web\StickyController@updated')->name('sticky.updated');
+Route::get('sticky/destroy/{id}', 'web\StickyController@delete');
+Route::post('sticky/store/boton', 'web\StickyController@storeboton')->name('sticky.storeboton');
+Route::get('sticky/destroy/{id}/boton', 'web\StickyController@deleteboton');
+
 
 //CONTACTENOS
 Route::get('contactenos/create/{widget}', 'web\ContactenosController@create');
@@ -88,7 +105,7 @@ Route::resource('articles', 'web\ArticleController');
 Route::post('articles/article/store', 'web\ArticleController@articlestore')->name('article.articlestore');
 Route::post('articles/article/update', 'web\ArticleController@articleupdate')->name('article.articleupdate');
 Route::get('articles/article/{id}/viewfinder', 'web\ArticleController@show')->name('article.show');
-Route::get('article/delete/destroy/{id}','web\ArticleController@destroy');
+Route::get('article/delete/destroy/{id}', 'web\ArticleController@destroy');
 
 //Route::get('article/{id}','web\ArticleController@destroy');
 
@@ -100,12 +117,12 @@ Route::post('archivos/archivo/store', 'web\ArchivoController@archivostore')->nam
 Route::post('archivos/archivo/update', 'web\ArchivoController@archivoupdate')->name('archivos.archivoupdate');
 Route::post('archivos/archivo/delete', 'web\ArchivoController@destroy')->name('archivos.delete');
 
-Route::resource('cofiguraciones','web\ConfiguracionesController');
+Route::resource('cofiguraciones', 'web\ConfiguracionesController');
 
 //PREGUNTAS FRECUENTES
 Route::get('preguntas/create/{widget}', 'web\PreguntasfrecuenteController@create');
 Route::get('preguntas/eliminar/itempregunta/{itempregunta}', 'web\PreguntasfrecuenteController@delete')->name('preguntas.eliminar');
-Route::post('preguntas/guardar/seccion','web\PreguntasfrecuenteController@guardar')->name('preguntas.guardar');
+Route::post('preguntas/guardar/seccion', 'web\PreguntasfrecuenteController@guardar')->name('preguntas.guardar');
 Route::post('preguntas/store', 'web\PreguntasfrecuenteController@store')->name('preguntas.store');
 Route::get('preguntas/destroy/{pregunta}', 'web\PreguntasfrecuenteController@destroy');
 Route::post('preguntas/modificar/pregunta/', 'web\PreguntasfrecuenteController@updated')->name('preguntas.modificar');
@@ -113,7 +130,7 @@ Route::put('preguntas/ferecuntes/seccion/modificar/{seccion}', 'web\Preguntasfre
 
 //TESTIMONIALES
 Route::get('testimonial/eliminar/itemtestimonial/{itemtestimonial}', 'web\TestimonialController@delete')->name('testimonial.eliminar');
-Route::post('testimonial/guardar/seccion','web\TestimonialController@guardar')->name('testimonial.guardar');
+Route::post('testimonial/guardar/seccion', 'web\TestimonialController@guardar')->name('testimonial.guardar');
 Route::post('testimonial/store', 'web\TestimonialController@store')->name('testimonial.store');
 Route::get('testimonial/destroy/{testimonial}', 'web\TestimonialController@destroy');
 Route::post('testimonial/modificar/pregunta/', 'web\TestimonialController@updated')->name('testimonial.modificar');
@@ -158,24 +175,24 @@ Route::post('pedidosweb/store', 'web\PedidoswebController@store')->name('pedidos
 Route::resource('pedidosweb', 'web\PedidoswebController');
 
 //TIENDA
-Route::post('correo/itemcorreo/store','web\CorreoController@modificaritem')->name('correo.modificaritem');
-Route::put('correo/updated/{correo}','web\CorreoController@updated')->name('correo.updated');
-Route::post('tienda/store','web\TiendaController@store')->name('tienda.store');
-Route::get('tienda/{pais}/getciudades','web\TiendaController@getCiudades')->name('tienda.getciudades');
-Route::put('tienda/general/updated/{tienda}','web\TiendaController@generalUpdated')->name('tienda.generalupdated');
-Route::put('tienda/producto/updated/{tienda}','web\TiendaController@productoUpdated')->name('tienda.productoupdated');
-Route::put('tienda/inventario/updated/{tienda}','web\TiendaController@inventarioUpdated')->name('tienda.inventarioupdated');
-Route::put('tienda/terminos/condiciones/updated/{tienda}','web\TiendaController@terminos')->name('tienda.terminos');
+Route::post('correo/itemcorreo/store', 'web\CorreoController@modificaritem')->name('correo.modificaritem');
+Route::put('correo/updated/{correo}', 'web\CorreoController@updated')->name('correo.updated');
+Route::post('tienda/store', 'web\TiendaController@store')->name('tienda.store');
+Route::get('tienda/{pais}/getciudades', 'web\TiendaController@getCiudades')->name('tienda.getciudades');
+Route::put('tienda/general/updated/{tienda}', 'web\TiendaController@generalUpdated')->name('tienda.generalupdated');
+Route::put('tienda/producto/updated/{tienda}', 'web\TiendaController@productoUpdated')->name('tienda.productoupdated');
+Route::put('tienda/inventario/updated/{tienda}', 'web\TiendaController@inventarioUpdated')->name('tienda.inventarioupdated');
+Route::put('tienda/terminos/condiciones/updated/{tienda}', 'web\TiendaController@terminos')->name('tienda.terminos');
 
 //TIENDA PUBLICA
-Route::get('ecommerce/public/cuenta','web\TiendaController@cuenta')->name('tienda.cuenta');
-Route::get('ecommerce/public/signIn','web\TiendaController@login')->name('tienda.login');
-Route::get('ecommerce/public/nuevacuenta','web\TiendaController@crearCuenta')->name('tienda.nuevacuenta');
-Route::get('ecommerce/comprar','web\TiendaController@comprar')->name('tienda.comprar');
-Route::get('ecommerce/public/account','web\TiendaController@cuenta')->name('tienda.micuenta');
-Route::put('ecommerce/account/informacion/updated/{clienteweb}','web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
-Route::get('ecommerce/public/filtro/categoria/{categoria}','web\TiendaController@filtroCategoria')->name('tienda.filtrocategoria');
-Route::get('ecommerce/public/busqueda/','web\TiendaController@busqueda')->name('tienda.busqueda');
+Route::get('ecommerce/public/cuenta', 'web\TiendaController@cuenta')->name('tienda.cuenta');
+Route::get('ecommerce/public/signIn', 'web\TiendaController@login')->name('tienda.login');
+Route::get('ecommerce/public/nuevacuenta', 'web\TiendaController@crearCuenta')->name('tienda.nuevacuenta');
+Route::get('ecommerce/comprar', 'web\TiendaController@comprar')->name('tienda.comprar');
+Route::get('ecommerce/public/account', 'web\TiendaController@cuenta')->name('tienda.micuenta');
+Route::put('ecommerce/account/informacion/updated/{clienteweb}', 'web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
+Route::get('ecommerce/public/filtro/categoria/{categoria}', 'web\TiendaController@filtroCategoria')->name('tienda.filtrocategoria');
+Route::get('ecommerce/public/busqueda/', 'web\TiendaController@busqueda')->name('tienda.busqueda');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');

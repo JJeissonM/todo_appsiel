@@ -65,6 +65,8 @@ class InventarioController extends TransaccionController
             ['url' => 'NO', 'etiqueta' => 'Inventarios']
         ];
 
+        $movimientos = [];
+
         // Existencias por bodegas
         $bodegas = InvBodega::get();
         $i = 0;

@@ -14,19 +14,20 @@ class Widget extends Model
     public static function opciones_campo_select()
     {
         $opciones = Widget::leftJoin('pw_paginas', 'pw_paginas.id', '=', 'pw_widget.pagina_id')
-                    ->leftJoin('pw_seccion', 'pw_seccion.id', '=', 'pw_widget.seccion_id')
-                    ->select(
-                            'pw_widget.id',
-                            'pw_paginas.descripcion AS pagina_descripcion',
-                            'pw_seccion.nombre AS seccion_descripcion' )
-                    ->get();
+            ->leftJoin('pw_seccion', 'pw_seccion.id', '=', 'pw_widget.seccion_id')
+            ->select(
+                'pw_widget.id',
+                'pw_paginas.titulo AS pagina_titulo',
+                'pw_paginas.descripcion AS pagina_descripcion',
+                'pw_seccion.nombre AS seccion_descripcion'
+            )
+            ->get();
 
-        $vec['']='';
-        foreach ($opciones as $opcion)
-        {
-            $vec[$opcion->id] = 'Página: ' . $opcion->pagina_descripcion . ' > Sección: ' . $opcion->seccion_descripcion;
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
+            $vec[$opcion->id] = 'Página: ' . $opcion->pagina_titulo . '(' . $opcion->pagina_descripcion . ') > Sección: ' . $opcion->seccion_descripcion;
         }
-        
+
         return $vec;
     }
 
@@ -101,5 +102,15 @@ class Widget extends Model
     public function customhtml()
     {
         return $this->hasMany(CustomHtml::class);
+    }
+
+    public function comparallaxes()
+    {
+        return $this->hasMany(Comparallax::class);
+    }
+
+    public function stickies()
+    {
+        return $this->hasMany(Sticky::class);
     }
 }

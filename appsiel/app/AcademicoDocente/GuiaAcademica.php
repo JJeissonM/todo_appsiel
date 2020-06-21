@@ -38,7 +38,7 @@ class GuiaAcademica extends Model
         
         if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') ) 
         {
-            $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);          
+            $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);
         }
 
 	    return GuiaAcademica::leftJoin( 'sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')

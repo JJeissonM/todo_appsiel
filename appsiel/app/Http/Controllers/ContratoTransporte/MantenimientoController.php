@@ -128,6 +128,16 @@ class MantenimientoController extends Controller
     public function store(Request $request)
     {
         $m = new Mantenimiento($request->all());
+        $m->documento = null;
+        if (isset($request->documento)) {
+            $file = $request->file("documento");
+            $name = time() . $file->getClientOriginalName();
+            $filename = "img/documentos/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $m->documento = $filename;
+            }
+        }
         if ($m->save()) {
             $totalo = 0;
             $totalr = 0;

@@ -3,9 +3,9 @@
 </div>
 
 
-<table class="table table-fluid">
+<table class="table table-fluid" style="font-size: 11px;">
     <tr>
-        <td colspan="2" align="center"> <b style="font-size: 1.2em;">{{ $encabezado->plantilla_decripcion }}</b></td>
+        <td colspan="2" align="center"> <b>{{ $encabezado->plantilla_decripcion }}</b></td>
     </tr>
     <tr>
         <td>
@@ -75,3 +75,20 @@
         {!! $registro->contenido !!}
     </div>
 @endforeach
+
+<table width="100%" style="text-align: center;">
+    <tr>
+        <td width="15%"> </td>
+        <td width="30%"> _______________________ </td>
+        <td width="10%"> </td>
+        <td width="30%"> _______________________ </td>
+        <td width="15%"> </td>
+    </tr>
+    <tr>
+        <td width="15%"> </td>
+        <td width="30%"> DOCENTE </td>
+        <td width="10%"> </td>
+        <td width="30%"> Vo. Bo. COORDINADOR </td>
+        <td width="15%"> </td>
+    </tr>
+</table>

@@ -286,7 +286,9 @@ class EstudianteController extends ModeloController
 		        $usuario = User::find( $estudiante->user_id );
 		        if( is_null( $usuario ) )
 		        {
-		        	$usuario = User::crear_y_asignar_role( $request, 4); // 4 = Role Estudiante
+                    $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
+                    $email = $request->email;
+		        	$usuario = User::crear_y_asignar_role( $name, $email, 4); // 4 = Role Estudiante
 		        	$mensaje = '<br> Se creó un nuevo usuario para el estudiante. <br> Puede acceder al sistema con los siguientes datos: <br> email: '. $request->email.' <br> Contraseña: colombia1';
 		        }else{
 		        	$usuario->name = $descripcion;

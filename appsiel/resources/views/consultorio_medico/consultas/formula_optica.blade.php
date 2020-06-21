@@ -19,8 +19,7 @@
 	
 	
 	
-	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnPrint( 'consultorio_medico/formulas_opticas/9999/print?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
-
+	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnPrint( 'consultorio_medico/formulas_opticas/9999/print?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
 	<br><br>
 	
 	
@@ -52,13 +51,15 @@
 									{{ Form::hidden( 'formula_id', $formula->id ) }}
 									{{ Form::hidden( 'ruta_redirect', 'consultorio_medico/pacientes/'.$consulta->paciente_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}		
 
-									&nbsp;&nbsp;<button class="btn btn-danger btn-xs btn-detail btn_eliminar" title="Eliminar"> <i class="fa fa-trash"></i> &nbsp; </button>
+									&nbsp;&nbsp;&nbsp; <button class="btn btn-danger btn-xs btn-detail btn_eliminar" title="Eliminar"> <i class="fa fa-trash"></i> &nbsp; </button>
 								{{ Form::close() }}
 
 									<!-- 
 										&nbsp;&nbsp;<button class="btn btn-danger btn-xs desasociar_examen" data-formula_id="{ {$examen->formula_id}}" data-examen_id="{ {$examen->examen_id}}">&times;</button>
 									-->
 							@endcan
+
+							&nbsp;&nbsp;&nbsp; {{ Form::bsBtnEmail( 'formula_optica_enviar_email/'.$formula->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
 
 						</td>
 					</tr>

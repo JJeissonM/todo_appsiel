@@ -9,12 +9,19 @@
 	<hr>
 
 	@include('layouts.mensajes')
+	
+	{!! $mensaje_duplicado !!}
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
 		    <h4>Nuevo registro</h4>
 		    <hr>
-			{{ Form::open( ['url'=>$form_create['url'],'id'=>'form_create']) }}
+
+		    @if( is_null($registro) )
+				{{ Form::open( ['url'=>$form_create['url'],'id'=>'form_create']) }}
+			@else
+				{{ Form::model($registro, ['url' => [ $form_create['url'] ], 'method' => 'PUT','files' => true, 'id' => 'form_create']) }}
+			@endif
 
 				<?php
 				  if (count($form_create['campos'])>0) {
@@ -35,56 +42,9 @@
 
 			{{ Form::close() }}
 
+			<br/>
+			@include('tesoreria.pagos.tabla_ingreso_registros', [ 'lineas_tabla_ingreso_registros' => $lineas_tabla_ingreso_registros ] )
 
-			<div id="div_ingreso_registros">
-				<br/>
-			    <h4>Ingreso de valores</h4>
-			    <hr>
-			    <div class="table-responsive" id="table_content">
-					<table class="table table-striped" id="ingreso_registros">
-				        <thead>
-				            <tr>
-				                <th data-override="teso_motivo_id" width="200px">Motivo</th>
-				                <th data-override="linea_tercero_id" width="200px">Tercero</th>
-				                <th data-override="detalle">Detalle</th>
-				                <th data-override="valor">Valor</th>
-				                <th width="10px">&nbsp;</th>
-				            </tr>
-				        </thead>
-				        <tbody>
-				            <tr>
-				                <td></td>
-				                <td width="200px"></td>
-				                <td></td>
-				                <td></td>
-				                <td></td>
-				            </tr>
-				        </tbody>
-				        <tfoot>
-				            <tr>
-				                <td>
-				                	<button id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none;"><i class="fa fa-btn fa-plus"></i> Agregar registro</button>
-				                </td>
-				                <td width="200px"></td>
-				                <td></td>
-				                <td></td>
-				                <td></td>
-				            </tr>
-				            <tr>
-				                <td colspan="3">&nbsp;</td>
-				                <td> <div id="total_valor">$0</div> </td>
-				                <td> &nbsp;</td>
-				            </tr>
-				            <tr>
-				                <td colspan="2">&nbsp;</td>
-				                <td> <div id="lbl_total_pendiente" style="color: red;"></div></td>
-				                <td> <div id="total_pendiente" style="color: red;"></div> </td>
-				                <td> &nbsp;</td>
-				            </tr>
-				        </tfoot>
-				    </table>
-				</div>
-		    </div>
 		</div>
 	</div>
 	<br/><br/>
@@ -100,8 +60,11 @@
         }
 
 		$(document).ready(function(){
-			$('#teso_caja_id').parent().hide();
-			$('#teso_cuenta_bancaria_id').parent().hide();
+
+			$('#teso_caja_id').parent().parent().hide();
+			$('#teso_cuenta_bancaria_id').parent().parent().hide();
+
+			calcular_totales();
 
 
 			$('#fecha').val( get_fecha_hoy() );
@@ -112,6 +75,17 @@
 				if(x==13){
 					$('#core_tercero_id').focus();				
 				}		
+			});
+
+			$(document).on('keyup', '.text_input_sugerencias', function(){
+
+				var codigo_tecla_presionada = event.which || event.keyCode;
+
+				if ( codigo_tecla_presionada == 13 && $(this).val() == '' )
+			    {
+			    	console.log('enter');
+			    	$(this).parent().next().find(':input').focus();
+			    }
 			});
 
 			$('#valor_total').keyup(function(event){
@@ -126,7 +100,6 @@
 
 				var x = event.which || event.keyCode; // Capturar la tecla presionada
 
-				// Guardar
 				if( x == 13 ) // 13 = ENTER
 				{
 		        	$(this).parent().next().find(':input').focus();
@@ -138,7 +111,6 @@
 
 				var x = event.which || event.keyCode; // Capturar la tecla presionada
 
-				// Guardar
 				if( x == 13 ) // 13 = ENTER
 				{
 		        	$('.btn_confirmar').focus();
@@ -153,22 +125,21 @@
 			});
 
 
-
 			$('#teso_medio_recaudo_id').change(function(){
 				var valor = $(this).val().split('-');
 				if (valor!='') {
 					if (valor[1]=='Tarjeta bancaria'){
-						$('#teso_caja_id').parent().hide();
-						$('#teso_cuenta_bancaria_id').parent().show();
+						$('#teso_caja_id').parent().parent().fadeOut();
+						$('#teso_cuenta_bancaria_id').parent().parent().fadeIn();
 					}else{
-						$('#teso_cuenta_bancaria_id').parent().hide();
-						$('#teso_caja_id').parent().show();
+						$('#teso_cuenta_bancaria_id').parent().parent().fadeOut();
+						$('#teso_caja_id').parent().parent().fadeIn();
 					}
 				}else{
-					$('#teso_cuenta_bancaria_id').parent().hide();
-					$('#teso_caja_id').parent().hide();
+					$('#teso_cuenta_bancaria_id').parent().parent().fadeOut();
+					$('#teso_caja_id').parent().parent().fadeOut();
 					$(this).focus();
-				}			
+				}
 			});
 
 
@@ -181,7 +152,7 @@
 		    function nueva_linea_ingreso_datos(){
 		    	$('#div_cargando').fadeIn();
 
-				var url = '../pagos/ajax_get_fila/' + $('#teso_tipo_motivo').val();
+				var url = "{{ url('tesoreria/pagos/ajax_get_fila/') }}" + "/" + $('#teso_tipo_motivo').val();
 				$.get( url, function( datos ) {
 			        $('#div_cargando').hide();
 
@@ -198,7 +169,8 @@
 				LineaNum++;
 				var fila = $(this).closest("tr");
 				var ok = validar_linea();
-				if( ok ) {
+				if( ok )
+				{
 					var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='glyphicon glyphicon-trash'></i></button>";
 
 			        var cuenta = '<span style="color:white;">' + $('#combobox_motivos').val() + '-</span>' + $( "#combobox_motivos option:selected" ).text();
@@ -207,8 +179,9 @@
 			        
 			        var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#tercero_input" ).val();
 
-			        var detalle = $('#col_detalle').val();
-			        var valor = $('#col_valor').val();
+			        var detalle = '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + $('#col_detalle').val() + '</div> </div>';
+
+			        var valor = '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + $('#col_valor').val() + '</div> </div>';
 
 			        $('#ingreso_registros').find('tbody:last').append('<tr id="fila_'+LineaNum+'" >' +
 																	'<td id="cuenta_'+LineaNum+'">' + cuenta + '</td>'+
@@ -221,6 +194,9 @@
 			       	calcular_totales();
 			       	fila.remove();
 			       	nueva_linea_ingreso_datos();
+                
+					// Bajar el Scroll hasta el final de la página
+					$("html, body").animate( { scrollTop: $(document).height()+"px"} );
 				}
 
 			});
@@ -241,7 +217,6 @@
 			// Al introducir valor en la caja de texto
 			$(document).on('keyup', '.col_valor', function() {
 				var celda = $(this);
-				//console.log( celda );
 				validar_valor( celda );
 
 				var x = event.which || event.keyCode;
@@ -265,9 +240,8 @@
 
 				// Se obtienen todos los datos del formulario y se envían
 				// Se validan nuevamente los campos requeridos
-				
-
-				if ( validar_requeridos() ) {
+				if ( validar_requeridos() )
+				{
 
 						// Desactivar el click del botón
 						$( this ).off( event );
@@ -282,14 +256,13 @@
 						// Enviar formulario
 						habilitar_campos_form_create();
 						$('#form_create').submit();		
-				}else{
-					alert('Faltan campos por llenar.');
 				}
 					
 			});
 
 
-			function calcular_totales(){
+			function calcular_totales()
+			{
 				var sum = 0.0;
 				sum = 0.0;
 				$('.valor').each(function()
@@ -302,7 +275,8 @@
 			}
 
 
-			function validar_linea(){
+			function validar_linea()
+			{
 				var ok;
 
 				if ( $('#combobox_motivos').val() != '' ) {
@@ -326,7 +300,7 @@
 						ok = false;
 					}
 				}else{
-					alert('Debe seleccionar una motivo.');
+					alert('Debe ingresar una motivo.');
 					$('#combobox_motivos').focus();
 					ok = false;
 				}
@@ -335,7 +309,6 @@
 
 			function validar_valor(celda){
 				var fila = celda.closest("tr");
-				//console.log(fila);
 
 				var ok;
 
@@ -367,20 +340,6 @@
 				$control.attr('disabled','disabled');
 			}
 
-			function validar_requeridos(){
-				$( "*[required]" ).each(function() {
-					if ( $(this).val() == "" ) {
-					  $(this).focus();
-					  control = false;
-					  alert('Este campo es requerido.' + $(this).prev('label').text() );
-					  return false;
-					}else{
-					  control = true;
-					}
-				});
-				return control;
-			}
-
 			function deshabilitar_campos_form_create()
 			{
 
@@ -399,13 +358,69 @@
 			function habilitar_campos_form_create()
 			{
 				$('#fecha').removeAttr('disabled');
-				
-				//$('.custom-combobox').show();
-
-				//$('#core_tercero_id').hide();
 				$('#core_tercero_id').removeAttr('disabled');
 				
 				$('#teso_tipo_motivo').removeAttr('disabled');
+			}
+
+			var valor_actual, elemento_modificar, elemento_padre;
+				
+			// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
+			$(document).on('dblclick','.elemento_modificar',function(){
+				
+				elemento_modificar = $(this);
+
+				elemento_padre = elemento_modificar.parent();
+
+				valor_actual = $(this).html();
+
+				elemento_modificar.hide();
+
+				elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+
+				document.getElementById('valor_nuevo').value = valor_actual;
+				document.getElementById('valor_nuevo').select();
+
+			});
+
+			// Si la caja de texto pierde el foco
+			$(document).on('blur','#valor_nuevo',function(){
+				guardar_valor_nuevo();
+			});
+
+			// Al presiona teclas en la caja de texto
+			$(document).on('keyup','#valor_nuevo',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Abortar la edición
+				if( x == 27 ) // 27 = ESC
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+		        	elemento_modificar.show();
+		        	return false;
+				}
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	guardar_valor_nuevo();
+				}
+			});
+
+			function guardar_valor_nuevo()
+			{
+				var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+				// Si no cambió el valor_nuevo, no pasa nada
+				if ( valor_nuevo == valor_actual) { return false; }
+
+				elemento_modificar.html( valor_nuevo );
+				elemento_modificar.show();
+
+				elemento_padre.find('#valor_nuevo').remove();
+
+				calcular_totales();
 			}
 		});
 	</script>

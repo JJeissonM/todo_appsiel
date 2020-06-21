@@ -503,12 +503,12 @@ class ModeloController extends Controller
         
         $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
 
+        $url_action = str_replace('id_fila', $registro->id, $acciones->update);
+        
         $form_create = [
-            'url' => str_replace('id_fila', $registro->id, $acciones->update),
+            'url' => $url_action,
             'campos' => $lista_campos
         ];
-
-        $url_action = str_replace('id_fila', $registro->id, $acciones->update);
 
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, $registro->descripcion);
 
@@ -734,7 +734,8 @@ class ModeloController extends Controller
         //} 
 
         //Personalización de la lista de campos
-        for ($i = 0; $i < $cantidad_campos; $i++) {
+        for ($i = 0; $i < $cantidad_campos; $i++)
+        {
 
             if ($lista_campos[$i]['name'] == 'core_tipo_doc_app_id') {
                 $lista_campos[$i]['opciones'] = $opciones;
@@ -767,8 +768,8 @@ class ModeloController extends Controller
                 }
             }
 
-            if ($lista_campos[$i]['name'] == 'teso_medio_recaudo_id') {
-
+            if ($lista_campos[$i]['name'] == 'teso_medio_recaudo_id')
+            {
                 $registros = TesoMedioRecaudo::all();
                 $vec_m[''] = '';
                 foreach ($registros as $fila) {
@@ -776,6 +777,13 @@ class ModeloController extends Controller
                 }
 
                 $lista_campos[$i]['opciones'] = $vec_m;
+                
+
+                if ($accion == 'edit')
+                {
+                    $medio_recaudo = TesoMedioRecaudo::find( $lista_campos[$i]['value'] );
+                    $lista_campos[$i]['value'] = $lista_campos[$i]['value'] . '-' . $medio_recaudo->comportamiento;
+                }
             }
 
             unset($vec_m);
@@ -1009,7 +1017,6 @@ class ModeloController extends Controller
                     {
                         $lista_campos[$i]['value'] = ModeloEavValor::where(["modelo_padre_id" => Input::get('modelo_padre_id'), "registro_modelo_padre_id" => Input::get('registro_modelo_padre_id'), "modelo_entidad_id" => Input::get('modelo_entidad_id'), "core_campo_id" => $lista_campos[$i]['id']])->value('valor');
                     } else {
-                        //dd( [ $lista_campos, $registro ] );
                         $lista_campos[$i]['value'] = $registro->$nombre_campo;
                     }
                 }
@@ -1192,4 +1199,30 @@ class ModeloController extends Controller
         }
         return $randomString;
     }
+
+
+
+    public function create_registro_modelo( $modelo_id )
+    {
+        $modelo = Modelo::find( $modelo_id );
+
+        $lista_campos = $this->get_campos_modelo( $modelo, '', 'create');
+
+        if ( method_exists(app( $modelo->name_space ), 'get_campos_adicionales_create') )
+        {
+            $lista_campos = app( $modelo->name_space )->get_campos_adicionales_create($lista_campos);
+        }
+
+        $form_create = [
+                        'url' => 'web', // Siempre se almacenará con ModeloController@store()
+                        'campos' => $lista_campos
+                        ];
+
+        $miga_pan = [];
+
+        $vista = 'layouts.registro_modelo_create';
+
+        return view( $vista, compact( 'modelo', 'form_create', 'miga_pan', 'archivo_js') );
+    }
+
 }

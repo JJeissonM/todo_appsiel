@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Http\Controllers\Sistema\ModeloController;
+use App\Http\Controllers\Sistema\EmailController;
 
 use Input;
 use DB;
@@ -17,6 +18,7 @@ use View;
 use App\Sistema\Modelo;
 use App\Core\Empresa;
 use App\Core\FirmaAutorizada;
+use App\Core\Tercero;
 
 use App\Salud\ExamenTieneVariables;
 use App\Salud\ExamenTieneOrganos;
@@ -73,12 +75,8 @@ class FormulaOpticaController extends ModeloController
         return view('layouts.create',compact('form_create','miga_pan','archivo_js','url_action'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
+
     public function store(Request $request)
     {
         $general = new ModeloController();
@@ -93,25 +91,14 @@ class FormulaOpticaController extends ModeloController
 
    
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+   public function edit($id)
     {
         $general = new ModeloController();
         return $general->edit( $id );
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
+
     public function update(Request $request, $id)
     {
         // Se obtiene el modelo según la variable modelo_id de la url
@@ -151,18 +138,14 @@ class FormulaOpticaController extends ModeloController
             }
         }
 
-        //dd( $request->all() );
-
         $registro->fill( $request->all() );
         $registro->save();
 
         return redirect('consultorio_medico/pacientes/'.$request->paciente_id.'?id='.$request->url_id.'&id_modelo=95')->with('flash_message','Fórmula MODIFICADA correctamente.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     */
+    
+
     public function eliminar_formula_optica(Request $request)
     {
       // 1ro. Eliminar la asociación de exámenes a la formula
@@ -173,6 +156,8 @@ class FormulaOpticaController extends ModeloController
       return redirect( $request->ruta_redirect )->with('mensaje_error', 'Fórmula óptica ELIMINADA correctamente.');
     }
 
+    
+
     public function quitar_examen_de_formula($formula_id, $examen_id)
     {
         DB::table('salud_formula_tiene_examenes')->where( [ 'formula_id' => $formula_id, 'examen_id' => $examen_id] )->delete();
@@ -180,19 +165,30 @@ class FormulaOpticaController extends ModeloController
         return 1;
     }
 
+    
     public function asociar_examen_a_formula($formula_id, $examen_id)
     {
         DB::table('salud_formula_tiene_examenes')->insert( [ 'formula_id' => $formula_id, 'examen_id' => $examen_id] );
         return 1;
     }
 
+    
     public function imprimir($id)
     {
+        $view = $this->generar_documento_vista( $id, Input::get('paciente_id'), Input::get('consulta_id') );
 
-        $paciente_id = Input::get('paciente_id');
-        $consulta_id = Input::get('consulta_id');
-        $formula_id = $id;
+        $tam_hoja = 'Letter';
+        $orientacion='portrait';
 
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
+
+        return $pdf->stream('formula_optica.pdf');
+    }
+
+
+    public function generar_documento_vista( $formula_id, $paciente_id, $consulta_id )
+    {
         $consulta = ConsultaMedica::find($consulta_id);
 
         $datos_historia_clinica = Paciente::datos_basicos_historia_clinica( $paciente_id );
@@ -238,26 +234,18 @@ class FormulaOpticaController extends ModeloController
 
         $empresa = Empresa::find( Auth::user()->empresa_id );
 
-        // Se prepara el PDF
-        $tam_hoja = 'Letter';//array(0, 0, 612.00, 792.00);//
-        $orientacion='portrait';
-
-        $view =  View::make('consultorio_medico.formula_optica_print_pdf', compact('consulta','datos_historia_clinica','examenes','profesional_salud','empresa','formula','firma_autorizada'))->render();
-
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
-
-        //return $view;
-        return $pdf->stream('formula_optica.pdf');//stream();
+        return View::make('consultorio_medico.formula_optica_print_pdf', compact('consulta','datos_historia_clinica','examenes','profesional_salud','empresa','formula','firma_autorizada'))->render();
     }
+
 
     public function form_agregar_formula_factura()
     {
 
-        $consultas = Paciente::find( Input::get('paciente_id') )->consultas;
+        $consultas = Paciente::where( 'core_tercero_id', Input::get('core_tercero_id') )->first()->consultas;
 
         $tabla = '<table class="table table-striped">
                     <thead>
+                        <th style="display: none;">formula_id</th>
                         <th>Fecha</th>
                         <th>Consulta</th>
                         <th>Formula</th>
@@ -272,12 +260,21 @@ class FormulaOpticaController extends ModeloController
             {
                 foreach ( $una_formula->examenes as $un_examen )
                 {
-                    
+                    $btn_ver_examen = '<button class="btn btn-default btn-xs btn_ver_examen" data-paciente_id="'.$una_consulta->paciente_id.'" data-consulta_id="'.$una_consulta->id.'" data-examen_id="'.$un_examen->id.'" data-examen_descripcion="'.$un_examen->descripcion.'"> <i class="fa fa-eye"></i> '.$un_examen->descripcion.' </button>';
+
+                    $tipo_de_lentes = TipoLente::find( $una_formula->tipo_de_lentes );
+
+                    if ( is_null( $tipo_de_lentes ) )
+                    {
+                        $tipo_de_lentes = (object)['descripcion'=>''];
+                    }
+
                     $tabla .= '<tr>
+                                <td style="display: none;"><input type="hidden" name="formula_id" value="'.$una_formula->id.'"></td>
                                 <td>'.$una_consulta->fecha.'</td>
                                 <td> #'.$una_consulta->id.'</td>
-                                <td>'.TipoLente::find( $una_formula->tipo_de_lentes )->descripcion.'</td>
-                                <td>'.$un_examen->descripcion.'</td>
+                                <td>'.$tipo_de_lentes->descripcion.'</td>
+                                <td>'.$btn_ver_examen.'</td>
                                 <td> <button class="btn btn-success btn-xs btn_confirmar" style="display: inline;"><i class="fa fa-check"></i></button> </td>
                             </tr>';
                 }
@@ -287,5 +284,32 @@ class FormulaOpticaController extends ModeloController
         $tabla .= '</tbody> </table>';
 
         return $tabla;        
-    } 
+    }
+
+
+    public function enviar_por_email( $formula_id )
+    {
+        $documento_vista = $this->generar_documento_vista( $formula_id, Input::get('paciente_id'), Input::get('consulta_id') );
+
+        $empresa = Empresa::find( Auth::user()->empresa_id );
+
+        $formula = FormulaOptica::find( $formula_id );
+
+        $paciente = Paciente::find( $formula->paciente_id );
+
+        $tercero = Tercero::find( $paciente->core_tercero_id );
+
+        $asunto = 'Fórmula de Optometría. Paciente: '.$tercero->descripcion.' Historia clínica No. '.$paciente->codigo_historia_clinica;
+
+        $cuerpo_mensaje = 'Saludos, <br><br> Le hacemos llegar su '. $asunto . 
+                            ' <br><br> <p style="width: 100%; text-align: center; color: red;"> <i> Su proxima cita de control es en <b> '.$formula->proximo_control . ' </b> </i> </p>'.
+                            ' <br><br> Atentamente, <br> '.$empresa->descripcion.
+                            '<br> Tel. '.$empresa->telefono1.
+                            '<br> Dir. '.$empresa->direccion1.
+                            '<br><br> <p style="width: 100%; text-align: center;"> <b> <i> Recuerde que puede consultar su formula en <a href="'.$empresa->pagina_web.'" target="_blank" >'.$empresa->pagina_web . '</a> </i> </b> </p>';
+
+        $vec = EmailController::enviar_por_email_documento( $empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista );
+
+        return redirect( 'consultorio_medico/pacientes/'.$paciente->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( $vec['tipo_mensaje'], $vec['texto_mensaje'] );
+    }
 }   

@@ -37,6 +37,9 @@ Route::get('a_i/{id_registro}', 'Sistema\ModeloController@activar_inactivar');
 Route::get('modelo/eliminar/{id_registro}', 'Sistema\ModeloController@eliminar_registro');
 
 
+Route::get('core_create_registro_modelo/{modelo_id}', 'Sistema\ModeloController@create_registro_modelo');
+
+
 Route::auth();
 
 //          C O R E

@@ -49,7 +49,8 @@ class ProcesoController extends ModeloController
                         'sys_reportes',
                         'sys_reporte_tiene_campos',
                         'sys_tipos_transacciones',
-                        'migrations'];
+                        'migrations',
+                        'pw_seccion'];
 
         return view( 'core.procesos.exportar_importar_registros_bd', compact( 'miga_pan', 'tablas_bd') );
     }
@@ -238,7 +239,8 @@ class ProcesoController extends ModeloController
         $opciones = Role::all();
         
         $roles['']='';
-        foreach ($opciones as $opcion){
+        foreach ($opciones as $opcion)
+        {
             if ( $opcion->id != 1) // Exceptuando al SuperAdmin
             {
                 $roles[$opcion->id] = $opcion->name;

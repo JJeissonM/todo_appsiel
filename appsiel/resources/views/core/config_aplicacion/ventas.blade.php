@@ -1,21 +1,5 @@
 @extends('layouts.principal')
 
-@section('estilos_1')
-	<style type="text/css">
-		#div_cargando{
-			display: none;/**/
-			color: #FFFFFF;
-			background: #3394FF;
-			position: fixed; /*El div será ubicado con relación a la pantalla*/
-			/*left:0px; A la derecha deje un espacio de 0px*/
-			/*right:0px; A la izquierda deje un espacio de 0px*/
-			bottom:0px; /*Abajo deje un espacio de 0px*/
-			/*height:50px; alto del div*/
-			z-index:999;
-		}
-	</style>
-@endsection
-
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
 	<hr>

@@ -24,6 +24,8 @@ use App\Salud\ConsultaMedica;
 use App\Salud\ExamenMedico;
 use App\Salud\Paciente;
 
+use App\Ventas\Cliente;
+
 class PacienteController extends Controller
 {
     public function __construct()
@@ -46,7 +48,8 @@ class PacienteController extends Controller
 
         /* Almacenar datos del Tercero y ... 
             Asignar datos adicionales al Paciente creado */
-        $registro_creado->core_tercero_id = Tercero::crear_nuevo_tercero($general, $request)->id;
+        $tercero = Tercero::crear_nuevo_tercero($general, $request);
+        $registro_creado->core_tercero_id = $tercero->id;
 
         // Consecutivo Historia Clínica
         // Se obtiene el consecutivo para actualizar el logro creado
@@ -59,6 +62,14 @@ class PacienteController extends Controller
         $registro_creado->codigo_historia_clinica = $consecutivo;
 
         $registro_creado->save();
+
+        // Crear Tercero como cliente
+        // Datos del Cliente
+        $cliente = new Cliente;
+        $cliente->fill( 
+                        ['core_tercero_id' => $tercero->id, 'encabezado_dcto_pp_id' => 1, 'clase_cliente_id' => 1, 'lista_precios_id' => 1, 'lista_descuentos_id' => 1, 'vendedor_id' => 1,'inv_bodega_id' => 1, 'zona_id' => 1, 'liquida_impuestos' => 1, 'condicion_pago_id' => 1, 'estado' => 'Activo' ]
+                         );
+        $cliente->save();
 
         return redirect( 'consultorio_medico/pacientes/'.$registro_creado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
     }
@@ -73,8 +84,6 @@ class PacienteController extends Controller
     {
         $secciones_consulta = json_decode( config('consultorio_medico.secciones_consulta') );
 
-        $general = new ModeloController();
-
         // Se obtiene el modelo según la variable modelo_id de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
 
@@ -86,21 +95,16 @@ class PacienteController extends Controller
         
         $datos_historia_clinica = Paciente::datos_basicos_historia_clinica( $id );
         
-        //$miga_pan = $general->get_miga_pan($modelo,$registro->descripcion);
 
         $miga_pan = MigaPan::get_array( Aplicacion::find( Input::get('id') ), $modelo, 'Historia Clínica' );
 
-        $url_crear = '';
-        $url_edit = '';
+        $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo');
+        
+        $model_controller = new ModeloController();
+        $acciones = $model_controller->acciones_basicas_modelo( $modelo, $variables_url );
 
-        // Se le asigna a cada variable url, su valor en el modelo correspondiente
-        $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
-        if ($modelo->url_crear!='') {
-            $url_crear = $modelo->url_crear.$variables_url;    
-        }
-        if ($modelo->url_edit!='') {
-            $url_edit = $modelo->url_edit.$variables_url;
-        }
+        $url_crear = $acciones->create;
+        $url_edit = $acciones->edit;
 
         // RELATIVO A CONSULTAS
         $modelo_consultas = Modelo::where('modelo','salud_consultas')->first();

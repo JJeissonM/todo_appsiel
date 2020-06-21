@@ -66,6 +66,7 @@
 												<b>FECHA: </b>{{$m->fecha}}<br>
 												<b>SEDE: </b>{{$m->sede}}<br>
 												<b>REVISADO: </b>{{$m->revisado}}<br>
+												<b>DOCUMENTO SOPORTE: </b>@if($m->documento!=null)<a onclick="ir(this.id)" id="{{$m->documento}}" style="cursor: pointer; color: blue;">Ver/Descargar</a>@else --- @endif<br>
 												<a onclick="mantenimiento(this.id)" id="{{$m->id}}" data-toggle="modal" data-target="#myModal1" style="margin-bottom: 5px;" class="btn btn-xs btn-primary"><i class="fa fa-plus"></i> Agregar Reporte</a><br>
 												<a onclick="observacion(this.id)" id="{{$m->id}}" data-toggle="modal" data-target="#myModal2" class="btn btn-xs btn-primary"><i class="fa fa-plus"></i> Agregar Observación</a>
 											</div>
@@ -203,6 +204,11 @@
 
 	function obs() {
 		$("#form-obs").submit();
+	}
+
+	function ir(id) {
+		var url = "{{url('')}}/" + id;
+		window.open(url, '', 'width=800,height=500,left=50,top=50,toolbar=yes');
 	}
 </script>
 @endsection

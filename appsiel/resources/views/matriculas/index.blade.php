@@ -34,7 +34,7 @@
 					//echo Lava::render('PieChart', 'MyStocks', 'stocks-chart');
 					echo Lava::render('BarChart', 'MyStocks', 'stocks-chart');
 					echo Lava::render('PieChart', 'Generos', 'stocks-chart2');
-					//print_r($generos);
+					//dd($generos);
 				?>
 				<div class="row">
 					<div  class="col-sm-6">

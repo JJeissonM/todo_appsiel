@@ -12,12 +12,14 @@ class NavegacionController extends Controller
 {
 
 
-    public function create(){
+    public function create()
+    {
         $miga_pan = self::migapan();
         return view('web.navegacion.navegacion',compact('miga_pan'));
     }
 
-    public function migapan() {
+    public function migapan()
+    {
        return [
            [
                'url' => 'pagina_web'.'?id='. Input::get('id'),
@@ -30,7 +32,8 @@ class NavegacionController extends Controller
        ];
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
     }
 

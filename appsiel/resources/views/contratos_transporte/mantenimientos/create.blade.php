@@ -24,23 +24,27 @@
 				<div class="panel panel-primary">
 					<div class="panel-heading">Crear Mantenimiento</div>
 					<div class="panel-body">
-						{{ Form::open(['route'=>'mantenimiento.store','method'=>'post','class'=>'form-horizontal']) }}
+						{{ Form::open(['route'=>'mantenimiento.store','method'=>'post','class'=>'form-horizontal','files'=>'true']) }}
 						<h4>Datos del Mantenimiento</h4>
 						<input type="hidden" name="vehiculo_id" value="{{$v->id}}" />
 						<input type="hidden" name="anioperiodo_id" value="{{$ap->id}}" />
 						<input type="hidden" name="variables_url" value="{{$variables_url}}" />
 						<div class="form-group">
-							<div class="col-md-4">
+							<div class="col-md-6">
 								<label class="control-label">Fecha Mantenimiento</label>
 								<input type="date" class="form-control" name="fecha" required />
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-6">
 								<label class="control-label">Lugar Realización (Sede)</label>
 								<input type="text" class="form-control" name="sede" required />
 							</div>
-							<div class="col-md-4">
+							<div class="col-md-6">
 								<label class="control-label">Revisado (SI, NO, OK, valores según entidad)</label>
 								<input type="text" class="form-control" name="revisado" required />
+							</div>
+							<div class="col-md-6">
+								<label class="control-label">Documento Soporte Del Mantenimiento (Opcional)</label>
+								<input type="file" class="form-control" name="documento" />
 							</div>
 						</div>
 						<div class="table-responsive col-md-6" id="table_content">
