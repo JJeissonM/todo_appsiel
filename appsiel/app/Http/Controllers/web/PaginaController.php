@@ -212,7 +212,6 @@ class PaginaController extends Controller
 
     public function showPage($slug)
     {
-
         $pagina = Pagina::where('slug', $slug)->first();
 
         if( is_null( $pagina ) )
@@ -221,30 +220,26 @@ class PaginaController extends Controller
         }
 
         $configuracion = Configuraciones::all()->first();
-
+        
         $widgets = $pagina->widgets()->orderBy('orden')->get();
 
         $view = [];
         $links = [];
         $estilos = [];
         $scripts = [];
-
         if (count($widgets) > 0)
         {
-
             foreach ($widgets as $widget)
             {
                 $factory = new FactoryCompents($widget->seccion->nombre, $widget->id);
-
+                
                 $componente = $factory();
-
+                
                 if ($componente === false || $componente->DrawComponent() == false) continue;
-
-                $view[] = '<div id="' . str_slug($widget->seccion->nombre) . '">' . $componente->DrawComponent() . '</div>';
+                $view[] = "<div id='" . str_slug($widget->seccion->nombre) . "'>" . $componente->DrawComponent() . "</div>";
 
                 // Traer los elementos de diseño del widget
-                //$elements_design = WidgetsElementsDesign::where('widget_id',$widget->id)->first();
-                $elements_design = null;
+                $elements_design = WidgetsElementsDesign::where('widget_id',$widget->id)->first();
 
                 if( $elements_design != null )
                 {
@@ -254,7 +249,6 @@ class PaginaController extends Controller
                 }
             }
         }
-
         return view('web.index', compact('view', 'pagina', 'configuracion', 'links','estilos','scripts'));
     }
 

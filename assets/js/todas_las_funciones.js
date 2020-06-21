@@ -5,7 +5,6 @@ $(document).ready(function(){
 	var direccion = location.href;
 
 	var documento_inicial = parseInt( $("#numero_identificacion").val() );
-	var email_inicial = $("#email").val();
 
 	/*
 		WARNING: FALTA VALIDAR UN TERCERO DE UNA EMPRESA DIFERENTE
@@ -49,39 +48,6 @@ $(document).ready(function(){
 	        
 		});
 	});
-
-
-	// !!!! Solo valida en la tabla core_tereceros
-	$('#email').keyup(function(){
-		var email = $("#email").val();
-
-		if( direccion.search("edit") == -1) {
-			url = '../core/validar_email/';
-		}else{
-			url = '../../../core/validar_email/';
-		}
-
-		$.get( url + email, function( datos ) 
-		{
-	        if ( datos != '') 
-	        {
-	        	if ( datos == email_inicial ) 
-	        	{
-	        		// No hay problema
-	        		$('#bs_boton_guardar').show();
-	        	}else{
-	        		alert( "Ya existe una persona con ese EMAIL. Cambié el EMAIL o no podrá guardar el registro." );
-	        		$('#bs_boton_guardar').hide();
-	        	}
-	        	
-	        }else{
-	        	// Número de identificación
-	        	$('#bs_boton_guardar').show();
-	        }
-	        
-		});
-	});
-
 
 
 	/*
@@ -224,6 +190,48 @@ $(document).ready(function(){
 		    tA.style.display = 'none';
 		    tA.click();
 		    tA.parentNode.removeChild(tA)
+		}
+	});
+
+	$(document).on('change','#tipo',function(){
+
+		console.log( $(this).val() );
+
+		switch( $(this).val() )
+		{
+			case 'Persona natural':
+				$('#razon_social').parent().parent().fadeOut();
+				$('#nombre1').parent().parent().fadeIn();
+				$('#otros_nombres').parent().parent().fadeIn();
+				$('#apellido1').parent().parent().fadeIn();
+				$('#apellido2').parent().parent().fadeIn();
+				break;
+
+			case 'Persona jurídica':
+				$('#razon_social').parent().parent().fadeIn();
+				$('#nombre1').parent().parent().fadeOut();
+				$('#otros_nombres').parent().parent().fadeOut();
+				$('#apellido1').parent().parent().fadeOut();
+				$('#apellido2').parent().parent().fadeOut();	
+
+				break;
+
+			case 'Interno':
+				$('#razon_social').parent().parent().fadeOut();
+				$('#nombre1').parent().parent().fadeOut();
+				$('#otros_nombres').parent().parent().fadeOut();
+				$('#apellido1').parent().parent().fadeOut();
+				$('#apellido2').parent().parent().fadeOut();	
+
+				break;
+				
+			default:
+				$('#razon_social').parent().parent().fadeIn();
+				$('#nombre1').parent().parent().fadeIn();
+				$('#otros_nombres').parent().parent().fadeIn();
+				$('#apellido1').parent().parent().fadeIn();
+				$('#apellido2').parent().parent().fadeIn();	
+				break;
 		}
 	});
 });
