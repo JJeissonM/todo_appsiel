@@ -2,17 +2,20 @@
 <link rel="stylesheet" href="{{asset('assets/tienda/css/normalize.css')}}">
 <link rel="stylesheet" href="{{asset('assets/tienda/css/custom.css')}}">
 <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
+<link rel="stylesheet" href="{{asset('assets/css/toastr.min.css')}}">
+
 
 @include('web.tienda.header')
 
 @include( 'web.tienda.carousel' )
+
+@include('web.tienda.search')
 
 <main style="background: white;">
     <div class="main-container col2-left-layout">
         <div class="container">
             <div class="container-inner">
                 <div class="main">
-
                     <div class="main-inner">
                         <div class="row">
                             <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -80,9 +83,9 @@
                                                                     <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
                                                             </div>
                                                             <div class="actions agregar-carrito">
-                                                                <button type="button" class="button btn-cart "
-                                                                        data-original-title="Agregar al carro de compras" rel="tooltip"><i
-                                                                            class="fa fa-shopping-cart"></i><span> Comprar</span>
+                                                                <button type="button" class="btn-cart">
+                                                                    <i class="fa fa-shopping-cart"></i>
+                                                                    Comprar
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -121,7 +124,6 @@
 
 @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
 
-<script src="{{asset('assets/tienda/js/categories.js')}}"></script>
 
 <script src="{{asset('js/carrito/app.js')}}"></script>
 
@@ -180,3 +182,4 @@
                 });
     }
 </script>
+

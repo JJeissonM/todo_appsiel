@@ -17,6 +17,12 @@ img {
     z-index: 400;
 }
 
+@media(max-width: 468px){
+    .header{
+        border-bottom: none !important;
+    }
+}
+
 .header-content {
     display: flex;
     justify-content: space-between;
@@ -29,9 +35,6 @@ img {
     padding: 5px 0;
 }
 
-::-webkit-input-placeholder { /* Edge */
-    color: white;
-}
 
 .header .logo strong {
     position: absolute;

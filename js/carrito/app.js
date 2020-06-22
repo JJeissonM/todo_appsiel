@@ -33,8 +33,10 @@ function comprarProducto(e) {
          //e.target.style.backgroundColor = 'rgb(249, 123, 0)';
           let producto = e.target.parentElement.parentElement;
           // Enviamos el curso seleccionado para tomar sus datos
+          toastr.success(`${producto.querySelector('.product-name a').textContent} agregado al carrito`)
           leerDatosProducto(producto);
      }
+
 }
 // Lee los datos del curso
 function leerDatosProducto(producto) {
