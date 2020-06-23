@@ -33,8 +33,10 @@ function comprarProducto(e) {
          //e.target.style.backgroundColor = 'rgb(249, 123, 0)';
           let producto = e.target.parentElement.parentElement;
           // Enviamos el curso seleccionado para tomar sus datos
+          toastr.success(`${producto.querySelector('.product-name a').textContent} agregado al carrito`)
           leerDatosProducto(producto);
      }
+
 }
 // Lee los datos del curso
 function leerDatosProducto(producto) {
@@ -44,12 +46,12 @@ function leerDatosProducto(producto) {
           titulo: producto.querySelector('.product-name a').textContent,
           precio: producto.querySelector('.price-box .price').textContent,
           cantidad: 1,
+          total:this.precio*this.cantidad,
           id: producto.getAttribute('data-id')
      }
 
      insertarCarrito(infoProducto);
 }
-
 // Muestra el curso seleccionado en el Carrito
 function insertarCarrito(producto) {
 
@@ -127,9 +129,7 @@ function vaciarCarrito() {
 
      return false;
 }
-
 // Almacena cursos en el carrito a Local Storage
-
 function guardarProductoLocalStorage(producto) {
 
     let productos = [];
@@ -151,7 +151,6 @@ function guardarProductoLocalStorage(producto) {
 
     localStorage.setItem('productos', JSON.stringify(productos));
 }
-
 
 // Comprueba que haya elementos en Local Storage
 function obtenerProductosLocalStorage() {

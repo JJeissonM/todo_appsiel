@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Ventas;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 use Auth;
 use DB;
 use View;
@@ -13,9 +11,6 @@ use Input;
 use Form;
 
 
-use Spatie\Permission\Models\Permission;
-
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;

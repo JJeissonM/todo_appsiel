@@ -3,9 +3,9 @@
     $configuracion = App\web\Configuraciones::all()->first();
 ?>
 
-<header style="background: {{ $configuracion->color_primario }}">
+<header>
     <div class="top-link" style="background: {{ $configuracion->color_primario }};">
-        <div class="container">
+        <div class="container" style="padding: 0 ">
             <div class="top-link-inner">
                 <div class="row">
                     <div class="col-md-3 col-sm-3 col-xs-12">
@@ -23,9 +23,7 @@
                             <li class="first"><a
                                         href="{{route('tienda.micuenta')}}"
                                         title="Mi Cuenta">Mi Cuenta</a></li>
-                            <li><a href="#"
-                                   title="My Wishlist">Mi Lista</a></li>
-                            <li><a href="#"
+                            <li><a href="{{route("tienda.comprar")}}"
                                    title="My Cart" class="top-link-cart">Mi Carrito</a></li>
                             <li><a href="#"
                                    title="Checkout" class="top-link-checkout">Revisa</a></li>
@@ -39,70 +37,20 @@
                                             title="Registrarse"
                                             onclick="registrarse( event )">Registrarse</a>
                                 </li>
+                            <!--
                                 <li class=" last">
                                     <button onclick="document.getElementById('id01').style.display='block'" title="Registrarse" class="_no_abrir_modal" data-elemento_id="218" style="background: transparent; border: 0px;">Registrarse 2</button>
 
-                                </li>
+                                </li>-->
                             @else
+
+
                                 <li class=" last"><a
                                             href="{{url('/logout')}}"
                                             title="Cerra sesión">Cerrar Sesión</a>
                                 </li>
                             @endif
                         </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="header">
-        <div class="container">
-            <div class="header-inner">
-                <div class="row">
-                    <div class="header-content clearfix">
-                        <div class="top-logo col-xs-12 col-md-3 col-sm-12">
-                            <a href="{{url('/')}}" title="{{$empresa->descripcion}}"
-                               class="logo"><strong>{{$empresa->descripcion}}</strong><img
-                                        src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}"
-                                        alt="Magento Commerce"></a>
-                        </div>
-                        <form class="col-xs-12 col-md-6 col-sm-12 search" action="{{route('tienda.busqueda')}}" method="GET" onsubmit="buscar_descripcion(event)" id="form_consulta">
-                            <div class="box-search-bar clearfix">
-                                <input type="text" class="input-text" autocomplete="off" id="search" name="search" required
-                                       placeholder="Buscar por producto, categoría... ">
-                                <button type="submit" title="Search" class="btn"><i
-                                            class="fa fa-search"></i></button>
-                            </div>
-                        </form>
-                        <div class="col-xs-12 col-md-3 col-sm-12">
-                            <ul class="nav-categorias ">
-                                <li class="submenu nav-item">
-                                    <div class="item-nav">
-                                        <i class="fa fa-cart-plus" aria-hidden="true"></i>
-                                        <p>Mi carrito</p>
-                                        <span class="item"></span>
-                                    </div>
-                                    <div id="carrito">
-                                        <table id="lista-carrito" class="u-full-width">
-                                            <thead>
-                                            <tr>
-                                                <th>Imagen</th>
-                                                <th>Nombre</th>
-                                                <th>Precio</th>
-                                                <th>Cantidad</th>
-                                                <th></th>
-                                            </tr>
-                                            </thead>
-                                            <tbody></tbody>
-                                        </table>
-                                        <a href="#" onclick="window.location.href='{{route("tienda.comprar")}}'" style="color:white;background-color:red;" id="comprar" class="button u-full-width">Comprar</a>
-                                        <a href="#" id="vaciar-carrito" class="button u-full-width">Vaciar
-                                            Carrito</a>
-
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
                     </div>
                 </div>
             </div>

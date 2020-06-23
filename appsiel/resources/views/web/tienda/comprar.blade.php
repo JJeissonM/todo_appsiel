@@ -49,12 +49,12 @@
             <div class="col-md-4 col-sm-12">
                 <div class="contenido">
                     <p>Subtotal</p>
-                    <p>$ 19.000</p>
+                    <p id="subtotal">$ 19.000</p>
                 </div>
 
                 <div class="total_compra">
                     <p>Total: </p>
-                    <p><span style="color: red">$ 19.000</span></p>
+                    <p><span style="color: red" id="total">$ 19.000</span></p>
                 </div>
 
                 <div class="terminos">

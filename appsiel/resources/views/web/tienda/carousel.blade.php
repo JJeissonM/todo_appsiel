@@ -52,9 +52,9 @@
   </div>
 
   <!-- Left and right controls -->
-  <a class="carousel-control-prev" href="#myCarousel" data-slide="prev">
+  <a class="carousel-control-prev" href="#myCarousel" data-slide="prev" >
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-    <span class="sr-only">Anterior</span>
+    <span class="sr-only" >Anterior</span>
   </a>
   <a class="carousel-control-next" href="#myCarousel" data-slide="next">
     <span class="carousel-control-next-icon" aria-hidden="true"></span>
