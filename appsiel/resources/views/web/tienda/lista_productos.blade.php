@@ -9,7 +9,7 @@
         @foreach($items as $item)
             <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
                 <div class="item-inner">
-                    <div class="ma-box-content">
+                    <div class="ma-box-content" data-id="{{$item->id}}">
                         <div class="products clearfix">
                             <a href=""
                                title="Fusce aliquam" class="product-image">
