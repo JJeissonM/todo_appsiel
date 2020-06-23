@@ -63,6 +63,9 @@
 			$('#btn_revisar').click(function(e){
 				e.preventDefault();
 
+
+				$("#div_resultado").html('');
+
 				if ( !validar_requeridos() ) { return false; }
 				$('#div_spin').show();
 				var form = $("#form-revisar");
