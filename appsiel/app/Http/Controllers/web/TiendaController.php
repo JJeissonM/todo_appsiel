@@ -3,12 +3,9 @@
 namespace App\Http\Controllers\web;
 
 use App\Core\Tercero;
-use App\Http\Controllers\Salud\ResultadoExamenMedicoController;
 use App\Inventarios\InvProducto;
 use App\User;
 use App\Ventas\ClienteWeb;
-use App\Ventas\ListaDctoDetalle;
-use App\Ventas\ListaPrecioDetalle;
 use App\web\Tienda;
 use Form;
 use Illuminate\Http\Request;
