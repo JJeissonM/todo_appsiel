@@ -31,8 +31,6 @@
 
 				@for($k=0;$k<$cantidad_estudiantes;$k++)		
 					<?php 
-
-						$linea=1; 
 						$logros="logros".$k;
 					?>
 
