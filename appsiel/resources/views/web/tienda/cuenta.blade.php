@@ -506,7 +506,7 @@
             </div>
         </div>
     </main>
-    @include('web.tienda.footer')
+    {!! Form::footer($footer,$redes,null,'small')  !!}
 @endsection
 
 @section('script')

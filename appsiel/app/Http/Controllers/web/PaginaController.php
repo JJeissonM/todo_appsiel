@@ -187,11 +187,10 @@ class PaginaController extends Controller
             ['seccion_id', $request->seccion_id]
         ])->first();
 
-        if ($exist) {
+        /*if ($exist) {
             $message = "Sección ya registrada en la pagina actual selecionada";
             return redirect()->back()->with('mensaje_error', $message)->withInput($request->input());
-        }
-
+        }*/
 
         $widget = new Widget();
         $widget->pagina_id = $request->pagina_id;

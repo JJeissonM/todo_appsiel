@@ -4,9 +4,6 @@ namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\web\services\FactoryCompents;
 use App\web\Widget;
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 class SeccionController extends Controller
@@ -27,6 +24,7 @@ class SeccionController extends Controller
             $factory = new FactoryCompents($widget->seccion->nombre,$widget->id);
 
             $componente = $factory();
+
             if(!$componente){
                 return redirect()->back()->with('flash_message','el componente selecciónado no se encuentra registrado');
             }

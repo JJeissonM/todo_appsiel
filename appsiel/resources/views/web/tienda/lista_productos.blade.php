@@ -1,11 +1,9 @@
 @if( empty( $items->toArray()['data'] ) )
-
     <div class="alert alert-warning">
         <strong>Lo sentimos, no se encontraron resultados para "{{$texto}}"</strong> 
         <br>
         Intente utilizar otras palabras para la busqueda.
     </div>
-        
 @else
     <ul class="products-grid row first odd">
         @foreach($items as $item)
@@ -33,10 +31,11 @@
                         <span class="regular-price" id="product-price-1">
                             <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
                         </div>
-                        <div class="actions">
-                            <button type="button" class="button btn-cart"
-                                    data-original-title="Add to Cart" rel="tooltip"><i
-                                        class="fa fa-shopping-cart"></i><span>Comprar</span></button>
+                        <div class="actions agregar-carrito">
+                            <button type="button" class="btn-cart">
+                                <i class="fa fa-shopping-cart"></i>
+                                Comprar
+                            </button>
                         </div>
                     </div>
                 </div>
