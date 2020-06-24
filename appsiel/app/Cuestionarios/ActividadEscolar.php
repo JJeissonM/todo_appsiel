@@ -18,7 +18,7 @@ class ActividadEscolar extends Model
 {
     protected $table = 'sga_actividades_escolares'; 
 
-    protected $fillable = ['descripcion','tematica','instrucciones','tipo_recurso','url_recurso','cuestionario_id','fecha_entrega','fecha_desde','fecha_hasta','periodo_id','curso_id','asignatura_id','estado'];
+    protected $fillable = ['descripcion','tematica','instrucciones','tipo_recurso','url_recurso','cuestionario_id','fecha_entrega','fecha_desde','fecha_hasta','periodo_id','curso_id','asignatura_id','estado','created_by'];
 
     public $encabezado_tabla = ['Título','Temática','Fecha de entrega','Curso','Asignatura','Estado','Acción'];
     
