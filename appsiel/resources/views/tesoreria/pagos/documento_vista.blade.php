@@ -1,5 +1,5 @@
 <table class="table table-bordered table-striped">
-    {{ Form::bsTableHeader(['Concepto','Tercero','Detalle','Valor']) }}
+    {{ Form::bsTableHeader(['Motivo','Tercero','Detalle','Valor']) }}
     <tbody>
         <?php 
         

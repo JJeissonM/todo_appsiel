@@ -18,7 +18,7 @@ class ActividadEscolar extends Model
 {
     protected $table = 'sga_actividades_escolares'; 
 
-    protected $fillable = ['descripcion','tematica','instrucciones','tipo_recurso','url_recurso','cuestionario_id','fecha_entrega','fecha_desde','fecha_hasta','periodo_id','curso_id','asignatura_id','estado'];
+    protected $fillable = ['descripcion','tematica','instrucciones','tipo_recurso','url_recurso','cuestionario_id','fecha_entrega','fecha_desde','fecha_hasta','periodo_id','curso_id','asignatura_id','estado','created_by'];
 
     public $encabezado_tabla = ['Título','Temática','Fecha de entrega','Curso','Asignatura','Estado','Acción'];
     
@@ -58,6 +58,7 @@ class ActividadEscolar extends Model
                                             'sga_asignaturas.descripcion AS campo5',
                                             'sga_actividades_escolares.estado AS campo6',
                                             'sga_actividades_escolares.id AS campo7')
+                                ->distinct('core_acl.user_id')
                                 ->get()
                                 ->toArray();
     }

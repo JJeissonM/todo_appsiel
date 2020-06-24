@@ -77,11 +77,11 @@
     </table>
     
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Concepto','Tercero','Detalle','Valor']) }}
+        {{ Form::bsTableHeader(['Motivo','Tercero','Detalle','Valor']) }}
         <tbody>
             <?php 
             
-            $total_abono = 0;
+                $total_abono = 0;
 
             ?>
             @foreach($doc_registros as $linea )
@@ -89,7 +89,7 @@
                 <tr>
                     <td> {{ $linea->motivo }} </td>
                     <td> {{ $linea->tercero }} </td>
-                    <td> {{ $linea->registro_operacion }} </td>
+                    <td> {{ $linea->detalle_operacion }} </td>
                     <td> {{ '$ '.number_format( $linea->valor, 0, ',', '.') }} </td>
                 </tr>
                 <?php 

@@ -83,7 +83,14 @@
 									  	@endif
 
 
-									  	{{ Form::bsBtnDropdown( 'Logros', 'success', 'tag', [ ['link' => 'academico_docente/ingresar_logros/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id').'&id_modelo='.$modelo_logros_id, 'etiqueta' => 'Ingresar'], ['link' => 'academico_docente/revisar_logros/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id').'&id_modelo='.$modelo_logros_id, 'etiqueta' => 'Consultar' ] ] ) }}
+									  	{{ Form::bsBtnDropdown( 'Logros', 'success', 'tag', [ 
+									  			['link' => 'academico_docente/ingresar_logros/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id').'&id_modelo='.$modelo_logros_id, 'etiqueta' => 'Ingresar'],
+									  			['link' => 'academico_docente/revisar_logros/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id').'&id_modelo='.$modelo_logros_id, 'etiqueta' => 'Consultar' ],
+									  			[
+									  				'link' => '#', 
+									  				'etiqueta' => '--------' ],
+									  			['link' => 'academico_docente/ingresar_logros/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id').'&id_modelo='.$modelo_logros_adicionales_id, 'etiqueta' => 'Logros adicionales'],
+									  			['link' => 'academico_docente/revisar_logros/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id').'&id_modelo='.$modelo_logros_adicionales_id, 'etiqueta' => 'Consultar adicionales'] ] ) }}
 									  	
 
 									  	@if( config('calificaciones.colegio_maneja_metas') == 'Si' )

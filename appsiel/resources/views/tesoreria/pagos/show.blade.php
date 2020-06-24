@@ -7,6 +7,11 @@
 @section('botones_acciones')
 	{{ Form::bsBtnCreate( 'tesoreria/pagos/create'.$variables_url ) }}
 	@if($doc_encabezado->estado != 'Anulado')
+
+        {{ Form::bsBtnEdit2( 'tesoreria/pagos/'.$id.'/edit'.$variables_url,'Editar') }}
+        
+        <a class="btn btn-default btn-xs" id="btn_duplicar" href="{{ url( 'teso_pagos_duplicar_documento/'.$id.$variables_url ) }}"><i class="fa fa-btn fa-clone"></i> Duplicar </a>
+
         <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-close"></i> Anular </button>
     @endif
 @endsection

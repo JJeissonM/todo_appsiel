@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use Input;
+use Auth;
 
 use App\Cuestionarios\Pregunta;
 use App\Cuestionarios\CuestionarioTienePregunta;
@@ -15,17 +16,16 @@ class Cuestionario extends Model
 {
     protected $table = 'sga_cuestionarios'; 
 
-    protected $fillable = ['colegio_id','descripcion','detalle','activar_resultados','estado'];
+    protected $fillable = ['colegio_id','descripcion','detalle','activar_resultados','estado','created_by'];
 
     public $encabezado_tabla = ['Nombre','Estado','Acción'];
 
     public static function consultar_registros()
     {
-        $registros = Cuestionario::select('sga_cuestionarios.descripcion AS campo1', 'sga_cuestionarios.estado AS campo2', 'sga_cuestionarios.id AS campo3')
+        return Cuestionario::where( 'created_by', Auth::user()->id )
+                    ->select('sga_cuestionarios.descripcion AS campo1', 'sga_cuestionarios.estado AS campo2', 'sga_cuestionarios.id AS campo3')
                     ->get()
                     ->toArray();
-
-        return $registros;
     }
 
     // El archivo js debe estar en la carpeta public
@@ -79,7 +79,8 @@ class Cuestionario extends Model
     public static function get_opciones_modelo_relacionado($cuestionario_id)
     {
         $vec['']='';
-        $opciones = Pregunta::get();
+        $opciones = Pregunta::where( 'created_by', Auth::user()->id )
+                                ->get();
         foreach ($opciones as $opcion)
         {
             $esta = CuestionarioTienePregunta::where('cuestionario_id',$cuestionario_id)->where('pregunta_id',$opcion->id)->get();
@@ -101,5 +102,19 @@ class Cuestionario extends Model
         $registro_modelo_hijo_id = 'pregunta_id';
 
         return compact('nombre_tabla','nombre_columna1','registro_modelo_padre_id','registro_modelo_hijo_id');
+    }
+
+    
+    public static function opciones_campo_select()
+    {
+        $opciones = Cuestionario::where('created_by', Auth::user()->id)->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
     }
 }

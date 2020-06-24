@@ -1,26 +1,5 @@
 @extends('layouts.principal')
 
-@section('estilos_1')
-	<style type="text/css">
-		#div_cargando{
-			display: none;/**/
-			color: #FFFFFF;
-			background: #3394FF;
-			position: fixed; /*El div será ubicado con relación a la pantalla*/
-			/*left:0px; A la derecha deje un espacio de 0px*/
-			/*right:0px; A la izquierda deje un espacio de 0px*/
-			bottom:0px; /*Abajo deje un espacio de 0px*/
-			/*height:50px; alto del div*/
-			z-index:0;
-		}
-
-		#ingreso_registros select {
-			width: 150px;
-		}
-
-	</style>
-@endsection
-
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
 ?>
@@ -63,7 +42,6 @@
 
 	@include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
 
-	<div id="div_cargando">Cargando...</div>
 @endsection
 
 @section('scripts')
@@ -89,6 +67,15 @@
 
 			var direccion = location.href;
 
+			$(document).on('keyup', '.text_input_sugerencias', function(){
+
+				var codigo_tecla_presionada = event.which || event.keyCode;
+
+				if ( codigo_tecla_presionada == 13 && $(this).val() == '' )
+			    {
+			    	$(this).parent().next().find(':input').focus();
+			    }
+			});
 
 			// Al presiona teclas en la caja de texto
 			$(document).on('keyup','#col_detalle,#col_debito',function(){

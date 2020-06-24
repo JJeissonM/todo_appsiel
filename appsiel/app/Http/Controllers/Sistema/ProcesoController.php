@@ -38,18 +38,15 @@ class ProcesoController extends ModeloController
         //$tablas_bd = $this->get_array_tablas_bd();
 
         $tablas_bd = [
-                        'sys_aplicaciones',
                         'permissions',
                         'roles',
                         'role_has_permissions',
                         'sys_campos',
                         'sys_modelos',
-                        //'sys_modelos_relacionados',
                         'sys_modelo_tiene_campos',
                         'sys_reportes',
                         'sys_reporte_tiene_campos',
-                        'sys_tipos_transacciones',
-                        'migrations'];
+                        'sys_tipos_transacciones'];
 
         return view( 'core.procesos.exportar_importar_registros_bd', compact( 'miga_pan', 'tablas_bd') );
     }
@@ -238,7 +235,8 @@ class ProcesoController extends ModeloController
         $opciones = Role::all();
         
         $roles['']='';
-        foreach ($opciones as $opcion){
+        foreach ($opciones as $opcion)
+        {
             if ( $opcion->id != 1) // Exceptuando al SuperAdmin
             {
                 $roles[$opcion->id] = $opcion->name;

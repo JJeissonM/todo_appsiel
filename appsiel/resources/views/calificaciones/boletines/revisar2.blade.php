@@ -136,6 +136,10 @@
 								{
 									$tbody.='<td '.$estilo_advertencia.'>&nbsp;</td>';
 								}else{
+									if ( is_null($escala) ) 
+									{
+										$escala = (object) array('id' => 0, 'nombre_escala' => '');
+									}
 									$tbody.='<td>'.$calificacion.'( '.$escala->nombre_escala.')</td>';
 								}/**/
 

@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\web;
 
 use App\Core\Tercero;
-use App\Http\Controllers\Salud\ResultadoExamenMedicoController;
 use App\Inventarios\InvProducto;
 use App\User;
 use App\Ventas\ClienteWeb;
-use App\Ventas\ListaDctoDetalle;
-use App\Ventas\ListaPrecioDetalle;
+use App\web\Footer;
+use App\web\RedesSociales;
 use App\web\Tienda;
 use Form;
 use Illuminate\Http\Request;
@@ -225,14 +224,18 @@ class TiendaController extends Controller
             return redirect()->route('tienda.login');
         }
 
-        return view('web.tienda.cuenta', compact('paises', 'cliente'));
+        $footer = Footer::all()->first();
+        $redes = RedesSociales::all();
+        return view('web.tienda.cuenta', compact('paises', 'cliente','footer','redes'));
 
     }
 
     public function login()
     {
         $grupos = InvProducto::get_grupos_pagina_web();
-        return view('web.tienda.login', compact( 'grupos' ) );
+        $footer = Footer::all()->first();
+        $redes = RedesSociales::all();
+        return view('web.tienda.login', compact( 'grupos' ,'footer','redes') );
     }
 
     public function crearCuenta()

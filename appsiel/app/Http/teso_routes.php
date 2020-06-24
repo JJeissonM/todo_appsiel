@@ -43,11 +43,16 @@ Route::get('tesoreria/recaudos_imprimir/{id}', 'Tesoreria\RecaudoController@impr
 Route::get('tesoreria/recaudos_anular/{id}', 'Tesoreria\RecaudoController@anular_recaudo');
 Route::resource('tesoreria/recaudos', 'Tesoreria\RecaudoController');
 
+
+//				PAGOS
 Route::get('tesoreria/pagos/ajax_get_terceros/{id_tercero}', 'Tesoreria\PagoController@ajax_get_terceros');
 Route::get('tesoreria/pagos/ajax_get_fila/{teso_tipo_motivo}', 'Tesoreria\PagoController@ajax_get_fila');
 Route::get('tesoreria/pagos_imprimir/{id}', 'Tesoreria\PagoController@imprimir');
 Route::get('teso_anular_pago/{id}', 'Tesoreria\PagoController@anular_pago');
+Route::get('teso_pagos_duplicar_documento/{id}', 'Tesoreria\PagoController@duplicar_documento');
 Route::resource('tesoreria/pagos', 'Tesoreria\PagoController');
+
+
 
 Route::resource('tesoreria/arqueo_caja', 'Tesoreria\ArqueoCajaController');
 Route::get('tesoreria/imprimir/{id}', 'Tesoreria\ArqueoCajaController@imprimir');

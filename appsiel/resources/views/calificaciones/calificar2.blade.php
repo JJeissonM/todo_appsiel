@@ -18,12 +18,21 @@
 					<th>
 						Def.
 					</th>
+					<th colspan="2">
+						Logros Adicionales
+					</th>
 				</tr>
 			</thead>
 			<tbody>
-				<?php $linea=1; ?>
+				<?php 
+
+					$linea=1;
+				?>
 
 				@for($k=0;$k<$cantidad_estudiantes;$k++)		
+					<?php 
+						$logros="logros".$k;
+					?>
 
 					<tr valign="{{$linea}}" data-codigo_matricula="{{ $vec_estudiantes[$k]['codigo_matricula'] }}"  data-id_estudiante="{{ $vec_estudiantes[$k]['id_estudiante'] }}"  data-id_calificacion="{{ $vec_estudiantes[$k]['id_calificacion'] }}"  data-calificacion="{{ $vec_estudiantes[$k]['calificacion'] }}"  data-id_calificacion_aux="{{ $vec_estudiantes[$k]['id_calificacion_aux'] }}">
 
@@ -37,6 +46,16 @@
 
 						<td>
 							<input type="text" name="calificacion_texto[]" id="{{ "calificacion_texto".$linea }}" style="width: 32px;"  value="{{ $vec_estudiantes[$k]['calificacion'] }}" disabled="disabled">
+						</td>
+
+
+						<td width="50px"> 
+							<input type="text" name="logros[]" id="{{ $logros }}" size="3" class="caja_logros">
+							<input type="hidden" id="caja_logro">
+						</td>
+
+						<td> 
+							<a href="#" onclick="ventana({{$datos_asignatura->id}},{{ $k }});"> <i class="fa fa-btn fa-search"></i> </a>
 						</td>
 					</tr>
 					<?php $linea++; ?>
