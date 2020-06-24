@@ -58,6 +58,7 @@ class ActividadEscolar extends Model
                                             'sga_asignaturas.descripcion AS campo5',
                                             'sga_actividades_escolares.estado AS campo6',
                                             'sga_actividades_escolares.id AS campo7')
+                                ->distinct('core_acl.user_id')
                                 ->get()
                                 ->toArray();
     }
