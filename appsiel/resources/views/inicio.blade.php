@@ -5,6 +5,12 @@
 		body {
 			background-color: #FAFAFA !important;
         }
+
+        .img-responsive:hover {
+	        transform: scale(1.1);
+	        cursor: pointer;
+	    }
+
 	</style>
 @endsection
 
@@ -42,11 +48,13 @@
 		          	$url=$fila['app'].'?id='.$fila['id'];
 		          ?>
 		          @can($fila['descripcion'])
-			          <div class="col-sm-{{12/$cant_cols}}">
+			          <div class="col-sm-{{12/$cant_cols}} col-xs-{{12/$cant_cols}}" style="padding: 5px; text-align: center;">
 			          		<a href="{{url($url)}}">
-			          			<img class="img-responsive" src="https://appsiel.com.co/el_software/assets/img/{{$fila['nombre_imagen']}}" width="{{$tam_iconos}}" title="{{$fila['descripcion']}}" />
-				          		<br/>
-				                {{$fila['descripcion']}}
+			          			<img class="img-responsive" src="https://appsiel.com.co/el_software/assets/img/{{$fila['nombre_imagen']}}" width="{{$tam_iconos}}" title="{{$fila['descripcion']}}" style="display: inline;" />
+			          			<p>
+			          				{{$fila['descripcion']}}
+			          			</p>
+				                
 				            </a>
 			          </div>
 			      @endcan
