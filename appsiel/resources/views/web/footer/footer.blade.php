@@ -510,7 +510,7 @@
 
         function editar(id) {
 
-            const url = '{{url('')}}/' + 'footer/' + id + '/categorias';
+            const url = "{{url('')}}/" + "footer/" + id + "/categorias";
             document.getElementById('widgets').style.display = 'none';
             document.getElementById('form-edit').style.display = 'block';
 
@@ -522,7 +522,7 @@
                         $("#tituloe").val(data.categoria.texto);
                         $('#categoria').val(data.categoria.id);
                         $("#form-article-edit").remove('action');
-                        $("#form-article-edit").attr('action', '{{url('footer/edit/categoria/')}}' + "/" + data.categoria.id);
+                        $("#form-article-edit").attr('action', "{{url('footer/edit/categoria/')}}" + "/" + data.categoria.id);
                     } else {
                         Swal.fire(
                             'Error!',
@@ -539,11 +539,11 @@
             document.getElementById('widgets').style.display = 'block';
         }
 
-        function submitEnlace() {
-
+        function submitEnlace(e) {
+            e.preventDefault();
             let data = $('#form-enlace').serialize();
 
-            axios.post('{{url('footer/categoria/enlace')}}', data)
+            axios.post("{{url('footer/categoria/enlace')}}", data)
                 .then(function (response) {
                     data = response.data;
                     if (data.status == 'ok') {
@@ -595,7 +595,7 @@
                 confirmButtonText: 'Sí, bórralo!'
             }).then((result) => {
                 if (result.value) {
-                    axios.get('{{url('footer/eliminar/seccion')}}'+'/'+id)
+                    axios.get("{{url('footer/eliminar/seccion')}}"+"/"+id)
                         .then(function(response) {
                             const data = response.data;
                             if(data.status == 'ok'){
@@ -626,7 +626,7 @@
 
         function eliminarEnlace(event,id){
            event.preventDefault();
-           axios.get('{{url('footer/eliminar/enlace')}}'+'/'+id)
+           axios.get("{{url('footer/eliminar/enlace')}}"+"/"+id)
                .then(function(response) {
                    const data = response.data;
                    if(data.status == 'ok'){
@@ -659,7 +659,7 @@
         function rellenarSelect(select) {
 
             select = select.options[select.selectedIndex].value;
-            const url = '{{url('')}}/' + 'pagina/secciones/' + select;
+            const url = "{{url('')}}/" + "pagina/secciones/" + select;
 
             axios.get(url)
                 .then(function (response) {
