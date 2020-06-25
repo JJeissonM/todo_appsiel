@@ -124,7 +124,7 @@ class PedidoController extends TransaccionController
             // $base_impuesto = $lineas_registros[$i]->precio_unitario / ( 1 + $lineas_registros[$i]->tasa_impuesto / 100 );
             // $valor_total_descuento = $lineas_registros[$i]->precio_unitario * ( 1 + $lineas_registros[$i]->tasa_descuento / 100 ) * $lineas_registros[$i]->cantidad;
 
-            $linea_datos = ['vtas_motivo_id' => $lineas_registros[$i]->inv_motivo_id] +
+            $linea_datos = ['vtas_motivo_id' => $lineas_registros[$i]->inv_Imotivo_id] +
                 ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
                 ['precio_unitario' => $lineas_registros[$i]->precio_unitario] +
                 ['cantidad' => $lineas_registros[$i]->cantidad] +

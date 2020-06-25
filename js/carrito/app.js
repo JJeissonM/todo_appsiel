@@ -44,9 +44,10 @@ function leerDatosProducto(producto) {
      const infoProducto = {
           imagen: producto.querySelector('.product-image img').src,
           titulo: producto.querySelector('.product-name a').textContent,
-          precio: producto.querySelector('.price-box .price').textContent,
+          precio: producto.querySelector('#precio_venta').value,
           cantidad: 1,
-          total:this.precio*this.cantidad,
+          tasa_impuesto: producto.querySelector('#tasa_impuesto').value,
+          total:parseFloat(producto.querySelector('#precio_venta').value),
           id: producto.getAttribute('data-id')
      }
 
@@ -77,6 +78,7 @@ function insertarCarrito(producto) {
         listaProductos.appendChild(row);
 
     });
+
     let element  =  document.querySelector('.item-nav .item');
     let count = productos.length;
     element.style.display = 'block';
@@ -140,6 +142,7 @@ function guardarProductoLocalStorage(producto) {
     productos.forEach(item => {
         if(item.id == producto.id){
             item.cantidad++;
+            item.total = item.precio*item.cantidad;
             exist = true;
         }
     });

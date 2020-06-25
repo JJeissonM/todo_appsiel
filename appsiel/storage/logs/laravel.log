@@ -1,0 +1,11 @@
+[2020-06-23 18:02:18] local.ERROR: Symfony\Component\Debug\Exception\FatalThrowableError: Parse error: syntax error, unexpected '<<' (T_SL), expecting ')' in /srv/http/Appsiel/appsiel/bootstrap/cache/services.php:92
+Stack trace:
+#0 /srv/http/Appsiel/appsiel/bootstrap/cache/compiled.php(7667): Illuminate\Filesystem\Filesystem->getRequire()
+#1 /srv/http/Appsiel/appsiel/bootstrap/cache/compiled.php(7618): Illuminate\Foundation\ProviderRepository->loadManifest()
+#2 /srv/http/Appsiel/appsiel/bootstrap/cache/compiled.php(1802): Illuminate\Foundation\ProviderRepository->load()
+#3 /srv/http/Appsiel/appsiel/bootstrap/cache/compiled.php(2220): Illuminate\Foundation\Application->registerConfiguredProviders()
+#4 /srv/http/Appsiel/appsiel/bootstrap/cache/compiled.php(1666): Illuminate\Foundation\Bootstrap\RegisterProviders->bootstrap()
+#5 /srv/http/Appsiel/appsiel/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(219): Illuminate\Foundation\Application->bootstrapWith()
+#6 /srv/http/Appsiel/appsiel/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(105): Illuminate\Foundation\Console\Kernel->bootstrap()
+#7 /srv/http/Appsiel/appsiel/artisan(35): Illuminate\Foundation\Console\Kernel->handle()
+#8 {main}  

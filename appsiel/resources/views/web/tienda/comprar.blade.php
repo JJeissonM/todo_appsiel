@@ -38,6 +38,8 @@
                            <th><center>Descripcion</center></th>
                            <th  width="150px"><center>Precio</center></th>
                            <th  width="150px"><center>Cantidad</center></th>
+                           <th  width="150px"><center>Precio Base</center></th>
+                           <th  width="150px"><center>IVA</center></th>
                            <th  width="150px"><center>Total</center></th>
                        </tr>
                    </thead>
@@ -49,12 +51,17 @@
             <div class="col-md-4 col-sm-12">
                 <div class="contenido">
                     <p>Subtotal</p>
-                    <p id="subtotal">$ 19.000</p>
+                    <p id="subtotal">$ 0.000</p>
+                </div>
+
+                <div class="contenido">
+                    <p>IVA</p>
+                    <p id="iva">$ 0.000</p>
                 </div>
 
                 <div class="total_compra">
                     <p>Total: </p>
-                    <p><span style="color: red" id="total">$ 19.000</span></p>
+                    <p><span style="color: red" id="total">$ 0.000</span></p>
                 </div>
 
                 <div class="terminos">
@@ -64,7 +71,7 @@
 
                 <div class="acciones">
                     <button class="btn-block" id="comprar">finalizar compra</button>
-                    <a href=""><center>Seguir comprando</center></a>
+                    <a href="{{redirect()->back()->getTargetUrl()}}"><center>Seguir comprando</center></a>
                 </div>
 
             </div>
