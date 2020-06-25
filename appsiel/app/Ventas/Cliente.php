@@ -58,4 +58,15 @@ class Cliente extends Model
         $clase_cliente_id = Cliente::where( 'id', $cliente_id )->value( 'clase_cliente_id' );
         return ClaseCliente::where( 'id', $clase_cliente_id )->value( 'cta_x_cobrar_id' );
     }
+
+
+    public function lista_precios()
+    {
+        return $this->belongsTo(ListaPrecioEncabezado::class);
+    }
+
+    public function lista_descuentos()
+    {
+        return $this->belongsTo(ListaDctoEncabezado::class);
+    }
 }
