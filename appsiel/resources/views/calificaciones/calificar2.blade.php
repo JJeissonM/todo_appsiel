@@ -29,10 +29,7 @@
 					$linea=1;
 				?>
 
-				@for($k=0;$k<$cantidad_estudiantes;$k++)		
-					<?php 
-						$logros="logros".$k;
-					?>
+				@for( $k = 0; $k < $cantidad_estudiantes; $k++)
 
 					<tr valign="{{$linea}}" data-codigo_matricula="{{ $vec_estudiantes[$k]['codigo_matricula'] }}"  data-id_estudiante="{{ $vec_estudiantes[$k]['id_estudiante'] }}"  data-id_calificacion="{{ $vec_estudiantes[$k]['id_calificacion'] }}"  data-calificacion="{{ $vec_estudiantes[$k]['calificacion'] }}"  data-id_calificacion_aux="{{ $vec_estudiantes[$k]['id_calificacion_aux'] }}">
 
@@ -50,12 +47,11 @@
 
 
 						<td width="50px"> 
-							<input type="text" name="logros[]" id="{{ $logros }}" size="3" class="caja_logros">
+							<input type="text" name="caja_logros[]" id="logros_{{$linea}}" size="3" class="caja_logros" value="{{ $vec_estudiantes[$k]['logros'] }}">
 							<input type="hidden" id="caja_logro">
 						</td>
-
 						<td> 
-							<a href="#" onclick="ventana({{$datos_asignatura->id}},{{ $k }});"> <i class="fa fa-btn fa-search"></i> </a>
+							<a href="#" onclick="ventana({{$datos_asignatura->id}},{{ $linea }});"> <i class="fa fa-btn fa-search"></i> </a>
 						</td>
 					</tr>
 					<?php $linea++; ?>
