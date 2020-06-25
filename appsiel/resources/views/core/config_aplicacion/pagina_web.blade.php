@@ -150,9 +150,19 @@
 					</div>
 				</div>
 
-				<div class="col-md-6">
-					<div class="row" style="padding:5px;">
-						&nbsp;
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['pedidos_inv_motivo_id'] ) )
+								{
+									$pedidos_inv_motivo_id = $parametros['pedidos_inv_motivo_id'];
+								}else{
+									$pedidos_inv_motivo_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('pedidos_inv_motivo_id', $pedidos_inv_motivo_id, 'Motivo por defecto pedidos ventas', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
 					</div>
 				</div>
 

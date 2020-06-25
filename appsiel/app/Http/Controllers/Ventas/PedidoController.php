@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Ventas;
 
+use App\Inventarios\InvProducto;
+use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Http\Request;
 use Auth;
 use DB;
@@ -116,28 +118,37 @@ class PedidoController extends TransaccionController
 
         //dd( $datos );
 
+        $lista_precios_id = config('pagina_web.lista_precios_id');
         $total_documento = 0;
 
         $cantidad_registros = count($lineas_registros);
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
-            // $base_impuesto = $lineas_registros[$i]->precio_unitario / ( 1 + $lineas_registros[$i]->tasa_impuesto / 100 );
-            // $valor_total_descuento = $lineas_registros[$i]->precio_unitario * ( 1 + $lineas_registros[$i]->tasa_descuento / 100 ) * $lineas_registros[$i]->cantidad;
+          // Se llama nuevamente el precio de venta para estar SEGURO
+          $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
+          $tasa_impuesto = InvProducto::get_tasa_impuesto( $lineas_registros[$i]->inv_producto_id );
 
-            $linea_datos = ['vtas_motivo_id' => $lineas_registros[$i]->inv_Imotivo_id] +
+            $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
+            $valor_impuesto = $precio_unitario - $base_impuesto;
+
+            if(!isset($lineas_registros[$i]->inv_Imotivo_id))
+                 $inv_motivo_id = config('pagina_web.pedidos_inv_motivo_id');
+            else
+                $inv_motivo_id = $lineas_registros[$i]->inv_Imotivo_id;
+
+            $linea_datos = ['vtas_motivo_id' => $inv_motivo_id ]+
                 ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
-                ['precio_unitario' => $lineas_registros[$i]->precio_unitario] +
+                ['precio_unitario' => $precio_unitario] +
                 ['cantidad' => $lineas_registros[$i]->cantidad] +
-                ['precio_total' => $lineas_registros[$i]->precio_total] +
-                ['base_impuesto' => $lineas_registros[$i]->base_impuesto] +
-                ['tasa_impuesto' => $lineas_registros[$i]->tasa_impuesto] +
-                ['valor_impuesto' => $lineas_registros[$i]->valor_impuesto] +
-                ['base_impuesto_total' => $lineas_registros[$i]->base_impuesto_total] +
+                ['precio_total' => $precio_unitario * $lineas_registros[$i]->cantidad] +
+                ['base_impuesto' => $base_impuesto] +
+                ['tasa_impuesto' => $tasa_impuesto] +
+                ['valor_impuesto' => $valor_impuesto] +
+                ['base_impuesto_total' => $base_impuesto * $lineas_registros[$i]->cantidad ] +
                 [ 'tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento ] +
                 [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
                 ['creado_por' => Auth::user()->email] +
                 ['estado' => 'Activo'];
-
 
             VtasDocRegistro::create(
                 $datos +

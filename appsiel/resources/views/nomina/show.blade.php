@@ -8,7 +8,7 @@
 
 	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEmail( 'nomina_enviar_por_email/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
 
-	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Acción', 'success', 'money', 
+	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Acciones', 'success', 'money', 
 		          [ 
 		            ['link' => 'nomina/liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 
 		            'etiqueta' => 'Liquidación automática'], 

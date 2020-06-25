@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class NomConcepto extends Model
 {
     //protected $table = 'nom_conceptos';
+
+    /*
+        naturaleza: devengo, deduccion, provision
+    */
 	protected $fillable = ['modo_liquidacion_id','naturaleza', 'porcentaje_sobre_basico', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'estado'];
 
 	public $encabezado_tabla = ['Modo Liquidación', 'Descripción', 'Abreviatura', 'Porc. sobre el básico', 'Naturaleza', 'Estado', 'Acción'];

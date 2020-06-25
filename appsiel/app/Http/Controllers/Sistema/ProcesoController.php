@@ -38,19 +38,15 @@ class ProcesoController extends ModeloController
         //$tablas_bd = $this->get_array_tablas_bd();
 
         $tablas_bd = [
-                        'sys_aplicaciones',
                         'permissions',
                         'roles',
                         'role_has_permissions',
                         'sys_campos',
                         'sys_modelos',
-                        //'sys_modelos_relacionados',
                         'sys_modelo_tiene_campos',
                         'sys_reportes',
                         'sys_reporte_tiene_campos',
-                        'sys_tipos_transacciones',
-                        'migrations',
-                        'pw_seccion'];
+                        'sys_tipos_transacciones'];
 
         return view( 'core.procesos.exportar_importar_registros_bd', compact( 'miga_pan', 'tablas_bd') );
     }

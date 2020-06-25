@@ -12,7 +12,7 @@ $configuracion = App\web\Configuraciones::all()->first();
                         <a href="{{url('/')}}" title="{{$empresa->descripcion}}"
                            class="logo"><strong>{{$empresa->descripcion}}</strong><img
                                     src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}"
-                                    alt="Magento Commerce"></a>
+                                    alt="Tienda Online {{$empresa->descripcion}}"></a>
                     </div>
                     <form class="col-xs-12 col-md-6 col-sm-12 search" action="{{route('tienda.busqueda')}}" method="GET" onsubmit="buscar_descripcion(event)" id="form_consulta">
                         <div class="box-search-bar clearfix">

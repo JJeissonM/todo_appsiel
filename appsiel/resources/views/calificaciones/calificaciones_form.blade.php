@@ -50,6 +50,8 @@
 				{{ Form::hidden('C'.$c,null,['id'=>'C'.$c]) }}
 			@endfor
 
+			{{ Form::hidden('logros',null,['id'=>'logros']) }}
+
 			{{ Form::hidden('calificacion',null,['id'=>'calificacion']) }}
 			{{ Form::hidden('id_calificacion',null,['id'=>'id_calificacion']) }}
 
@@ -128,11 +130,8 @@
 		function getChildVar(a_value){
 			var caja
 			caja = document.getElementById("caja_logro").value;
-			document.getElementById("logros"+caja).value = a_value;
+			document.getElementById("logros_"+caja).value = a_value;
 		}
-	</script>
-	
-	<script language="javascript">
 
 		$( document ).ready(function() {
 
@@ -186,10 +185,6 @@
 			// Cuando se presiona una caja de texto
 			$("input[type=text]").keyup(function(e) 
 			{
-				if( $(this).attr('class') == 'caja_logros' )
-				{
-					return false;
-				}
 
 				if(e.keyCode!=40){ //Si NO se presiona flecha hacia abajo
 				   if(e.keyCode!=38){ // Si NO se presiona flecha hacia arriba
@@ -256,6 +251,7 @@
 
 					$('#id_calificacion').val( $(item).attr('data-id_calificacion') );
 					$('#calificacion').val( $('#calificacion_texto'+linea).val() );
+					$('#logros').val( $('#logros_'+linea).val() );
 
 					$('#id_calificacion_aux').val( $(item).attr('data-id_calificacion_aux') );
 
@@ -330,6 +326,11 @@
 			// Validar que sea númerico y que esté entre la escala de valoración
 			function validar_valor_ingresado( obj )
 			{
+				if( obj.attr('class') == 'caja_logros' )
+				{
+					return true;
+				}
+
 				var valido = true;
 				if ( obj.val() !='' && !$.isNumeric( obj.val() ) ) 
 		   		{	

@@ -229,7 +229,8 @@ class VistaController extends Controller
                 $control = $campo['value'];
                 break;
             case 'constante':
-                switch ( $campo['value'] ) {
+                switch ( $campo['value'] )
+                {
                     case 'id_colegio':
                         $empresa = Empresa::find(Auth::user()->empresa_id);
                         $colegio = Colegio::where('empresa_id',$empresa->id)->get();
@@ -242,6 +243,9 @@ class VistaController extends Controller
                         break;
                     case 'empresa_id':
                         $valor = Auth::user()->empresa_id;
+                        break;
+                    case 'created_by':
+                        $valor = Auth::user()->id;
                         break;
                     
                     default:

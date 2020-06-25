@@ -17,7 +17,7 @@ function leerLocalStorage() {
              <td><center>${producto.titulo}</center></td>
              <td width="150px"><center>${producto.precio}</center></td>
              <td width="150px" class="accion"><center><a style="color:red" href="" onclick="down(event,${producto.id})"><i class="fa fa-minus-square-o" aria-hidden="true"></i></a><p style="margin: 0;">${producto.cantidad}</p><a href="" style="color: #00cc66" onclick="up(event,${producto.id})"><i class="fa fa-plus" aria-hidden="true"></i></a></center></td>
-             <td width="150px"><center>${producto.total+producto.total*(producto.tasa_impuesto/100)}%</center></td>   
+             <td width="150px"><center>${parseFloat(producto.precio/ ( 1 + producto.tasa_impuesto/100)).toFixed(2)}%</center></td>   
              <td width="150px"><center>${parseFloat(producto.total*(producto.tasa_impuesto/100))}</center></td>       
              <td width="150px" class="total"><center>${producto.total+producto.total*(producto.tasa_impuesto/100)}</center></td>         
              <td>

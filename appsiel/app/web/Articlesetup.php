@@ -13,9 +13,4 @@ class Articlesetup extends Model
     {
         return $this->belongsTo(Widget::class);
     }
-
-    public function articles()
-    {
-        return $this->hasMany(Article::class);
-    }
 }
