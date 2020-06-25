@@ -131,7 +131,6 @@ class NominaController extends TransaccionController
 
         return view( 'nomina.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') ); 
 
-        //echo $view_pdf;
     }
 
 
@@ -153,7 +152,7 @@ class NominaController extends TransaccionController
 
         $this->encabezado_doc =  NomDocEncabezado::get_un_registro($id);
 
-        $personas = NomContrato::get_empleados( 'Activo' );
+        $empleados =$this->encabezado_doc->empleados;
 
         $conceptos = NomConcepto::conceptos_del_documento($this->encabezado_doc->id);
 
@@ -185,20 +184,20 @@ class NominaController extends TransaccionController
 
         $this->vec_totales = array_fill(0, count($conceptos)+2, 0);  
         
-        foreach ($personas as $persona)
+        foreach ($empleados as $empleado)
         {          
             $this->total_devengos_empleado = 0;
             $this->total_deducciones_empleado = 0;
 
             $tabla.='<tr>
                     <td>'.$i.'</td>
-                    <td>'.$persona->empleado.'</td>
-                    <td>'.number_format($persona->cedula, 0, ',', '.').'</td>';
+                    <td>'.$empleado->tercero->descripcion.'</td>
+                    <td>'.number_format($empleado->tercero->numero_identificacion, 0, ',', '.').'</td>';
 
             $this->pos = 0;
             foreach ($conceptos as $un_concepto)
             {          
-                $valor = $this->get_valor_celda( NomDocRegistro::where('nom_doc_encabezado_id',$this->encabezado_doc->id)->where('core_tercero_id',$persona->core_tercero_id)->where('nom_concepto_id',$un_concepto->nom_concepto_id)->get(), $un_concepto );
+                $valor = $this->get_valor_celda( NomDocRegistro::where('nom_doc_encabezado_id',$this->encabezado_doc->id)->where('core_tercero_id',$empleado->core_tercero_id)->where('nom_concepto_id',$un_concepto->nom_concepto_id)->get(), $un_concepto );
                 
                 $tabla.='<td>'.$valor.'</td>';
                 $this->pos++;
@@ -403,7 +402,7 @@ class NominaController extends TransaccionController
     public function crear_registros2(Request $request)
     {
         // Se obtienen los Empleados Activos
-        $personas = NomContrato::get_empleados( 'Activo' );
+        $empleados = NomContrato::get_empleados( 'Activo' );
 
         // Se obtienen las descripciones del concepto y documento de nómina
         $concepto = NomConcepto::find($request->nom_concepto_id);
@@ -429,15 +428,15 @@ class NominaController extends TransaccionController
             // Se crea un vector con los valores de los conceptos para modificarlas
             $vec_registros = array();
             $i=0;
-            foreach($personas as $persona)
+            foreach($empleados as $empleado)
             {
-                $vec_personas[$i]['core_tercero_id'] = $persona->core_tercero_id;
-                $vec_personas[$i]['nombre'] = $persona->empleado;
+                $vec_personas[$i]['core_tercero_id'] = $empleado->core_tercero_id;
+                $vec_personas[$i]['nombre'] = $empleado->empleado;
                 
                 // Se verifica si cada persona tiene valor ingresado
                 $datos = NomDocRegistro::where(['nom_doc_encabezado_id'=>$request->nom_doc_encabezado_id,
                 'nom_concepto_id'=>$request->nom_concepto_id,
-                'core_tercero_id'=>$persona->core_tercero_id])
+                'core_tercero_id'=>$empleado->core_tercero_id])
                 ->get();
 
                 $vec_personas[$i]['valor_concepto'] = 0;
@@ -466,7 +465,7 @@ class NominaController extends TransaccionController
                 $i++;
             } // Fin foreach (llenado de array con datos)
             return view('nomina.editar_registros1',['vec_personas'=>$vec_personas,
-                'cantidad_personas'=>count($personas),
+                'cantidad_personas'=>count($empleados),
                 'concepto'=>$concepto,
                 'documento'=>$documento,
                 'ruta'=>$request->ruta,
@@ -496,8 +495,8 @@ class NominaController extends TransaccionController
 
         $documento = NomDocEncabezado::find($id);
 
-        // Se obtienen los Empleados Activos
-        $personas = NomContrato::get_empleados( 'Activo' );
+        // Se obtienen los Empleados del documento
+        $personas = $documento->empleados;
 
         // Guardar los valores para cada persona      
         foreach ($personas as $una_persona) 
