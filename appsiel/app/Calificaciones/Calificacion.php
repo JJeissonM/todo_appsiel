@@ -124,22 +124,30 @@ class Calificacion extends Model
             if ( !is_null($escala) ) 
             {
                 $la_calificacion = (object)['valor' => $calificacion->calificacion, 
-                'escala_id' => $escala->id, 
-                'escala_descripcion' => $escala->nombre_escala, 
-                'escala_abreviatura' => $escala->sigla, 
-                'escala_nacional' => $escala->escala_nacional];
+                                            'escala_id' => $escala->id, 
+                                            'escala_descripcion' => $escala->nombre_escala, 
+                                            'escala_abreviatura' => $escala->sigla, 
+                                            'escala_nacional' => $escala->escala_nacional, 
+                                            'logros' => $calificacion->logros
+                                        ];
             }else{
-                $la_calificacion = (object)['valor' => $calificacion->calificacion, 'escala_id' => 0, 'escala_descripcion' => '
-            -', 'escala_abreviatura' => '
-            -', 'escala_nacional' => '
-            -'];
+                $la_calificacion = (object)['valor' => $calificacion->calificacion,
+                                            'escala_id' => 0,
+                                            'escala_descripcion' => '-',
+                                            'escala_abreviatura' => '-',
+                                            'escala_nacional' => '-', 
+                                            'logros' => ''
+                                        ];
             }
 
         }else{
-            $la_calificacion = (object)['valor' => '-', 'escala_id' => 0, 'escala_descripcion' => '
-            -', 'escala_abreviatura' => '
-            -', 'escala_nacional' => '
-            -'];
+            $la_calificacion = (object)['valor' => '-',
+                                        'escala_id' => 0,
+                                        'escala_descripcion' => '-',
+                                        'escala_abreviatura' => '-',
+                                        'escala_nacional' => '-', 
+                                        'logros' => ''
+                                    ];
         }
 
         return $la_calificacion;

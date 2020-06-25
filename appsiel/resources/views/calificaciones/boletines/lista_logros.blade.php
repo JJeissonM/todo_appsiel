@@ -1,7 +1,7 @@
 <?php 
 
 	$hay_logros = false;
-	$lista = '<ul>';
+	$lista = '<ul class="lista_logros">';
 
 	if ( $calificacion->escala_id != 0 ) 
 	{
@@ -29,13 +29,49 @@
 		$hay_logros = true;
 	}
 
-	$lista.=$tbody;
+	/*
+		Para logros Adicionales
+	*/
+	if( $calificacion->escala_id != 0 )
+	{
+		$vec_logros = explode( ",", $calificacion->logros);
+	}else{
+		$vec_logros[0] = 0;
+	}
 
-	$lista.='</ul>';
+	for( $j = 0; $j < count($vec_logros); $j++ )
+	{
+		$logro = App\Calificaciones\Logro::where( 'codigo', $vec_logros[$j] )
+											->where( 'id_colegio', $colegio->id)
+											->where( 'asignatura_id', $asignatura->id)
+											->get()
+											->first();
+
+		if( !is_null($logro) )
+		{
+			switch ($convetir_logros_mayusculas)
+			{
+				case 'Si':
+					$tbody.='<li style="text-align: justify;">'.strtoupper( $logro->descripcion ).'</li>';
+					break;
+				case 'No':
+					$tbody.='<li style="text-align: justify;">'.$logro->descripcion.'</li>';
+					break;
+				
+				default:
+					# code...
+					break;
+			}
+			$hay_logros = true;
+		}
+	}
+
+	$lista .= $tbody;
+
+	$lista .= '</ul>';
 
 	if ( $hay_logros ) 
 	{
-		//echo '<b>Logro: </b>'.$lista;
 		echo $lista;
 	}else{
 		echo "&nbsp;";

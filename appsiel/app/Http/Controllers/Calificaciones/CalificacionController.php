@@ -238,6 +238,7 @@ class CalificacionController extends Controller
             $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
             $vec_estudiantes[$i]['id_calificacion'] = "no";
             $vec_estudiantes[$i]['calificacion'] = 0;
+            $vec_estudiantes[$i]['logros'] = '';
             $vec_estudiantes[$i]['id_calificacion_aux'] = "no";
             for ($c=1; $c < 16; $c++) { 
                 $key = "C".$c;
@@ -265,6 +266,7 @@ class CalificacionController extends Controller
                 
                 $vec_estudiantes[$i]['id_calificacion'] = $calificacion_est->id;
                 $vec_estudiantes[$i]['calificacion'] = $calificacion_est->calificacion;
+                $vec_estudiantes[$i]['logros'] = $calificacion_est->logros;
                 $vec_estudiantes[$i]['id_calificacion_aux'] = $calificacion_aux->id;
 
                 for ($c=1; $c < 16; $c++) { 
@@ -334,6 +336,7 @@ class CalificacionController extends Controller
 				break;
 		}
     } 
+
 
     public static function almacenar_calificacion(Request $request)
     {
