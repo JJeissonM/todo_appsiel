@@ -47,6 +47,22 @@
 		text-align:right;
 	}
 
+	.lbl_asignatura_descripcion
+	{
+		 width: 65%;
+		 display: inline-block;
+		 float: left;
+		 /*height: { {$tam_letra-3}}px;*/
+	}
+
+	.lbl_calificacion
+	{
+		 width: 35%;
+		 display: inline-block;
+		 float: left;
+		 /*height: { {$tam_letra-3}}px;*/
+	}
+
 	.page-break {
 		page-break-after: always;
 	}
@@ -96,40 +112,33 @@
 			<tbody>
 				@foreach($asignaturas as $asignatura)
 					<?php
-					// Se llama a la calificacion de cada asignatura
-					$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id_estudiante, $asignatura->id);
-					
+						// Se llama a la calificacion de cada asignatura
+						$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id_estudiante, $asignatura->id);		
 					?>
-					<?php 
-						if ( $area_anterior != $asignatura->area  AND $mostrar_areas == 'Si')
-						{
-					?>
+
+					@if ( $area_anterior != $asignatura->area  AND $mostrar_areas == 'Si')
 						<tr style="font-size: {{$tam_letra}}mm; background-color: #CCCBCB;">
 							<td>
 								<b> ÁREA: {{ strtoupper($asignatura->area) }}</b>
 							</td>
 						</tr>
-
-					<?php
-						}
-					?>
+					@endif
 
 					<tr style="font-size: {{$tam_letra}}mm; background-color: #E8E8E8;">
 						<td> 
-							<div style="width: 65%; height: {{$tam_letra-3}}px; display: inline-block;">
+							<div class="lbl_asignatura_descripcion">
 								{{ $asignatura->descripcion }}
 							</div>
-							<div style="width: 35%; height: {{$tam_letra-3}}px; display: inline-block;">
+							
+							<div class="lbl_calificacion">
 								
 								@if($asignatura->intensidad_horaria != 0)
 									<b>IH: </b>{{ $asignatura->intensidad_horaria }} &nbsp;
 								@endif
 								
-								<!-- @ if($asignatura->maneja_calificacion != 0)
-									<b>Cal: </b>{ { $calificacion->valor }} ({ { $calificacion->escala_descripcion }})
-								@ endif
-								-->
-								<b>Cal: </b>{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
+								@if( $calificacion->valor > 0)
+									<b>Cal: </b>{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
+								@endif
 							</div>					
 						</td>
 					</tr>
