@@ -42,6 +42,8 @@
     <link href="{{asset('css/prettyPhoto.css')}}" rel="stylesheet">
     <link href="{{asset('css/main.css')}}" rel="stylesheet">
     <link href="{{asset('css/responsive.css')}}" rel="stylesheet">
+	<!-- Select2 -->
+	<link rel="stylesheet" href="{{ asset('assets/bower_components/select2/dist/css/select2.min.css')}}">
     <!--[if lt IE 9]>
     <script src="{{asset('js/html5shiv.js')}}"></script>
     <script src="{{asset('js/respond.min.js')}}"></script>
@@ -224,6 +226,8 @@
 
 
     <script src="{{ asset('assets/js/spectrum.js') }}" ></script>
+	<!-- Select2 -->
+	<script src="{{ asset('assets/bower_components/select2/dist/js/select2.full.min.js')}}"></script>
 
 
     <!-- About us Skills Circle progress  -->

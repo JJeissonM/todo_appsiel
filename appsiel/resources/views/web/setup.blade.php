@@ -4,7 +4,6 @@
 @section('style')
 
 <style>
-
     .card-body {
         padding: 0 !important;
         overflow: hidden;
@@ -132,6 +131,15 @@
         <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
             <h4>.:: Bienvenido {{Auth::user()->name}} | Configuraciones Globales ::.</h4>
         </div>
+        <div class="col-md-12">
+            <div style="margin-top:20px; margin-bottom: 40px; width:100%; border:1px solid #e9ecef; -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);">
+                <h1 style="width: 180px; font-size:18px; margin-top:-12px; margin-left:20px; text-align: center; background:white;">Accesos Rápidos</h1>
+                <div class="col-md-12" style="padding: 20px;">
+                    <a href="{{url('').'/web'.$variables_url.'&id_modelo=77'}}" class="btn btn-primary">Categorías de Artículos</a>
+                    <a href="{{route('articles.index').$variables_url}}" class="btn btn-primary">Artículos</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="card">
@@ -152,28 +160,22 @@
                             <div class="card-body">
                                 <div class="col-md-12">
                                     @if($configuracion == null)
-                                        <form action="{{route('cofiguraciones.store')}}" method="POST" >
+                                    <form action="{{route('cofiguraciones.store')}}" method="POST">
                                         <input type="hidden" name="_token" value="{{csrf_token()}}">
                                         <input type="hidden" name="_method" value="POST">
-                                        <div class="form-group" >
+                                        <div class="form-group">
                                             <label for="">Color Primario</label>
-                                            <input type="color" id="color_terciario" onchange="selectColor(event)"
-                                                   class="form-control"
-                                                   name="color_primario" value="" required>
+                                            <input type="color" id="color_terciario" onchange="selectColor(event)" class="form-control" name="color_primario" value="" required>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="">Color Segundario</label>
-                                            <input type="color" id="color_segundario" onchange="selectColor(event)"
-                                                   class="form-control"
-                                                   name="color_segundario" value="" required>
+                                            <input type="color" id="color_segundario" onchange="selectColor(event)" class="form-control" name="color_segundario" value="" required>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="">Color Terciario</label>
-                                            <input type="color" id="color_terciario" onchange="selectColor(event)"
-                                                   class="form-control"
-                                                   name="color_terciario" value="" required>
+                                            <input type="color" id="color_terciario" onchange="selectColor(event)" class="form-control" name="color_terciario" value="" required>
                                         </div>
 
                                         <div class="form-group d-flex justify-content-end">
@@ -182,35 +184,29 @@
 
                                     </form>
                                     @else
-                                        <form action="{{route('cofiguraciones.update',$configuracion->id)}}" method="POST" >
-                                            <input type="hidden" name="_token" value="{{csrf_token()}}">
-                                            <input type="hidden" name="_method" value="PUT">
-                                            <div class="form-group">
-                                                <label for="">Color Primario</label>
-                                                <input type="color" id="color_primario" onchange="selectColor(event)"
-                                                       class="form-control"
-                                                       name="color_primario" value="{{$configuracion->color_primario}}" required>
-                                            </div>
+                                    <form action="{{route('cofiguraciones.update',$configuracion->id)}}" method="POST">
+                                        <input type="hidden" name="_token" value="{{csrf_token()}}">
+                                        <input type="hidden" name="_method" value="PUT">
+                                        <div class="form-group">
+                                            <label for="">Color Primario</label>
+                                            <input type="color" id="color_primario" onchange="selectColor(event)" class="form-control" name="color_primario" value="{{$configuracion->color_primario}}" required>
+                                        </div>
 
-                                            <div class="form-group">
-                                                <label for="">Color Segundario</label>
-                                                <input type="color" id="color_segundario" onchange="selectColor(event)"
-                                                       class="form-control"
-                                                       name="color_segundario" value="{{$configuracion->color_segundario}}" required>
-                                            </div>
+                                        <div class="form-group">
+                                            <label for="">Color Segundario</label>
+                                            <input type="color" id="color_segundario" onchange="selectColor(event)" class="form-control" name="color_segundario" value="{{$configuracion->color_segundario}}" required>
+                                        </div>
 
-                                            <div class="form-group">
-                                                <label for="">Color Terciario</label>
-                                                <input type="color" id="color_terciario" onchange="selectColor(event)"
-                                                       class="form-control"
-                                                       name="color_terciario" value="{{$configuracion->color_terciario}}" required>
-                                            </div>
+                                        <div class="form-group">
+                                            <label for="">Color Terciario</label>
+                                            <input type="color" id="color_terciario" onchange="selectColor(event)" class="form-control" name="color_terciario" value="{{$configuracion->color_terciario}}" required>
+                                        </div>
 
-                                            <div class="form-group d-flex justify-content-end">
-                                                <button type="submit" class="btn btn-info">Guardar</button>
-                                            </div>
+                                        <div class="form-group d-flex justify-content-end">
+                                            <button type="submit" class="btn btn-info">Guardar</button>
+                                        </div>
 
-                                        </form>
+                                    </form>
                                     @endif
                                 </div>
                             </div>
@@ -310,7 +306,6 @@
 @section('script')
 
 <script type="text/javascript">
-
     $(function() {
         const color_primario = document.getElementById('color_primario');
         color_primario.style.backgroundColor = color_primario.getAttribute('value');

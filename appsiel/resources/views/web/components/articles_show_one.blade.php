@@ -35,7 +35,7 @@
 
                                     <footer class="entry-meta" style="text-align: right;">
                                           <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$articulo->updated_at}}</a></span>
-                                          <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{{$articulo->articlesetup->titulo}}</a></span>
+                                          <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">@if($articulo->articlecategory!=null) {{$articulo->articlecategory->titulo}} @else Sin Categoría @endif</a></span>
                                     </footer>
                               </div>
                         </article>

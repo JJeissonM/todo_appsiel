@@ -13,4 +13,9 @@ class Article extends Model
     {
         return $this->belongsTo(Articlecategory::class);
     }
+
+    public function articlesetup()
+    {
+        return $this->hasOne(Articlesetup::class);
+    }
 }

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddColumnCategoriaArticleToArticle extends Migration
+class AddColumnsToArticlesetup extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,10 @@ class AddColumnCategoriaArticleToArticle extends Migration
      */
     public function up()
     {
-        Schema::table('pw_articles', function (Blueprint $table) {
-            $table->dropForeign('pw_articles_articlesetup_id_foreign');
-            $table->dropColumn('articlesetup_id');
-            $table->unsignedInteger('articlecategory_id')->nullable()->after('imagen');
+        Schema::table('pw_articlesetups', function (Blueprint $table) {
+            $table->unsignedInteger('article_id')->nullable()->after('widget_id');
+            $table->foreign('article_id')->references('id')->on('pw_articles')->onDelete('CASCADE');
+            $table->unsignedInteger('articlecategory_id')->nullable()->after('article_id');
             $table->foreign('articlecategory_id')->references('id')->on('pw_articlecategories')->onDelete('CASCADE');
         });
     }
@@ -27,8 +27,9 @@ class AddColumnCategoriaArticleToArticle extends Migration
      */
     public function down()
     {
-        Schema::table('pw_articles', function (Blueprint $table) {
+        Schema::table('pw_articlesetups', function (Blueprint $table) {
             $table->dropColumn('articlecategory_id');
+            $table->dropColumn('article_id');
         });
     }
 }
