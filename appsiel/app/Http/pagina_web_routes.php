@@ -108,7 +108,7 @@ Route::get('articles/article/viewfinder/{id}', 'web\ArticleController@show')->na
 Route::get('articles/article/viewfinder/only/{id}', 'web\ArticleController@show2')->name('article.show2');
 Route::get('article/delete/destroy/{id}', 'web\ArticleController@destroy');
 Route::get('article/category/articles/list/{id}', 'web\ArticleController@articlesCategory')->name('article.articlesCategory');
-
+ 
 //Route::get('article/{id}','web\ArticleController@destroy');
 
 
