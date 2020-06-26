@@ -47,22 +47,6 @@
 		text-align:right;
 	}
 
-	.lbl_asignatura_descripcion
-	{
-		 width: 65%;
-		 display: inline-block;
-		 float: left;
-		 /*height: { {$tam_letra-3}}px;*/
-	}
-
-	.lbl_calificacion
-	{
-		 width: 35%;
-		 display: inline-block;
-		 float: left;
-		 /*height: { {$tam_letra-3}}px;*/
-	}
-
 	.page-break {
 		page-break-after: always;
 	}
@@ -114,21 +98,23 @@
 						}
 					?>
 					<tr style="font-size: {{$tam_letra}}mm; background-color: #E8E8E8;">
-						<td>
-							<div class="lbl_asignatura_descripcion">
-								{{ $asignatura->descripcion }}
-							</div>
-							
-							<div class="lbl_calificacion">
-								
-								@if($asignatura->intensidad_horaria != 0)
-									<b>IH: </b>{{ $asignatura->intensidad_horaria }} &nbsp;
-								@endif
-								
-								@if( $calificacion->valor > 0)
-									<b>Cal: </b>{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
-								@endif
-							</div>				
+						<td>							
+							<table width="100%" style="border: 0px;">
+								<tr>
+									<td style="border: 0px;">
+										{{ $asignatura->descripcion }}
+									</td>
+									<td style="border: 0px;" width="35%">
+										@if($asignatura->intensidad_horaria != 0)
+											<b>IH: </b>{{ $asignatura->intensidad_horaria }} &nbsp;
+										@endif
+										
+										@if( $calificacion->valor > 0)
+											<b>Cal: </b>{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
+										@endif
+									</td>
+								</tr>
+							</table>				
 						</td>
 					</tr>
 					<tr style="font-size: {{$tam_letra}}mm;">
