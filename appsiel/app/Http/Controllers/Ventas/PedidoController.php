@@ -114,29 +114,37 @@ class PedidoController extends TransaccionController
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
         $datos = $request->all();
 
-        //dd( $datos );
+        $lista_precios_id = Cliente::find( $doc_encabezado->cliente_id )->lista_precios->id;
+        $lista_descuentos_id = Cliente::find( $doc_encabezado->cliente_id )->lista_descuentos->id;
 
         $total_documento = 0;
 
         $cantidad_registros = count($lineas_registros);
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
-            // $base_impuesto = $lineas_registros[$i]->precio_unitario / ( 1 + $lineas_registros[$i]->tasa_impuesto / 100 );
-            // $valor_total_descuento = $lineas_registros[$i]->precio_unitario * ( 1 + $lineas_registros[$i]->tasa_descuento / 100 ) * $lineas_registros[$i]->cantidad;
+          // Se llama nuevamente el precio de venta para estar SEGURO
+          $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
 
-            $linea_datos = ['vtas_motivo_id' => $lineas_registros[$i]->inv_motivo_id] +
-                ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
-                ['precio_unitario' => $lineas_registros[$i]->precio_unitario] +
-                ['cantidad' => $lineas_registros[$i]->cantidad] +
-                ['precio_total' => $lineas_registros[$i]->precio_total] +
-                ['base_impuesto' => $lineas_registros[$i]->base_impuesto] +
-                ['tasa_impuesto' => $lineas_registros[$i]->tasa_impuesto] +
-                ['valor_impuesto' => $lineas_registros[$i]->valor_impuesto] +
-                ['base_impuesto_total' => $lineas_registros[$i]->base_impuesto_total] +
-                [ 'tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento ] +
-                [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
-                ['creado_por' => Auth::user()->email] +
-                ['estado' => 'Activo'];
+          $tasa_descuento = ListaDctoDetalle::get_descuento_producto( $lista_descuentos_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
+
+          $tasa_impuesto = InvProducto::get_tasa_impuesto( $lineas_registros[$i]->inv_producto_id );
+
+          $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
+          $valor_impuesto = $precio_unitario - $base_impuesto;
+
+          $linea_datos = ['vtas_motivo_id' => $lineas_registros[$i]->inv_motivo_id] +
+              ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
+              ['precio_unitario' => $precio_unitario] +
+              ['cantidad' => $lineas_registros[$i]->cantidad] +
+              ['precio_total' => $precio_unitario * $lineas_registros[$i]->cantidad] +
+              ['base_impuesto' => $base_impuesto] +
+              ['tasa_impuesto' => $tasa_impuesto] +
+              ['valor_impuesto' => $valor_impuesto] +
+              ['base_impuesto_total' => $base_impuesto * $lineas_registros[$i]->cantidad ] +
+              [ 'tasa_descuento' => $tasa_descuento ] +
+              [ 'valor_total_descuento' => ( $precio_unitario * $tasa_descuento / 100 ) * $lineas_registros[$i]->cantidad ] +
+              ['creado_por' => Auth::user()->email] +
+              ['estado' => 'Activo'];
 
 
             VtasDocRegistro::create(

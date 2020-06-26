@@ -4,6 +4,8 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Core\Tercero;
+
 class NomContrato extends Model
 {
     //protected $table = 'nom_contratos';
@@ -20,6 +22,12 @@ class NomContrato extends Model
 		    ->toArray();
 	    return $registros;
 	}
+
+    public function tercero()
+    {
+        return $this->belongsTo(Tercero::class,'core_tercero_id');
+    }
+
 
 	public static function get_empleados($estado)
 	{
