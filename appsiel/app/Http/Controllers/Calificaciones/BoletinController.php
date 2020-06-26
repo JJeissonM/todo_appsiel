@@ -185,7 +185,6 @@ class BoletinController extends Controller
 
 			$view =  View::make('calificaciones.boletines.'.$request->formato, compact('estudiantes','asignaturas','colegio','curso','periodo','anio','tam_letra','banner','convetir_logros_mayusculas','mostrar_areas','mostrar_nombre_docentes','mostrar_escala_valoracion','firmas','mostrar_usuarios_estudiantes'))->render();
 			
-            return $view;
             $pdf = \App::make('dompdf.wrapper');			
             $pdf->loadHTML(($view))->setPaper($request->tam_hoja,$orientacion);
 
