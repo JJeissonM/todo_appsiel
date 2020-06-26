@@ -104,8 +104,10 @@ Route::post('articles/store', 'web\ArticleController@store')->name('article.stor
 Route::resource('articles', 'web\ArticleController');
 Route::post('articles/article/store', 'web\ArticleController@articlestore')->name('article.articlestore');
 Route::post('articles/article/update', 'web\ArticleController@articleupdate')->name('article.articleupdate');
-Route::get('articles/article/{id}/viewfinder', 'web\ArticleController@show')->name('article.show');
+Route::get('articles/article/viewfinder/{id}', 'web\ArticleController@show')->name('article.show');
+Route::get('articles/article/viewfinder/only/{id}', 'web\ArticleController@show2')->name('article.show2');
 Route::get('article/delete/destroy/{id}', 'web\ArticleController@destroy');
+Route::get('article/category/articles/list/{id}', 'web\ArticleController@articlesCategory')->name('article.articlesCategory');
 
 //Route::get('article/{id}','web\ArticleController@destroy');
 
