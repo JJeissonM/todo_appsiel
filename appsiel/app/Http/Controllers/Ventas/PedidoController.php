@@ -66,6 +66,7 @@ class PedidoController extends TransaccionController
      */
     public function store(Request $request)
     {
+        dd($request->all());
 
         if( isset( $request['pedido_web'] ) )
         {
