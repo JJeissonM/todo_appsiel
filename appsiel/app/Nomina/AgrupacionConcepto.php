@@ -35,7 +35,7 @@ class AgrupacionConcepto extends Model
         return $vec;
     }
 
-    public function nom_conceptos()
+    public function conceptos()
     {
         return $this->belongsToMany('App\Nomina\NomConcepto','nom_agrupacion_tiene_conceptos','nom_agrupacion_id','nom_concepto_id');
     }

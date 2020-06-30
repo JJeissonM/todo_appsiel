@@ -30,6 +30,7 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
+use App\Nomina\AgrupacionConcepto;
 
 class NominaController extends TransaccionController
 {
@@ -39,6 +40,7 @@ class NominaController extends TransaccionController
     protected $pos = 0;
     protected $registros_procesados = 0;
     protected $vec_campos;
+    protected $modo_liquidacion_id = [1, 6, 3, 4, 8];
 
     /**
      * Display a listing of the resource.
@@ -67,10 +69,7 @@ class NominaController extends TransaccionController
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Para almacenar los registros de documentos
      */
     public function store(Request $request)
     {
@@ -80,9 +79,9 @@ class NominaController extends TransaccionController
 
         $concepto = NomConcepto::find($request->nom_concepto_id);
         $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
-        
+
         // Guardar los valores para cada persona      
-        for($i=0;$i<$request->cantidad_personas;$i++)
+        for($i=0;$i<$request->cantidad_empleados;$i++)
         {
             if ( $request->input('valor.'.$i) > 0) 
             {
@@ -109,10 +108,7 @@ class NominaController extends TransaccionController
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Muestra un documento de liquidación con sus registros
      */
     public function show($id)
     {
@@ -138,11 +134,11 @@ class NominaController extends TransaccionController
     {
       $view_pdf = $this->vista_preliminar($id,'imprimir');
 
-      $tam_hoja = 'folio';
+      $tam_hoja = 'letter';
       $orientacion='landscape';
       $pdf = \App::make('dompdf.wrapper');
       $pdf->loadHTML(($view_pdf))->setPaper($tam_hoja,$orientacion);
-      return $pdf->download('nomina'.$this->encabezado_doc->documento_app.'.pdf');
+      return $pdf->stream('nomina'.$this->encabezado_doc->documento_app.'.pdf');
     }
 
 
@@ -156,7 +152,9 @@ class NominaController extends TransaccionController
 
         $conceptos = NomConcepto::conceptos_del_documento($this->encabezado_doc->id);
 
-        $tabla = '<table  class="tabla_registros table table-striped" style="margin-top: 1px;">
+        $tabla = '<style> .celda_firma { width: 100px; }  .celda_nombre_empleado { width: 150px; } </style>
+                    <br>
+                     <table  class="tabla_registros table table-striped" style="margin-top: 1px; width: 100%;">
                     <thead>
                       <tr class="encabezado">
                           <th>
@@ -173,8 +171,10 @@ class NominaController extends TransaccionController
           $tabla.='<th>'.$registro->abreviatura.'</th>';
         }
 
-        $tabla.='<th>Tot. Deducciones</th>
+        $tabla.='<th>Tot. <br> Devengos</th>
+                    <th>Tot. <br> Deducciones</th>
                     <th>Total a pagar</th>
+                    <th width="100px">Firma</th>
                     </tr>
                     </thead>
                     <tbody>';
@@ -182,7 +182,7 @@ class NominaController extends TransaccionController
         $total_1=0;
         $i=1;
 
-        $this->vec_totales = array_fill(0, count($conceptos)+2, 0);  
+        $this->vec_totales = array_fill(0, count($conceptos)+3, 0);  
         
         foreach ($empleados as $empleado)
         {          
@@ -191,7 +191,7 @@ class NominaController extends TransaccionController
 
             $tabla.='<tr>
                     <td>'.$i.'</td>
-                    <td>'.$empleado->tercero->descripcion.'</td>
+                    <td class="celda_nombre_empleado">'.$empleado->tercero->descripcion.'</td>
                     <td>'.number_format($empleado->tercero->numero_identificacion, 0, ',', '.').'</td>';
 
             $this->pos = 0;
@@ -203,14 +203,27 @@ class NominaController extends TransaccionController
                 $this->pos++;
             }
 
+            $total_devengos_empleado = NomDocRegistro::where( 'nom_doc_encabezado_id', $this->encabezado_doc->id )
+                                                        ->where( 'core_tercero_id', $empleado->core_tercero_id )
+                                                        ->sum('valor_devengo');
 
-            $tabla.='<td>'.Form::TextoMoneda( $this->total_deducciones_empleado ).'</td>';
+            $total_deducciones_empleado = NomDocRegistro::where( 'nom_doc_encabezado_id', $this->encabezado_doc->id )
+                                                        ->where( 'core_tercero_id', $empleado->core_tercero_id )
+                                                        ->sum('valor_deduccion');
 
-            $tabla.='<td>'.Form::TextoMoneda( $this->total_devengos_empleado - $this->total_deducciones_empleado ).'</td>';
+            $tabla.='<td>'.Form::TextoMoneda( $total_devengos_empleado ).'</td>';
 
-            $this->vec_totales[$this->pos] += $this->total_deducciones_empleado;
+            $tabla.='<td>'.Form::TextoMoneda( $total_deducciones_empleado ).'</td>';
+
+            $tabla.='<td>'.Form::TextoMoneda( $total_devengos_empleado - $total_deducciones_empleado ).'</td>';
+
+            $tabla.='<td class="celda_firma"> &nbsp; </td>';
+
+            $this->vec_totales[$this->pos] += $total_devengos_empleado;
             $this->pos++;
-            $this->vec_totales[$this->pos] += $this->total_devengos_empleado - $this->total_deducciones_empleado;
+            $this->vec_totales[$this->pos] += $total_deducciones_empleado;
+            $this->pos++;
+            $this->vec_totales[$this->pos] += $total_devengos_empleado - $total_deducciones_empleado;
 
             $tabla.='</tr>';
             $i++;
@@ -219,9 +232,11 @@ class NominaController extends TransaccionController
         $tabla.='<tr><td></td><td></td><td></td>';
 
         $cant = count( $this->vec_totales );
-        for ($j=0; $j < $cant; $j++) { 
+        for ($j=0; $j < $cant; $j++)
+        {
             $tabla.='<td>'.Form::TextoMoneda( $this->vec_totales[$j] ).'</td>';
         }
+        $tabla.='<td> &nbsp; </td>';
         $tabla.='</tr>';
 
         // DATOS ADICIONALES
@@ -401,12 +416,14 @@ class NominaController extends TransaccionController
 
     public function crear_registros2(Request $request)
     {
-        // Se obtienen los Empleados Activos
-        $empleados = NomContrato::get_empleados( 'Activo' );
 
         // Se obtienen las descripciones del concepto y documento de nómina
         $concepto = NomConcepto::find($request->nom_concepto_id);
         $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
+
+        // Se obtienen los Empleados del documento
+        $empleados = $documento->empleados;
+
         
         // Verificar si ya se han ingresado registro para ese concepto y documento
         $cant_registros = NomDocRegistro::where(['nom_doc_encabezado_id'=>$request->nom_doc_encabezado_id,
@@ -430,8 +447,8 @@ class NominaController extends TransaccionController
             $i=0;
             foreach($empleados as $empleado)
             {
-                $vec_personas[$i]['core_tercero_id'] = $empleado->core_tercero_id;
-                $vec_personas[$i]['nombre'] = $empleado->empleado;
+                $vec_empleados[$i]['core_tercero_id'] = $empleado->core_tercero_id;
+                $vec_empleados[$i]['nombre'] = $empleado->empleado;
                 
                 // Se verifica si cada persona tiene valor ingresado
                 $datos = NomDocRegistro::where(['nom_doc_encabezado_id'=>$request->nom_doc_encabezado_id,
@@ -439,18 +456,18 @@ class NominaController extends TransaccionController
                 'core_tercero_id'=>$empleado->core_tercero_id])
                 ->get();
 
-                $vec_personas[$i]['valor_concepto'] = 0;
-                $vec_personas[$i]['nom_registro_id'] = "no";
+                $vec_empleados[$i]['valor_concepto'] = 0;
+                $vec_empleados[$i]['nom_registro_id'] = "no";
                 
                 // Si el persona tiene calificacion se envian los datos de esta para editar
                 if( !is_null($datos) )
                 {
                     switch ($concepto->naturaleza) {
                         case 'devengo':
-                            $vec_personas[$i]['valor_concepto'] = $datos[0]->valor_devengo;
+                            $vec_empleados[$i]['valor_concepto'] = $datos[0]->valor_devengo;
                             break;
                         case 'deduccion':
-                            $vec_personas[$i]['valor_concepto'] = $datos[0]->valor_deduccion;
+                            $vec_empleados[$i]['valor_concepto'] = $datos[0]->valor_deduccion;
                             break;
                         
                         default:
@@ -458,22 +475,22 @@ class NominaController extends TransaccionController
                             break;
                     }
 
-                    $vec_personas[$i]['nom_registro_id'] = $datos[0]->id;
+                    $vec_empleados[$i]['nom_registro_id'] = $datos[0]->id;
 
                 }
                 
                 $i++;
             } // Fin foreach (llenado de array con datos)
-            return view('nomina.editar_registros1',['vec_personas'=>$vec_personas,
-                'cantidad_personas'=>count($empleados),
+            return view('nomina.editar_registros1',['vec_empleados'=>$vec_empleados,
+                'cantidad_empleados'=>count($empleados),
                 'concepto'=>$concepto,
                 'documento'=>$documento,
                 'ruta'=>$request->ruta,
                 'miga_pan'=>$miga_pan]);
         }else{
             // Si no tienen datos, se crean por primera vez
-            return view('nomina.create_registros2',['personas'=>$personas,
-                'cantidad_personas'=>count($personas),
+            return view('nomina.create_registros2',['empleados'=>$empleados,
+                'cantidad_empleados'=>count($empleados),
                 'concepto'=>$concepto,
                 'documento'=>$documento,
                 'ruta'=>$request->ruta,
@@ -501,16 +518,10 @@ class NominaController extends TransaccionController
         // Guardar los valores para cada persona      
         foreach ($personas as $una_persona) 
         {
-            // Para los conceptos automáticos
-            // 1=Automático
-            // 3=Cuota
-            // 4=Préstamo
-            // 9=Prestaciones sociales
-            $modo_liquidacion_id = [1, 3, 4, 9];//
-            $cant = count($modo_liquidacion_id);
+            $cant = count($this->modo_liquidacion_id);
             for ($i=0; $i < $cant; $i++) 
             { 
-                $this->liquidar_automaticos($modo_liquidacion_id[$i], $id, $una_persona, $documento, $usuario);
+                $this->liquidar_automaticos($this->modo_liquidacion_id[$i], $id, $una_persona, $documento, $usuario);
             }
         }
 
@@ -537,14 +548,15 @@ class NominaController extends TransaccionController
 
             if ( $cant == 0) 
             {
-                // Las horas lanborales se traen de la configuración de nómina (240 horas al mes)
-                $salario_x_hora = $una_persona->salario / config('nomina')['horas_laborales'] * $documento_nomina->tiempo_a_liquidar;
+                // Las horas laborales se traen de la configuración de nómina (240 horas al mes)
+                $salario_x_hora = $una_persona->sueldo / config('nomina')['horas_laborales'];                               
 
                 switch ($modo_liquidacion_id) 
                 {
 
-                    case '1': //automáticos
-                        $valor_a_liquidar = $salario_x_hora * $un_concepto->porcentaje_sobre_basico / 100;
+                    case '1': // Tiempo laborado
+
+                        $valor_a_liquidar = ($salario_x_hora * $documento_nomina->tiempo_a_liquidar) * $un_concepto->porcentaje_sobre_basico / 100;
 
                         $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
 
@@ -552,16 +564,40 @@ class NominaController extends TransaccionController
 
                         break;
 
-                    case '3': //Cuotas
+                    case '6': // Aux. Transporte
+
+                        // Se toma el valor directo del concepto
+                        $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $un_concepto->valor_fijo, 'valor_deduccion' => 0 ];
+
+                        break;
+
+                    case '3': // Cuotas
                         $this->liquidar_cuotas($una_persona, $un_concepto, $documento);
                         break;
 
-                    case '4': //Préstamos
+                    case '4': // Préstamos
                         $this->liquidar_prestamos($una_persona, $un_concepto, $documento);
                         break;
 
-                    case '9': //Presataciones sociales
-                        $valor_a_liquidar = $salario_x_hora * $un_concepto->porcentaje_sobre_basico / 100;
+                    case '8': // Seguridad social
+
+                        // Se suman los valores liquidados en los conceptos de la Agrupación para cálculo
+                        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $un_concepto->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
+
+                        // Ingreso Base Cotización
+                        $total_ibc_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+                                                            ->where( 'nom_doc_encabezado_id', $documento->id )
+                                                            ->where( 'core_tercero_id', $una_persona->core_tercero_id )
+                                                            ->sum('valor_devengo');
+
+                        $total_ibc_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+                                                            ->where( 'nom_doc_encabezado_id', $documento->id )
+                                                            ->where( 'core_tercero_id', $una_persona->core_tercero_id )
+                                                            ->sum('valor_deduccion');
+
+                        $total_IBC = ($total_ibc_devengos - $total_ibc_deducciones);
+
+                        $valor_a_liquidar = $total_IBC * $un_concepto->porcentaje_sobre_basico / 100;
 
                         $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
 
@@ -572,11 +608,7 @@ class NominaController extends TransaccionController
                     default:
                         # code...
                         break;
-                }
-
-
-
-                        
+                }    
 
                 if( ($this->vec_campos->valor_devengo +$this->vec_campos->valor_deduccion ) > 0)
                 {
@@ -676,11 +708,10 @@ class NominaController extends TransaccionController
 
     public function retirar_liquidacion($id)
     {
-        
-        $modo_liquidacion_id = [1, 3, 4]; // 1=Automático, 3=Cuota, 4=Préstamo
-        $conceptos = NomConcepto::where('estado','Activo')->whereIn('modo_liquidacion_id', $modo_liquidacion_id)->get();
+        $conceptos = NomConcepto::where('estado','Activo')->whereIn('modo_liquidacion_id', $this->modo_liquidacion_id)->get();
 
-        foreach ($conceptos as $un_concepto) {
+        foreach ($conceptos as $un_concepto)
+        {
             
             // LOS REGISTROS QUE TIENEN ESE CONCEPTO
             $registros = NomDocRegistro::where('nom_doc_encabezado_id', $id)->where('nom_concepto_id', $un_concepto->id)->get();

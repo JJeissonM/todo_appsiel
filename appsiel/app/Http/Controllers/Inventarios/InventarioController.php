@@ -68,11 +68,12 @@ class InventarioController extends TransaccionController
         $movimientos = [];
 
         // Existencias por bodegas
-        $bodegas = InvBodega::get();
+        $bodegas = InvBodega::take(3)->get();
         $i = 0;
         $cantidad_graficas = 0;
         $titulos = [];
-        foreach ($bodegas as $una_bodega) {
+        foreach ($bodegas as $una_bodega)
+        {
             unset($movimientos);
             //$movimientos['bodega'][$i] = $una_bodega->descripcion;
             $movimientos['registros'][$i] = InvMovimiento::where('inv_movimientos.inv_bodega_id', '=', $una_bodega->id)

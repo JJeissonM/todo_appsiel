@@ -33,7 +33,7 @@ table td {
 					{{ Form::hidden('nom_concepto_id', $concepto->id, ['id' =>'nom_concepto_id']) }}
 
 
-					{{ Form::hidden('cantidad_personas', $cantidad_personas, ['id' =>'cantidad_personas']) }}
+					{{ Form::hidden('cantidad_empleados', $cantidad_empleados, ['id' =>'cantidad_empleados']) }}
 
 				</div>							
 			</div>
@@ -48,12 +48,12 @@ table td {
 					</tr>
 				</thead>
 				<tbody>
-					@foreach($personas as $fila)
+					@foreach($empleados as $empleado)
 						<tr> 
 							<td style="font-size:12px">
-								<b>{{ $fila->empleado }}</b>
+								<b>{{ $empleado->tercero->descripcion }}</b>
 								
-								{{ Form::hidden('core_tercero_id[]', $fila->core_tercero_id, []) }}
+								{{ Form::hidden('core_tercero_id[]', $empleado->core_tercero_id, []) }}
 
 							</td>
 
@@ -78,5 +78,29 @@ table td {
 		{{Form::close()}}					
 	</div>
 </div> 
+
+@endsection
+
+@section('scripts')
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$('#bs_boton_guardar').on('click',function(event){
+				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+
+				// Desactivar el click del botón
+				$( this ).off( event );
+
+				$('#formulario').submit();
+			});
+
+		});
+	</script>
 
 @endsection
