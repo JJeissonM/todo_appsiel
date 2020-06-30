@@ -28,6 +28,10 @@ use App\Ventas\Cliente;
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
+use App\Ventas\ListaPrecioDetalle;
+use App\Ventas\ListaDctoDetalle;
+
+use App\Inventarios\InvProducto;
 
 class PedidoController extends TransaccionController
 {
