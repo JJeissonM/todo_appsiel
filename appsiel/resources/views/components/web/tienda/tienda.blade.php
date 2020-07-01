@@ -24,7 +24,7 @@
                                         <strong><span>Filtrar Por</span></strong>
                                     </div>
                                     <div class="block-content">
-                                        <p class="block-subtitle">Shopping Options</p>
+                                        <p class="block-subtitle">Opciones de compra</p>
                                         <dl id="narrow-by-list">
                                             <dt class="odd" style="margin:20px 0;">Categorias</dt>
                                             <div id="categoria_filtrada"></div>
@@ -83,10 +83,11 @@
                                                                     <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
                                                             </div>
                                                             <div class="actions agregar-carrito">
-                                                                <button type="button" class="btn-cart">
+                                                                &nbsp;
+                                                                <!-- <button type="button" class="btn-cart">
                                                                     <i class="fa fa-shopping-cart"></i>
                                                                     Comprar
-                                                                </button>
+                                                                </button> -->
                                                             </div>
                                                         </div>
                                                     </div>

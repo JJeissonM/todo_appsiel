@@ -214,7 +214,13 @@ class ContabilidadController extends TransaccionController
     {
         foreach ($doc_registros as $linea)
         {
-            $tipo_transaccion_linea = 'causacion';
+            $tipo_transaccion_linea = $linea->tipo_transaccion;
+
+            if ( $tipo_transaccion_linea == '' )
+            {
+                $tipo_transaccion_linea = 'causacion';
+            }
+
             $fecha_vencimiento = date('Y-m-d');
             $documento_soporte_tercero = '';
 

@@ -40,7 +40,7 @@ class NominaController extends TransaccionController
     protected $pos = 0;
     protected $registros_procesados = 0;
     protected $vec_campos;
-    protected $modo_liquidacion_id = [1, 6, 3, 4, 8];
+    protected $modo_liquidacion_id = [1, 6, 3, 4, 8]; // 1: tiempo laborado, 6: aux. transporte, 3: cuotas, 4: prestamos, 8: seguridad social
 
     /**
      * Display a listing of the resource.
@@ -321,7 +321,7 @@ class NominaController extends TransaccionController
             $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
             
             // Guardar los valores para cada persona      
-            for($i=0;$i<$request->cantidad_personas;$i++)
+            for($i=0;$i<$request->cantidad_empleados;$i++)
             {
                 $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $request->input('valor.'.$i) );
                 
@@ -447,8 +447,8 @@ class NominaController extends TransaccionController
             $i=0;
             foreach($empleados as $empleado)
             {
-                $vec_empleados[$i]['core_tercero_id'] = $empleado->core_tercero_id;
-                $vec_empleados[$i]['nombre'] = $empleado->empleado;
+                $vec_empleados[$i]['core_tercero_id'] = $empleado->tercero->id;
+                $vec_empleados[$i]['nombre'] = $empleado->tercero->descripcion;
                 
                 // Se verifica si cada persona tiene valor ingresado
                 $datos = NomDocRegistro::where(['nom_doc_encabezado_id'=>$request->nom_doc_encabezado_id,
@@ -549,7 +549,7 @@ class NominaController extends TransaccionController
             if ( $cant == 0) 
             {
                 // Las horas laborales se traen de la configuración de nómina (240 horas al mes)
-                $salario_x_hora = $una_persona->sueldo / config('nomina')['horas_laborales'];                               
+                $salario_x_hora = $una_persona->sueldo / config('nomina')['horas_laborales'];
 
                 switch ($modo_liquidacion_id) 
                 {
@@ -566,8 +566,14 @@ class NominaController extends TransaccionController
 
                     case '6': // Aux. Transporte
 
+                        /*
+                            falta completar: solo se debe liquidar el tiempo proporcional a la quincena
+                        */
+
                         // Se toma el valor directo del concepto
-                        $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $un_concepto->valor_fijo, 'valor_deduccion' => 0 ];
+                        $valor_a_liquidar = $un_concepto->valor_fijo / ( config('nomina')['horas_laborales'] / $documento_nomina->tiempo_a_liquidar );
+
+                        $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valor_a_liquidar, 'valor_deduccion' => 0 ];
 
                         break;
 
@@ -635,11 +641,15 @@ class NominaController extends TransaccionController
 
     public function liquidar_cuotas($una_persona, $un_concepto, $documento)
     {
-        $cuota = NomCuota::where('estado', 'Activo')->where('core_tercero_id', $una_persona->core_tercero_id)->where('nom_concepto_id', $un_concepto->id)->where('fecha_inicio', '<=', $documento->fecha)->get();
+        $cuota = NomCuota::where('estado', 'Activo')
+                        ->where('core_tercero_id', $una_persona->core_tercero_id)
+                        ->where('nom_concepto_id', $un_concepto->id)
+                        ->where('fecha_inicio', '<=', $documento->fecha)
+                        ->get();
 
         if ( count($cuota) > 0)
         {
-            if ( $cuota[0]->tope_maximo != '' ) 
+            if ( $cuota[0]->tope_maximo != '' ) // si la cuota maneja tope máximo 
             {
                 // El valor_acumulado no se puede pasar del tope_maximo
                 $saldo_pendiente = $cuota[0]->tope_maximo - $cuota[0]->valor_acumulado;
@@ -667,14 +677,19 @@ class NominaController extends TransaccionController
             $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_real_cuota );
 
             $this->vec_campos = (object)['nom_cuota_id' => $cuota[0]->id, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
-        }else{
+        }/*else{
             $this->vec_campos = (object)[ 'nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => 0, 'valor_deduccion' => 0 ];
-        }
+        }*/
     }
 
     public function liquidar_prestamos($una_persona, $un_concepto, $documento)
     {
-        $prestamo = NomPrestamo::where('estado', 'Activo')->where('core_tercero_id', $una_persona->core_tercero_id)->where('nom_concepto_id', $un_concepto->id)->where('fecha_inicio', '<=', $documento->fecha)->get();
+        // un solo préstamo por concepto
+        $prestamo = NomPrestamo::where('estado', 'Activo')
+                                ->where('core_tercero_id', $una_persona->core_tercero_id)
+                                ->where('nom_concepto_id', $un_concepto->id)
+                                ->where('fecha_inicio', '<=', $documento->fecha)
+                                ->get();
 
         if ( count($prestamo) > 0)
         {
@@ -700,9 +715,9 @@ class NominaController extends TransaccionController
             $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_real_prestamo );
 
             $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => $prestamo[0]->id, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
-        }else{
+        }/*else{
             $this->vec_campos = (object)[ 'nom_cuota_id' => 'no', 'nom_prestamo_id' => 'no', 'valor_devengo' => 0, 'valor_deduccion' => 0 ];
-        }
+        }*/
     }
 
 
@@ -763,7 +778,9 @@ class NominaController extends TransaccionController
                 }
             }
 
-            NomDocRegistro::where('nom_doc_encabezado_id', $id)->where('nom_concepto_id', $un_concepto->id)->delete();                
+            NomDocRegistro::where('nom_doc_encabezado_id', $id)
+                            ->where('nom_concepto_id', $un_concepto->id)
+                            ->delete();                
         }
 
         $this->actualizar_totales_documento($id);
