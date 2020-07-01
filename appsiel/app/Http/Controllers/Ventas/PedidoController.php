@@ -31,8 +31,10 @@ use App\Ventas\Cliente;
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
+
 use App\Contabilidad\Impuesto;
 use App\Ventas\ListaDctoDetalle;
+
 
 class PedidoController extends TransaccionController
 {
@@ -71,6 +73,7 @@ class PedidoController extends TransaccionController
      */
     public function store(Request $request)
     {
+        dd($request->all());
 
         if( isset( $request['pedido_web'] ) )
         {
@@ -423,41 +426,3 @@ class PedidoController extends TransaccionController
         return redirect('inventarios/' . $remision_creada_id . '?id=' . $request->url_id . '&id_modelo=' . $rm_modelo_id . '&id_transaccion=' . $rm_tipo_transaccion_id);
     }
 }
-
-/*
-
-    array:30 [▼
-  "_token" => "lroJ4zP16GeE1dyO0iL2qe2NAvd0UQYHbSCYZfdv"
-  "core_empresa_id" => "1"
-  "core_tipo_doc_app_id" => "41"
-  "fecha" => "2020-05-27"
-  "cliente_input" => " ANA  LOEZ PEREZ (8.789) "
-  "descripcion" => ""
-  "fecha_entrega" => "2020-05-27"
-  "core_tipo_transaccion_id" => "42"
-  "consecutivo" => ""
-  "url_id" => "13"
-  "url_id_modelo" => "175"
-  "url_id_transaccion" => "42"
-  "inv_bodega_id_aux" => ""
-  "vendedor_id" => "1"
-  "forma_pago" => "forma_pago"
-  "fecha_vencimiento" => "fecha_vencimiento"
-  "inv_bodega_id" => "1"
-  "cliente_id" => "1"
-  "zona_id" => "1"
-  "clase_cliente_id" => "1"
-  "equipo_ventas_id" => "1"
-  "core_tercero_id" => "1"
-  "lista_precios_id" => "1"
-  "lista_descuentos_id" => "1"
-  "liquida_impuestos" => "1"
-  "lineas_registros" => "[{"inv_motivo_id":"10","inv_bodega_id":"1","inv_producto_id":"1","costo_unitario":"1e-7","precio_unitario":"1200","base_impuesto":"1008.4033613445379","tasa_impuesto":"19","valor_impuesto":"191.59663865546213","base_impuesto_total":"12100.840336134454","cantidad":"12","costo_total":"0.0000012","precio_total":"14400","tasa_descuento":"0","valor_total_descuento":"0","Producto":"1 1 YOGURT","Motivo":"Ventas POS","Stock":"0","Cantidad":"12","Precio Unit. (IVA incluido)":"$ 1.200","Dcto. (%)":"[object Object]","Dcto. Tot. ($)":"$ 0","IVA":"19%","Total":"$ 14.400"}]"
-  "tipo_transaccion" => "factura_directa"
-  "rm_tipo_transaccion_id" => "24"
-  "dvc_tipo_transaccion_id" => "34"
-  "saldo_original" => "0"
-]
-
-
-*/

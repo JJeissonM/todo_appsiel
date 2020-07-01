@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
-class VtasPedido extends Model
+class VtasPedido extends VtasDocEncabezado
 {
     protected $table = 'vtas_doc_encabezados';
 

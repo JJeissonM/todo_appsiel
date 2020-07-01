@@ -13,6 +13,7 @@ use Auth;
 use Form;
 use View;
 use Cache;
+use Lava;
 
 use App\Sistema\Aplicacion;
 use App\Sistema\TipoTransaccion;
@@ -32,6 +33,7 @@ use App\Contabilidad\ContabBloqueEeff;
 use App\Contabilidad\ContabElementoEeff;
 use App\Contabilidad\ContabNotaEeff;
 use App\Contabilidad\ContabArbolGruposCuenta;
+use App\Contabilidad\ClaseCuenta;
 
 use App\CxC\CxcDocEncabezado;
 use App\CxC\CxcDocRegistro;
@@ -1228,5 +1230,55 @@ class ContabReportesController extends Controller
         return $vista;
     }
 
+    public static function grafica_riqueza_neta( $fecha_corte )
+    {
+        $saldo_activos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'activos', $fecha_corte ) );
+        $saldo_pasivos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'pasivos', $fecha_corte ) );
+
+        $stocksTable = Lava::DataTable();
+        
+        $stocksTable->addStringColumn('rubro')
+                    ->addNumberColumn('valor');
+        
+        $stocksTable->addRow( [ 'Activos', (float)$saldo_activos ] );
+        $stocksTable->addRow( [ 'Pasivos', (float)$saldo_pasivos ] );
+
+        // Creación de gráfico de Torta
+        Lava::PieChart('Riqueza', $stocksTable);
+
+        return (object)[ 'activos'=> $saldo_activos, 'pasivos'=> $saldo_pasivos, 'patrimonio' => ( $saldo_activos - $saldo_pasivos ) ];
+    }
+
+    public static function grafica_flujo_efectivo_neto( $fecha_corte )
+    {
+        $saldo_ingresos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'ingresos', $fecha_corte ) );
+        $saldo_costos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'costos', $fecha_corte ) );
+        $saldo_gastos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'gastos', $fecha_corte ) );
+
+        $stocksTable = Lava::DataTable();
+        
+        $stocksTable->addStringColumn('rubro')
+                    ->addNumberColumn('valor');
+        
+        $stocksTable->addRow( [ 'Ingresos', (float)$saldo_ingresos ] );
+        $stocksTable->addRow( [ 'Costos y Gastos', (float)$saldo_costos + (float)$saldo_gastos ] );
+
+        // Creación de gráfico de Torta
+        Lava::PieChart('FlujoNeto', $stocksTable);
+
+        return (object)[ 'ingresos'=> $saldo_ingresos, 'costos_y_gastos'=> ( $saldo_costos + $saldo_gastos ), 'resultado' => ( $saldo_ingresos - ( $saldo_costos + $saldo_gastos ) ) ];
+    }
+
+    public static function get_saldo_movimiento_por_clase_cuenta( $descripcion_clase_cuenta, $fecha_corte )
+    {
+        $clase_cuenta = ClaseCuenta::where( 'descripcion', $descripcion_clase_cuenta)->get()->first();
+
+        return ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                                ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('contab_cuentas.contab_cuenta_clase_id', $clase_cuenta->id )
+                                ->where('contab_movimientos.fecha','<=', $fecha_corte)
+                                ->sum('contab_movimientos.valor_saldo');
+
+    }
 
 }

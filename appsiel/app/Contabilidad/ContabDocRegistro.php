@@ -33,6 +33,7 @@ class ContabDocRegistro extends Model
                                         DB::raw( 'CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS cuenta' ),
                                         'core_terceros.numero_identificacion',
                                         'core_terceros.id AS tercero_id',
+                                        'contab_doc_registros.tipo_transaccion',
                                         'contab_doc_registros.valor_debito',
                                         'contab_doc_registros.valor_credito',
                                         'contab_doc_registros.detalle_operacion',

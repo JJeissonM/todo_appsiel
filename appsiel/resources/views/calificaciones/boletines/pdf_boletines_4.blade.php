@@ -98,13 +98,21 @@
 						}
 					?>
 					<tr style="font-size: {{$tam_letra}}mm; background-color: #E8E8E8;">
-						<td>
+						<td>							
 							<table width="100%" style="border: 0px;">
 								<tr>
 									<td style="border: 0px;">
-										{{ $asignatura->descripcion }}</td>
-									<td style="text-align: right;border: 0px;">
-										<b>IH: </b> {{ $asignatura->intensidad_horaria }} &nbsp; <b>Cal: </b> {{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})</td>
+										{{ $asignatura->descripcion }}
+									</td>
+									<td style="border: 0px;" width="35%">
+										@if($asignatura->intensidad_horaria != 0)
+											<b>IH: </b>{{ $asignatura->intensidad_horaria }} &nbsp;
+										@endif
+										
+										@if( $calificacion->valor > 0)
+											<b>Cal: </b>{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
+										@endif
+									</td>
 								</tr>
 							</table>				
 						</td>
