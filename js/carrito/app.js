@@ -33,7 +33,7 @@ function comprarProducto(e) {
          //e.target.style.backgroundColor = 'rgb(249, 123, 0)';
           let producto = e.target.parentElement.parentElement;
           // Enviamos el curso seleccionado para tomar sus datos
-          toastr.success(`${producto.querySelector('.product-name a').textContent} agregado al carrito`)
+          toastr.success(`${producto.querySelector('.product-name a').textContent} agregado al carrito`);
           leerDatosProducto(producto);
      }
 
@@ -41,15 +41,19 @@ function comprarProducto(e) {
 // Lee los datos del curso
 function leerDatosProducto(producto) {
 
-     const infoProducto = {
+     let infoProducto = {
           imagen: producto.querySelector('.product-image img').src,
           titulo: producto.querySelector('.product-name a').textContent,
           precio: producto.querySelector('#precio_venta').value,
           cantidad: 1,
           tasa_impuesto: producto.querySelector('#tasa_impuesto').value,
-          total:parseFloat(producto.querySelector('#precio_venta').value),
-          id: producto.getAttribute('data-id')
+          total:0,
+          id: producto.getAttribute('data-id'),
+          precio_base:0
      }
+
+     infoProducto.total = parseFloat(producto.querySelector('#precio_venta').value);
+     infoProducto.precio_base = parseFloat(infoProducto.precio/ ( 1 + infoProducto.tasa_impuesto/100)).toFixed(2);
 
      insertarCarrito(infoProducto);
 }

@@ -103,6 +103,7 @@ class TransaccionController extends Controller
 
     public function get_boton_select_crear( $app )
     {
+
         // Botón crear con el listado de las transacciones asociadas a la aplicación
         $tipos_transacciones = $app->tipos_transacciones()->where('estado','Activo')->get();
         

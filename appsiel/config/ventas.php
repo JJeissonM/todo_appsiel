@@ -2,7 +2,10 @@
  return array (
   'titulo' => '<h3>Configuraciones generales <br> <small style="color: red;"> Si no está completamente seguro, no modifique ningún valor de este formulario. Consulte con el administrador del sistema. </small></h3>',
   'lista_precios_id' => '1',
+  'liquida_impuestos' => '1',
   'lista_descuentos_id' => '1',
+  'liquida_impuestos' => '1',
+  'equipo_ventas_id' => '1',
   'clase_cliente_id' => '1',
   'vendedor_id' => '1',
   'inv_bodega_id' => '1',
@@ -27,4 +30,5 @@
   'pie_pagina_linea_2' => '',
   'pie_pagina_linea_3' => '',
   'url_id_modelo' => '0',
+  'tipo_transaccion' => 'factura_directa',
 ) ;

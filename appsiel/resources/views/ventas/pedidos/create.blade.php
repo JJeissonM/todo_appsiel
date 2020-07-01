@@ -81,13 +81,10 @@
 				<input type="hidden" name="fecha_vencimiento" id="" value="fecha_vencimiento" required="required">
 				<input type="hidden" name="inv_bodega_id" id="inv_bodega_id" value="" required="required">
 
-				
-
 				<input type="hidden" name="cliente_id" id="cliente_id" value="" required="required">
 				<input type="hidden" name="zona_id" id="zona_id" value="" required="required">
 				<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="" required="required">
 				<input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="" required="required">
-
 
 				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="" required="required">
 				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="" required="required">
@@ -149,7 +146,5 @@
 @endsection
 
 @section('scripts')
-	
 	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
-	
 @endsection

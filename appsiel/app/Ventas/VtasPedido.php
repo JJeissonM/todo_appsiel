@@ -13,6 +13,12 @@ class VtasPedido extends Model
 
     public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente',  'Fecha entrega', 'Detalle', 'Estado', 'Acción'];
 
+    protected $fillable = ['id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 
+                        'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 
+                         'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 
+                         'fecha_vencimiento', 'orden_compras', 'descripcion', 'valor_total', 'estado', 
+                          'creado_por', 'modificado_por', 'created_at', 'updated_at'];
+
     //public $vistas = '{"index":"layouts.index3"}';
 
     public $archivo_js = 'assets/js/ventas/pedidos.js';
@@ -56,4 +62,5 @@ class VtasPedido extends Model
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->paginate(100);
     }
+
 }

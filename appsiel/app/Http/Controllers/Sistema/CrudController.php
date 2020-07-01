@@ -90,11 +90,12 @@ class CrudController extends Controller
     */
     public static function crear_nuevo_registro( request $request, $modelo_id )
     {
+
         $modelo = Modelo::find( $modelo_id );
 
         CrudController::validar_requeridos_y_unicos($request, $modelo);
 
-        // Se verifican si vienen campos con valores tipo array. Normalmente para los campos tipo chexkbox.
+        // Se verifican si vienen campos con valores tipo arra_tokeny. Normalmente para los campos tipo chexkbox.
         foreach ( $request->all() as $key => $value)
         {
             if ( is_array($value) )
@@ -104,7 +105,7 @@ class CrudController extends Controller
         }
 
         // Crear el nuevo registro
-        $registro = app($modelo->name_space)->create( $request->all() );
+        $registro = app($modelo->name_space)->create($request->all());
 
         // Si se está almacenando una transacción que maneja consecutivo
         if ( isset($request->consecutivo) and isset($request->core_tipo_doc_app_id) ) 
@@ -128,6 +129,8 @@ class CrudController extends Controller
     // !!! Revisar cuando se está editando
     public static function validar_requeridos_y_unicos($request, $registro_modelo)
     {
+
+
         // Obtener la table de ese modelo
         //$any_registro = New $registro_modelo->name_space;
         $nombre_tabla = $registro_modelo->getTable();       
@@ -221,6 +224,7 @@ class CrudController extends Controller
     //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
     public function update(Request $request, $id)
     {
+
         // Se obtiene el modelo según la variable modelo_id de la url
         $modelo = Modelo::find($request->url_id_modelo);
 

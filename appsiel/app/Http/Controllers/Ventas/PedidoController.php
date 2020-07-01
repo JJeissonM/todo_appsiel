@@ -13,6 +13,7 @@ use Input;
 use Form;
 
 
+
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -30,6 +31,8 @@ use App\Ventas\Cliente;
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
+use App\Contabilidad\Impuesto;
+use App\Ventas\ListaDctoDetalle;
 
 class PedidoController extends TransaccionController
 {
@@ -71,7 +74,15 @@ class PedidoController extends TransaccionController
 
         if( isset( $request['pedido_web'] ) )
         {
+            if(!Auth::check()){
+                return response()->json([
+                    'status' => 'error',
+                    'mensaje' => 'Debe estar logeado para poder realizar el pedido.'
+                ]);
+            }
+
             $request = $this->completar_request( $request );
+
         }
 
         $request['fecha_entrega'] = $request['fecha_entrega'] . ' ' . $request['hora_entrega'] . ':00';
@@ -82,13 +93,47 @@ class PedidoController extends TransaccionController
         // 2do. Crear documento de Ventas
         $ventas_doc_encabezado_id = PedidoController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
+
         return redirect('vtas_pedidos/' . $ventas_doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
     }
 
     public function completar_request( $request )
     {
+        $tercero = DB::select('select id from core_terceros where user_id = ?', [Auth::user()->id]);
+        $cliente = DB::select('select id from vtas_clientes where core_tercero_id = ?',[$tercero[0]->id]);
         $request['core_tipo_transaccion_id'] = config( 'ventas.pv_tipo_transaccion_id' );
         $request['core_tipo_doc_app_id'] = config( 'ventas.pv_tipo_doc_app_id' );
+        $request['core_empresa_id'] = Empresa::find(1)->id;
+        $request['fecha'] = date('Y-m-d');
+        $request['cliente_input'] = Auth::user()->id;
+        $request['descripcion'] = '';
+        $request['consecutivo'] = '';
+        $request['url_id'] = 13;
+        $request['url_id_modelo'] = 175;
+        $request['inv_bodega_id_aux'] = '';
+        $request['vendedor_id'] = config('ventas.vendedor_id');
+        $request['forma_pago'] = 'forma_pago';
+        $request['fecha_entrega'] = date('Y-m-d');
+        $request['fecha_vencimiento'] = date('Y-m-d');
+        $request['inv_bodega_id'] = config('ventas.inv_bodega_id');
+        $request['zona_id'] = config('ventas.zona_id');
+        $request['clase_cliente_id'] = config('ventas.clase_cliente_id');
+        $request['equipo_ventas_id'] = config('ventas.equipo_ventas_id');
+        $request['core_tercero_id'] = $tercero[0]->id;
+        $request['lista_precios_id'] = config('ventas.lista_precios_id');
+        $request['lista_descuentos_id'] = config('ventas.lista_descuentos_id');
+        $request['liquida_impuestos'] = config('ventas.liquida_impuestos');
+        $request['cliente_id'] = $cliente[0]->id;
+        $request['dvc_tipo_transaccion_id'] = config('ventas.dvc_tipo_transaccion_id');
+        $request['rm_tipo_transaccion_id'] = config('ventas.rm_tipo_transaccion_id');
+        $request['tipo_transaccion'] = config('ventas.tipo_transaccion');
+        $id_transaccion = Input::get('id_transaccion');
+        if( is_null( $id_transaccion ) )
+        {
+            $id_transaccion = 42;
+        }
+
+        $request['id_transaccion'] = $id_transaccion;
 
         return $request;
     }
@@ -99,10 +144,9 @@ class PedidoController extends TransaccionController
     */
     public function crear_documento(Request $request, array $lineas_registros, $modelo_id)
     {
+
         $doc_encabezado = $this->crear_encabezado_documento($request, $modelo_id);
-
         PedidoController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
-
         return $doc_encabezado->id;
     }
 
@@ -113,50 +157,54 @@ class PedidoController extends TransaccionController
     */
     public function crear_registros_documento(Request $request, $doc_encabezado, array $lineas_registros)
     {
-        // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
-        $datos = $request->all();
 
-        //dd( $datos );
+        // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros
+        $lista_precios_id = Cliente::find( $doc_encabezado->cliente_id )->lista_precios->id;
+        $lista_descuentos_id = Cliente::find( $doc_encabezado->cliente_id )->lista_descuentos->id;
 
-        $lista_precios_id = config('pagina_web.lista_precios_id');
         $total_documento = 0;
 
         $cantidad_registros = count($lineas_registros);
+
+
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
-          // Se llama nuevamente el precio de venta para estar SEGURO
-          $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
-          $tasa_impuesto = InvProducto::get_tasa_impuesto( $lineas_registros[$i]->inv_producto_id );
-
-            $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
-            $valor_impuesto = $precio_unitario - $base_impuesto;
-
             if(!isset($lineas_registros[$i]->inv_Imotivo_id))
-                 $inv_motivo_id = config('pagina_web.pedidos_inv_motivo_id');
+                $inv_motivo_id = config('pagina_web.pedidos_inv_motivo_id');
             else
                 $inv_motivo_id = $lineas_registros[$i]->inv_Imotivo_id;
 
-            $linea_datos = ['vtas_motivo_id' => $inv_motivo_id ]+
-                ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
-                ['precio_unitario' => $precio_unitario] +
-                ['cantidad' => $lineas_registros[$i]->cantidad] +
-                ['precio_total' => $precio_unitario * $lineas_registros[$i]->cantidad] +
-                ['base_impuesto' => $base_impuesto] +
-                ['tasa_impuesto' => $tasa_impuesto] +
-                ['valor_impuesto' => $valor_impuesto] +
-                ['base_impuesto_total' => $base_impuesto * $lineas_registros[$i]->cantidad ] +
-                [ 'tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento ] +
-                [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
-                ['creado_por' => Auth::user()->email] +
-                ['estado' => 'Activo'];
+            // Se llama nuevamente el precio de venta para estar SEGURO
+          $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
+
+          $tasa_descuento = ListaDctoDetalle::get_descuento_producto( $lista_descuentos_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
+
+          $tasa_impuesto = Impuesto::get_tasa($lineas_registros[$i]->inv_producto_id,0,$doc_encabezado->cliente_id);
+
+          $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
+          $valor_impuesto = $precio_unitario - $base_impuesto;
+
+          $linea_datos = ['vtas_motivo_id' =>$inv_motivo_id] +
+              ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
+              ['precio_unitario' => $precio_unitario] +
+              ['cantidad' => $lineas_registros[$i]->cantidad] +
+              ['precio_total' => $precio_unitario * $lineas_registros[$i]->cantidad] +
+              ['base_impuesto' => $base_impuesto] +
+              ['tasa_impuesto' => $tasa_impuesto] +
+              ['valor_impuesto' => $valor_impuesto] +
+              ['base_impuesto_total' => $base_impuesto * $lineas_registros[$i]->cantidad ] +
+              [ 'tasa_descuento' => $tasa_descuento ] +
+              [ 'valor_total_descuento' => ( $precio_unitario * $tasa_descuento / 100 ) * $lineas_registros[$i]->cantidad ] +
+              ['creado_por' => Auth::user()->email] +
+              ['estado' => 'Activo'];
 
             VtasDocRegistro::create(
-                $datos +
                     ['vtas_doc_encabezado_id' => $doc_encabezado->id] +
                     $linea_datos
             );
 
             $total_documento += $lineas_registros[$i]->precio_total;
+
         } // Fin por cada registro
 
     }
