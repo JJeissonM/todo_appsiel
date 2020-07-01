@@ -7,30 +7,40 @@ comprar.addEventListener('click',function (event) {
    const contrato = document.getElementById('contrato');
    if(contrato.checked){
        let productos = obtenerProductosLocalStorage();
-       let lineas_registros = [];
-       productos.forEach(x => {
-           lineas_registros.push({
-               'inv_producto_id' : x.id,
-               'cantidad' : x.cantidad,
-               'precio_total' : x.total
-           });
-       })
-       let form  = document.getElementById('form');
-       let data = {
-           'lineas_registros' : JSON.stringify(lineas_registros),
-           '_token':form.querySelector('#token').value,
-           'pedido_web' : true,
-       }
-       let url =  form.getAttribute('action');
-       axios.post(url,data)
-           .then(resp => {
-               let data = resp.data;
-               if(data.status == 'error' ){
-                   toastr.warning(data.mensaje);
-               }
-           }).catch(error => {
-             toastr.error('hubo un error en la solicitud, Asegurese de estar logeado al momento de realizar el pedido');
-       });
+      if(productos.length > 0){
+
+          let lineas_registros = [];
+          productos.forEach(x => {
+              lineas_registros.push({
+                  'inv_producto_id' : x.id,
+                  'cantidad' : x.cantidad,
+                  'precio_total' : x.total
+              });
+          })
+          let form  = document.getElementById('form');
+          let data = {
+              'lineas_registros' : JSON.stringify(lineas_registros),
+              '_token':form.querySelector('#token').value,
+              'pedido_web' : true,
+          }
+          let url =  form.getAttribute('action');
+          axios.post(url,data)
+              .then(resp => {
+                  let data = resp.data;
+                  if(data.status == 'error' ){
+                      toastr.warning(data.mensaje);
+                  }else if (data.status == 'ok'){
+                      toastr.success(data.mensaje);
+                      // Añadimos el arreglo actual a storage
+                      localStorage.setItem('productos', JSON.stringify([]));
+                      listaProductos.innerHTML = '';
+                  }
+              }).catch(error => {
+              toastr.error('hubo un error en la solicitud, Asegúrese de estar logeado al momento de realizar el pedido');
+          });
+      }else{
+          toastr.warning('La lista de productos en el carrito está vacía');
+      }
    }else {
        toastr.warning('Debe aceptar los términos y condiciones para proceder con el pedido');
    }
@@ -60,7 +70,6 @@ function leerLocalStorage() {
                   <center><a style="color: red" href="#" onclick="eliminar(event,${producto.id})" class="borrar-curso" data-id="${producto.id}"><i class="fa fa-times-circle" aria-hidden="true"></i></a></center>
              </td>
         `;
-
         listaProductos.appendChild(row);
         total();
     });

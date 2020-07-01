@@ -84,11 +84,10 @@
                                                                     <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
                                                             </div>
                                                             <div class="actions agregar-carrito">
-                                                                &nbsp;
-                                                                <!-- <button type="button" class="btn-cart">
+                                                                <button type="button" class="btn-cart">
                                                                     <i class="fa fa-shopping-cart"></i>
                                                                     Comprar
-                                                                </button> -->
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>

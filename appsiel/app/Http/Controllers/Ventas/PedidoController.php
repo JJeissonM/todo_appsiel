@@ -73,7 +73,6 @@ class PedidoController extends TransaccionController
      */
     public function store(Request $request)
     {
-        dd($request->all());
 
         if( isset( $request['pedido_web'] ) )
         {
@@ -96,8 +95,14 @@ class PedidoController extends TransaccionController
         // 2do. Crear documento de Ventas
         $ventas_doc_encabezado_id = PedidoController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
-
-        return redirect('vtas_pedidos/' . $ventas_doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        if(isset($request['pedido_web'])){
+            return  response()->json([
+                  'status' => 'ok',
+                  'mensaje' => 'Pedido recibido correctamente, pronto uno de nuestros asesores te estará contactando para proceder con el envío.'
+            ]);
+        }else{
+            return redirect('vtas_pedidos/' . $ventas_doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        }
     }
 
     public function completar_request( $request )
@@ -147,7 +152,6 @@ class PedidoController extends TransaccionController
     */
     public function crear_documento(Request $request, array $lineas_registros, $modelo_id)
     {
-
         $doc_encabezado = $this->crear_encabezado_documento($request, $modelo_id);
         PedidoController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
         return $doc_encabezado->id;
