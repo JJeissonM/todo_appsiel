@@ -77,12 +77,13 @@
     </table>
     
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Tercero','Documento','Fecha','Detalle','Abono']) }}
+        {{ Form::bsTableHeader(['Tercero','Documento','Fecha','Detalle','Abono','Saldo']) }}
         </thead>
         <tbody>
             <?php 
             
-            $total_abono = 0;
+                $total_abono = 0;
+                $total_pendiente = 0;
 
             ?>
             @foreach($doc_pagados as $linea )
@@ -93,7 +94,11 @@
                     ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                     ->where('consecutivo',$linea->doc_cxc_consecutivo)
                     ->get()->first();
-                    //dd( $el_documento );
+
+                    $saldo_pendiente = App\CxC\CxcMovimiento::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
+                                                        ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
+                                                        ->where('consecutivo',$linea->doc_cxc_consecutivo)
+                                                        ->value('saldo_pendiente');
                 ?>
 
                 <tr>
@@ -102,16 +107,19 @@
                     <td> {{ $el_documento->fecha }} </td>
                     <td> {{ $el_documento->descripcion }} </td>
                     <td> {{ '$ '.number_format( $linea->abono, 0, ',', '.') }} </td>
+                    <td> ${{ number_format( $saldo_pendiente, 0, ',', '.') }} </td>
                 </tr>
                 <?php 
                     $total_abono += $linea->abono;
+                    $total_pendiente += $saldo_pendiente;
                 ?>
             @endforeach
         </tbody>
         <tfoot>
-            <tr>
-                <td colspan="4">&nbsp;</td>
-                <td> {{ number_format($total_abono, 0, ',', '.') }} </td>
+            <tr style="font-weight: bold;">
+                <td colspan="4" style="text-align: right;"> Totales </td>
+                <td> ${{ number_format($total_abono, 0, ',', '.') }} </td>
+                <td> ${{ number_format($total_pendiente, 0, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>

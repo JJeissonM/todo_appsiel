@@ -292,7 +292,8 @@ class Tercero extends Model
                                 }
                         }';
         $tablas = json_decode($tablas_relacionadas);
-        foreach ($tablas as $una_tabla) {
+        foreach ($tablas as $una_tabla)
+        {
             $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
 
             if (!empty($registro)) {
