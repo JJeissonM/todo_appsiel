@@ -134,7 +134,7 @@ class NominaController extends TransaccionController
     {
       $view_pdf = $this->vista_preliminar($id,'imprimir');
 
-      $tam_hoja = 'letter';
+      $tam_hoja = 'folio';
       $orientacion='landscape';
       $pdf = \App::make('dompdf.wrapper');
       $pdf->loadHTML(($view_pdf))->setPaper($tam_hoja,$orientacion);

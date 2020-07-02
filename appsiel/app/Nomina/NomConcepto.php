@@ -49,6 +49,11 @@ class NomConcepto extends Model
 
     public static function conceptos_del_documento($encabezado_doc_id)
     {
-        return NomConcepto::leftJoin('nom_doc_registros','nom_doc_registros.nom_concepto_id','=','nom_conceptos.id')->where('nom_doc_registros.nom_doc_encabezado_id',$encabezado_doc_id)->select('nom_doc_registros.nom_concepto_id','nom_conceptos.descripcion','nom_conceptos.abreviatura','nom_conceptos.naturaleza')->distinct('nom_doc_registros.nom_concepto_id')->orderBy('nom_conceptos.id','ASC')->get();
+        return NomConcepto::leftJoin('nom_doc_registros','nom_doc_registros.nom_concepto_id','=','nom_conceptos.id')
+                            ->where('nom_doc_registros.nom_doc_encabezado_id',$encabezado_doc_id)
+                            ->select('nom_doc_registros.nom_concepto_id','nom_conceptos.descripcion','nom_conceptos.abreviatura','nom_conceptos.naturaleza')
+                            ->distinct('nom_doc_registros.nom_concepto_id')
+                            ->orderBy('nom_conceptos.id','ASC')
+                            ->get();
     }
 }
