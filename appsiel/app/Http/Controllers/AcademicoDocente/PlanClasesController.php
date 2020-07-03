@@ -12,10 +12,17 @@ use App\Sistema\Modelo;
 use Input;
 use View;
 use Storage;
+use Cache;
+
+use App\User;
+
+use App\Matriculas\Curso;
 
 use App\AcademicoDocente\PlanClaseEstrucPlantilla;
 use App\AcademicoDocente\PlanClaseEncabezado;
 use App\AcademicoDocente\PlanClaseRegistro;
+
+use App\AcademicoDocente\AsignacionProfesor;
 
 
 class PlanClasesController extends ModeloController
@@ -205,5 +212,59 @@ class PlanClasesController extends ModeloController
 
         return redirect( 'sga_planes_clases/'.$encabezado_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion=0' )->with( 'flash_message','Archivo adjunto removido correctamente.' );
         
+    }
+
+    public function resumen_planes_clases( Request $request )
+    {
+        
+        $listado_asignaciones = AsignacionProfesor::get_asignaturas_x_curso( $request->user_id, $request->periodo_lectivo_id );
+
+        $plantilla = PlanClaseEstrucPlantilla::get_actual( $request->periodo_lectivo_id );
+
+        $elementos_plantilla = $plantilla->elementos()->orderBy('orden')->get();
+
+        $planes_profesor = PlanClaseEncabezado::where( 'plantilla_plan_clases_id', $plantilla->id )
+                                            ->whereBetween( 'fecha', [ $request->fecha_desde, $request->fecha_hasta ] )
+                                            ->where( 'user_id', $request->user_id )
+                                            ->get();
+
+        $lineas_asignaturas = [];
+
+        // NOTA: SOLO SE VA A MOSTRAR UN PLAN POR ASIGNATURA
+        foreach ($listado_asignaciones as $asignacion)
+        {
+
+            $linea = (object)[ 'asignatura' => $asignacion->Asignatura, 'fecha' => '', 'contenido_elementos' => null];
+
+            foreach ($planes_profesor as $plan)
+            {
+
+                if ( $plan->asignatura_id == $asignacion->id_asignatura )
+                {
+                    $linea->fecha = $plan->fecha;
+                    $array_elementos = [];
+                    foreach ($elementos_plantilla as $elemento)
+                    {
+                        $array_elementos[] =  PlanClaseRegistro::where( 'plan_clase_encabezado_id', $plan->id )
+                                                        ->where( 'plan_clase_estruc_elemento_id', $elemento->id )
+                                                        ->value('contenido');
+                    }
+
+                    $linea->contenido_elementos = $array_elementos;
+                }
+            }
+
+            $lineas_asignaturas[] = $linea;
+            
+        }
+        
+        $curso = Curso::find($asignacion->curso_id);
+        $profesor = User::find( $request->user_id );
+
+        $vista = View::make('academico_docente.planes_clases.resumen_planes', compact( 'plantilla', 'elementos_plantilla', 'lineas_asignaturas', 'curso', 'profesor') )->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
     }
 }
