@@ -230,6 +230,8 @@ class PlanClasesController extends ModeloController
                                             ->where( 'user_id', $request->user_id )
                                             ->get();
 
+        $curso = '';
+        
         $lineas_asignaturas = [];
 
         // NOTA: SOLO SE VA A MOSTRAR UN PLAN POR ASIGNATURA
@@ -242,7 +244,7 @@ class PlanClasesController extends ModeloController
             foreach ($planes_profesor as $plan)
             {
 
-                if ( $plan->asignatura_id == $asignacion->id_asignatura )
+                if ( $plan->asignatura_id == $asignacion->id_asignatura && $plan->curso_id == $asignacion->curso_id )
                 {
                     $linea->fecha = $plan->fecha;
                     $array_elementos = [];
