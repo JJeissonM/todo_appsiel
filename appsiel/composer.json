@@ -18,8 +18,8 @@
         "rap2hpoutre/laravel-log-viewer": "^0.20.0",
         "yajra/laravel-datatables-oracle": "~6.0",
         "milon/barcode": "^5.3",
-        "cmgmyr/messenger": "^2.16",
-        "doctrine/dbal": "^2.10"
+        "doctrine/dbal": "^2.10",
+        "cmgmyr/messenger": "^2.16"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
