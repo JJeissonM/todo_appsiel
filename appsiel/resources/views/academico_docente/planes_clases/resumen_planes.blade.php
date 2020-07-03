@@ -10,7 +10,7 @@
     </tr>
     <tr>
         <td>
-            <b> Curso: </b> {{ $curso->descripcion }}
+            <b> Fecha: </b> desde {{ $fecha_desde }} hasta {{ $fecha_hasta }}
         </td>
         <td>
             <b> Profesor: </b> {{ $profesor->name }}
@@ -23,6 +23,7 @@
 <table class="table table-bordered table-striped" style="font-size: 0.9em;">
     <thead>
         <tr>
+            <th>Curso</th>
             <th>Asignatura</th>
             <th>Fecha</th>
             @foreach( $elementos_plantilla as $elemento )
@@ -34,6 +35,9 @@
     <tbody>
         @foreach( $lineas_asignaturas as $linea )
             <tr>
+                <td>
+                    {{ $linea->curso }}
+                </td>
                 <td>
                     {{ $linea->asignatura }}
                 </td>

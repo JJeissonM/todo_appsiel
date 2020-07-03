@@ -216,7 +216,9 @@ class PlanClasesController extends ModeloController
 
     public function resumen_planes_clases( Request $request )
     {
-        
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
+
         $listado_asignaciones = AsignacionProfesor::get_asignaturas_x_curso( $request->user_id, $request->periodo_lectivo_id );
 
         $plantilla = PlanClaseEstrucPlantilla::get_actual( $request->periodo_lectivo_id );
@@ -233,8 +235,9 @@ class PlanClasesController extends ModeloController
         // NOTA: SOLO SE VA A MOSTRAR UN PLAN POR ASIGNATURA
         foreach ($listado_asignaciones as $asignacion)
         {
+            $curso = Curso::find($asignacion->curso_id);
 
-            $linea = (object)[ 'asignatura' => $asignacion->Asignatura, 'fecha' => '', 'contenido_elementos' => null];
+            $linea = (object)[ 'curso' => $curso->descripcion, 'asignatura' => $asignacion->Asignatura, 'fecha' => '', 'contenido_elementos' => null];
 
             foreach ($planes_profesor as $plan)
             {
@@ -258,10 +261,9 @@ class PlanClasesController extends ModeloController
             
         }
         
-        $curso = Curso::find($asignacion->curso_id);
         $profesor = User::find( $request->user_id );
 
-        $vista = View::make('academico_docente.planes_clases.resumen_planes', compact( 'plantilla', 'elementos_plantilla', 'lineas_asignaturas', 'curso', 'profesor') )->render();
+        $vista = View::make('academico_docente.planes_clases.resumen_planes', compact( 'plantilla', 'elementos_plantilla', 'lineas_asignaturas', 'curso', 'profesor', 'fecha_desde', 'fecha_hasta') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
