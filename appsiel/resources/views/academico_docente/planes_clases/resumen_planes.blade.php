@@ -18,8 +18,6 @@
     </tr>
 </table>
 
-<br>
-
 <table class="table table-bordered table-striped" style="font-size: 0.9em;">
     <thead>
         <tr>
@@ -60,6 +58,8 @@
         @endforeach
     </tbody>
 </table>
+
+<br>
 
 <table width="100%" style="text-align: center;">
     <tr>
