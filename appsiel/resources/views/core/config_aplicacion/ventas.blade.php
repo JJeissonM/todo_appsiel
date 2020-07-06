@@ -334,7 +334,7 @@
 									$modo_liquidacion_precio = 'ultimo_precio';
 								}
 							?>
-							{{ Form::bsSelect('modo_liquidacion_precio', $modo_liquidacion_precio, 'Modo de liquidación del precio de ventas', ['ultimo_precio'=>'Último precio vendido','lista_de_precios'=>'Lista de precios del cliente'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('modo_liquidacion_precio', $modo_liquidacion_precio, 'Modo de liquidación del precio de ventas', ['precio_estandar_venta'=>'Precio estándar de venta','ultimo_precio'=>'Último precio vendido','lista_de_precios'=>'Lista de precios del cliente'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

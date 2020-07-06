@@ -1,8 +1,14 @@
 <tr>
-    <td> <div class="elemento_modificar" title="Doble click para modificar." data-asignatura_id="{{ $asignatura_id }}"> {{ $orden_boletin }} </div>  </td>
+    <td>
+        <div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('calificaciones_cambiar_orden_asignatura') . "/" . $periodo_lectivo_id . "/" . $curso_id . "/" . $asignatura_id }}"> {{ $orden_boletin }} 
+        </div>
+    </td>
     <td> {{ $area_descripcion }} </td>
     <td> {{ $asignatura_descripcion }} </td>
-    <td> {{ $intensidad_horaria }} </td>
+    <td>
+        <div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('calificaciones_cambiar_intensidad_horaria_asignatura') . "/" . $periodo_lectivo_id . "/" . $curso_id . "/" . $asignatura_id }}"> {{ $intensidad_horaria }} 
+        </div>
+    </td>
     <td> {{ $maneja_calificacion }} </td>
     <td> 
     	@if( $profesor == 'No' )

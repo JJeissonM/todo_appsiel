@@ -21,21 +21,22 @@ class Estudiante extends Model
      */
     protected $fillable = [ 'imagen', 'id_colegio', 'core_tercero_id', 'genero', 'fecha_nacimiento','ciudad_nacimiento', 'papa','cedula_papa','ocupacion_papa','telefono_papa','email_papa', 'mama', 'cedula_mama', 'ocupacion_mama','telefono_mama','email_mama', 'grupo_sanguineo', 'alergias', 'medicamentos', 'eps', 'user_id'];
 
-    public $encabezado_tabla = ['Nombre','Documento','Género','Fecha nacimiento','Teléfono','Email papá','Email mamá','Acción'];
+    public $encabezado_tabla = ['ID','Nombre','Documento','Género','Fecha nacimiento','Teléfono','Email papá','Email mamá','Acción'];
 
     public static function consultar_registros()
     {
         return Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
                             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
                             ->select( 
-                                    DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1' ),
-                                    DB::raw( 'CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS campo2' ),
-                                    'sga_estudiantes.genero AS campo3',
-                                    'sga_estudiantes.fecha_nacimiento AS campo4',
-                                    'core_terceros.telefono1 AS campo5',
-                                    'sga_estudiantes.email_papa AS campo6',
-                                    'sga_estudiantes.email_mama AS campo7',
-                                    'sga_estudiantes.id AS campo8')
+                                    'sga_estudiantes.id AS campo1',
+                                    DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo2' ),
+                                    DB::raw( 'CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS campo3' ),
+                                    'sga_estudiantes.genero AS campo4',
+                                    'sga_estudiantes.fecha_nacimiento AS campo5',
+                                    'core_terceros.telefono1 AS campo6',
+                                    'sga_estudiantes.email_papa AS campo7',
+                                    'sga_estudiantes.email_mama AS campo8',
+                                    'sga_estudiantes.id AS campo9')
                             ->orderBy('sga_estudiantes.id','desc')
                             ->get()
                             ->toArray();

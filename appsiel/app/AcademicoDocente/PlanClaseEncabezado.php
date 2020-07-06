@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Calificaciones\CursoTieneAsignatura;
 
 use App\AcademicoDocente\PlanClaseEstrucElemento;
+use App\AcademicoDocente\PlanClaseEstrucPlantilla;
 use App\AcademicoDocente\PlanClaseRegistro;
 
 use Form;
@@ -16,6 +17,8 @@ use Auth;
 use App\Matriculas\Curso;
 
 use App\Calificaciones\Asignatura;
+
+use App\Matriculas\PeriodoLectivo;
 
 class PlanClaseEncabezado extends Model
 {
@@ -73,6 +76,11 @@ class PlanClaseEncabezado extends Model
         }
 
         return $vec;
+    }
+
+    public function plantilla()
+    {
+        return $this->belongsTo(PlanClaseEstrucPlantilla::class, 'plantilla_plan_clases_id');
     }
 
 
@@ -402,4 +410,22 @@ class PlanClaseEncabezado extends Model
                                         'sga_plan_clases_encabezados.id')
                                     ->get();
     }
+
+
+    public static function get_plan_periodo_lectivo( $periodo_lectivo_id = null )
+    {
+        if( is_null($periodo_lectivo_id) )
+        {
+            $periodo_lectivo_id = PeriodoLectivo::get_actual()->id;
+        }
+        
+        // Se obtienen la plantilla del periodo lectivo        
+        $plantilla_plan_clases = PlanClaseEstrucPlantilla::where('periodo_lectivo_id',$periodo_lectivo_id)
+                                                        ->where( 'tipo_plantilla', 'planeador' )
+                                                        ->get()
+                                                        ->first();
+
+        // Se devuelven los datos del plan que tenga asociado la plantilla
+        return PlanClaseEncabezado::get_registro_impresion( PlanClaseEncabezado::where('plantilla_plan_clases_id',$plantilla_plan_clases->id)->value('id') );
+    } 
 }

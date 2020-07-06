@@ -2,10 +2,7 @@
  return array (
   'titulo' => '<h3>Configuraciones generales <br> <small style="color: red;"> Si no está completamente seguro, no modifique ningún valor de este formulario. Consulte con el administrador del sistema. </small></h3>',
   'lista_precios_id' => '1',
-  'liquida_impuestos' => '1',
   'lista_descuentos_id' => '1',
-  'liquida_impuestos' => '1',
-  'equipo_ventas_id' => '1',
   'clase_cliente_id' => '1',
   'vendedor_id' => '1',
   'inv_bodega_id' => '1',
@@ -20,7 +17,7 @@
   'pv_modelo_id' => '175',
   'pv_tipo_transaccion_id' => '42',
   'pv_tipo_doc_app_id' => '41',
-  'modo_liquidacion_precio' => 'lista_de_precios',
+  'modo_liquidacion_precio' => 'precio_estandar_venta',
   'permitir_venta_menor_costo' => '1',
   'permitir_inventarios_negativos' => '1',
   'encabezado_linea_1' => 'SERVIMOS CON CALIDAD.',
@@ -30,5 +27,4 @@
   'pie_pagina_linea_2' => '',
   'pie_pagina_linea_3' => '',
   'url_id_modelo' => '0',
-  'tipo_transaccion' => 'factura_directa',
 ) ;

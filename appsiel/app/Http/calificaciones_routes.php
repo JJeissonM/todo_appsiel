@@ -76,6 +76,8 @@ Route::resource('calificaciones', 'Calificaciones\CalificacionController', ['exc
 
 Route::get('calificaciones_cambiar_orden_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}/{nueva_posicion}', 'Calificaciones\PensumController@cambiar_orden_asignatura');
 
+Route::get('calificaciones_cambiar_intensidad_horaria_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}/{nueva_ih}', 'Calificaciones\PensumController@cambiar_intensidad_horaria_asignatura');
+
 Route::get('calificaciones/asignar_asignaturas', 'Calificaciones\PensumController@asignar_asignaturas');
 Route::post('calificaciones/guardar_asignacion_asignatura', 'Calificaciones\PensumController@guardar_asignacion_asignatura');
 Route::get('calificaciones/eliminar_asignacion_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}', 'Calificaciones\PensumController@eliminar_asignacion_asignatura');
