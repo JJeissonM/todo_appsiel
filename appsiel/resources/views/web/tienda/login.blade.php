@@ -67,7 +67,7 @@
                                             <div class="col2-set">
                                                 <div class="new-users">
                                                     <div class="buttons-set">
-                                                        <button type="button" title="Create an Account" class="button" onclick="window.location='{{route('tienda.cuenta')}}';"><span><span>Crear una Cuenta</span></span></button>
+                                                        <button type="button" title="Create an Account" class="button" onclick="window.location.href='{{route('tienda.nuevacuenta')}}';"><span><span>Crear una Cuenta</span></span></button>
                                                     </div>
                                                 </div>
                                                 <div class="registered-users">

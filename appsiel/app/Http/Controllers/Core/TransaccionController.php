@@ -160,8 +160,6 @@ class TransaccionController extends Controller
         
         return view( $vista, compact('form_create','miga_pan','tabla'));
     }
-
-    
     /*
         Crea el encabezado de un documento
         Devuelve LA INSTANCIA del documento creado
@@ -169,6 +167,7 @@ class TransaccionController extends Controller
     public function crear_encabezado_documento(Request $request, $modelo_id)
     {
         $request['creado_por'] = Auth::user()->email;
+        $request['valor_total'] = 10;
         return CrudController::crear_nuevo_registro( $request, $modelo_id );
     }
 
