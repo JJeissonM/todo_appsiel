@@ -3,23 +3,16 @@
         position: fixed;
         /* Hacemos que la posición en pantalla sea fija para que siempre se muestre en pantalla*/
         /* Establecemos la barra en la posición indicada */
-        @if($sticky!=null)
-        @if($sticky->posicion=='IZQUIERDA')
-        left: 0;
+        @if($sticky !=null) @if($sticky->posicion=='IZQUIERDA') left: 0;
         top: 200px;
         /* Bajamos la barra 200px de arriba a abajo */
-        @endif
-        @if($sticky->posicion=='DERECHA')
-        right: 0;
+        @endif @if($sticky->posicion=='DERECHA') right: 0;
         top: 200px;
         /* Bajamos la barra 200px de arriba a abajo */
-        @endif
-        @else
-        left: 0;
+        @endif @else left: 0;
         top: 200px;
         /* Bajamos la barra 200px de arriba a abajo */
-        @endif
-        z-index: 2000;
+        @endif z-index: 2000;
         /* Utilizamos la propiedad z-index para que no se superponga algún otro elemento como sliders, galerías, etc */
     }
 
@@ -28,7 +21,13 @@
     }
 
     .social ul li a {
-        width: @if($sticky!=null) {{$sticky->ancho_boton}}px @else 50px @endif;
+        width: @if($sticky !=null) {
+                {
+                $sticky->ancho_boton
+            }
+        }
+
+        px @else 50px @endif;
         display: inline-block;
         color: #fff;
         background: #000;
@@ -43,13 +42,9 @@
     .social ul li a:hover {
         background: #000;
         /* Cambiamos el fondo cuando el usuario pase el mouse */
-        @if($sticky!=null)
-        @if($sticky->posicion=='DERECHA')
-        padding: 50px 15px;
-        @else
-        padding: 15px 50px;
-        @endif
-        @endif
+        @if($sticky !=null) @if($sticky->posicion=='DERECHA') padding: 50px 15px;
+        @else padding: 15px 50px;
+        @endif @endif
         /* Hacemos mas grande el espacio cuando el usuario pase el mouse */
     }
 </style>
@@ -59,7 +54,13 @@
         @if($sticky!=null)
         @if(count($sticky->stickybotons)>0)
         @foreach($sticky->stickybotons as $b)
-        <li><a @if($b->texto!=null) data-toggle="tooltip" data-placement="right" title="{{$b->texto}}" @endif @if($b->enlace!=null) href="{{$b->enlace}}" @endif target="_blank" style="background-color: {{$b->color}};"> @if($b->icono!=null) <i class="fa fa-{{$b->icono}}"></i> @endif</a></li>
+        <li>
+            <a @if($b->texto!=null) data-toggle="tooltip" data-placement="right" title="{{$b->texto}}" @endif @if($b->enlace!=null) href="{{$b->enlace}}" @endif target="_blank" style="background-color: {{$b->color}};"> @if($b->icono!=null) <i class="fa fa-{{$b->icono}}"></i> @endif
+                @if($b->imagen!=null)
+                <img style="width: 100px; max-height: 100px;" src="{{ asset('docs/'.$b->imagen)}}" />
+                @endif
+            </a>
+        </li>
         @endforeach
         @endif
         @endif
