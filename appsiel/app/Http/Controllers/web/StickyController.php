@@ -68,6 +68,16 @@ class StickyController extends Controller
     public function storeboton(Request $request)
     {
         $s = new Stickyboton($request->all());
+        if (isset($request->imagen)) {
+            $file = $request->file("imagen");
+            //$name = "Archivo_" . $date['year'] . $date['mon'] . $date['mday'] . $date['hours'] . $date['minutes'] . $date['seconds'] . "." . $f->getClientOriginalExtension();
+            $name = str_slug($file->getClientOriginalName()) . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $path = "docs/" . $name;
+            $flag = file_put_contents($path, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $s->imagen = $name;
+            }
+        }
         $result = $s->save();
         $variables_url = $request->variables_url;
         if ($result) {

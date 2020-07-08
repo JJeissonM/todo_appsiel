@@ -281,7 +281,7 @@ class NubeController extends Controller
         if (isset($request->archivo)) {
             $files = $request->file("archivo");
             foreach ($files as $f) {
-                $name = str_slug($f->getClientOriginalName()) . '.' . $f->clientExtension();
+                $name = str_slug($f->getClientOriginalName()) . "." . $f->getClientOriginalExtension();
                 $path = $request->path . $name;
                 file_put_contents($path, file_get_contents($f->getRealPath()), LOCK_EX);
             }
