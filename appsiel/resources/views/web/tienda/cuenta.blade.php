@@ -6,6 +6,21 @@
     <link rel="stylesheet" href="{{asset('assets/tienda/css/custom.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/cuenta.css')}}">
+
+    <style>
+        table {
+            width: 100%;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+        }
+        th {
+             background-color: red;
+             color: white;
+        }
+    </style>
+
 @endsection
 
 @section('content')
@@ -432,67 +447,26 @@
                                                     <div class="page-title">
                                                         <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">MIS PEDIDOS</font></font></h1>
                                                     </div>
-                                                    <div class="welcome-msg">
-                                                        <p class="hello"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Hola Jordan Cuadro!</font></font></strong></p>
-                                                        <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Desde el Panel de control de Mi cuenta, puede ver una instantánea de la actividad reciente de su cuenta y actualizar la información de su cuenta. </font><font style="vertical-align: inherit;">Seleccione un enlace a continuación para ver o editar información.</font></font></p>
-                                                    </div>
+
                                                     <div class="box-account box-info">
-                                                        <div class="box-head">
-                                                            <h2><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Información de la cuenta</font></font></h2>
-                                                        </div>
-                                                        <div class="col2-set">
-                                                            <div class="col-1" style="max-width: 50%">
-                                                                <div class="box">
-                                                                    <div class="box-title">
-                                                                        <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Información del contacto</font></font></h3>
-                                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/customer/account/edit/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Editar</font></font></a>
-                                                                    </div>
-                                                                    <div class="box-content">
-                                                                        <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                                    Jordan Cuadro </font></font><br><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                                    jordan_j9@hotmail.com </font></font><br>
-                                                                            <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/customer/account/edit/changepass/1/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Cambiar contraseña</font></font></a>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-2" style="max-width: 50%">
-                                                                <div class="box">
-                                                                    <div class="box-title">
-                                                                        <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Boletines informativos</font></font></h3>
-                                                                        <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/newsletter/manage/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Editar</font></font></a>
-                                                                    </div>
-                                                                    <div class="box-content">
-                                                                        <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                                    Actualmente no estás suscrito a ningún boletín.                                    </font></font></p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col2-set">
-                                                            <div class="box">
-                                                                <div class="box-title">
-                                                                    <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Directorio</font></font></h3>
-                                                                    <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/customer/address/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Administrar direcciones</font></font></a>
-                                                                </div>
-                                                                <div class="box-content">
-                                                                    <div class="col-1" style="max-width: 50%">
-                                                                        <h4><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">direccion de FACTURACION por defecto</font></font></h4>
-                                                                        <address><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                                    No ha establecido una dirección de facturación predeterminada. </font></font><br>
-                                                                            <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/customer/address/edit/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Editar dirección</font></font></a>
-                                                                        </address>
-                                                                    </div>
-                                                                    <div class="col-2" style="max-width: 50%">
-                                                                        <h4><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Dirección de entrega por defecto</font></font></h4>
-                                                                        <address><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                                                                    No ha establecido una dirección de envío predeterminada. </font></font><br>
-                                                                            <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/customer/address/edit/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Editar dirección</font></font></a>
-                                                                        </address>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                         <table>
+                                                             <thead>
+                                                                  <th># pedido</th>
+                                                                  <th>Fecha del Pedido</th>
+                                                                  <th>Valor total</th>
+                                                                  <th>Estado</th>
+                                                             </thead>
+                                                             <tbody>
+                                                                @foreach($doc_encabezados  as $key => $value)
+                                                                    <tr>
+                                                                        <td><a target="_blank" href="{{url('/vtas_pedidos_imprimir').'/'.$value->id.'?id=13&id_modelo=175&id_transaccion=42&formato_impresion_id=1'}}">PV-{{$value->consecutivo}}</a></td>
+                                                                        <td>{{$value->fecha}}</td>
+                                                                        <td>${{$value->valor_total}}</td>
+                                                                        <td>{{$value->estado}}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                             </tbody>
+                                                         </table>
                                                     </div>
                                                 </div>
                                             </div>
@@ -557,7 +531,6 @@
             // $('confirmation').removeClassName('required-entry');
         }
     }
-
     //]]>
 </script>
 @endsection

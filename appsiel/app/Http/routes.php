@@ -219,6 +219,9 @@ include __DIR__ . '/inv_routes.php';
 // Aplicación VENTAS
 include __DIR__ . '/vtas_routes.php';
 
+// Aplicación VENTAS POS
+include __DIR__ . '/ventas_pos_routes.php';
+
 // Aplicación COMPRAS
 include __DIR__ . '/compras_routes.php';
 

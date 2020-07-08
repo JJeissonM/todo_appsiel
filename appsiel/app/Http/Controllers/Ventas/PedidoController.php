@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Ventas;
 
+use App\Inventarios\InvProducto;
+use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Http\Request;
 use Auth;
 use DB;
@@ -9,6 +11,7 @@ use View;
 use Lava;
 use Input;
 use Form;
+
 
 
 use App\Http\Controllers\Sistema\ModeloController;
@@ -28,10 +31,10 @@ use App\Ventas\Cliente;
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
-use App\Ventas\ListaPrecioDetalle;
+
+use App\Contabilidad\Impuesto;
 use App\Ventas\ListaDctoDetalle;
 
-use App\Inventarios\InvProducto;
 
 class PedidoController extends TransaccionController
 {
@@ -73,6 +76,13 @@ class PedidoController extends TransaccionController
         
         if( isset( $request['pedido_web'] ) )
         {
+            if(!Auth::check()){
+                return response()->json([
+                    'status' => 'error',
+                    'mensaje' => 'Debe estar logeado para poder realizar el pedido.'
+                ]);
+            }
+
             $request = $this->completar_request( $request );
         }
 
@@ -84,13 +94,54 @@ class PedidoController extends TransaccionController
         // 2do. Crear documento de Ventas
         $ventas_doc_encabezado_id = PedidoController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
-        return redirect('vtas_pedidos/' . $ventas_doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        if(isset($request['pedido_web'])){
+            self::enviar_pedidoweb_email($ventas_doc_encabezado_id);
+            return  response()->json([
+                  'status' => 'ok',
+                  'mensaje' => 'Pedido recibido correctamente, pronto uno de nuestros asesores te estará contactando para proceder con el envío.'
+            ]);
+        }else{
+            return redirect('vtas_pedidos/' . $ventas_doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        }
     }
 
     public function completar_request( $request )
     {
+        $tercero = DB::select('select id from core_terceros where user_id = ?', [Auth::user()->id]);
+        $cliente = DB::select('select id from vtas_clientes where core_tercero_id = ?',[$tercero[0]->id]);
         $request['core_tipo_transaccion_id'] = config( 'ventas.pv_tipo_transaccion_id' );
         $request['core_tipo_doc_app_id'] = config( 'ventas.pv_tipo_doc_app_id' );
+        $request['core_empresa_id'] = Empresa::find(1)->id;
+        $request['fecha'] = date('Y-m-d');
+        $request['cliente_input'] = Auth::user()->id;
+        $request['descripcion'] = '';
+        $request['consecutivo'] = '';
+        $request['url_id'] = 13;
+        $request['url_id_modelo'] = 175;
+        $request['inv_bodega_id_aux'] = '';
+        $request['vendedor_id'] = config('ventas.vendedor_id');
+        $request['forma_pago'] = 'forma_pago';
+        $request['fecha_entrega'] = date('Y-m-d');
+        $request['fecha_vencimiento'] = date('Y-m-d');
+        $request['inv_bodega_id'] = config('ventas.inv_bodega_id');
+        $request['zona_id'] = config('ventas.zona_id');
+        $request['clase_cliente_id'] = config('ventas.clase_cliente_id');
+        $request['equipo_ventas_id'] = config('ventas.equipo_ventas_id');
+        $request['core_tercero_id'] = $tercero[0]->id;
+        $request['lista_precios_id'] = config('ventas.lista_precios_id');
+        $request['lista_descuentos_id'] = config('ventas.lista_descuentos_id');
+        $request['liquida_impuestos'] = config('ventas.liquida_impuestos');
+        $request['cliente_id'] = $cliente[0]->id;
+        $request['dvc_tipo_transaccion_id'] = config('ventas.dvc_tipo_transaccion_id');
+        $request['rm_tipo_transaccion_id'] = config('ventas.rm_tipo_transaccion_id');
+        $request['tipo_transaccion'] = config('ventas.tipo_transaccion');
+        $id_transaccion = Input::get('id_transaccion');
+        if( is_null( $id_transaccion ) )
+        {
+            $id_transaccion = 42;
+        }
+
+        $request['id_transaccion'] = $id_transaccion;
 
         return $request;
     }
@@ -102,9 +153,7 @@ class PedidoController extends TransaccionController
     public function crear_documento(Request $request, array $lineas_registros, $modelo_id)
     {
         $doc_encabezado = $this->crear_encabezado_documento($request, $modelo_id);
-
         PedidoController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
-
         return $doc_encabezado->id;
     }
 
@@ -115,28 +164,34 @@ class PedidoController extends TransaccionController
     */
     public function crear_registros_documento(Request $request, $doc_encabezado, array $lineas_registros)
     {
-        // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
-        $datos = $request->all();
 
+        // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros
         $lista_precios_id = Cliente::find( $doc_encabezado->cliente_id )->lista_precios->id;
         $lista_descuentos_id = Cliente::find( $doc_encabezado->cliente_id )->lista_descuentos->id;
 
         $total_documento = 0;
 
         $cantidad_registros = count($lineas_registros);
+
+
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
-          // Se llama nuevamente el precio de venta para estar SEGURO
+            if(!isset($lineas_registros[$i]->inv_Imotivo_id))
+                $inv_motivo_id = config('pagina_web.pedidos_inv_motivo_id');
+            else
+                $inv_motivo_id = $lineas_registros[$i]->inv_Imotivo_id;
+
+            // Se llama nuevamente el precio de venta para estar SEGURO
           $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
 
           $tasa_descuento = ListaDctoDetalle::get_descuento_producto( $lista_descuentos_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
 
-          $tasa_impuesto = InvProducto::get_tasa_impuesto( $lineas_registros[$i]->inv_producto_id );
+          $tasa_impuesto = Impuesto::get_tasa($lineas_registros[$i]->inv_producto_id,0,$doc_encabezado->cliente_id);
 
           $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
           $valor_impuesto = $precio_unitario - $base_impuesto;
 
-          $linea_datos = ['vtas_motivo_id' => $lineas_registros[$i]->inv_motivo_id] +
+          $linea_datos = ['vtas_motivo_id' =>$inv_motivo_id] +
               ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
               ['precio_unitario' => $precio_unitario] +
               ['cantidad' => $lineas_registros[$i]->cantidad] +
@@ -150,14 +205,13 @@ class PedidoController extends TransaccionController
               ['creado_por' => Auth::user()->email] +
               ['estado' => 'Activo'];
 
-
             VtasDocRegistro::create(
-                $datos +
                     ['vtas_doc_encabezado_id' => $doc_encabezado->id] +
                     $linea_datos
             );
 
             $total_documento += $lineas_registros[$i]->precio_total;
+
         } // Fin por cada registro
 
     }
@@ -228,6 +282,24 @@ class PedidoController extends TransaccionController
         $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista);
 
         return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with($vec['tipo_mensaje'], $vec['texto_mensaje']);
+    }
+
+    public function enviar_pedidoweb_email($id){
+
+        $documento_vista = $this->generar_documento_vista($id, 'documento_imprimir');
+
+        $tercero = Tercero::find($this->doc_encabezado->core_tercero_id);
+
+        $asunto = $this->doc_encabezado->documento_transaccion_descripcion . ' No. ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo;
+        $this->empresa = Empresa::all()->first();
+        $descripcion =  $this->empresa->descripcion;
+        $cuerpo_mensaje = "Hola, <strong>$tercero->nombre1 $tercero->nombre2</strong> </br>"
+                          ."Gracias por su compra en <strong> $descripcion </strong> </br>"
+                          ."Hemos recibido tu pedido; el cual ha ingresado a un proceso de validación de datos personales e inventario. Una vez finalizada esta verificación se  procederá a realizar el despacho. </br>"
+                          ."<strong style='color:red;'>NOTA:</strong>  para los productos pesados el precio puede variar, los detalles de está variación los podra revisar en la factura que le haremos llegar con los productos, Esta observación es valida para los productos que son sometidos a un proceso de medida , donde el proceso de medición no siempre es exacto. ";
+
+        $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista);
+
     }
 
 
@@ -376,41 +448,3 @@ class PedidoController extends TransaccionController
         return redirect('inventarios/' . $remision_creada_id . '?id=' . $request->url_id . '&id_modelo=' . $rm_modelo_id . '&id_transaccion=' . $rm_tipo_transaccion_id);
     }
 }
-
-/*
-
-    array:30 [▼
-  "_token" => "lroJ4zP16GeE1dyO0iL2qe2NAvd0UQYHbSCYZfdv"
-  "core_empresa_id" => "1"
-  "core_tipo_doc_app_id" => "41"
-  "fecha" => "2020-05-27"
-  "cliente_input" => " ANA  LOEZ PEREZ (8.789) "
-  "descripcion" => ""
-  "fecha_entrega" => "2020-05-27"
-  "core_tipo_transaccion_id" => "42"
-  "consecutivo" => ""
-  "url_id" => "13"
-  "url_id_modelo" => "175"
-  "url_id_transaccion" => "42"
-  "inv_bodega_id_aux" => ""
-  "vendedor_id" => "1"
-  "forma_pago" => "forma_pago"
-  "fecha_vencimiento" => "fecha_vencimiento"
-  "inv_bodega_id" => "1"
-  "cliente_id" => "1"
-  "zona_id" => "1"
-  "clase_cliente_id" => "1"
-  "equipo_ventas_id" => "1"
-  "core_tercero_id" => "1"
-  "lista_precios_id" => "1"
-  "lista_descuentos_id" => "1"
-  "liquida_impuestos" => "1"
-  "lineas_registros" => "[{"inv_motivo_id":"10","inv_bodega_id":"1","inv_producto_id":"1","costo_unitario":"1e-7","precio_unitario":"1200","base_impuesto":"1008.4033613445379","tasa_impuesto":"19","valor_impuesto":"191.59663865546213","base_impuesto_total":"12100.840336134454","cantidad":"12","costo_total":"0.0000012","precio_total":"14400","tasa_descuento":"0","valor_total_descuento":"0","Producto":"1 1 YOGURT","Motivo":"Ventas POS","Stock":"0","Cantidad":"12","Precio Unit. (IVA incluido)":"$ 1.200","Dcto. (%)":"[object Object]","Dcto. Tot. ($)":"$ 0","IVA":"19%","Total":"$ 14.400"}]"
-  "tipo_transaccion" => "factura_directa"
-  "rm_tipo_transaccion_id" => "24"
-  "dvc_tipo_transaccion_id" => "34"
-  "saldo_original" => "0"
-]
-
-
-*/

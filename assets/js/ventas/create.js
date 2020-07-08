@@ -784,7 +784,7 @@ $(document).ready(function(){
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td>'+ $('#tasa_descuento').val(0) + ' </td>';
+				celdas[ num_celda ] = '<td>'+ tasa_descuento + '% </td>';
 				
 				num_celda++;
 				// ¿se va  amostrar valor del descuento?

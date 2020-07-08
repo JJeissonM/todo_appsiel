@@ -5,11 +5,12 @@ namespace App\AcademicoDocente;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Matriculas\PeriodoLectivo;
+use App\AcademicoDocente\PlanClaseEstrucElemento;
 
 class PlanClaseEstrucPlantilla extends Model
 {
     protected $table = 'sga_plan_clases_struc_plantillas';
-	protected $fillable = ['periodo_lectivo_id', 'descripcion', 'detalle', 'estado'];
+	protected $fillable = ['periodo_lectivo_id', 'tipo_plantilla', 'descripcion', 'detalle', 'estado'];
 	public $encabezado_tabla = ['Año Lectivo', 'Descripción', 'Detalle', 'Estado', 'Acción'];
 	
 	public static function consultar_registros()
@@ -40,11 +41,22 @@ class PlanClaseEstrucPlantilla extends Model
         return $vec;
     }
 
-    public static function get_actual()
+    public static function get_actual( $periodo_lectivo_id = null )
     {
-        return PlanClaseEstrucPlantilla::where('periodo_lectivo_id', PeriodoLectivo::get_actual()->id )
-                            ->where('estado','Activo')
-                            ->get()
-                            ->last();
+        if ( is_null($periodo_lectivo_id) )
+        {
+            $periodo_lectivo_id = PeriodoLectivo::get_actual()->id;
+        }
+
+        return PlanClaseEstrucPlantilla::where('periodo_lectivo_id', $periodo_lectivo_id )
+                                    ->where('estado','Activo')
+                                    ->where('tipo_plantilla','planeador')
+                                    ->get()
+                                    ->last();
+    }
+
+    public function elementos()
+    {
+        return $this->hasMany(PlanClaseEstrucElemento::class,'plantilla_plan_clases_id');
     }
 }

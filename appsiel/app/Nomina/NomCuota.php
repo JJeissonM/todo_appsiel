@@ -13,6 +13,8 @@ class NomCuota extends Model
 
 	// El archivo js debe estar en la carpeta public
 	public $archivo_js = 'assets/js/nom_cuotas.js';
+
+	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","cambiar_estado":"a_i/id_fila"}';
 	
 	public static function consultar_registros()
 	{

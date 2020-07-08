@@ -5,6 +5,8 @@ namespace App\Ventas;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Ventas\ClaseCliente;
+use App\Ventas\Vendedor;
+use App\Core\Tercero;
 
 class Cliente extends Model
 {
@@ -68,5 +70,15 @@ class Cliente extends Model
     public function lista_descuentos()
     {
         return $this->belongsTo(ListaDctoEncabezado::class);
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo( Tercero::class,'core_tercero_id');
+    }
+
+    public function vendedor()
+    {
+        return $this->belongsTo( Vendedor::class,'vendedor_id');
     }
 }

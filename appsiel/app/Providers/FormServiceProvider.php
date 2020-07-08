@@ -62,7 +62,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsMigaPan', 'components.design.miga_pan', ['vec']);
 
         Form::component('NombreMes', 'components.design.nombre_mes', ['mes']);
-        Form::component('TextoMoneda', 'components.design.texto_moneda', ['valor']);
+        Form::component('TextoMoneda', 'components.design.texto_moneda', ['valor','lbl'=>null]);
         Form::component('Spin', 'components.design.spin', ['tamaño']);
         Form::component('btnInfo', 'components.design.btn_info', ['title']);
 

@@ -4,7 +4,6 @@
 <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
 <link rel="stylesheet" href="{{asset('assets/css/toastr.min.css')}}">
 
-
 @include('web.tienda.header')
 
 @include( 'web.tienda.carousel' )
@@ -24,7 +23,7 @@
                                         <strong><span>Filtrar Por</span></strong>
                                     </div>
                                     <div class="block-content">
-                                        <p class="block-subtitle">Shopping Options</p>
+                                        <p class="block-subtitle">Opciones de compra</p>
                                         <dl id="narrow-by-list">
                                             <dt class="odd" style="margin:20px 0;">Categorias</dt>
                                             <div id="categoria_filtrada"></div>
@@ -54,6 +53,8 @@
                                                 <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
                                                     <div class="item-inner">
                                                         <div class="ma-box-content" data-id="{{$item->id}}">
+                                                            <input id="tasa_impuesto" type="hidden" value="{{$item->tasa_impuesto}}">
+                                                            <input id="precio_venta" type="hidden" value="{{$item->precio_venta}}">
                                                             <div class="products clearfix">
                                                                 <a href="#"
                                                                    title="{{$item->descripcion}}" class="product-image">
@@ -123,7 +124,6 @@
 </main>
 
 @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
-
 
 <script src="{{asset('js/carrito/app.js')}}"></script>
 

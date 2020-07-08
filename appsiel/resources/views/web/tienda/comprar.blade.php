@@ -16,6 +16,8 @@
     <!-- Main Style -->
     <link href="{{asset('assets/style.css')}}" rel="stylesheet">
     <link href="{{asset('assets/tienda/css/compra.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/css/toastr.min.css')}}" rel="stylesheet">
+
 </head>
 <body>
 <header>
@@ -38,6 +40,8 @@
                            <th><center>Descripcion</center></th>
                            <th  width="150px"><center>Precio</center></th>
                            <th  width="150px"><center>Cantidad</center></th>
+                           <th  width="150px"><center>Precio Base X UNI</center></th>
+                           <th  width="150px"><center>IVA X UNI</center></th>
                            <th  width="150px"><center>Total</center></th>
                        </tr>
                    </thead>
@@ -49,28 +53,40 @@
             <div class="col-md-4 col-sm-12">
                 <div class="contenido">
                     <p>Subtotal</p>
-                    <p id="subtotal">$ 19.000</p>
+                    <p id="subtotal">$ 0.000</p>
+                </div>
+
+                <div class="contenido">
+                    <p>IVA</p>
+                    <p id="iva">$ 0.000</p>
                 </div>
 
                 <div class="total_compra">
                     <p>Total: </p>
-                    <p><span style="color: red" id="total">$ 19.000</span></p>
+                    <p><span style="color: red" id="total">$ 0.000</span></p>
                 </div>
 
                 <div class="terminos">
-                    <input class="select" type="checkbox">
+                    <input class="select" type="checkbox" id="contrato">
                     <a href="">Acepto términos y condiciones, términos y condiciones marketplace y autorizo el tratamiento de mis datos personales con las siguientes condiciones.</a>
                 </div>
 
                 <div class="acciones">
-                    <button class="btn-block" id="comprar">finalizar compra</button>
-                    <a href=""><center>Seguir comprando</center></a>
+                    <form action="{{url('/vtas_pedidos')}}" id="form" method="POST">
+                        <input type="hidden" name="login" id="url_login" value="{{url('/ecommerce/public/signIn')}}">
+                        <input type="hidden" id="token" name="_toker" value="{{csrf_token()}}">
+                        <button class="btn-block" id="comprar" type="submit">finalizar compra</button>
+                    </form>
+                    <a href="{{url('/')}}"><center>Seguir comprando</center></a>
                 </div>
 
             </div>
         </div>
     </div>
 </main>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="{{asset('assets/js/toastr.min.js')}}"></script>
+<script src="{{asset('assets/js/axios.min.js')}}"></script>
 <script src="{{asset('assets/tienda/js/compra.js')}}"></script>
 </body>
 </html>

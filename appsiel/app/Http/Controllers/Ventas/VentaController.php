@@ -682,17 +682,26 @@ class VentaController extends TransaccionController
                 WARNING: Falta el manejo de los descuentos.
             */
 
-            // Precios traido desde la lista de precios asociada al cliente.
-            if ( config('ventas')['modo_liquidacion_precio'] == 'lista_de_precios' )
+            switch ( config('ventas')['modo_liquidacion_precio'] )
             {
-                $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $fecha, $producto_id );
-            }
-            // Precios traido del movimiento de ventas. El último precio liquidado al cliente para ese producto.
-            if ( config('ventas')['modo_liquidacion_precio'] == 'ultimo_precio' )
-            {
-                $precio_unitario = VtasMovimiento::get_ultimo_precio_producto( $cliente_id, $producto_id );
-            }
-           
+                case 'lista_de_precios':
+                    // Precios traido desde la lista de precios asociada al cliente.
+                    $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $fecha, $producto_id );
+                    break;
+
+                case 'ultimo_precio':
+                    // Precios traido del movimiento de ventas. El último precio liquidado al cliente para ese producto.
+                    $precio_unitario = VtasMovimiento::get_ultimo_precio_producto( $cliente_id, $producto_id );
+                    break;
+
+                case 'precio_estandar_venta':
+                    $precio_unitario = $producto['precio_venta'];
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }           
 
             $tasa_impuesto = Impuesto::get_tasa( $producto_id, 0, $cliente_id );
 

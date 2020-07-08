@@ -22,7 +22,7 @@
 	<div class="marco_formulario">
 	    <h4>Actualizar registros</h4>
 	    <hr>
-		{{Form::open(array('route'=>array('nomina.update','editar1'),'method'=>'PUT','class'=>'form-horizontal','id'=>'form_gral'))}}
+		{{Form::open(array('route'=>array('nomina.update','editar1'),'method'=>'PUT','class'=>'form-horizontal','id'=>'formulario'))}}
 			<div class="row">
 				<div class="col-sm-12">
 					<b>Documento de nómina:</b><code>{{ $documento->descripcion }}</code>
@@ -33,7 +33,7 @@
 					{{ Form::hidden('nom_concepto_id', $concepto->id, ['id' =>'nom_concepto_id']) }}
 
 
-					{{ Form::hidden('cantidad_personas', $cantidad_personas, ['id' =>'cantidad_personas']) }}
+					{{ Form::hidden('cantidad_empleados', $cantidad_empleados, ['id' =>'cantidad_empleados']) }}
 
 				</div>							
 			</div>
@@ -48,19 +48,19 @@
 					</tr>
 				</thead>
 				<tbody>
-					@for($k=0;$k<$cantidad_personas;$k++)
+					@for($k=0;$k<$cantidad_empleados;$k++)
 						<tr> 
 							<td style="font-size:12px">
-								<b>{{ $vec_personas[$k]['nombre'] }}</b>
+								<b>{{ $vec_empleados[$k]['nombre'] }}</b>
 								
-								{{ Form::hidden('core_tercero_id[]', $vec_personas[$k]['core_tercero_id'], []) }}
+								{{ Form::hidden('core_tercero_id[]', $vec_empleados[$k]['core_tercero_id'], []) }}
 
-								{{ Form::hidden('nom_registro_id[]', $vec_personas[$k]['nom_registro_id'], []) }}
+								{{ Form::hidden('nom_registro_id[]', $vec_empleados[$k]['nom_registro_id'], []) }}
 
 							</td>
 
 							<td>
-								<input type="text" name="valor[]" value="{{$vec_personas[$k]['valor_concepto']}}" class="form-control">
+								<input type="text" name="valor[]" value="{{$vec_empleados[$k]['valor_concepto']}}" class="form-control">
 
 							</td>
                         </tr>
@@ -80,5 +80,29 @@
 		{{Form::close()}}					
 	</div>
 </div> 
+
+@endsection
+
+@section('scripts')
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$('#bs_boton_guardar').on('click',function(event){
+				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+
+				// Desactivar el click del botón
+				$( this ).off( event );
+
+				$('#formulario').submit();
+			});
+
+		});
+	</script>
 
 @endsection

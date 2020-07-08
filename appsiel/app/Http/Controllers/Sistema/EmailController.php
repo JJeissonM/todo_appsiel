@@ -161,7 +161,7 @@ class EmailController extends Controller
     $from = $nombre_remitente." <".$email_interno."> \r\n";
     $headers = "From:" . $from." \r\n";
     $to = $email_destino;
-    
+
     $subject = $asunto;
 
     //headers for attachment

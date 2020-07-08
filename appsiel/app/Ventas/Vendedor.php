@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 
+use App\Core\Tercero;
+
 class Vendedor extends Model
 {
     protected $table = 'vtas_vendedores';
@@ -48,5 +50,10 @@ class Vendedor extends Model
         }
 
         return $vec;
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo( Tercero::class,'core_tercero_id');
     }
 }

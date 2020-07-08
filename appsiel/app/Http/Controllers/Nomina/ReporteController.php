@@ -92,6 +92,9 @@ class ReporteController extends Controller
                                 border-radius: 15px;
                                 padding: 5px;
                             }
+                            .table td {
+                                padding: 0px;
+                            }
                         </style>    
                     </head>
                     <body>
@@ -120,13 +123,13 @@ class ReporteController extends Controller
 
         if ( $core_tercero_id == 'Todos') 
         {
-            $empleados = NomContrato::get_empleados('');
+            $empleados = $documento->empleados;
         }else{
             $empleados = NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
-            ->leftJoin('nom_cargos', 'nom_cargos.id', '=', 'nom_contratos.cargo_id')
-            ->where('nom_contratos.core_tercero_id',$core_tercero_id)
-            ->select('core_terceros.descripcion AS empleado','core_terceros.id AS core_tercero_id', 'nom_cargos.descripcion AS cargo', 'nom_contratos.sueldo AS salario', 'core_terceros.numero_identificacion AS cedula')
-            ->get();
+                                    ->leftJoin('nom_cargos', 'nom_cargos.id', '=', 'nom_contratos.cargo_id')
+                                    ->where('nom_contratos.core_tercero_id', $core_tercero_id)
+                                    ->select('core_terceros.descripcion AS empleado', 'core_terceros.id AS core_tercero_id', 'nom_cargos.descripcion AS cargo', 'nom_contratos.sueldo AS salario', 'core_terceros.numero_identificacion AS cedula')
+                                    ->get();
         }
 
         $tabla = '';
@@ -134,11 +137,22 @@ class ReporteController extends Controller
         foreach ($empleados as $una_persona) 
         {
 
-            $tabla .= '<div class="cuadro"><p style="text-align: center; font-size: 15px; font-weight: bold;"><span style="font-size:17px;">'.$empresa->descripcion.'</span><br/> Documento: '.$documento->descripcion.' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fecha: '.$documento->fecha.'</p>
-                <p style="text-align: center; font-size: 14px; font-weight: bold;"> Desprendible de pago </p>';
+            $tabla .= '<div class="cuadro">
+                            <p style="text-align: center; font-size: 13px; font-weight: bold;">
+                                <span style="font-size:14px;">'.$empresa->descripcion.'</span>
+                                <br/> 
+                                Documento: '.$documento->descripcion.' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fecha: '.$documento->fecha.'</p>
+                            <div style="text-align: center; font-size: 13px; font-weight: bold; width: 100%;"> 
+                            Desprendible de pago </div> <br> ';
 
-            $tabla .= '<table style="border: 1px solid; border-collapse: collapse; width:100%;"><tr><td style="border: 1px solid;"><b>Empleado: </b></td><td style="border: 1px solid;">'.$una_persona->empleado.'</td><td style="border: 1px solid;"><b>Sueldo: </b></td><td style="border: 1px solid;">'.Form::TextoMoneda($una_persona->salario).'</td></tr></table>
-            <table style="width:100%; font-size: 14px;" class="table table-bordered table-striped">
+            $tabla .= '<table style="border: 1px solid; border-collapse: collapse; width:100%;">
+                        <tr>
+                            <td style="border: 1px solid;"><b>Empleado: </b></td>
+                            <td style="border: 1px solid;">'.$una_persona->tercero->descripcion.'</td>
+                            <td style="border: 1px solid;">'.Form::TextoMoneda($una_persona->sueldo, 'Sueldo: ').'</td>
+                        </tr>
+                    </table>
+            <table style="width:100%; font-size: 12px;" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th style="border: 1px solid; text-align:center;"> Conceptos </th>

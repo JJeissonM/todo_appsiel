@@ -124,6 +124,21 @@ class PensumController extends CalificacionController
         
     }
 
+
+    public function cambiar_intensidad_horaria_asignatura( $periodo_lectivo_id, $curso_id, $asignatura_id, $nueva_ih )
+    {
+        
+        CursoTieneAsignatura::where( [
+                                    'periodo_lectivo_id' => $periodo_lectivo_id,
+                                    'curso_id' => $curso_id,
+                                    'asignatura_id' => $asignatura_id 
+                                    ] )
+                            ->update( [ 'intensidad_horaria' => $nueva_ih ] );
+
+        return 'true';
+        
+    }
+
     /**
      * Revisar las Todas Asignaturas por curso con su intensidad horaria
      *

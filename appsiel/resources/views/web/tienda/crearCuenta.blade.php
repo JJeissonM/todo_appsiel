@@ -20,70 +20,78 @@
                         <div class="col-main">
                             <div class="account-create">
                                 <div class="page-title">
-                                    <h1>Create an Account</h1>
+                                    <h1>Crear nuevo documento</h1>
                                 </div>
-                                <form action="" method="post" id="form-validate">
-                                    <div class="fieldset col-sm-12">
-                                        <input type="hidden" name="success_url" value="">
-                                        <input type="hidden" name="error_url" value="">
-                                        <h2 class="legend">Información Personal</h2>
-                                        <ul class="form-list">
-                                            <li class="fields">
-                                                <div class="customer-name">
-                                                    <div class="field name-firstname">
-                                                        <label for="firstname" class="required"><em>*</em>First Name</label>
-                                                        <div class="input-box">
-                                                            <input type="text" id="firstname" name="firstname" value="" title="First Name" maxlength="255" class="input-text required-entry">
-                                                        </div>
-                                                    </div>
-                                                    <div class="field name-lastname">
-                                                        <label for="lastname" class="required"><em>*</em>Last Name</label>
-                                                        <div class="input-box">
-                                                            <input type="text" id="lastname" name="lastname" value="" title="Last Name" maxlength="255" class="input-text required-entry">
-                                                        </div>
-                                                    </div>
+                                    <form action="{{url('/web')}}" method="post" id="form-validate">
+                                        <input type="hidden" name="_token" value="{{csrf_token()}}">
+                                        <input name="url_id" type="hidden" value="10">
+                                        <input name="url_id_modelo" type="hidden" value="218">
+                                        <input name="url_id_transaccion" type="hidden">
+                                        <div class="row">
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">*Nombres: </label>
+                                                    <input type="text" name="nombre" class="form-control" placeholder="nombres" required>
                                                 </div>
-                                            </li>
-                                            <li>
-                                                <label for="email_address" class="required"><em>*</em>Email Address</label>
-                                                <div class="input-box">
-                                                    <input type="text" name="email" id="email_address" value="" title="Email Address" class="input-text validate-email required-entry">
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">*Apellidos: </label>
+                                                    <input type="text" name="apellido" class="form-control" placeholder="apellidos" required>
                                                 </div>
-                                            </li>
-                                            <li class="control">
-                                                <div class="input-box">
-                                                    <input type="checkbox" name="is_subscribed" title="Sign Up for Newsletter" value="1" id="is_subscribed" class="checkbox">
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">*Tipo de Documento: </label>
+                                                    <select name="tipo_doc_id"  id="" class="form-control" required>
+                                                        @foreach($tipos as $tipo)
+                                                            <option value="{{$tipo->id}}">{{$tipo->descripcion}}</option>
+                                                        @endforeach
+                                                    </select>
                                                 </div>
-                                                <label for="is_subscribed">Sign Up for Newsletter</label>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="fieldset col-sm-12">
-                                        <h2 class="legend">Login Information</h2>
-                                        <ul class="form-list">
-                                            <li class="fields">
-                                                <div class="field">
-                                                    <label for="password" class="required"><em>*</em>Password</label>
-                                                    <div class="input-box">
-                                                        <input type="password" name="password" id="password" title="Password" class="input-text required-entry validate-password">
-                                                    </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">*Numero de identificación: </label>
+                                                    <input type="number" name="numero_identificacion" class="form-control" placeholder="Identificación" required>
                                                 </div>
-                                                <div class="field">
-                                                    <label for="confirmation" class="required"><em>*</em>Confirm Password</label>
-                                                    <div class="input-box">
-                                                        <input type="password" name="confirmation" title="Confirm Password" id="confirmation" class="input-text required-entry validate-cpassword">
-                                                    </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">*Email: </label>
+                                                    <input type="email" name="email" class="form-control" placeholder="Email" required>
                                                 </div>
-                                            </li>
-                                        </ul>
-
-                                    </div>
-                                    <div class="buttons-set">
-                                        <p class="required">* Required Fields</p>
-                                        <p class="back-link"><a href="http://www.plazathemes.com/demo/ma_dicove/index.php/customer/account/login/" class="back-link"><small>« </small>Back</a></p>
-                                        <button type="submit" title="Submit" class="button"><span><span>Submit</span></span></button>
-                                    </div>
-                                </form>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">*Dirección: </label>
+                                                    <input type="text" name="direccion" class="form-control" placeholder="Direccion" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">*Telefono: </label>
+                                                    <input type="number" name="telefono" class="form-control" placeholder="Telefono" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">*Contraseña: </label>
+                                                    <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-md-6">
+                                                <div class="form-group">
+                                                    <label for="">*Confirmar Contraseña: </label>
+                                                    <input type="password" name="password_confirmation" class="form-control" placeholder="Confirmar contraseña">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="buttons-set">
+                                            <p class="required">* Required Fields</p>
+                                            <button type="submit" title="Submit" class="button"><span><span>Submit</span></span></button>
+                                        </div>
+                                    </form>
                             </div>
                         </div>
                     </div>

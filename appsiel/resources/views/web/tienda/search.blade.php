@@ -23,6 +23,7 @@ $configuracion = App\web\Configuraciones::all()->first();
                         </div>
                     </form>
                     <div class="col-xs-12 col-md-3 col-sm-12">
+                        &nbsp;
                         <ul class="nav-categorias ">
                             <li class="submenu nav-item">
                                 <div class="item-nav">
@@ -46,7 +47,6 @@ $configuracion = App\web\Configuraciones::all()->first();
                                     <a href="#" onclick="window.location.href='{{route("tienda.comprar")}}'" style="color:white;background-color:red;" id="comprar" class="button u-full-width">Comprar</a>
                                     <a href="#" id="vaciar-carrito" class="button u-full-width">Vaciar
                                         Carrito</a>
-
                                 </div>
                             </li>
                         </ul>

@@ -15,6 +15,9 @@ class InvProductoCalzado extends Model
 {
     protected $table = 'inv_productos'; 
 
+    /*
+        unidad_medida2 = Talla
+    */
     protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por'];
 
     public $encabezado_tabla = ['Código', 'Grupo inventario', 'Descripción', 'Talla', 'Referencia', 'Estado', 'Acción'];

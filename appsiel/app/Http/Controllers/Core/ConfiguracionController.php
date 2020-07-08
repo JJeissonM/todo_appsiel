@@ -249,8 +249,9 @@ class ConfiguracionController extends ModeloController
     public function config_form()
     {
         $app = Aplicacion::find( Input::get('id') );
-        
+
         $parametros = config( $app->app );
+
 
         $miga_pan = [
                         [ 'url' => $app->app.'?id='.Input::get('id'),'etiqueta'=> $app->descripcion ],
@@ -258,7 +259,6 @@ class ConfiguracionController extends ModeloController
                     ];
         
         $archivo_js = 'assets/js/configuracion/config.js';
-
         // Se llama un formulario específico para cada aplicación
         return view( 'core.config_aplicacion.'.$app->app, compact( 'parametros','miga_pan','archivo_js' ) );
 

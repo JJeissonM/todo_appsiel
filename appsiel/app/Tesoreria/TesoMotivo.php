@@ -11,7 +11,7 @@ class TesoMotivo extends Model
 {
     protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','descripcion','movimiento','estado','teso_tipo_motivo','contab_cuenta_id'];
 
-    public $encabezado_tabla = ['ID','Descripción','Motivo','Movimiento','Cuenta contrapartida','Estado','Acción'];
+    public $encabezado_tabla = ['ID','Descripción','Tipo de transacción','Movimiento','Cuenta contrapartida','Estado','Acción'];
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
 
