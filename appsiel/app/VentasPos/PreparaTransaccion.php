@@ -49,7 +49,7 @@ class PreparaTransaccion
                     'titulo' => 'Líneas de registros',
                     'columnas' => $columnas,
                     'fila_body' => $body,
-                    'fila_foot' => $fila_controles_formulario
+                    'fila_foot' => '' //$fila_controles_formulario
                 ];
 
         switch ( $tipo_transaccion->id ) {

@@ -67,6 +67,9 @@
 
 				<input type="hidden" name="url_id_transaccion" id="url_id_transaccion" value="{{Input::get('id_transaccion')}}" required="required">
 
+				{{ Form::hidden('pdv_id',Input::get('pdv_id')) }}
+				{{ Form::hidden('cajero_id', Auth::user()->id ) }}
+
 				{{ Form::hidden('inv_bodega_id_aux',$pdv->bodega_default_id,['id'=>'inv_bodega_id_aux']) }}
 
 				<input type="hidden" name="cliente_id" id="cliente_id" value="{{$pdv->cliente_default_id}}" required="required">
@@ -77,6 +80,9 @@
 				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{$pdv->cliente->lista_precios_id}}" required="required">
 				<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="{{$pdv->cliente->lista_descuentos_id}}" required="required">
 				<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="{{$pdv->cliente->liquida_impuestos}}" required="required">
+
+				<input type="hidden" name="inv_motivo_id" id="inv_motivo_id" value="{{$inv_motivo_id}}">
+
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
 
 				<input type="hidden" name="tipo_transaccion"  id="tipo_transaccion" value="factura_directa">
@@ -264,8 +270,6 @@
 
 <script type="text/javascript">
 
-
-
 	// Variables de cada línea de ingresos de registros.
 	var producto_id, precio_total, costo_total, base_impuesto_total, valor_impuesto_total, tasa_impuesto, tasa_descuento, valor_total_descuento, cantidad, inv_producto_id, inv_bodega_id, inv_motivo_id, unidad_medida;
 	var costo_unitario = 0;
@@ -314,9 +318,17 @@
 		return descuento;
 	}
 
+	function ventana_imprimir( doc_encabezado_id )
+	{
+		window.open( "{{ url('pos_factura_imprimir') }}" + "/" + doc_encabezado_id + "?id=" + getParameterByName('id') + "&id_modelo=" + getParameterByName('id_modelo') + "&id_transaccion=" + getParameterByName('id_transaccion') , "Impresión de factura POS", "width=800,height=600,menubar=no" );
+		//window.print();
+	}
+
 	$(document).ready(function(){
 
 			checkCookie();
+
+			$('#btn_guardar').hide();
 
 			$('#fecha').val( get_fecha_hoy() );
 
@@ -329,10 +341,6 @@
 		    	$('#linea_ingreso_default input[type="text"]').val('');
 				$('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
 				$('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
-
-
-				$('#inv_motivo_id').attr('style','background-color:#ECECE5;');
-				$('#inv_motivo_id').attr('disabled','disabled');
 
 				// Se habilitan los campos necesarios
 				$('#precio_unitario').removeAttr('style');
@@ -597,15 +605,6 @@
 				$('#btn_guardar_factura').attr('disabled','disabled');
 			}
 
-            //Al hacer click en alguna de las sugerencias (escoger un producto)
-            $(document).on('click','.list-group-item-productos', function(){
-                
-            	seleccionar_producto( $(this) );
-
-                // Consultar datos de existencia y costo y asignarlos a los inputs
-                consultar_existencia( $('#inv_bodega_id').val(), $(this).attr('data-producto_id') );
-            });
-
 
 			/*
 			** Al digitar la cantidad, se valida la existencia actual y se calcula el precio total
@@ -618,7 +617,6 @@
 				if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
 				{
 					cantidad = parseFloat( $(this).val() );
-
 
 					if( codigo_tecla_presionada == 13) // ENTER
 					{
@@ -986,57 +984,43 @@
 			});
 
 			// GUARDAR EL FORMULARIO
-			$('#btn_guardar').click(function(event){
+			$('#btn_guardar_factura').click(function(event){
 				event.preventDefault();
-
-				var object = $('#ingreso_registros').val();
-				
-				if( typeof object == typeof undefined){
-					// Si no existe la tabla de ingreso_registros, se envía el formulario
-					// Esto es para los otros modelos que usan el ModeloController y que no
-					// son una transacción
-
-					// Desactivar el click del botón
-					$( this ).off( event );
-
-					$('#form_create').submit();
-				}
-
-				if ( !validar_requeridos() )
-				{
-					return false;	
-				}
-
 
 				if( hay_productos == 0) 
 				{
 					alert('No ha ingresado productos.');
 					reset_linea_ingreso_default();
+					reset_efectivo_recibido();
 					return false;		  			
-				}				
-
-				// Desactivar el click del botón
-				$( this ).off( event );
-
-				$('#linea_ingreso_default').remove();
-
-				if ( $('#tipo_transaccion').val() == 'factura_directa' ) // Cuando no hay remisiones o devoluciones pendientes
-				{
-					// Se transfoma la tabla a formato JSON a través de un plugin JQuery
-					var table = $('#ingreso_registros').tableToJSON();
-				}else{
-
-					var table = $('#tabla_registros_documento').tableToJSON();
 				}
 
+				// Desactivar el click del botón
+				$( this ).attr( 'disabled', 'disabled' );
+
+				$('#linea_ingreso_default').remove();
+				$('#linea_ingreso_default_aux').remove();
+
+				var table = $('#ingreso_registros').tableToJSON();
+				
 				// Se asigna el objeto JSON a un campo oculto del formulario
 		 		$('#lineas_registros').val(JSON.stringify(table));
 				
 			 	// No se puede enviar controles disabled
 				habilitar_campos_encabezado();
 
+				var url = $("#form_create").attr('action');
+				var data = $("#form_create").serialize();
+
+				$.post(url, data, function( doc_encabezado_id ){
+
+					location.reload();
+
+					ventana_imprimir(doc_encabezado_id);
+				});
+
 		 		// Enviar formulario
-				$('#form_create').submit();					
+				//$('#form_create').submit();					
 			});
 
 			function reset_campos_formulario()
@@ -1187,197 +1171,6 @@
 			  }
 			}
 
-			function consultar_remisiones_pendientes()
-			{
-				$('#div_remisiones_pendientes').hide();
-				$('#listado_remisiones_pendientes').html('');
-				$('#alert_listado_remisiones_seleccionadas').hide();
-				$('#tabla_registros_documento').find('tbody').html( '' );
-
-				url = '../vtas_consultar_remisiones_pendientes';
-
-				// Si se está elaborando una factura de ventas
-				if ( $('#core_tipo_transaccion_id').val() == 23 )
-				{
-					var inv_transaccion_id = $('#rm_tipo_transaccion_id').val();
-				}
-
-				// Si se está elaborando una Nota crédito directa (de ventas)
-				if ( $('#core_tipo_transaccion_id').val() == 41 )
-				{
-					var inv_transaccion_id = $('#dvc_tipo_transaccion_id').val();
-				}
-
-				$.get( url, { core_tercero_id: $('#core_tercero_id').val(), inv_transaccion_id: inv_transaccion_id, lista_precios_id: $('#lista_precios_id').val(), fecha: $('#fecha').val() } )
-					.done(function( data ) {
-						if ( data != 'sin_registros')
-						{
-							$('#div_remisiones_pendientes').show( 500 );
-							$('#listado_remisiones_pendientes').html( data );
-							$('.td_boton').show();
-		                	$('.btn_agregar_documento').show();
-		                	$('#div_ingreso_registros').hide();
-						}else{
-							$('#div_ingreso_registros').show( 500 );
-						}
-						return false;
-					});/**/
-			}
-
-
-
-			$("#btn_cerrar_alert").on('click', function(){
-				$('#div_remisiones_pendientes').hide();
-
-				$('#alert_listado_remisiones_seleccionadas').hide();
-				$('#tabla_registros_documento').find('tbody').html( '' );
-				hay_productos = 0;
-
-				// Dependiendo del tipo de transacción ( Factura o Nota crédito directa)
-				if ( $('#core_tipo_transaccion_id').val() == 23 ) // Factura
-				{
-					$('#tipo_transaccion').val( 'factura_directa' );
-					cambiar_action_form( 'ventas' );
-				}
-
-				if ( $('#core_tipo_transaccion_id').val() == 41 ) // Nota Crédito
-				{
-					$('#tipo_transaccion').val( 'factura_directa' );
-					cambiar_action_form( 'ventas_notas_credito_directa' );
-				}	
-				
-				$('#div_ingreso_registros').show( 500 );
-
-				$('#inv_producto_id').focus();
-			});
-
-
-			$(document).on('click', '.btn_agregar_documento', function(event) 
-			{
-				event.preventDefault();
-
-				if ( $('#core_tipo_transaccion_id').val() == 23 )
-				{
-					$('#tipo_transaccion').val( 'factura_remision_pendiente' );
-
-					cambiar_action_form( 'factura_remision_pendiente' );
-				}
-
-				if ( $('#core_tipo_transaccion_id').val() == 41 )
-				{
-					$('#tipo_transaccion').val( 'nota_devolucion_pendiente' );
-
-					cambiar_action_form_dev( 'nota_devolucion_pendiente' );
-				}
-
-				$('#alert_listado_remisiones_seleccionadas').show();
-				$(this).hide();
-				$('#tabla_registros_documento').find('tbody:last').append( $(this).closest("tr") );
-				hay_productos = 1;
-			});
-			
-			function cambiar_action_form( nueva_accion )
-			{
-				var accion = $('#form_create').attr('action');
-				var n = accion.search('ventas');
-
-				if( n === -1 )
-				{
-					// No está la palabra ventas
-					n = accion.search('factura_remision_pendiente');
-					$('#form_create').attr('action', accion.substr(0,n) + nueva_accion );
-				}else{
-					$('#form_create').attr('action', accion.substr(0,n) + nueva_accion );
-				}
-			}
-			
-			function cambiar_action_form_dev( nueva_accion )
-			{
-				var accion = $('#form_create').attr('action');
-				var n = accion.search('ventas_notas_credito_directa');
-
-				if( n === -1 )
-				{
-					// No está la palabra ventas_notas_credito_directa
-					n = accion.search('nota_devolucion_pendiente');
-					$('#form_create').attr('action', accion.substr(0,n) + nueva_accion );
-				}else{
-					$('#form_create').attr('action', accion.substr(0,n) + nueva_accion );
-				}
-			}
-
-			// Para las notas crédito directas (salida de inventario)
-			function calcular_nuevo_saldo_a_la_fecha()
-			{
-				// saldo_original es la existencia_actual al consultar las existencias luego de seleccionar_producto()
-				// 0 es la cantidad_original
-				var nuevo_saldo = parseFloat( $('#saldo_original').val() ) + 0 - cantidad;
-
-				$('#existencia_actual').val( nuevo_saldo );
-			}
-            
-            function validacion_saldo_movimientos_posteriores( )
-            {
-            	// Se escogen los campos de la fila ingresada
-				var fila = $('#linea_ingreso_default');
-
-                var url = '../inv_validacion_saldo_movimientos_posteriores/' + $('#inv_bodega_id').val() + '/' + inv_producto_id + '/' + $('#fecha').val() + '/' + cantidad + '/' + $('#existencia_actual').val() + '/salida';
-
-                $.get( url )
-                    .done( function( data ) {
-
-                    	if ( $("#permitir_inventarios_negativos").val() == 1 )
-						{
-                    		var data = 0; // se deja pasar
-                    	}
-
-                        if ( data != 0 )
-                        {
-                            $('#popup_alerta_danger').show();
-                            $('#popup_alerta_danger').text( data );
-                        }else{
-                            $('#popup_alerta_danger').hide();
-                            agregar_la_linea();
-                        }
-                    });
-            }	
-
-
-            // PARA BASCULA
-			$('#cargar_datos_producto').on('click',function(event){
-				event.preventDefault();
-
-				if ( validar_requeridos() == false )
-				{
-					return false;
-				}
-
-				$('#div_cargando').show();
-				var bascula_id = $("input[name='bascula_id']:checked").val();
-
-				var mov = $('#inv_motivo_id').val().split('-');
-				var bodega_id = $('#inv_bodega_id').val();
-				var cliente_id = $('#cliente_id').val();
-
-
-				var url = '../vtas_get_productos_por_facturar';
-
-				$.get( url, { bascula_id: bascula_id, numero_linea: numero_linea, hay_productos:hay_productos, inv_motivo_id: mov[0], motivo_descripcion: $('#inv_motivo_id option:selected').text(), bodega_id:bodega_id, cliente_id: cliente_id } )
-					.done(function( data ) {
-						$('#ingreso_registros').find('tbody:last').append( data[0] );
-
-						// Se calculan los totales
-						calcular_totales();
-
-						numero_linea = data[1];
-						hay_productos = data[2];
-
-						reset_linea_ingreso_default();
-						$('#div_cargando').hide();
-					});
-				
-			});
-			
 		});
 
 </script>
