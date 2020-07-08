@@ -84,7 +84,6 @@ class PedidoController extends TransaccionController
             }
 
             $request = $this->completar_request( $request );
-
         }
 
         $request['fecha_entrega'] = $request['fecha_entrega'] . ' ' . $request['hora_entrega'] . ':00';
@@ -96,6 +95,7 @@ class PedidoController extends TransaccionController
         $ventas_doc_encabezado_id = PedidoController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
         if(isset($request['pedido_web'])){
+            self::enviar_pedidoweb_email($ventas_doc_encabezado_id);
             return  response()->json([
                   'status' => 'ok',
                   'mensaje' => 'Pedido recibido correctamente, pronto uno de nuestros asesores te estará contactando para proceder con el envío.'
@@ -282,6 +282,24 @@ class PedidoController extends TransaccionController
         $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista);
 
         return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with($vec['tipo_mensaje'], $vec['texto_mensaje']);
+    }
+
+    public function enviar_pedidoweb_email($id){
+
+        $documento_vista = $this->generar_documento_vista($id, 'documento_imprimir');
+
+        $tercero = Tercero::find($this->doc_encabezado->core_tercero_id);
+
+        $asunto = $this->doc_encabezado->documento_transaccion_descripcion . ' No. ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo;
+        $this->empresa = Empresa::all()->first();
+        $descripcion =  $this->empresa->descripcion;
+        $cuerpo_mensaje = "Hola, <strong>$tercero->nombre1 $tercero->nombre2</strong> </br>"
+                          ."Gracias por su compra en <strong> $descripcion </strong> </br>"
+                          ."Hemos recibido tu pedido; el cual ha ingresado a un proceso de validación de datos personales e inventario. Una vez finalizada esta verificación se  procederá a realizar el despacho. </br>"
+                          ."<strong style='color:red;'>NOTA:</strong>  para los productos pesados el precio puede variar, los detalles de está variación los podra revisar en la factura que le haremos llegar con los productos, Esta observación es valida para los productos que son sometidos a un proceso de medida , donde el proceso de medición no siempre es exacto. ";
+
+        $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista);
+
     }
 
 

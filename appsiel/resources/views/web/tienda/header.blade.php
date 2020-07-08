@@ -33,7 +33,7 @@
                                         title="Iniciar sesión">Iniciar Sesión</a>
                                      </li>
                                 <li class=" last"><a
-                                            href="{{url('/web/create?id=10&id_modelo=218')}}"
+                                            href="{{route('tienda.nuevacuenta')}}"
                                             title="Registrarse"
                                             onclick="registrarse( event )">Registrarse</a>
                                 </li>

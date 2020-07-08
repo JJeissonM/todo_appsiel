@@ -36,7 +36,8 @@ comprar.addEventListener('click',function (event) {
                       listaProductos.innerHTML = '';
                   }
               }).catch(error => {
-              toastr.error('hubo un error en la solicitud, Asegúrese de estar logeado al momento de realizar el pedido');
+               const url =  document.getElementById('url_login').value;
+               toastr.error(`hubo un error en la solicitud, Asegúrese de estar logeado al momento de realizar el pedido <a href='${url}' style="text-decoration:underline;">Iniciar Sesión</a>`);
           });
       }else{
           toastr.warning('La lista de productos en el carrito está vacía');
