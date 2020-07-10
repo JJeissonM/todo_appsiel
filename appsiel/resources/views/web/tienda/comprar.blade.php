@@ -75,6 +75,7 @@
                     <form action="{{url('/vtas_pedidos')}}" id="form" method="POST">
                         <input type="hidden" name="login" id="url_login" value="{{url('/ecommerce/public/signIn')}}">
                         <input type="hidden" id="token" name="_toker" value="{{csrf_token()}}">
+                        <center><img style="display: none" id="loading" src="{{asset('img/fidget-spinner-loading.gif')}}" alt="" width="250px" height="250px"></center>
                         <button class="btn-block" id="comprar" type="submit">finalizar compra</button>
                     </form>
                     <a href="{{url('/')}}"><center>Seguir comprando</center></a>
