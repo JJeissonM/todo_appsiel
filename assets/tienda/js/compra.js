@@ -8,7 +8,6 @@ comprar.addEventListener('click',function (event) {
    if(contrato.checked){
        let productos = obtenerProductosLocalStorage();
       if(productos.length > 0){
-
           let lineas_registros = [];
           productos.forEach(x => {
               lineas_registros.push({
@@ -24,8 +23,13 @@ comprar.addEventListener('click',function (event) {
               'pedido_web' : true,
           }
           let url =  form.getAttribute('action');
+          comprar.style.display  = 'none';
+          let loading = document.getElementById('loading');
+          loading.style.display = 'block';
           axios.post(url,data)
               .then(resp => {
+                  loading.style.display = 'none';
+                  comprar.style.display  = 'block';
                   let data = resp.data;
                   if(data.status == 'error' ){
                       toastr.warning(data.mensaje);
