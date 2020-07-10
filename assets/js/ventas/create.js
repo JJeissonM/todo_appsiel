@@ -125,7 +125,7 @@ $(document).ready(function(){
 
 				reset_linea_ingreso_default();
 
-				$('#inv_producto_id').focus();
+				$('#inv_producto_id').select();
 
 				if( $('#url_id_transaccion').val()==2 ) 
 				{ // Si es una transferencia
@@ -366,14 +366,14 @@ $(document).ready(function(){
 							return false;
 						}
 
-						$('#tasa_descuento').focus();			
+						$('#tasa_descuento').select();			
 					}
 
 
 
 				}else{
 
-					$(this).focus();
+					$(this).select();
 					return false;
 				}
 
@@ -416,7 +416,7 @@ $(document).ready(function(){
 
 				}else{
 
-					$(this).focus();
+					$(this).select();
 					return false;
 				}
 			});
@@ -466,7 +466,7 @@ $(document).ready(function(){
 
 				}else{
 
-					$(this).focus();
+					$(this).select();
 					return false;
 				}
 
@@ -602,7 +602,7 @@ $(document).ready(function(){
 						// Se pasa a ingresar las cantidades
 						$('#cantidad').removeAttr('disabled');
 						$('#cantidad').attr('style','background-color:white;');
-						$('#cantidad').focus();
+						$('#cantidad').select();
 
 						if ( (respuesta.tipo != 'servicio') && (respuesta.costo_promedio == 0) )
 						{
@@ -947,7 +947,7 @@ $(document).ready(function(){
 
 			function reset_linea_ingreso_default()
 			{
-				$('#linea_ingreso_default input[type="text"]').val('');
+				$('#linea_ingreso_default input[type="text"]').val(0);
 				$('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
 				$('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
 
@@ -970,9 +970,10 @@ $(document).ready(function(){
 				$('#precio_total').removeAttr('style');
 				$('#precio_total').removeAttr('disabled');
 
+				$('#inv_producto_id').val('');
 				$('#inv_producto_id').removeAttr('style');
 				$('#inv_producto_id').removeAttr('disabled');
-				$('#inv_producto_id').focus();
+				$('#inv_producto_id').select();
 				$("[data-toggle='tooltip']").tooltip('show');
 
 				producto_id = 0; precio_total = 0; costo_total = 0; base_impuesto_total = 0; valor_impuesto_total = 0; tasa_impuesto = 0; tasa_descuento = 0; valor_total_descuento = 0; cantidad = 0; costo_unitario = 0; precio_unitario = 0; base_impuesto_unitario = 0; valor_impuesto_unitario = 0; valor_unitario_descuento = 0;

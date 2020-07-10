@@ -146,7 +146,7 @@
 
 			$('#fecha_vencimiento').attr( 'readonly','readonly' );
 
-			$('#proveedor_input').focus( );
+			$('#proveedor_input').select( );
 
 			$("#proveedor_input").after('<div id="div_list_suggestions"> </div>');
 
@@ -277,7 +277,7 @@
 			// Al seleccionar una bodega, se ubica en el siguiente elemento
 			$('#inv_bodega_id').change(function(){
 
-				$('#inv_producto_id').focus();
+				$('#inv_producto_id').select();
 
 			});
 
@@ -298,7 +298,8 @@
 				var codigo_tecla_presionada = event.which || event.keyCode;
 				if( codigo_tecla_presionada == 13 )
 				{
-					$('#inv_producto_id').focus();
+					$('#inv_producto_id').select();
+					$("html, body").animate( { scrollTop: $(document).height()+"px"} );
 				}
 				
 				validar_documento_proveedor();
@@ -486,14 +487,14 @@
 					var codigo_tecla_presionada = event.which || event.keyCode;
 					if( codigo_tecla_presionada == 13 )
 					{
-						$('#tasa_descuento').focus();			
+						$('#tasa_descuento').select();			
 					}
 					
 					calcular_valor_descuento();
 					calcular_impuestos();
 					calcular_precio_total();
 				}else{
-					$(this).focus();
+					$(this).select();
 					return false;
 				}
 
@@ -537,7 +538,7 @@
 
 				}else{
 
-					$(this).focus();
+					$(this).select();
 					return false;
 				}
 			});
@@ -714,7 +715,7 @@
 				{
 					alert('Saldo negativo a la fecha.');
 					$('#cantidad').val('');
-					$('#cantidad').focus();
+					$('#cantidad').select();
 					return false;
 				}/**/
 
@@ -1019,7 +1020,7 @@
 
 			function reset_linea_ingreso_default()
 			{
-				$('#linea_ingreso_default input[type="text"]').val('');
+				$('#linea_ingreso_default input[type="text"]').val('0');
 				$('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
 				$('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
 
@@ -1040,9 +1041,10 @@
 				$('#valor_unitario_descuento').removeAttr('style');
 				$('#valor_unitario_descuento').removeAttr('disabled');
 
+				$('#inv_producto_id').val('');
 				$('#inv_producto_id').removeAttr('style');
 				$('#inv_producto_id').removeAttr('disabled');
-				$('#inv_producto_id').focus();
+				$('#inv_producto_id').select();
 				$("[data-toggle='tooltip']").tooltip('show');
 
 				producto_id = 0; precio_total = 0; costo_total = 0; base_impuesto_total = 0; valor_impuesto_total = 0; tasa_impuesto = 0; tasa_descuento = 0; valor_total_descuento = 0; cantidad = 0; costo_unitario = 0; precio_unitario = 0; base_impuesto_unitario = 0; valor_impuesto_unitario = 0; valor_unitario_descuento = 0;

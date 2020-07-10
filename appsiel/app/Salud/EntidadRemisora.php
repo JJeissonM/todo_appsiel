@@ -15,7 +15,7 @@ class EntidadRemisora extends Model
 
 	protected $fillable = ['modelo_padre_id', 'registro_modelo_padre_id', 'modelo_entidad_id', 'core_campo_id', 'valor'];
 	
-	protected $crud_model_id = 223;
+	protected $crud_model_id = 223; // Es el mismo $modelo_padre_id, a variable no se puede usar en métodos estáticos
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"no"}'; 
 
@@ -39,18 +39,14 @@ class EntidadRemisora extends Model
     {
     	$modelo_padre_id = 223; // Entidades Remisoras
         $opciones = EntidadRemisora::where('core_eav_valores.modelo_padre_id',$modelo_padre_id)
-                            ->select(
-                                        'core_eav_valores.valor as id',
-                                        'core_eav_valores.valor as descripcion')
-                            ->orderBy('descripcion')
-                            ->get();
+                                    ->orderBy('valor')
+                                    ->get();
                             
         $vec['']='';
         foreach ($opciones as $opcion)
         {
-            $vec[$opcion->id] = $opcion->descripcion;
+            $vec[$opcion->modelo_padre_id.'-'.$opcion->registro_modelo_padre_id.'-'.$opcion->modelo_entidad_id.'-'.$opcion->core_campo_id] = $opcion->valor;
         }
-        dd($vec);
         return $vec;
     }
 
@@ -70,8 +66,6 @@ class EntidadRemisora extends Model
 
         return $lista_campos;
     }
-
-
 
     public function store_adicional( $datos, $registro )
     {
@@ -115,7 +109,7 @@ class EntidadRemisora extends Model
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
         $modelo_padre_id = Modelo::find( $this->crud_model_id )->id;
-$los_registro = [];
+
         // Personalizar campos
         $cantida_campos = count($lista_campos);
         for ($i=0; $i <  $cantida_campos; $i++)
@@ -128,6 +122,7 @@ $los_registro = [];
                 $registro_eav = ModeloEavValor::where(
                                                     [ 
                                                         "modelo_padre_id" => $modelo_padre_id,
+                                                        "registro_modelo_padre_id" => $registro->registro_modelo_padre_id,
                                                         "core_campo_id" => $core_campo_id
                                                     ]
                                                 )
@@ -185,4 +180,22 @@ $los_registro = [];
         }
     }
 
+    public static function get_valor_campo( $string_ids_campos )
+    {
+        $vec_ids_campos = explode('-', $string_ids_campos);
+
+        if ( !isset( $vec_ids_campos[1] ) )
+        {
+            return '';
+        }
+
+        return ModeloEavValor::where(
+                                    [ 
+                                        "modelo_padre_id" => $vec_ids_campos[0],
+                                        "registro_modelo_padre_id" => $vec_ids_campos[1],
+                                        "core_campo_id" => $vec_ids_campos[3]
+                                    ]
+                                )
+                            ->value('valor');
+    }
 }

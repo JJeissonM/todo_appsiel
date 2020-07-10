@@ -10,7 +10,7 @@
 	</tr>
 	@if( !isset( $mostrar_avatar ))
 		<tr>
-			<td rowspan="5" width="160px">
+			<td rowspan="6" width="160px">
 
 				<?php
 					if ( $datos_historia_clinica->imagen == '') {
@@ -27,7 +27,7 @@
 		</tr>
 	@else
 		<tr>
-			<td rowspan="5">
+			<td rowspan="6">
 				&nbsp;
 			</td>
 		</tr>
@@ -71,6 +71,21 @@
 		</td>
 		<td>
 			<b>Ocupación:</b> {{ $datos_historia_clinica->ocupacion }}
+		</td>
+		<td>
+			&nbsp;
+		</td>
+	</tr>
+	<tr>
+			<?php
+				$grupo_sanguineo = App\Salud\GrupoSanguineo::get_valor_campo( $datos_historia_clinica->grupo_sanguineo );
+				$remitido_por = App\Salud\EntidadRemisora::get_valor_campo( $datos_historia_clinica->remitido_por );
+			?>
+		<td>
+			<b>Grupo Sanguineo:</b> {{ $grupo_sanguineo }}
+		</td>
+		<td>
+			<b>Remitido por:</b> {{ $remitido_por }}
 		</td>
 		<td>
 			&nbsp;

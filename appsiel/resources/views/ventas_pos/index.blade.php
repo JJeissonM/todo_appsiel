@@ -57,7 +57,7 @@
 		        @endif
 
 		        	<?php 
-		        		$num_facturas = 0;
+		        		$num_facturas = App\VentasPos\FacturaPos::where('pdv_id', $pdv->id)->where('estado', 'Pendiente')->count();
 		        		$apertura = App\VentasPos\AperturaEncabezado::where('pdv_id', $pdv->id)->get()->last();
 		        		$cierre = App\VentasPos\CierreEncabezado::where('pdv_id', $pdv->id)->get()->last();
 
@@ -109,8 +109,7 @@
 		        		}
 		        	?>
 
-
-			     	<div class="col-sm-{{12/$cant_cols}} col-xs-{{12/$cant_cols}}" style="padding: 5px;">
+			     	<div class="col-sm-{{12/$cant_cols}} col-xs-1" style="padding: 5px;">
 		          		<div class="tienda">
 							<p style="text-align: center; margin: 10px;">
 								<img src="{{asset('assets/images/canopy_shop_pos.jpg') }}" style="display: inline; height: 120px; width: 100%;" />
@@ -141,6 +140,9 @@
 											</td>
 											<td>
 												<span class="badge">{{ $num_facturas }}</span>
+												@if( $num_facturas > 0 )
+													<button style="background: transparent; border: 0px; text-decoration: underline; color: #069;" id="btn_consultar_facturas" href="#"> Consultar </button>
+												@endif
 											</td>
 										</tr>
 									</table>
@@ -171,5 +173,7 @@
 			@endforeach
 		</div>
 	</div>
+
+	@include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
 
 @endsection

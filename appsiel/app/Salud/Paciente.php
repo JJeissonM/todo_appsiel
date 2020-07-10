@@ -88,13 +88,26 @@ class Paciente extends Model
 
     public static function datos_basicos_historia_clinica( $paciente_id )
     {
-        $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombres';
-
-        $select_raw2 = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2) AS apellidos';
-
         return Paciente::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_pacientes.core_tercero_id')
-                    ->where('salud_pacientes.id',$paciente_id)->select(DB::raw($select_raw), DB::raw($select_raw2), 'salud_pacientes.codigo_historia_clinica AS codigo', 'salud_pacientes.fecha_nacimiento', 'salud_pacientes.genero', 'salud_pacientes.estado_civil', 'salud_pacientes.grupo_sanguineo', 'salud_pacientes.nivel_academico', 'salud_pacientes.ocupacion', 'core_terceros.direccion1', 'core_terceros.telefono1', 'core_terceros.numero_identificacion', 'core_terceros.email', 'core_terceros.imagen')
-                    ->get()[0];
+                            ->where('salud_pacientes.id',$paciente_id)
+                            ->select(
+                                        DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombres' ),
+                                        DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2) AS apellidos' ),
+                                        'salud_pacientes.codigo_historia_clinica AS codigo',
+                                        'salud_pacientes.fecha_nacimiento',
+                                        'salud_pacientes.genero',
+                                        'salud_pacientes.estado_civil',
+                                        'salud_pacientes.grupo_sanguineo',
+                                        'salud_pacientes.remitido_por',
+                                        'salud_pacientes.nivel_academico',
+                                        'salud_pacientes.ocupacion',
+                                        'core_terceros.direccion1',
+                                        'core_terceros.telefono1',
+                                        'core_terceros.numero_identificacion',
+                                        'core_terceros.email',
+                                        'core_terceros.imagen')
+                            ->get()
+                            ->first();
     }
     
 

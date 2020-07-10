@@ -175,13 +175,10 @@ class FacturaPosController extends TransaccionController
         return $doc_encabezado->id;
     }
 
-   
-
 
     /*
-        Crea los registros, el movimiento y la contabilización de un documento. 
-        Todas estas operaciones se crean juntas porque se almacenena en cada iteración de las lineas de registros
-        No Devuelve nada
+        Crea los registros de un documento.
+        No Devuelve nada.
     */
     public static function crear_registros_documento( Request $request, $doc_encabezado, array $lineas_registros )
     {
@@ -209,14 +206,10 @@ class FacturaPosController extends TransaccionController
                             [ 'estado' => 'Pendiente' ] +
                             [ 'vtas_pos_doc_encabezado_id' => $doc_encabezado->id ];
 
-                            //dd([$datos, $linea_datos]);
-
-            DocRegistro::create( 
-                                    $datos +
-                                    $linea_datos
-                                );
+            $registro_creado = DocRegistro::create( $linea_datos );
 
             $datos['consecutivo'] = $doc_encabezado->consecutivo;
+
             Movimiento::create( 
                                     $datos +
                                     $linea_datos
@@ -229,6 +222,7 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado->valor_total = $total_documento;
         $doc_encabezado->save();
         
+        return 0;
     }
 
     /**
@@ -992,111 +986,6 @@ class FacturaPosController extends TransaccionController
         return View::make( 'ventas.incluir.remisiones_pendientes', compact('remisiones','todos_los_productos') )->render();
     }
 
-
-    public function factura_remision_pendiente( Request $request )
-    {
-        $datos = $request->all();
-
-        $doc_encabezado = CrudController::crear_nuevo_registro( $request, $request->url_id_modelo );
-
-        $lineas_registros = json_decode( $request->lineas_registros );
-
-        FacturaPosController::crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros );
-
-        return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
-    }
-
-    // Se crean los registros con base en los registros de la remisión o remisiones
-    public static function crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros )
-    {
-        $total_documento = 0;
-        // Por cada remisión pendiente
-        $cantidad_registros = count( $lineas_registros );
-        $remision_doc_encabezado_id = '';
-        $primera = true;
-        for ($i=0; $i < $cantidad_registros ; $i++)
-        {
-            $doc_remision_id = (int)$lineas_registros[$i]->id_doc;
-
-            $registros_remisiones = InvDocRegistro::where( 'inv_doc_encabezado_id', $doc_remision_id )->get();
-            foreach ($registros_remisiones as $un_registro)
-            {
-                // Nota: $un_registro contiene datos de inventarios 
-                $cantidad = $un_registro->cantidad * -1;
-
-                // Los precios se deben traer de la lista de precios del cliente
-                $precio_unitario = ListaPrecioDetalle::get_precio_producto( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id );
-
-                $cliente = Cliente::where( 'core_tercero_id', $un_registro->core_tercero_id )->get()->first();
-
-                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, 0, $cliente->id );
-
-                $precio_total = $precio_unitario * $cantidad;
-
-                $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
-
-                $base_impuesto_total = $base_impuesto * $cantidad;
-
-                $linea_datos = [ 'vtas_motivo_id' => $un_registro->inv_motivo_id ] +
-                                [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
-                                [ 'precio_unitario' => $precio_unitario ] +
-                                [ 'cantidad' => $cantidad ] +
-                                [ 'precio_total' => $precio_total ] +
-                                [ 'base_impuesto' =>  $base_impuesto ] +
-                                [ 'tasa_impuesto' => $tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( $precio_unitario - $base_impuesto ) ] +
-                                [ 'base_impuesto_total' => $base_impuesto_total ] +
-                                [ 'creado_por' => Auth::user()->email ] +
-                                [ 'estado' => 'Activo' ];
-
-                DocRegistro::create( 
-                                    $datos + 
-                                    [ 'vtas_doc_encabezado_id' => $doc_encabezado->id ] +
-                                    $linea_datos
-                                );
-
-                $datos['consecutivo'] = $doc_encabezado->consecutivo;
-                Movimiento::create( 
-                                        $datos +
-                                        $linea_datos
-                                    );
-
-                // CONTABILIZAR
-                $detalle_operacion = $datos['descripcion'];
-                FacturaPosController::contabilizar_movimiento_credito( $datos + $linea_datos, $detalle_operacion );
-
-                $total_documento += $precio_total;
-            } // Fin por cada registro de la remisión
-
-            // Marcar la remisión como facturada
-            InvDocEncabezado::find( $doc_remision_id )->update( [ 'estado' => 'Facturada' ] );
-
-            // Se va creando un listado de remisiones separadas por coma 
-            if ($primera)
-            {
-                $remision_doc_encabezado_id = $doc_remision_id;
-                $primera = false;
-            }else{
-                $remision_doc_encabezado_id .= ','.$doc_remision_id;
-            }
-
-        }
-
-        $doc_encabezado->valor_total = $total_documento;
-        $doc_encabezado->remision_doc_encabezado_id = $remision_doc_encabezado_id;
-        $doc_encabezado->save();
-        
-        // Un solo registro contable débito
-        $forma_pago = 'credito'; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
-
-        // Cartera ó Caja (DB)
-        FacturaPosController::contabilizar_movimiento_debito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
-
-        // Crear registro del pago: cuenta por cobrar(cartera) o recaudo
-        FacturaPosController::crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
-
-        return true;
-    }
 
     public function agregar_precio_lista( Request $request )
     {

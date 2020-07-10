@@ -46,8 +46,8 @@ class VtasTransaccion
                         <td> '. Form::text('existencia_actual', null, ['disabled'=>'disabled','id'=>'existencia_actual','width'=>'15px']) .' </td>
                         <td> '. Form::text('cantidad', null, ['disabled'=>'disabled','id'=>'cantidad','width'=>'30px']) .' </td>
                         <td> '. Form::text('precio_unitario', null, ['disabled'=>'disabled','id'=>'precio_unitario']) . Form::hidden('costo_unitario', null, ['id'=>'costo_unitario']) .' </td>
-                        <td> '. Form::text('tasa_descuento', null, [ 'id'=>'tasa_descuento','width'=>'30px']) .' </td>
-                        <td> '. Form::text('valor_unitario_descuento', null, [ 'id'=>'valor_unitario_descuento']) . Form::text('valor_total_descuento', null, [ 'id'=>'valor_total_descuento' ]) .' </td>
+                        <td> '. Form::text('tasa_descuento', '0', [ 'id'=>'tasa_descuento','width'=>'30px']) .' </td>
+                        <td> '. Form::text('valor_unitario_descuento', '0', [ 'id'=>'valor_unitario_descuento']) . Form::text('valor_total_descuento', '0', [ 'id'=>'valor_total_descuento' ]) .' </td>
                         <td> '. Form::text('tasa_impuesto', null, ['disabled'=>'disabled','id'=>'tasa_impuesto','width'=>'15px']) .' </td>
                         <td> '. Form::text('precio_total', null, ['disabled'=>'disabled','id'=>'precio_total']) . Form::hidden('costo_total', null, ['id'=>'costo_total']) .' </td>
                         <td></td>

@@ -11,5 +11,5 @@ use App\Http\Controllers\Core\TransaccionController;
 
 class ConsultorioMedicoController extends TransaccionController
 {
-    //
+    // NO BORRAR
 }

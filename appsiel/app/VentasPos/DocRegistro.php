@@ -15,7 +15,7 @@ class DocRegistro extends Model
 
     // valor_impuesto es del precio_unitario
     // base_impuesto es del precio_unitario
-    protected $fillable = ['vtas_pos_doc_encabezado_id ', 'vtas_motivo_id ', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'cantidad_devuelta', 'creado_por', 'modificado_por', 'estado'];
+    protected $fillable = ['vtas_pos_doc_encabezado_id', 'vtas_motivo_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'cantidad_devuelta', 'creado_por', 'modificado_por', 'estado'];
 
     public $campos_invisibles_linea_registro = ['inv_producto_id','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','base_impuesto_total','cantidad','precio_total', 'tasa_descuento', 'valor_total_descuento']; // 13 campos
 

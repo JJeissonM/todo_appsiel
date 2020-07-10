@@ -11,7 +11,8 @@ $(document).ready(function(){
 	*/
 
 
-	$('#numero_identificacion').on('blur',function(){
+	//$('#numero_identificacion').on('blur',function(){
+	$(document).on('blur','#numero_identificacion',function(){
 		var documento = $("#numero_identificacion").val();
 
 		/* Cuando el javascript está dentro de una vista blade se puede llamar la url de la siguiente forma:
@@ -60,7 +61,8 @@ $(document).ready(function(){
 	});
 	*/
 		
-	$('#doc_identidad').blur(function(){
+	//$('#doc_identidad').blur(function(){
+	$(document).on('blur','#doc_identidad',function(){
 		var documento = $("#doc_identidad").val();
 		//alert(documento);
 		var form = $('#form-buscar');

@@ -17,7 +17,7 @@
   'pv_modelo_id' => '175',
   'pv_tipo_transaccion_id' => '42',
   'pv_tipo_doc_app_id' => '41',
-  'modo_liquidacion_precio' => 'precio_estandar_venta',
+  'modo_liquidacion_precio' => 'lista_de_precios',
   'permitir_venta_menor_costo' => '1',
   'permitir_inventarios_negativos' => '1',
   'encabezado_linea_1' => 'SERVIMOS CON CALIDAD.',

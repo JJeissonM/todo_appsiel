@@ -49,7 +49,7 @@ class InvProducto extends Model
           $operador1 = '=';
         }
 
-        return InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+        $registros = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                     ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
                     ->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
                     ->where('inv_productos.inv_grupo_id', $operador1, $grupo_inventario_id)
@@ -68,6 +68,13 @@ class InvProducto extends Model
                                 'inv_productos.mostrar_en_pagina_web',
                                 'inv_productos.codigo_barras')
                     ->get();
+
+        foreach ($registros as $item)
+        {
+            $item->tasa_impuesto = Impuesto::get_tasa( $item->id, 0, 0 );
+        }
+
+        return $registros;
     }
 
     public static function get_grupos_pagina_web()
