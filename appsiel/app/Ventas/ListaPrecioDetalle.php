@@ -52,7 +52,7 @@ class ListaPrecioDetalle extends Model
 	{
 		$precios = ListaPrecioDetalle::leftJoin('inv_productos','inv_productos.id','=','vtas_listas_precios_detalles.inv_producto_id')
 								->leftJoin('contab_impuestos','contab_impuestos.id','=','inv_productos.impuesto_id')
-								->where('lista_precios_id', $lista_precios_id)
+								->where('vtas_listas_precios_detalles.lista_precios_id', $lista_precios_id)
 								->select(
 											'vtas_listas_precios_detalles.id',
 											'vtas_listas_precios_detalles.precio',

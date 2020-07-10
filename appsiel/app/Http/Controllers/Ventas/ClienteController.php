@@ -22,6 +22,8 @@ use App\Ventas\Cliente;
 use App\Ventas\Vendedor;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasDocEncabezado;
+use App\Ventas\ListaPrecioDetalle;
+use App\Ventas\ListaDctoDetalle;
 
 class ClienteController extends ModeloController
 {
@@ -248,6 +250,16 @@ class ClienteController extends ModeloController
         Cliente::find($id)->delete();
 
         return redirect('web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('flash_message','Cliente ELIMINADO correctamente.');
+    }
+
+    // Detalles de Listas de precios y descuentos
+    public function get_lista_precios_cliente( $cliente_id )
+    {
+        $cliente = Cliente::find( $cliente_id );
+        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $cliente->lista_precios_id );
+        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $cliente->lista_descuentos_id );
+
+        return [ $precios, $descuentos ];
     }
 }
 

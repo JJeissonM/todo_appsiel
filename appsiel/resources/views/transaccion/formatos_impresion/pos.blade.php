@@ -27,7 +27,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="window.print();">
     <?php        
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
@@ -106,4 +106,5 @@
     <br><br><br>
 
 </body>
+
 </html>

@@ -151,6 +151,7 @@ class VistaController extends Controller
         switch ($campo['tipo']) {
             case 'bsLabel':
 
+                $valor = '';
                 switch ($campo['name']) {
                     case 'id_colegio':
                         $empresa = Empresa::find(Auth::user()->empresa_id);

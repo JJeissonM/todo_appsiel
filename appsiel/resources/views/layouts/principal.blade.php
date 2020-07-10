@@ -8,13 +8,31 @@
 
 	<?php
 
-	//$aplicaciones_inactivas_demo = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 6];
-	$aplicaciones_inactivas_demo = [17];
-	$app = App\Sistema\Aplicacion::find(Input::get('id'));
+		//$aplicaciones_inactivas_demo = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 6];
+		$aplicaciones_inactivas_demo = [17];
+		$app = App\Sistema\Aplicacion::find( Input::get('id') );
+		$modelo = App\Sistema\Modelo::find( Input::get('id_modelo') );
+
+		$titulo = '';
+
+		if ( !is_null($modelo) )
+		{
+			$titulo = $modelo->descripcion . ' - ';
+		}
+
+		if ( !is_null($app) )
+		{
+			$titulo .= $app->descripcion;
+		}else{
+			$titulo = 'Inicio';
+		}
+
+		$titulo .= ' - APPSIEL';
+
 	?>
 
 	<title>
-		@if(!is_null($app)) {{ $app->descripcion }} - APPSIEL @else Inicio - APPSIEL @endif
+		{{ $titulo }}
 	</title>
 
 	<link rel="shortcut icon" href="{{ asset('favicon.ico') }}">

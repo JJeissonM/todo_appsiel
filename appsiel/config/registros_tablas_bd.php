@@ -5537,6 +5537,156 @@
       'created_at' => '2020-06-20 07:26:54',
       'updated_at' => '2020-06-20 07:27:37',
     ),
+    369 => 
+    array (
+      'id' => 395,
+      'core_app_id' => 20,
+      'modelo_id' => 0,
+      'name' => 'vtas_pos_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    370 => 
+    array (
+      'id' => 396,
+      'core_app_id' => 20,
+      'modelo_id' => 0,
+      'name' => 'Ventas POS',
+      'descripcion' => 'Ventas POS',
+      'url' => 'ventas_pos',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    371 => 
+    array (
+      'id' => 397,
+      'core_app_id' => 20,
+      'modelo_id' => 0,
+      'name' => 'vtas_pos_transacciones',
+      'descripcion' => 'Transacciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    372 => 
+    array (
+      'id' => 398,
+      'core_app_id' => 20,
+      'modelo_id' => 227,
+      'name' => 'vtas_pos_pdvs',
+      'descripcion' => 'Puntos de ventas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    373 => 
+    array (
+      'id' => 399,
+      'core_app_id' => 20,
+      'modelo_id' => 226,
+      'name' => 'vtas_pos_cajeros',
+      'descripcion' => 'Cajeros',
+      'url' => 'web',
+      'parent' => 395,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    374 => 
+    array (
+      'id' => 400,
+      'core_app_id' => 20,
+      'modelo_id' => 45,
+      'name' => 'vtas_pos_cajas',
+      'descripcion' => 'Cajas',
+      'url' => 'web',
+      'parent' => 395,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    375 => 
+    array (
+      'id' => 401,
+      'core_app_id' => 20,
+      'modelo_id' => 230,
+      'name' => 'vtas_pos_facturas',
+      'descripcion' => 'Facturas POS',
+      'url' => 'web',
+      'parent' => 397,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    376 => 
+    array (
+      'id' => 402,
+      'core_app_id' => 20,
+      'modelo_id' => 232,
+      'name' => 'vtas_pos_movimientos',
+      'descripcion' => 'Movimientos POS',
+      'url' => 'web',
+      'parent' => 397,
+      'orden' => 9,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    377 => 
+    array (
+      'id' => 403,
+      'core_app_id' => 20,
+      'modelo_id' => 228,
+      'name' => 'vtas_pos_aperturas',
+      'descripcion' => 'Aperturas',
+      'url' => 'web',
+      'parent' => 397,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    378 => 
+    array (
+      'id' => 404,
+      'core_app_id' => 20,
+      'modelo_id' => 229,
+      'name' => 'vtas_pos_cierres',
+      'descripcion' => 'Cierres',
+      'url' => 'web',
+      'parent' => 397,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
   ),
   'roles' => 
   array (
@@ -5672,6 +5822,13 @@
       'name' => 'Conductor',
       'created_at' => '2020-06-08 09:34:06',
       'updated_at' => '2020-06-08 09:34:06',
+    ),
+    19 => 
+    array (
+      'id' => 20,
+      'name' => 'Cajero PDV',
+      'created_at' => '2020-07-06 13:58:33',
+      'updated_at' => '2020-07-06 13:58:33',
     ),
   ),
   'role_has_permissions' => 
@@ -13349,6 +13506,222 @@
       'orden' => 0,
       'permission_id' => 394,
       'role_id' => 9,
+    ),
+    1279 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 395,
+      'role_id' => 1,
+    ),
+    1280 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 395,
+      'role_id' => 3,
+    ),
+    1281 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 395,
+      'role_id' => 17,
+    ),
+    1282 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 396,
+      'role_id' => 1,
+    ),
+    1283 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 396,
+      'role_id' => 3,
+    ),
+    1284 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 396,
+      'role_id' => 17,
+    ),
+    1285 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 396,
+      'role_id' => 20,
+    ),
+    1286 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 397,
+      'role_id' => 1,
+    ),
+    1287 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 397,
+      'role_id' => 3,
+    ),
+    1288 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 397,
+      'role_id' => 17,
+    ),
+    1289 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 397,
+      'role_id' => 20,
+    ),
+    1290 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 398,
+      'role_id' => 1,
+    ),
+    1291 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 398,
+      'role_id' => 3,
+    ),
+    1292 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 398,
+      'role_id' => 17,
+    ),
+    1293 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 399,
+      'role_id' => 1,
+    ),
+    1294 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 399,
+      'role_id' => 3,
+    ),
+    1295 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 399,
+      'role_id' => 17,
+    ),
+    1296 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 400,
+      'role_id' => 1,
+    ),
+    1297 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 400,
+      'role_id' => 3,
+    ),
+    1298 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 400,
+      'role_id' => 17,
+    ),
+    1299 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 401,
+      'role_id' => 1,
+    ),
+    1300 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 401,
+      'role_id' => 3,
+    ),
+    1301 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 401,
+      'role_id' => 17,
+    ),
+    1302 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 401,
+      'role_id' => 20,
+    ),
+    1303 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 1,
+    ),
+    1304 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 3,
+    ),
+    1305 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 17,
+    ),
+    1306 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 20,
+    ),
+    1307 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 1,
+    ),
+    1308 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 3,
+    ),
+    1309 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 17,
+    ),
+    1310 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 20,
+    ),
+    1311 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 404,
+      'role_id' => 1,
+    ),
+    1312 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 404,
+      'role_id' => 3,
+    ),
+    1313 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 404,
+      'role_id' => 17,
+    ),
+    1314 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 404,
+      'role_id' => 20,
     ),
   ),
   'sys_campos' => 
@@ -21695,7 +22068,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     516 => 
     array (
       'id' => 522,
-      'descripcion' => 'Tercero',
+      'descripcion' => 'Cliente',
       'tipo' => 'bsText',
       'name' => 'cliente_input',
       'opciones' => '',
@@ -21706,7 +22079,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 0,
       'unico' => 0,
       'created_at' => '2019-09-17 10:29:40',
-      'updated_at' => '2020-05-12 17:10:39',
+      'updated_at' => '2020-07-06 15:11:56',
     ),
     517 => 
     array (
@@ -25450,6 +25823,134 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'unico' => 0,
       'created_at' => '2020-06-30 19:10:13',
       'updated_at' => '2020-06-30 19:10:28',
+    ),
+    750 => 
+    array (
+      'id' => 756,
+      'descripcion' => 'Cajero',
+      'tipo' => 'bsLabel',
+      'name' => 'cajero_id',
+      'opciones' => 'model_App\\User',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-07-06 09:46:22',
+      'updated_at' => '2020-07-06 09:46:22',
+    ),
+    751 => 
+    array (
+      'id' => 757,
+      'descripcion' => 'PDV',
+      'tipo' => 'bsLabel',
+      'name' => 'pdv_id',
+      'opciones' => 'model_App\\VentasPos\\Pdv',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-07-06 09:46:22',
+      'updated_at' => '2020-07-06 09:46:22',
+    ),
+    752 => 
+    array (
+      'id' => 758,
+      'descripcion' => 'Efectivo base',
+      'tipo' => 'bsText',
+      'name' => 'efectivo_base',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-07-06 09:46:22',
+      'updated_at' => '2020-07-06 09:46:22',
+    ),
+    753 => 
+    array (
+      'id' => 759,
+      'descripcion' => 'Bodega por defecto',
+      'tipo' => 'select',
+      'name' => 'bodega_default_id',
+      'opciones' => 'model_App\\Inventarios\\InvBodega',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-07-06 09:46:22',
+      'updated_at' => '2020-07-06 09:46:22',
+    ),
+    754 => 
+    array (
+      'id' => 760,
+      'descripcion' => 'Caja por defecto',
+      'tipo' => 'select',
+      'name' => 'caja_default_id',
+      'opciones' => 'model_App\\Tesoreria\\TesoCaja',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-07-06 09:46:22',
+      'updated_at' => '2020-07-06 09:46:22',
+    ),
+    755 => 
+    array (
+      'id' => 761,
+      'descripcion' => 'Cajero por defecto',
+      'tipo' => 'select',
+      'name' => 'cajero_default_id',
+      'opciones' => 'model_App\\VentasPos\\Cajero',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-07-06 09:46:22',
+      'updated_at' => '2020-07-06 14:53:29',
+    ),
+    756 => 
+    array (
+      'id' => 762,
+      'descripcion' => 'Cliente por defecto',
+      'tipo' => 'select',
+      'name' => 'cliente_default_id',
+      'opciones' => 'model_App\\Ventas\\Cliente',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-07-06 09:46:22',
+      'updated_at' => '2020-07-06 09:46:22',
+    ),
+    757 => 
+    array (
+      'id' => 763,
+      'descripcion' => 'Tipo Documento por defecto',
+      'tipo' => 'select',
+      'name' => 'tipo_doc_app_default_id',
+      'opciones' => 'model_App\\Core\\TipoDocApp',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-07-06 09:46:22',
+      'updated_at' => '2020-07-06 09:46:22',
     ),
   ),
   'sys_modelos' => 
@@ -30205,6 +30706,160 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-06-20 07:20:58',
       'updated_at' => '2020-06-20 07:20:58',
+    ),
+    216 => 
+    array (
+      'id' => 226,
+      'descripcion' => 'Cajeros PDV',
+      'modelo' => 'Cajero',
+      'name_space' => 'App\\VentasPos\\Cajero',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 14:58:12',
+    ),
+    217 => 
+    array (
+      'id' => 227,
+      'descripcion' => 'Puntos de ventas',
+      'modelo' => 'Pdv',
+      'name_space' => 'App\\VentasPos\\Pdv',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 09:13:22',
+    ),
+    218 => 
+    array (
+      'id' => 228,
+      'descripcion' => 'Documentos de apertura PDV',
+      'modelo' => 'AperturaEncabezado',
+      'name_space' => 'App\\VentasPos\\AperturaEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 09:13:22',
+    ),
+    219 => 
+    array (
+      'id' => 229,
+      'descripcion' => 'Documentos de cierre PDV',
+      'modelo' => 'CierreEncabezado',
+      'name_space' => 'App\\VentasPos\\CierreEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 09:13:22',
+    ),
+    220 => 
+    array (
+      'id' => 230,
+      'descripcion' => 'Facturas POS',
+      'modelo' => 'FacturaPos',
+      'name_space' => 'App\\VentasPos\\FacturaPos',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 09:13:22',
+    ),
+    221 => 
+    array (
+      'id' => 231,
+      'descripcion' => 'Registros de documentos POS',
+      'modelo' => 'DocRegistros',
+      'name_space' => 'App\\VentasPos\\DocRegistro',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-08 12:28:19',
+    ),
+    222 => 
+    array (
+      'id' => 232,
+      'descripcion' => 'Movimientos de Vtas. POS',
+      'modelo' => 'Movimientos',
+      'name_space' => 'App\\VentasPos\\Movimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-08 12:28:07',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -41395,6 +42050,314 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 88,
       'core_campo_id' => 585,
     ),
+    1598 => 
+    array (
+      'id' => 1865,
+      'orden' => 2,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 2,
+    ),
+    1599 => 
+    array (
+      'id' => 1866,
+      'orden' => 4,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 759,
+    ),
+    1600 => 
+    array (
+      'id' => 1867,
+      'orden' => 6,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 760,
+    ),
+    1601 => 
+    array (
+      'id' => 1868,
+      'orden' => 8,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 761,
+    ),
+    1602 => 
+    array (
+      'id' => 1869,
+      'orden' => 10,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 762,
+    ),
+    1603 => 
+    array (
+      'id' => 1870,
+      'orden' => 12,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 763,
+    ),
+    1604 => 
+    array (
+      'id' => 1872,
+      'orden' => 99,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 94,
+    ),
+    1605 => 
+    array (
+      'id' => 1873,
+      'orden' => 99,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 95,
+    ),
+    1606 => 
+    array (
+      'id' => 1875,
+      'orden' => 2,
+      'core_modelo_id' => 226,
+      'core_campo_id' => 124,
+    ),
+    1607 => 
+    array (
+      'id' => 1876,
+      'orden' => 4,
+      'core_modelo_id' => 226,
+      'core_campo_id' => 7,
+    ),
+    1608 => 
+    array (
+      'id' => 1877,
+      'orden' => 6,
+      'core_modelo_id' => 226,
+      'core_campo_id' => 18,
+    ),
+    1609 => 
+    array (
+      'id' => 1878,
+      'orden' => 8,
+      'core_modelo_id' => 226,
+      'core_campo_id' => 19,
+    ),
+    1610 => 
+    array (
+      'id' => 1879,
+      'orden' => 10,
+      'core_modelo_id' => 226,
+      'core_campo_id' => 20,
+    ),
+    1611 => 
+    array (
+      'id' => 1880,
+      'orden' => 99,
+      'core_modelo_id' => 226,
+      'core_campo_id' => 195,
+    ),
+    1612 => 
+    array (
+      'id' => 1881,
+      'orden' => 99,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 386,
+    ),
+    1613 => 
+    array (
+      'id' => 1882,
+      'orden' => 14,
+      'core_modelo_id' => 227,
+      'core_campo_id' => 257,
+    ),
+    1614 => 
+    array (
+      'id' => 1883,
+      'orden' => 99,
+      'core_modelo_id' => 228,
+      'core_campo_id' => 87,
+    ),
+    1615 => 
+    array (
+      'id' => 1884,
+      'orden' => 2,
+      'core_modelo_id' => 228,
+      'core_campo_id' => 88,
+    ),
+    1616 => 
+    array (
+      'id' => 1885,
+      'orden' => 99,
+      'core_modelo_id' => 228,
+      'core_campo_id' => 100,
+    ),
+    1617 => 
+    array (
+      'id' => 1886,
+      'orden' => 4,
+      'core_modelo_id' => 228,
+      'core_campo_id' => 93,
+    ),
+    1618 => 
+    array (
+      'id' => 1887,
+      'orden' => 0,
+      'core_modelo_id' => 228,
+      'core_campo_id' => 201,
+    ),
+    1619 => 
+    array (
+      'id' => 1890,
+      'orden' => 6,
+      'core_modelo_id' => 228,
+      'core_campo_id' => 758,
+    ),
+    1620 => 
+    array (
+      'id' => 1891,
+      'orden' => 8,
+      'core_modelo_id' => 228,
+      'core_campo_id' => 8,
+    ),
+    1621 => 
+    array (
+      'id' => 1892,
+      'orden' => 99,
+      'core_modelo_id' => 228,
+      'core_campo_id' => 94,
+    ),
+    1622 => 
+    array (
+      'id' => 1893,
+      'orden' => 99,
+      'core_modelo_id' => 228,
+      'core_campo_id' => 95,
+    ),
+    1623 => 
+    array (
+      'id' => 1894,
+      'orden' => 99,
+      'core_modelo_id' => 229,
+      'core_campo_id' => 87,
+    ),
+    1624 => 
+    array (
+      'id' => 1895,
+      'orden' => 99,
+      'core_modelo_id' => 229,
+      'core_campo_id' => 94,
+    ),
+    1625 => 
+    array (
+      'id' => 1896,
+      'orden' => 99,
+      'core_modelo_id' => 229,
+      'core_campo_id' => 95,
+    ),
+    1626 => 
+    array (
+      'id' => 1897,
+      'orden' => 99,
+      'core_modelo_id' => 229,
+      'core_campo_id' => 100,
+    ),
+    1627 => 
+    array (
+      'id' => 1898,
+      'orden' => 8,
+      'core_modelo_id' => 229,
+      'core_campo_id' => 8,
+    ),
+    1628 => 
+    array (
+      'id' => 1899,
+      'orden' => 6,
+      'core_modelo_id' => 229,
+      'core_campo_id' => 93,
+    ),
+    1629 => 
+    array (
+      'id' => 1900,
+      'orden' => 4,
+      'core_modelo_id' => 229,
+      'core_campo_id' => 88,
+    ),
+    1630 => 
+    array (
+      'id' => 1901,
+      'orden' => 2,
+      'core_modelo_id' => 229,
+      'core_campo_id' => 201,
+    ),
+    1631 => 
+    array (
+      'id' => 1902,
+      'orden' => 16,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 8,
+    ),
+    1632 => 
+    array (
+      'id' => 1903,
+      'orden' => 99,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 87,
+    ),
+    1633 => 
+    array (
+      'id' => 1904,
+      'orden' => 3,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 88,
+    ),
+    1634 => 
+    array (
+      'id' => 1905,
+      'orden' => 13,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 90,
+    ),
+    1635 => 
+    array (
+      'id' => 1906,
+      'orden' => 4,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 93,
+    ),
+    1636 => 
+    array (
+      'id' => 1907,
+      'orden' => 99,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 100,
+    ),
+    1637 => 
+    array (
+      'id' => 1908,
+      'orden' => 12,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 194,
+    ),
+    1638 => 
+    array (
+      'id' => 1909,
+      'orden' => 2,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 201,
+    ),
+    1639 => 
+    array (
+      'id' => 1910,
+      'orden' => 8,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 521,
+    ),
+    1640 => 
+    array (
+      'id' => 1911,
+      'orden' => 6,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 522,
+    ),
+    1641 => 
+    array (
+      'id' => 1912,
+      'orden' => 10,
+      'core_modelo_id' => 230,
+      'core_campo_id' => 523,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -42841,6 +43804,48 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'estado' => 'Activo',
       'created_at' => '2020-06-02 04:13:59',
       'updated_at' => '2020-06-02 04:20:03',
+    ),
+    44 => 
+    array (
+      'id' => 45,
+      'core_app_id' => 20,
+      'core_modelo_id' => 228,
+      'descripcion' => 'Apertura PDV',
+      'modelo_encabezados_documentos' => 'App\\VentasPos\\AperturaEncabezado',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'NA',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-07-07 04:20:06',
+      'updated_at' => '2020-07-07 04:22:03',
+    ),
+    45 => 
+    array (
+      'id' => 46,
+      'core_app_id' => 20,
+      'core_modelo_id' => 229,
+      'descripcion' => 'Cierre PDV',
+      'modelo_encabezados_documentos' => 'App\\VentasPos\\CierreEncabezado',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'NA',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-07-07 07:55:42',
+      'updated_at' => '2020-07-07 07:56:00',
+    ),
+    46 => 
+    array (
+      'id' => 47,
+      'core_app_id' => 20,
+      'core_modelo_id' => 230,
+      'descripcion' => 'Factura de ventas POS',
+      'modelo_encabezados_documentos' => 'App\\VentasPos\\FacturaPos',
+      'modelo_registros_documentos' => 'App\\VentasPos\\DocRegistro',
+      'modelo_movimientos' => 'App\\VentasPos\\Movimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-07-07 08:36:01',
+      'updated_at' => '2020-07-08 12:02:17',
     ),
   ),
 ) ;

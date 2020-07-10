@@ -230,7 +230,7 @@
 </div>
 
 <div class="modal" id="Modalboton" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Crear Botón</h5>
@@ -241,7 +241,7 @@
             <div class="modal-body">
                 <div class="col-md-12">
                     @if($sticky != null)
-                    <h5>Puede colocar solo ícono o solo texto, si prefiere los dos también es posible</h5>
+                    <p style="text-align: justify;"><b>Nota: </b>Puede colocar, una sola imágen para el botón, solo ícono, solo texto, si prefiere dos o tres de las opciones también es posible. De la estética del componente usted será responsable si decide usar las opciones combinadas (texto, ícono e imágen)</p>
                     {!! Form::open(['route'=>'sticky.storeboton','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
@@ -251,16 +251,20 @@
                         <input name="color" type="color" required class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>Ícono</label>
+                        <label>Ícono (Opcional)</label>
                         <input name="icono" type="text" class="form-control" data-toggle="modal" data-target="#exampleModal" id="iconotxt">
                     </div>
                     <div class="form-group">
-                        <label>Enlace</label>
+                        <label>Enlace (Opcional)</label>
                         <input name="enlace" type="text" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>Texto</label>
+                        <label>Texto (Opcional)</label>
                         <input name="texto" type="text" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Imágen (Opcional)</label>
+                        <input name="imagen" type="file" class="form-control">
                     </div>
                     <div class="form-group">
                         <br /><br /><a class="btn btn-danger" id="Modalboton" style="color: white" onclick="cerrar(this.id)">Cancelar</a>

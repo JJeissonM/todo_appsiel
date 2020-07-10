@@ -73,7 +73,7 @@ class PedidoController extends TransaccionController
      */
     public function store(Request $request)
     {
-
+        
         if( isset( $request['pedido_web'] ) )
         {
             if(!Auth::check()){

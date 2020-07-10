@@ -5,6 +5,10 @@ Route::post('vtas_agregar_precio_lista', 'Ventas\VentaController@agregar_precio_
 Route::post('vtas_doc_registro_guardar', 'Ventas\VentaController@doc_registro_guardar');
 Route::get('vtas_get_formulario_edit_registro', 'Ventas\VentaController@get_formulario_edit_registro');
 
+Route::get('vtas_get_lista_precios_cliente/{cliente_id}', 'Ventas\ClienteController@get_lista_precios_cliente');
+
+
+
 // CONSULTAS GENERALES
 Route::get('vtas_consultar_remisiones_pendientes', 'Ventas\VentaController@consultar_remisiones_pendientes');
 Route::get('vtas_consultar_clientes', 'Ventas\VentaController@consultar_clientes');
