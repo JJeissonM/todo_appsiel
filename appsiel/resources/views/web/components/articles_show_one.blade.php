@@ -4,7 +4,7 @@
             
             <a href="{{url('/')}}"> <i class="fa fa-home"></i> </a>
             /
-            <a onclick="ver_contenedor_seccion_articulos()" href="#"> Todos los artículos </a>
+            <a onclick="ver_contenedor_seccion_articulos()" href="#"> Volver </a>
             
       </p>
       <div class="col-md-12 light-txt">
@@ -12,7 +12,7 @@
                   <div class="blog-post blog-media">
                         <article class="media clearfix">
                               <div class="media-body">
-                                    <header class="entry-header">
+                                    <header class="entry-header" style="background: transparent;">
 
                                               <?php
                                                   $url_imagen = 'assets/img/blog-default.jpg';

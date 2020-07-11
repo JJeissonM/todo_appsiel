@@ -20,6 +20,7 @@
     .list-group-item {
         background-color: transparent;
         font-size: 16px;
+        list-style: none;
     }
 
     .list-group-item:hover {
