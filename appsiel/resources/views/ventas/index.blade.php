@@ -120,7 +120,7 @@
 											<ol>
 												@foreach($s['data'] as $d)
 												<li>
-													<a target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$d['documento']}}</a>
+													<a style="color: #0b97c4;" target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$d['documento']}}</a>
 													- {{$d['cliente']." - ".$d['fecha_entrega']}}
 												</li>
 												@endforeach
