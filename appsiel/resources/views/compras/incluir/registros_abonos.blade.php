@@ -2,7 +2,6 @@
     <h4 style="text-align: center;"> Pagos aplicados </h4>
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Documento','Fecha','Detalle','Abono']) }}
-        </thead>
         <tbody>
             <?php 
             

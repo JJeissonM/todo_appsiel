@@ -30,7 +30,6 @@
 			{{ Form::bsBtnExcel('Existencias de inventarios') }}
 			<table class="table table-bordered" id="myTable">
 			    {{ Form::bsTableHeader(['Cód.','Producto','Cantidad','Costo Prom.','Costo Total']) }}
-			    </thead>
 			    <tbody>
 			        <?php 
 			        $total_cantidad=0;

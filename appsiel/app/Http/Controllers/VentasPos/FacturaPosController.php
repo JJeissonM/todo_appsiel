@@ -150,7 +150,13 @@ class FacturaPosController extends TransaccionController
         $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id );
         $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id );
 
-        return view( 'ventas_pos.create', compact('form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id'));
+        $contenido_modal = View::make('ventas_pos.lista_items',compact( 'productos') )->render();
+
+        $plantilla_factura = $this->generar_plantilla_factura( $pdv );
+
+        echo $plantilla_factura;
+
+        //return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura') );
     }
 
     /**
@@ -277,8 +283,7 @@ class FacturaPosController extends TransaccionController
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
-        return $pdf->stream( $this->doc_encabezado->documento_transaccion_descripcion.' - '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
-        
+        return $pdf->stream( $this->doc_encabezado->documento_transaccion_descripcion.' - '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');        
     }
 
 
@@ -301,6 +306,21 @@ class FacturaPosController extends TransaccionController
         $etiquetas = $this->get_etiquetas();
 
         return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas' ) )->render();
+    }
+
+
+
+    public function generar_plantilla_factura( $pdv )
+    {
+        $this->set_variables_globales();
+
+        $resolucion = ResolucionFacturacion::where( 'tipo_doc_app_id', $pdv->tipo_doc_app_default_id )->where('estado','Activo')->get()->last();
+
+        $empresa = $this->empresa;
+
+        $etiquetas = $this->get_etiquetas();
+
+        return View::make( 'ventas_pos.plantilla_factura', compact( 'empresa', 'resolucion', 'etiquetas', 'pdv' ) )->render();
     }
 
     /*

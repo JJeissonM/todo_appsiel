@@ -77,7 +77,6 @@
     
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
-        </thead>
         <tbody>
             <?php 
             $i = 1;

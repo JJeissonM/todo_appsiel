@@ -17,7 +17,6 @@
     <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Documentos pagados </div>
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Tercero','Documento','Fecha','Detalle','Abono']) }}
-        </thead>
         <tbody>
             <?php 
             

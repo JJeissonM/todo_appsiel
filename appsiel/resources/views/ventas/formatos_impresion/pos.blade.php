@@ -48,7 +48,6 @@
 @section('tabla_registros_1')
     <table style="width: 100%;">
         {{ Form::bsTableHeader(['Producto','Cant. (Precio)','IVA','Total']) }}
-        </thead>
         <tbody>
             <?php 
             

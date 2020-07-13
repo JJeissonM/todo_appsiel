@@ -241,9 +241,7 @@
 				<div class="valor_total_descuento"></div>
 			</td>
 			<td> 
-				<label class="checkbox-inline" title="Activar ingreso por código de barras">
-					<input type="checkbox" id="modo_ingreso" name="modo_ingreso" value="false"><i class="fa fa-barcode"></i>
-				</label>
+				<button id="btn_listar_items" style="border: 0; background: transparent;"> <i class="fa fa-btn fa-search"></i> </button>
 			</td>
 			<td>
 				{{ Form::text( 'inv_producto_id', null, [ 'class' => 'form-control', 'id' => 'inv_producto_id' ] ) }}
@@ -266,6 +264,9 @@
 			<td></td>
 		</tr>
 	</table>
+
+	@include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
+
 @endsection
 
 @section('scripts')
@@ -324,6 +325,25 @@
 	{
 		window.open( "{{ url('pos_factura_imprimir') }}" + "/" + doc_encabezado_id + "?id=" + getParameterByName('id') + "&id_modelo=" + getParameterByName('id_modelo') + "&id_transaccion=" + getParameterByName('id_transaccion') , "Impresión de factura POS", "width=800,height=600,menubar=no" );
 		//window.print();
+	}
+
+	function mandar_codigo( item_id )
+	{
+		$('#myModal').modal("hide");
+
+		var producto = productos.find( item => item.id === parseInt( item_id ) );
+
+		tasa_impuesto = producto.tasa_impuesto;
+		inv_producto_id = producto.id;
+		unidad_medida = producto.unidad_medida1;
+
+		$('#inv_producto_id').val( producto.descripcion );
+		$('#precio_unitario').val( get_precio( producto.id ) );
+		$('#tasa_descuento').val( get_descuento( producto.id ) );
+
+		$('#cantidad').select();
+
+
 	}
 
 	$(document).ready(function(){
@@ -1196,6 +1216,18 @@
 				}
 			});
 
+
+			$("#btn_listar_items").click(function(event){
+
+		        $("#myModal").modal({keyboard: true});
+		        $(".btn_edit_modal").hide();
+		        $(".btn_edit_modal").hide();
+		        $('#myTable_filter').find('input').css( "border", "3px double red" );
+		        $('#myTable_filter').find('input').select();
+
+		    });
+
+
 			function guardar_valor_nuevo( fila )
 			{
 				var valor_nuevo = document.getElementById('valor_nuevo').value;
@@ -1241,9 +1273,6 @@
 
 			    fila.find('.lbl_precio_total').text( new Intl.NumberFormat("de-DE").format( precio_total.toFixed(2) ) );
 			}
-
-
-
 
 			function setCookie(cname, cvalue, exdays) {
 			  var d = new Date();
