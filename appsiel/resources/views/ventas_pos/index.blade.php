@@ -71,7 +71,7 @@
 
 		        		$btn_acumular = '<button href="'.url('vtas_pos_acumular').'/'.$pdv->id.'" class="btn btn-xs btn-warning" id="btn_acumular" > Acumular </button>';
 
-		        		$btn_contabilizar = '<button href="'.url('vtas_pos_contabilizar').'/'.$pdv->id.'" class="btn btn-xs btn-info" id="btn_acumular" > Contabilizar  </button>';
+		        		$btn_contabilizar = '<button href="'.url('vtas_pos_contabilizar').'/'.$pdv->id.'" class="btn btn-xs btn-info" id="btn_acumular" data-pdv_id="'.$pdv->id.'" > Contabilizar  </button>';
 
 		        		$color = 'red';
 
@@ -100,7 +100,9 @@
 		        			{
 			        			$btn_acumular = '';
 			        			$btn_contabilizar = '';
-		        			}
+		        			}/*else{
+		        				$btn_abrir = '';
+		        			}*/
 
 		        			if ( !is_null( $cierre ) )
 		        			{
@@ -176,4 +178,36 @@
 
 	@include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
 
+@endsection
+
+@section('scripts')
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$("#btn_contabilizar").click(function(event){
+
+		        $("#myModal").modal({backdrop: "static"});
+		        $("#div_spin").show();
+		        $(".btn_edit_modal").hide();
+		        $(".btn_edit_modal").hide();
+
+		        var url = "{{url('pos_factura_acumular')}}" + "/" + $(this).atrr('data-pdv_id');
+
+				$.get( url )
+					.done(function( data ) {
+
+		                $('#contenido_modal').html(data);
+
+		                $("#div_spin").hide();
+
+		                $('#fecha_vencimiento_aux').focus( );
+		                $('#fecha_vencimiento_aux').val( get_fecha_hoy() );
+
+					});		        
+		    });
+
+
+		});
+	</script>
 @endsection

@@ -1004,9 +1004,6 @@ class InventarioController extends TransaccionController
     }
 
 
-
-
-
     public function get_validacion_saldo_movimientos_posteriores($bodega_id, $producto_id, $fecha, $cantidad_nueva, $saldo_a_la_fecha, $movimiento)
     {
         $producto = InvProducto::find( $producto_id );
