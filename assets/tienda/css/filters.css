@@ -41,7 +41,7 @@
 }
 
 #narrow-by-list dt {
-    font-size: 12px;
+    font-size: 18px;
     text-transform: uppercase;
     font-weight: bold;
     padding-left: 10px;
@@ -59,7 +59,7 @@
 }
 
 .block-layered-nav #narrow-by-list li {
-    font-size: 10px;
+    font-size: 15px;
     line-height: 29px;
     text-transform: uppercase;
     padding-left: 10px;

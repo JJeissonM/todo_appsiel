@@ -84,8 +84,12 @@ h2 {
     font-weight: normal;
 }
 
+.page-title h1{
+    font-weight: bold;
+}
+
 .product-name a {
-    font-size: 11px;
+    font-size: 16px;
     text-transform: uppercase;
 }
 
@@ -121,6 +125,10 @@ h2 {
 .price-box {
     margin: 5px 0;
     font-size: 15px;
+}
+
+.price {
+    font-size: 18px;
 }
 
 .ma-box-content ul.add-to-links {

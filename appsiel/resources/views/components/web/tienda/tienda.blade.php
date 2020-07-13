@@ -94,10 +94,10 @@
                                                 </li>
                                             @endforeach
                                         </ul>
-                                        <div class="col-md-12">
-                                            {{$items->render()}}
-                                        </div>
                                     </div>
+                                </div>
+                                <div class="col-md-12">
+                                    {{$items->render()}}
                                 </div>
                             </div>
                         </div>
@@ -106,21 +106,6 @@
             </div>
         </div>
     </div>
-
-    <!-- The Modal -->
-    <div class="modal fade" id="myModal" data-url_busqueda="{{ url('core_create_registro_modelo') }}">
-      <div class="modal-dialog modal-lg modal-dialog-centered" style="height: 100% !important;">
-        <div class="modal-content">    
-          
-          <!-- Modal body -->
-          <div id="modal-body" style="margin: 15px;">
-            Modal body..
-          </div>
-          
-        </div>
-      </div>
-    </div>
-
 </main>
 
 @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])

@@ -27,7 +27,6 @@
     <!-- <div class="footerarea" style="padding-top: 20px; background: linear-gradient(180deg, rgba(255,255,255,1) 0%, { {$footer->background}} 100%); color: { {$footer->color}}"> -->
         
     <div class="footerarea" style="padding-top: 20px; background: {{$footer->background}}; color: {{$footer->color}}">
-
         <div class="container">
             <div class="row">
                 @if($footer->ubicacion == '')
@@ -41,7 +40,7 @@
                                         <ul id="menu-menu4" class="menu">
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                            style="color: {{$footer->color}};"
+                                                            style="color: {{$footer->color}}; font-size: 14px;"
                                                             href="{{$enlace->enlace}}" target="_blank"><i
                                                                 class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                                     </a>
@@ -62,7 +61,7 @@
                                         <ul id="menu-menu4" class="menu">
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                            style="color: {{$footer->color}};"
+                                                            style="color: {{$footer->color}}; font-size: 14px"
                                                             target="_blank"
                                                             href="{{$enlace->enlace}}"><i
                                                                 class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
@@ -96,7 +95,7 @@
                                         <ul id="menu-menu4" class="menu">
                                             @foreach($item->enlaces as $enlace)
                                                 <li id="" class="" style="list-style: none; margin-top: 10px;"><a
-                                                            style="color: {{$footer->color}};"
+                                                            style="color: {{$footer->color}}; font-size: 14px;"
                                                             href="{{$enlace->enlace}}" target="_blank"><i
                                                                 class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                                     </a>
