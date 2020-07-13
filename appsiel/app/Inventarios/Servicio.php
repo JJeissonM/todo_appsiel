@@ -24,7 +24,7 @@ class Servicio extends Model
 
     public $encabezado_tabla = ['Código','Descripción','UM-1', 'Grupo inventario','Precio compra','Precio venta','IVA','Tipo','Estado','Acción'];
 
-    public $urls_acciones = '{"create":"web/create"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 
     public static function consultar_registros()
     {

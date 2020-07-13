@@ -72,23 +72,12 @@ class CotizacionController extends TransaccionController
 
         $lineas_registros = json_decode($request->lineas_registros);
 
+        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+
         // 2do. Crear documento de Ventas
-        $ventas_doc_encabezado_id = CotizacionController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
-
-        return redirect('vtas_cotizacion/'.$ventas_doc_encabezado_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo);
-    }
-
-    /*
-        Crea un documento completo: encabezados, registros, movimiento y contabilización
-        Devuelve en ID del documento creado
-    */
-    public static function crear_documento( Request $request, array $lineas_registros, $modelo_id )
-    {
-        $doc_encabezado = $this->crear_encabezado_documento($request, $modelo_id);
-
         CotizacionController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
-        return $doc_encabezado->id;
+        return redirect('vtas_cotizacion/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
 
@@ -101,8 +90,6 @@ class CotizacionController extends TransaccionController
     {
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
         $datos = $request->all();
-
-        //dd( $datos );
 
         $total_documento = 0;
 
@@ -131,6 +118,9 @@ class CotizacionController extends TransaccionController
             $total_documento += $lineas_registros[$i]->precio_total;
 
         } // Fin por cada registro
+
+        $doc_encabezado->valor_total = $total_documento;
+        $doc_encabezado->save();
 
     }
 

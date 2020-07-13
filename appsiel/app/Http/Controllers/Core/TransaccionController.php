@@ -170,19 +170,7 @@ class TransaccionController extends Controller
     */
     public function crear_encabezado_documento(Request $request, $modelo_id)
     {
-
         $request['creado_por'] = Auth::user()->email;
-        $lineas_registros = json_decode($request->lineas_registros);
-        $cantidad_registros = count($lineas_registros);
-        $total_documento = 0;
-
-        for ($i = 0; $i < $cantidad_registros; $i++)
-        {
-            $total_documento += $lineas_registros[$i]->precio_total;
-        } // Fin por cada registro
-
-        $request['valor_total'] = $total_documento;
-
         return CrudController::crear_nuevo_registro( $request, $modelo_id );
     }
 

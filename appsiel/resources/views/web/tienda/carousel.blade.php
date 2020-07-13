@@ -14,7 +14,7 @@
   <div class="carousel-inner">
 
     <div class="carousel-item active">
-      <img src="http://avipoulet.com./nube/imagenes_banner/banners-11jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
+      <img src="http://avipoulet.com./nube/imagenes_banner/banners-3jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
     </div>
 
     <div class="carousel-item">
@@ -30,7 +30,7 @@
     </div>
   
     <div class="carousel-item">
-      <img src="http://avipoulet.com./nube/imagenes_banner/banners-3jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
+      <img src="http://avipoulet.com./nube/imagenes_banner/banners-11jpg.jpeg" alt="banner_avipoulet" style="width:100%;">
     </div>
   
     <div class="carousel-item">

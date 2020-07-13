@@ -117,7 +117,7 @@ class PagoController extends TransaccionController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {        
+    {
         $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);

@@ -125,7 +125,7 @@ $(document).ready(function(){
 
 				reset_linea_ingreso_default();
 
-				$('#inv_producto_id').focus();
+				$('#inv_producto_id').select();
 
 				if( $('#url_id_transaccion').val()==2 ) 
 				{ // Si es una transferencia
@@ -366,14 +366,14 @@ $(document).ready(function(){
 							return false;
 						}
 
-						$('#tasa_descuento').focus();			
+						$('#tasa_descuento').select();			
 					}
 
 
 
 				}else{
 
-					$(this).focus();
+					$(this).select();
 					return false;
 				}
 
@@ -416,7 +416,7 @@ $(document).ready(function(){
 
 				}else{
 
-					$(this).focus();
+					$(this).select();
 					return false;
 				}
 			});
@@ -466,7 +466,7 @@ $(document).ready(function(){
 
 				}else{
 
-					$(this).focus();
+					$(this).select();
 					return false;
 				}
 
@@ -602,7 +602,7 @@ $(document).ready(function(){
 						// Se pasa a ingresar las cantidades
 						$('#cantidad').removeAttr('disabled');
 						$('#cantidad').attr('style','background-color:white;');
-						$('#cantidad').focus();
+						$('#cantidad').select();
 
 						if ( (respuesta.tipo != 'servicio') && (respuesta.costo_promedio == 0) )
 						{
@@ -901,82 +901,6 @@ $(document).ready(function(){
 				$('#form_create').submit();					
 			});
 
-			function reset_campos_formulario()
-			{
-				$('#cliente_id').val( '' );
-				$('#cliente_input').css( 'background-color','#FF8C8C' );
-                $('#vendedor_id').val( '' );
-                $('#inv_bodega_id').val( '' );
-                $('#forma_pago').val( 'contado' );
-				$('#fecha_vencimiento').val( '' );
-                $('#lista_precios_id').val( '' );
-                $('#lista_descuentos_id').val( '' );
-                $('#liquida_impuestos').val( '' );
-
-                $('#equipo_ventas_id').val( '' );
-                $('#core_tercero_id').val( '' );
-                $('#lineas_registros').val( 0 );
-                $('#zona_id').val( '' );
-                $('#clase_cliente_id').val( '' );
-			}
-
-			function reset_tabla_ingreso()
-			{
-				$('.linea_registro').each(function( ){
-					$(this).remove();
-				});
-
-				// reset totales
-				$('#total_cantidad').text( '0' );
-
-				// Subtotal (Sumatoria de base_impuestos por cantidad)
-				$('#subtotal').text( '$ 0' );
-
-				$('#descuento').text( '$ 0' );
-
-				// Total impuestos (Sumatoria de valor_impuesto por cantidad)
-				$('#total_impuestos').text( '$ 0' );
-
-				// Total factura  (Sumatoria de precio_total)
-				$('#total_factura').text( '$ 0' );
-
-
-				reset_linea_ingreso_default()
-			}
-
-
-			function reset_linea_ingreso_default()
-			{
-				$('#linea_ingreso_default input[type="text"]').val('');
-				$('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
-				$('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
-
-
-				$('#inv_motivo_id').attr('style','background-color:#ECECE5;');
-				$('#inv_motivo_id').attr('disabled','disabled');
-
-				$('#precio_unitario').removeAttr('style');
-				$('#precio_unitario').removeAttr('disabled');
-
-				$('#tasa_descuento').removeAttr('style');
-				$('#tasa_descuento').removeAttr('disabled');
-
-				$('#valor_total_descuento').removeAttr('style');
-				$('#valor_total_descuento').removeAttr('disabled');
-
-				$('#valor_unitario_descuento').removeAttr('style');
-				$('#valor_unitario_descuento').removeAttr('disabled');
-
-				$('#precio_total').removeAttr('style');
-				$('#precio_total').removeAttr('disabled');
-
-				$('#inv_producto_id').removeAttr('style');
-				$('#inv_producto_id').removeAttr('disabled');
-				$('#inv_producto_id').focus();
-				$("[data-toggle='tooltip']").tooltip('show');
-
-				producto_id = 0; precio_total = 0; costo_total = 0; base_impuesto_total = 0; valor_impuesto_total = 0; tasa_impuesto = 0; tasa_descuento = 0; valor_total_descuento = 0; cantidad = 0; costo_unitario = 0; precio_unitario = 0; base_impuesto_unitario = 0; valor_impuesto_unitario = 0; valor_unitario_descuento = 0;
-			}
 
 			function calcular_precio_total()
 			{
@@ -1217,42 +1141,85 @@ $(document).ready(function(){
                             agregar_la_linea();
                         }
                     });
-            }	
+            }
+
+            
+			function reset_campos_formulario()
+			{
+				$('#cliente_id').val( '' );
+				$('#cliente_input').css( 'background-color','#FF8C8C' );
+                $('#vendedor_id').val( '' );
+                $('#inv_bodega_id').val( '' );
+                $('#forma_pago').val( 'contado' );
+				$('#fecha_vencimiento').val( '' );
+                $('#lista_precios_id').val( '' );
+                $('#lista_descuentos_id').val( '' );
+                $('#liquida_impuestos').val( '' );
+
+                $('#equipo_ventas_id').val( '' );
+                $('#core_tercero_id').val( '' );
+                $('#lineas_registros').val( 0 );
+                $('#zona_id').val( '' );
+                $('#clase_cliente_id').val( '' );
+			}
+
+			function reset_tabla_ingreso()
+			{
+				$('.linea_registro').each(function( ){
+					$(this).remove();
+				});
+
+				// reset totales
+				$('#total_cantidad').text( '0' );
+
+				// Subtotal (Sumatoria de base_impuestos por cantidad)
+				$('#subtotal').text( '$ 0' );
+
+				$('#descuento').text( '$ 0' );
+
+				// Total impuestos (Sumatoria de valor_impuesto por cantidad)
+				$('#total_impuestos').text( '$ 0' );
+
+				// Total factura  (Sumatoria de precio_total)
+				$('#total_factura').text( '$ 0' );
 
 
-            // PARA BASCULA
-			$('#cargar_datos_producto').on('click',function(event){
-				event.preventDefault();
-
-				if ( validar_requeridos() == false )
-				{
-					return false;
-				}
-
-				$('#div_cargando').show();
-				var bascula_id = $("input[name='bascula_id']:checked").val();
-
-				var mov = $('#inv_motivo_id').val().split('-');
-				var bodega_id = $('#inv_bodega_id').val();
-				var cliente_id = $('#cliente_id').val();
+				reset_linea_ingreso_default()
+			}
 
 
-				var url = '../vtas_get_productos_por_facturar';
+			function reset_linea_ingreso_default()
+			{
+				$('#linea_ingreso_default input[type="text"]').val(0);
+				$('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
+				$('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
 
-				$.get( url, { bascula_id: bascula_id, numero_linea: numero_linea, hay_productos:hay_productos, inv_motivo_id: mov[0], motivo_descripcion: $('#inv_motivo_id option:selected').text(), bodega_id:bodega_id, cliente_id: cliente_id } )
-					.done(function( data ) {
-						$('#ingreso_registros').find('tbody:last').append( data[0] );
 
-						// Se calculan los totales
-						calcular_totales();
+				$('#inv_motivo_id').attr('style','background-color:#ECECE5;');
+				$('#inv_motivo_id').attr('disabled','disabled');
 
-						numero_linea = data[1];
-						hay_productos = data[2];
+				$('#precio_unitario').removeAttr('style');
+				$('#precio_unitario').removeAttr('disabled');
 
-						reset_linea_ingreso_default();
-						$('#div_cargando').hide();
-					});
-				
-			});
+				$('#tasa_descuento').removeAttr('style');
+				$('#tasa_descuento').removeAttr('disabled');
+
+				$('#valor_total_descuento').removeAttr('style');
+				$('#valor_total_descuento').removeAttr('disabled');
+
+				$('#valor_unitario_descuento').removeAttr('style');
+				$('#valor_unitario_descuento').removeAttr('disabled');
+
+				$('#precio_total').removeAttr('style');
+				$('#precio_total').removeAttr('disabled');
+
+				$('#inv_producto_id').val('');
+				$('#inv_producto_id').removeAttr('style');
+				$('#inv_producto_id').removeAttr('disabled');
+				$('#inv_producto_id').select();
+				$("[data-toggle='tooltip']").tooltip('show');
+
+				producto_id = 0; precio_total = 0; costo_total = 0; base_impuesto_total = 0; valor_impuesto_total = 0; tasa_impuesto = 0; tasa_descuento = 0; valor_total_descuento = 0; cantidad = 0; costo_unitario = 0; precio_unitario = 0; base_impuesto_unitario = 0; valor_impuesto_unitario = 0; valor_unitario_descuento = 0;
+			}
 			
 		});

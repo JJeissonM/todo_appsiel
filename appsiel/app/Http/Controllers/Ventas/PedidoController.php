@@ -298,7 +298,16 @@ class PedidoController extends TransaccionController
                           ."Hemos recibido tu pedido; el cual ha ingresado a un proceso de validación de datos personales e inventario. Una vez finalizada esta verificación se  procederá a realizar el despacho. </br>"
                           ."<strong style='color:red;'>NOTA:</strong>  para los productos pesados el precio puede variar, los detalles de está variación los podra revisar en la factura que le haremos llegar con los productos, Esta observación es valida para los productos que son sometidos a un proceso de medida , donde el proceso de medición no siempre es exacto. ";
 
-        $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista);
+        
+        $email_interno = 'info@'.substr( url('/'), 7);
+        $empresa = Empresa::find( Auth::user()->empresa_id );
+
+        if ( !is_null( $empresa ) )
+        {
+            $email_interno = $empresa->email;
+        }
+
+        $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email . ',' . $email_interno, $asunto, $cuerpo_mensaje, $documento_vista);
 
     }
 

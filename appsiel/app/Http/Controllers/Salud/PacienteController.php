@@ -176,14 +176,7 @@ class PacienteController extends Controller
             // Si se carga un nuevo archivo, Eliminar el(los) archivo(s) anterior(es)
             if ( $request->file($key) != '' ) 
             {
-                // El favicon se almacena en la carpeta public
-                if ( isset( $request->favicon ) ) 
-                {
-                    Storage::disk('publico')->delete($registro2->$key);
-                }else{
-                    Storage::delete($modelo->ruta_storage_imagen.$registro2->$key);
-                }
-                
+                Storage::delete('fotos_terceros/'.$registro2->tercero->$key);                
             }
             
             // 2do. Almacenar en disco con su extensión específica
@@ -193,24 +186,13 @@ class PacienteController extends Controller
 
             $nuevo_nombre = uniqid().'.'.$extension;
 
-
-            // El favicon se almacena en la carpeta public
-            if ( $key == 'favicon' ) 
-            {
-                Storage::disk('publico')->put( 
-                $nuevo_nombre,
+            Storage::put('fotos_terceros/'.$nuevo_nombre,
                 file_get_contents( $archivo->getRealPath() ) 
                 );
-            }else{
-
-                Storage::put($modelo->ruta_storage_imagen.$nuevo_nombre,
-                file_get_contents( $archivo->getRealPath() ) 
-                );
-            }                
 
             // Guardar nombre en la BD
-            $registro2->$key = $nuevo_nombre;
-            $registro2->save();
+            $registro2->tercero->$key = $nuevo_nombre;
+            $registro2->tercero->save();
         }
 
 

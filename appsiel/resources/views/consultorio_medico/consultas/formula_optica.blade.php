@@ -14,13 +14,15 @@
 												->get();*/
 		$examenes = App\Salud\ExamenMedico::examenes_del_paciente2( $consulta->paciente_id, $consulta->id );
 
-		//dd( $examenes );
+		;
 	?>
 	
 	
-	
+	@if( !empty($examenes->toArray() ) )
 	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnPrint( 'consultorio_medico/formulas_opticas/9999/print?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
+	@endif
 	<br><br>
+
 	
 	
 

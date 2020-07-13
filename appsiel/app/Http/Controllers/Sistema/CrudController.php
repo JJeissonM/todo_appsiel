@@ -93,6 +93,7 @@ class CrudController extends Controller
 
         $modelo = Modelo::find( $modelo_id );
 
+
         CrudController::validar_requeridos_y_unicos($request, $modelo);
 
         // Se verifican si vienen campos con valores tipo arra_tokeny. Normalmente para los campos tipo chexkbox.

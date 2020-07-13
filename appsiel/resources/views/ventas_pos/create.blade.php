@@ -85,6 +85,8 @@
 
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
 
+				<input type="hidden" name="estado" id="estado" value="Pendiente">
+
 				<input type="hidden" name="tipo_transaccion"  id="tipo_transaccion" value="factura_directa">
 
 				<input type="hidden" name="rm_tipo_transaccion_id"  id="rm_tipo_transaccion_id" value="{{config('ventas')['rm_tipo_transaccion_id']}}">
@@ -108,8 +110,8 @@
 						Productos ingresados: <span id="numero_lineas"> 0 </span>
 					</div>
 
-					<div class="col-md-4 well" style="font-size: 1.3em;">
-						<h1 style="width: 100%; text-align: center;">Totales</h1>
+					<div class="col-md-4 well" style="font-size: 1.2em;">
+						<h3 style="width: 100%; text-align: center;">Totales</h3>
 						<hr>
 							<div id="total_cantidad" style="display: none;"> 0 </div>
 							
@@ -204,7 +206,7 @@
 			<br>
 		</div>
 	</div>
-	<br/><br/>
+	<br/>
 
 	<table style="display: none;">
 		<tr id="linea_ingreso_default_aux">
@@ -271,7 +273,7 @@
 <script type="text/javascript">
 
 	// Variables de cada línea de ingresos de registros.
-	var producto_id, precio_total, costo_total, base_impuesto_total, valor_impuesto_total, tasa_impuesto, tasa_descuento, valor_total_descuento, cantidad, inv_producto_id, inv_bodega_id, inv_motivo_id, unidad_medida;
+	var producto_id, precio_total, costo_total, base_impuesto_total, valor_impuesto_total, tasa_impuesto, tasa_descuento, valor_total_descuento, cantidad, inv_producto_id, inv_bodega_id, inv_motivo_id, unidad_medida, total_factura;
 	var costo_unitario = 0;
 	var precio_unitario = 0;
 	var base_impuesto_unitario = 0;
@@ -736,6 +738,9 @@
 				// El descuento se calcula cuando el precio tiene el IVA incluido
 				valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
 				valor_total_descuento = valor_unitario_descuento * cantidad;
+
+				console.log( [ precio_unitario, tasa_descuento, valor_unitario_descuento, valor_total_descuento] );
+
 			}
 
 
@@ -916,7 +921,8 @@
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td>' + cantidad + ' </td>';
+				//celdas[ num_celda ] = '<td>' + cantidad + ' </td>';
+				celdas[ num_celda ] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + cantidad + '</div> </div> </td>';
 				
 				num_celda++;
 
@@ -924,7 +930,7 @@
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td>'+ tasa_descuento + '% ( $' + new Intl.NumberFormat("de-DE").format( valor_total_descuento ) + ' ) </td>';
+				celdas[ num_celda ] = '<td>'+ tasa_descuento + '% ( $<div class="lbl_valor_total_descuento">' + new Intl.NumberFormat("de-DE").format( valor_total_descuento ) + '</div> ) </td>';
 				
 				num_celda++;
 
@@ -933,7 +939,7 @@
 				num_celda++;
 
 				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
-				celdas[ num_celda ] = '<td> '+ '$ ' + new Intl.NumberFormat("de-DE").format( precio_total ) + ' </td><td>' + btn_borrar + '</td>';
+				celdas[ num_celda ] = '<td> '+ '$ <div class="lbl_precio_total">' + new Intl.NumberFormat("de-DE").format( precio_total ) + ' </div> </td> <td>' + btn_borrar + '</td>';
 
 				var cantidad_celdas = celdas.length;
 				var string_celdas = '';
@@ -1012,10 +1018,12 @@
 				var url = $("#form_create").attr('action');
 				var data = $("#form_create").serialize();
 
+				setCookie( 'ultimo_valor_total_cambio', total_cambio, 1);
+				setCookie( 'ultimo_valor_total_factura', total_factura, 1);
+				setCookie( 'ultimo_valor_efectivo_recibido',  parseFloat( $('#efectivo_recibido').val() ), 1);
+
 				$.post(url, data, function( doc_encabezado_id ){
-
 					location.reload();
-
 					ventana_imprimir(doc_encabezado_id);
 				});
 
@@ -1101,14 +1109,13 @@
 			}
 
 
-
 			function calcular_totales()
 			{	
 				var cantidad = 0.0;
 				var subtotal = 0.0;
 				var valor_total_descuento = 0.0;
 				var total_impuestos = 0.0;
-				var total_factura = 0.0;
+				total_factura = 0.0;
 				$('.linea_registro').each(function()
 				{
 				    cantidad += parseFloat( $(this).find('.cantidad').text() );
@@ -1136,6 +1143,108 @@
 			}
 
 
+		var valor_actual, elemento_modificar, elemento_padre;
+				
+			// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
+			$(document).on('dblclick','.elemento_modificar',function(){
+
+				elemento_modificar = $(this);
+
+				elemento_padre = elemento_modificar.parent();
+
+				valor_actual = $(this).html();
+
+				elemento_modificar.hide();
+
+				elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+
+				document.getElementById('valor_nuevo').value = valor_actual;
+				document.getElementById('valor_nuevo').select();
+
+			});
+
+			// Si la caja de texto pierde el foco
+			$(document).on('blur','#valor_nuevo',function(event){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+				if( x != 13 ) // 13 = Tecla Enter
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+			        elemento_modificar.show();
+			    }
+
+			});
+
+			// Al presiona teclas en la caja de texto
+			$(document).on('keyup','#valor_nuevo',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Abortar la edición
+				if( x == 27 ) // 27 = ESC
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+		        	elemento_modificar.show();
+		        	return false;
+				}
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+					var fila = $(this).closest("tr");
+		        	guardar_valor_nuevo( fila );
+				}
+			});
+
+			function guardar_valor_nuevo( fila )
+			{
+				var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+				// Si no cambió el valor_nuevo, no pasa nada
+				if ( valor_nuevo == valor_actual) { return false; }
+
+				elemento_modificar.html( valor_nuevo );
+				elemento_modificar.show();
+
+				cantidad = parseFloat( valor_nuevo );
+				
+				calcular_precio_total_lbl( fila );
+				calcular_totales();
+
+				elemento_padre.find('#valor_nuevo').remove();
+			}
+
+
+
+			function calcular_precio_total_lbl( fila )
+			{
+				precio_unitario = parseFloat( fila.find('.precio_unitario').text() );
+				base_impuesto_unitario = parseFloat( fila.find('.base_impuesto').text() );
+				tasa_descuento = parseFloat( fila.find('.tasa_descuento').text() );
+
+				valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
+				valor_total_descuento = valor_unitario_descuento * cantidad;
+
+				console.log( [precio_unitario, base_impuesto_unitario, valor_unitario_descuento, cantidad] );
+
+				precio_total = ( precio_unitario - valor_unitario_descuento ) * cantidad;
+
+			    fila.find('.cantidad').text( cantidad );
+			    
+			    fila.find('.precio_total').text( precio_total );
+
+			    fila.find('.base_impuesto_total').text( base_impuesto_unitario * cantidad );
+
+			    fila.find('.valor_total_descuento').text( valor_total_descuento );
+
+			    fila.find('.lbl_valor_total_descuento').text( new Intl.NumberFormat("de-DE").format( valor_total_descuento.toFixed(2) ) );
+
+			    fila.find('.lbl_precio_total').text( new Intl.NumberFormat("de-DE").format( precio_total.toFixed(2) ) );
+			}
+
+
+
+
 			function setCookie(cname, cvalue, exdays) {
 			  var d = new Date();
 			  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -1158,17 +1267,20 @@
 			  return "";
 			}
 
-			function checkCookie() {
-			  var modo_ingreso_codigo_de_barra = getCookie("modo_ingreso_codigo_de_barra");
+			function checkCookie()
+			{
+			  var ultimo_valor_total_factura = parseFloat( getCookie("ultimo_valor_total_factura") );
+			  var ultimo_valor_efectivo_recibido = parseFloat( getCookie("ultimo_valor_efectivo_recibido") );
+			  var ultimo_valor_total_cambio = parseFloat( getCookie("ultimo_valor_total_cambio") );
 
-			  if (modo_ingreso_codigo_de_barra == "true" || modo_ingreso_codigo_de_barra == "")
+			  if( ultimo_valor_total_factura > 0 )
 			  {
-		        $('#modo_ingreso').attr('checked','checked');
-		        $('#modo_ingreso').val( "true" );
-			  }else{
-			  	$('#modo_ingreso').removeAttr('checked');
-		        $('#modo_ingreso').val( "false" );
+			  	$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( ultimo_valor_total_factura.toFixed(2) ) );
+			  	$('#lbl_efectivo_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( ultimo_valor_efectivo_recibido.toFixed(2) ) );
+			  	$('#total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( ultimo_valor_total_cambio.toFixed(2) ) );
+			  	$("html, body").animate( { scrollTop: $(document).height()+"px"} );
 			  }
+
 			}
 
 		});

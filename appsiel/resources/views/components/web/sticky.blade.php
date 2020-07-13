@@ -16,7 +16,7 @@
         /* Utilizamos la propiedad z-index para que no se superponga algún otro elemento como sliders, galerías, etc */
     }
 
-    .social ul {
+    .social ul li {
         list-style: none;
     }
 
@@ -50,7 +50,7 @@
 </style>
 
 <div class="social">
-    <ul style="list-style: none !important;">
+    <ul>
         @if($sticky!=null)
         @if(count($sticky->stickybotons)>0)
         @foreach($sticky->stickybotons as $b)
