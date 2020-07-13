@@ -86,7 +86,7 @@ class PedidoController extends TransaccionController
             $request = $this->completar_request( $request );
         }
 
-        $request['fecha_entrega'] = $request['fecha_entrega'] . ' ' . $request['hora_entrega'] . ':00';
+        //$request['fecha_entrega'] = $request['fecha_entrega'] . ' ' . $request['hora_entrega'] . ':00';
 
         $lineas_registros = json_decode($request->lineas_registros);
         $request['estado'] = "Pendiente";
@@ -122,7 +122,7 @@ class PedidoController extends TransaccionController
         $request['vendedor_id'] = config('ventas.vendedor_id');
         $request['forma_pago'] = 'forma_pago';
         $request['fecha_entrega'] = date('Y-m-d');
-        $request['fecha_vencimiento'] = date('Y-m-d');
+        $request['fecha_vencimiento'] = date('Y-m-d',strtotime(date('Y-m-d')."+ 1 days"));
         $request['inv_bodega_id'] = config('ventas.inv_bodega_id');
         $request['zona_id'] = config('ventas.zona_id');
         $request['clase_cliente_id'] = config('ventas.clase_cliente_id');

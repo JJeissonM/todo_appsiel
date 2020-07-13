@@ -178,10 +178,12 @@ class ReportesController extends Controller
         for ($i = 1; $i <= 7; $i++) {
             $fechas[] = date("Y-m-d", strtotime("$inicio +$i day"));
         }
+
         $data = null;
         $parametros = config('ventas');
+
         foreach ($fechas as $f) {
-            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '=', $f], ['estado', 'Pendiente']])->get();
+            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'], ['estado', 'Pendiente']])->get();
             $pedidos = null;
             if (count($pedidos_db) > 0) {
                 foreach ($pedidos_db as $o) {
