@@ -330,7 +330,7 @@
 
 		//window.open( "{ { url('pos_factura_imprimir') }}" + "/" + doc_encabezado_id + "?id=" + getParameterByName('id') + "&id_modelo=" + getParameterByName('id_modelo') + "&id_transaccion=" + getParameterByName('id_transaccion') , "Impresión de factura POS", "width=800,height=600,menubar=no" );
 		
-		ventana_factura = window.open( "" , "Impresión de factura POS", "width=800,height=600,menubar=no" );
+		ventana_factura = window.open( "" , "Impresión de factura POS", "width=400,height=600,menubar=no" );
 
 		ventana_factura.document.write( $('#div_plantilla_factura').html() );
 
