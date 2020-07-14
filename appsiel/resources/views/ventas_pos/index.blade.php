@@ -69,9 +69,9 @@
 
 		        		$btn_cerrar = '<a href="' . url('web/create') . '?id=20&id_modelo=229&id_transaccion=46&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-danger" > Cierre </a>';
 
-		        		$btn_acumular = '<button href="'.url('vtas_pos_acumular').'/'.$pdv->id.'" class="btn btn-xs btn-warning" id="btn_acumular" > Acumular </button>';
+		        		$btn_acumular = '<button class="btn btn-xs btn-warning" id="btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  > Acumular </button>';
 
-		        		$btn_contabilizar = '<button href="'.url('vtas_pos_contabilizar').'/'.$pdv->id.'" class="btn btn-xs btn-info" id="btn_acumular" data-pdv_id="'.$pdv->id.'" > Contabilizar  </button>';
+		        		$btn_contabilizar = '<button href="'.url('vtas_pos_contabilizar').'/'.$pdv->id.'" class="btn btn-xs btn-info" id="btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'" > Contabilizar </button>';
 
 		        		$color = 'red';
 
@@ -184,6 +184,31 @@
 
 	<script type="text/javascript">
 		$(document).ready(function(){
+
+			$("#btn_acumular").click(function(event){
+
+		        $("#myModal").modal({backdrop: "static"});
+		        $("#div_spin").show();
+		        $(".btn_edit_modal").hide();
+		        $(".btn_save_modal").hide();
+
+		        $('#contenido_modal').html( '<h1> Acumulando facturas POS... </h1>' );
+
+		        var url = "{{url('pos_factura_acumular')}}" + "/" + $(this).attr('data-pdv_id');
+
+				$.get( url )
+					.done(function( data ) {
+
+		                $('#contenido_modal').html( '<h1>Acumulación com,pletada exitosamente. </h1>' );
+
+		                $("#div_spin").hide();
+
+		                location.reload();
+
+					});		        
+		    });
+
+
 
 			$("#btn_contabilizar").click(function(event){
 
