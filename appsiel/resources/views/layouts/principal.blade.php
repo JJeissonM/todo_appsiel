@@ -231,6 +231,10 @@
 	<!-- Select2 -->
 	<script src="{{ asset('assets/bower_components/select2/dist/js/select2.full.min.js')}}"></script>
 
+	<!-- 
+	<script src="https://unpkg.com/jspdf@ latest/dist/jspdf.min.js"></script>
+	-->
+
 	<script>
 		var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
 		function validar_requeridos() {

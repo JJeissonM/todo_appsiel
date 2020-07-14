@@ -154,9 +154,9 @@ class FacturaPosController extends TransaccionController
 
         $plantilla_factura = $this->generar_plantilla_factura( $pdv );
 
-        echo $plantilla_factura;
+        //echo $plantilla_factura;
 
-        //return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura') );
+        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura') );
     }
 
     /**
@@ -178,7 +178,7 @@ class FacturaPosController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
-        return $doc_encabezado->id;
+        return $doc_encabezado->consecutivo;
     }
 
 

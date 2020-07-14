@@ -27,7 +27,7 @@
         }
     </style>
 </head>
-<body onload="window.print()">
+<body>
     <?php        
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
@@ -107,24 +107,24 @@
         <tbody>
         </tbody>
         <tfoot>
-            <tr>
+            <tr style="font-weight: bold;">
                 <td></td>
                 <td colspan="2" style="text-align: right;"> Total factura: </td>
-                <td> $ <div class="lbl_total_factura" style="display: inline;"> </div>
+                <td> <div class="lbl_total_factura" style="display: inline;"> </div>
     </div> </td>
             </tr>
         </tfoot>
     </table>
 
     <table style="width: 100%;" class="table table-bordered">
-        <thead>
+        <!-- <thead>
             <tr>
                 <th>Tipo producto</th>
                 <th>Vlr. Compra</th>
                 <th>Base IVA</th>
                 <th>Vlr. IVA</th>
             </tr>            
-        </thead>
+        </thead> -->
         <tbody>
             <tr>
                 <td colspan="4">
@@ -161,10 +161,6 @@
     </table>
     
     <br><br>
-
-    <script type="text/javascript">
-     window.onload = function() { window.print(); }
-    </script>
 
 </body>
 

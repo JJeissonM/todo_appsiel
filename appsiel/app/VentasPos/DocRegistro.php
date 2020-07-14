@@ -21,8 +21,8 @@ class DocRegistro extends Model
 
     public $campos_visibles_linea_registro = [ 
     											['&nbsp;','10px'],
-    											['Item','280px'],
-                                                ['Cantidad','80px'],
+    											['Item','250px'],
+                                                ['Cantidad','150px'],
                                                 ['Precio Unit.','150px'],
                                                 ['Dcto.','150px'],
                                                 ['IVA','50px'],
