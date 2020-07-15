@@ -39,6 +39,10 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    /*public function roles(){
+        return $this->hasMany(UserHasRole::class,'user_id','id');
+    }*/
+
     public function foros()
     {
         return $this->hasMany(Foro::class);
@@ -74,7 +78,6 @@ class User extends Authenticatable
         //return $this->hasOne('App\Core\Empresa');
         return $this->belongsTo('App\Core\Empresa');
     }
-
     public static function crear_y_asignar_role( $name, $email, $role_id)
     {
         $user = User::create([
