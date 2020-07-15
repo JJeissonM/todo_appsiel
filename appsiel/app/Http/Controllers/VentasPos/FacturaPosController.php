@@ -54,7 +54,8 @@ use App\Ventas\Cliente;
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
-use App\Ventas\NotaCredito;
+
+use App\Ventas\VtasMovimiento;
 
 use App\CxC\DocumentosPendientes;
 use App\CxC\CxcMovimiento;
@@ -150,7 +151,13 @@ class FacturaPosController extends TransaccionController
         $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id );
         $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id );
 
-        return view( 'ventas_pos.create', compact('form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id'));
+        $contenido_modal = View::make('ventas_pos.lista_items',compact( 'productos') )->render();
+
+        $plantilla_factura = $this->generar_plantilla_factura( $pdv );
+
+        //echo $plantilla_factura;
+
+        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura') );
     }
 
     /**
@@ -172,7 +179,7 @@ class FacturaPosController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
-        return $doc_encabezado->id;
+        return $doc_encabezado->consecutivo;
     }
 
 
@@ -277,8 +284,7 @@ class FacturaPosController extends TransaccionController
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
-        return $pdf->stream( $this->doc_encabezado->documento_transaccion_descripcion.' - '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
-        
+        return $pdf->stream( $this->doc_encabezado->documento_transaccion_descripcion.' - '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');        
     }
 
 
@@ -301,6 +307,21 @@ class FacturaPosController extends TransaccionController
         $etiquetas = $this->get_etiquetas();
 
         return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas' ) )->render();
+    }
+
+
+
+    public function generar_plantilla_factura( $pdv )
+    {
+        $this->set_variables_globales();
+
+        $resolucion = ResolucionFacturacion::where( 'tipo_doc_app_id', $pdv->tipo_doc_app_default_id )->where('estado','Activo')->get()->last();
+
+        $empresa = $this->empresa;
+
+        $etiquetas = $this->get_etiquetas();
+
+        return View::make( 'ventas_pos.plantilla_factura', compact( 'empresa', 'resolucion', 'etiquetas', 'pdv' ) )->render();
     }
 
     /*
@@ -365,16 +386,89 @@ class FacturaPosController extends TransaccionController
     }
 
 
-    public function acumula( $pdv_id )
+    public function acumular( $pdv_id )
     {
-        $documento_vista = $this->generar_documento_vista( $id, 'ventas.formatos_impresion.pos' );
+        $encabezados_documentos = FacturaPos::where('pdv_id',$pdv_id)->where('estado','Pendiente')->get();
 
-        // Se prepara el PDF
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
+        foreach ($encabezados_documentos as $factura)
+        {
+            $lineas_registros = DocRegistro::where('vtas_pos_doc_encabezado_id',$factura->id)->get();
 
-        return $pdf->stream( $this->doc_encabezado->documento_transaccion_descripcion.' - '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
+            foreach ($lineas_registros as $linea)
+            {
+                $datos = $factura->toArray() + $linea->toArray();
+
+                // Falta Movimientos y Documentos de Inventarios
+                /*
+                    
+                */
+
+
+                // Movimiento de Ventas
+                $datos['estado'] = 'Activo';
+                VtasMovimiento::create( $datos );
+
+                $linea->estado ='Acumulado';
+                $linea->save();
+
+                // Actualiza Movimiento POS
+                $movimiento_pos = Movimiento::where('pdv_id', $datos['pdv_id'])
+                                                ->where('core_tipo_transaccion_id', $datos['core_tipo_transaccion_id'])
+                                                ->where('core_tipo_doc_app_id', $datos['core_tipo_doc_app_id'])
+                                                ->where('consecutivo', $datos['consecutivo'])
+                                                ->get()
+                                                ->first();
+
+                $movimiento_pos->estado ='Acumulado';
+                $movimiento_pos->save();
+            }
+
+            // Movimiento de Tesoreria ó CxC
+            $datos['estado'] = 'Activo';
+            FacturaPosController::crear_registro_pago( $factura->forma_pago, $datos, $factura->valor_total, $factura->descripcion );
+
+            $factura->estado ='Acumulado';
+            $factura->save();
+        }
+
+        return 1;
         
+    }
+
+    public static function crear_registro_pago( $forma_pago, $datos, $total_documento, $detalle_operacion )
+    {
+        /*
+            WARNING. Esto debe ser un parámetro de la configuración. Si se quiere llevar la factura contado a la caja directamente o si se causa una cuenta por cobrar
+        */
+        
+        // Cargar la cuenta por cobrar (CxC)
+        if ( $forma_pago == 'credito')
+        {
+            $datos['modelo_referencia_tercero_index'] = 'App\Ventas\Cliente';
+            $datos['referencia_tercero_id'] = $datos['cliente_id'];
+            $datos['valor_documento'] = $total_documento;
+            $datos['valor_pagado'] = 0;
+            $datos['saldo_pendiente'] = $total_documento;
+            $datos['estado'] = 'Pendiente';
+            DocumentosPendientes::create( $datos );
+        }
+        
+        // Agregar el movimiento a tesorería
+        if ( $forma_pago == 'contado')
+        {
+            // WARNING: La caja la debe tomar de la caja por defecto asociada al usuario,
+            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
+            
+            $pdv = Pdv::find( $datos['pdv_id'] );
+
+            $caja = TesoCaja::find( $pdv->caja_default_id );
+            // El motivo lo debe traer de unparámetro de la configuración
+            $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
+            $datos['teso_caja_id'] = $caja->id;
+            $datos['teso_cuenta_bancaria_id'] = 0;
+            $datos['valor_movimiento'] = $total_documento;
+            TesoMovimiento::create( $datos );
+        }
     }
 
     public function get_etiquetas()

@@ -84,7 +84,6 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 		<input type="hidden" name="inv_bodega_id" value="{{$proveedor->inv_bodega_id}}" />
 		<table class="table table-bordered table-striped">
 			{{ Form::bsTableHeader(['Cód.','Producto','Precio','IVA','Cantidad','Total']) }}
-			</thead>
 			<tbody>
 				<?php
 

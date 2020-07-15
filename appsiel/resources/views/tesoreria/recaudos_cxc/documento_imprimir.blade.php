@@ -78,7 +78,6 @@
     
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Tercero','Documento','Fecha','Detalle','Abono','Saldo']) }}
-        </thead>
         <tbody>
             <?php 
             

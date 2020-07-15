@@ -58,7 +58,6 @@ Formato: {{ Form::select('formato_impresion_id',['1'=>'POS','2'=>'Estándar'],nu
 	<input type="hidden" name="core_empresa_id" value="{{$doc_encabezado->core_empresa_id}}" />
 	<table class="table table-bordered table-striped">
 		{{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
-		</thead>
 		<tbody>
 			<?php
 			$i = 1;

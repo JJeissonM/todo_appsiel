@@ -7,7 +7,6 @@
 @endif
 <table class="table table-bordered table-striped">
     {{ Form::bsTableHeader(['Cód.','Producto','Precio','IVA','Cantidad','Total', 'Motivo','Cantidad a devolver']) }}
-    </thead>
     <tbody>
         @foreach($doc_registros as $linea )
             <?php 

@@ -35,7 +35,6 @@ class Pdv extends Model
     }
 
 
-
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 	
     public $encabezado_tabla = ['Descripción', 'Bodega', 'Caja', 'Cajero', 'Cliente', 'Tipo Doc.', 'Estado', 'Acción'];

@@ -74,7 +74,7 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 
-			$('input').focus( );			
+			$('input').focus( );	
 
 		});
 	</script>

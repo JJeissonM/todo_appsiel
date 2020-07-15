@@ -85,7 +85,6 @@
 
     <table style="width: 100%;">
         {{ Form::bsTableHeader(['línea','Producto','Cantidad']) }}
-        </thead>
         <tbody>
 
             <?php

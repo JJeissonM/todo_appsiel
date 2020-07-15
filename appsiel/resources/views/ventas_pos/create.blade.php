@@ -241,9 +241,7 @@
 				<div class="valor_total_descuento"></div>
 			</td>
 			<td> 
-				<label class="checkbox-inline" title="Activar ingreso por código de barras">
-					<input type="checkbox" id="modo_ingreso" name="modo_ingreso" value="false"><i class="fa fa-barcode"></i>
-				</label>
+				<button id="btn_listar_items" style="border: 0; background: transparent;"> <i class="fa fa-btn fa-search"></i> </button>
 			</td>
 			<td>
 				{{ Form::text( 'inv_producto_id', null, [ 'class' => 'form-control', 'id' => 'inv_producto_id' ] ) }}
@@ -266,6 +264,13 @@
 			<td></td>
 		</tr>
 	</table>
+
+	@include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
+
+	<div id="div_plantilla_factura" style="display: none;">
+		{!! $plantilla_factura !!}
+	</div>
+
 @endsection
 
 @section('scripts')
@@ -320,10 +325,39 @@
 		return descuento;
 	}
 
-	function ventana_imprimir( doc_encabezado_id )
+	function ventana_imprimir()
 	{
-		window.open( "{{ url('pos_factura_imprimir') }}" + "/" + doc_encabezado_id + "?id=" + getParameterByName('id') + "&id_modelo=" + getParameterByName('id_modelo') + "&id_transaccion=" + getParameterByName('id_transaccion') , "Impresión de factura POS", "width=800,height=600,menubar=no" );
-		//window.print();
+
+		//window.open( "{ { url('pos_factura_imprimir') }}" + "/" + doc_encabezado_id + "?id=" + getParameterByName('id') + "&id_modelo=" + getParameterByName('id_modelo') + "&id_transaccion=" + getParameterByName('id_transaccion') , "Impresión de factura POS", "width=800,height=600,menubar=no" );
+		
+		ventana_factura = window.open( "" , "Impresión de factura POS", "width=400,height=600,menubar=no" );
+
+		ventana_factura.document.write( $('#div_plantilla_factura').html() );
+
+		ventana_factura.print();
+
+		location.reload();
+		//ventana_factura.document.write('<scr'+'ipt>alert("Here\'s your alert()!");</scr'+'ipt>');
+
+	}
+
+	function mandar_codigo( item_id )
+	{
+		$('#myModal').modal("hide");
+
+		var producto = productos.find( item => item.id === parseInt( item_id ) );
+
+		tasa_impuesto = producto.tasa_impuesto;
+		inv_producto_id = producto.id;
+		unidad_medida = producto.unidad_medida1;
+
+		$('#inv_producto_id').val( producto.descripcion );
+		$('#precio_unitario').val( get_precio( producto.id ) );
+		$('#tasa_descuento').val( get_descuento( producto.id ) );
+
+		$('#cantidad').select();
+
+
 	}
 
 	$(document).ready(function(){
@@ -739,8 +773,6 @@
 				valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
 				valor_total_descuento = valor_unitario_descuento * cantidad;
 
-				console.log( [ precio_unitario, tasa_descuento, valor_unitario_descuento, valor_total_descuento] );
-
 			}
 
 
@@ -806,8 +838,6 @@
 					.done(function( data ) {
 						precios = data[0];
 						descuentos = data[1];
-
-						console.log( [ precios, descuentos ] );
 
 					});
                 
@@ -917,29 +947,29 @@
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td> <span style="background-color:#F7B2A3;">'+ inv_producto_id + "</span> " + $('#inv_producto_id').val() + ' (' + unidad_medida + ')' + '</td>';
+				celdas[ num_celda ] = '<td> <span style="background-color:#F7B2A3;">'+ inv_producto_id + '</span> <div class="lbl_producto_descripcion" style="display: inline;"> ' + $('#inv_producto_id').val() + ' </div> </td>';
 				
 				num_celda++;
 
 				//celdas[ num_celda ] = '<td>' + cantidad + ' </td>';
-				celdas[ num_celda ] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + cantidad + '</div> </div> </td>';
+				celdas[ num_celda ] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + cantidad + '</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">' + unidad_medida + '</div>)' + ' </td>';
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td> '+ '$ ' + new Intl.NumberFormat("de-DE").format( precio_unitario ) + '</td>';
+				celdas[ num_celda ] = '<td> <div class="lbl_precio_unitario" style="display: inline;">'+ '$ ' + new Intl.NumberFormat("de-DE").format( precio_unitario ) + '</div></td>';
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td>'+ tasa_descuento + '% ( $<div class="lbl_valor_total_descuento">' + new Intl.NumberFormat("de-DE").format( valor_total_descuento ) + '</div> ) </td>';
+				celdas[ num_celda ] = '<td>'+ tasa_descuento + '% ( $<div class="lbl_valor_total_descuento" style="display: inline;">' + new Intl.NumberFormat("de-DE").format( valor_total_descuento ) + '</div> ) </td>';
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td>'+ tasa_impuesto + '</td>';
+				celdas[ num_celda ] = '<td><div class="lbl_tasa_impuesto" style="display: inline;">'+ tasa_impuesto + '</div></td>';
 				
 				num_celda++;
 
 				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
-				celdas[ num_celda ] = '<td> '+ '$ <div class="lbl_precio_total">' + new Intl.NumberFormat("de-DE").format( precio_total ) + ' </div> </td> <td>' + btn_borrar + '</td>';
+				celdas[ num_celda ] = '<td> <div class="lbl_precio_total" style="display: inline;">'+ '$ ' + new Intl.NumberFormat("de-DE").format( precio_total ) + ' </div> </td> <td>' + btn_borrar + '</td>';
 
 				var cantidad_celdas = celdas.length;
 				var string_celdas = '';
@@ -1022,14 +1052,41 @@
 				setCookie( 'ultimo_valor_total_factura', total_factura, 1);
 				setCookie( 'ultimo_valor_efectivo_recibido',  parseFloat( $('#efectivo_recibido').val() ), 1);
 
-				$.post(url, data, function( doc_encabezado_id ){
-					location.reload();
-					ventana_imprimir(doc_encabezado_id);
+				$.post(url, data, function( doc_encabezado_consecutivo ){
+					$('.lbl_consecutivo_doc_encabezado').text( doc_encabezado_consecutivo );
+					llenar_tabla_productos_facturados();
+					//location.reload();
+					ventana_imprimir();
 				});
 
 		 		// Enviar formulario
 				//$('#form_create').submit();					
 			});
+
+			function llenar_tabla_productos_facturados()
+			{
+				var linea_factura;
+				var lbl_total_factura = 0;
+
+				$('.linea_registro').each(function( ){
+
+					linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> '+ $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text()  + '  (' + $(this).find('.lbl_precio_unitario').text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '% </td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
+
+	                if( parseFloat( $(this).find('.valor_total_descuento').text() )  != 0 )
+	                {
+	                	linea_factura += '<tr> <td colspan="3" style="text-align: right;">Dcto.</td> <td> ( -$' + new Intl.NumberFormat("de-DE").format( parseFloat( $(this).find('.valor_total_descuento').text() ) ) + ' ) </td> </tr>';
+	                }
+
+	                $('#tabla_productos_facturados').find('tbody:last').append( linea_factura );
+
+	                lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
+
+				});
+
+				$('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( lbl_total_factura ) );
+				$('.lbl_total_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( $('#efectivo_recibido').val() ) ) );
+				$('.lbl_total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_cambio ) );
+			}
 
 			function reset_campos_formulario()
 			{
@@ -1196,6 +1253,18 @@
 				}
 			});
 
+
+			$("#btn_listar_items").click(function(event){
+
+		        $("#myModal").modal({keyboard: true});
+		        $(".btn_edit_modal").hide();
+		        $(".btn_edit_modal").hide();
+		        $('#myTable_filter').find('input').css( "border", "3px double red" );
+		        $('#myTable_filter').find('input').select();
+
+		    });
+
+
 			function guardar_valor_nuevo( fila )
 			{
 				var valor_nuevo = document.getElementById('valor_nuevo').value;
@@ -1225,8 +1294,6 @@
 				valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
 				valor_total_descuento = valor_unitario_descuento * cantidad;
 
-				console.log( [precio_unitario, base_impuesto_unitario, valor_unitario_descuento, cantidad] );
-
 				precio_total = ( precio_unitario - valor_unitario_descuento ) * cantidad;
 
 			    fila.find('.cantidad').text( cantidad );
@@ -1241,9 +1308,6 @@
 
 			    fila.find('.lbl_precio_total').text( new Intl.NumberFormat("de-DE").format( precio_total.toFixed(2) ) );
 			}
-
-
-
 
 			function setCookie(cname, cvalue, exdays) {
 			  var d = new Date();

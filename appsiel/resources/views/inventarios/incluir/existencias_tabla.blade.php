@@ -1,6 +1,5 @@
 <table class="table table-bordered">
     {{ Form::bsTableHeader(['Cód.','Producto','Cantidad','Costo Prom.','Costo Total']) }}
-    </thead>
     <tbody>
         <?php 
         $total_cantidad=0;

@@ -1,7 +1,6 @@
 <div>
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cantidad','Precio','Total bruto','Sub-total <br> (Sin IVA)','% Dcto.','Total Dcto.','IVA','Total IVA','Total','Acción']) }}
-        </thead>
         <tbody>
             <?php 
             

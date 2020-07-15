@@ -4,7 +4,6 @@
 
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Cód.','Producto','Cantidad IF','Costo Total IF','Cantidad sistema','Costo Total sistema','DIF. Cantidad','DIF. Total sistema','']) }}
-        </thead>
         <tbody>
             <?php 
             
