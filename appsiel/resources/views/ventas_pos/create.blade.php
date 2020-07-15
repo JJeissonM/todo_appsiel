@@ -77,6 +77,12 @@
 				<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="{{$pdv->cliente->clase_cliente_id}}" required="required">
 
 				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$pdv->cliente->core_tercero_id}}" required="required">
+
+				<input type="hidden" name="cliente_descripcion" id="cliente_descripcion" value="{{$pdv->cliente->tercero->descripcion}}" required="required">
+				{{ Form::bsText( 'numero_identificacion', $pdv->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
+				{{ Form::bsText( 'direccion1', $pdv->cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
+				{{ Form::bsText( 'telefono1', $pdv->cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
+
 				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{$pdv->cliente->lista_precios_id}}" required="required">
 				<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="{{$pdv->cliente->lista_descuentos_id}}" required="required">
 				<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="{{$pdv->cliente->liquida_impuestos}}" required="required">
@@ -100,11 +106,10 @@
 				
 			{{ Form::close() }}
 
-			<br/>
+			
 
 			<div class="container-fluid">
-				<div class="row">
-					
+				<div class="row">					
 					<div class="col-md-8">
 						{!! $tabla->dibujar() !!}
 						Productos ingresados: <span id="numero_lineas"> 0 </span>
@@ -804,6 +809,12 @@
                 $('#inv_bodega_id').val( item_sugerencia.attr('data-inv_bodega_id') );
 
 
+                $('#cliente_descripcion').val( item_sugerencia.attr('data-nombre_cliente') );
+                $('#numero_identificacion').val( item_sugerencia.attr('data-numero_identificacion') );
+                $('#direccion1').val( item_sugerencia.attr('data-direccion1') );
+                $('#telefono1').val( item_sugerencia.attr('data-telefono1') );
+
+
                 var forma_pago = 'contado';
                 var dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
                 if ( dias_plazo > 0 ) { forma_pago = 'credito'; }
@@ -1088,7 +1099,6 @@
 				$('.lbl_total_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( $('#efectivo_recibido').val() ) ) );
 				$('.lbl_total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( redonder_a_centena( total_cambio ) ) );
 
-
 				if( $('#forma_pago').val() == 'credito' )
 				{
 					$('#tr_fecha_vencimiento').show();
@@ -1096,8 +1106,11 @@
 					$('.lbl_fecha_vencimiento').text( $('#fecha_vencimiento').val() );
 				}
 
+				$('.lbl_cliente_descripcion').text( $('#cliente_descripcion').val() );
+				$('.lbl_cliente_nit').text( $('#numero_identificacion').val() );
+				$('.lbl_cliente_direccion').text( $('#direccion1').val() );
+				$('.lbl_cliente_telefono').text( $('#telefono1').val() );
 				$('.lbl_atendido_por').text( $('#vendedor_id option:selected').text() );
-
 				$('.lbl_descripcion_doc_encabezado').text( $('#descripcion').val() );
 
 			}

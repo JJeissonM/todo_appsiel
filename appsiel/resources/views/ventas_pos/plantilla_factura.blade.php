@@ -94,15 +94,34 @@
     </div>
 
     <div style="border: solid 1px #ddd; font-size: 1.3em;">
-        <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
-        <br>
-        <b>NIT:</b> <div class="lbl_cliente_nit_telefono" style="display: inline;"> {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}  |  <b>Teléfono:</b> {{ $pdv->cliente->tercero->telefono1 }}</div> 
-        <br>
-        <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"></div> {{ $pdv->cliente->tercero->direccion1 }}
-        <br>
-        <b>Atendido por: &nbsp;&nbsp;</b> <div class="lbl_atendido_por" style="display: inline;"> {{ $pdv->cliente->vendedor->tercero->descripcion }} </div>
-        <br>
-        <b>Detalle: &nbsp;&nbsp;</b> <div class="lbl_descripcion_doc_encabezado" style="display: inline;"> </div>
+        <table width="100%">
+            <tr>
+                <td>
+                    <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
+                </td>
+                <td>
+                    <b>NIT/CC:</b> <div class="lbl_cliente_nit" style="display: inline;"> {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}  </div> 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"></div> {{ $pdv->cliente->tercero->direccion1 }}
+                </td>
+                <td>
+                    <b>Teléfono:</b> <div class="lbl_cliente_telefono" style="display: inline;"> {{ $pdv->cliente->tercero->telefono1 }} </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <b>Atendido por: &nbsp;&nbsp;</b> <div class="lbl_atendido_por" style="display: inline;"> {{ $pdv->cliente->vendedor->tercero->descripcion }} </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <b>Detalle: &nbsp;&nbsp;</b> <div class="lbl_descripcion_doc_encabezado" style="display: inline;"> </div>
+                </td>
+            </tr>
+        </table>        
     </div>
 
     <table style="width: 100%;" id="tabla_productos_facturados">
