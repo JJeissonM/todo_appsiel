@@ -124,7 +124,9 @@ class FacturaPosController extends TransaccionController
                     break;
 
                 case 'vendedor_id':
-                    $lista_campos[$i]['opciones'] = [ $pdv->cliente->vendedor->id => $pdv->cliente->vendedor->tercero->descripcion];
+                    array_shift( $lista_campos[$i]['opciones'] );
+                    $lista_campos[$i]['value'] = [ $pdv->cliente->vendedor_id ];
+                    //$lista_campos[$i]['opciones'] = [ $pdv->cliente->vendedor->id => $pdv->cliente->vendedor->tercero->descripcion];
                     break;
 
                 case 'fecha_vencimiento':

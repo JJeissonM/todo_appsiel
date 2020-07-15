@@ -620,8 +620,11 @@
 			    				$('#div_total_cambio').attr('class','alert alert-danger');
 			    			}
 
-			    			$('#total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_cambio.toFixed(2) ) );
-			    			$('#valor_total_cambio').val( total_cambio );
+			    			// Label
+			    			$('#total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( redonder_a_centena(total_cambio) ) );
+
+			    			// Input hidden
+			    			$('#valor_total_cambio').val( redonder_a_centena( total_cambio ) );
 
 			    			break;
 			    	}
@@ -713,8 +716,6 @@
 						$('#tasa_descuento').focus();			
 					}
 
-
-
 				}else{
 
 					$(this).focus();
@@ -733,7 +734,6 @@
 	            valor_impuesto_unitario = precio_venta - base_impuesto_unitario;
 
 			}
-
 
 
             $('#tasa_descuento').keyup(function(){
@@ -1074,7 +1074,7 @@
 
 	                if( parseFloat( $(this).find('.valor_total_descuento').text() )  != 0 )
 	                {
-	                	linea_factura += '<tr> <td colspan="3" style="text-align: right;">Dcto.</td> <td> ( -$' + new Intl.NumberFormat("de-DE").format( parseFloat( $(this).find('.valor_total_descuento').text() ) ) + ' ) </td> </tr>';
+	                	linea_factura += '<tr> <td colspan="2" style="text-align: right;">Dcto.</td> <td colspan="2"> ( -$' + new Intl.NumberFormat("de-DE").format( parseFloat( $(this).find('.valor_total_descuento').text() ) ) + ' ) </td> </tr>';
 	                }
 
 	                $('#tabla_productos_facturados').find('tbody:last').append( linea_factura );
@@ -1083,9 +1083,58 @@
 
 				});
 
-				$('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( lbl_total_factura ) );
+
+				$('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( redonder_a_centena(lbl_total_factura ) ) );
 				$('.lbl_total_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( $('#efectivo_recibido').val() ) ) );
-				$('.lbl_total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_cambio ) );
+				$('.lbl_total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( redonder_a_centena( total_cambio ) ) );
+
+
+				if( $('#forma_pago').val() == 'credito' )
+				{
+					$('#tr_fecha_vencimiento').show();
+					$('.lbl_condicion_pago').text( $('#forma_pago').val() );
+					$('.lbl_fecha_vencimiento').text( $('#fecha_vencimiento').val() );
+				}
+
+				$('.lbl_atendido_por').text( $('#vendedor_id option:selected').text() );
+
+				$('.lbl_descripcion_doc_encabezado').text( $('#descripcion').val() );
+
+			}
+
+			function redonder_a_centena( numero, aproximacion_superior = false )
+			{
+				var millones = 0;
+				var millares = 0;
+				var centenas = 0;
+
+				var saldo1, saldo2, saldo3;
+
+				if ( numero > 999999.99999 )
+				{
+					// se obtiene solo la parte entera
+					millones = Math.trunc( numero / 1000000 ) * 1000000;
+				}
+
+				saldo1 = numero - millones;
+
+				if ( saldo1 > 999.99999 )
+				{
+					// se obtiene solo la parte entera
+					millares = Math.trunc( saldo1 / 1000 ) * 1000;
+				}
+
+				saldo2 = saldo1 - millares;
+
+				if ( saldo2 > 99.99999 )
+				{
+					// se obtiene solo la parte entera
+					//centenas = Math.trunc( saldo2 / 100 ) * 100;
+					centenas = ( saldo2 / 100 ).toFixed(0) * 100;
+				}
+
+				return ( millones + millares + centenas );
+
 			}
 
 			function reset_campos_formulario()
@@ -1193,9 +1242,10 @@
 				// Total impuestos (Sumatoria de valor_impuesto por cantidad)
 				$('#total_impuestos').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_impuestos.toFixed(2) ) );
 
-				// Total factura  (Sumatoria de precio_total)
-				$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_factura.toFixed(2) ) );
+				// label Total factura  (Sumatoria de precio_total)
+				$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( redonder_a_centena( total_factura ) ) );
 				
+				// input hidden
 				$('#valor_total_factura').val( total_factura );
 			}
 
@@ -1339,9 +1389,9 @@
 
 			  if( ultimo_valor_total_factura > 0 )
 			  {
-			  	$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( ultimo_valor_total_factura.toFixed(2) ) );
+			  	$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( redonder_a_centena( ultimo_valor_total_factura ) ) );
 			  	$('#lbl_efectivo_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( ultimo_valor_efectivo_recibido.toFixed(2) ) );
-			  	$('#total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( ultimo_valor_total_cambio.toFixed(2) ) );
+			  	$('#total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( redonder_a_centena( ultimo_valor_total_cambio) ) );
 			  	$("html, body").animate( { scrollTop: $(document).height()+"px"} );
 			  }
 
