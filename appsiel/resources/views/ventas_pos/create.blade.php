@@ -1084,6 +1084,8 @@
 				});
 
 				$('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( lbl_total_factura ) );
+				$('.lbl_total_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( $('#efectivo_recibido').val() ) ) );
+				$('.lbl_total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_cambio ) );
 			}
 
 			function reset_campos_formulario()

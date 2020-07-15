@@ -110,8 +110,23 @@
             <tr style="font-weight: bold;">
                 <td></td>
                 <td colspan="2" style="text-align: right;"> Total factura: </td>
-                <td> <div class="lbl_total_factura" style="display: inline;"> </div>
-    </div> </td>
+                <td> 
+                    <div class="lbl_total_factura" style="display: inline;"> </div>
+                </td>
+            </tr>
+            <tr style="font-weight: bold;">
+                <td></td>
+                <td colspan="2" style="text-align: right;"> Recibido: </td>
+                <td> 
+                    <div class="lbl_total_recibido" style="display: inline;"> </div>
+                </td>
+            </tr>
+            <tr style="font-weight: bold;">
+                <td></td>
+                <td colspan="2" style="text-align: right;"> Cambio: </td>
+                <td> 
+                    <div class="lbl_total_cambio" style="display: inline;"> </div>
+                </td>
             </tr>
         </tfoot>
     </table>
