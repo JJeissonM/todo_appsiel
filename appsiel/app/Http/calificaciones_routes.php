@@ -36,6 +36,7 @@ Route::post('calificaciones/cuadro_honor_estudiantes','Calificaciones\ReporteCon
 Route::post('calificaciones/promedio_acumulado_periodos','Calificaciones\ReporteController@promedio_acumulado_periodos');
 Route::post('calificaciones/promedio_proyectado_asignaturas','Calificaciones\ReporteController@promedio_proyectado_asignaturas');
 Route::post('calificaciones/promedio_consolidado_asignaturas','Calificaciones\ReporteController@promedio_consolidado_asignaturas');
+Route::post('calificaciones_consulta_notas_auxiliares','Calificaciones\ReporteController@consulta_notas_auxiliares');
 
 Route::post('cali_repo_certificado_notas','Calificaciones\ReporteController@certificado_notas');
 
@@ -81,6 +82,7 @@ Route::get('calificaciones_cambiar_intensidad_horaria_asignatura/{periodo_lectiv
 Route::get('calificaciones/asignar_asignaturas', 'Calificaciones\PensumController@asignar_asignaturas');
 Route::post('calificaciones/guardar_asignacion_asignatura', 'Calificaciones\PensumController@guardar_asignacion_asignatura');
 Route::get('calificaciones/eliminar_asignacion_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}', 'Calificaciones\PensumController@eliminar_asignacion_asignatura');
+Route::get('calificaciones_opciones_select_asignaturas_del_curso/{curso_id}/{area_id}/{periodo_lectivo_id}/{estado_asignaturas}', 'Calificaciones\PensumController@opciones_select_asignaturas_del_curso');
 
 // Listado de asignaciones
 Route::get('calificaciones/revisar_asignaciones', 'Calificaciones\PensumController@revisar_asignaciones');

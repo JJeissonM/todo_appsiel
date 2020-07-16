@@ -150,25 +150,54 @@
 			$('#curso_id').on('change',function()
 			{
 
-				$('#estudiante_id').html('<option value=""></option>');
+				if( $('#estudiante_id').html() !== undefined )
+				{
+					$('#estudiante_id').html('<option value=""></option>');
 
-				if ( $(this).val() == '') { return false; }
+					if ( $(this).val() == '') { return false; }
 
-	    		$('#div_cargando').show();
+		    		$('#div_cargando').show();
 
-				var url = "{{ url('get_estudiantes_matriculados') }}" + "/" + $('#periodo_lectivo_id').val() + "/" + $('#curso_id').val();
+					var url = "{{ url('get_estudiantes_matriculados') }}" + "/" + $('#periodo_lectivo_id').val() + "/" + $('#curso_id').val();
 
-				$.ajax({
-		        	url: url,
-		        	type: 'get',
-		        	success: function(datos){
+					$.ajax({
+			        	url: url,
+			        	type: 'get',
+			        	success: function(datos){
 
-		        		$('#div_cargando').hide();
-	    				
-	    				$('#estudiante_id').html( datos );
-						$('#estudiante_id').focus();
-			        }
-			    });
+			        		$('#div_cargando').hide();
+		    				
+		    				$('#estudiante_id').html( datos );
+							$('#estudiante_id').focus();
+				        }
+				    });
+				}else{
+
+					// Debe haber Select Asignatura
+					$('#asignatura_id').html('<option value=""></option>');
+
+					if ( $(this).val() == '') { return false; }
+
+		    		$('#div_cargando').show();
+
+					var url = "{{ url('calificaciones_opciones_select_asignaturas_del_curso') }}" + "/" + $('#curso_id').val() + "/null" + "/" + $('#periodo_lectivo_id').val() + "/Activo";
+
+					//console.log( url );
+
+					$.ajax({
+			        	url: url,
+			        	type: 'get',
+			        	success: function(datos){
+
+			        		$('#div_cargando').hide();
+		    				
+		    				$('#asignatura_id').html( datos );
+							$('#asignatura_id').focus();
+				        }
+				    });
+				}
+
+					
 			});
 
 

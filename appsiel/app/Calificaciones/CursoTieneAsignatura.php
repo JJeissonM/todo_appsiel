@@ -20,8 +20,6 @@ class CursoTieneAsignatura extends Model
 
     protected $fillable = ['periodo_lectivo_id','curso_id','asignatura_id','intensidad_horaria','orden_boletin','maneja_calificacion'];
 
-
-
     public static function asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas = null )
     {
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
@@ -61,7 +59,7 @@ class CursoTieneAsignatura extends Model
         {
             $array_wheres = array_merge( $array_wheres, [ 'sga_asignaturas.estado' => 'Activo' ] );
         }else{
-            // SiNo filtra por estado
+            $array_wheres = array_merge( $array_wheres, [ 'sga_asignaturas.estado' => $estado_asignaturas ] );
         }
 
         return CursoTieneAsignatura::leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_curso_tiene_asignaturas.periodo_lectivo_id')
