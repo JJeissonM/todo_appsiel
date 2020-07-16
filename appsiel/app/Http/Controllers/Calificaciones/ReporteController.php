@@ -17,6 +17,8 @@ use App\Calificaciones\CursoTieneAsignatura;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\Periodo;
 use App\Calificaciones\Calificacion;
+use App\Calificaciones\CalificacionAuxiliar;
+use App\Calificaciones\EncabezadoCalificacion;
 use App\Calificaciones\ObservacionesBoletin;
 use App\Calificaciones\EscalaValoracion;
 use App\Calificaciones\Area;
@@ -264,7 +266,7 @@ class ReporteController extends Controller
     {
         $tope_escala_valoracion_minima = EscalaValoracion::orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
 
-        $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
+        $calificaciones = CalificacionAuxiliar::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
 
         $estado_matricula = null; // Todas las matriculas. ¿Está bien así?
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, $estado_matricula );
@@ -284,6 +286,90 @@ class ReporteController extends Controller
         }
 
         $vista = View::make( 'calificaciones.incluir.promedio_consolidado_asignaturas', compact('estudiantes', 'calificaciones', 'asignaturas','curso','tope_escala_valoracion_minima','periodos','periodo_lectivo') )->render();        
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        return $vista;
+    }
+
+    /**
+     * consulta_notas_auxiliares
+     *
+     */
+    public function consulta_notas_auxiliares(Request $request)
+    {
+        $periodo = Periodo::find( $request->periodo_id );
+
+        // Warning!!!! El año se toma del periodo. Analizar si está bien.
+        $anio = explode("-",$periodo->fecha_desde)[0];
+
+        $periodo_lectivo = PeriodoLectivo::find( $periodo->periodo_lectivo_id );
+
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, null );
+
+        // Warning!!! No usar funciones de Eloquent en el controller (acoplamiento al framework) 
+        $curso = Curso::find($request->curso_id);
+        
+        $asignatura = Asignatura::find( $request->asignatura_id );
+
+        // Se crea un array con los valores de las calificaciones de cada estudiante
+        $vec_estudiantes = array();
+        $i=0;
+        foreach($estudiantes as $estudiante)
+        {
+            $vec_estudiantes[$i]['id_estudiante'] = $estudiante->id_estudiante;
+            $vec_estudiantes[$i]['nombre'] = $estudiante->nombre_completo;//." ".$estudiante->apellido2." ".$estudiante->nombres;
+            $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
+            $vec_estudiantes[$i]['id_calificacion'] = "no";
+            $vec_estudiantes[$i]['calificacion'] = 0;
+            $vec_estudiantes[$i]['logros'] = '';
+            $vec_estudiantes[$i]['id_calificacion_aux'] = "no";
+            for ($c=1; $c < 16; $c++) { 
+                $key = "C".$c;
+                $vec_estudiantes[$i][$key] = 0;
+            }
+
+            // Se verifica si cada estudiante tiene calificación creada
+            $calificacion_est = Calificacion::where(['anio'=>$anio,'id_periodo'=>$request->periodo_id,
+                                'curso_id'=>$request->curso_id,'id_asignatura'=>$request->asignatura_id,
+                                'id_estudiante'=>$estudiante->id_estudiante])
+                                ->get()
+                                ->first();
+            
+            // Si el estudiante tiene calificacion se envian los datos de esta para editar
+            if( !is_null($calificacion_est) )
+            {
+                $creado_por = $calificacion_est->creado_por;
+                $modificado_por = Auth::user()->email;
+                // Obtener la calificación auxiliar del estudiante
+                $calificacion_aux = CalificacionAuxiliar::where(['anio'=>$anio,'id_periodo'=>$request->periodo_id,
+                                'curso_id'=>$request->curso_id,'id_asignatura'=>$request->asignatura_id,
+                                'id_estudiante'=>$estudiante->id_estudiante])
+                                ->get()
+                                ->first();
+                
+                $vec_estudiantes[$i]['id_calificacion'] = $calificacion_est->id;
+                $vec_estudiantes[$i]['calificacion'] = $calificacion_est->calificacion;
+                $vec_estudiantes[$i]['logros'] = $calificacion_est->logros;
+                $vec_estudiantes[$i]['id_calificacion_aux'] = $calificacion_aux->id;
+
+                for ($c=1; $c < 16; $c++) { 
+                    $key = "C".$c;
+                    $vec_estudiantes[$i][$key] = $calificacion_aux->$key;
+                }
+
+            }
+            $i++;
+        }
+
+        $cantidad_estudiantes = count($estudiantes);
+
+        $encabezados_calificaciones = EncabezadoCalificacion::where('periodo_id', $request->periodo_id)
+                                                            ->where('curso_id', $request->curso_id)
+                                                            ->where('asignatura_id', $request->asignatura_id)
+                                                            ->get();
+
+        $vista = View::make( 'calificaciones.incluir.consulta_notas_auxiliares', compact('vec_estudiantes', 'cantidad_estudiantes', 'anio','curso','periodo','periodo_lectivo', 'asignatura', 'encabezados_calificaciones') )->render();   
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

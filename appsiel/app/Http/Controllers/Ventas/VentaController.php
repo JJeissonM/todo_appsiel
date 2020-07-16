@@ -602,7 +602,23 @@ class VentaController extends TransaccionController
                                 ->leftJoin('inv_bodegas','inv_bodegas.id','=','vtas_clientes.inv_bodega_id')
                                 ->where('vtas_clientes.estado','Activo')
                                 ->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)
-                                ->select('vtas_clientes.id AS cliente_id','vtas_clientes.liquida_impuestos','vtas_clientes.zona_id','vtas_clientes.clase_cliente_id','core_terceros.id AS core_tercero_id','core_terceros.descripcion AS nombre_cliente','core_terceros.numero_identificacion','vtas_vendedores.id AS vendedor_id','vtas_vendedores.equipo_ventas_id','inv_bodegas.id AS inv_bodega_id','vtas_condiciones_pago.dias_plazo','vtas_listas_precios_encabezados.id AS lista_precios_id','vtas_listas_dctos_encabezados.id AS lista_descuentos_id')
+                                ->select(
+                                            'vtas_clientes.id AS cliente_id',
+                                            'vtas_clientes.liquida_impuestos',
+                                            'vtas_clientes.zona_id',
+                                            'vtas_clientes.clase_cliente_id',
+                                            'core_terceros.id AS core_tercero_id',
+                                            'core_terceros.descripcion AS nombre_cliente',
+                                            'core_terceros.numero_identificacion',
+                                            'core_terceros.direccion1',
+                                            'core_terceros.telefono1',
+                                            'vtas_vendedores.id AS vendedor_id',
+                                            'vtas_vendedores.equipo_ventas_id',
+                                            'inv_bodegas.id AS inv_bodega_id',
+                                            'vtas_condiciones_pago.dias_plazo',
+                                            'vtas_listas_precios_encabezados.id AS lista_precios_id',
+                                            'vtas_listas_dctos_encabezados.id AS lista_descuentos_id'
+                                        )
                                 ->get()
                                 ->take(7);
 
@@ -622,6 +638,8 @@ class VentaController extends TransaccionController
                                 '" data-clase_cliente_id="'.$linea->clase_cliente_id.
                                 '" data-liquida_impuestos="'.$linea->liquida_impuestos.
                                 '" data-core_tercero_id="'.$linea->core_tercero_id.
+                                '" data-direccion1="'.$linea->direccion1.
+                                '" data-telefono1="'.$linea->telefono1.
                                 '" data-numero_identificacion="'.$linea->numero_identificacion.
                                 '" data-vendedor_id="'.$linea->vendedor_id.
                                 '" data-equipo_ventas_id="'.$linea->equipo_ventas_id.

@@ -8,6 +8,7 @@
             font-family: Arial, Helvetica, sans-serif;
             font-size: 10px;
         }
+
         @page {
           size: 3.15in 38.5in;
           margin: 15px;
@@ -80,6 +81,8 @@
 
             <tr id="tr_fecha_vencimiento" style="display: none;">
                 <td colspan="2">
+                    <b>Condición pago:</b> <div class="lbl_condicion_pago" style="display: inline;"></div>
+                    <br>
                     <b>Fecha vencimiento:</b> <div class="lbl_fecha_vencimiento" style="display: inline;"></div>
                 </td>
             </tr>
@@ -90,45 +93,64 @@
         Documento Anulado
     </div>
 
-    <div style="border: solid 1px #ddd;">
-        <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
-        <br>
-        <b>NIT:</b> <div class="lbl_cliente_nit_telefono" style="display: inline;"> {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}  |  <b>Teléfono:</b> {{ $pdv->cliente->tercero->telefono1 }}</div> 
-        <br>
-        <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"></div> {{ $pdv->cliente->tercero->direccion1 }}
-        <br>
-        <b>Atendido por: &nbsp;&nbsp;</b> <div class="lbl_atendido_por" style="display: inline;"> {{ $pdv->cliente->vendedor->tercero->descripcion }} </div>
-        <br>
-        <b>Detalle: &nbsp;&nbsp;</b> <div class="lbl_descripcion_doc_encabezado" style="display: inline;"> </div>
+    <div style="border: solid 1px #ddd; font-size: 1.3em;">
+        <table width="100%">
+            <tr>
+                <td>
+                    <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
+                </td>
+                <td>
+                    <b>NIT/CC:</b> <div class="lbl_cliente_nit" style="display: inline;"> {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}  </div> 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"></div> {{ $pdv->cliente->tercero->direccion1 }}
+                </td>
+                <td>
+                    <b>Teléfono:</b> <div class="lbl_cliente_telefono" style="display: inline;"> {{ $pdv->cliente->tercero->telefono1 }} </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <b>Atendido por: &nbsp;&nbsp;</b> <div class="lbl_atendido_por" style="display: inline;"> {{ $pdv->cliente->vendedor->tercero->descripcion }} </div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <b>Detalle: &nbsp;&nbsp;</b> <div class="lbl_descripcion_doc_encabezado" style="display: inline;"> </div>
+                </td>
+            </tr>
+        </table>        
     </div>
 
     <table style="width: 100%;" id="tabla_productos_facturados">
         {{ Form::bsTableHeader(['Producto','Cant. (Precio)','IVA','Total']) }}
         <tbody>
         </tbody>
-        <tfoot>
+    </table>
+
+    <table style="width: 100%;">
+        <tbody>
             <tr style="font-weight: bold;">
-                <td></td>
-                <td colspan="2" style="text-align: right;"> Total factura: </td>
-                <td> 
+                <td style="text-align: right;"> Total factura: </td>
+                <td style="text-align: right;">
                     <div class="lbl_total_factura" style="display: inline;"> </div>
                 </td>
             </tr>
             <tr style="font-weight: bold;">
-                <td></td>
-                <td colspan="2" style="text-align: right;"> Recibido: </td>
-                <td> 
+                <td style="text-align: right;"> Recibido: </td>
+                <td style="text-align: right;">
                     <div class="lbl_total_recibido" style="display: inline;"> </div>
                 </td>
             </tr>
             <tr style="font-weight: bold;">
-                <td></td>
-                <td colspan="2" style="text-align: right;"> Cambio: </td>
-                <td> 
+                <td style="text-align: right;"> Cambio: </td>
+                <td style="text-align: right;">
                     <div class="lbl_total_cambio" style="display: inline;"> </div>
                 </td>
             </tr>
-        </tfoot>
+        </tbody>
     </table>
 
     <table style="width: 100%;" class="table table-bordered">

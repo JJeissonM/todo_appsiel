@@ -199,7 +199,7 @@
 				$.get( url )
 					.done(function( data ) {
 
-		                $('#contenido_modal').html( '<h1>Acumulación com,pletada exitosamente. </h1>' );
+		                $('#contenido_modal').html( '<h1>Acumulación completada exitosamente. </h1>' );
 
 		                $("#div_spin").hide();
 

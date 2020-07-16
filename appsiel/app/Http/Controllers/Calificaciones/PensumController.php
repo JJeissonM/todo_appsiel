@@ -213,4 +213,22 @@ class PensumController extends CalificacionController
 
         return 1;
     }
+
+    public function opciones_select_asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas )
+    {
+        if ( $area_id = 'null' )
+        {
+            $area_id = null;
+        }
+
+        $registros = CursoTieneAsignatura::asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas );
+
+        $opciones = '<option value="">Seleccionar...</option>';
+        foreach ($registros as $opcion)
+        {
+            $opciones .= '<option value="'.$opcion->id.'">'.$opcion->descripcion.'</option>';
+        }
+
+        return $opciones;
+    }
 }
