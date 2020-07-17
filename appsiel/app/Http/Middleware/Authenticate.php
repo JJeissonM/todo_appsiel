@@ -26,29 +26,47 @@ class Authenticate
                 return redirect()->guest('/login');
             }
         }
+        $user = Auth::user();
 
-        if(isset($request->id) || isset($request->id_modelo)){
-            $user = Auth::user();
+        if(isset($request->id) && isset($request->id_modelo)){
+
             $permisos = DB::table('users')
                 ->join('user_has_roles','users.id','=','user_has_roles.user_id')
                 ->join('roles','user_has_roles.role_id','=','roles.id')
                 ->join('role_has_permissions','roles.id','=','role_has_permissions.role_id')
                 ->join('permissions','permissions.id','=','role_has_permissions.permission_id')
                 ->select('users.id','permissions.core_app_id','permissions.modelo_id')
-                ->where('users.id','=',$user->id)
+                ->where([
+                    ['users.id','=',$user->id],
+                    ['permissions.core_app_id','=',$request->id],
+                    ['permissions.modelo_id','=',$request->id_modelo]
+                ])
                 ->get();
 
-            $flat = false;
-            foreach ($permisos as $key => $value){
-               if($value->modelo_id == $request->id_modelo || $value->core_app_id == $request->id){
-                   $flat = true;
-                   break;
-               }
-            }
-            if(!$flat){
+            if(sizeof($permisos) == 0){
                 return redirect()->back();
             }
+
+        }else if(isset($request->id)){
+
+            $permisos = DB::table('users')
+                ->join('user_has_roles','users.id','=','user_has_roles.user_id')
+                ->join('roles','user_has_roles.role_id','=','roles.id')
+                ->join('role_has_permissions','roles.id','=','role_has_permissions.role_id')
+                ->join('permissions','permissions.id','=','role_has_permissions.permission_id')
+                ->select('users.id','permissions.core_app_id','permissions.modelo_id')
+                ->where([
+                    ['users.id','=',$user->id],
+                    ['permissions.core_app_id','=',$request->id],
+                ])
+                ->get();
+
+            if(sizeof($permisos) == 0){
+                return redirect()->back();
+            }
+
         }
+
 
         return $next($request);
     }
