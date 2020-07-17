@@ -44,7 +44,7 @@ class Authenticate
                 ->get();
 
             if(sizeof($permisos) == 0){
-                return redirect()->back();
+                return redirect()->back()->with('flash_message','Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
             }
 
         }else if(isset($request->id)){
@@ -62,7 +62,7 @@ class Authenticate
                 ->get();
 
             if(sizeof($permisos) == 0){
-                return redirect()->back();
+                return redirect()->back()->with('flash_message','Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
             }
 
         }

@@ -167,7 +167,7 @@ class PedidoController extends TransaccionController
 
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros
         $lista_precios_id = Cliente::find( $doc_encabezado->cliente_id )->lista_precios->id;
-        $lista_descuentos_id = Cliente::find( $doc_encabezado->cliente_id )->lista_descuentos->id;
+        $lista_descuentos_id = Cliente::find($doc_encabezado->cliente_id)->lista_descuentos->id;
 
         $total_documento = 0;
 
