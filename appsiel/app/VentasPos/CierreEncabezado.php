@@ -20,14 +20,14 @@ class CierreEncabezado extends Model
 	    return CierreEncabezado::leftJoin('vtas_pos_puntos_de_ventas','vtas_pos_puntos_de_ventas.id','=','vtas_pos_cierre_encabezados.pdv_id')
                             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_cierre_encabezados.core_tipo_doc_app_id')
                             ->leftJoin('users','users.id','=','vtas_pos_cierre_encabezados.cajero_id')
-                            ->select('vtas_pos_cierre_encabezados.fecha AS campo1',
-                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_cierre_encabezados.consecutivo) AS campo2'),
-                            'users.name AS campo3',
-                            'vtas_pos_puntos_de_ventas.descripcion AS campo4',
-                            'vtas_pos_cierre_encabezados.efectivo_base AS campo5',
-                            'vtas_pos_cierre_encabezados.detalle AS campo6',
-                            'vtas_pos_cierre_encabezados.estado AS campo7',
-                            'vtas_pos_cierre_encabezados.id AS campo8')
+                            ->select(
+                                        'vtas_pos_cierre_encabezados.fecha AS campo1',
+                                        DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_cierre_encabezados.consecutivo) AS campo2'),
+                                        'users.name AS campo3',
+                                        'vtas_pos_puntos_de_ventas.descripcion AS campo4',
+                                        'vtas_pos_cierre_encabezados.detalle AS campo5',
+                                        'vtas_pos_cierre_encabezados.estado AS campo6',
+                                        'vtas_pos_cierre_encabezados.id AS campo7')
                             ->get()
                             ->toArray();
 	}

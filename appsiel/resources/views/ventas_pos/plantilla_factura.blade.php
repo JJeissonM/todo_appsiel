@@ -6,7 +6,6 @@
     <style type="text/css">
         body{
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 10px;
         }
 
         @page {
@@ -34,7 +33,7 @@
 
         $ciudad = DB::table('core_ciudades')->where( 'id', $empresa->codigo_ciudad )->get()[0];
     ?>
-    <table border="0" style="margin-top: 12px !important;" width="100%">
+    <table border="0" style="margin-top: 12px !important; font-size: 13px;" width="100%">
         <tr>
             <td width="15%">
                 <img src="{{ $url_img }}" width="120px;" />
@@ -54,7 +53,7 @@
     </table>
 
     @if( $etiquetas['encabezado'] != '')
-        <table style="width: 100%;">
+        <table style="width: 100%; font-size: 13px;">
             <tr>
                 <td style="border: solid 1px #ddd; text-align: center; font-family: Courier New; font-style: italic;">
                     <b> {!! $etiquetas['encabezado'] !!} </b> 
@@ -63,7 +62,7 @@
         </table>
     @endif
 
-    <table border="0" style="margin-top: 12px !important;" width="100%">
+    <table border="0" style="margin-top: 12px !important; font-size: 12px;" width="100%">
             <tr>
                 <td>
                     <b>{{ $pdv->tipo_doc_app->descripcion }} No.</b> 
@@ -93,8 +92,8 @@
         Documento Anulado
     </div>
 
-    <div style="border: solid 1px #ddd; font-size: 1.3em;">
-        <table width="100%">
+    <div style="border: solid 1px #ddd;">
+        <table width="100%" style=" font-size: 12px;">
             <tr>
                 <td>
                     <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
@@ -124,36 +123,36 @@
         </table>        
     </div>
 
-    <table style="width: 100%;" id="tabla_productos_facturados">
+    <table style="width: 100%; font-size: 12px;" id="tabla_productos_facturados">
         {{ Form::bsTableHeader(['Producto','Cant. (Precio)','IVA','Total']) }}
         <tbody>
         </tbody>
     </table>
 
-    <table style="width: 100%;">
+    <table style="width: 100%; font-size: 12px;">
         <tbody>
             <tr style="font-weight: bold;">
                 <td style="text-align: right;"> Total factura: </td>
                 <td style="text-align: right;">
-                    <div class="lbl_total_factura" style="display: inline;"> </div>
+                    <div class="lbl_total_factura" style="display: inline; margin-right: 15px;"> </div>
                 </td>
             </tr>
             <tr style="font-weight: bold;">
                 <td style="text-align: right;"> Recibido: </td>
                 <td style="text-align: right;">
-                    <div class="lbl_total_recibido" style="display: inline;"> </div>
+                    <div class="lbl_total_recibido" style="display: inline; margin-right: 15px;"> </div>
                 </td>
             </tr>
             <tr style="font-weight: bold;">
                 <td style="text-align: right;"> Cambio: </td>
                 <td style="text-align: right;">
-                    <div class="lbl_total_cambio" style="display: inline;"> </div>
+                    <div class="lbl_total_cambio" style="display: inline; margin-right: 15px;"> </div>
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <table style="width: 100%;" class="table table-bordered">
+    <table style="width: 100%; font-size: 11px;" class="table table-bordered">
         <!-- <thead>
             <tr>
                 <th>Tipo producto</th>
@@ -184,7 +183,7 @@
         </tbody>
     </table>
 
-    <table style="width: 100%;">
+    <table style="width: 100%; font-size: 11px;">
         <tr>
             <td style="border: solid 1px black;"> <b> Firma del aceptante: </b> <br><br><br><br> </td>
         </tr>

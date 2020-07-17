@@ -13,6 +13,7 @@
 		#clientes_suggestions {
 		    position: absolute;
 		    z-index: 9999;
+		    bottom: 20px;
 		}
 
 		#existencia_actual, #tasa_impuesto, #tasa_descuento{
@@ -35,6 +36,14 @@
     		text-align: center;
     		padding: 5px;
     		opacity: 0.7;
+		}
+
+		.elemento_fondo{
+		    position: fixed;
+		    z-index: 9999;
+			bottom: 0;
+		    margin-bottom: 0;
+		    float: left;
 		}
 	</style>
 @endsection
@@ -105,8 +114,6 @@
 				<div id="popup_alerta"> </div>
 				
 			{{ Form::close() }}
-
-			
 
 			<div class="container-fluid">
 				<div class="row">					
@@ -270,11 +277,15 @@
 		</tr>
 	</table>
 
+	<!-- La ventana contiene la variable contenido_modal -->
 	@include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
 
 	<div id="div_plantilla_factura" style="display: none;">
 		{!! $plantilla_factura !!}
 	</div>
+
+
+	<div class="container-fluid elemento_fondo" style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;"> </div>
 
 @endsection
 
@@ -374,6 +385,11 @@
 			$('#fecha').val( get_fecha_hoy() );
 
 			agregar_la_linea_ini();	
+
+			// Elementos al final de la página
+			$('#cliente_input').parent().parent().attr('class','elemento_fondo');
+			$('#vendedor_id').parent().parent().attr('class','elemento_fondo');
+
 
 		    // Al cambiar la fecha
 		    $('#fecha').on('change',function(){
