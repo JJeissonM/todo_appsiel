@@ -327,9 +327,13 @@ class FacturaPosController extends TransaccionController
     }
 
     /*
-        Proceso de eliminar FACTURA POS
+        Proceso de eliminar FACTURA POS 
+
+
+        PRIMERO TRABAJAR EN EDITAR
+
     */
-    public static function anular_factura_pos(Request $request)
+    public static function anular_factura_pos( $doc_encabezado_id )
     {        
         $factura = FacturaPos::find( $request->factura_id );
 
