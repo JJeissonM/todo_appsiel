@@ -1400,6 +1400,7 @@
 
 		        $("#myModal2 .btn_edit_modal").hide();
 		        $("#myModal2 .btn-danger").hide();
+				$("#myModal2 .btn_save_modal").show();
 		        
 		        var url = "{{ url('ventas_pos_form_registro_ingresos_gastos') }}" + "/" + $('#pdv_id').val() + "/" + $(this).attr('data-id_modelo') + "/" + $(this).attr('data-id_transaccion');
 
