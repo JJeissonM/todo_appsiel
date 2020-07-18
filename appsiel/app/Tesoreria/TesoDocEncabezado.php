@@ -11,6 +11,7 @@ class TesoDocEncabezado extends Model
 {
     //protected $table = 'teso_doc_encabezados'; 
 
+    // teso_tipo_motivo debe desaparecer, pues se una segun el motivo de cada registro del documento, en un mismom documento pueden haber varios teso_tipo_motivo
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_empresa_id','core_tercero_id','codigo_referencia_tercero','teso_tipo_motivo','documento_soporte','descripcion','teso_medio_recaudo_id','teso_caja_id','teso_cuenta_bancaria_id','valor_total','estado','creado_por','modificado_por'];
 
     public $encabezado_tabla = ['Documento','Fecha','Tercero','Detalle','Acción'];

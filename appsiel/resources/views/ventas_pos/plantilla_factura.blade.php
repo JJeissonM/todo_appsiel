@@ -135,6 +135,8 @@
                 <td style="text-align: right;"> Total factura: </td>
                 <td style="text-align: right;">
                     <div class="lbl_total_factura" style="display: inline; margin-right: 15px;"> </div>
+                    <br>
+                    <div class="lbl_ajuste_al_peso" style="display: inline; margin-right: 15px; font-size: 9px;"> </div>
                 </td>
             </tr>
             <tr style="font-weight: bold;">
@@ -197,6 +199,16 @@
     </table>
     
     <br><br>
+
+    <script type="text/javascript">
+        window.onkeydown = function( event ) {
+            // Si se presiona la tecla q (Quit)
+            if ( event.keyCode == 81 )
+            {
+                window.close();
+            }
+        };
+    </script>
 
 </body>
 

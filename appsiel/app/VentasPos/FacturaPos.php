@@ -7,21 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\VentasPos\Pdv;
+
 class FacturaPos extends Model
 {
     protected $table = 'vtas_pos_doc_encabezados';
 	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'orden_compras', 'descripcion', 'valor_total', 'estado', 'creado_por', 'modificado_por'];
 
-    public $urls_acciones = '{"store":"pos_factura","imprimir":"pos_factura_imprimir/id_fila","eliminar":"pos_factura_anular/id_fila"}';
+    public $urls_acciones = '{"store":"pos_factura","imprimir":"pos_factura_imprimir/id_fila","show":"no"}'; // ,"eliminar":"pos_factura_anular/id_fila"
 	
     public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'PDV', 'Estado', 'Acción'];
 
     public static function consultar_registros()
     {
+        //$pdv = Pdv::where('cajero_default_id',Auth::user()->id)->get()->first();
+
         $core_tipo_transaccion_id = 47; // Facturas POS
         return FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
                                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
                                 ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
+                                //->where('vtas_pos_doc_encabezados.pdv_id', $pdv->id )
+                                ->where('vtas_pos_doc_encabezados.estado', 'Pendiente')
                                 ->where('vtas_pos_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
                                 ->where('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
                                 ->select(

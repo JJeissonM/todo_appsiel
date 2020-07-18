@@ -6,17 +6,17 @@
       
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">{{$titulo}}</h4>
+        <h4 class="modal-title">{{$titulo2}}</h4>
       </div>
 
       <div class="modal-body">
       	{{ Form::Spin(64) }}
         <div class="alert alert-success alert-dismissible fade in" style="display: none;" id="alert_mensaje2">
-          <strong>{{$texto_mensaje}}</strong>
+          <strong>{{$texto_mensaje2}}</strong>
         </div>
       	<div id="contenido_modal2">
-          @if( isset($contenido_modal) )
-            {!! $contenido_modal !!}
+          @if( isset($contenido_modal2) )
+            {!! $contenido_modal2 !!}
           @endif
         </div>
       </div>
