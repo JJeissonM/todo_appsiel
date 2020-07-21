@@ -57,10 +57,25 @@
 	<div class="container-fluid">
 
 		<div class="row">
-			<div class="col-md-12 col-xs-12 text-center">
+			<div class="col-md-4 col-xs-12">
+				<div class="btn-group">
+					<button class="btn btn-primary btn-xs btn_consultar_estado_pdv" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Ingresos"> <i class="fa fa-btn fa-search"></i> Estado PDV </button>
+					<button class="btn btn-default btn-xs btn_consultar_documentos" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Gastos"> <i class="fa fa-btn fa-search"></i> Consultar facturas </button>
+				</div>
+			</div>
+
+
+			<div class="col-md-4 col-xs-12 text-center">
 				<div class="btn-group">
 					<button class="btn btn-info btn-xs btn_registrar_ingresos_gastos" data-id_modelo="46" data-id_transaccion="8" data-lbl_ventana="Ingresos"><i class="fa fa-btn fa-money"></i> <i class="fa fa-btn fa-arrow-up"></i> Registrar Ingresos </button>
 					<button class="btn btn-warning btn-xs btn_registrar_ingresos_gastos" data-id_modelo="54" data-id_transaccion="17" data-lbl_ventana="Gastos"><i class="fa fa-btn fa-money"></i> <i class="fa fa-btn fa-arrow-down"></i> Registrar Salidas </button>
+				</div>
+			</div>
+
+
+			<div class="col-md-4 col-xs-12">
+				<div class="btn-group">
+					&nbsp;
 				</div>
 			</div>
 		</div>
@@ -1403,6 +1418,30 @@
 				$("#myModal2 .btn_save_modal").show();
 		        
 		        var url = "{{ url('ventas_pos_form_registro_ingresos_gastos') }}" + "/" + $('#pdv_id').val() + "/" + $(this).attr('data-id_modelo') + "/" + $(this).attr('data-id_transaccion');
+
+		        $.get( url, function( respuesta ){
+		        	$('#div_spin').hide();
+		        	$('#contenido_modal2').html( respuesta );
+		        });/**/
+		    });
+		    
+
+			$(document).on('click',".btn_consultar_estado_pdv",function(event){
+				event.preventDefault();
+
+		        $('#contenido_modal2').html('');
+				$('#div_spin').fadeIn();
+
+		        $("#myModal2").modal(
+		        	{backdrop: "static"}
+		        );
+
+		        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
+
+		        $("#myModal2 .btn_edit_modal").hide();
+				$("#myModal2 .btn_save_modal").hide();
+		        
+		        var url = "{{ url('pos_get_saldos_caja_pdv') }}" + "/" + $('#pdv_id').val() + "/" + "{{date('Y-m-d')}}" + "/" + "{{date('Y-m-d')}}";
 
 		        $.get( url, function( respuesta ){
 		        	$('#div_spin').hide();

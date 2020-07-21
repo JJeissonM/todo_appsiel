@@ -71,7 +71,9 @@
 
 		        		$btn_acumular = '<button class="btn btn-xs btn-warning" id="btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  > Acumular </button>';
 
-		        		$btn_contabilizar = '<button href="'.url('vtas_pos_contabilizar').'/'.$pdv->id.'" class="btn btn-xs btn-info" id="btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'" > Contabilizar </button>';
+		        		$btn_hacer_arqueo = '<a href="'.url( '/web/create' . '?id=20&id_modelo=158&vista=tesoreria.arqueo_caja.create&teso_caja_id='.$pdv->caja_default_id ) .'" class="btn btn-xs btn-info" id="btn_hacer_arqueo"> Hacer arqueo </a>';
+
+		        		$btn_consultar_estado = '<button class="btn btn-primary btn-xs btn_consultar_estado_pdv" data-pdv_id="'.$pdv->id.'" data-lbl_ventana="Ingresos"> <i class="fa fa-btn fa-search"></i> Estado PDV </button>';
 
 		        		$color = 'red';
 
@@ -81,7 +83,7 @@
 
 		        			$btn_abrir = '';
 		        			$btn_acumular = '';
-		        			$btn_contabilizar = '';
+		        			$btn_hacer_arqueo = '';
 
 		        			if ( !is_null( $apertura ) )
 		        			{
@@ -99,10 +101,8 @@
 		        			if ($num_facturas == 0)
 		        			{
 			        			$btn_acumular = '';
-			        			$btn_contabilizar = '';
-		        			}/*else{
-		        				$btn_abrir = '';
-		        			}*/
+			        			//$btn_hacer_arqueo = '';
+		        			}
 
 		        			if ( !is_null( $cierre ) )
 		        			{
@@ -155,9 +155,12 @@
 										{!! $btn_facturar !!}
 										{!! $btn_cerrar !!}
 										{!! $btn_acumular !!}
-										{!! $btn_contabilizar !!}
+										{!! $btn_hacer_arqueo !!}
 										
 									</div>
+
+									<br><br>
+									{{ $btn_consultar_estado }}
 
 								</div>										
 							</div>
@@ -207,31 +210,30 @@
 
 					});		        
 		    });
+		    
 
+			$(document).on('click',".btn_consultar_estado_pdv",function(event){
+				event.preventDefault();
 
+		        $('#contenido_modal2').html('');
+				$('#div_spin').fadeIn();
 
-			$("#btn_contabilizar").click(function(event){
+		        $("#myModal2").modal(
+		        	{backdrop: "static"}
+		        );
 
-		        $("#myModal").modal({backdrop: "static"});
-		        $("#div_spin").show();
-		        $(".btn_edit_modal").hide();
-		        $(".btn_edit_modal").hide();
+		        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
 
-		        var url = "{{url('pos_factura_acumular')}}" + "/" + $(this).atrr('data-pdv_id');
+		        $("#myModal2 .btn_edit_modal").hide();
+				$("#myModal2 .btn_save_modal").hide();
+		        
+		        var url = "{{ url('pos_get_saldos_caja_pdv') }}" + "/" + $('#pdv_id').val() + "/" + "{{date('Y-m-d')}}" + "/" + "{{date('Y-m-d')}}";
 
-				$.get( url )
-					.done(function( data ) {
-
-		                $('#contenido_modal').html(data);
-
-		                $("#div_spin").hide();
-
-		                $('#fecha_vencimiento_aux').focus( );
-		                $('#fecha_vencimiento_aux').val( get_fecha_hoy() );
-
-					});		        
+		        $.get( url, function( respuesta ){
+		        	$('#div_spin').hide();
+		        	$('#contenido_modal2').html( respuesta );
+		        });/**/
 		    });
-
 
 		});
 	</script>

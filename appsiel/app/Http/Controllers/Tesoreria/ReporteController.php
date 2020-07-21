@@ -894,8 +894,6 @@ class ReporteController extends TesoreriaController
     }
 
 
-
-
     public function teso_movimiento_caja_bancos(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -928,6 +926,22 @@ class ReporteController extends TesoreriaController
         $vista = View::make('tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'saldo_inicial', 'movimiento', 'mensaje'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function teso_movimiento_caja_pdv( $fecha_desde, $fecha_hasta, $teso_caja_id )
+    {
+        $teso_cuenta_bancaria_id = 0;
+
+        $caja = TesoCaja::find( $teso_caja_id );
+        $mensaje = $caja->descripcion;
+
+        $saldo_inicial = TesoMovimiento::get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde );
+
+        $movimiento = TesoMovimiento::get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta );
+
+        $vista = View::make('tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'saldo_inicial', 'movimiento', 'mensaje'))->render();
 
         return $vista;
     }
