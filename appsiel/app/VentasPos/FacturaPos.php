@@ -16,7 +16,7 @@ class FacturaPos extends Model
 
     public $urls_acciones = '{"store":"pos_factura","imprimir":"pos_factura_imprimir/id_fila","show":"no"}'; // ,"eliminar":"pos_factura_anular/id_fila"
 	
-    public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'PDV', 'Estado', 'Acción'];
+    public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente', 'Cond. pago', 'Detalle', 'Valor total', 'PDV', 'Estado', 'Acción'];
 
     public static function consultar_registros()
     {
@@ -32,11 +32,12 @@ class FacturaPos extends Model
                                     'vtas_pos_doc_encabezados.fecha AS campo1',
                                     DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo) AS campo2'),
                                     DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                                    'vtas_pos_doc_encabezados.descripcion AS campo4',
-                                    'vtas_pos_doc_encabezados.valor_total AS campo5',
-                                    'vtas_pos_puntos_de_ventas.descripcion AS campo6',
-                                    'vtas_pos_doc_encabezados.estado AS campo7',
-                                    'vtas_pos_doc_encabezados.id AS campo8'
+                                    'vtas_pos_doc_encabezados.condicion_pago AS campo4',
+                                    'vtas_pos_doc_encabezados.descripcion AS campo5',
+                                    'vtas_pos_doc_encabezados.valor_total AS campo6',
+                                    'vtas_pos_puntos_de_ventas.descripcion AS campo7',
+                                    'vtas_pos_doc_encabezados.estado AS campo8',
+                                    'vtas_pos_doc_encabezados.id AS campo9'
                                 )
                                 ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
                                 ->get()
