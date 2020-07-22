@@ -3,6 +3,7 @@
 Route::resource('ventas_pos', 'VentasPos\AplicacionController');
 
 Route::get('pos_get_saldos_caja_pdv/{pdv_id}/{fecha_desde}/{fecha_hasta}', 'VentasPos\ReporteController@get_saldos_caja_pdv');
+Route::get('pos_consultar_documentos_pendientes/{pdv_id}/{fecha}', 'VentasPos\ReporteController@consultar_documentos_pendientes');
 
 Route::get('pos_factura_imprimir/{doc_encabezado_id}', 'VentasPos\FacturaPosController@imprimir');
 

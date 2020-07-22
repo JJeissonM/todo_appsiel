@@ -20,7 +20,13 @@ class ArqueoCaja extends Model
 
     public static function consultar_registros()
     {
-        $registros = ArqueoCaja::select('teso_arqueos_caja.fecha AS campo1', 'teso_arqueos_caja.teso_caja_id AS campo2', 'teso_arqueos_caja.observaciones AS campo3', 'teso_arqueos_caja.estado AS campo4', 'teso_arqueos_caja.id AS campo5')
+        $registros = ArqueoCaja::leftJoin('teso_cajas','teso_cajas.id','=','teso_arqueos_caja.teso_caja_id')
+                                ->select(
+                                        'teso_arqueos_caja.fecha AS campo1',
+                                        'teso_cajas.descripcion AS campo2',
+                                        'teso_arqueos_caja.observaciones AS campo3',
+                                        'teso_arqueos_caja.estado AS campo4',
+                                        'teso_arqueos_caja.id AS campo5' )
             ->get()
             ->toArray();
         return $registros;

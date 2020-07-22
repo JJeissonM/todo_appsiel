@@ -61,6 +61,22 @@ class ReporteController extends Controller
 
     }
 
+    public function consultar_documentos_pendientes( $pdv_id, $fecha )
+    {
+        $pdv = Pdv::find( $pdv_id );
+
+        $encabezados_documentos = FacturaPos::consultar_encabezados_documentos( $pdv_id, $fecha, 'Pendiente' );
+
+        dd( $encabezados_documentos );
+
+        $resumen_ventas = View::make( 'ventas_pos.resumen_ventas', compact( 'total_contado', 'total_credito' ) )->render();
+        
+        $vista_movimiento = $this->teso_movimiento_caja_pdv( $fecha_desde, $fecha_hasta, $pdv->caja_default_id );
+
+        return $resumen_ventas . '<br><br>' . $vista_movimiento;
+
+    }
+
     public function teso_movimiento_caja_pdv( $fecha_desde, $fecha_hasta, $teso_caja_id )
     {
         $teso_cuenta_bancaria_id = 0;

@@ -10,7 +10,7 @@
       </div>
 
       <div class="modal-body">
-      	{{ Form::Spin(64) }}
+      	{{ Form::Spin2(64) }}
         <div class="alert alert-success alert-dismissible fade in" style="display: none;" id="alert_mensaje2">
           <strong>{{$texto_mensaje2}}</strong>
         </div>

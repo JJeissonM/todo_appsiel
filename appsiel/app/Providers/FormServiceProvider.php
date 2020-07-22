@@ -64,6 +64,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('NombreMes', 'components.design.nombre_mes', ['mes']);
         Form::component('TextoMoneda', 'components.design.texto_moneda', ['valor','lbl'=>null]);
         Form::component('Spin', 'components.design.spin', ['tamaño']);
+        Form::component('Spin2', 'components.design.spin2', ['tamaño']);
         Form::component('btnInfo', 'components.design.btn_info', ['title']);
 
         //Form::component('HrefDocEncabezado', 'components.design.btn_info', ['title']);

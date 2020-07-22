@@ -1405,7 +1405,7 @@
 				event.preventDefault();
 
 		        $('#contenido_modal2').html('');
-				$('#div_spin').fadeIn();
+				$('#div_spin2').fadeIn();
 
 		        $("#myModal2").modal(
 		        	{backdrop: "static"}
@@ -1420,7 +1420,7 @@
 		        var url = "{{ url('ventas_pos_form_registro_ingresos_gastos') }}" + "/" + $('#pdv_id').val() + "/" + $(this).attr('data-id_modelo') + "/" + $(this).attr('data-id_transaccion');
 
 		        $.get( url, function( respuesta ){
-		        	$('#div_spin').hide();
+		        	$('#div_spin2').hide();
 		        	$('#contenido_modal2').html( respuesta );
 		        });/**/
 		    });
@@ -1430,7 +1430,7 @@
 				event.preventDefault();
 
 		        $('#contenido_modal2').html('');
-				$('#div_spin').fadeIn();
+				$('#div_spin2').fadeIn();
 
 		        $("#myModal2").modal(
 		        	{backdrop: "static"}
@@ -1444,7 +1444,7 @@
 		        var url = "{{ url('pos_get_saldos_caja_pdv') }}" + "/" + $('#pdv_id').val() + "/" + "{{date('Y-m-d')}}" + "/" + "{{date('Y-m-d')}}";
 
 		        $.get( url, function( respuesta ){
-		        	$('#div_spin').hide();
+		        	$('#div_spin2').hide();
 		        	$('#contenido_modal2').html( respuesta );
 		        });/**/
 		    });
@@ -1462,6 +1462,30 @@
 					$("#myModal2 .btn_save_modal").hide();
 				});
 
+		    });
+		    
+
+			$(document).on('click',".btn_consultar_documentos",function(event){
+				event.preventDefault();
+
+		        $('#contenido_modal2').html('');
+				$('#div_spin2').fadeIn();
+
+		        $("#myModal2").modal(
+		        	{backdrop: "static"}
+		        );
+
+		        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
+
+		        $("#myModal2 .btn_edit_modal").hide();
+				$("#myModal2 .btn_save_modal").hide();
+		        
+		        var url = "{{ url('pos_consultar_documentos_pendientes') }}" + "/" + $('#pdv_id').val() + "/" + "{{date('Y-m-d')}}";
+
+		        $.get( url, function( respuesta ){
+		        	$('#div_spin2').hide();
+		        	$('#contenido_modal2').html( respuesta );
+		        });/**/
 		    });
 
 
