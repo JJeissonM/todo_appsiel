@@ -22,8 +22,14 @@ class Album extends Model
     public function dibujar_individual()
     {
         //$fotos = $this->fotos;
+        $primera_foto = $this->fotos->first();
+        $url_primera_foto = 'img/avatar.png';
+        if( !is_null( $primera_foto ) )
+        {
+            $url_primera_foto = $primera_foto->nombre;
+        }
         return '<div class="abrir_modal" data-elemento_id="'.$this->id.'" style="margin: 5px; font-size: 0.9em; color: black;" title="'.$this->titulo.'">
-                    <img src="'.$this->fotos->first()->nombre.'" style="border-radius: 5px; height: 210px; width=210px;">
+                    <img src="'.$url_primera_foto.'" style="border-radius: 5px; height: 210px; width=210px;">
                     <div class="titulo" style="font-weight: bold;">'.$this->titulo.'</div>
                     <div class="subtitulo" style="margin-top: -10px;">'.count($this->fotos).' elementos</div>
                 </div>';

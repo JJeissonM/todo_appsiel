@@ -160,7 +160,7 @@
 									</div>
 
 									<br><br>
-									{{ $btn_consultar_estado }}
+									{!! $btn_consultar_estado !!}
 
 								</div>										
 							</div>
