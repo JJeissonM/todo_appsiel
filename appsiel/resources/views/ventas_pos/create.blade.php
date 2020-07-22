@@ -59,8 +59,8 @@
 		<div class="row">
 			<div class="col-md-4 col-xs-12">
 				<div class="btn-group">
-					<button class="btn btn-primary btn-xs btn_consultar_estado_pdv" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Ingresos"> <i class="fa fa-btn fa-search"></i> Estado PDV </button>
-					<button class="btn btn-default btn-xs btn_consultar_documentos" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Gastos"> <i class="fa fa-btn fa-search"></i> Consultar facturas </button>
+					<button class="btn btn-primary btn-xs btn_consultar_estado_pdv" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Estado de PDV"> <i class="fa fa-btn fa-search"></i> Estado PDV </button>
+					<button class="btn btn-default btn-xs btn_consultar_documentos" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Facturas de ventas"> <i class="fa fa-btn fa-search"></i> Consultar facturas </button>
 				</div>
 			</div>
 
@@ -386,7 +386,7 @@
 
 		ventana_factura.print();
 
-		location.reload();
+		//location.reload();
 
 	}
 
@@ -1136,12 +1136,12 @@
 				$.post(url, data, function( doc_encabezado_consecutivo ){
 					$('.lbl_consecutivo_doc_encabezado').text( doc_encabezado_consecutivo );
 					llenar_tabla_productos_facturados();
-					//location.reload();
+					
 					ventana_imprimir();
-				});
 
-		 		// Enviar formulario
-				//$('#form_create').submit();					
+					location.reload();
+				});
+					
 			});
 
 			function llenar_tabla_productos_facturados()
@@ -1480,12 +1480,37 @@
 		        $("#myModal2 .btn_edit_modal").hide();
 				$("#myModal2 .btn_save_modal").hide();
 		        
-		        var url = "{{ url('pos_consultar_documentos_pendientes') }}" + "/" + $('#pdv_id').val() + "/" + "{{date('Y-m-d')}}";
+		        var url = "{{ url('pos_consultar_documentos_pendientes') }}" + "/" + $('#pdv_id').val() + "/" + $('#fecha').val() + "/" + $('#fecha').val();
 
 		        $.get( url, function( respuesta ){
 		        	$('#div_spin2').hide();
 		        	$('#contenido_modal2').html( respuesta );
 		        });/**/
+		    });
+		    
+			var fila;
+			$(document).on('click',".btn_anular_factura",function(event){
+				event.preventDefault();
+
+				var opcion = confirm('¿Seguro desea anular la factura ' + $(this).attr('data-lbl_factura') + ' ?');
+
+				if ( opcion )
+				{
+					fila = $(this).closest("tr");
+
+					$('#div_spin2').fadeIn();
+					var url = "{{ url('pos_factura_anular') }}" + "/" + $(this).attr('data-doc_encabezado_id');
+
+			        $.get( url, function( respuesta ){
+			        	$('#div_spin2').hide();
+
+			        	fila.find('td').eq(6).text('Anulado');
+			        	fila.find('.btn_anular_factura').hide();
+			        	alert('Documento anulado correctamente.');
+			        });
+				}else{
+					return false;
+				}
 		    });
 
 

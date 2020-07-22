@@ -106,11 +106,10 @@ class FacturaPos extends Model
     }
 
 
-    public static function consultar_encabezados_documentos( $pdv_id, $fecha, $estado = null )
+    public static function consultar_encabezados_documentos( $pdv_id, $fecha_desde, $fecha_hasta, $estado = null )
     {
         $array_wheres = [ 
                             'vtas_pos_doc_encabezados.pdv_id' => $pdv_id,
-                            'vtas_pos_doc_encabezados.fecha' => $fecha,
                             'vtas_pos_doc_encabezados.core_empresa_id' => Auth::user()->empresa_id
                         ];
 
@@ -124,17 +123,19 @@ class FacturaPos extends Model
                                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
                                 ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
                                 ->where( $array_wheres )
+                                ->whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta ] )
                                 ->select(
                                     'vtas_pos_doc_encabezados.fecha AS campo1',
                                     DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo) AS campo2'),
                                     DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                                    'vtas_pos_doc_encabezados.descripcion AS campo4',
-                                    'vtas_pos_doc_encabezados.valor_total AS campo5',
-                                    'vtas_pos_puntos_de_ventas.descripcion AS campo6',
+                                    'vtas_pos_doc_encabezados.forma_pago AS campo4',
+                                    'vtas_pos_doc_encabezados.descripcion AS campo5',
+                                    'vtas_pos_doc_encabezados.valor_total AS campo6',
                                     'vtas_pos_doc_encabezados.estado AS campo7',
                                     'vtas_pos_doc_encabezados.id AS campo8'
                                 )
                                 ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
-                                ->get();
+                                ->get()
+                                ->toArray();
     }
 }

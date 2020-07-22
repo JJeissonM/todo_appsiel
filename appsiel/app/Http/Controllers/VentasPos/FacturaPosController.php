@@ -339,59 +339,17 @@ class FacturaPosController extends TransaccionController
     */
     public static function anular_factura_pos( $doc_encabezado_id )
     {        
-        $factura = FacturaPos::find( $request->factura_id );
-
-        $array_wheres = ['core_empresa_id'=>$factura->core_empresa_id, 
-            'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id,
-            'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id,
-            'consecutivo' => $factura->consecutivo];
-
-        // Verificar si la factura tiene abonos, si tiene no se puede eliminar
-        $cantidad = CxcAbono::where('doc_cxc_transacc_id',$factura->core_tipo_transaccion_id)
-                            ->where('doc_cxc_tipo_doc_id',$factura->core_tipo_doc_app_id)
-                            ->where('doc_cxc_consecutivo',$factura->consecutivo)
-                            ->count();
-
-        if($cantidad != 0)
-        {
-            return redirect( 'ventas/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error','Factura NO puede ser eliminada. Se le han hecho Recaudos de CXC (Tesorería).');
-        }
+        $factura = FacturaPos::find( $doc_encabezado_id );
 
         $modificado_por = Auth::user()->email;
 
-        // 1ro. Anular documento asociado de inventarios
-        // Obtener las remisiones relacionadas con la factura y anularlas o dejarlas en estado Pendiente
-        $ids_documentos_relacionados = explode( ',', $factura->remision_doc_encabezado_id );
-        $cant_registros = count($ids_documentos_relacionados);
-        for ($i=0; $i < $cant_registros; $i++)
-        { 
-            $remision = InvDocEncabezado::find( $ids_documentos_relacionados[$i] );
-            if ( !is_null($remision) )
-            {
-                if ( $request->anular_remision ) // anular_remision es tipo boolean
-                {
-                    InventarioController::anular_documento_inventarios( $remision->id );
-                }else{
-                    $remision->update(['estado'=>'Pendiente', 'modificado_por' => $modificado_por]);
-                }    
-            }
-        }
+        // Se marcan como anulados los registros del documento
+        DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
 
-        // 2do. Borrar registros contables del documento
-        ContabMovimiento::where($array_wheres)->delete();
+        // Se marca como anulado el documento
+        $factura->update(['estado'=>'Anulado', 'modificado_por' => $modificado_por]);
 
-        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar
-        CxcMovimiento::where($array_wheres)->delete();
-
-        // 4to. Se elimina el movimiento de compras
-        Movimiento::where($array_wheres)->delete();
-        // 5to. Se marcan como anulados los registros del documento
-        DocRegistro::where( 'vtas_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
-
-        // 6to. Se marca como anulado el documento
-        $factura->update(['estado'=>'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
-
-        return redirect( 'ventas/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Factura de ventas ANULADA correctamente.');
+        return 1;
         
     }
 
