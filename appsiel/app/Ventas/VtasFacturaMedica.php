@@ -13,7 +13,7 @@ class VtasFacturaMedica extends VtasDocEncabezado
 {
     protected $table = 'vtas_doc_encabezados';
 
-    public $encabezado_tabla = ['Fecha','Documento','Paciente','Detalle','Acción'];
+    public $encabezado_tabla = [ 'Fecha', 'Documento', 'Paciente', 'Detalle', 'Valor total', 'Estado', 'Acción' ];
 
     public $vistas = '{}';
 
@@ -31,7 +31,9 @@ class VtasFacturaMedica extends VtasDocEncabezado
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2' ),
                                 DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3' ),
                                 'vtas_doc_encabezados.descripcion AS campo4',
-                                'vtas_doc_encabezados.id AS campo5')
+                                'vtas_doc_encabezados.valor_total AS campo5',
+                                'vtas_doc_encabezados.estado AS campo6',
+                                'vtas_doc_encabezados.id AS campo7')
                     ->get()
                     ->toArray();
                     /*

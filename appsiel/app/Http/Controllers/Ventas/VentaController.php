@@ -821,10 +821,11 @@ class VentaController extends TransaccionController
         // 2do. Borrar registros contables del documento
         ContabMovimiento::where($array_wheres)->delete();
 
-        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar
+        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar y de tesorería
         CxcMovimiento::where($array_wheres)->delete();
+        TesoMovimiento::where($array_wheres)->delete();
 
-        // 4to. Se elimina el movimiento de compras
+        // 4to. Se elimina el movimiento de ventas
         VtasMovimiento::where($array_wheres)->delete();
         // 5to. Se marcan como anulados los registros del documento
         VtasDocRegistro::where( 'vtas_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );

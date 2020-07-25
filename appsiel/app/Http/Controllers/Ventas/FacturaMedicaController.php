@@ -579,8 +579,9 @@ class FacturaMedicaController extends VentaController
         // 2do. Borrar registros contables del documento
         ContabMovimiento::where($array_wheres)->delete();
 
-        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar
+        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar y de tesorería
         CxcMovimiento::where($array_wheres)->delete();
+        TesoMovimiento::where($array_wheres)->delete();
 
         // 4to. Se elimina el movimiento de compras
         VtasMovimiento::where($array_wheres)->delete();
