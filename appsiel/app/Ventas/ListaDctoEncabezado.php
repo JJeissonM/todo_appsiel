@@ -22,7 +22,8 @@ class ListaDctoEncabezado extends Model
                     ->select('vtas_listas_dctos_encabezados.id','vtas_listas_dctos_encabezados.descripcion')
                     ->get();
 
-        $vec['']='';
+        //$vec['']='';
+        $vec = [];
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

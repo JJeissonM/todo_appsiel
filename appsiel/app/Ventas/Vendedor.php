@@ -43,7 +43,8 @@ class Vendedor extends Model
                     ->select('vtas_vendedores.id',DB::raw($raw))
                     ->get();
 
-        $vec['']='';
+        //$vec['']='';
+        $vec = [];
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

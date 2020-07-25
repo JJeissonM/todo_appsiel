@@ -26,7 +26,8 @@ class ListaPrecioEncabezado extends Model
 	                ->select('vtas_listas_precios_encabezados.id','vtas_listas_precios_encabezados.descripcion')
 	                ->get();
 
-	    $vec['']='';
+	    //$vec['']='';
+        $vec = [];
 	    foreach ($opciones as $opcion)
 	    {
 	        $vec[$opcion->id] = $opcion->descripcion;

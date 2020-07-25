@@ -293,7 +293,7 @@ class PedidoController extends TransaccionController
         $asunto = $this->doc_encabezado->documento_transaccion_descripcion . ' No. ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo;
         $this->empresa = Empresa::all()->first();
         $descripcion =  $this->empresa->descripcion;
-        $cuerpo_mensaje = "Hola, <strong>$tercero->nombre1 $tercero->nombre2</strong> </br>"
+        $cuerpo_mensaje = "Hola <strong>$tercero->nombre1 $tercero->nombre2</strong> </br>"
                           ."Gracias por su compra en <strong> $descripcion </strong> </br>"
                           ."Hemos recibido tu pedido; el cual ha ingresado a un proceso de validación de datos personales e inventario. Una vez finalizada esta verificación se  procederá a realizar el despacho. </br>"
                           ."<strong style='color:red;'>NOTA:</strong>  para los productos pesados el precio puede variar, los detalles de está variación los podra revisar en la factura que le haremos llegar con los productos, Esta observación es valida para los productos que son sometidos a un proceso de medida , donde el proceso de medición no siempre es exacto. ";

@@ -12,6 +12,8 @@
         	<a class="btn btn-default btn-xs" href="{{ url('ventas_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=167&id_transaccion=38') }}"><i class="fa fa-file-o"></i> Nota crédito </a>
 		@endif
 	    
+	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn btn-success btn-xs"><i class="fa fa-btn fa-money"></i> Hacer abono </a>
+
 	    <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
         
         @can('vtas_recontabilizar')
@@ -43,10 +45,10 @@
 	<table class="table table-bordered">
 		<tr>
 	        <td style="border: solid 1px #ddd;" colspan="2">
-	            <b>Paciente:</b> {{ $doc_encabezado->tercero_nombre_completo }}
+	            <b>Paciente/Cliente:</b> {{ $documento->tercero->descripcion }}
 	        </td>
 	        <td style="border: solid 1px #ddd;">
-	            <b>C.C. o NIT: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+	            <b>C.C. o NIT: &nbsp;&nbsp;</b> {{ number_format( $documento->tercero->numero_identificacion, 0, ',', '.') }}
 	        </td>
 	    </tr>
 	    <tr>
@@ -54,10 +56,10 @@
 	            <b>Historia clínica No.: &nbsp;&nbsp;</b> {{ App\Salud\Paciente::where( 'core_tercero_id', $doc_encabezado->core_tercero_id )->value('codigo_historia_clinica') }}
 	        </td>
 	        <td style="border: solid 1px #ddd;">
-	            <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
+	            <b>Dirección: &nbsp;&nbsp;</b> {{ $documento->tercero->direccion1 }}
 	        </td>
 	        <td style="border: solid 1px #ddd;">
-	            <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
+	            <b>Teléfono: &nbsp;&nbsp;</b> {{ $documento->tercero->telefono1 }}
 	        </td>
 	    </tr>
 	    <tr>        
@@ -72,11 +74,53 @@
 		{!! $examen !!}
 	    @include( 'consultorio_medico.formula_optica_show_tabla', [ 'formula' => $formula_medica ] )
 	@endif
+
+	@if( $formula_medica == '' && !is_null($formula_id) )
+        <p style="width: 100%; text-align: center; font-weight: bold; font-size: 12px; padding: -10px;">  Formula óptica </p>
+        <?php 
+            $datos = json_decode( $formula_asociada_factura->contenido_formula );
+        ?>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th> Esfera </th>
+                    <th> Cilindro </th>
+                    <th> Eje </th>
+                    <th> Adición </th>
+                    <th> Agudeza Visual </th>
+                    <th> Distancia Pupilar </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> O. D. </td>
+                    <td> {{ $datos->esfera_ojo_derecho }}  </td>
+                    <td> {{ $datos->cilindro_ojo_derecho }}  </td>
+                    <td> {{ $datos->eje_ojo_derecho }}  </td>
+                    <td> {{ $datos->adicion_ojo_derecho }}  </td>
+                    <td> {{ $datos->agudeza_visual_ojo_derecho }}  </td>
+                    <td> {{ $datos->distancia_pupilar_ojo_derecho }}  </td>
+                </tr>
+                <tr>
+                    <td> O. I. </td>
+                    <td> {{ $datos->esfera_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->cilindro_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->eje_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->adicion_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->agudeza_visual_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->distancia_pupilar_ojo_izquierdo }}  </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+    @endif
 	
 @endsection
 
 @section('div_advertencia_anulacion')
-	{{ Form::open(['url'=>'ventas_anular_factura', 'id'=>'form_anular']) }}
+	{{ Form::open(['url'=>'ventas_anular_factura_medica', 'id'=>'form_anular']) }}
 		<div class="alert alert-warning" style="display: none;">
 			<a href="#" id="close" class="close">&times;</a>
 			<strong>Advertencia!</strong>

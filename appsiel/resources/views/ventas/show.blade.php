@@ -12,6 +12,9 @@
         	<a class="btn btn-default btn-xs" href="{{ url('ventas_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=167&id_transaccion=38') }}"><i class="fa fa-file-o"></i> Nota crédito </a>
 		@endif
 	    
+	    
+	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn btn-success btn-xs"><i class="fa fa-btn fa-money"></i> Hacer abono </a>
+
 	    <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
         
         @can('vtas_recontabilizar')

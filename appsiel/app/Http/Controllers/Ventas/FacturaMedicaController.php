@@ -123,17 +123,26 @@ class FacturaMedicaController extends VentaController
         
         $vista = 'ventas.factura_medica.show';
 
-        $formula_id = DocEncabezadoTieneFormulaMedica::where( 'vtas_doc_encabezado_id', $doc_encabezado->id )->value('formula_medica_id');
+        $formula_asociada_factura = DocEncabezadoTieneFormulaMedica::where( 'vtas_doc_encabezado_id', $doc_encabezado->id )->get()->first();
+        $formula_id = null;
+
+        if( !is_null($formula_asociada_factura) )
+        {
+            $formula_id = $formula_asociada_factura->formula_medica_id;
+        }
+
         $formula_medica = '';
         $examen = '';
-        if( !is_null($formula_id) )
+        if( !is_null($formula_id) && $formula_id != 0 )
         {
             $formula_medica = FormulaOptica::find( $formula_id );
             $resultado = new ResultadoExamenMedicoController();
             $examen = $resultado->get_tabla_resultado_examen( $formula_medica->consulta_id, $formula_medica->paciente_id, $formula_medica->examenes->first()->id);
-        }            
+        }
 
-        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito','formula_medica','examen') );
+        $documento = app( $this->transaccion->modelo_encabezados_documentos )->find( $id );
+
+        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito','formula_medica','examen','documento', 'formula_asociada_factura', 'formula_id') );
     }
 
 
@@ -189,7 +198,11 @@ class FacturaMedicaController extends VentaController
 
         $etiquetas = $this->get_etiquetas();
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas' ) )->render();
+        $documento = app( $this->transaccion->modelo_encabezados_documentos )->find( $id );
+
+        $abonos = CxcAbono::get_abonos_documento( $doc_encabezado );
+        
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'documento', 'abonos' ) )->render();
     }
 
     /**
@@ -577,7 +590,7 @@ class FacturaMedicaController extends VentaController
         // 6to. Se marca como anulado el documento
         $factura->update(['estado'=>'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
 
-        return redirect( 'ventas/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Factura de ventas ANULADA correctamente.');
+        return redirect( 'factura_medica/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Factura de ventas ANULADA correctamente.');
         
     }    
 

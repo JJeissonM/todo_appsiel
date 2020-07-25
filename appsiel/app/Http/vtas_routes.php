@@ -54,6 +54,7 @@ Route::resource('vtas_cotizacion', 'Ventas\CotizacionController');
 
 // Eliminar
 Route::post('ventas_anular_factura', 'Ventas\VentaController@anular_factura');
+Route::post('ventas_anular_factura_medica', 'Ventas\FacturaMedicaController@anular_factura');
 Route::get('eliminar_cliente/{id}', 'Ventas\ClienteController@eliminar_cliente');
 Route::get('vtas_cotizacion_anular/{id}', 'Ventas\CotizacionController@anular_cotizacion');
 /*

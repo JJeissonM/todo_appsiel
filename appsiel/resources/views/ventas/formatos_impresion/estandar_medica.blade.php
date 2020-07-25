@@ -85,15 +85,29 @@
         }
 
 
-        $formula_id = App\Ventas\DocEncabezadoTieneFormulaMedica::where( 'vtas_doc_encabezado_id', $doc_encabezado->id )->value('formula_medica_id');
+        $formula_asociada_factura = App\Ventas\DocEncabezadoTieneFormulaMedica::where( 'vtas_doc_encabezado_id', $doc_encabezado->id )->get()->first();
+
+        $formula_id = null;
+
+        if( !is_null($formula_asociada_factura) )
+        {
+            $formula_id = $formula_asociada_factura->formula_medica_id;
+        }
+
         $formula_medica = '';
         $examen = '';
-        if( !is_null($formula_id) )
+        if( !is_null($formula_id) && $formula_id != 0 )
         {
             $formula_medica = App\Salud\FormulaOptica::find( $formula_id );
             $resultado = new App\Http\Controllers\Salud\ResultadoExamenMedicoController();
             $examen = $resultado->get_tabla_resultado_examen( $formula_medica->consulta_id, $formula_medica->paciente_id, $formula_medica->examenes->first()->id);
         } 
+
+        $total_abonos = 0;
+        foreach ($abonos as $linea_abono)
+        {
+            $total_abonos += $linea_abono->abono;
+        }
 
     ?>
 
@@ -101,6 +115,48 @@
         <p style="width: 100%; text-align: center; font-weight: bold; font-size: 12px; padding: -10px;"> Exámen de {{ $formula_medica->examenes->first()->descripcion }}</p>
         {!! $examen !!}
         @include( 'consultorio_medico.formula_optica_show_tabla', [ 'formula' => $formula_medica ] )
+        <br>
+    @endif
+
+    @if( !is_null($formula_id) )
+        <p style="width: 100%; text-align: center; font-weight: bold; font-size: 12px; padding: -10px;">  Formula óptica </p>
+        <?php 
+            $datos = json_decode( $formula_asociada_factura->contenido_formula );
+        ?>
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th> Esfera </th>
+                    <th> Cilindro </th>
+                    <th> Eje </th>
+                    <th> Adición </th>
+                    <th> Agudeza Visual </th>
+                    <th> Distancia Pupilar </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td> O. D. </td>
+                    <td> {{ $datos->esfera_ojo_derecho }}  </td>
+                    <td> {{ $datos->cilindro_ojo_derecho }}  </td>
+                    <td> {{ $datos->eje_ojo_derecho }}  </td>
+                    <td> {{ $datos->adicion_ojo_derecho }}  </td>
+                    <td> {{ $datos->agudeza_visual_ojo_derecho }}  </td>
+                    <td> {{ $datos->distancia_pupilar_ojo_derecho }}  </td>
+                </tr>
+                <tr>
+                    <td> O. I. </td>
+                    <td> {{ $datos->esfera_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->cilindro_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->eje_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->adicion_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->agudeza_visual_ojo_izquierdo }}  </td>
+                    <td> {{ $datos->distancia_pupilar_ojo_izquierdo }}  </td>
+                </tr>
+            </tbody>
+        </table>
         <br>
     @endif
 
@@ -112,10 +168,3 @@
 @section('tabla_registros_2')
     @include('ventas.incluir.factura_medica_firma_totales')
 @endsection
-
-<!-- 
-@ section('tabla_registros_3')
-    @ include('transaccion.registros_contables')
-    @ include('transaccion.auditoria')
-@ endsection
--->

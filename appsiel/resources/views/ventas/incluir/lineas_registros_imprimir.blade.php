@@ -21,5 +21,17 @@
             <td colspan="3">&nbsp;</td>
             <td style="text-align: right;"> ${{ number_format($total_factura, 2, ',', '.') }} </td>
         </tr>
+        @if( $total_abonos != 0)
+            <tr>
+                <td colspan="6">&nbsp;</td>
+                <td style="text-align: right;"> Total abonos: </td>
+                <td style="text-align: right;"> ${{ number_format($total_abonos, 2, ',', '.') }} </td>
+            </tr>
+            <tr>
+                <td colspan="6">&nbsp;</td>
+                <td style="text-align: right;"> Total saldo: </td>
+                <td style="text-align: right;"> ${{ number_format( $total_factura - $total_abonos, 2, ',', '.') }} </td>
+            </tr>
+        @endif
     </tfoot>
 </table>

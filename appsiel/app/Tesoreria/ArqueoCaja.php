@@ -16,7 +16,7 @@ class ArqueoCaja extends Model
         'base', 'total_monedas', 'monedas_contadas', 'otros_saldos', 'detalle_otros_saldos', 'lbl_total_efectivo',
         'lbl_total_sistema', 'total_saldo', 'detalles_mov_entradas', 'total_mov_entradas', 'detalles_mov_salidas', 'total_mov_salidas', 'observaciones', 'estado', 'creado_por', 'modificado_por'];
 
-    public $encabezado_tabla = ['Fecha', 'Caja', 'Observaciones', 'Estado', 'Acción'];
+    public $encabezado_tabla = ['Fecha', 'Caja', 'Observaciones', 'Total saldo', 'Estado', 'Acción'];
 
     public static function consultar_registros()
     {
@@ -25,8 +25,9 @@ class ArqueoCaja extends Model
                                         'teso_arqueos_caja.fecha AS campo1',
                                         'teso_cajas.descripcion AS campo2',
                                         'teso_arqueos_caja.observaciones AS campo3',
-                                        'teso_arqueos_caja.estado AS campo4',
-                                        'teso_arqueos_caja.id AS campo5' )
+                                        'teso_arqueos_caja.total_saldo AS campo4',
+                                        'teso_arqueos_caja.estado AS campo5',
+                                        'teso_arqueos_caja.id AS campo6' )
             ->get()
             ->toArray();
         return $registros;

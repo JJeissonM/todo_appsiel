@@ -43,6 +43,8 @@ class VtasFacturaMedica extends VtasDocEncabezado
     // Solo se creó un registro vacío en la tabla clientes
     public function store_adicional($datos, $doc_encabezado)
     {
+
+        // Se asocia la formula seleccionada a la factura de ventas
         if ( isset( $datos['formula_id'] ) )
         {
             DocEncabezadoTieneFormulaMedica::create(
@@ -50,6 +52,20 @@ class VtasFacturaMedica extends VtasDocEncabezado
                                                         'vtas_doc_encabezado_id'=> $doc_encabezado->id,
                                                         'formula_medica_id'=> $datos['formula_id']
                                                     ]);
+        }
+
+        // Cuando el cliente no es un paciente, se almacenan sus datos de formula médica en un campo
+        if ( $datos['no_es_paciente'] )
+        {
+            $cadena = '{"esfera_ojo_derecho":"'.$datos['esfera_ojo_derecho'].'", "cilindro_ojo_derecho":"'.$datos['cilindro_ojo_derecho'].'", "eje_ojo_derecho":"'.$datos['eje_ojo_derecho'].'", "adicion_ojo_derecho":"'.$datos['adicion_ojo_derecho'].'", "agudeza_visual_ojo_derecho":"'.$datos['agudeza_visual_ojo_derecho'].'", "distancia_pupilar_ojo_derecho":"'.$datos['distancia_pupilar_ojo_derecho'].'", "esfera_ojo_izquierdo":"'.$datos['esfera_ojo_izquierdo'].'", "cilindro_ojo_izquierdo":"'.$datos['cilindro_ojo_izquierdo'].'", "eje_ojo_izquierdo":"'.$datos['eje_ojo_izquierdo'].'", "adicion_ojo_izquierdo":"'.$datos['adicion_ojo_izquierdo'].'", "agudeza_visual_ojo_izquierdo":"'.$datos['agudeza_visual_ojo_izquierdo'].'", "distancia_pupilar_ojo_izquierdo":"'.$datos['distancia_pupilar_ojo_izquierdo'].'"}';
+
+            DocEncabezadoTieneFormulaMedica::create(
+                                                    [
+                                                        'vtas_doc_encabezado_id'=> $doc_encabezado->id,
+                                                        'formula_medica_id'=> 0,
+                                                        'contenido_formula' => $cadena
+                                                    ]);
+                                                                                
         }
     }
 }
