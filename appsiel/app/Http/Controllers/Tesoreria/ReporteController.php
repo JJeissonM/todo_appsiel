@@ -270,13 +270,17 @@ class ReporteController extends TesoreriaController
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
 
-        $tipo_movimiento = "%" . $request->tipo_movimiento . "%";
-        $core_tercero_id = "%" . $request->core_tercero_id . "%";
+        $saldo_inicial = 0;
 
-        $saldo_inicial = TesoMovimiento::get_suma_movimientos_menor_a_la_fecha($fecha_desde);
+        if( $request->incluir_saldo_anterior )
+        {
+            $saldo_inicial = TesoMovimiento::get_suma_movimientos_menor_a_la_fecha($fecha_desde);
+        }
 
         $movimiento_entradas = TesoMovimiento::movimiento_por_tipo_motivo('entrada', $fecha_desde, $fecha_hasta);
+        
         //dd($movimiento_entradas);
+        
         $movimiento_salidas = TesoMovimiento::movimiento_por_tipo_motivo('salida', $fecha_desde, $fecha_hasta);
 
         // 
