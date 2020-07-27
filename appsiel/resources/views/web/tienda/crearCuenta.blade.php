@@ -88,8 +88,8 @@
                                             </div>
                                         </div>
                                         <div class="buttons-set">
-                                            <p class="required">* Required Fields</p>
-                                            <button type="submit" title="Submit" class="button"><span><span>Submit</span></span></button>
+                                            <p class="required">* Campos requeridos</p>
+                                            <button type="submit" title="Submit" class="button"><span><span>Registrarme</span></span></button>
                                         </div>
                                     </form>
                             </div>

@@ -25,58 +25,41 @@
                                         </div>
                                         <form action="{{ url('/login') }}" method="post" id="login-form">
                                             {{ csrf_field() }}
-                                            <div class="col2-set">
-                                                <div class="new-users">
-                                                    <div class="content">
-                                                        <h2>Clientes Nuevos</h2>
-                                                        <p>Al crear una cuenta en nuestra tienda, podrá pasar por el proceso de pago más rápido, almacenar múltiples direcciones de envío, ver y rastrear sus pedidos en su cuenta y más.</p>
+                                                <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="content">
+                                                            <h2>Clientes Nuevos</h2>
+                                                            <p>Al crear una cuenta en nuestra tienda, podrá pasar por el proceso de pago más rápido, almacenar múltiples direcciones de envío, ver y rastrear sus pedidos en su cuenta y más.</p>
+                                                            <div class="buttons-set">
+                                                                <button type="button" title="Create an Account" class="button" onclick="window.location.href='{{route('tienda.nuevacuenta')}}';"><span><span>Crear una Cuenta</span></span></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-sm-12">
+                                                        <div class="content">
+                                                            <h2>Clientes Registrados</h2>
+                                                            <p>Si tiene una cuenta con nosotros, inicie sesión.</p>
+                                                            <ul class="form-list">
+                                                                <li>
+                                                                    <label for="email" class="required"><em>*</em>Email</label>
+                                                                    <div class="input-box">
+                                                                        <input style="font-size: 16px;" placeholder="Correo Electronico" type="text" name="email"  value="{{old('email')}}" id="email" class="input-text required-entry validate-email" title="Email Address">
+                                                                    </div>
+                                                                </li>
+                                                                <li>
+                                                                    <label for="pass" class="required"><em>*</em>Contraseña</label>
+                                                                    <div class="input-box">
+                                                                        <input style="font-size: 16px;" placeholder="Password" type="password" name="password"  class="input-text required-entry validate-password" id="pass" title="Password">
+                                                                    </div>
+                                                                </li>
+                                                            </ul>
+                                                            <div class="buttons-set">
+                                                                <!--<a href="" class="f-left">¿Olvidaste Tu Contraseña?</a>-->
+                                                                <button type="submit" class="button" title="Login" name="send" id="send2"><span><span>Iniciar Sesión</span></span></button>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="registered-users">
-                                                    <div class="content">
-                                                        <h2>Clientes Registrados</h2>
-                                                        <p>Si tiene una cuenta con nosotros, inicie sesión.</p>
-                                                        <ul class="form-list">
-                                                            <li>
-                                                                <label for="email" class="required"><em>*</em>Email</label>
-                                                                <div class="input-box">
-                                                                    <input type="text" name="email"  value="{{old('email')}}" id="email" class="input-text required-entry validate-email" title="Email Address">
-                                                                    @if ($errors->has('email'))
-                                                                        <span class="help-block">
-                                                                            <strong>{{ $errors->first('email') }}</strong>
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                            </li>
-                                                            <li>
-                                                                <label for="pass" class="required"><em>*</em>Contraseña</label>
-                                                                <div class="input-box">
-                                                                    <input type="password" name="password"  class="input-text required-entry validate-password" id="pass" title="Password">
-                                                                    @if ($errors->has('password'))
-                                                                        <span class="help-block">
-                                                                            <strong>{{ $errors->first('password') }}</strong>
-                                                                        </span>
-                                                                    @endif
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                        <p class="required">* Campos Requeridos</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col2-set">
-                                                <div class="new-users">
-                                                    <div class="buttons-set">
-                                                        <button type="button" title="Create an Account" class="button" onclick="window.location.href='{{route('tienda.nuevacuenta')}}';"><span><span>Crear una Cuenta</span></span></button>
-                                                    </div>
-                                                </div>
-                                                <div class="registered-users">
-                                                    <div class="buttons-set">
-                                                        <a href="" class="f-left">¿Olvidaste Tu Contraseña?</a>
-                                                        <button type="submit" class="button" title="Login" name="send" id="send2"><span><span>Iniciar Sesión</span></span></button>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </form>
                                     </div>
                                 </div>

@@ -236,7 +236,7 @@ class TiendaController extends Controller
         $grupos = InvProducto::get_grupos_pagina_web();
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
-        return view('web.tienda.login', compact( 'grupos' ,'footer','redes') );
+        return view('web.tienda.login', compact( 'grupos' ,'footer','redes'));
     }
 
     public function crearCuenta()

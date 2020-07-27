@@ -4,6 +4,11 @@
 Route::get('inv_get_formulario_edit_registro','Inventarios\InventarioController@get_formulario_edit_registro');
 Route::post('inv_doc_registro_guardar','Inventarios\InventarioController@doc_registro_guardar');
 
+//ficha técnica
+Route::get('ficha_tecnica/{id}','Inventarios\ProductoController@create_ficha');
+Route::post('producto/store/ficha','Inventarios\ProductoController@store_ficha')->name('ficha.store');
+Route::get('producto/delete/ficha/{id}','Inventarios\ProductoController@delete_ficha')->name('ficha.delete');
+
 
 Route::get('get_ajax','Inventarios\InventarioController@get_ajax');
 

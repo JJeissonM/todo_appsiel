@@ -71,9 +71,9 @@
                                                                     </span>
                                                                 </a>
                                                             </div>
-                                                            <h2 class="product-name"><a
-                                                                        href="#"
-                                                                        title="{{$item->descripcion}}">{{$item->descripcion}}</a></h2>
+                                                            <h2 class="product-name" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'">
+                                                                <a href="{{route('tienda.detalleproducto',$item->id)}}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
+                                                            </h2>
                                                             <div class="ratings">
                                                                 <div class="rating-box">
                                                                     <div class="rating" style="width:67%"></div>
@@ -107,8 +107,6 @@
         </div>
     </div>
 </main>
-
-@include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
 
 <script src="{{asset('js/carrito/app.js')}}"></script>
 
