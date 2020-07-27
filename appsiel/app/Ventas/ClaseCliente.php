@@ -28,7 +28,8 @@ class ClaseCliente extends Model
                     ->select('vtas_clases_clientes.id','vtas_clases_clientes.descripcion')
                     ->get();
 
-        $vec['']='';
+        //$vec['']='';
+        $vec = [];
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

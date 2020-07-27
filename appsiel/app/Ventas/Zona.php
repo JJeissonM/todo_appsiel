@@ -23,7 +23,8 @@ class Zona extends Model
                     ->select('vtas_zonas.id','vtas_zonas.descripcion')
                     ->get();
 
-        $vec['']='';
+        //$vec['']='';
+        $vec = [];
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

@@ -17,18 +17,19 @@ class CondicionPago extends Model
 	    return $registros;
 	}
 
-	    public static function opciones_campo_select()
-	    {
-	        $opciones = CondicionPagoProv::where('compras_condiciones_pago.estado','Activo')
-	                    ->select('compras_condiciones_pago.id','compras_condiciones_pago.descripcion')
-	                    ->get();
+    public static function opciones_campo_select()
+    {
+        $opciones = CondicionPagoProv::where('compras_condiciones_pago.estado','Activo')
+                    ->select('compras_condiciones_pago.id','compras_condiciones_pago.descripcion')
+                    ->get();
 
-	        $vec['']='';
-	        foreach ($opciones as $opcion)
-	        {
-	            $vec[$opcion->id] = $opcion->descripcion;
-	        }
+        //$vec['']='';
+    	$vec = [];
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
 
-	        return $vec;
-	    }
+        return $vec;
+    }
 }

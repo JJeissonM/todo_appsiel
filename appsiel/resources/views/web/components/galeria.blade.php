@@ -111,7 +111,15 @@
                     <div class="col-md-12">
                         @foreach($galeria->albums as $album)
                             <div class="contenido">
-                                <img src="{{url($album->fotos->first()->nombre)}}" alt="" class="imagen">
+                                <?php 
+                                    $primera_foto = $album->fotos->first();
+                                    $url_primera_foto = url('img/avatar.png');
+                                    if( !is_null( $primera_foto ) )
+                                    {
+                                        $url_primera_foto = url( $primera_foto->nombre );
+                                    }
+                                ?>
+                                <img src="{{ $url_primera_foto }}" alt="" class="imagen">
                                 <div class="descripcion">
                                     <h5 class="titulo">{{$album->titulo}}</h5>
                                     <p>{{str_limit($album->descripcion,30)}}</p>

@@ -46,6 +46,30 @@ class ArqueoCajaController extends ModeloController
         $registro->monedas_contadas = json_decode($registro->monedas_contadas);
         $registro->detalles_mov_entradas = json_decode($registro->detalles_mov_entradas);
         $registro->detalles_mov_salidas = json_decode($registro->detalles_mov_salidas);
+
+
+
+        if ( is_null( $registro->billetes_contados ) )
+        {
+            $registro->billetes_contados = [];
+        }
+
+        if ( is_null( $registro->monedas_contadas ) )
+        {
+            $registro->monedas_contadas = [];
+        }
+
+        if ( $registro->detalles_mov_entradas == 0 )
+        {
+            $registro->detalles_mov_entradas = [];
+        }
+
+        if ( $registro->detalles_mov_salidas == 0 )
+        {
+            $registro->detalles_mov_salidas = [];
+        }
+
+        
         // Crear vista
         $view = \View::make('tesoreria.arqueo_caja.print', compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
 
@@ -95,7 +119,25 @@ class ArqueoCajaController extends ModeloController
         $registro->detalles_mov_entradas = json_decode($registro->detalles_mov_entradas);
         $registro->detalles_mov_salidas = json_decode($registro->detalles_mov_salidas);
 
-        //dd( $registro );
+        if ( is_null( $registro->billetes_contados ) )
+        {
+            $registro->billetes_contados = [];
+        }
+
+        if ( is_null( $registro->monedas_contadas ) )
+        {
+            $registro->monedas_contadas = [];
+        }
+
+        if ( $registro->detalles_mov_entradas == 0 )
+        {
+            $registro->detalles_mov_entradas = [];
+        }
+
+        if ( $registro->detalles_mov_salidas == 0 )
+        {
+            $registro->detalles_mov_salidas = [];
+        }
 
         //return view( 'matriculas.show_matricula',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') );
         return view('tesoreria.arqueo_caja.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'empresa', 'doc_encabezado', 'user'));

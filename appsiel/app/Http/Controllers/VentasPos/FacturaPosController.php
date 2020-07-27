@@ -28,11 +28,13 @@ use App\Http\Controllers\Ventas\ReportesController;
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
+use App\Sistema\TipoTransaccion;
 
 // Modelos
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Core\Tercero;
+use App\Core\TipoDocApp;
 
 
 use App\Inventarios\InvDocEncabezado;
@@ -60,6 +62,8 @@ use App\Ventas\VtasMovimiento;
 use App\CxC\DocumentosPendientes;
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
+
+use App\CxP\CxpMovimiento;
 
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMovimiento;
@@ -335,59 +339,17 @@ class FacturaPosController extends TransaccionController
     */
     public static function anular_factura_pos( $doc_encabezado_id )
     {        
-        $factura = FacturaPos::find( $request->factura_id );
-
-        $array_wheres = ['core_empresa_id'=>$factura->core_empresa_id, 
-            'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id,
-            'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id,
-            'consecutivo' => $factura->consecutivo];
-
-        // Verificar si la factura tiene abonos, si tiene no se puede eliminar
-        $cantidad = CxcAbono::where('doc_cxc_transacc_id',$factura->core_tipo_transaccion_id)
-                            ->where('doc_cxc_tipo_doc_id',$factura->core_tipo_doc_app_id)
-                            ->where('doc_cxc_consecutivo',$factura->consecutivo)
-                            ->count();
-
-        if($cantidad != 0)
-        {
-            return redirect( 'ventas/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error','Factura NO puede ser eliminada. Se le han hecho Recaudos de CXC (Tesorería).');
-        }
+        $factura = FacturaPos::find( $doc_encabezado_id );
 
         $modificado_por = Auth::user()->email;
 
-        // 1ro. Anular documento asociado de inventarios
-        // Obtener las remisiones relacionadas con la factura y anularlas o dejarlas en estado Pendiente
-        $ids_documentos_relacionados = explode( ',', $factura->remision_doc_encabezado_id );
-        $cant_registros = count($ids_documentos_relacionados);
-        for ($i=0; $i < $cant_registros; $i++)
-        { 
-            $remision = InvDocEncabezado::find( $ids_documentos_relacionados[$i] );
-            if ( !is_null($remision) )
-            {
-                if ( $request->anular_remision ) // anular_remision es tipo boolean
-                {
-                    InventarioController::anular_documento_inventarios( $remision->id );
-                }else{
-                    $remision->update(['estado'=>'Pendiente', 'modificado_por' => $modificado_por]);
-                }    
-            }
-        }
+        // Se marcan como anulados los registros del documento
+        DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
 
-        // 2do. Borrar registros contables del documento
-        ContabMovimiento::where($array_wheres)->delete();
+        // Se marca como anulado el documento
+        $factura->update(['estado'=>'Anulado', 'modificado_por' => $modificado_por]);
 
-        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar
-        CxcMovimiento::where($array_wheres)->delete();
-
-        // 4to. Se elimina el movimiento de compras
-        Movimiento::where($array_wheres)->delete();
-        // 5to. Se marcan como anulados los registros del documento
-        DocRegistro::where( 'vtas_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
-
-        // 6to. Se marca como anulado el documento
-        $factura->update(['estado'=>'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
-
-        return redirect( 'ventas/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Factura de ventas ANULADA correctamente.');
+        return 1;
         
     }
 
@@ -476,6 +438,159 @@ class FacturaPosController extends TransaccionController
             TesoMovimiento::create( $datos );
         }
     }
+
+    public function form_registro_ingresos_gastos( $pdv_id, $id_modelo, $id_transaccion)
+    {
+        $pdv = Pdv::find( (int)$pdv_id);
+        
+        $tipo_transaccion = TipoTransaccion::find( $id_transaccion );
+
+        $tipo_docs_app_id = $tipo_transaccion->tipos_documentos->first()->id;
+
+        $campos = (object)[
+                            'core_tipo_transaccion_id' => $id_transaccion,
+                            'core_tipo_doc_app_id' => $tipo_docs_app_id,
+                            'consecutivo' => 0,
+                            'fecha' => date('Y-m-d'),
+                            'core_empresa_id' => Auth::user()->empresa_id,
+                            'teso_medio_recaudo_id' => 1,
+                            'teso_caja_id' => $pdv->caja_default_id,
+                            'teso_cuenta_bancaria_id' => 0,
+                            'estado' => 'Activo',
+                            'creado_por' => Auth::user()->email,
+                            'id_modelo' => $id_modelo
+                        ];
+
+        return View::make( 'ventas_pos.form_registro_ingresos_gastos', compact('pdv','campos') )->render();
+    }
+
+    public function store_registro_ingresos_gastos( Request $request )
+    {
+        
+        $this->datos = $request->all();
+        $this->datos['core_tercero_id'] = $request->cliente_proveedor_id;
+        $this->datos['descripcion'] = $request->detalle_operacion;
+
+        $modelo = Modelo::find( $request->id_modelo );
+
+        // Guardar encabezado del documento
+        $doc_encabezado = app( $modelo->name_space )->create( $this->datos );
+
+        $valor_movimiento = $request->col_valor;
+
+        // Si se está almacenando una transacción que maneja consecutivo
+        if ( isset($request->consecutivo) and isset($request->core_tipo_doc_app_id) ) 
+        {
+            // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
+            $consecutivo = TipoDocApp::get_consecutivo_actual($request->core_empresa_id,$request->core_tipo_doc_app_id) + 1;
+
+            // Se incementa el consecutivo para ese tipo de documento y la empresa
+            TipoDocApp::aumentar_consecutivo($request->core_empresa_id,$request->core_tipo_doc_app_id);
+
+            $doc_encabezado->consecutivo = $consecutivo;
+            $doc_encabezado->valor_total = $valor_movimiento;
+            $doc_encabezado->save();
+        }        
+
+        // Guardar registro del documentos
+        $tipo_transaccion = TipoTransaccion::find( $request->core_tipo_transaccion_id );
+        app( $tipo_transaccion->modelo_registros_documentos )->create(
+                                                                [ 'teso_encabezado_id' => $doc_encabezado->id ] +
+                                                                [ 'teso_motivo_id' => $request->campo_motivos ] + 
+                                                                [ 'teso_caja_id' => $request->teso_caja_id ] +
+                                                                [ 'core_tercero_id' => $request->cliente_proveedor_id ] + 
+                                                                [ 'detalle_operacion' => $request->detalle_operacion ] +
+                                                                [ 'valor' => $valor_movimiento ] +
+                                                                [ 'estado' => 'Activo' ] );
+
+        // Guardar movimiento de tesorería
+        $motivo = TesoMotivo::find( $request->campo_motivos );
+        $valor_movimiento_teso = $valor_movimiento;
+        if ( $motivo->movimiento == 'salida' )
+        {
+            $valor_movimiento_teso = $valor_movimiento * -1;
+        }
+
+        $this->datos['consecutivo'] = $doc_encabezado->consecutivo;
+        app( $tipo_transaccion->modelo_movimientos )->create(  $this->datos +  
+                                                                [ 'teso_motivo_id' => $motivo->id] + 
+                                                                [ 'teso_caja_id' => $request->teso_caja_id] + 
+                                                                [ 'teso_cuenta_bancaria_id' => 0] + 
+                                                                [ 'valor_movimiento' => $valor_movimiento_teso] +
+                                                                [ 'estado' => 'Activo' ]
+                                                            );
+
+
+        // Guardar contabilización de tesorería, siempre CAJA
+        $contab_cuenta_id = TesoCaja::find( $request->teso_caja_id )->contab_cuenta_id;
+        $valor_debito = $valor_movimiento;
+        $valor_credito = 0;
+        if ( $motivo->movimiento == 'salida' )
+        {
+            $valor_debito = 0;
+            $valor_credito = $valor_movimiento;
+        }
+        $this->contabilizar_registro($contab_cuenta_id, $request->detalle_operacion, $valor_debito, $valor_credito, $request->teso_caja_id, 0);
+
+        // Guardar contabiización contrapartida
+        $contab_cuenta_id = $motivo->contab_cuenta_id;
+        $valor_debito = 0;
+        $valor_credito = $valor_movimiento;
+        if ( $motivo->movimiento == 'salida' )
+        {
+            $valor_debito = $valor_movimiento;
+            $valor_credito = 0;
+        }
+        $this->contabilizar_registro( $contab_cuenta_id, $request->detalle_operacion, $valor_debito, $valor_credito);
+
+        // Guardar otros movimientos según motivo
+
+        // Generar CxP a favor. Saldo negativo por pagar (a favor de la empresa)
+        if ( $motivo->teso_tipo_motivo == 'Anticipo proveedor' )
+        {
+            $this->datos['valor_documento'] = $valor_movimiento * -1;
+            $this->datos['valor_pagado'] = 0;
+            $this->datos['saldo_pendiente'] = $valor_movimiento * -1;
+            $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
+            $this->datos['estado'] = 'Pendiente';
+            CxpMovimiento::create( $this->datos );
+        }
+
+        // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
+        if ( $motivo->teso_tipo_motivo == 'Prestamo financiero' )
+        {
+            $this->datos['valor_documento'] = $valor_movimiento;
+            $this->datos['valor_pagado'] = 0;
+            $this->datos['saldo_pendiente'] = $valor_movimiento;
+            $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
+            $this->datos['estado'] = 'Pendiente';
+            CxpMovimiento::create( $this->datos );
+        }
+
+        // Generar CxC por algún dinero prestado o anticipado a trabajadores o clientes.
+        if ( $motivo->teso_tipo_motivo == 'Pago anticipado' )
+        {
+            $this->datos['valor_documento'] = $valor_movimiento;
+            $this->datos['valor_pagado'] = 0;
+            $this->datos['saldo_pendiente'] = $valor_movimiento;
+            $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
+            $this->datos['estado'] = 'Pendiente';
+            CxcMovimiento::create( $this->datos );
+        }
+
+        // Generar CxC: movimiento de cartera de clientes
+        if ( $motivo->teso_tipo_motivo == 'Anticipo' )
+        {
+            $this->datos['valor_documento'] = $valor_movimiento * -1;
+            $this->datos['valor_pagado'] = 0;
+            $this->datos['saldo_pendiente'] = $valor_movimiento * -1;
+            $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
+            $this->datos['estado'] = 'Pendiente';
+            CxcMovimiento::create( $this->datos );
+        }
+
+        return '<h4>Registro almacenado correctamente</h4><hr><a class="btn btn-info btn-lg" href="'.url('/').'/tesoreria/pagos_imprimir/'.$doc_encabezado->id.'?id=3&id_modelo='.$request->id_modelo.'&id_transaccion='.$request->id_transaccion.'" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;</a>';
+    }    
 
     public function get_etiquetas()
     {

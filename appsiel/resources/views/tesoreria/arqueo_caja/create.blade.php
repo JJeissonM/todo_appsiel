@@ -124,14 +124,12 @@
                     <b>Saldo Total</b>
                     <br>
                     <input type="text" min="0" class="form-control otros_saldos" id="otros_saldos"
-                           autocomplete="off" name="otros_saldos" placeholder="$">
+                           autocomplete="off" name="otros_saldos" placeholder="$" value="0">
                 </td>
                 <td class="col-md-6">
                     <b>Observaciones</b>
                     <br>
-                    <textarea class="form-control" name="detalle_otros_saldos" id="detalle_otros_saldos">
-							
-						</textarea>
+                    <textarea class="form-control" name="detalle_otros_saldos" id="detalle_otros_saldos">&nbsp;</textarea>
                 </td>
             </tr>
             </tbody>
@@ -204,6 +202,18 @@
             $('#teso_caja_id').focus();
 
             $('#fecha').val(get_fecha_hoy());
+
+            var teso_caja_id = getParameterByName( 'teso_caja_id' );
+
+            if( teso_caja_id !== '' )
+            {
+                var lbl = $('#teso_caja_id option:selected').text();
+                $('#teso_caja_id').html('');
+                $('#teso_caja_id').html( '<option value="' + teso_caja_id + '">' + lbl + '</option>');
+
+                $('.breadcrumb > li').eq(1).find('a').attr('href','#');
+                
+            }
 
 
             var sum;

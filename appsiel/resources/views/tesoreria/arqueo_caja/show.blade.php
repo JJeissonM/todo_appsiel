@@ -204,3 +204,24 @@
     </div>
     </div>
 @endsection
+
+@section('scripts2')
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var app_id = getParameterByName( 'id' );
+
+            if( app_id == 20 )
+            {
+                $('.breadcrumb > li').eq(1).find('a').attr('href','#');
+
+                $('#btn_create_general').hide();
+                $('.btn.btn-warning.btn-xs').hide();
+                $('.btn-group.pull-right').hide();                
+            }
+
+        });
+
+    </script>
+@endsection

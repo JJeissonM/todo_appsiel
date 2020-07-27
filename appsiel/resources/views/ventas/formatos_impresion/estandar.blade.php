@@ -82,6 +82,14 @@
             $total_impuestos += (float)$linea->valor_impuesto * (float)$linea->cantidad;
             $total_factura += $linea->precio_total;
             $total_descuentos += $linea->valor_total_descuento;
+
+            
+
+            $total_abonos = 0;
+            foreach ($abonos as $linea_abono)
+            {
+                $total_abonos += $linea_abono->abono;
+            }
         }
     ?>
     @include('ventas.incluir.lineas_registros_imprimir',compact('total_cantidad','total_factura'))

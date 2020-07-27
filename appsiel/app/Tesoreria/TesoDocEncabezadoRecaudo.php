@@ -14,7 +14,7 @@ class TesoDocEncabezadoRecaudo extends Model
 
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_empresa_id','core_tercero_id','codigo_referencia_tercero','teso_tipo_motivo','documento_soporte','descripcion','teso_medio_recaudo_id','teso_caja_id','teso_cuenta_bancaria_id','valor_total','estado','creado_por','modificado_por'];
 
-    public $encabezado_tabla = ['Documento','Fecha','Tercero','Detalle','Valor total','Estado','Acción'];
+    public $encabezado_tabla = ['Fecha','Documento','Tercero','Detalle','Valor total','Estado','Acción'];
 
     public static function consultar_registros()
     {
@@ -23,8 +23,9 @@ class TesoDocEncabezadoRecaudo extends Model
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
                     ->where('teso_doc_encabezados.core_empresa_id',Auth::user()->empresa_id)
                     ->where('teso_doc_encabezados.core_tipo_transaccion_id', $transaccion_id)
-                    ->select( DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo1'),
-                                'teso_doc_encabezados.fecha AS campo2',
+                    ->select( 
+                                'teso_doc_encabezados.fecha AS campo1',
+                                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
                                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
                                 'teso_doc_encabezados.descripcion AS campo4',
                                 'teso_doc_encabezados.valor_total AS campo5',

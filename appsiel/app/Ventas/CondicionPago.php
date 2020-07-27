@@ -23,7 +23,8 @@ class CondicionPago extends Model
                     ->select('vtas_condiciones_pago.id','vtas_condiciones_pago.descripcion')
                     ->get();
 
-        $vec['']='';
+        //$vec['']='';
+        $vec = [];
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

@@ -242,6 +242,11 @@ class ModeloController extends Controller
                 {
                     $acciones->show = $urls_acciones->show . $parametros_url;
                 }
+
+                if ( $urls_acciones->show == 'no' )
+                {
+                    $acciones->show = '';
+                }
             }
             
             if ( isset( $urls_acciones->imprimir ) )

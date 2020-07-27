@@ -51,22 +51,22 @@ class TesoMovimiento extends Model
         return $registros;
     }
 
-    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = 0)
+    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null)
     {
-        $operador = 'LIKE';
-        if ($teso_caja_id != 0) {
-            $operador = '=';
+        $array_wheres = [ ['teso_motivos.movimiento' ,'=', $tipo_movimiento ] ];
+        
+        if ( !is_null($teso_caja_id) ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
         }
 
         return TesoMovimiento::leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
-            ->where('teso_motivos.movimiento', '=', $tipo_movimiento)
-            ->where('teso_movimientos.fecha', '>=', $fecha_inicial)
-            ->where('teso_movimientos.fecha', '<=', $fecha_final)
-            ->where('teso_movimientos.teso_caja_id', $operador, (int) $teso_caja_id)
-            ->groupBy('teso_movimientos.teso_motivo_id')
-            ->select('teso_motivos.descripcion as motivo', 'teso_motivos.movimiento', DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento'))
-            ->get()
-            ->toArray();
+                                ->whereBetween('teso_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
+                                ->where( $array_wheres )
+                                ->groupBy('teso_movimientos.teso_motivo_id')
+                                ->select('teso_motivos.descripcion as motivo', 'teso_motivos.movimiento', DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento'))
+                                ->get()
+                                ->toArray();
     }
 
     public static function get_suma_movimientos_menor_a_la_fecha($fecha)

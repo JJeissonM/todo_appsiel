@@ -110,6 +110,45 @@
 	                </tbody>
 	            </table>
 
+	            <div class="container-fluid" id="tabla_formula_no_paciente" style="display: none;">
+	            	<h2> Ingrese los datos de la formula a facturar </h2>
+	            	<table class="table table-bordered">
+	                    <thead>
+	                        <tr>
+	                            <th>&nbsp;</th>
+	                            <th> Esfera </th>
+	                            <th> Cilindro </th>
+	                            <th> Eje </th>
+	                            <th> Adición </th>
+	                            <th> Agudeza Visual </th>
+	                            <th> Distancia Pupilar </th>
+	                        </tr>
+	                    </thead>
+	                    <tbody>
+	                    	<tr>
+	                    		<td> O. D. </td>
+	                    		<td> <input class="form-control" name="esfera_ojo_derecho" id="esfera_ojo_derecho" type="text"> </td>
+	                    		<td> <input class="form-control" name="cilindro_ojo_derecho" type="text"> </td>
+	                    		<td> <input class="form-control" name="eje_ojo_derecho" type="text"> </td>
+	                    		<td> <input class="form-control" name="adicion_ojo_derecho" type="text"> </td>
+	                    		<td> <input class="form-control" name="agudeza_visual_ojo_derecho" type="text"> </td>
+	                    		<td> <input class="form-control" name="distancia_pupilar_ojo_derecho" type="text"> </td>
+	                    	</tr>
+	                    	<tr>
+	                    		<td> O. I. </td>
+	                    		<td> <input class="form-control" name="esfera_ojo_izquierdo" type="text"> </td>
+	                    		<td> <input class="form-control" name="cilindro_ojo_izquierdo" type="text"> </td>
+	                    		<td> <input class="form-control" name="eje_ojo_izquierdo" type="text"> </td>
+	                    		<td> <input class="form-control" name="adicion_ojo_izquierdo" type="text"> </td>
+	                    		<td> <input class="form-control" name="agudeza_visual_ojo_izquierdo" type="text"> </td>
+	                    		<td> <input class="form-control" name="distancia_pupilar_ojo_izquierdo" type="text"> </td>
+	                    	</tr>
+	                    </tbody>
+	                </table>
+	                <input type="hidden" name="no_es_paciente" value="0" id="no_es_paciente">
+	            </div>
+		            
+
 				
 			{{ Form::close() }}
 
@@ -167,7 +206,7 @@
 	</div>
 
 	@include( 'components.design.ventana_modal',['titulo'=>'Asignar formula a la factura','texto_mensaje'=>'','contenido_modal' => ''] )
-	@include( 'components.design.ventana_modal2',['titulo'=>'Consulta del exámen','texto_mensaje'=>'','contenido_modal' => ''] )
+	@include( 'components.design.ventana_modal2',['titulo2'=>'Consulta del exámen','texto_mensaje2'=>'','contenido_modal' => ''] )
 
 	<br/><br/>
 @endsection
@@ -177,13 +216,14 @@
 	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
 
 	<script type="text/javascript">
+
 		$(document).ready(function(){
 
 			$("#agregar_examen").click(function(event){
 
 				event.preventDefault();
 
-				if ( $("#core_tercero_id").val() == '' )
+				if ( $("#cliente_input").val() == '' && $("#core_tercero_id").val() == '' )
 				{
 					alert('Debe ingresar un tercero.');
 					return false;
@@ -191,6 +231,7 @@
 
 				$('#tabla_formula').find('tbody').html('');
 				$('#tabla_formula').fadeOut();
+				$('#tabla_formula_no_paciente').fadeOut();
 
 		        $("#myModal").modal({backdrop: "static"});
 		        $("#div_spin").show();
@@ -201,10 +242,18 @@
 
 				$.get( url )
 					.done(function( respuesta ) {
-
-		                $('#contenido_modal').html( respuesta );
-
-		                $("#div_spin").hide();
+						$("#div_spin").hide();
+						if ( respuesta !== 'no_es_paciente')
+						{
+							$('#contenido_modal').html( respuesta );
+							$('#no_es_paciente').val(0);
+						}else{
+							$('#contenido_modal').html( '' );							
+	            			$('#myModal').modal("hide");
+							$('#tabla_formula_no_paciente').fadeIn();
+							$('#no_es_paciente').val(1);
+							$('#esfera_ojo_derecho').focus();
+						}
 
 					});		        
 		    });

@@ -44,6 +44,11 @@ class VtasDocEncabezado extends Model
                     */
     }
 
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
     public static function consultar_registros2()
     {
         $core_tipo_transaccion_id = 23; // Facturas
@@ -105,7 +110,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.consecutivo AS documento_transaccion_consecutivo',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo'),
                 DB::raw('CONCAT(doc_inventarios.prefijo," ",inv_doc_encabezados.consecutivo) AS documento_remision_prefijo_consecutivo'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero_nombre_completo'),
+                DB::raw('core_terceros.descripcion AS tercero_nombre_completo'),
                 'core_terceros.numero_identificacion',
                 'core_terceros.direccion1',
                 'core_terceros.telefono1',

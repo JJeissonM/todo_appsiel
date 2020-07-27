@@ -403,7 +403,9 @@ class VentaController extends TransaccionController
 
         $etiquetas = $this->get_etiquetas();
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas' ) )->render();
+        $abonos = CxcAbono::get_abonos_documento( $doc_encabezado );
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos' ) )->render();
     }
 
     /**
@@ -621,19 +623,35 @@ class VentaController extends TransaccionController
                                         )
                                 ->get()
                                 ->take(7);
+                                //dd($clientes);
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
+        $es_el_primero = true;
+        $ultimo_item = 0;
+        $num_item = 1;
+        $cantidad_datos = count( $clientes->toArray() ); // si datos es null?
         foreach ($clientes as $linea) 
         {
+            $primer_item = 0;
             $clase = '';
             if ($es_el_primero) {
                 $clase = 'active';
                 $es_el_primero = false;
+                $primer_item = 1;
+            }
+
+            if ( $num_item == $cantidad_datos )
+            {
+                $ultimo_item = 1;
             }
 
             $html .= '<a class="list-group-item list-group-item-cliente '.$clase.'" data-cliente_id="'.$linea->cliente_id.
-                                '" data-nombre_cliente="'.$linea->nombre_cliente.
+                                '" data-primer_item="'.$primer_item.
+                                '" data-accion="na" '.
+                                '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
+
+            $html .=            '" data-nombre_cliente="'.$linea->nombre_cliente.
                                 '" data-zona_id="'.$linea->zona_id.
                                 '" data-clase_cliente_id="'.$linea->clase_cliente_id.
                                 '" data-liquida_impuestos="'.$linea->liquida_impuestos.
@@ -648,7 +666,13 @@ class VentaController extends TransaccionController
                                 '" data-lista_precios_id="'.$linea->lista_precios_id.
                                 '" data-lista_descuentos_id="'.$linea->lista_descuentos_id.
                                 '" > '.$linea->nombre_cliente.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
+            $num_item++;
         }
+
+        // Linea crear nuevo registro
+        $modelo_id = 138; // App\Ventas\Clientes
+        $html .= '<a href="'.url('vtas_clientes/create?id=13&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
+
         $html .= '</div>';
 
         return $html;
@@ -797,10 +821,11 @@ class VentaController extends TransaccionController
         // 2do. Borrar registros contables del documento
         ContabMovimiento::where($array_wheres)->delete();
 
-        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar
+        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar y de tesorería
         CxcMovimiento::where($array_wheres)->delete();
+        TesoMovimiento::where($array_wheres)->delete();
 
-        // 4to. Se elimina el movimiento de compras
+        // 4to. Se elimina el movimiento de ventas
         VtasMovimiento::where($array_wheres)->delete();
         // 5to. Se marcan como anulados los registros del documento
         VtasDocRegistro::where( 'vtas_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );

@@ -35,7 +35,7 @@
 
     <table class="table table-bordered">
         <tr>
-            <td style="border: solid 1px #ddd; margin-top: -40px;">
+            <td style="border: solid 1px #ddd; margin-top: -40px;" width="70%">
                 @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir' ] )
             </td>
             <td style="border: solid 1px #ddd; padding-top: -20px;">
@@ -67,11 +67,11 @@
 
     <div style="border: solid 1px #ddd;">
         <b>@yield('lbl_tercero')</b> {{ $doc_encabezado->tercero_nombre_completo }}
-        <br>
-        <b>NIT:</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
-        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <b>NIT / CC:</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <b>Dirección:</b> {{ $doc_encabezado->direccion1 }}
-        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <b>Teléfono:</b> {{ $doc_encabezado->telefono1 }}
 
         @yield('encabezado_datos_adicionales')
