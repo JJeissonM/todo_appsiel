@@ -118,7 +118,7 @@
         <br>
     @endif
 
-    @if( !is_null($formula_id) )
+    @if( !is_null($formula_id) && $formula_asociada_factura->contenido_formula != '' )
         <p style="width: 100%; text-align: center; font-weight: bold; font-size: 12px; padding: -10px;">  Formula óptica </p>
         <?php 
             $datos = json_decode( $formula_asociada_factura->contenido_formula );
