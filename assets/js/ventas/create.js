@@ -572,7 +572,7 @@ $(document).ready(function(){
             	$('#div_cargando').show();
             	var url = '../vtas_consultar_existencia_producto';
 
-				$.get( url, { transaccion_id: $('#core_tipo_transaccion_id').val(), bodega_id: bodega_id, producto_id: producto_id, fecha: $('#fecha').val(), lista_precios_id: $('#lista_precios_id').val(), cliente_id: $('#cliente_id').val() } )
+				$.get( url, { transaccion_id: $('#core_tipo_transaccion_id').val(), bodega_id: bodega_id, producto_id: producto_id, fecha: $('#fecha').val(), lista_precios_id: $('#lista_precios_id').val(), lista_descuentos_id: $('#lista_descuentos_id').val(), cliente_id: $('#cliente_id').val() } )
 					.done(function( respuesta ) {
 
 						$('#div_cargando').hide();
@@ -607,12 +607,14 @@ $(document).ready(function(){
 
 						tasa_impuesto = respuesta.tasa_impuesto;
 						precio_unitario = respuesta.precio_venta;
+						tasa_descuento = respuesta.descuento_unitario;
 
 						//asignar_valores_campos_invisibles_linea_registro(); // ( valores sin formato )
 
 
 						// Asignar datos a los controles (formateados visualmente para el usuario)
 						$('#precio_unitario').val(  respuesta.precio_venta );
+						$('#tasa_descuento').val(  respuesta.descuento_unitario );
 						$('#tasa_impuesto').val( respuesta.tasa_impuesto + '%' );
 
 						// Se pasa a ingresar las cantidades

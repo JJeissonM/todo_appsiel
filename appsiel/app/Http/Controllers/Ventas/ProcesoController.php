@@ -78,7 +78,7 @@ class ProcesoController extends Controller
             $n++;
         }
 
-        $forma_pago = 'credito';
+        $forma_pago = $documento->forma_pago;
         VentaController::contabilizar_movimiento_debito( $forma_pago, $documento->toArray(), $total_documento, $detalle_operacion );/**/
     }
 

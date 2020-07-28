@@ -1,6 +1,6 @@
 <table class="table table-bordered">
     <tr>
-        <td width="50%" style="border: solid 1px black; margin-top: -40px;">
+        <td width="50%" style="border: solid 1px black; margin-top: -40px;" width="70%">
                 @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa' )
         </td>
         <td style="border: solid 1px black; padding-top: -20px;">

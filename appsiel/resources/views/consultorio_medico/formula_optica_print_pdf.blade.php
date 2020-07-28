@@ -11,7 +11,7 @@
 
 @section('content')
 
-	<div class="row lbl_historia_clinica" style="border: solid 1px; font-size: 14px;">
+	<div class="row lbl_historia_clinica" style="border: solid 1px; font-size: 14px;" width="70%">
 			
 			@include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', ['vista'=>'imprimir'] )
 

@@ -284,9 +284,11 @@ class RecaudoController extends TransaccionController
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
-        $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
+        $registros_contabilidad = [];//TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
-        $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad' ) )->render();
+        $elaboro = $doc_encabezado->creado_por;
+
+        $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
        
         // Se prepara el PDF
         $orientacion='portrait';
