@@ -139,7 +139,7 @@
 										@endif
 										
 										@if( $calificacion->valor > 0)
-											<b>Cal: </b>{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
+											<b>Cal: </b> @include('calificaciones.boletines.lbl_descripcion_calificacion')
 										@endif
 									</td>
 								</tr>

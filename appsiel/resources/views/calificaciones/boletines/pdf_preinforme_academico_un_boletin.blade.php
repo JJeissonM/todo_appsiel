@@ -58,7 +58,7 @@
 						</td>
 						
 						<td> 
-							{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
+							@include('calificaciones.boletines.lbl_descripcion_calificacion')
 						</td>
 
 						<td>

@@ -61,7 +61,7 @@
 						
 						&nbsp;&nbsp;&nbsp;	|  &nbsp;&nbsp;&nbsp;
 
-						<b>Cal: </b>{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
+						<b>Cal: </b> @include('calificaciones.boletines.lbl_descripcion_calificacion')
 					</td>
 				</tr>
 

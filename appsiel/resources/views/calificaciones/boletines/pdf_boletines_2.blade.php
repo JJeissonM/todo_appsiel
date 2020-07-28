@@ -126,7 +126,9 @@
 						    @endif
 						</td>
 							@if( $calificacion->valor != 0 )
-								<td align="center"> {{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }}) </td>
+								<td align="center">
+									@include('calificaciones.boletines.lbl_descripcion_calificacion')
+								</td>
 							@else
 								<td align="center"> &nbsp; </td>
 							@endif

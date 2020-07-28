@@ -147,7 +147,7 @@
 							<td align="center"> 
 								@if( $asignatura->maneja_calificacion == 1)
 									<!-- se imprimie la calificación -->
-									{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
+									@include('calificaciones.boletines.lbl_descripcion_calificacion')
 								@endif
 							</td>
 						@endif

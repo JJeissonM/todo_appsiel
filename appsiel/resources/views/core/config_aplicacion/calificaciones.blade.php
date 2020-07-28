@@ -83,7 +83,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								if( isset($parametros['etiqueta_calificacion_boletines'] ) )
+								{
+									$etiqueta_calificacion_boletines = $parametros['etiqueta_calificacion_boletines'];
+								}else{
+									$etiqueta_calificacion_boletines = 'numero_y_letras';
+								}
+							?>
+							{{ Form::bsSelect('etiqueta_calificacion_boletines', $etiqueta_calificacion_boletines, 'Calificación a mostrar en boletines', ['numero_y_letras'=>'Número y letras','solo_numeros'=>'Solo números','solo_letras'=>'Solo letras'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

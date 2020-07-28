@@ -110,7 +110,7 @@
 										@endif
 										
 										@if( $calificacion->valor > 0)
-											<b>Cal: </b>{{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
+											<b>Cal: </b> {{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }})
 										@endif
 									</td>
 								</tr>
