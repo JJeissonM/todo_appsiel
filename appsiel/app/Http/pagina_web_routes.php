@@ -195,6 +195,7 @@ Route::get('ecommerce/public/account', 'web\TiendaController@cuenta')->name('tie
 Route::put('ecommerce/account/informacion/updated/{clienteweb}', 'web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
 Route::get('ecommerce/public/filtro/categoria/{categoria}', 'web\TiendaController@filtroCategoria')->name('tienda.filtrocategoria');
 Route::get('ecommerce/public/busqueda/', 'web\TiendaController@busqueda')->name('tienda.busqueda');
+Route::get('ecommerce/public/product/{id}/detalle', 'Inventarios\ProductoController@detalle_producto')->name('tienda.detalleproducto');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');

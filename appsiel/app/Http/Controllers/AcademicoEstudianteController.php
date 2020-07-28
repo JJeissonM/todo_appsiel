@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
+
 use Illuminate\Support\Facades\Auth;
 use DB;
 use View;
@@ -21,8 +20,7 @@ use App\Matriculas\PeriodoLectivo;
 use App\Calificaciones\Periodo;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\CalificacionAuxiliar;
-use App\Calificaciones\Logro;
-use App\Calificaciones\EncabezadoCalificacion;
+
 use App\Calificaciones\CursoTieneAsignatura;
 
 use App\Calificaciones\ObservacionesBoletin;
@@ -30,16 +28,12 @@ use App\Calificaciones\ObservacionesBoletin;
 use App\AcademicoDocente\PlanClaseEncabezado;
 use App\AcademicoDocente\PlanClaseRegistro;
 
-use App\Cuestionarios\Pregunta;
-use App\Cuestionarios\Cuestionario;
+
 use App\Cuestionarios\ActividadEscolar;
 
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoCarteraEstudiante;
 
-//Importing laravel-permission models
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 
 class AcademicoEstudianteController extends Controller
 {

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Sistema;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use Input;
@@ -23,25 +22,19 @@ use App\Sistema\Aplicacion;
 use App\Sistema\TipoTransaccion;
 use App\Core\TipoDocApp;
 use App\Sistema\Modelo;
-use App\Sistema\Campo;
-use App\Core\Tercero;
 use App\Core\ModeloEavValor;
 use App\User;
-use App\Matriculas\Matricula;
 
 use App\Calificaciones\Logro;
-use App\Calificaciones\Asignatura;
-use App\Core\ConsecutivoDocumento;
 
-use App\Inventarios\InvMovimiento;
+
+
 use App\Inventarios\InvBodega;
 
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 
-use App\Contabilidad\ContabCuenta;
-use App\PropiedadHorizontal\Propiedad;
 
 class ModeloController extends Controller
 {

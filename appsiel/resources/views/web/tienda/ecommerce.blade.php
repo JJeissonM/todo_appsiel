@@ -15,7 +15,6 @@
             <div class="container">
                 <div class="container-inner">
                     <div class="main">
-                        
                         <div class="main-inner">
                             <div class="row">
                                 <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -62,7 +61,7 @@
                                                                 </a>
                                                             </div>
                                                             <h2 class="product-name"><a
-                                                                        href="#"
+                                                                        href="{{route('tienda.detalleproducto',$item->id)}}"
                                                                         title="Fusce aliquam">{{$item->descripcion}}</a></h2>
                                                             <div class="ratings">
                                                                 <div class="rating-box">

@@ -26,6 +26,11 @@ class InvProducto extends Model
 
     public $encabezado_tabla = ['Código','Descripción','UM-1', 'Grupo inventario','Precio compra','Precio venta','IVA','Tipo','Estado','Acción'];
 
+    public function fichas()
+    {
+      return $this->hasMany(InvFichaProducto::class,'producto_id','id');
+    }
+
     public static function consultar_registros()
     {
         $registros = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
@@ -191,7 +196,6 @@ class InvProducto extends Model
         $impuesto_id = InvProducto::where( 'id', $producto_id )->value( 'impuesto_id' );
         return Impuesto::where( 'id', $impuesto_id )->value( 'cta_ventas_devol_id' );
     }
-
 
     public static function get_tasa_impuesto( $producto_id )
     {
