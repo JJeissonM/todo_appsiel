@@ -20,7 +20,7 @@
                         <div class="col-main">
                             <div class="account-create">
                                 <div class="page-title">
-                                    <h1>Crear nuevo documento</h1>
+                                    <h1>Nuevo Cliente</h1>
                                 </div>
                                     <form action="{{url('/web')}}" method="post" id="form-validate">
                                         <input type="hidden" name="_token" value="{{csrf_token()}}">
