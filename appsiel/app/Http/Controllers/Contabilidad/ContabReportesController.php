@@ -710,25 +710,33 @@ class ContabReportesController extends Controller
 
     public function contab_ajax_auxiliar_por_cuenta(Request $request)
     {
-        $contab_cuenta_id = "%".$request->contab_cuenta_id."%";
-        $fecha_inicial = $request->fecha_inicial;
-        $fecha_final = $request->fecha_final;
+        $contab_cuenta_id = $request->contab_cuenta_id;
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
 
-        $numero_identificacion = "%".$request->core_tercero_id."%";        
+        $core_tercero_id = $request->core_tercero_id;
 
-        if ( $request->codigo_referencia_tercero == '') {
-          $codigo_referencia_tercero = '%'.$request->codigo_referencia_tercero.'%';
-          $operador = 'LIKE';
-        }else{
-          $codigo_referencia_tercero = $request->codigo_referencia_tercero;
-          $operador = '=';
+        if ( $contab_cuenta_id == '' )
+        {
+            $contab_cuenta_id = null;
         }
 
-        $core_empresa_id = Auth::user()->empresa_id;   
+        if ( $core_tercero_id == '' )
+        {
+            $core_tercero_id = null;
+        }
 
-        $saldo_inicial = ContabMovimiento::get_saldo_inicial($fecha_inicial, $contab_cuenta_id, $numero_identificacion, $operador, $codigo_referencia_tercero, $core_empresa_id );
+        if ( is_null($contab_cuenta_id ) && is_null( $core_tercero_id ) )
+        {
+            return '<h1>Debe ingresar al menos una Cuenta o un Tercero</h1>';
+        }
+
+        $saldo_inicial = ContabMovimiento::get_saldo_inicial_v2($fecha_desde, $contab_cuenta_id, $core_tercero_id );
         
-        $movimiento_cuenta = ContabMovimiento::get_movimiento_cuenta($fecha_inicial, $fecha_final, $contab_cuenta_id, $numero_identificacion, $operador, $codigo_referencia_tercero, $core_empresa_id );
+
+        $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id );
+
+        return View::make( 'contabilidad.incluir.tabla_movimiento_contable', compact( 'movimiento_contable','fecha_desde', 'saldo_inicial' ) )->render();
 
         // 
         $total_debito = 0;
@@ -740,107 +748,7 @@ class ContabReportesController extends Controller
         // OJO, esto es para una sola cuenta
         $cuenta = ContabCuenta::where( 'codigo', $request->contab_cuenta_id )->get()[0];
 
-        $tabla2 = '<h3>Cuenta: '.$cuenta->codigo.' '.$cuenta->descripcion.'</h3><table id="myTable" class="table table-striped tabla_registros" style="margin-top: -4px;">
-                        <thead>
-                            <tr>
-                                <th>
-                                   Fecha
-                                </th>
-                                <th>
-                                   Documento
-                                </th>
-                                <th>
-                                   Tercero
-                                </th>
-                                <th>
-                                   Detalle
-                                </th>
-                                <th>
-                                   Mov. Débito
-                                </th>
-                                <th>
-                                   Mov. Crédito
-                                </th>
-                                <th>
-                                   Saldo
-                                </th>
-                            </tr>
-                        </thead>';
-
-        $tabla2.='<tr  class="fila-'.$j.'" >
-                            <td>'.$fecha_inicial.'
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                            </td>
-                            <td>
-                               '.number_format( $saldo_inicial , 0, ',', '.').'
-                            </td>
-                        </tr>';
-        $j++;
-        for ($i=0; $i < count($movimiento_cuenta) ; $i++) {           
-
-            $debito = $movimiento_cuenta[$i]['debito'];
-            $credito = $movimiento_cuenta[$i]['credito'];
-
-            $saldo = $saldo_inicial + $debito + $credito;
-            
-            $tabla2.='<tr  class="fila-'.$j.'" >
-                            <td>
-                               '.$movimiento_cuenta[$i]['fecha'].'
-                            </td>
-                            <td>
-                               '.$movimiento_cuenta[$i]['documento'].'
-                            </td>
-                            <td>
-                               '.$movimiento_cuenta[$i]['tercero'].'
-                            </td>
-                            <td>
-                               '.$movimiento_cuenta[$i]['detalle_operacion'].'
-                            </td>
-                            <td>
-                               '.number_format($debito, 0, ',', '.').'
-                            </td>
-                            <td>
-                               '.number_format($credito, 0, ',', '.').'
-                            </td>
-                            <td>
-                               '.number_format( $saldo , 0, ',', '.').'
-                            </td>
-                        </tr>';
-
-            $saldo_inicial = $saldo;
-            $j++;
-            if ($j==3) {
-                $j=1;
-            }
-            $total_debito+=$debito;
-            $total_credito+=$credito;
-            /**/
-        }
-
-        $tabla2.='<tr  class="fila-'.$j.'" >
-                            <td colspan="4">
-                               &nbsp;
-                            </td>
-                            <td>
-                               '.number_format($total_debito, 0, ',', '.').'
-                            </td>
-                            <td>
-                               '.number_format($total_credito, 0, ',', '.').'
-                            </td>
-                            <td>
-                               '.number_format($saldo, 0, ',', '.').'
-                            </td>
-                        </tr>';
-        $tabla2.='</table>';
+        $tabla2 = '<h3>Cuenta: '.$cuenta->codigo.' '.$cuenta->descripcion.'</h3>';
 
         return $tabla2;
     }

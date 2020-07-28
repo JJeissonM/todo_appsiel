@@ -30,7 +30,7 @@
 
     <table class="table table-bordered">
         <tr>
-            <td style="border: solid 1px #ddd; margin-top: -40px;" colspan="3">
+            <td style="border: solid 1px #ddd; margin-top: -40px;" colspan="3" width="70%">
                     @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir' ] )
             </td>
             <td style="border: solid 1px #ddd; padding-top: -20px;" colspan="2">

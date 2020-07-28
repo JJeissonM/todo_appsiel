@@ -49,6 +49,7 @@ use App\Ventas\VtasMovimiento;
 use App\Ventas\Cliente;
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\ListaPrecioDetalle;
+use App\Ventas\ListaDctoDetalle;
 use App\Ventas\NotaCredito;
 
 use App\CxC\DocumentosPendientes;
@@ -687,6 +688,7 @@ class VentaController extends TransaccionController
         $bodega_id = (int)Input::get('bodega_id');
         $fecha = Input::get('fecha');
         $lista_precios_id = (int)Input::get('lista_precios_id');
+        $lista_descuentos_id = (int)Input::get('lista_descuentos_id');
         $producto_id = (int)Input::get('producto_id');
         
         $producto = InvProducto::where('inv_productos.id', $producto_id)
@@ -721,14 +723,16 @@ class VentaController extends TransaccionController
 
             /*
                 El precio de venta se trae de a cuerdo al parámetro de la configuración
-                WARNING: Falta el manejo de los descuentos.
             */
-
+            $descuento_unitario = 0;
+            $precio_unitario = 0;
             switch ( config('ventas')['modo_liquidacion_precio'] )
             {
                 case 'lista_de_precios':
                     // Precios traido desde la lista de precios asociada al cliente.
                     $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $fecha, $producto_id );
+                    $descuento_unitario = ListaDctoDetalle::get_descuento_producto( $lista_descuentos_id, $fecha, $producto_id );
+
                     break;
 
                 case 'ultimo_precio':
@@ -761,13 +765,13 @@ class VentaController extends TransaccionController
                                                 [ 'tipo' => $producto['tipo'] ],
                                                 [ 'costo_promedio' => $costo_promedio ],
                                                 [ 'precio_venta' => $precio_unitario ],
+                                                [ 'descuento_unitario' => $descuento_unitario ],
                                                 [ 'base_impuesto' => $base_impuesto ],
                                                 [ 'tasa_impuesto' => $tasa_impuesto ],
                                                 [ 'valor_impuesto' => $valor_impuesto ]
                                     );
         }
 
-        //print_r($producto);
         return $producto;
     }
 

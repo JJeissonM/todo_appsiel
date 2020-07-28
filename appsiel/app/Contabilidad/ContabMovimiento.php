@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Core\Tercero;
+use App\Core\TipoDocApp;
+use App\Sistema\TipoTransaccion;
+use App\Contabilidad\ContabCuenta;
+
 class ContabMovimiento extends Model
 {
     // tipo_transaccion se refiere al tipo de transacción de la línea
@@ -63,6 +68,27 @@ class ContabMovimiento extends Model
                     ->paginate(2000);
     }
 
+    public function tercero()
+    {
+        return $this->belongsTo( Tercero::class,'core_tercero_id');
+    }
+
+    public function cuenta()
+    {
+        return $this->belongsTo( ContabCuenta::class,'contab_cuenta_id');
+    }
+
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo( TipoTransaccion::class,'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo( TipoDocApp::class,'core_tipo_doc_app_id');
+    }
+
+
     public static function get_saldo_inicial($fecha_inicial, $contab_cuenta_id, $numero_identificacion, $operador, $codigo_referencia_tercero, $empresa_id )
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento';
@@ -81,11 +107,53 @@ class ContabMovimiento extends Model
         return $saldo_inicial_sql['valor_saldo'];
     }
 
+    public static function get_saldo_inicial_v2( $fecha_desde, $cuenta_id, $tercero_id )
+    {
+        $array_wheres = [ 
+                            [ 'fecha', '<', $fecha_desde ],
+                            [ 'core_empresa_id', '=', Auth::user()->empresa_id ]
+                        ];
+
+        if ( !is_null( $cuenta_id ) )
+        {
+            $array_wheres = array_merge( $array_wheres, [ 'contab_cuenta_id' => $cuenta_id ] );
+        }
+
+        if ( !is_null( $tercero_id ) )
+        {
+            $array_wheres = array_merge( $array_wheres, [ 'core_tercero_id' => $tercero_id ] );
+        }
+
+        return ContabMovimiento::where( $array_wheres )->sum( 'valor_saldo' );
+    }
+
+    public static function get_movimiento_contable( $fecha_desde, $fecha_hasta, $cuenta_id, $tercero_id )
+    {
+        $array_wheres = [ 
+                            [ 'core_empresa_id', '=', Auth::user()->empresa_id ]
+                        ];
+
+        if ( !is_null( $cuenta_id ) )
+        {
+            $array_wheres = array_merge( $array_wheres, [ 'contab_cuenta_id' => $cuenta_id ] );
+        }
+
+        if ( !is_null( $tercero_id ) )
+        {
+            $array_wheres = array_merge( $array_wheres, [ 'core_tercero_id' => $tercero_id ] );
+        }
+
+        return ContabMovimiento::whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta ] )
+                                ->where( $array_wheres )
+                                ->orderBy('fecha')
+                                ->get();
+    }
+
+
+
     public static function get_movimiento_cuenta($fecha_inicial, $fecha_final, $contab_cuenta_id, $numero_identificacion, $operador, $codigo_referencia_tercero, $empresa_id )
     {
-        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento';
-        
-        $movimiento_cuenta = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
+        return ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_movimientos.core_tercero_id')
                     ->where('contab_movimientos.fecha','>=',$fecha_inicial)
@@ -94,12 +162,14 @@ class ContabMovimiento extends Model
                     ->where( 'core_terceros.numero_identificacion', 'LIKE', $numero_identificacion)
                     ->where( 'contab_movimientos.codigo_referencia_tercero', $operador, $codigo_referencia_tercero)
                     ->where( 'contab_movimientos.core_empresa_id', '=', $empresa_id)
-                    ->select( 'contab_movimientos.fecha', 'contab_movimientos.detalle_operacion', DB::raw( $select_raw ), 'core_terceros.descripcion as tercero', 'contab_movimientos.valor_debito AS debito', 'contab_movimientos.valor_credito AS credito', 'contab_movimientos.codigo_referencia_tercero', 'contab_movimientos.core_tercero_id', 'contab_movimientos.core_empresa_id', 'contab_movimientos.core_tipo_transaccion_id', 'contab_movimientos.core_tipo_doc_app_id', 'contab_movimientos.consecutivo', 'contab_movimientos.documento_soporte', 'contab_movimientos.detalle_operacion')
+                    ->select( 
+                                'contab_movimientos.fecha',
+                                'contab_movimientos.detalle_operacion', 
+                                DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento' ), 
+                                'core_terceros.descripcion as tercero', 'contab_movimientos.valor_debito AS debito', 'contab_movimientos.valor_credito AS credito', 'contab_movimientos.codigo_referencia_tercero', 'contab_movimientos.core_tercero_id', 'contab_movimientos.core_empresa_id', 'contab_movimientos.core_tipo_transaccion_id', 'contab_movimientos.core_tipo_doc_app_id', 'contab_movimientos.consecutivo', 'contab_movimientos.documento_soporte', 'contab_movimientos.detalle_operacion')
                     ->orderBy('fecha')
                     ->get()
                     ->toArray();
-
-        return $movimiento_cuenta;
     }
 
     public static function get_movimiento_arbol_grupo_cuenta($empresa_id, $fecha_inicial, $fecha_final, $grupo_abuelo_id )

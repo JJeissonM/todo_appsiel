@@ -105,47 +105,52 @@
         </tfoot>
     </table>
 
-    <table class="table table-bordered">
-        <tr>
-            <td style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> Registros contables </span> </td>
-        </tr>
-    </table>
-    
-    <table class="table table-bordered table-striped">
-        <thead>
+    @if( !empty($registros_contabilidad) ) 
+        <table class="table table-bordered">
             <tr>
-                <th>Código</th>
-                <th>Cuenta</th>
-                <th>Débito</th>
-                <th>Crédito</th>
+                <td style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> Registros contables </span> </td>
             </tr>
-        </thead>
-        <tbody>
-            @php
-                $total_valor_debito = 0;
-                $total_valor_credito = 0;
-            @endphp
-            @foreach( $registros_contabilidad as $fila )
+        </table>
+        
+        <table class="table table-bordered table-striped">
+            <thead>
                 <tr>
-                    <td> {{ $fila['cuenta_codigo'] }}</td>
-                    <td> {{ $fila['cuenta_descripcion'] }}</td>
-                    <td> {{ number_format(  $fila['valor_debito'], 0, ',', '.') }}</td>
-                    <td> {{ number_format(  $fila['valor_credito'] * -1, 0, ',', '.') }}</td>
+                    <th>Código</th>
+                    <th>Cuenta</th>
+                    <th>Débito</th>
+                    <th>Crédito</th>
                 </tr>
+            </thead>
+            <tbody>
                 @php
-                    $total_valor_debito += $fila['valor_debito'];
-                    $total_valor_credito += $fila['valor_credito'] * -1;
+                    $total_valor_debito = 0;
+                    $total_valor_credito = 0;
                 @endphp
-            @endforeach
-        </tbody>
-        <tfoot>            
-                <tr>
-                    <td colspan="2"> &nbsp; </td>
-                    <td> {{ number_format( $total_valor_debito, 0, ',', '.') }}</td>
-                    <td> {{ number_format( $total_valor_credito, 0, ',', '.') }}</td>
-                </tr>
-        </tfoot>
-    </table>
+                @foreach( $registros_contabilidad as $fila )
+                    <tr>
+                        <td> {{ $fila['cuenta_codigo'] }}</td>
+                        <td> {{ $fila['cuenta_descripcion'] }}</td>
+                        <td> {{ number_format(  $fila['valor_debito'], 0, ',', '.') }}</td>
+                        <td> {{ number_format(  $fila['valor_credito'] * -1, 0, ',', '.') }}</td>
+                    </tr>
+                    @php
+                        $total_valor_debito += $fila['valor_debito'];
+                        $total_valor_credito += $fila['valor_credito'] * -1;
+                    @endphp
+                @endforeach
+            </tbody>
+            <tfoot>            
+                    <tr>
+                        <td colspan="2"> &nbsp; </td>
+                        <td> {{ number_format( $total_valor_debito, 0, ',', '.') }}</td>
+                        <td> {{ number_format( $total_valor_credito, 0, ',', '.') }}</td>
+                    </tr>
+            </tfoot>
+        </table>
+    @endif
+
+    <br><br>
+    @include('tesoreria.incluir.firmas')
 
 </body>
 </html>

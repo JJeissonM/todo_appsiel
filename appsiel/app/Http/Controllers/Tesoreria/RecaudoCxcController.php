@@ -316,9 +316,11 @@ class RecaudoCxcController extends Controller
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
-        $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
+        $registros_contabilidad = [];//TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
-        $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad' ) )->render();
+        $elaboro = $doc_encabezado->creado_por;
+
+        $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
         
         // Se prepara el PDF
         $orientacion='portrait';
