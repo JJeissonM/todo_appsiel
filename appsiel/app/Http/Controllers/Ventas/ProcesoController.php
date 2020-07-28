@@ -111,7 +111,7 @@ class ProcesoController extends Controller
             $i++;            
         }
 
-        echo '<br>Se Recontabilizaron '.($i-1).' documentos de ventas con sus repectivas remisiones.';
+        echo '<br>Se Recontabilizaron '.($i-1).' documentos de ventas.'; //con sus repectivas remisiones
     }
 
     /*

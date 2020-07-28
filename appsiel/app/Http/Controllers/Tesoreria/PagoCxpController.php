@@ -193,6 +193,9 @@ class PagoCxpController extends TransaccionController
         // UN SOLO MOVIMIENTO DE TESORERIA y un solo movimiento contable de (CR) CAJA O BANCO
         $datos = array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] );
 
+        $doc_encabezado->valor_total = $valor_total;
+        $doc_encabezado->save();        
+
         // Datos la caja o el la cuenta bancaria
         // Tambien se asigna el ID de la cuenta contable para el movimiento CREDITO
         $vec_3 = explode("-",$request->teso_medio_recaudo_id);
