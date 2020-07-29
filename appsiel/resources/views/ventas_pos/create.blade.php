@@ -1453,6 +1453,26 @@
 		    $(document).on('click','#myModal2 .btn_save_modal',function(event){
 		    	event.preventDefault();
 
+		    	if( $('#combobox_motivos').val() == '' )
+		    	{
+		    		$('#combobox_motivos').focus();
+		    		alert('Debe ingresar un Motivo');
+		    		return false;
+		    	}
+
+		    	if( $('#cliente_proveedor_id').val() == '' )
+		    	{
+		    		$('#cliente_proveedor_id').focus();
+		    		alert('Debe ingresar un Cliente/Proveedor.');
+		    		return false;
+		    	}
+
+		    	if( !validar_input_numerico( $('#col_valor') ) || $('#col_valor').val() == '' )
+		    	{
+		    		alert('No ha ingresado una valor para la transacción.');
+		    		return false;
+		    	}
+
 		    	var url = $("#form_registrar_ingresos_gastos").attr('action');
 				var data = $("#form_registrar_ingresos_gastos").serialize();
 

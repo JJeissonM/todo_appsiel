@@ -4,7 +4,7 @@
 			<label class="control-label col-sm-3" for="motivo_input">*Motivo:</label>
 			<div class="col-sm-9">
 				<input class="form-control text_input_sugerencias" id="motivo_input" data-url_busqueda="{{url('/')}}/teso_consultar_motivos" autocomplete="off" name="motivo_input" type="text">
-				<input id="combobox_motivos" name="campo_motivos" type="hidden" required="required">
+				<input type="hidden" name="campo_motivos" id="combobox_motivos" required="required" value="">
 			</div>
 		</div>
 
@@ -13,8 +13,8 @@
 		<div class="form-group">
 			<label class="control-label col-sm-3" for="cliente_proveedor_id">*Cliente/Proveedor:</label>
 			<div class="col-sm-9">
-				<input id="cliente_proveedor_id" placeholder="*Cliente/Proveedor" autocomplete="off" class="form-control text_input_sugerencias" data-url_busqueda="{{url('/')}}/core_consultar_terceros_v2" data-clase_modelo="App\Core\Tercero" required="required" name="core_tercero_id_aux" type="text" value="">
-				<input type="hidden" name="cliente_proveedor_id" value="">
+				<input placeholder="*Cliente/Proveedor" autocomplete="off" class="form-control text_input_sugerencias" data-url_busqueda="{{url('/')}}/core_consultar_terceros_v2" data-clase_modelo="App\Core\Tercero" required="required" name="core_tercero_id_aux" type="text" value="">
+				<input type="hidden" name="cliente_proveedor_id" id="cliente_proveedor_id" required="required" value="">
 			</div>
 		</div>
 
