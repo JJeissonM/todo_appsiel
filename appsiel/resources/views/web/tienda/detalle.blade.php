@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{asset('assets/tienda/css/custom.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/login.css')}}">
+    <link href="{{asset('assets/css/toastr.min.css')}}" rel="stylesheet">
     <style>
 
         #img_producto {
@@ -65,8 +66,15 @@
                     <div class="main">
                         <div class="main-inner">
                             <div class="row">
+                                <?php
+                                $url_imagen_producto = '#';
+                                if ( $inv_producto->imagen != '' )
+                                {
+                                    $url_imagen_producto = asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen );
+                                }
+                                ?>
                                 <div class="col-left sidebar col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-bottom: 20px;">
-                                    <img id="img_producto" src="https://images.alphacoders.com/241/241133.jpg"  alt="">
+                                    <img id="img_producto" src="{{$url_imagen_producto}}"  alt="">
                                 </div>
                                 <div class="col-main col-lg-6 col-md-6 col-sm-12 col-xs-12">
                                     <div class="page-title category-title">
@@ -78,12 +86,12 @@
                                          <div class="cantidades">
                                              <label for="" style="margin-right: 5px;">CANTIDAD</label>
                                              <span class="label label-danger" onclick="less()"><i class="fa fa-minus-square-o" aria-hidden="true"></i></span>
-                                             <input type="text" style="width: 40px; " value="0">
+                                             <input type="text" style="width: 40px; " value="1" id="cantidad">
                                              <span class="label label-success" onclick="plus()"><i class="fa fa-plus-square-o" aria-hidden="true"></i></span>
                                          </div>
-                                         <button class="btn add_carrito" style="">Agregar al Carrito</button>
-                                     </div>
 
+                                         <button class="btn add_carrito" style="" onclick="add_carrito({'id':'{{$inv_producto->id}}','imagen':'{{$url_imagen_producto}}', 'titulo':'{{$inv_producto->descripcion}}','precio':'{{$inv_producto->precio_venta}}','tasa_impuesto':'{{$inv_producto->tasa_impuesto}}'})">Agregar al Carrito</button>
+                                     </div>
                                 </div>
                                 <div class="col-main col-lg-12 col-md-12 col-sm-12 col-xs-12"  style="margin-top: 20px">
                                     <h2 class="title" style=" padding-bottom: 10px; font-size: 24px; border-bottom: 1px solid grey">Especificacíones</h2>
@@ -112,10 +120,76 @@
 @endsection
 
 @section('script')
-    <script src="{{asset('js/carrito/app.js')}}"></script>
+    <script src="{{asset('assets/js/toastr.min.js')}}"></script>
     <script type="text/javascript">
+
          function less() {
+           let val = $('#cantidad').val();
+           val--;
+           if(val == -1){
+               val = 0;
+           }
+           $('#cantidad').val(val);
+         }
+
+         function plus(){
+             let val = $('#cantidad').val();
+             val++;
+             $('#cantidad').val(val);
+         }
+         
+         function add_carrito(producto) {
+
+             let cant = $('#cantidad').val();
+             producto.cantidad = cant;
+             producto.total =  parseFloat(producto.precio*cant);
+             producto.precio_base = parseFloat(producto.precio/ ( 1 + producto.tasa_impuesto/100)).toFixed(2);
+
+             guardarProductoLocalStorage(producto);
+             toastr.success(`${producto.titulo} agregado al carrito`);
 
          }
+
+         // Almacena cursos en el carrito a Local Storage
+         function guardarProductoLocalStorage(producto) {
+
+             let productos = [];
+             // Toma el valor de un arreglo con datos de LS o vacio
+             productos = obtenerProductosLocalStorage();
+             let exist = false;
+
+             productos.forEach(item => {
+                 if(item.id == producto.id){
+                     item.cantidad = producto.cantidad;
+                     item.total = item.precio*item.cantidad;
+                     exist = true;
+                 }
+             });
+
+             // el curso seleccionado se agrega al arreglo
+             if(!exist){
+                 productos.push(producto);
+             }
+
+             localStorage.setItem('productos', JSON.stringify(productos));
+         }
+
+         // Comprueba que haya elementos en Local Storage
+         function obtenerProductosLocalStorage() {
+
+             let productosLS;
+
+             // comprobamos si hay algo en localStorage
+             if(localStorage.getItem('productos') === null) {
+                 productosLS = [];
+             } else {
+                 productosLS = JSON.parse( localStorage.getItem('productos') );
+             }
+
+
+             return productosLS;
+
+         }
+
     </script>
 @endsection
