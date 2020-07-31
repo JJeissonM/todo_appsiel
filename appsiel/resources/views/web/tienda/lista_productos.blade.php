@@ -37,8 +37,8 @@
                             </div>
                         </div>
                         <div class="price-box">
-                                                                <span class="regular-price" id="product-price-1">
-                                                                    <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
+                            <span class="regular-price" id="product-price-1">
+                            <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
                         </div>
                         <div class="actions agregar-carrito">
                             <button type="button" class="btn-cart">
