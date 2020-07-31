@@ -22,11 +22,17 @@
 			<?php
 
 				
-				$cant_cols=4;
-				$i=$cant_cols;
+				$cant_cols = 4;
+				$i = $cant_cols;
 		      ?>
 		        @foreach($permisos as $fila)
-		          
+		          	
+		          	<?php  
+
+		          		//dd( $permisos );
+
+		          	?>
+
 		          @if($i % $cant_cols == 0)
 		            <div class="row">
 		          @endif
@@ -34,32 +40,27 @@
 		          <?php
 		          		$url=$fila['url'].'?id='.Input::get('id').'&id_modelo='.$fila['modelo_id'];
 		          ?>
+
 		          @can($fila['name'])
+
+			          
 			          <div class="col-sm-{{12/$cant_cols}}">
 			          		<a href="{{url($url)}}">
 			          			<h1><i class="fa fa-{{$fila['fa_icon']}}"></i></h1>
 				                {{$fila['descripcion']}}
 				            </a>
 			          </div>
+
 			     @endcan
-		    <?php
-		          $i++;
-
-		          $modelo_tercero_a_cliente_id = 157;
-
-		      ?>
+			     
+				    <?php
+				          $i++;
+				      ?>
 		          @if($i % $cant_cols == 0)
 		            </div>
 		            <br/>
 		          @endif
 		        @endforeach
-
-		        <div class="col-sm-{{12/$cant_cols}}">
-	          		<a href="{{ url('vtas_clientes_tercero_a_cliente_create'.'?id='.Input::get('id').'&id_modelo='.$modelo_tercero_a_cliente_id )}}">
-	          			<h1><i class="fa fa-child"></i></h1>
-		                Crear tercero como cliente
-		            </a>
-	          </div>
 		</div>
 	</div>
 @endsection

@@ -4047,10 +4047,10 @@
       'url' => 'web',
       'parent' => 0,
       'orden' => 4,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => 'list',
       'created_at' => '2019-10-10 08:47:31',
-      'updated_at' => '2019-10-11 08:35:34',
+      'updated_at' => '2020-07-31 17:17:44',
     ),
     270 => 
     array (
@@ -4266,16 +4266,16 @@
     array (
       'id' => 310,
       'core_app_id' => 9,
-      'modelo_id' => 0,
-      'name' => 'compras_terceros_proveedores',
+      'modelo_id' => 156,
+      'name' => 'compras_terceros_proveedores_ok',
       'descripcion' => 'Crear tercero como proveedor',
-      'url' => 'web',
+      'url' => 'web/create',
       'parent' => 0,
       'orden' => 2,
       'enabled' => 0,
-      'fa_icon' => 'address-book',
+      'fa_icon' => 'child',
       'created_at' => '2019-10-22 05:51:40',
-      'updated_at' => '2019-10-22 05:58:39',
+      'updated_at' => '2020-07-31 17:06:20',
     ),
     285 => 
     array (
@@ -5382,10 +5382,10 @@
       'url' => 'web',
       'parent' => 173,
       'orden' => 2,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => 'list',
       'created_at' => '2020-05-03 06:28:48',
-      'updated_at' => '2020-05-03 06:29:30',
+      'updated_at' => '2020-07-31 17:18:06',
     ),
     359 => 
     array (
@@ -5926,6 +5926,126 @@
       'fa_icon' => '',
       'created_at' => '2020-07-28 15:10:30',
       'updated_at' => '2020-07-28 15:10:41',
+    ),
+    395 => 
+    array (
+      'id' => 421,
+      'core_app_id' => 5,
+      'modelo_id' => 219,
+      'name' => 'sga_guias_academicas_docente',
+      'descripcion' => 'Guías académicas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:18:59',
+      'updated_at' => '2020-07-31 16:19:23',
+    ),
+    396 => 
+    array (
+      'id' => 422,
+      'core_app_id' => 5,
+      'modelo_id' => 192,
+      'name' => 'sga_aca_doc_preinforme_academico',
+      'descripcion' => 'Preinforme Académico',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 7,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:23:39',
+      'updated_at' => '2020-07-31 16:24:11',
+    ),
+    397 => 
+    array (
+      'id' => 423,
+      'core_app_id' => 5,
+      'modelo_id' => 70,
+      'name' => 'aca_doc_crear_logro',
+      'descripcion' => 'Crear logros',
+      'url' => 'web/create',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:27:49',
+      'updated_at' => '2020-07-31 16:28:08',
+    ),
+    398 => 
+    array (
+      'id' => 424,
+      'core_app_id' => 5,
+      'modelo_id' => 225,
+      'name' => 'aca_doc_logros_adicionales',
+      'descripcion' => 'Logros adicionales',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:31:10',
+      'updated_at' => '2020-07-31 16:31:27',
+    ),
+    399 => 
+    array (
+      'id' => 425,
+      'core_app_id' => 5,
+      'modelo_id' => 17,
+      'name' => 'aca_doc_novedades_observador',
+      'descripcion' => 'Novedades observador',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:34:40',
+      'updated_at' => '2020-07-31 16:35:06',
+    ),
+    400 => 
+    array (
+      'id' => 426,
+      'core_app_id' => 5,
+      'modelo_id' => 18,
+      'name' => 'aca_doc_analisis_dofa',
+      'descripcion' => 'Análisis FODA',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:37:39',
+      'updated_at' => '2020-07-31 16:38:06',
+    ),
+    401 => 
+    array (
+      'id' => 427,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'sin_usar_1',
+      'descripcion' => 'Sin usar',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'address-book',
+      'created_at' => '2020-07-31 17:01:12',
+      'updated_at' => '2020-07-31 17:11:23',
+    ),
+    402 => 
+    array (
+      'id' => 428,
+      'core_app_id' => 13,
+      'modelo_id' => 157,
+      'name' => 'ventas_terceros_a_clientes',
+      'descripcion' => 'Crear tercero como cliente',
+      'url' => 'web/create',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'child',
+      'created_at' => '2020-07-31 17:19:48',
+      'updated_at' => '2020-07-31 17:20:21',
     ),
   ),
   'roles' => 
@@ -14309,6 +14429,222 @@
     array (
       'orden' => 0,
       'permission_id' => 420,
+      'role_id' => 17,
+    ),
+    1373 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 1,
+    ),
+    1374 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 2,
+    ),
+    1375 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 9,
+    ),
+    1376 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 12,
+    ),
+    1377 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 13,
+    ),
+    1378 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 1,
+    ),
+    1379 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 2,
+    ),
+    1380 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 9,
+    ),
+    1381 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 12,
+    ),
+    1382 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 13,
+    ),
+    1383 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 1,
+    ),
+    1384 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 2,
+    ),
+    1385 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 3,
+    ),
+    1386 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 9,
+    ),
+    1387 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 12,
+    ),
+    1388 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 13,
+    ),
+    1389 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 1,
+    ),
+    1390 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 2,
+    ),
+    1391 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 3,
+    ),
+    1392 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 9,
+    ),
+    1393 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 13,
+    ),
+    1394 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 1,
+    ),
+    1395 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 2,
+    ),
+    1396 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 3,
+    ),
+    1397 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 9,
+    ),
+    1398 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 12,
+    ),
+    1399 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 13,
+    ),
+    1400 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 1,
+    ),
+    1401 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 2,
+    ),
+    1402 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 3,
+    ),
+    1403 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 9,
+    ),
+    1404 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 12,
+    ),
+    1405 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 13,
+    ),
+    1406 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 428,
+      'role_id' => 1,
+    ),
+    1407 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 428,
+      'role_id' => 3,
+    ),
+    1408 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 428,
       'role_id' => 17,
     ),
   ),
@@ -27080,7 +27416,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
       'url_ver' => 'web/id_fila',
-      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=22","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=22","color_bootstrap":"default","faicon":"clone","size":"xs"},"1":{"tag_html":"a","title":"Ficha Tecnica","url":"ficha_tecnica/id_fila?id=8&id_modelo=22","color_bootstrap":"info","faicon":"file-text","size":"xs"}}',
       'url_estado' => '',
       'url_eliminar' => 'inventarios/eliminar_producto/id_fila',
       'controller_complementario' => '',
@@ -27089,7 +27425,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => 'inventarios/',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2018-09-06 09:48:36',
-      'updated_at' => '2020-01-20 10:41:39',
+      'updated_at' => '2020-07-31 10:59:55',
     ),
     22 => 
     array (
@@ -30600,7 +30936,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
       'url_ver' => 'web/id_fila',
-      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=189","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=189","color_bootstrap":"default","faicon":"clone","size":"xs"},"1":{"tag_html":"a","title":"Ficha Tecnica","url":"ficha_tecnica/id_fila?id=8&id_modelo=22","color_bootstrap":"info","faicon":"file-text","size":"xs"}}',
       'url_estado' => '',
       'url_eliminar' => 'inventarios/eliminar_producto/id_fila',
       'controller_complementario' => '',
@@ -30609,7 +30945,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => 'inventarios/',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-02-17 09:48:36',
-      'updated_at' => '2020-02-20 10:24:17',
+      'updated_at' => '2020-07-31 10:59:29',
     ),
     182 => 
     array (

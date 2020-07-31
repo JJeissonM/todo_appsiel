@@ -54,15 +54,6 @@ class ProveedorController extends ModeloController
         return redirect( 'compras_proveedores/'.$Proveedor->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
     }
 
-
-    // Para los terceros que ya están creados
-    public function tercero_a_proveedor_create()
-    {
-        $general = new ModeloController();
-
-        return $general->create();
-    }
-
     public function tercero_a_proveedor_store(Request $request)
     {
         // Ya el tercero está creado

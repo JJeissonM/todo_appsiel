@@ -90,7 +90,7 @@ class TransaccionController extends Controller
     {
         $this->set_variables_globales();
 
-        $permisos = Permission::where( 'core_app_id', $this->app->id)
+        $permisos = Permission::where( 'core_app_id', $this->app->id )
                                 ->where('parent',0)
                                 ->orderBy('orden','ASC')
                                 ->get()
