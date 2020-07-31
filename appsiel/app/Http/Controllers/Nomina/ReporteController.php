@@ -82,14 +82,14 @@ class ReporteController extends Controller
                         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
                         <style>
                             @page { 
-                                margin: 1cm;
+                                margin: 0.7cm;
                             }
                             .page-break {
                                 page-break-after: always;
                             }
                             .cuadro {
                                 border: 1px solid;
-                                border-radius: 15px;
+                                border-radius: 10px;
                                 padding: 5px;
                             }
                             .table td {
@@ -103,7 +103,7 @@ class ReporteController extends Controller
                     </body>
                 </html>';
 
-        $tam_hoja = 'folio';
+        $tam_hoja = array(0, 0, 612.00, 390.00);//'folio';
         $orientacion='portrait';
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
@@ -195,7 +195,7 @@ class ReporteController extends Controller
 
             $total_a_pagar = $total_devengos - $total_deducciones;
 
-            $firmas = '<table style="width:100%;">
+            $firmas = '<table style="width:100%; font-size: 10px;">
             <tr>
                 <td width="20%"> &nbsp; </td>
                 <td align="center"> _____________________________ </td>

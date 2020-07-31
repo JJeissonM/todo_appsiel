@@ -23,8 +23,6 @@
 			@include('banner')
 		</div>
 
-		<br/><br/><br/>
-
 		@include('layouts.mensajes')
 
 		<input id="myInput" type="text" placeholder="Buscar..." style="border: none; border-color: transparent; background-color: transparent; border-bottom: 1px solid #ddd; width: 100%;">
@@ -37,7 +35,7 @@
 					El nombre del permiso (permissions.name) debe coincidir con el nombre de la aplicación (sys_aplicaciones.descripcion) para poder ser mostrada.
 				*/
 				$cant_cols=4;
-				$tam_iconos = '90px';
+				$tam_iconos = '80px';
 				$i=$cant_cols;
 		      ?>
 		        @foreach($aplicaciones as $fila)
@@ -63,7 +61,7 @@
 				      ?>
 		          @if($i % $cant_cols == 0)
 		            </div>
-		            <br/><br/>
+		            <br/>
 		          @endif
 		        @endforeach
 		</div>

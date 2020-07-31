@@ -234,8 +234,18 @@
 	<!-- 
 	<script src="https://unpkg.com/jspdf@ latest/dist/jspdf.min.js"></script>
 	-->
+	<script type="text/javascript">
 
-	<script>
+		if ( document.getElementById('id_tipo_documento_id') !== null )
+		{
+			document.getElementById('id_tipo_documento_id').value = 13;
+		}
+
+		if ( document.getElementById('codigo_ciudad') !== null )
+		{
+			document.getElementById('codigo_ciudad').value = 16920001;
+		}		
+
 		var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
 		function validar_requeridos() {
 			control_requeridos = true;
