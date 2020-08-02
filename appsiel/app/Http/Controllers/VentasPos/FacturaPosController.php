@@ -56,6 +56,8 @@ use App\Ventas\Cliente;
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
+use App\Ventas\VtasDocEncabezado;
+use App\Ventas\NotaCredito;
 
 use App\Ventas\VtasMovimiento;
 
@@ -161,9 +163,9 @@ class FacturaPosController extends TransaccionController
 
         $plantilla_factura = $this->generar_plantilla_factura( $pdv );
 
-        //echo $plantilla_factura;
+        $redondear_centena = config('ventas_pos.redondear_centena');
 
-        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura') );
+        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura', 'redondear_centena') );
     }
 
     /**
@@ -179,7 +181,6 @@ class FacturaPosController extends TransaccionController
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-
 
         // Crear Registros del documento de ventas
         $request['creado_por'] = Auth::user()->email;
@@ -250,7 +251,7 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
-        $docs_relacionados = FacturaPos::get_documentos_relacionados( $doc_encabezado );
+        $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
         $empresa = $this->empresa;
         $id_transaccion = $this->transaccion->id;
 
@@ -268,7 +269,7 @@ class FacturaPosController extends TransaccionController
 
         $url_crear = $this->modelo->url_crear.$this->variables_url;
         
-        $vista = 'ventas.show';
+        $vista = 'ventas_pos.show';
 
         if( !is_null( Input::get('vista') ) )
         {
@@ -343,6 +344,12 @@ class FacturaPosController extends TransaccionController
 
         $modificado_por = Auth::user()->email;
 
+        // Se elimina el Mov. Vtas. POS
+        Movimiento::where( 'core_tipo_transaccion_id', $factura->core_tipo_transaccion_id )
+                        ->where( 'core_tipo_doc_app_id', $factura->core_tipo_doc_app_id )
+                        ->where( 'consecutivo', $factura->consecutivo )
+                        ->delete();
+
         // Se marcan como anulados los registros del documento
         DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
 
@@ -353,49 +360,111 @@ class FacturaPosController extends TransaccionController
         
     }
 
+    public static function anular_factura_acumulada(Request $request)
+    {        
+        $factura = FacturaPos::find( $request->factura_id );
+
+        $array_wheres = ['core_empresa_id'=>$factura->core_empresa_id, 
+                            'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id,
+                            'consecutivo' => $factura->consecutivo];
+
+        // Verificar si la factura tiene abonos, si tiene no se puede eliminar
+        $cantidad = CxcAbono::where('doc_cxc_transacc_id',$factura->core_tipo_transaccion_id)
+                            ->where('doc_cxc_tipo_doc_id',$factura->core_tipo_doc_app_id)
+                            ->where('doc_cxc_consecutivo',$factura->consecutivo)
+                            ->count();
+
+        if($cantidad != 0)
+        {
+            return redirect( 'pos_factura/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error','Factura NO puede ser eliminada. Se le han hecho Recaudos de CXC (Tesorería).');
+        }
+
+        $modificado_por = Auth::user()->email;
+
+        // 1ro. Anular documento asociado de inventarios
+        // Obtener las remisiones relacionadas con la factura y anularlas o dejarlas en estado Pendiente
+        $ids_documentos_relacionados = explode( ',', $factura->remision_doc_encabezado_id );
+        $cant_registros = count($ids_documentos_relacionados);
+        for ($i=0; $i < $cant_registros; $i++)
+        { 
+            $remision = InvDocEncabezado::find( $ids_documentos_relacionados[$i] );
+            if ( !is_null($remision) )
+            {
+                if ( $request->anular_remision ) // anular_remision es tipo boolean
+                {
+                    InventarioController::anular_documento_inventarios( $remision->id );
+                }else{
+                    $remision->update( [ 'estado'=>'Pendiente', 'modificado_por' => $modificado_por]);
+                }    
+            }
+        }
+
+        // 2do. Borrar registros contables del documento
+        ContabMovimiento::where($array_wheres)->delete();
+
+        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar y de tesorería
+        CxcMovimiento::where($array_wheres)->delete();
+        TesoMovimiento::where($array_wheres)->delete();
+
+        // 4to. Se elimina el movimiento de ventas POS y Ventas Estándar
+        Movimiento::where($array_wheres)->delete();
+        VtasMovimiento::where($array_wheres)->delete();
+
+        // 5to. Se marcan como anulados los registros del documento
+        DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
+
+        // 6to. Se marca como anulado el documento
+        $factura->update(['estado'=>'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
+
+        return redirect( 'pos_factura/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Factura de ventas ANULADA correctamente.');
+        
+    }
+
 
     public function acumular( $pdv_id )
     {
-        $encabezados_documentos = FacturaPos::where('pdv_id',$pdv_id)->where('estado','Pendiente')->get();
+        $pdv = Pdv::find( $pdv_id );
+
+        $encabezados_documentos = FacturaPos::where( 'pdv_id', $pdv_id )->where( 'estado', 'Pendiente' )->get();
 
         foreach ($encabezados_documentos as $factura)
         {
-            $lineas_registros = DocRegistro::where('vtas_pos_doc_encabezado_id',$factura->id)->get();
+            $lineas_registros = DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->get();
 
             foreach ($lineas_registros as $linea)
             {
                 $datos = $factura->toArray() + $linea->toArray();
 
-                // Falta Movimientos y Documentos de Inventarios
-                /*
-                    
-                */
-
-
                 // Movimiento de Ventas
                 $datos['estado'] = 'Activo';
+
                 VtasMovimiento::create( $datos );
 
-                $linea->estado ='Acumulado';
+                $linea->estado = 'Acumulado';
                 $linea->save();
+            } 
 
-                // Actualiza Movimiento POS
-                $movimiento_pos = Movimiento::where('pdv_id', $datos['pdv_id'])
-                                                ->where('core_tipo_transaccion_id', $datos['core_tipo_transaccion_id'])
-                                                ->where('core_tipo_doc_app_id', $datos['core_tipo_doc_app_id'])
-                                                ->where('consecutivo', $datos['consecutivo'])
-                                                ->get()
-                                                ->first();
+            // Actualiza Movimiento POS
+            Movimiento::where( 'core_tipo_transaccion_id', $factura->core_tipo_transaccion_id )
+                        ->where( 'core_tipo_doc_app_id', $factura->core_tipo_doc_app_id )
+                        ->where( 'consecutivo', $factura->consecutivo )
+                        ->update( [ 'estado' => 'Acumulado' ] ); 
 
-                $movimiento_pos->estado ='Acumulado';
-                $movimiento_pos->save();
-            }
+            // Crear Remisión y Mov. de inventarios
+            $datos_remision = $factura->toArray();
+            $datos_remision['inv_bodega_id'] = $pdv->bodega_default_id;
+
+            $doc_remision = InventarioController::crear_encabezado_remision_ventas( $datos_remision );
+
+            InventarioController::crear_registros_remision_ventas( $doc_remision, $lineas_registros );
 
             // Movimiento de Tesoreria ó CxC
             $datos['estado'] = 'Activo';
             FacturaPosController::crear_registro_pago( $factura->forma_pago, $datos, $factura->valor_total, $factura->descripcion );
 
-            $factura->estado ='Acumulado';
+            $factura->remision_doc_encabezado_id = $doc_remision->id;
+            $factura->estado = 'Acumulado';
             $factura->save();
         }
 

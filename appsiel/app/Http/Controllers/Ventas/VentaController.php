@@ -162,7 +162,6 @@ class VentaController extends TransaccionController
         return $remision_creada_id;
     }
 
-
     /*
         Crea los registros, el movimiento y la contabilización de un documento. 
         Todas estas operaciones se crean juntas porque se almacenena en cada iteración de las lineas de registros
@@ -711,15 +710,7 @@ class VentaController extends TransaccionController
         // Si no está vacío el array $producto
         if( !empty($producto) )
         {
-            $costo_promedio = InvCostoPromProducto::where('inv_bodega_id','=',$bodega_id)
-                                    ->where('inv_producto_id','=',$producto['id'])
-                                    ->value('costo_promedio');
-
-            if ( ! ($costo_promedio>0) ) 
-            {
-                $costo_promedio = 0;
-            }
-
+            $costo_promedio = InvCostoPromProducto::get_costo_promedio($bodega_id, $producto['id'] );
 
             /*
                 El precio de venta se trae de a cuerdo al parámetro de la configuración

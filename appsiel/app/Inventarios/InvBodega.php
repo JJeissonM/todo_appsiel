@@ -36,7 +36,6 @@ class InvBodega extends Model
                             ->get();
 
         $vec['']='';
-        $vec = [];
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

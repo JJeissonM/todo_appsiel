@@ -337,7 +337,8 @@ class InventarioController extends TransaccionController
 
             // Si es una entrada, se calcula el costo promedio por bodega y producto
             //if ($request->core_tipo_transaccion_id==$tipo_entrada) {
-            if ($motivo->movimiento == 'entrada') {
+            if ($motivo->movimiento == 'entrada')
+            {
                 // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
                 $costo_prom = TransaccionController::calcular_costo_promedio($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_unitario, $request->fecha);
 
@@ -346,6 +347,65 @@ class InventarioController extends TransaccionController
             }
         }
     }
+
+
+
+
+    public static function crear_encabezado_remision_ventas( $datos )
+    {
+        // Llamar a los parámetros del archivo de configuración
+        $parametros = config('ventas');
+
+        $datos['core_tipo_transaccion_id'] = $parametros['rm_tipo_transaccion_id'];
+        $datos['core_tipo_doc_app_id'] = $parametros['rm_tipo_doc_app_id'];
+        $datos['estado'] = 'Facturada';
+        $datos['creado_por'] = Auth::user()->email;
+        $datos['consecutivo'] = TipoDocApp::get_consecutivo_actual( $datos['core_empresa_id'], $datos['core_tipo_doc_app_id'] ) + 1;
+
+        TipoDocApp::aumentar_consecutivo( $datos['core_empresa_id'], $datos['core_tipo_doc_app_id'] );
+
+        $doc_encabezado = InvDocEncabezado::create( $datos );
+
+        return $doc_encabezado;
+    }
+
+
+    /*
+        Nota los costos son llamados del costo promedio
+    */
+    public static function crear_registros_remision_ventas( $doc_encabezado, $lineas_registros )
+    {
+
+        $cantidad_registros = count($lineas_registros);
+
+        foreach( $lineas_registros AS $linea )
+        {
+            $costo_unitario = InvCostoPromProducto::get_costo_promedio($doc_encabezado->inv_bodega_id, $linea->inv_producto_id );
+            $cantidad = $linea->cantidad * -1; // Salida de inventarios
+            $costo_total = $cantidad * $costo_unitario;
+
+            $datos = $doc_encabezado->toArray();
+            $datos['inv_doc_encabezado_id'] = $doc_encabezado->id;
+            $datos['core_empresa_id'] = $doc_encabezado->core_empresa_id;
+            $datos['inv_bodega_id'] = $doc_encabezado->inv_bodega_id;
+            $datos['core_tercero_id'] = $doc_encabezado->core_tercero_id;
+
+            $linea_datos = [ 'inv_motivo_id' => $linea->vtas_motivo_id ] + // Warning: $linea tiene un campo especifico
+                            [ 'inv_producto_id' => $linea->inv_producto_id ] + 
+                            [ 'costo_unitario' => $costo_unitario ] +
+                            [ 'cantidad' => $cantidad ] +
+                            [ 'costo_total' => $costo_total ];
+
+            InvDocRegistro::create( $datos + $linea_datos );
+
+            if ( InvProducto::find( $linea->inv_producto_id )->tipo == 'producto')
+            {
+                InvMovimiento::create( $datos + $linea_datos );
+            }
+        }
+    }
+
+
 
     /**
      * Mostrar las EXISTENCIAS de una bodega ($id).
@@ -643,13 +703,12 @@ class InventarioController extends TransaccionController
 
         if (!empty($producto)) {
             // si no es una Entrada, se debe cambiar el costo unitario, por el costo promedio
-            if ($transaccion_id != 1) {
-                $costo_prom = InvCostoPromProducto::where('inv_bodega_id', '=', $bodega_id)
-                    ->where('inv_producto_id', '=', $producto['id'])
-                    ->value('costo_promedio');
-                if ($costo_prom > 0) {
-                    $producto = array_merge($producto, ['precio_compra' => $costo_prom]);
-                }
+            if ($transaccion_id != 1)
+            {
+                
+                $costo_prom = InvCostoPromProducto::get_costo_promedio( $bodega_id, $producto['id']);
+
+                $producto = array_merge( $producto, ['precio_compra' => $costo_prom] );
             }
 
             // Obtener existencia actual
@@ -666,14 +725,9 @@ class InventarioController extends TransaccionController
     {
         $producto = InvProducto::find($request->inv_producto_id)->toArray();
 
-        $costo_prom = InvCostoPromProducto::where('inv_bodega_id', '=', $request->id_bodega)
-                                            ->where('inv_producto_id', '=', $request->inv_producto_id)
-                                            ->value('costo_promedio');
+        $costo_prom = InvCostoPromProducto::get_costo_promedio( $request->id_bodega, $request->inv_producto_id);
 
-        if ($costo_prom > 0)
-        {
-            $producto = array_merge($producto, ['precio_compra' => $costo_prom]);
-        }
+        $producto = array_merge($producto, ['precio_compra' => $costo_prom]);
 
         // Obtener existencia actual
         $existencia_actual = InvMovimiento::get_existencia_actual($request->inv_producto_id, $request->id_bodega, $request->fecha_aux);

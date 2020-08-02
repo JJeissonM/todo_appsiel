@@ -448,14 +448,7 @@ class InvFisicoController extends TransaccionController
         $cantidad = count($productos);
         for($i=0; $i<$cantidad;$i++)
         {
-            $costo_prom = InvCostoPromProducto::where('inv_bodega_id','=',$bodega_id)
-                                    ->where('inv_producto_id','=',$productos[$i]['producto_id'])
-                                    ->value('costo_promedio');
-
-            $productos[$i]['costo_unitario'] = 0;
-            if ($costo_prom>0) {
-                $productos[$i]['costo_unitario'] = $costo_prom;
-            } 
+            $productos[$i]['costo_unitario'] = InvCostoPromProducto::get_costo_promedio( $bodega_id, $productos[$i]['producto_id'] );
         }
 
         return $productos;

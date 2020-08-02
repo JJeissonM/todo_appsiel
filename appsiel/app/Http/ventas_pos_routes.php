@@ -16,4 +16,5 @@ Route::post('ventas_pos_form_registro_ingresos_gastos', 'VentasPos\FacturaPosCon
 
 
 
+Route::post('ventas_pos_anular_factura', 'VentasPos\FacturaPosController@anular_factura_acumulada');
 Route::resource('pos_factura', 'VentasPos\FacturaPosController');

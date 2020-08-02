@@ -466,14 +466,7 @@ class FacturaMedicaController extends VentaController
         // Si no está vacío el array $producto
         if( !empty($producto) )
         {
-            $costo_promedio = InvCostoPromProducto::where('inv_bodega_id','=',$bodega_id)
-                                    ->where('inv_producto_id','=',$producto['id'])
-                                    ->value('costo_promedio');
-
-            if ( ! ($costo_promedio>0) ) 
-            {
-                $costo_promedio = 0;
-            }
+            $costo_promedio = InvCostoPromProducto::get_costo_promedio( $bodega_id , $producto['id'] );
 
 
             /*
