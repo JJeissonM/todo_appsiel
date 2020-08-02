@@ -5317,7 +5317,7 @@
       'id' => 380,
       'core_app_id' => 10,
       'modelo_id' => 0,
-      'name' => 'pw_config',
+      'name' => 'pw_configuracion',
       'descripcion' => 'Configuración',
       'url' => 'config',
       'parent' => 214,
@@ -5325,7 +5325,7 @@
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-04-13 08:59:26',
-      'updated_at' => '2020-05-02 09:47:30',
+      'updated_at' => '2020-08-02 06:47:55',
     ),
     355 => 
     array (
@@ -6046,6 +6046,21 @@
       'fa_icon' => 'child',
       'created_at' => '2020-07-31 17:19:48',
       'updated_at' => '2020-07-31 17:20:21',
+    ),
+    403 => 
+    array (
+      'id' => 429,
+      'core_app_id' => 20,
+      'modelo_id' => 0,
+      'name' => 'vtas_pos_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-08-02 06:46:56',
+      'updated_at' => '2020-08-02 06:47:15',
     ),
   ),
   'roles' => 
@@ -14645,6 +14660,18 @@
     array (
       'orden' => 0,
       'permission_id' => 428,
+      'role_id' => 17,
+    ),
+    1409 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 429,
+      'role_id' => 1,
+    ),
+    1410 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 429,
       'role_id' => 17,
     ),
   ),
