@@ -13,6 +13,7 @@ use Form;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Core\TransaccionController;
+use App\Http\Controllers\Contabilidad\ContabilidadController;
 
 
 // Objetos
@@ -1095,6 +1096,46 @@ class InventarioController extends TransaccionController
                             [ 'valor_credito' => ($valor_credito * -1) ] + 
                             [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
                         );
+    }
+
+
+
+    public static function contabilizar_documento_inventario( $documento_id, $detalle_operacion )
+    {
+        $documento = InvDocEncabezado::find( $documento_id );
+
+        // Obtener líneas de registros del documento
+        $registros_documento = InvDocRegistro::where( 'inv_doc_encabezado_id', $documento->id )->get();
+
+        foreach ($registros_documento as $linea)
+        {
+            $motivo = InvMotivo::find( $linea->inv_motivo_id );
+
+            // Si el movimiento es de ENTRADA de inventarios, se DEBITA la cta. de inventarios vs la cta. contrapartida
+            if ( $motivo->movimiento == 'entrada')
+            {
+                // Inventarios (DB)
+                $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea->inv_producto_id );
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, abs($linea->costo_total), 0);
+                
+                // Cta. Contrapartida (CR)
+                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, 0, abs($linea->costo_total) );
+            }
+
+            // Si el movimiento es de SALIDA de inventarios, se ACREDITA la cta. de inventarios vs la cta. contrapartida
+            if ( $motivo->movimiento == 'salida')
+            {
+                // Inventarios (CR)
+                $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea->inv_producto_id );
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, 0, abs($linea->costo_total));
+                
+                // Cta. Contrapartida (DB)
+                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, abs($linea->costo_total), 0 );
+            }
+                
+        }
     }
 
 }

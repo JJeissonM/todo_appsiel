@@ -32,18 +32,10 @@ class ProveedorController extends ModeloController
      */
     public function store(Request $request)
     {
-        // Almacenar datos básicos (Tercero)
-        
-        $descripcion = $request->all()['apellido1']." ".$request->all()['apellido2']." ".$request->all()['nombre1']." ".$request->all()['otros_nombres'];
-
-        if ( $request->all()['razon_social'] != '' )
-        {
-            $descripcion = $request->all()['razon_social'];
-        }
-        
+        // Almacenar datos básicos (Tercero)        
 
         $tercero = new Tercero;
-        $tercero->fill( array_merge( $request->all(), ['descripcion' => $descripcion] ) );
+        $tercero->fill( $request->all() );
         $tercero->save();
         
         // Datos del Proveedor
@@ -176,6 +168,7 @@ class ProveedorController extends ModeloController
         $lista_campos = $general->get_campos_modelo($modelo,$registro,'edit');
 
         $tercero = Tercero::find($registro->core_tercero_id);
+        $registro->descripcion = $tercero->descripcion;
         $registro->nombre1 = $tercero->nombre1;
         $registro->otros_nombres = $tercero->otros_nombres;
         $registro->apellido1 = $tercero->apellido1;
@@ -227,16 +220,8 @@ class ProveedorController extends ModeloController
         $registro->fill( $request->all() );
         $registro->save();
 
-        // Actualizar datos del Tercero
-        $descripcion = $request->all()['apellido1']." ".$request->all()['apellido2']." ".$request->all()['nombre1']." ".$request->all()['otros_nombres'];
-
-        if ( $request->all()['razon_social'] != '' )
-        {
-            $descripcion = $request->all()['razon_social'];
-        }
-        
         $tercero = Tercero::find( $registro->core_tercero_id );
-        $tercero->fill( array_merge( $request->all(), ['descripcion' => $descripcion] ) );
+        $tercero->fill( $request->all() );
         $tercero->save();
 
         return redirect('compras_proveedores/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Registro MODIFICADO correctamente.');

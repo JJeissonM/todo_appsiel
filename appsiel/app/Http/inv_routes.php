@@ -27,8 +27,6 @@ Route::get('inv_fisico_hacer_ajuste','Inventarios\InvFisicoController@hacer_ajus
 Route::get('inv_get_productos_del_grupo','Inventarios\InvFisicoController@get_productos_del_grupo');
 Route::resource('inv_fisico', 'Inventarios\InvFisicoController');
 
-//Route::get('inv_balance', 'Inventarios\InventarioController@inv_balance');
-//Route::post('ajax_balance', 'Inventarios\InventarioController@ajax_balance');
 Route::resource('inventarios', 'Inventarios\InventarioController');
 Route::get('inv_get_lista_productos', 'Inventarios\InventarioController@get_lista_productos');
 
@@ -47,6 +45,7 @@ Route::get('inv_anular_documento/{id}', 'Inventarios\InventarioController@anular
 Route::get('inv_movimiento', 'Inventarios\ReporteController@inv_movimiento');
 Route::post('ajax_movimiento', 'Inventarios\ReporteController@ajax_movimiento');
 Route::get('inv_existencias', 'Inventarios\ReporteController@inv_existencias');
+Route::post('inv_balance_inventarios', 'Inventarios\ReporteController@balance_inventarios');
 Route::post('inv_etiquetas_codigos_barra', 'Inventarios\ReporteController@inv_etiquetas_codigos_barra');
 Route::post('inv_existencias_corte', 'Inventarios\ReporteController@inv_existencias_corte');
 

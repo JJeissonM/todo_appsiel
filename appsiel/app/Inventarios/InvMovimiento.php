@@ -19,6 +19,13 @@ class InvMovimiento extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
+    
+    public function producto()
+    {
+        return $this->belongsTo('App\Inventarios\InvProducto');
+    }
+
+
     public static function consultar_registros()
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo) AS campo2';
@@ -103,10 +110,6 @@ class InvMovimiento extends Model
                                 ->toArray();
     }
 
-    public function producto()
-    {
-        return $this->belongsTo('App\Inventarios\InvProducto');
-    }
 
     public static function get_saldo_inicial($id_producto, $id_bodega, $fecha_inicial )
     {
@@ -120,6 +123,74 @@ class InvMovimiento extends Model
                     ->toArray();    
         return $sql_saldo_inicial[0];
     }
+
+
+
+    public static function get_saldos_iniciales_items( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial )
+    {
+        $array_wheres = [ 
+                            ['inv_doc_encabezados.fecha' ,'<', $fecha_inicial]
+                        ];
+
+        if ( $grupo_inventario_id != '')
+        {
+          $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
+        }
+
+        if ( $inv_bodega_id != '')
+        {
+          $array_wheres = array_merge( $array_wheres, ['inv_movimientos.inv_bodega_id' => $inv_bodega_id ] );
+        }
+        
+        return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+                            ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+                            ->where( $array_wheres )
+                            ->select(
+                                        'inv_productos.id AS item_id',
+                                        DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento'),
+                                        DB::raw('sum(inv_movimientos.costo_total) as costo_total_movimiento') 
+                                    )
+                            ->groupBy( 'inv_movimientos.inv_producto_id' )
+                            ->get();
+    }
+
+
+
+    public static function get_suma_movimientos( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial, $fecha_final, $tipo_movimiento )
+    {
+        $array_wheres = [ 
+                            ['inv_doc_encabezados.fecha' ,'>=', $fecha_inicial ],
+                            ['inv_doc_encabezados.fecha' ,'<=', $fecha_final ]
+                        ];
+
+        if ( $grupo_inventario_id != '')
+        {
+          $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
+        }
+
+        if ( $inv_bodega_id != '')
+        {
+          $array_wheres = array_merge( $array_wheres, ['inv_movimientos.inv_bodega_id' => $inv_bodega_id ] );
+        }
+
+        if ( $tipo_movimiento != '')
+        {
+          $array_wheres = array_merge( $array_wheres, ['inv_motivos.movimiento' => $tipo_movimiento ] );
+        }
+
+        return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+                            ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+                            ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
+                            ->where( $array_wheres )
+                            ->select(
+                                        'inv_productos.id AS item_id',
+                                        DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento'),
+                                        DB::raw('sum(inv_movimientos.costo_total) as costo_total_movimiento') 
+                                    )
+                            ->groupBy( 'inv_movimientos.inv_producto_id' )
+                            ->get();
+    }
+
 
     public static function get_movimiento($id_producto, $id_bodega, $fecha_inicial, $fecha_final )
     {

@@ -15,12 +15,14 @@ use Form;
 
 use Spatie\Permission\Models\Permission;
 
+
 use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Inventarios\InventarioController;
+use App\Http\Controllers\Ventas\VentaController;
 
 use App\Http\Controllers\Contabilidad\ContabilidadController;
 use App\Http\Controllers\Ventas\ReportesController;
@@ -422,6 +424,12 @@ class FacturaPosController extends TransaccionController
     }
 
 
+    /*
+        ACUMULAR
+        => Genera movimiento de ventas
+        => Genera Documentos de Remisión y movimiento de inventarios
+        => Genera Movimiento de Tesorería O CxC
+    */
     public function acumular( $pdv_id )
     {
         $pdv = Pdv::find( $pdv_id );
@@ -465,6 +473,55 @@ class FacturaPosController extends TransaccionController
 
             $factura->remision_doc_encabezado_id = $doc_remision->id;
             $factura->estado = 'Acumulado';
+            $factura->save();
+        }
+
+        return 1;        
+    }
+
+    /*
+        CONTABILIZAR
+        => Genera Movimiento Contable para:
+            * Movimiento de Ventas (Ingresos e Impuestos)
+            * Movimiento de Inventarios (Inventarios y Costos)
+            * Movimiento de Tesorería (Caja y Bancos)
+            * Movimiento de CxC (Cartera de clientes)
+    */
+    public function contabilizar( $pdv_id )
+    {
+        $pdv = Pdv::find( $pdv_id );
+
+        $encabezados_documentos = FacturaPos::where( 'pdv_id', $pdv_id )->where( 'estado', 'Acumulado' )->get();
+
+        $detalle_operacion = 'Acumulación PDV: ' . $pdv->descripcion;
+
+        foreach ($encabezados_documentos as $factura)
+        {
+            $lineas_registros = DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->get();
+
+            foreach ($lineas_registros as $linea)
+            {
+                $una_linea_registro = $factura->toArray() + $linea->toArray();
+
+                $una_linea_registro['estado'] = 'Activo';
+
+                // Contabilizar Ventas (Ingresos e Impuestos)
+                VentaController::contabilizar_movimiento_credito( $una_linea_registro, $detalle_operacion );
+
+                $linea->estado = 'Contabilizado';
+                $linea->save();
+            }
+
+            // Contabilizar Caja y Bancos ó Cartera de clientes
+            $forma_pago = $factura->forma_pago;
+            $datos = $factura->toArray();
+            $datos['estado'] = 'Activo';
+            VentaController::contabilizar_movimiento_debito( $forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $pdv->caja_default_id );
+
+            // Inventarios (Inventarios y Costos)
+            InventarioController::contabilizar_documento_inventario( $factura->remision_doc_encabezado_id, $detalle_operacion );
+
+            $factura->estado = 'Contabilizado';
             $factura->save();
         }
 
@@ -532,6 +589,37 @@ class FacturaPosController extends TransaccionController
 
         return View::make( 'ventas_pos.form_registro_ingresos_gastos', compact('pdv','campos') )->render();
     }
+
+
+
+    /*
+        Proceso especial para generar remisiones de documentos YA acumulados
+    */
+    public function generar_remisiones( $pdv_id )
+    {
+        $pdv = Pdv::find( $pdv_id );
+
+        $encabezados_documentos = FacturaPos::where( 'pdv_id', $pdv_id )->where( 'estado', 'Acumulado' )->get();
+
+        foreach ($encabezados_documentos as $factura)
+        {
+            $lineas_registros = DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->get();
+
+            // Crear Remisión y Mov. de inventarios
+            $datos_remision = $factura->toArray();
+            $datos_remision['inv_bodega_id'] = $pdv->bodega_default_id;
+
+            $doc_remision = InventarioController::crear_encabezado_remision_ventas( $datos_remision );
+
+            InventarioController::crear_registros_remision_ventas( $doc_remision, $lineas_registros );
+
+            $factura->remision_doc_encabezado_id = $doc_remision->id;
+            $factura->save();
+        }
+
+        return 1;        
+    }
+
 
     public function store_registro_ingresos_gastos( Request $request )
     {
