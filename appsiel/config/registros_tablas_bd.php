@@ -5694,13 +5694,13 @@
       'modelo_id' => 170,
       'name' => 'compras_create_doc_cruce_cxp',
       'descripcion' => 'Docs. Cruce de CxP',
-      'url' => 'doc_cruce_cxp/create',
+      'url' => 'web',
       'parent' => 292,
       'orden' => 6,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-07-17 12:32:21',
-      'updated_at' => '2020-07-25 09:45:47',
+      'updated_at' => '2020-08-07 11:04:10',
     ),
     380 => 
     array (

@@ -113,7 +113,7 @@
 
 		        			if ($num_facturas == 0)
 		        			{
-			        			//$btn_acumular = '';
+			        			$btn_acumular = '';
 			        			//$btn_hacer_arqueo = '';
 		        			}
 

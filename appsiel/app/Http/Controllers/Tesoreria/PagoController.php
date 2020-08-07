@@ -276,6 +276,8 @@ class PagoController extends TransaccionController
 
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
 
+        $encabezado_documento = TesoDocEncabezado::find( $id );
+
         $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
         $empresa = $this->empresa;
@@ -291,7 +293,7 @@ class PagoController extends TransaccionController
                 ['url'=>'NO','etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
             ];
         
-        return view( 'tesoreria.pagos.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','doc_registros','registros_contabilidad','empresa') );
+        return view( 'tesoreria.pagos.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','doc_registros','registros_contabilidad','empresa', 'encabezado_documento') );
     }
 
     /**
