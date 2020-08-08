@@ -90,9 +90,9 @@ class FacturaPosController extends TransaccionController
 
         // Enviar valores predeterminados
         // WARNING!!!! Este motivo es de INVENTARIOS
-        $motivos = ['22-salida'=>'Ventas POS'];
+        $motivos = ['10-salida' => 'Ventas POS' ]; 
 
-        $inv_motivo_id = 22;
+        $inv_motivo_id = 10;
 
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros( PreparaTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
