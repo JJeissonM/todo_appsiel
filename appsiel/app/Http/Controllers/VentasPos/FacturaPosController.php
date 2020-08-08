@@ -457,7 +457,7 @@ class FacturaPosController extends TransaccionController
             Movimiento::where( 'core_tipo_transaccion_id', $factura->core_tipo_transaccion_id )
                         ->where( 'core_tipo_doc_app_id', $factura->core_tipo_doc_app_id )
                         ->where( 'consecutivo', $factura->consecutivo )
-                        ->update( [ 'estado' => 'Acumulado' ] ); 
+                        ->update( [ 'estado' => 'Acumulado' ] );
 
             // Crear Remisión y Mov. de inventarios
             $datos_remision = $factura->toArray();
@@ -511,6 +511,12 @@ class FacturaPosController extends TransaccionController
                 $linea->estado = 'Contabilizado';
                 $linea->save();
             }
+
+            // Actualiza Movimiento POS
+            Movimiento::where( 'core_tipo_transaccion_id', $factura->core_tipo_transaccion_id )
+                        ->where( 'core_tipo_doc_app_id', $factura->core_tipo_doc_app_id )
+                        ->where( 'consecutivo', $factura->consecutivo )
+                        ->update( [ 'estado' => 'Contabilizado' ] );
 
             // Contabilizar Caja y Bancos ó Cartera de clientes
             $forma_pago = $factura->forma_pago;

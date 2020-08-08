@@ -41,7 +41,12 @@ class InvCostoPromProducto extends Model
 
         if ( is_null( $costo_prom ) || $costo_prom < 0 )
         {
-            $costo_prom = InvProducto::find( $producto_id )->precio_compra;
+            $item = InvProducto::find( $producto_id );
+            $costo_prom = 0;
+            if ( !is_null( $item ) )
+            {
+                $costo_prom = $item->precio_compra;
+            }
         }
 
         return $costo_prom;
