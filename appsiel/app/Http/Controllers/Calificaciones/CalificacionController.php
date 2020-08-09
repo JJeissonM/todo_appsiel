@@ -200,6 +200,7 @@ class CalificacionController extends Controller
                 return redirect( url()->previous() )->with( 'mensaje_error','No se permite ingresar calificaciones para las asignaturas que aún no tienen logros en el periodo seleccionado.' );
             }
         }
+        
         $periodo = Periodo::find( $request->id_periodo );
 
         // Warning!!!! El año se toma del periodo. Analizar si está bien.

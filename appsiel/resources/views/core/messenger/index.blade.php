@@ -3,7 +3,7 @@
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
 
-			&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate( url('messages/create') ) }}
+			&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate( url( 'messages/create?id=5' ) ) }}
 			
 	<hr>
 

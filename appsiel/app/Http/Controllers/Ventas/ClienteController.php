@@ -175,6 +175,7 @@ class ClienteController extends ModeloController
         $registro->numero_identificacion = $tercero->numero_identificacion;
         $registro->digito_verificacion = $tercero->digito_verificacion;
         $registro->direccion1 = $tercero->direccion1;
+        $registro->direccion2 = $tercero->direccion2; // Se está usando para fecha de cumpleaños
         $registro->telefono1 = $tercero->telefono1;
         $registro->codigo_ciudad = $tercero->codigo_ciudad;
         $registro->tipo = $tercero->tipo;

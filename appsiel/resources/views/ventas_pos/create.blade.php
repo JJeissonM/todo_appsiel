@@ -1116,6 +1116,7 @@
 				}
 
 				// Desactivar el click del botón
+				$( this ).off( event );
 				$( this ).attr( 'disabled', 'disabled' );
 
 				$('#linea_ingreso_default').remove();
