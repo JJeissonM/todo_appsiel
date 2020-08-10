@@ -366,7 +366,7 @@
 		        $(".btn_save_modal").show();
 		        $(".modal-title").html('Ingreso/Actualización encabezados de calificaciones');
 
-				var url = '../calificaciones/encabezados/create?columna_calificacion=' + $(this).val() + '&periodo_id=' + $('#id_periodo').val() + '&curso_id=' + $('#curso_id').val() + '&asignatura_id=' + $('#id_asignatura').val() + '&anio=' + $('#anio').val();
+				var url = "{{url('/')}}" + '/calificaciones_encabezados/create?columna_calificacion=' + $(this).val() + '&periodo_id=' + $('#id_periodo').val() + '&curso_id=' + $('#curso_id').val() + '&asignatura_id=' + $('#id_asignatura').val() + '&anio=' + $('#anio').val();
 
 				$.get(url, function( respuesta ){
 					$('#div_spin').hide();
@@ -383,10 +383,11 @@
 
 				$('#div_spin').fadeIn();
 
-				var url2 = $("#formulario_modal").attr('action');
-				var data = $("#formulario_modal").serialize();
+				var url2 = $("#myModal #formulario_modal").attr('action');
+				var data = $("#myModal #formulario_modal").serialize();
 
-				console.log( $("#formulario_modal") );
+				console.log( $("#myModal #formulario_modal") );
+				console.log( document.getElementById("formulario_modal") );
 				console.log( [ url2, data ] );
 				
 				$.post(url2, data, function( respuesta ){

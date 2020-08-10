@@ -1,5 +1,14731 @@
 <?php
  return array (
+  'permissions' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'core_app_id' => 1,
+      'modelo_id' => 19,
+      'name' => 'Matrículas',
+      'descripcion' => 'Matrículas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-02-28 19:01:07',
+      'updated_at' => '2018-11-20 08:57:21',
+    ),
+    1 => 
+    array (
+      'id' => 2,
+      'core_app_id' => 0,
+      'modelo_id' => 0,
+      'name' => 'Administer roles & permissions',
+      'descripcion' => '',
+      'url' => '',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-03-05 05:00:00',
+      'updated_at' => '2018-08-21 23:44:28',
+    ),
+    2 => 
+    array (
+      'id' => 3,
+      'core_app_id' => 1,
+      'modelo_id' => 18,
+      'name' => 'Análisis FODA',
+      'descripcion' => 'Análisis FODA',
+      'url' => 'web',
+      'parent' => 20,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-03-13 03:36:19',
+      'updated_at' => '2018-09-05 15:02:20',
+    ),
+    3 => 
+    array (
+      'id' => 4,
+      'core_app_id' => 7,
+      'modelo_id' => 34,
+      'name' => 'Secciones',
+      'descripcion' => 'Secciones de formatos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 21,
+      'enabled' => 0,
+      'fa_icon' => 'th-large',
+      'created_at' => '2018-03-13 19:51:03',
+      'updated_at' => '2020-02-04 10:42:07',
+    ),
+    4 => 
+    array (
+      'id' => 7,
+      'core_app_id' => 7,
+      'modelo_id' => 16,
+      'name' => 'Formatos',
+      'descripcion' => 'Formatos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 20,
+      'enabled' => 0,
+      'fa_icon' => 'th-list',
+      'created_at' => '2018-03-13 19:58:54',
+      'updated_at' => '2020-02-04 10:42:25',
+    ),
+    5 => 
+    array (
+      'id' => 8,
+      'core_app_id' => 8,
+      'modelo_id' => 24,
+      'name' => 'Grupos de inventario',
+      'descripcion' => 'Grupos de Inventario',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-04-03 09:40:39',
+      'updated_at' => '2018-09-06 10:29:42',
+    ),
+    6 => 
+    array (
+      'id' => 9,
+      'core_app_id' => 7,
+      'modelo_id' => 4,
+      'name' => 'Campos',
+      'descripcion' => 'Campos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => 'align-center',
+      'created_at' => '2018-08-19 13:10:43',
+      'updated_at' => '2018-09-07 16:53:35',
+    ),
+    7 => 
+    array (
+      'id' => 10,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'cali_logros ',
+      'descripcion' => 'Logros ',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-19 13:18:41',
+      'updated_at' => '2020-07-03 06:10:45',
+    ),
+    8 => 
+    array (
+      'id' => 11,
+      'core_app_id' => 1,
+      'modelo_id' => 17,
+      'name' => 'Novedades observador',
+      'descripcion' => 'Novedades observador',
+      'url' => 'web',
+      'parent' => 20,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-19 13:19:27',
+      'updated_at' => '2020-01-10 19:10:32',
+    ),
+    9 => 
+    array (
+      'id' => 12,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'Tesorería',
+      'descripcion' => 'Tesorería',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 0,
+      'fa_icon' => 'cash',
+      'created_at' => '2018-08-19 13:20:54',
+      'updated_at' => '2018-09-07 16:52:05',
+    ),
+    10 => 
+    array (
+      'id' => 13,
+      'core_app_id' => 11,
+      'modelo_id' => 0,
+      'name' => 'Configuración PH',
+      'descripcion' => 'Configuración',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-19 13:23:57',
+      'updated_at' => '2018-10-18 15:38:21',
+    ),
+    11 => 
+    array (
+      'id' => 15,
+      'core_app_id' => 1,
+      'modelo_id' => 19,
+      'name' => 'Crear matrícula',
+      'descripcion' => 'Crear',
+      'url' => 'matriculas/create',
+      'parent' => 1,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 03:34:21',
+      'updated_at' => '2018-10-08 14:41:32',
+    ),
+    12 => 
+    array (
+      'id' => 16,
+      'core_app_id' => 7,
+      'modelo_id' => 3,
+      'name' => 'Crear modelo',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 110,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 03:36:06',
+      'updated_at' => '2018-09-03 10:31:13',
+    ),
+    13 => 
+    array (
+      'id' => 17,
+      'core_app_id' => 1,
+      'modelo_id' => 29,
+      'name' => 'Crear estudiante',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 85,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 03:39:46',
+      'updated_at' => '2018-12-29 09:53:17',
+    ),
+    14 => 
+    array (
+      'id' => 18,
+      'core_app_id' => 1,
+      'modelo_id' => 29,
+      'name' => 'Consultar estudiantes',
+      'descripcion' => 'Estudiantes',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 09:39:31',
+      'updated_at' => '2018-12-29 09:52:59',
+    ),
+    15 => 
+    array (
+      'id' => 19,
+      'core_app_id' => 1,
+      'modelo_id' => 19,
+      'name' => 'Generar listas estudiantes',
+      'descripcion' => 'Reportes y listados',
+      'url' => '/matriculas/estudiantes/listar',
+      'parent' => 1,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 10:00:33',
+      'updated_at' => '2018-11-20 10:07:55',
+    ),
+    16 => 
+    array (
+      'id' => 20,
+      'core_app_id' => 1,
+      'modelo_id' => 0,
+      'name' => 'Observador estudiantes',
+      'descripcion' => 'Observador',
+      'url' => '/matriculas/estudiantes/observador',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 10:06:00',
+      'updated_at' => '2018-09-05 13:58:29',
+    ),
+    17 => 
+    array (
+      'id' => 21,
+      'core_app_id' => 1,
+      'modelo_id' => 0,
+      'name' => 'Importar excel estudiantes',
+      'descripcion' => 'Importar excel',
+      'url' => '/matriculas/estudiantes/importar_excel',
+      'parent' => 86,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 10:06:25',
+      'updated_at' => '2018-08-20 10:06:25',
+    ),
+    18 => 
+    array (
+      'id' => 37,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'teso_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 15,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 11:39:06',
+      'updated_at' => '2019-10-17 00:39:46',
+    ),
+    19 => 
+    array (
+      'id' => 38,
+      'core_app_id' => 1,
+      'modelo_id' => 19,
+      'name' => 'Consultar matrículas',
+      'descripcion' => 'Consultar ',
+      'url' => 'web',
+      'parent' => 1,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 13:18:23',
+      'updated_at' => '2018-10-08 14:38:38',
+    ),
+    20 => 
+    array (
+      'id' => 40,
+      'core_app_id' => 7,
+      'modelo_id' => 5,
+      'name' => 'Usuarios',
+      'descripcion' => 'Usuarios',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => 'users',
+      'created_at' => '2018-08-21 12:29:54',
+      'updated_at' => '2020-01-21 14:38:46',
+    ),
+    21 => 
+    array (
+      'id' => 41,
+      'core_app_id' => 7,
+      'modelo_id' => 9,
+      'name' => 'Perfiles',
+      'descripcion' => 'Perfiles',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => 'glass',
+      'created_at' => '2018-08-21 12:30:08',
+      'updated_at' => '2018-11-29 19:56:55',
+    ),
+    22 => 
+    array (
+      'id' => 42,
+      'core_app_id' => 7,
+      'modelo_id' => 2,
+      'name' => 'Permisos',
+      'descripcion' => 'Permisos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => 'key',
+      'created_at' => '2018-08-21 12:30:21',
+      'updated_at' => '2018-09-03 13:43:58',
+    ),
+    23 => 
+    array (
+      'id' => 43,
+      'core_app_id' => 7,
+      'modelo_id' => 6,
+      'name' => 'Mi Empresa',
+      'descripcion' => 'Mi Empresa',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 11,
+      'enabled' => 0,
+      'fa_icon' => 'building',
+      'created_at' => '2018-08-21 12:30:37',
+      'updated_at' => '2018-11-29 19:57:22',
+    ),
+    24 => 
+    array (
+      'id' => 44,
+      'core_app_id' => 7,
+      'modelo_id' => 53,
+      'name' => 'Colegios',
+      'descripcion' => 'Colegios',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 15,
+      'enabled' => 0,
+      'fa_icon' => 'home',
+      'created_at' => '2018-08-21 12:31:04',
+      'updated_at' => '2018-11-29 19:58:30',
+    ),
+    25 => 
+    array (
+      'id' => 47,
+      'core_app_id' => 7,
+      'modelo_id' => 5,
+      'name' => 'Crear usuario',
+      'descripcion' => 'Crear',
+      'url' => 'core/usuarios/create',
+      'parent' => 40,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 22:23:38',
+      'updated_at' => '2018-09-03 14:44:38',
+    ),
+    26 => 
+    array (
+      'id' => 48,
+      'core_app_id' => 7,
+      'modelo_id' => 5,
+      'name' => 'Consultar usuarios',
+      'descripcion' => 'Consultar',
+      'url' => '/core/usuarios',
+      'parent' => 40,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 23:50:50',
+      'updated_at' => '2018-09-03 14:45:45',
+    ),
+    27 => 
+    array (
+      'id' => 49,
+      'core_app_id' => 7,
+      'modelo_id' => 9,
+      'name' => 'Consultar perfil',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 41,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-22 00:46:46',
+      'updated_at' => '2018-10-16 09:58:30',
+    ),
+    28 => 
+    array (
+      'id' => 50,
+      'core_app_id' => 7,
+      'modelo_id' => 9,
+      'name' => 'Crear perfil',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 41,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-10-16 09:58:48',
+    ),
+    29 => 
+    array (
+      'id' => 51,
+      'core_app_id' => 7,
+      'modelo_id' => 2,
+      'name' => 'Crear permisos',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 42,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-22 00:50:56',
+      'updated_at' => '2018-09-03 10:28:22',
+    ),
+    30 => 
+    array (
+      'id' => 52,
+      'core_app_id' => 7,
+      'modelo_id' => 2,
+      'name' => 'Consultar permisos',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 42,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-22 00:51:29',
+      'updated_at' => '2018-09-03 10:28:43',
+    ),
+    31 => 
+    array (
+      'id' => 53,
+      'core_app_id' => 7,
+      'modelo_id' => 41,
+      'name' => 'Empresas',
+      'descripcion' => 'Empresas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 0,
+      'fa_icon' => 'building',
+      'created_at' => '2018-08-22 00:53:28',
+      'updated_at' => '2018-11-29 19:58:45',
+    ),
+    32 => 
+    array (
+      'id' => 54,
+      'core_app_id' => 7,
+      'modelo_id' => 5,
+      'name' => 'Cambiar Empresa',
+      'descripcion' => 'Cambiar Empresa',
+      'url' => 'core/usuario/perfil/cambiar_empresa',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 0,
+      'fa_icon' => 'refresh',
+      'created_at' => '2018-08-22 00:54:51',
+      'updated_at' => '2018-11-29 20:03:09',
+    ),
+    33 => 
+    array (
+      'id' => 55,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'Consultar colegios',
+      'descripcion' => 'Consultar',
+      'url' => '/core/colegios',
+      'parent' => 44,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-27 01:56:42',
+    ),
+    34 => 
+    array (
+      'id' => 56,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'Crear colegio',
+      'descripcion' => 'Crear',
+      'url' => '/core/colegios/create',
+      'parent' => 44,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-27 01:56:30',
+    ),
+    35 => 
+    array (
+      'id' => 57,
+      'core_app_id' => 1,
+      'modelo_id' => 1,
+      'name' => 'Cursos',
+      'descripcion' => 'Cursos',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-12-29 09:37:48',
+    ),
+    36 => 
+    array (
+      'id' => 58,
+      'core_app_id' => 1,
+      'modelo_id' => 1,
+      'name' => 'Consultar cursos',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 57,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-03 18:15:38',
+    ),
+    37 => 
+    array (
+      'id' => 59,
+      'core_app_id' => 1,
+      'modelo_id' => 1,
+      'name' => 'Crear curso',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 57,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-03 18:15:47',
+    ),
+    38 => 
+    array (
+      'id' => 60,
+      'core_app_id' => 2,
+      'modelo_id' => 12,
+      'name' => 'Periodos',
+      'descripcion' => 'Periodos',
+      'url' => 'web',
+      'parent' => 61,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2019-01-03 13:45:17',
+    ),
+    39 => 
+    array (
+      'id' => 61,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'Catálogos calificaciones',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 30,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2019-01-03 13:43:25',
+    ),
+    40 => 
+    array (
+      'id' => 62,
+      'core_app_id' => 2,
+      'modelo_id' => 12,
+      'name' => 'Crear periodo',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 60,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-03 18:07:14',
+    ),
+    41 => 
+    array (
+      'id' => 63,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Profesores',
+      'descripcion' => 'Profesores',
+      'url' => '',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-27 16:22:34',
+    ),
+    42 => 
+    array (
+      'id' => 64,
+      'core_app_id' => 5,
+      'modelo_id' => 178,
+      'name' => 'Consultar profesores',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 63,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-01-06 22:07:54',
+    ),
+    43 => 
+    array (
+      'id' => 65,
+      'core_app_id' => 5,
+      'modelo_id' => 178,
+      'name' => 'Crear profesor',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 63,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-01-06 22:08:32',
+    ),
+    44 => 
+    array (
+      'id' => 66,
+      'core_app_id' => 5,
+      'modelo_id' => 178,
+      'name' => 'Revisar asignaciones',
+      'descripcion' => 'Revisar asignaciones',
+      'url' => '/academico_docente/profesores/revisar_asignaciones',
+      'parent' => 63,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-01-06 22:26:26',
+    ),
+    45 => 
+    array (
+      'id' => 67,
+      'core_app_id' => 2,
+      'modelo_id' => 11,
+      'name' => 'Asignaturas',
+      'descripcion' => 'Asignaturas',
+      'url' => 'web',
+      'parent' => 61,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2019-01-03 13:47:35',
+    ),
+    46 => 
+    array (
+      'id' => 68,
+      'core_app_id' => 2,
+      'modelo_id' => 11,
+      'name' => 'Consultar asignaturas',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 67,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-03 17:41:58',
+    ),
+    47 => 
+    array (
+      'id' => 69,
+      'core_app_id' => 2,
+      'modelo_id' => 11,
+      'name' => 'Crear asignatura',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 67,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-03 17:42:09',
+    ),
+    48 => 
+    array (
+      'id' => 70,
+      'core_app_id' => 2,
+      'modelo_id' => 13,
+      'name' => 'Escala de valoración',
+      'descripcion' => 'Escala de valoración',
+      'url' => 'web',
+      'parent' => 61,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2019-01-03 13:56:38',
+    ),
+    49 => 
+    array (
+      'id' => 71,
+      'core_app_id' => 8,
+      'modelo_id' => 0,
+      'name' => 'inv_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2019-07-02 06:27:53',
+    ),
+    50 => 
+    array (
+      'id' => 72,
+      'core_app_id' => 2,
+      'modelo_id' => 13,
+      'name' => 'Crear Escala Valoración',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 70,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-03 19:00:38',
+    ),
+    51 => 
+    array (
+      'id' => 73,
+      'core_app_id' => 1,
+      'modelo_id' => 14,
+      'name' => 'Aspectos observador',
+      'descripcion' => 'Aspectos observador',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-12-29 09:36:49',
+    ),
+    52 => 
+    array (
+      'id' => 74,
+      'core_app_id' => 1,
+      'modelo_id' => 0,
+      'name' => 'Catálogos matrículas',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-12-29 09:35:14',
+    ),
+    53 => 
+    array (
+      'id' => 75,
+      'core_app_id' => 1,
+      'modelo_id' => 14,
+      'name' => 'Crear aspecto',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 73,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-04 01:31:58',
+    ),
+    54 => 
+    array (
+      'id' => 76,
+      'core_app_id' => 1,
+      'modelo_id' => 15,
+      'name' => 'Tipos Aspectos Obs',
+      'descripcion' => 'Tipos Aspectos  Obs',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-12-29 09:37:19',
+    ),
+    55 => 
+    array (
+      'id' => 77,
+      'core_app_id' => 1,
+      'modelo_id' => 0,
+      'name' => 'Consultar tipos aspec',
+      'descripcion' => 'Consultar',
+      'url' => '/matriculas/estudiantes/observador/tipos_aspectos',
+      'parent' => 76,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-04 01:46:49',
+    ),
+    56 => 
+    array (
+      'id' => 78,
+      'core_app_id' => 1,
+      'modelo_id' => 0,
+      'name' => 'Crear tipos aspectos',
+      'descripcion' => 'Crear',
+      'url' => '/matriculas/estudiantes/observador/tipos_aspectos/create',
+      'parent' => 76,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-04 01:46:58',
+    ),
+    57 => 
+    array (
+      'id' => 79,
+      'core_app_id' => 7,
+      'modelo_id' => 7,
+      'name' => 'Terceros',
+      'descripcion' => 'Terceros',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 17,
+      'enabled' => 0,
+      'fa_icon' => 'male',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-11-29 20:00:43',
+    ),
+    58 => 
+    array (
+      'id' => 80,
+      'core_app_id' => 7,
+      'modelo_id' => 7,
+      'name' => 'Consultar terceros',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 79,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-03 03:23:29',
+    ),
+    59 => 
+    array (
+      'id' => 81,
+      'core_app_id' => 7,
+      'modelo_id' => 7,
+      'name' => 'Crear terceros',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 79,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-03 03:24:05',
+    ),
+    60 => 
+    array (
+      'id' => 82,
+      'core_app_id' => 7,
+      'modelo_id' => 8,
+      'name' => 'Firmas autorizadas',
+      'descripcion' => 'Firmas autorizadas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 18,
+      'enabled' => 0,
+      'fa_icon' => 'edit',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-11-29 20:00:51',
+    ),
+    61 => 
+    array (
+      'id' => 83,
+      'core_app_id' => 7,
+      'modelo_id' => 8,
+      'name' => 'Consultar firmas auto',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 82,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-02 16:36:51',
+    ),
+    62 => 
+    array (
+      'id' => 84,
+      'core_app_id' => 7,
+      'modelo_id' => 8,
+      'name' => 'Crear firmas autorizadas',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 82,
+      'orden' => 7,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-09-02 16:37:09',
+    ),
+    63 => 
+    array (
+      'id' => 85,
+      'core_app_id' => 1,
+      'modelo_id' => 29,
+      'name' => 'Estudiantes',
+      'descripcion' => 'Estudiantes',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-22 12:55:33',
+      'updated_at' => '2018-12-29 09:54:01',
+    ),
+    64 => 
+    array (
+      'id' => 86,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'Calificaciones',
+      'descripcion' => 'Calificaciones',
+      'url' => '',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-21 12:49:34',
+    ),
+    65 => 
+    array (
+      'id' => 87,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'Consultar calificaciones ',
+      'descripcion' => 'Consultar',
+      'url' => 'calificaciones/index2',
+      'parent' => 86,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2019-04-09 21:29:13',
+    ),
+    66 => 
+    array (
+      'id' => 88,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'sga_ingresar_calificaciones',
+      'descripcion' => 'Ingresar calificaciones',
+      'url' => '/calificaciones/create',
+      'parent' => 86,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-07-03 06:06:32',
+    ),
+    67 => 
+    array (
+      'id' => 89,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'Boletines',
+      'descripcion' => 'Boletines',
+      'url' => '',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-27 02:28:06',
+    ),
+    68 => 
+    array (
+      'id' => 90,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'cali_consultar_observaciones',
+      'descripcion' => 'Consultar observaciones',
+      'url' => '/calificaciones/observaciones_boletin',
+      'parent' => 89,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-07-03 06:08:45',
+    ),
+    69 => 
+    array (
+      'id' => 91,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'cali_ingresar_observaciones',
+      'descripcion' => 'Ingresar observaciones',
+      'url' => '/calificaciones/observaciones_boletin/create',
+      'parent' => 89,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-07-03 06:03:03',
+    ),
+    70 => 
+    array (
+      'id' => 92,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'cali_revisar_boletines',
+      'descripcion' => 'Revisar boletines',
+      'url' => '/calificaciones/boletines/revisar',
+      'parent' => 89,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-06-26 11:11:25',
+    ),
+    71 => 
+    array (
+      'id' => 93,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'Imprimir boletines',
+      'descripcion' => 'Imprimir',
+      'url' => '/calificaciones/boletines/imprimir/07',
+      'parent' => 89,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-21 12:49:34',
+    ),
+    72 => 
+    array (
+      'id' => 94,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'cali_calcular_puesto',
+      'descripcion' => 'Calcular puesto',
+      'url' => '/calificaciones/boletines/calcular_puesto',
+      'parent' => 89,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-06-26 11:12:18',
+    ),
+    73 => 
+    array (
+      'id' => 95,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'Asistencia clases ',
+      'descripcion' => 'Asistencia',
+      'url' => '',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-27 16:13:20',
+    ),
+    74 => 
+    array (
+      'id' => 96,
+      'core_app_id' => 2,
+      'modelo_id' => 181,
+      'name' => 'sga_asistencia_clases_index',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 95,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-01-12 06:07:32',
+    ),
+    75 => 
+    array (
+      'id' => 97,
+      'core_app_id' => 2,
+      'modelo_id' => 181,
+      'name' => 'Tomar asistencia',
+      'descripcion' => 'Tomar asistencia',
+      'url' => '/calificaciones/asistencia_clases/create',
+      'parent' => 95,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-01-12 08:21:35',
+    ),
+    76 => 
+    array (
+      'id' => 98,
+      'core_app_id' => 2,
+      'modelo_id' => 181,
+      'name' => 'sga_asistencia_clases_reportes',
+      'descripcion' => 'Reportes y listados',
+      'url' => '/calificaciones/asistencia_clases/reportes',
+      'parent' => 95,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-01-12 08:22:21',
+    ),
+    77 => 
+    array (
+      'id' => 100,
+      'core_app_id' => 2,
+      'modelo_id' => 70,
+      'name' => 'cali_consultar_logros',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 10,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-07-03 06:08:16',
+    ),
+    78 => 
+    array (
+      'id' => 101,
+      'core_app_id' => 7,
+      'modelo_id' => 194,
+      'name' => 'config_password_resets',
+      'descripcion' => 'Reseteo de contraseñas',
+      'url' => 'form_password_resets',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 0,
+      'fa_icon' => 'key',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-03-12 05:06:38',
+    ),
+    79 => 
+    array (
+      'id' => 102,
+      'core_app_id' => 2,
+      'modelo_id' => 70,
+      'name' => 'cali_crear_logro',
+      'descripcion' => 'Crear logros',
+      'url' => 'web/create',
+      'parent' => 10,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-07-03 06:09:28',
+    ),
+    80 => 
+    array (
+      'id' => 103,
+      'core_app_id' => 2,
+      'modelo_id' => 193,
+      'name' => 'cali_logros_anteriores',
+      'descripcion' => 'Logros años anteriores',
+      'url' => 'web',
+      'parent' => 10,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-03-12 04:02:13',
+    ),
+    81 => 
+    array (
+      'id' => 104,
+      'core_app_id' => 1,
+      'modelo_id' => 0,
+      'name' => 'Consultar matrículas ant',
+      'descripcion' => '',
+      'url' => '/matriculas/index2',
+      'parent' => 0,
+      'orden' => 22,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-23 04:15:09',
+      'updated_at' => '2018-08-23 04:15:09',
+    ),
+    82 => 
+    array (
+      'id' => 105,
+      'core_app_id' => 1,
+      'modelo_id' => 0,
+      'name' => 'Consultar matrículas AA',
+      'descripcion' => 'Consultar años anteriores',
+      'url' => 'matriculas/index2',
+      'parent' => 1,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-20 13:18:23',
+      'updated_at' => '2019-08-06 09:17:59',
+    ),
+    83 => 
+    array (
+      'id' => 107,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'Libreta pagos',
+      'descripcion' => 'Libreta pagos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-27 13:55:22',
+      'updated_at' => '2020-01-14 03:36:13',
+    ),
+    84 => 
+    array (
+      'id' => 108,
+      'core_app_id' => 3,
+      'modelo_id' => 31,
+      'name' => 'Crear libreta pagos',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 107,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-27 13:56:27',
+      'updated_at' => '2018-10-02 11:09:54',
+    ),
+    85 => 
+    array (
+      'id' => 109,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'Imprimir libreta en blanco',
+      'descripcion' => 'Imprimir en blanco',
+      'url' => 'tesoreria/imprimir_libreta/0',
+      'parent' => 107,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-27 13:57:34',
+      'updated_at' => '2020-03-27 12:00:56',
+    ),
+    86 => 
+    array (
+      'id' => 110,
+      'core_app_id' => 7,
+      'modelo_id' => 3,
+      'name' => 'Modelos',
+      'descripcion' => 'Modelos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => 'road',
+      'created_at' => '2018-08-30 16:04:09',
+      'updated_at' => '2018-09-07 16:53:00',
+    ),
+    87 => 
+    array (
+      'id' => 111,
+      'core_app_id' => 7,
+      'modelo_id' => 4,
+      'name' => 'Crear campo',
+      'descripcion' => 'Crear',
+      'url' => 'web/create',
+      'parent' => 9,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-09-01 08:50:59',
+      'updated_at' => '2018-09-02 12:36:52',
+    ),
+    88 => 
+    array (
+      'id' => 112,
+      'core_app_id' => 7,
+      'modelo_id' => 4,
+      'name' => 'Consultar campos',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 9,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-09-01 08:54:28',
+      'updated_at' => '2018-09-02 12:37:17',
+    ),
+    89 => 
+    array (
+      'id' => 113,
+      'core_app_id' => 7,
+      'modelo_id' => 10,
+      'name' => 'Configuración',
+      'descripcion' => 'Configuración',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 14,
+      'enabled' => 0,
+      'fa_icon' => 'cog',
+      'created_at' => '2018-09-02 10:00:54',
+      'updated_at' => '2020-01-17 02:16:06',
+    ),
+    90 => 
+    array (
+      'id' => 114,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'Calendario',
+      'descripcion' => 'Calendario',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 13,
+      'enabled' => 0,
+      'fa_icon' => 'calendar',
+      'created_at' => '2018-09-03 10:34:30',
+      'updated_at' => '2018-10-13 16:22:41',
+    ),
+    91 => 
+    array (
+      'id' => 115,
+      'core_app_id' => 1,
+      'modelo_id' => 180,
+      'name' => 'sga_observador_estudiante_consulta',
+      'descripcion' => 'Consultar estudiantes',
+      'url' => 'web',
+      'parent' => 20,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-09-05 14:48:10',
+      'updated_at' => '2020-01-10 19:09:26',
+    ),
+    92 => 
+    array (
+      'id' => 116,
+      'core_app_id' => 8,
+      'modelo_id' => 25,
+      'name' => 'inv_transacciones',
+      'descripcion' => 'Transacciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-09-06 09:34:00',
+      'updated_at' => '2019-10-14 20:55:01',
+    ),
+    93 => 
+    array (
+      'id' => 117,
+      'core_app_id' => 8,
+      'modelo_id' => 21,
+      'name' => 'Bodegas',
+      'descripcion' => 'Bodegas',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-09-06 09:34:35',
+      'updated_at' => '2018-09-06 10:30:11',
+    ),
+    94 => 
+    array (
+      'id' => 118,
+      'core_app_id' => 8,
+      'modelo_id' => 22,
+      'name' => 'Productos',
+      'descripcion' => 'Items',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-09-06 10:28:41',
+      'updated_at' => '2020-01-20 10:41:04',
+    ),
+    95 => 
+    array (
+      'id' => 119,
+      'core_app_id' => 7,
+      'modelo_id' => 26,
+      'name' => 'Config transacciones',
+      'descripcion' => 'Config. transacciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 8,
+      'enabled' => 1,
+      'fa_icon' => 'cogs',
+      'created_at' => '2018-09-07 16:05:33',
+      'updated_at' => '2019-11-16 09:08:52',
+    ),
+    96 => 
+    array (
+      'id' => 120,
+      'core_app_id' => 7,
+      'modelo_id' => 27,
+      'name' => 'Tipos Docs Apps',
+      'descripcion' => 'Tipos Docs Apps',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => 'file',
+      'created_at' => '2018-09-07 21:30:39',
+      'updated_at' => '2018-11-29 19:59:52',
+    ),
+    97 => 
+    array (
+      'id' => 121,
+      'core_app_id' => 4,
+      'modelo_id' => 0,
+      'name' => 'Imprimir Formatos',
+      'descripcion' => 'Imprimir Formatos',
+      'url' => 'gestion_documental/imprimir_formato',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-09-11 20:25:38',
+      'updated_at' => '2020-02-07 12:05:12',
+    ),
+    98 => 
+    array (
+      'id' => 122,
+      'core_app_id' => 8,
+      'modelo_id' => 0,
+      'name' => 'inv_movimiento_por_producto',
+      'descripcion' => 'Movimientos por producto',
+      'url' => 'inv_movimiento',
+      'parent' => 124,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-09-11 20:28:33',
+      'updated_at' => '2019-10-21 06:23:05',
+    ),
+    99 => 
+    array (
+      'id' => 123,
+      'core_app_id' => 8,
+      'modelo_id' => 0,
+      'name' => 'Inventarios',
+      'descripcion' => 'Inventarios',
+      'url' => 'inventarios',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-09-29 01:59:38',
+      'updated_at' => '2019-07-22 10:29:46',
+    ),
+    100 => 
+    array (
+      'id' => 124,
+      'core_app_id' => 8,
+      'modelo_id' => 0,
+      'name' => 'Reportes',
+      'descripcion' => 'Reportes',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-09-29 04:44:34',
+      'updated_at' => '2018-09-29 04:44:34',
+    ),
+    101 => 
+    array (
+      'id' => 125,
+      'core_app_id' => 8,
+      'modelo_id' => 0,
+      'name' => 'Existencias',
+      'descripcion' => 'Existencias',
+      'url' => 'inv_existencias',
+      'parent' => 124,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-09-29 12:27:27',
+      'updated_at' => '2018-09-29 12:27:27',
+    ),
+    102 => 
+    array (
+      'id' => 126,
+      'core_app_id' => 7,
+      'modelo_id' => 30,
+      'name' => 'Aplicaciones',
+      'descripcion' => 'Aplicaciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => 'inbox',
+      'created_at' => '2018-10-01 03:30:02',
+      'updated_at' => '2018-10-21 23:34:03',
+    ),
+    103 => 
+    array (
+      'id' => 127,
+      'core_app_id' => 9,
+      'modelo_id' => 0,
+      'name' => 'Compras',
+      'descripcion' => 'Compras',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-10-01 03:42:55',
+      'updated_at' => '2019-10-08 05:19:19',
+    ),
+    104 => 
+    array (
+      'id' => 128,
+      'core_app_id' => 3,
+      'modelo_id' => 31,
+      'name' => 'Consultar',
+      'descripcion' => 'Consultar',
+      'url' => 'web',
+      'parent' => 107,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-01 15:27:24',
+      'updated_at' => '2018-10-01 15:27:24',
+    ),
+    105 => 
+    array (
+      'id' => 129,
+      'core_app_id' => 3,
+      'modelo_id' => 32,
+      'name' => 'Entidades financieras',
+      'descripcion' => 'Entidades financieras',
+      'url' => 'web',
+      'parent' => 37,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => 'university',
+      'created_at' => '2018-10-03 23:11:51',
+      'updated_at' => '2018-10-03 23:46:00',
+    ),
+    106 => 
+    array (
+      'id' => 130,
+      'core_app_id' => 3,
+      'modelo_id' => 33,
+      'name' => 'Cuentas Bancarias',
+      'descripcion' => 'Cuentas Bancarias',
+      'url' => 'web',
+      'parent' => 37,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-04 00:50:42',
+      'updated_at' => '2018-10-04 00:50:42',
+    ),
+    107 => 
+    array (
+      'id' => 131,
+      'core_app_id' => 4,
+      'modelo_id' => 0,
+      'name' => 'Gestion documental',
+      'descripcion' => 'Gestion documental',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-10-06 15:32:13',
+      'updated_at' => '2018-10-06 15:33:47',
+    ),
+    108 => 
+    array (
+      'id' => 132,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'Página Web',
+      'descripcion' => 'Vista previa',
+      'url' => '/',
+      'parent' => 0,
+      'orden' => 400,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-11 02:39:31',
+      'updated_at' => '2020-03-03 11:42:22',
+    ),
+    109 => 
+    array (
+      'id' => 133,
+      'core_app_id' => 7,
+      'modelo_id' => 35,
+      'name' => 'Eventos',
+      'descripcion' => 'Eventos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 20,
+      'enabled' => 0,
+      'fa_icon' => 'calendar',
+      'created_at' => '2018-10-12 21:31:26',
+      'updated_at' => '2019-01-14 13:31:49',
+    ),
+    110 => 
+    array (
+      'id' => 134,
+      'core_app_id' => 5,
+      'modelo_id' => 36,
+      'name' => 'Gestionar Preguntas',
+      'descripcion' => 'Gestionar Preguntas',
+      'url' => 'web',
+      'parent' => 171,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-13 19:41:43',
+      'updated_at' => '2018-11-20 12:00:04',
+    ),
+    111 => 
+    array (
+      'id' => 135,
+      'core_app_id' => 2,
+      'modelo_id' => 37,
+      'name' => 'Cuestionarios',
+      'descripcion' => 'Cuestionarios',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 19,
+      'enabled' => 0,
+      'fa_icon' => 'list-alt',
+      'created_at' => '2018-10-13 20:25:12',
+      'updated_at' => '2019-07-22 10:09:29',
+    ),
+    112 => 
+    array (
+      'id' => 136,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Boletín',
+      'descripcion' => 'Boletín',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-10-16 09:40:09',
+    ),
+    113 => 
+    array (
+      'id' => 137,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'acdo_revisar_boletines',
+      'descripcion' => 'Revisar',
+      'url' => '/calificaciones/boletines/revisar',
+      'parent' => 136,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-07-03 06:00:58',
+    ),
+    114 => 
+    array (
+      'id' => 138,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Consultar observaciones',
+      'descripcion' => 'Consultar observaciones',
+      'url' => '/calificaciones/observaciones_boletin',
+      'parent' => 136,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-28 16:00:49',
+    ),
+    115 => 
+    array (
+      'id' => 139,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'acdo_ingresar_observaciones',
+      'descripcion' => 'Ingresar observaciones',
+      'url' => '/calificaciones/observaciones_boletin/create',
+      'parent' => 136,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-07-03 06:05:05',
+    ),
+    116 => 
+    array (
+      'id' => 140,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Calcular puesto estudiantes',
+      'descripcion' => 'Calcular puesto',
+      'url' => '/calificaciones/boletines/calcular_puesto',
+      'parent' => 136,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-21 12:49:34',
+    ),
+    117 => 
+    array (
+      'id' => 141,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Logros',
+      'descripcion' => 'Logros',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-08-19 13:18:41',
+      'updated_at' => '2019-02-04 06:51:24',
+    ),
+    118 => 
+    array (
+      'id' => 142,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Consultar logros',
+      'descripcion' => 'Consultar',
+      'url' => '/calificaciones/logros',
+      'parent' => 141,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-10-16 09:32:02',
+    ),
+    119 => 
+    array (
+      'id' => 143,
+      'core_app_id' => 1,
+      'modelo_id' => 194,
+      'name' => 'matri_lista_password_resets',
+      'descripcion' => 'Listado contraseñas',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 20,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2020-03-12 04:23:54',
+    ),
+    120 => 
+    array (
+      'id' => 144,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Crear logro',
+      'descripcion' => 'Crear',
+      'url' => '/calificaciones/logros/create',
+      'parent' => 141,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-27 02:24:19',
+    ),
+    121 => 
+    array (
+      'id' => 145,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Listados de logros',
+      'descripcion' => 'Reportes y listados',
+      'url' => '/calificaciones/logros/listar',
+      'parent' => 141,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-08-21 12:49:34',
+      'updated_at' => '2018-08-27 02:26:38',
+    ),
+    122 => 
+    array (
+      'id' => 146,
+      'core_app_id' => 5,
+      'modelo_id' => 38,
+      'name' => 'Gestionar actividades',
+      'descripcion' => 'Gestionar actividades',
+      'url' => 'web',
+      'parent' => 171,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-16 10:52:07',
+      'updated_at' => '2018-11-20 11:55:38',
+    ),
+    123 => 
+    array (
+      'id' => 147,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'Ver logs',
+      'descripcion' => 'Ver logs',
+      'url' => 'logs',
+      'parent' => 0,
+      'orden' => 20,
+      'enabled' => 1,
+      'fa_icon' => 'search',
+      'created_at' => '2018-10-16 19:39:53',
+      'updated_at' => '2018-10-19 14:39:54',
+    ),
+    124 => 
+    array (
+      'id' => 148,
+      'core_app_id' => 11,
+      'modelo_id' => 0,
+      'name' => 'Administración propiedad horizontal',
+      'descripcion' => 'Administración propiedad horizontal',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 500,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-10-18 10:33:39',
+      'updated_at' => '2018-10-18 16:01:34',
+    ),
+    125 => 
+    array (
+      'id' => 149,
+      'core_app_id' => 12,
+      'modelo_id' => 0,
+      'name' => 'Gestión de cobros',
+      'descripcion' => 'Gestión de cobros',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 600,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-10-18 10:35:16',
+      'updated_at' => '2018-12-06 16:24:12',
+    ),
+    126 => 
+    array (
+      'id' => 150,
+      'core_app_id' => 11,
+      'modelo_id' => 42,
+      'name' => 'Conceptos a facturar',
+      'descripcion' => 'Conceptos a facturar',
+      'url' => 'web',
+      'parent' => 13,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-18 15:38:53',
+      'updated_at' => '2018-11-01 09:21:31',
+    ),
+    127 => 
+    array (
+      'id' => 151,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Académico docente',
+      'descripcion' => 'Académico docente',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-10-22 00:28:38',
+      'updated_at' => '2018-11-20 11:46:40',
+    ),
+    128 => 
+    array (
+      'id' => 152,
+      'core_app_id' => 12,
+      'modelo_id' => 43,
+      'name' => 'Documentos de CxC',
+      'descripcion' => 'Documentos de CxC',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-22 02:55:01',
+      'updated_at' => '2018-12-13 23:23:47',
+    ),
+    129 => 
+    array (
+      'id' => 153,
+      'core_app_id' => 3,
+      'modelo_id' => 44,
+      'name' => 'Medios de recaudo',
+      'descripcion' => 'Medios de recaudo',
+      'url' => 'web',
+      'parent' => 37,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-24 15:06:25',
+      'updated_at' => '2018-10-24 15:06:25',
+    ),
+    130 => 
+    array (
+      'id' => 154,
+      'core_app_id' => 3,
+      'modelo_id' => 45,
+      'name' => 'Cajas',
+      'descripcion' => 'Cajas',
+      'url' => 'web',
+      'parent' => 37,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-24 15:48:11',
+      'updated_at' => '2018-10-24 15:48:11',
+    ),
+    131 => 
+    array (
+      'id' => 155,
+      'core_app_id' => 3,
+      'modelo_id' => 46,
+      'name' => 'Recaudos',
+      'descripcion' => 'Recaudos',
+      'url' => 'web',
+      'parent' => 304,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-10-24 21:57:31',
+      'updated_at' => '2019-10-20 23:39:03',
+    ),
+    132 => 
+    array (
+      'id' => 156,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'Contabilidad',
+      'descripcion' => 'Contabilidad',
+      'url' => 'contabilidad',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-04 17:10:37',
+      'updated_at' => '2018-11-13 23:55:07',
+    ),
+    133 => 
+    array (
+      'id' => 157,
+      'core_app_id' => 14,
+      'modelo_id' => 48,
+      'name' => 'Grupo cuentas',
+      'descripcion' => 'Grupo cuentas',
+      'url' => 'web',
+      'parent' => 158,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-08 09:35:22',
+      'updated_at' => '2018-11-08 09:36:19',
+    ),
+    134 => 
+    array (
+      'id' => 158,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'contab_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-08 09:35:51',
+      'updated_at' => '2019-08-14 22:34:29',
+    ),
+    135 => 
+    array (
+      'id' => 159,
+      'core_app_id' => 14,
+      'modelo_id' => 49,
+      'name' => 'Cuentas',
+      'descripcion' => 'Cuentas',
+      'url' => 'web',
+      'parent' => 158,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-08 09:41:46',
+      'updated_at' => '2018-11-08 09:41:46',
+    ),
+    136 => 
+    array (
+      'id' => 160,
+      'core_app_id' => 14,
+      'modelo_id' => 47,
+      'name' => 'Documentos de contabilidad',
+      'descripcion' => 'Documentos de contabilidad',
+      'url' => 'web',
+      'parent' => 173,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-13 23:54:16',
+      'updated_at' => '2018-11-27 20:29:37',
+    ),
+    137 => 
+    array (
+      'id' => 161,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'Estados financieros',
+      'descripcion' => 'Estados financieros',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-15 10:53:05',
+      'updated_at' => '2018-11-15 10:53:05',
+    ),
+    138 => 
+    array (
+      'id' => 162,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'Balance de comprobación',
+      'descripcion' => 'Balance de comprobación',
+      'url' => 'contab_balance_comprobacion',
+      'parent' => 161,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-11-15 10:54:17',
+      'updated_at' => '2019-08-14 15:44:57',
+    ),
+    139 => 
+    array (
+      'id' => 163,
+      'core_app_id' => 3,
+      'modelo_id' => 50,
+      'name' => 'Motivos tesorería',
+      'descripcion' => 'Motivos tesorería',
+      'url' => 'web',
+      'parent' => 37,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-17 23:02:13',
+      'updated_at' => '2018-11-17 23:02:13',
+    ),
+    140 => 
+    array (
+      'id' => 164,
+      'core_app_id' => 12,
+      'modelo_id' => 51,
+      'name' => 'Cuentas de cobro',
+      'descripcion' => 'Cuentas de cobro',
+      'url' => 'web',
+      'parent' => 152,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-11-18 16:22:56',
+      'updated_at' => '2018-12-13 23:24:04',
+    ),
+    141 => 
+    array (
+      'id' => 165,
+      'core_app_id' => 12,
+      'modelo_id' => 42,
+      'name' => 'cxc_conceptos_facturar',
+      'descripcion' => 'Conceptos facturar',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-18 18:27:58',
+      'updated_at' => '2020-07-03 06:07:42',
+    ),
+    142 => 
+    array (
+      'id' => 166,
+      'core_app_id' => 12,
+      'modelo_id' => 0,
+      'name' => 'Estados de cuentas',
+      'descripcion' => 'Estados de cuentas',
+      'url' => 'cxc/estados_de_cuentas',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-18 23:53:40',
+      'updated_at' => '2018-11-18 23:56:38',
+    ),
+    143 => 
+    array (
+      'id' => 167,
+      'core_app_id' => 12,
+      'modelo_id' => 52,
+      'name' => 'Cruce de documentos',
+      'descripcion' => 'Cruce de documentos',
+      'url' => 'web',
+      'parent' => 152,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-11-18 23:54:55',
+      'updated_at' => '2018-12-13 23:24:23',
+    ),
+    144 => 
+    array (
+      'id' => 168,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'Informes y listados',
+      'descripcion' => 'Informes y listados',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-19 12:09:22',
+      'updated_at' => '2018-11-19 12:09:22',
+    ),
+    145 => 
+    array (
+      'id' => 169,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'Auxiliar por cuenta',
+      'descripcion' => 'Auxiliar por cuenta',
+      'url' => 'contab_auxiliar_por_cuenta',
+      'parent' => 168,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-19 12:10:00',
+      'updated_at' => '2018-11-19 12:10:00',
+    ),
+    146 => 
+    array (
+      'id' => 170,
+      'core_app_id' => 5,
+      'modelo_id' => 37,
+      'name' => 'Gestionar Cuestionarios',
+      'descripcion' => 'Gestionar Cuestionarios',
+      'url' => 'web',
+      'parent' => 171,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-20 11:49:59',
+      'updated_at' => '2018-11-20 11:55:54',
+    ),
+    147 => 
+    array (
+      'id' => 171,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'Actividades escolares',
+      'descripcion' => 'Actividades escolares',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-20 11:51:26',
+      'updated_at' => '2018-11-20 11:51:26',
+    ),
+    148 => 
+    array (
+      'id' => 172,
+      'core_app_id' => 5,
+      'modelo_id' => 36,
+      'name' => 'Preguntas',
+      'descripcion' => 'Preguntas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 18,
+      'enabled' => 0,
+      'fa_icon' => 'list',
+      'created_at' => '2018-11-20 11:59:38',
+      'updated_at' => '2019-07-22 10:10:38',
+    ),
+    149 => 
+    array (
+      'id' => 173,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'contab_transacciones',
+      'descripcion' => 'Transacciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-27 20:28:50',
+      'updated_at' => '2019-10-31 17:13:34',
+    ),
+    150 => 
+    array (
+      'id' => 174,
+      'core_app_id' => 3,
+      'modelo_id' => 54,
+      'name' => 'teso_menu_pagos',
+      'descripcion' => 'Pagos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-11-29 02:01:42',
+      'updated_at' => '2019-12-19 17:33:47',
+    ),
+    151 => 
+    array (
+      'id' => 175,
+      'core_app_id' => 15,
+      'modelo_id' => 0,
+      'name' => 'Mi Conjunto',
+      'descripcion' => 'Mi Conjunto',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-12-02 23:13:26',
+      'updated_at' => '2018-12-02 23:17:43',
+    ),
+    152 => 
+    array (
+      'id' => 176,
+      'core_app_id' => 15,
+      'modelo_id' => 55,
+      'name' => 'Anuncios',
+      'descripcion' => 'Anuncios',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => 'bullhorn',
+      'created_at' => '2018-12-02 23:13:27',
+      'updated_at' => '2018-12-02 23:13:27',
+    ),
+    153 => 
+    array (
+      'id' => 177,
+      'core_app_id' => 15,
+      'modelo_id' => 0,
+      'name' => 'Mi cartera',
+      'descripcion' => 'Mi cartera',
+      'url' => 'mi_conjunto/mi_cartera',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-12-02 23:14:33',
+      'updated_at' => '2018-12-04 19:51:27',
+    ),
+    154 => 
+    array (
+      'id' => 178,
+      'core_app_id' => 15,
+      'modelo_id' => 56,
+      'name' => 'PQRs',
+      'descripcion' => 'PQRs',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-12-02 23:14:56',
+      'updated_at' => '2018-12-02 23:14:56',
+    ),
+    155 => 
+    array (
+      'id' => 179,
+      'core_app_id' => 15,
+      'modelo_id' => 57,
+      'name' => 'Reservas',
+      'descripcion' => 'Reservas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-12-02 23:15:24',
+      'updated_at' => '2018-12-05 16:39:58',
+    ),
+    156 => 
+    array (
+      'id' => 180,
+      'core_app_id' => 15,
+      'modelo_id' => 58,
+      'name' => 'Documentos digitales',
+      'descripcion' => 'Documentos digitales',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 6,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-12-02 23:16:24',
+      'updated_at' => '2018-12-05 16:40:09',
+    ),
+    157 => 
+    array (
+      'id' => 181,
+      'core_app_id' => 12,
+      'modelo_id' => 59,
+      'name' => 'Cancelaciones y anticipos',
+      'descripcion' => 'Cancelaciones y anticipos',
+      'url' => 'web',
+      'parent' => 152,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-12-07 10:03:02',
+      'updated_at' => '2018-12-13 23:24:46',
+    ),
+    158 => 
+    array (
+      'id' => 182,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'Estado de resultados',
+      'descripcion' => 'Estado de resultados',
+      'url' => 'contab_estado_resultados',
+      'parent' => 161,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-12-17 09:18:48',
+      'updated_at' => '2018-12-18 14:06:12',
+    ),
+    159 => 
+    array (
+      'id' => 183,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'Generación EEFF',
+      'descripcion' => 'Generación EEFF',
+      'url' => 'contab_generacion_eeff',
+      'parent' => 161,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-12-17 09:19:49',
+      'updated_at' => '2018-12-18 14:05:34',
+    ),
+    160 => 
+    array (
+      'id' => 184,
+      'core_app_id' => 14,
+      'modelo_id' => 61,
+      'name' => 'CONTAB_Reportes EEFF',
+      'descripcion' => 'Reportes EEFF',
+      'url' => 'web',
+      'parent' => 158,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-12-18 14:27:43',
+      'updated_at' => '2019-02-07 16:19:14',
+    ),
+    161 => 
+    array (
+      'id' => 185,
+      'core_app_id' => 14,
+      'modelo_id' => 62,
+      'name' => 'Config Bloques EEFF',
+      'descripcion' => 'Config Bloques EEFF',
+      'url' => 'web',
+      'parent' => 158,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-12-18 14:28:24',
+      'updated_at' => '2019-02-07 16:19:28',
+    ),
+    162 => 
+    array (
+      'id' => 186,
+      'core_app_id' => 14,
+      'modelo_id' => 63,
+      'name' => 'Config Elementos EEFF',
+      'descripcion' => 'Config Elementos EEFF',
+      'url' => 'web',
+      'parent' => 158,
+      'orden' => 5,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-12-18 14:28:55',
+      'updated_at' => '2019-02-07 16:19:42',
+    ),
+    163 => 
+    array (
+      'id' => 187,
+      'core_app_id' => 14,
+      'modelo_id' => 64,
+      'name' => 'Config Notas EEFF',
+      'descripcion' => 'Notas EEFF',
+      'url' => 'web',
+      'parent' => 158,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-12-18 14:29:42',
+      'updated_at' => '2019-02-07 16:20:07',
+    ),
+    164 => 
+    array (
+      'id' => 188,
+      'core_app_id' => 14,
+      'modelo_id' => 65,
+      'name' => 'Periodos ejercicio contable',
+      'descripcion' => 'Periodos ejercicio contable',
+      'url' => 'web',
+      'parent' => 158,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-12-18 14:56:24',
+      'updated_at' => '2018-12-18 14:56:24',
+    ),
+    165 => 
+    array (
+      'id' => 189,
+      'core_app_id' => 16,
+      'modelo_id' => 0,
+      'name' => 'Usuario adicional',
+      'descripcion' => 'Usuario adicional',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 98,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2018-12-18 22:26:30',
+      'updated_at' => '2018-12-18 22:26:30',
+    ),
+    166 => 
+    array (
+      'id' => 190,
+      'core_app_id' => 1,
+      'modelo_id' => 66,
+      'name' => 'Inscripciones',
+      'descripcion' => 'Inscripciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-12-21 15:26:35',
+      'updated_at' => '2018-12-22 10:59:11',
+    ),
+    167 => 
+    array (
+      'id' => 191,
+      'core_app_id' => 7,
+      'modelo_id' => 67,
+      'name' => 'Secuencias',
+      'descripcion' => 'Secuencias',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 30,
+      'enabled' => 0,
+      'fa_icon' => 'repeat',
+      'created_at' => '2018-12-23 09:10:54',
+      'updated_at' => '2019-11-16 09:09:39',
+    ),
+    168 => 
+    array (
+      'id' => 192,
+      'core_app_id' => 1,
+      'modelo_id' => 68,
+      'name' => 'Grados',
+      'descripcion' => 'Grados',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2018-12-29 09:38:17',
+      'updated_at' => '2018-12-29 09:38:17',
+    ),
+    169 => 
+    array (
+      'id' => 193,
+      'core_app_id' => 7,
+      'modelo_id' => 69,
+      'name' => 'Mi colegio',
+      'descripcion' => 'Mi colegio',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 0,
+      'fa_icon' => 'education',
+      'created_at' => '2019-01-03 16:51:27',
+      'updated_at' => '2020-01-20 10:38:42',
+    ),
+    170 => 
+    array (
+      'id' => 194,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'import data',
+      'descripcion' => 'Importar datos',
+      'url' => 'importar/formulario',
+      'parent' => 0,
+      'orden' => 101,
+      'enabled' => 0,
+      'fa_icon' => 'data-import',
+      'created_at' => '2019-01-14 15:16:52',
+      'updated_at' => '2019-07-22 10:14:07',
+    ),
+    171 => 
+    array (
+      'id' => 195,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'TESO: cartera estudiantes',
+      'descripcion' => 'Cartera de estudiantes',
+      'url' => 'tesoreria/cartera_vencida_estudiantes',
+      'parent' => 196,
+      'orden' => 70,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-01-16 12:57:26',
+      'updated_at' => '2020-05-13 10:20:32',
+    ),
+    172 => 
+    array (
+      'id' => 196,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'teso_otras_transacciones',
+      'descripcion' => 'Otras transacciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-01-16 12:58:15',
+      'updated_at' => '2020-05-13 10:15:28',
+    ),
+    173 => 
+    array (
+      'id' => 197,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'TESO: cuadre',
+      'descripcion' => 'Flujo de efectivo',
+      'url' => 'tesoreria/flujo_de_efectivo',
+      'parent' => 196,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-01-16 12:59:11',
+      'updated_at' => '2020-05-13 10:19:25',
+    ),
+    174 => 
+    array (
+      'id' => 198,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'teso_conciliacion_bancaria',
+      'descripcion' => 'Conciliación bancaria',
+      'url' => 'tesoreria/conciliacion_bancaria',
+      'parent' => 196,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-01-28 10:04:28',
+      'updated_at' => '2020-05-13 10:15:56',
+    ),
+    175 => 
+    array (
+      'id' => 199,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'CALI: Asignaciones',
+      'descripcion' => 'Asignaciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-01-31 11:12:19',
+      'updated_at' => '2019-01-31 11:12:19',
+    ),
+    176 => 
+    array (
+      'id' => 200,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'CALI: Asignacion asignaturas',
+      'descripcion' => 'Asignar asignaturas',
+      'url' => 'calificaciones/asignar_asignaturas',
+      'parent' => 199,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-01-31 11:12:57',
+      'updated_at' => '2019-01-31 11:13:12',
+    ),
+    177 => 
+    array (
+      'id' => 201,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'CALI: Revisar Asignacion asignaturas',
+      'descripcion' => 'Revisar asignaciones',
+      'url' => 'calificaciones/revisar_asignaciones',
+      'parent' => 199,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-02-01 13:01:51',
+      'updated_at' => '2019-02-01 13:01:51',
+    ),
+    178 => 
+    array (
+      'id' => 202,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'TESO: resumen x curso',
+      'descripcion' => 'Resumen x curso',
+      'url' => 'tesoreria/reporte_cartera_por_curso',
+      'parent' => 196,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-02-04 02:40:13',
+      'updated_at' => '2020-05-13 10:16:59',
+    ),
+    179 => 
+    array (
+      'id' => 203,
+      'core_app_id' => 3,
+      'modelo_id' => 31,
+      'name' => 'eliminar_recaudo_libreta',
+      'descripcion' => 'eliminar_recaudo_libreta',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-02-20 19:04:58',
+      'updated_at' => '2019-02-20 19:04:58',
+    ),
+    180 => 
+    array (
+      'id' => 204,
+      'core_app_id' => 6,
+      'modelo_id' => 0,
+      'name' => 'Académico estudiante',
+      'descripcion' => 'Académico estudiante',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 50,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-03-14 22:39:50',
+      'updated_at' => '2019-03-14 22:39:50',
+    ),
+    181 => 
+    array (
+      'id' => 205,
+      'core_app_id' => 1,
+      'modelo_id' => 0,
+      'name' => 'control_disciplinario',
+      'descripcion' => 'Control disciplinario',
+      'url' => 'matriculas/control_disciplinario/consultar2',
+      'parent' => 20,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-01 21:17:52',
+      'updated_at' => '2019-04-01 21:17:52',
+    ),
+    182 => 
+    array (
+      'id' => 206,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'metas_propositos',
+      'descripcion' => 'Metas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-04-15 11:34:24',
+      'updated_at' => '2019-04-15 11:34:24',
+    ),
+    183 => 
+    array (
+      'id' => 207,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'control_disciplinario',
+      'descripcion' => 'Control disciplinario',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-04-15 11:39:22',
+      'updated_at' => '2019-04-15 11:39:22',
+    ),
+    184 => 
+    array (
+      'id' => 208,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'control_disciplinario',
+      'descripcion' => 'Control disciplinario',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-04-15 11:39:22',
+      'updated_at' => '2019-04-15 11:39:22',
+    ),
+    185 => 
+    array (
+      'id' => 209,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'ACDO_metas_propositos',
+      'descripcion' => 'Metas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-04-15 11:34:24',
+      'updated_at' => '2019-04-15 11:34:24',
+    ),
+    186 => 
+    array (
+      'id' => 212,
+      'core_app_id' => 10,
+      'modelo_id' => 217,
+      'name' => 'pw_elementos_diseño_widgets',
+      'descripcion' => 'Elementos de diseño para widgets',
+      'url' => 'web',
+      'parent' => 214,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-21 23:14:25',
+      'updated_at' => '2020-05-02 09:59:44',
+    ),
+    187 => 
+    array (
+      'id' => 213,
+      'core_app_id' => 10,
+      'modelo_id' => 77,
+      'name' => 'pw_categorias',
+      'descripcion' => 'Categorías de artículos',
+      'url' => 'web',
+      'parent' => 258,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-21 23:14:25',
+      'updated_at' => '2020-06-25 10:02:40',
+    ),
+    188 => 
+    array (
+      'id' => 214,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_menu_config',
+      'descripcion' => 'Desarrollador',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-21 23:14:25',
+      'updated_at' => '2020-05-02 09:56:00',
+    ),
+    189 => 
+    array (
+      'id' => 215,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_nube',
+      'descripcion' => 'Nube',
+      'url' => 'pagina_web/nube/view',
+      'parent' => 0,
+      'orden' => 14,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-21 23:14:25',
+      'updated_at' => '2020-05-02 09:52:01',
+    ),
+    190 => 
+    array (
+      'id' => 216,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'Nómina',
+      'descripcion' => 'Nómina',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 8,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 16:11:29',
+      'updated_at' => '2019-04-29 16:11:29',
+    ),
+    191 => 
+    array (
+      'id' => 217,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_menu_liquidacion',
+      'descripcion' => 'Liquidación',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:24:54',
+      'updated_at' => '2019-04-29 17:24:54',
+    ),
+    192 => 
+    array (
+      'id' => 218,
+      'core_app_id' => 17,
+      'modelo_id' => 90,
+      'name' => 'nom_documentos',
+      'descripcion' => 'Documentos de nómina',
+      'url' => 'web',
+      'parent' => 217,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:25:46',
+      'updated_at' => '2019-04-29 17:25:46',
+    ),
+    193 => 
+    array (
+      'id' => 219,
+      'core_app_id' => 17,
+      'modelo_id' => 91,
+      'name' => 'nom_novedades',
+      'descripcion' => 'Registros de documentos',
+      'url' => 'web',
+      'parent' => 217,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:35:16',
+      'updated_at' => '2019-04-29 17:35:16',
+    ),
+    194 => 
+    array (
+      'id' => 220,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_menu_cuotas_prestamos',
+      'descripcion' => 'Cuotas y Préstamos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:36:31',
+      'updated_at' => '2019-04-29 17:36:31',
+    ),
+    195 => 
+    array (
+      'id' => 221,
+      'core_app_id' => 17,
+      'modelo_id' => 87,
+      'name' => 'nom_cuotas',
+      'descripcion' => 'Cuotas',
+      'url' => 'web',
+      'parent' => 220,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:37:00',
+      'updated_at' => '2019-04-29 17:37:00',
+    ),
+    196 => 
+    array (
+      'id' => 222,
+      'core_app_id' => 17,
+      'modelo_id' => 88,
+      'name' => 'nom_prestamos',
+      'descripcion' => 'Préstamos',
+      'url' => 'web',
+      'parent' => 220,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:37:26',
+      'updated_at' => '2019-04-29 17:37:26',
+    ),
+    197 => 
+    array (
+      'id' => 223,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_informes',
+      'descripcion' => 'Informes y listados',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:38:04',
+      'updated_at' => '2019-04-29 17:38:04',
+    ),
+    198 => 
+    array (
+      'id' => 224,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_reportes',
+      'descripcion' => 'Reportes',
+      'url' => 'nomina/reportes',
+      'parent' => 223,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:38:55',
+      'updated_at' => '2019-04-29 17:38:55',
+    ),
+    199 => 
+    array (
+      'id' => 225,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:39:19',
+      'updated_at' => '2019-04-29 17:39:19',
+    ),
+    200 => 
+    array (
+      'id' => 226,
+      'core_app_id' => 17,
+      'modelo_id' => 83,
+      'name' => 'nom_contratos',
+      'descripcion' => 'Contratos',
+      'url' => 'web',
+      'parent' => 225,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:39:49',
+      'updated_at' => '2019-04-29 17:39:49',
+    ),
+    201 => 
+    array (
+      'id' => 227,
+      'core_app_id' => 17,
+      'modelo_id' => 84,
+      'name' => 'nom_conceptos',
+      'descripcion' => 'Conceptos',
+      'url' => 'web',
+      'parent' => 225,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:40:14',
+      'updated_at' => '2019-04-29 17:40:14',
+    ),
+    202 => 
+    array (
+      'id' => 228,
+      'core_app_id' => 17,
+      'modelo_id' => 86,
+      'name' => 'nom_cargos',
+      'descripcion' => 'Cargos',
+      'url' => 'web',
+      'parent' => 225,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:41:06',
+      'updated_at' => '2019-04-29 17:41:06',
+    ),
+    203 => 
+    array (
+      'id' => 229,
+      'core_app_id' => 17,
+      'modelo_id' => 89,
+      'name' => 'nom_entidades',
+      'descripcion' => 'Entidades',
+      'url' => 'web',
+      'parent' => 225,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-04-29 17:41:32',
+      'updated_at' => '2019-04-29 17:41:32',
+    ),
+    204 => 
+    array (
+      'id' => 230,
+      'core_app_id' => 13,
+      'modelo_id' => 0,
+      'name' => 'Ventas',
+      'descripcion' => 'Ventas',
+      'url' => 'ventas',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'home',
+      'created_at' => '2019-05-03 13:41:40',
+      'updated_at' => '2019-09-19 12:44:25',
+    ),
+    205 => 
+    array (
+      'id' => 231,
+      'core_app_id' => 18,
+      'modelo_id' => 92,
+      'name' => 'salud_consultorios',
+      'descripcion' => 'Consultorios',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-04 20:48:57',
+      'updated_at' => '2019-06-13 08:21:33',
+    ),
+    206 => 
+    array (
+      'id' => 232,
+      'core_app_id' => 18,
+      'modelo_id' => 0,
+      'name' => 'salud_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-04 21:02:12',
+      'updated_at' => '2019-06-04 21:02:12',
+    ),
+    207 => 
+    array (
+      'id' => 233,
+      'core_app_id' => 18,
+      'modelo_id' => 95,
+      'name' => 'salud_historias_clinicas',
+      'descripcion' => 'Historias Clínicas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-10 14:41:00',
+      'updated_at' => '2020-06-02 10:31:50',
+    ),
+    208 => 
+    array (
+      'id' => 234,
+      'core_app_id' => 18,
+      'modelo_id' => 93,
+      'name' => 'salud_profesionales',
+      'descripcion' => 'Profesionales de la Salud',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-12 16:40:10',
+      'updated_at' => '2019-06-12 16:40:10',
+    ),
+    209 => 
+    array (
+      'id' => 235,
+      'core_app_id' => 18,
+      'modelo_id' => 99,
+      'name' => 'salud_examenes',
+      'descripcion' => 'Exámenes Médicos',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-13 08:22:25',
+      'updated_at' => '2019-06-13 08:22:25',
+    ),
+    210 => 
+    array (
+      'id' => 236,
+      'core_app_id' => 18,
+      'modelo_id' => 97,
+      'name' => 'salud_organos_cuerpo',
+      'descripcion' => 'Órganos del Cuerpo',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-13 08:23:31',
+      'updated_at' => '2019-06-13 08:23:31',
+    ),
+    211 => 
+    array (
+      'id' => 237,
+      'core_app_id' => 18,
+      'modelo_id' => 98,
+      'name' => 'salud_variables_examenes',
+      'descripcion' => 'Variables de Exámenes',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-13 08:26:30',
+      'updated_at' => '2019-06-13 08:26:30',
+    ),
+    212 => 
+    array (
+      'id' => 238,
+      'core_app_id' => 18,
+      'modelo_id' => 104,
+      'name' => 'salud_asignacion_variables_examen',
+      'descripcion' => 'Asignar Variables a Exámen',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-13 15:31:17',
+      'updated_at' => '2019-06-13 15:31:17',
+    ),
+    213 => 
+    array (
+      'id' => 239,
+      'core_app_id' => 18,
+      'modelo_id' => 105,
+      'name' => 'salud_asignacion_organo_examen',
+      'descripcion' => 'Asignar Órganos a Exámen',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-13 15:32:06',
+      'updated_at' => '2019-06-13 15:32:06',
+    ),
+    214 => 
+    array (
+      'id' => 240,
+      'core_app_id' => 18,
+      'modelo_id' => 0,
+      'name' => 'Consultorio Médico',
+      'descripcion' => 'Consultorio Médico',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 13,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-06-14 03:32:21',
+      'updated_at' => '2019-06-14 03:39:45',
+    ),
+    215 => 
+    array (
+      'id' => 241,
+      'core_app_id' => 18,
+      'modelo_id' => 96,
+      'name' => 'salud_consultas_create',
+      'descripcion' => 'Consultas Médicas (Crear)',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-06-14 04:23:07',
+      'updated_at' => '2019-06-14 04:23:07',
+    ),
+    216 => 
+    array (
+      'id' => 242,
+      'core_app_id' => 18,
+      'modelo_id' => 96,
+      'name' => 'salud_consultas_edit',
+      'descripcion' => 'Consultas Médicas (Editar)',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-06-14 04:23:45',
+      'updated_at' => '2019-06-14 04:23:45',
+    ),
+    217 => 
+    array (
+      'id' => 243,
+      'core_app_id' => 18,
+      'modelo_id' => 96,
+      'name' => 'salud_consultas_delete',
+      'descripcion' => 'Consultas Médicas (Eliminar)',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-06-14 04:24:28',
+      'updated_at' => '2019-06-14 04:24:28',
+    ),
+    218 => 
+    array (
+      'id' => 244,
+      'core_app_id' => 18,
+      'modelo_id' => 96,
+      'name' => 'salud_consultas_print',
+      'descripcion' => 'Consultas Médicas (Imprimir)',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-06-14 04:25:00',
+      'updated_at' => '2019-06-14 04:25:00',
+    ),
+    219 => 
+    array (
+      'id' => 245,
+      'core_app_id' => 18,
+      'modelo_id' => 106,
+      'name' => 'salud_tipos_lentes',
+      'descripcion' => 'Tipos de Lentes',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-13 15:31:17',
+      'updated_at' => '2019-06-13 15:31:17',
+    ),
+    220 => 
+    array (
+      'id' => 246,
+      'core_app_id' => 18,
+      'modelo_id' => 107,
+      'name' => 'salud_material_lentes',
+      'descripcion' => 'Material de Lentes',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-13 15:31:17',
+      'updated_at' => '2019-06-19 09:52:14',
+    ),
+    221 => 
+    array (
+      'id' => 247,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_menus_titulo',
+      'descripcion' => 'Menús',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-06-22 16:24:30',
+      'updated_at' => '2020-02-24 20:13:37',
+    ),
+    222 => 
+    array (
+      'id' => 248,
+      'core_app_id' => 10,
+      'modelo_id' => 108,
+      'name' => 'pw_menus',
+      'descripcion' => 'Menús',
+      'url' => 'web',
+      'parent' => 247,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-06-22 16:24:30',
+      'updated_at' => '2020-02-24 20:11:44',
+    ),
+    223 => 
+    array (
+      'id' => 249,
+      'core_app_id' => 10,
+      'modelo_id' => 109,
+      'name' => 'pw_menu_items',
+      'descripcion' => 'Items de menú',
+      'url' => 'web',
+      'parent' => 247,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-22 16:24:30',
+      'updated_at' => '2019-06-22 16:46:39',
+    ),
+    224 => 
+    array (
+      'id' => 250,
+      'core_app_id' => 18,
+      'modelo_id' => 110,
+      'name' => 'salud_anamnesis_create',
+      'descripcion' => 'Salud Anamnesis Create',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-06-28 09:43:18',
+      'updated_at' => '2019-07-17 05:20:41',
+    ),
+    225 => 
+    array (
+      'id' => 251,
+      'core_app_id' => 18,
+      'modelo_id' => 110,
+      'name' => 'salud_anamnesis_edit',
+      'descripcion' => 'Salud Anamnesis Edit',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-06-28 09:43:18',
+      'updated_at' => '2019-07-17 05:20:51',
+    ),
+    226 => 
+    array (
+      'id' => 252,
+      'core_app_id' => 8,
+      'modelo_id' => 113,
+      'name' => 'inv_min_stocks',
+      'descripcion' => 'Stock Mínimo',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-06-22 16:24:30',
+      'updated_at' => '2019-07-02 06:36:32',
+    ),
+    227 => 
+    array (
+      'id' => 253,
+      'core_app_id' => 8,
+      'modelo_id' => 0,
+      'name' => 'inv_repo_stock_min',
+      'descripcion' => 'Stock Mínimo',
+      'url' => 'inv_stock_minimo',
+      'parent' => 124,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-07-03 09:25:02',
+      'updated_at' => '2019-07-03 09:25:02',
+    ),
+    228 => 
+    array (
+      'id' => 254,
+      'core_app_id' => 10,
+      'modelo_id' => 222,
+      'name' => 'pw_clientes_campana',
+      'descripcion' => 'Clientes campaña web',
+      'url' => 'web',
+      'parent' => 258,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-07-04 16:24:30',
+      'updated_at' => '2020-06-04 04:00:12',
+    ),
+    229 => 
+    array (
+      'id' => 255,
+      'core_app_id' => 10,
+      'modelo_id' => 123,
+      'name' => 'pw_modulos',
+      'descripcion' => 'Módulos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '0000-00-00 00:00:00',
+      'updated_at' => '2020-02-24 20:12:22',
+    ),
+    230 => 
+    array (
+      'id' => 256,
+      'core_app_id' => 10,
+      'modelo_id' => 114,
+      'name' => 'pw_mod_carousel',
+      'descripcion' => 'Galería de imágenes',
+      'url' => 'web',
+      'parent' => 268,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-07-04 16:24:30',
+      'updated_at' => '2019-08-13 19:27:09',
+    ),
+    231 => 
+    array (
+      'id' => 257,
+      'core_app_id' => 10,
+      'modelo_id' => 115,
+      'name' => 'pw_mod_about',
+      'descripcion' => 'Quienes Somos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-07-04 16:24:30',
+      'updated_at' => '2019-08-13 18:59:29',
+    ),
+    232 => 
+    array (
+      'id' => 258,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-07-12 16:24:30',
+      'updated_at' => '2020-06-04 03:56:46',
+    ),
+    233 => 
+    array (
+      'id' => 259,
+      'core_app_id' => 10,
+      'modelo_id' => 81,
+      'name' => 'pw_paginas',
+      'descripcion' => 'Páginas y secciones',
+      'url' => 'paginas',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-07-12 16:24:30',
+      'updated_at' => '2020-02-21 07:21:06',
+    ),
+    234 => 
+    array (
+      'id' => 260,
+      'core_app_id' => 10,
+      'modelo_id' => 117,
+      'name' => 'pw_secciones',
+      'descripcion' => 'Secciones Página Web',
+      'url' => 'web',
+      'parent' => 214,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-07-12 16:24:30',
+      'updated_at' => '2020-05-02 09:57:10',
+    ),
+    235 => 
+    array (
+      'id' => 261,
+      'core_app_id' => 7,
+      'modelo_id' => 118,
+      'name' => 'core_reportes',
+      'descripcion' => 'Reportes de aplicaciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 100,
+      'enabled' => 0,
+      'fa_icon' => 'list-alt',
+      'created_at' => '2019-07-16 16:23:58',
+      'updated_at' => '2019-07-22 10:10:07',
+    ),
+    236 => 
+    array (
+      'id' => 262,
+      'core_app_id' => 1,
+      'modelo_id' => 119,
+      'name' => 'sga_tipos_novedades',
+      'descripcion' => 'Tipos de novedades',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-08-07 03:56:57',
+      'updated_at' => '2019-08-07 03:56:57',
+    ),
+    237 => 
+    array (
+      'id' => 263,
+      'core_app_id' => 1,
+      'modelo_id' => 120,
+      'name' => 'sga_semanas_academicas',
+      'descripcion' => 'Semanas académicas',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 8,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-08-07 04:00:41',
+      'updated_at' => '2020-01-24 05:31:58',
+    ),
+    238 => 
+    array (
+      'id' => 264,
+      'core_app_id' => 1,
+      'modelo_id' => 121,
+      'name' => 'sga_codigos_disciplinarios',
+      'descripcion' => 'Códigos disciplinarios',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 9,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-08-07 04:13:42',
+      'updated_at' => '2019-08-07 04:13:42',
+    ),
+    239 => 
+    array (
+      'id' => 265,
+      'core_app_id' => 2,
+      'modelo_id' => 75,
+      'name' => 'sga_metas',
+      'descripcion' => 'Metas / Propósitos',
+      'url' => 'web',
+      'parent' => 61,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-08-07 04:14:35',
+      'updated_at' => '2019-08-07 04:14:35',
+    ),
+    240 => 
+    array (
+      'id' => 266,
+      'core_app_id' => 2,
+      'modelo_id' => 122,
+      'name' => 'sga_areas',
+      'descripcion' => 'Áreas',
+      'url' => 'web',
+      'parent' => 61,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-08-07 11:19:23',
+      'updated_at' => '2019-08-07 11:19:23',
+    ),
+    241 => 
+    array (
+      'id' => 267,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_iconos',
+      'descripcion' => 'Iconos',
+      'url' => 'pagina_web/icons/view',
+      'parent' => 258,
+      'orden' => 12,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-08-13 19:04:57',
+      'updated_at' => '2020-06-04 03:57:41',
+    ),
+    242 => 
+    array (
+      'id' => 268,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_componentes',
+      'descripcion' => 'Componentes',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-08-13 19:26:48',
+      'updated_at' => '2020-02-24 20:10:15',
+    ),
+    243 => 
+    array (
+      'id' => 269,
+      'core_app_id' => 18,
+      'modelo_id' => 125,
+      'name' => 'salud_citas_medicas',
+      'descripcion' => 'Citas médicas',
+      'url' => 'muy_pronto',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-08-17 16:01:03',
+      'updated_at' => '2019-08-17 16:03:09',
+    ),
+    244 => 
+    array (
+      'id' => 270,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'cali_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-08-28 08:25:47',
+      'updated_at' => '2019-08-28 08:36:20',
+    ),
+    245 => 
+    array (
+      'id' => 271,
+      'core_app_id' => 13,
+      'modelo_id' => 0,
+      'name' => 'vtas_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'vtas_catalogos',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-09-15 20:30:31',
+      'updated_at' => '2019-09-15 20:30:31',
+    ),
+    246 => 
+    array (
+      'id' => 272,
+      'core_app_id' => 13,
+      'modelo_id' => 126,
+      'name' => 'vtas_descuentos_pp_encabezados',
+      'descripcion' => 'Encabezados Descuento PP',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 7,
+      'enabled' => 0,
+      'fa_icon' => 'paypal',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    247 => 
+    array (
+      'id' => 273,
+      'core_app_id' => 13,
+      'modelo_id' => 127,
+      'name' => 'vtas_descuentos_pp_detalles',
+      'descripcion' => 'Detalles de descuento PP',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 8,
+      'enabled' => 0,
+      'fa_icon' => 'product-hunt',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    248 => 
+    array (
+      'id' => 274,
+      'core_app_id' => 13,
+      'modelo_id' => 128,
+      'name' => 'vtas_listas_precios_encabezados',
+      'descripcion' => 'Listas de precios',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 9,
+      'enabled' => 0,
+      'fa_icon' => 'file-powerpoint-o',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    249 => 
+    array (
+      'id' => 275,
+      'core_app_id' => 13,
+      'modelo_id' => 129,
+      'name' => 'vtas_listas_precios_detalles',
+      'descripcion' => 'Detalles de listas de precios',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 0,
+      'fa_icon' => 'money',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    250 => 
+    array (
+      'id' => 276,
+      'core_app_id' => 13,
+      'modelo_id' => 130,
+      'name' => 'vtas_listas_dctos_encabezados',
+      'descripcion' => 'Listas de descuentos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 11,
+      'enabled' => 0,
+      'fa_icon' => 'ticket',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    251 => 
+    array (
+      'id' => 277,
+      'core_app_id' => 13,
+      'modelo_id' => 131,
+      'name' => 'vtas_listas_dctos_detalles',
+      'descripcion' => 'Detalles de listas de descuentos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 12,
+      'enabled' => 0,
+      'fa_icon' => 'hand-pointer-o',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    252 => 
+    array (
+      'id' => 278,
+      'core_app_id' => 13,
+      'modelo_id' => 132,
+      'name' => 'vtas_clases_vendedores',
+      'descripcion' => 'Clases de vendedores',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => 'suitcase',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    253 => 
+    array (
+      'id' => 279,
+      'core_app_id' => 13,
+      'modelo_id' => 133,
+      'name' => 'vtas_equipos_ventas',
+      'descripcion' => 'Equipos de ventas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => 'sitemap',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    254 => 
+    array (
+      'id' => 280,
+      'core_app_id' => 13,
+      'modelo_id' => 134,
+      'name' => 'vtas_vendedores',
+      'descripcion' => 'Vendedores',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => 'users',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    255 => 
+    array (
+      'id' => 281,
+      'core_app_id' => 13,
+      'modelo_id' => 135,
+      'name' => 'vtas_zonas',
+      'descripcion' => 'Zonas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 0,
+      'fa_icon' => 'map',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    256 => 
+    array (
+      'id' => 282,
+      'core_app_id' => 13,
+      'modelo_id' => 136,
+      'name' => 'vtas_condiciones_pago',
+      'descripcion' => 'Condiciones de pago',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 6,
+      'enabled' => 0,
+      'fa_icon' => 'credit-card',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    257 => 
+    array (
+      'id' => 283,
+      'core_app_id' => 13,
+      'modelo_id' => 137,
+      'name' => 'vtas_clases_clientes',
+      'descripcion' => 'Clases de clientes',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'pie-chart',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    258 => 
+    array (
+      'id' => 284,
+      'core_app_id' => 13,
+      'modelo_id' => 138,
+      'name' => 'vtas_clientes',
+      'descripcion' => 'Clientes',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => 'smile-o',
+      'created_at' => '2019-09-15 16:24:30',
+      'updated_at' => '2019-09-15 16:24:30',
+    ),
+    259 => 
+    array (
+      'id' => 285,
+      'core_app_id' => 14,
+      'modelo_id' => 140,
+      'name' => 'contab_impuestos',
+      'descripcion' => 'Impuestos',
+      'url' => 'web',
+      'parent' => 158,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-09-17 19:19:22',
+      'updated_at' => '2019-09-17 19:20:05',
+    ),
+    260 => 
+    array (
+      'id' => 286,
+      'core_app_id' => 13,
+      'modelo_id' => 0,
+      'name' => 'vtas_transacciones',
+      'descripcion' => 'Transacciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2019-09-19 14:21:31',
+      'updated_at' => '2019-10-31 17:15:52',
+    ),
+    261 => 
+    array (
+      'id' => 287,
+      'core_app_id' => 9,
+      'modelo_id' => 141,
+      'name' => 'compras_precios_proveedores',
+      'descripcion' => 'Listas de precios',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 0,
+      'fa_icon' => 'file-powerpoint-o',
+      'created_at' => '2019-10-07 16:24:30',
+      'updated_at' => '2019-10-08 05:18:51',
+    ),
+    262 => 
+    array (
+      'id' => 288,
+      'core_app_id' => 9,
+      'modelo_id' => 143,
+      'name' => 'compras_clases_proveedores',
+      'descripcion' => 'Clases de proveedores',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => 'sitemap',
+      'created_at' => '2019-10-07 16:24:30',
+      'updated_at' => '2019-10-07 16:24:30',
+    ),
+    263 => 
+    array (
+      'id' => 289,
+      'core_app_id' => 9,
+      'modelo_id' => 142,
+      'name' => 'compras_compradores',
+      'descripcion' => 'Compradores',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => 'users',
+      'created_at' => '2019-10-07 16:24:30',
+      'updated_at' => '2019-10-07 16:24:30',
+    ),
+    264 => 
+    array (
+      'id' => 290,
+      'core_app_id' => 9,
+      'modelo_id' => 145,
+      'name' => 'compras_condiciones_pago',
+      'descripcion' => 'Condiciones de pago',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'credit-card',
+      'created_at' => '2019-10-07 16:24:30',
+      'updated_at' => '2019-10-07 16:24:30',
+    ),
+    265 => 
+    array (
+      'id' => 291,
+      'core_app_id' => 9,
+      'modelo_id' => 146,
+      'name' => 'compras_proveedores',
+      'descripcion' => 'Proveedores',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => 'smile-o',
+      'created_at' => '2019-10-07 16:24:30',
+      'updated_at' => '2019-10-07 16:24:30',
+    ),
+    266 => 
+    array (
+      'id' => 292,
+      'core_app_id' => 9,
+      'modelo_id' => 0,
+      'name' => 'compras_transacciones',
+      'descripcion' => 'Transacciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2019-10-07 16:24:30',
+      'updated_at' => '2019-10-31 17:12:19',
+    ),
+    267 => 
+    array (
+      'id' => 293,
+      'core_app_id' => 9,
+      'modelo_id' => 0,
+      'name' => 'compras_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'compras_catalogos',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-07 16:24:30',
+      'updated_at' => '2019-10-08 05:18:07',
+    ),
+    268 => 
+    array (
+      'id' => 294,
+      'core_app_id' => 8,
+      'modelo_id' => 28,
+      'name' => 'inv_motivos',
+      'descripcion' => 'Motivos de inventarios',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-08 23:16:39',
+      'updated_at' => '2019-10-08 23:17:17',
+    ),
+    269 => 
+    array (
+      'id' => 295,
+      'core_app_id' => 9,
+      'modelo_id' => 149,
+      'name' => 'compras_registro_cxp',
+      'descripcion' => 'Registro de CxP',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => 'list',
+      'created_at' => '2019-10-10 08:47:31',
+      'updated_at' => '2020-07-31 17:17:44',
+    ),
+    270 => 
+    array (
+      'id' => 296,
+      'core_app_id' => 3,
+      'modelo_id' => 150,
+      'name' => 'teso_pagos_cxp',
+      'descripcion' => 'Pagos de CxP',
+      'url' => 'web',
+      'parent' => 174,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-10 10:25:33',
+      'updated_at' => '2019-10-10 10:31:13',
+    ),
+    271 => 
+    array (
+      'id' => 297,
+      'core_app_id' => 3,
+      'modelo_id' => 54,
+      'name' => 'teso_pagos',
+      'descripcion' => 'Pagos',
+      'url' => 'web',
+      'parent' => 174,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-10 10:25:43',
+      'updated_at' => '2019-10-10 10:26:03',
+    ),
+    272 => 
+    array (
+      'id' => 298,
+      'core_app_id' => 8,
+      'modelo_id' => 25,
+      'name' => 'inv_documentos',
+      'descripcion' => 'Documentos de inventario',
+      'url' => 'web',
+      'parent' => 116,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-14 20:53:07',
+      'updated_at' => '2019-10-14 20:53:31',
+    ),
+    273 => 
+    array (
+      'id' => 299,
+      'core_app_id' => 8,
+      'modelo_id' => 151,
+      'name' => 'inv_docs_inventario_fisico',
+      'descripcion' => 'Inventario Físico',
+      'url' => 'web',
+      'parent' => 116,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-14 20:53:37',
+      'updated_at' => '2020-01-17 01:58:49',
+    ),
+    274 => 
+    array (
+      'id' => 300,
+      'core_app_id' => 14,
+      'modelo_id' => 79,
+      'name' => 'contab_mov_contable',
+      'descripcion' => 'Movimiento contable',
+      'url' => 'web',
+      'parent' => 173,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-15 04:08:32',
+      'updated_at' => '2020-05-03 06:44:17',
+    ),
+    275 => 
+    array (
+      'id' => 301,
+      'core_app_id' => 13,
+      'modelo_id' => 152,
+      'name' => 'vtas_resoluciones_facturacion',
+      'descripcion' => 'Resoluciones de facturación',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 0,
+      'fa_icon' => 'bank',
+      'created_at' => '2019-10-15 04:13:09',
+      'updated_at' => '2019-10-15 04:13:58',
+    ),
+    276 => 
+    array (
+      'id' => 302,
+      'core_app_id' => 7,
+      'modelo_id' => 80,
+      'name' => 'conf_consecutivos_documentos',
+      'descripcion' => 'Consecutivo documentos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 80,
+      'enabled' => 0,
+      'fa_icon' => 'ellipsis-h',
+      'created_at' => '2019-10-16 01:52:26',
+      'updated_at' => '2019-10-16 01:52:26',
+    ),
+    277 => 
+    array (
+      'id' => 303,
+      'core_app_id' => 3,
+      'modelo_id' => 153,
+      'name' => 'teso_recaudos_cxc',
+      'descripcion' => 'Recaudos de CxC',
+      'url' => 'web',
+      'parent' => 304,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-20 23:36:06',
+      'updated_at' => '2019-10-20 23:43:59',
+    ),
+    278 => 
+    array (
+      'id' => 304,
+      'core_app_id' => 3,
+      'modelo_id' => 46,
+      'name' => 'teso_menu_recaudos',
+      'descripcion' => 'Recaudos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-20 23:37:37',
+      'updated_at' => '2019-12-19 17:33:21',
+    ),
+    279 => 
+    array (
+      'id' => 305,
+      'core_app_id' => 8,
+      'modelo_id' => 154,
+      'name' => 'inv_movimientos',
+      'descripcion' => 'Movimiento de inventarios',
+      'url' => 'web',
+      'parent' => 116,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-21 04:51:02',
+      'updated_at' => '2019-10-21 04:51:40',
+    ),
+    280 => 
+    array (
+      'id' => 306,
+      'core_app_id' => 13,
+      'modelo_id' => 139,
+      'name' => 'vtas_documentos_facturas',
+      'descripcion' => 'Facturas de ventas',
+      'url' => 'web',
+      'parent' => 286,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2019-10-21 22:28:30',
+      'updated_at' => '2020-04-21 05:42:59',
+    ),
+    281 => 
+    array (
+      'id' => 307,
+      'core_app_id' => 13,
+      'modelo_id' => 155,
+      'name' => 'vtas_documentos_cotizaciones',
+      'descripcion' => 'Cotizaciones',
+      'url' => 'web',
+      'parent' => 286,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2019-10-21 22:29:31',
+      'updated_at' => '2019-10-21 22:30:10',
+    ),
+    282 => 
+    array (
+      'id' => 308,
+      'core_app_id' => 13,
+      'modelo_id' => 164,
+      'name' => 'vtas_documentos_remisiones',
+      'descripcion' => 'Remisiones',
+      'url' => 'web',
+      'parent' => 286,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2019-10-21 22:30:18',
+      'updated_at' => '2019-11-01 03:28:44',
+    ),
+    283 => 
+    array (
+      'id' => 309,
+      'core_app_id' => 13,
+      'modelo_id' => 175,
+      'name' => 'vtas_documentos_pedidos',
+      'descripcion' => 'Pedidos',
+      'url' => 'web',
+      'parent' => 286,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2019-10-21 22:30:55',
+      'updated_at' => '2020-02-20 15:35:10',
+    ),
+    284 => 
+    array (
+      'id' => 310,
+      'core_app_id' => 9,
+      'modelo_id' => 156,
+      'name' => 'compras_terceros_proveedores_ok',
+      'descripcion' => 'Crear tercero como proveedor',
+      'url' => 'web/create',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'child',
+      'created_at' => '2019-10-22 05:51:40',
+      'updated_at' => '2020-07-31 17:06:20',
+    ),
+    285 => 
+    array (
+      'id' => 311,
+      'core_app_id' => 9,
+      'modelo_id' => 159,
+      'name' => 'compras_facturas',
+      'descripcion' => 'Facturas de compras',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-29 02:01:15',
+      'updated_at' => '2019-12-28 00:37:30',
+    ),
+    286 => 
+    array (
+      'id' => 312,
+      'core_app_id' => 9,
+      'modelo_id' => 160,
+      'name' => 'compras_documento_equivalente',
+      'descripcion' => 'Documentos equivalente a facturas',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-29 02:09:46',
+      'updated_at' => '2019-10-29 05:20:59',
+    ),
+    287 => 
+    array (
+      'id' => 313,
+      'core_app_id' => 3,
+      'modelo_id' => 158,
+      'name' => 'teso_arqueo_cajas',
+      'descripcion' => 'Arqueos de cajas',
+      'url' => 'web',
+      'parent' => 196,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-29 02:11:39',
+      'updated_at' => '2019-10-29 02:12:51',
+    ),
+    288 => 
+    array (
+      'id' => 314,
+      'core_app_id' => 8,
+      'modelo_id' => 161,
+      'name' => 'inv_costo_promedio',
+      'descripcion' => 'Costo promedio de items',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-31 06:32:10',
+      'updated_at' => '2020-01-20 10:41:17',
+    ),
+    289 => 
+    array (
+      'id' => 315,
+      'core_app_id' => 9,
+      'modelo_id' => 162,
+      'name' => 'compras_movimientos',
+      'descripcion' => 'Movimiento de compras',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-31 17:13:59',
+      'updated_at' => '2019-10-31 17:14:39',
+    ),
+    290 => 
+    array (
+      'id' => 316,
+      'core_app_id' => 13,
+      'modelo_id' => 163,
+      'name' => 'vtas_movimientos',
+      'descripcion' => 'Movimiento de ventas',
+      'url' => 'web',
+      'parent' => 286,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-10-31 17:14:42',
+      'updated_at' => '2019-10-31 17:15:24',
+    ),
+    291 => 
+    array (
+      'id' => 317,
+      'core_app_id' => 9,
+      'modelo_id' => 165,
+      'name' => 'compras_documentos_entradas',
+      'descripcion' => 'Entradas de almacén',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2019-11-01 23:48:54',
+      'updated_at' => '2019-11-01 23:49:59',
+    ),
+    292 => 
+    array (
+      'id' => 318,
+      'core_app_id' => 13,
+      'modelo_id' => 0,
+      'name' => 'vtas_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-11-02 18:35:57',
+      'updated_at' => '2019-11-02 18:36:18',
+    ),
+    293 => 
+    array (
+      'id' => 319,
+      'core_app_id' => 8,
+      'modelo_id' => 0,
+      'name' => 'inv_procesos',
+      'descripcion' => 'Procesos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 12,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-11-08 19:30:29',
+      'updated_at' => '2019-11-08 19:30:48',
+    ),
+    294 => 
+    array (
+      'id' => 320,
+      'core_app_id' => 8,
+      'modelo_id' => 0,
+      'name' => 'inv_procesos_recosteo',
+      'descripcion' => 'Recosteo',
+      'url' => 'inv_recosteo_form',
+      'parent' => 319,
+      'orden' => 12,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-11-08 19:30:51',
+      'updated_at' => '2019-11-08 19:31:20',
+    ),
+    295 => 
+    array (
+      'id' => 321,
+      'core_app_id' => 3,
+      'modelo_id' => 168,
+      'name' => 'teso_abonos_cxc',
+      'descripcion' => 'Documentos Abonados',
+      'url' => 'web',
+      'parent' => 304,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-11-10 18:36:06',
+      'updated_at' => '2019-11-10 13:03:54',
+    ),
+    296 => 
+    array (
+      'id' => 322,
+      'core_app_id' => 3,
+      'modelo_id' => 169,
+      'name' => 'teso_abonos_cxp',
+      'descripcion' => 'Documentos Abonados',
+      'url' => 'web',
+      'parent' => 174,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-11-10 05:25:33',
+      'updated_at' => '2019-11-10 13:03:38',
+    ),
+    297 => 
+    array (
+      'id' => 323,
+      'core_app_id' => 13,
+      'modelo_id' => 0,
+      'name' => 'vtas_recontabilizar',
+      'descripcion' => 'Recontabilizar',
+      'url' => 'vtas_recontabilizar',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2019-12-03 09:23:17',
+      'updated_at' => '2019-12-03 09:23:37',
+    ),
+    298 => 
+    array (
+      'id' => 324,
+      'core_app_id' => 9,
+      'modelo_id' => 166,
+      'name' => 'compras_notas_credito',
+      'descripcion' => 'Notas crédito',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-12-17 09:13:13',
+      'updated_at' => '2019-12-28 00:38:08',
+    ),
+    299 => 
+    array (
+      'id' => 325,
+      'core_app_id' => 9,
+      'modelo_id' => 172,
+      'name' => 'compras_notas_credito_directa',
+      'descripcion' => 'Notas crédito directas',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-12-17 09:14:05',
+      'updated_at' => '2019-12-28 00:37:46',
+    ),
+    300 => 
+    array (
+      'id' => 326,
+      'core_app_id' => 3,
+      'modelo_id' => 176,
+      'name' => 'teso_movimientos',
+      'descripcion' => 'Movimiento de tesorería',
+      'url' => 'web',
+      'parent' => 196,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-12-19 17:28:36',
+      'updated_at' => '2020-05-13 10:16:26',
+    ),
+    301 => 
+    array (
+      'id' => 327,
+      'core_app_id' => 17,
+      'modelo_id' => 85,
+      'name' => 'nom_modos_liquidacion',
+      'descripcion' => 'Modos de Liquidación',
+      'url' => 'web',
+      'parent' => 225,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-12-20 06:20:08',
+      'updated_at' => '2019-12-20 06:20:32',
+    ),
+    302 => 
+    array (
+      'id' => 328,
+      'core_app_id' => 9,
+      'modelo_id' => 177,
+      'name' => 'compras_ordenes_compra',
+      'descripcion' => 'Órdenes de compra',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2019-12-28 00:28:46',
+      'updated_at' => '2019-12-28 00:36:25',
+    ),
+    303 => 
+    array (
+      'id' => 329,
+      'core_app_id' => 1,
+      'modelo_id' => 179,
+      'name' => 'sga_periodos_lectivos',
+      'descripcion' => 'Periodos lectivos',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-01-07 00:34:48',
+      'updated_at' => '2020-01-07 00:35:16',
+    ),
+    304 => 
+    array (
+      'id' => 330,
+      'core_app_id' => 2,
+      'modelo_id' => 116,
+      'name' => 'sga_encabezados_calificaciones',
+      'descripcion' => 'Encabezados de calificaciones',
+      'url' => 'web',
+      'parent' => 86,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-01-11 06:23:22',
+      'updated_at' => '2020-01-19 07:23:26',
+    ),
+    305 => 
+    array (
+      'id' => 331,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'core_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-01-14 04:39:57',
+      'updated_at' => '2020-01-14 04:40:15',
+    ),
+    306 => 
+    array (
+      'id' => 332,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'cali_copiar_asignacion_asignaturas',
+      'descripcion' => 'Copiar asignaciones',
+      'url' => 'calificaciones/copiar_asignaciones',
+      'parent' => 199,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-01-18 12:21:14',
+      'updated_at' => '2020-01-18 12:22:16',
+    ),
+    307 => 
+    array (
+      'id' => 333,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'acdo_copiar_carga_academica',
+      'descripcion' => 'Copiar carga académica',
+      'url' => 'academico_docente/copiar_carga_academica',
+      'parent' => 63,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-01-18 17:21:06',
+      'updated_at' => '2020-01-18 17:22:20',
+    ),
+    308 => 
+    array (
+      'id' => 334,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'sga_menu_plan_clases',
+      'descripcion' => 'Plan de Clases',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-01-24 06:53:02',
+      'updated_at' => '2020-01-24 06:53:39',
+    ),
+    309 => 
+    array (
+      'id' => 335,
+      'core_app_id' => 5,
+      'modelo_id' => 184,
+      'name' => 'sga_plan_clases_encabezados',
+      'descripcion' => 'Planes de Clases',
+      'url' => 'web',
+      'parent' => 334,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-01-24 06:53:49',
+      'updated_at' => '2020-01-24 06:54:38',
+    ),
+    310 => 
+    array (
+      'id' => 336,
+      'core_app_id' => 5,
+      'modelo_id' => 182,
+      'name' => 'sga_plan_clases_plantillas',
+      'descripcion' => 'Plantillas de planes de Clases',
+      'url' => 'web',
+      'parent' => 334,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-01-24 06:55:13',
+      'updated_at' => '2020-01-24 06:55:57',
+    ),
+    311 => 
+    array (
+      'id' => 337,
+      'core_app_id' => 5,
+      'modelo_id' => 183,
+      'name' => 'sga_plan_clases_plantillas_elementos',
+      'descripcion' => 'Secciones de planes de Clases',
+      'url' => 'web',
+      'parent' => 334,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-01-24 06:56:01',
+      'updated_at' => '2020-02-28 11:41:24',
+    ),
+    312 => 
+    array (
+      'id' => 338,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'core_exportar_importar_tablas_bd',
+      'descripcion' => 'Exportar/importar tablas de la BD',
+      'url' => 'form_exportar_importar_tablas_bd',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 0,
+      'fa_icon' => 'cogs',
+      'created_at' => '2020-01-28 14:46:32',
+      'updated_at' => '2020-01-28 14:48:04',
+    ),
+    313 => 
+    array (
+      'id' => 339,
+      'core_app_id' => 2,
+      'modelo_id' => 0,
+      'name' => 'cali_calcular_promedio_final',
+      'descripcion' => 'Calcular promedio final',
+      'url' => 'form_generar_promedio_notas_periodo_final',
+      'parent' => 89,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-02-06 11:08:08',
+      'updated_at' => '2020-02-06 11:08:35',
+    ),
+    314 => 
+    array (
+      'id' => 340,
+      'core_app_id' => 17,
+      'modelo_id' => 186,
+      'name' => 'nom_agrupaciones_conceptos',
+      'descripcion' => 'Agrupaciones de Conceptos',
+      'url' => 'web',
+      'parent' => 225,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-02-10 10:04:08',
+      'updated_at' => '2020-02-10 10:09:27',
+    ),
+    315 => 
+    array (
+      'id' => 341,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'sys_generar_lista_tablas_con_sus_campos',
+      'descripcion' => 'Generar lista tablas con sus campos',
+      'url' => 'generar_lista_tablas_con_sus_campos',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-02-11 13:40:23',
+      'updated_at' => '2020-02-11 13:41:04',
+    ),
+    316 => 
+    array (
+      'id' => 342,
+      'core_app_id' => 14,
+      'modelo_id' => 7,
+      'name' => 'contab_terceros',
+      'descripcion' => 'Terceros',
+      'url' => 'web',
+      'parent' => 158,
+      'orden' => 17,
+      'enabled' => 1,
+      'fa_icon' => 'male',
+      'created_at' => '2020-02-11 14:07:58',
+      'updated_at' => '2020-02-11 14:08:30',
+    ),
+    317 => 
+    array (
+      'id' => 343,
+      'core_app_id' => 8,
+      'modelo_id' => 7,
+      'name' => 'inv_terceros',
+      'descripcion' => 'Terceros',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 17,
+      'enabled' => 1,
+      'fa_icon' => 'male',
+      'created_at' => '2020-02-11 14:08:33',
+      'updated_at' => '2020-02-11 14:08:49',
+    ),
+    318 => 
+    array (
+      'id' => 344,
+      'core_app_id' => 3,
+      'modelo_id' => 7,
+      'name' => 'teso_terceros',
+      'descripcion' => 'Terceros',
+      'url' => 'web',
+      'parent' => 37,
+      'orden' => 17,
+      'enabled' => 1,
+      'fa_icon' => 'male',
+      'created_at' => '2020-02-11 14:08:59',
+      'updated_at' => '2020-02-11 14:09:13',
+    ),
+    319 => 
+    array (
+      'id' => 345,
+      'core_app_id' => 8,
+      'modelo_id' => 188,
+      'name' => 'items_colegio',
+      'descripcion' => 'Elementos biblioteca',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-02-18 07:57:37',
+      'updated_at' => '2020-06-16 10:58:11',
+    ),
+    320 => 
+    array (
+      'id' => 346,
+      'core_app_id' => 8,
+      'modelo_id' => 189,
+      'name' => 'productos_calzado',
+      'descripcion' => 'Productos',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-02-18 19:07:46',
+      'updated_at' => '2020-07-30 13:15:12',
+    ),
+    321 => 
+    array (
+      'id' => 347,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_barra_de_navegacion',
+      'descripcion' => 'Navegación',
+      'url' => 'navegacion/create',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-02-21 07:21:40',
+      'updated_at' => '2020-02-21 07:22:24',
+    ),
+    322 => 
+    array (
+      'id' => 348,
+      'core_app_id' => 3,
+      'modelo_id' => 187,
+      'name' => 'teso_traslado_efectivo',
+      'descripcion' => 'Traslado de efectivo',
+      'url' => 'web',
+      'parent' => 196,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-02-21 08:16:43',
+      'updated_at' => '2020-05-13 10:19:59',
+    ),
+    323 => 
+    array (
+      'id' => 349,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_redes_sociales',
+      'descripcion' => 'Redes sociales',
+      'url' => 'sociales',
+      'parent' => 258,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-02-26 08:56:57',
+      'updated_at' => '2020-06-04 03:58:32',
+    ),
+    324 => 
+    array (
+      'id' => 350,
+      'core_app_id' => 2,
+      'modelo_id' => 192,
+      'name' => 'cali_preinforme_academico',
+      'descripcion' => 'Preinforme Académico',
+      'url' => 'web',
+      'parent' => 86,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-01 13:18:41',
+      'updated_at' => '2020-03-01 09:43:32',
+    ),
+    325 => 
+    array (
+      'id' => 351,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_pie_de_pagina',
+      'descripcion' => 'Pie de página',
+      'url' => 'footer',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-03 10:49:46',
+      'updated_at' => '2020-03-03 10:49:46',
+    ),
+    326 => 
+    array (
+      'id' => 352,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'Contratos transporte',
+      'descripcion' => 'Contratos Transporte',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-03-19 09:48:47',
+      'updated_at' => '2020-03-19 09:51:49',
+    ),
+    327 => 
+    array (
+      'id' => 353,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'cte_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 7,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:27:43',
+    ),
+    328 => 
+    array (
+      'id' => 354,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'cte_conductores_menu',
+      'descripcion' => 'Conductores',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:13:51',
+    ),
+    329 => 
+    array (
+      'id' => 355,
+      'core_app_id' => 19,
+      'modelo_id' => 196,
+      'name' => 'cte_contratantes',
+      'descripcion' => 'Contratantes',
+      'url' => 'web',
+      'parent' => 356,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:09:43',
+    ),
+    330 => 
+    array (
+      'id' => 356,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'cte_contratos_menu',
+      'descripcion' => 'Contratos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:08:57',
+    ),
+    331 => 
+    array (
+      'id' => 357,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'cte_plantillas_menu',
+      'descripcion' => 'Plantillas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:14:40',
+    ),
+    332 => 
+    array (
+      'id' => 358,
+      'core_app_id' => 19,
+      'modelo_id' => 201,
+      'name' => 'cte_propietarios',
+      'descripcion' => 'Propietarios',
+      'url' => 'web',
+      'parent' => 356,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:10:05',
+    ),
+    333 => 
+    array (
+      'id' => 359,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'cte_vehiculos_menu',
+      'descripcion' => 'Vehículos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-19 16:24:30',
+      'updated_at' => '2020-03-25 07:12:07',
+    ),
+    334 => 
+    array (
+      'id' => 360,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'cte_manteniminentos_menu',
+      'descripcion' => 'Mantenimientos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-24 16:24:30',
+      'updated_at' => '2020-03-25 07:13:18',
+    ),
+    335 => 
+    array (
+      'id' => 361,
+      'core_app_id' => 19,
+      'modelo_id' => 0,
+      'name' => 'cte_planillasc_menu',
+      'descripcion' => 'FUEC',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-30 11:17:42',
+    ),
+    336 => 
+    array (
+      'id' => 362,
+      'core_app_id' => 19,
+      'modelo_id' => 205,
+      'name' => 'cte_grupos_usuarios_contrato',
+      'descripcion' => 'Grupos de usuarios',
+      'url' => 'web',
+      'parent' => 356,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-27 07:24:02',
+    ),
+    337 => 
+    array (
+      'id' => 363,
+      'core_app_id' => 19,
+      'modelo_id' => 197,
+      'name' => 'cte_contratos_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 356,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    338 => 
+    array (
+      'id' => 364,
+      'core_app_id' => 19,
+      'modelo_id' => 197,
+      'name' => 'cte_contratos_propietarios',
+      'descripcion' => 'Mis contratos',
+      'url' => 'cte_contratos_propietarios',
+      'parent' => 356,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-30 11:16:39',
+    ),
+    339 => 
+    array (
+      'id' => 365,
+      'core_app_id' => 19,
+      'modelo_id' => 211,
+      'name' => 'cte_planillasc_conductores',
+      'descripcion' => 'Conductores x planilla',
+      'url' => 'web',
+      'parent' => 361,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-30 11:10:29',
+    ),
+    340 => 
+    array (
+      'id' => 366,
+      'core_app_id' => 19,
+      'modelo_id' => 206,
+      'name' => 'cte_manteniminentos_crud',
+      'descripcion' => 'Listado',
+      'url' => 'cte_mantenimientos',
+      'parent' => 360,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-30 11:09:57',
+    ),
+    341 => 
+    array (
+      'id' => 367,
+      'core_app_id' => 19,
+      'modelo_id' => 204,
+      'name' => 'cte_manteniminentos_periodos',
+      'descripcion' => 'Periodos',
+      'url' => 'web',
+      'parent' => 360,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    342 => 
+    array (
+      'id' => 368,
+      'core_app_id' => 19,
+      'modelo_id' => 203,
+      'name' => 'cte_manteniminentos_anios',
+      'descripcion' => 'Años',
+      'url' => 'web',
+      'parent' => 360,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    343 => 
+    array (
+      'id' => 369,
+      'core_app_id' => 19,
+      'modelo_id' => 202,
+      'name' => 'cte_vehiculos_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 359,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    344 => 
+    array (
+      'id' => 370,
+      'core_app_id' => 19,
+      'modelo_id' => 195,
+      'name' => 'cte_conductores_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 354,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    345 => 
+    array (
+      'id' => 371,
+      'core_app_id' => 19,
+      'modelo_id' => 199,
+      'name' => 'cte_vehiculos_documentos',
+      'descripcion' => 'Documentos',
+      'url' => 'web',
+      'parent' => 359,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    346 => 
+    array (
+      'id' => 372,
+      'core_app_id' => 19,
+      'modelo_id' => 198,
+      'name' => 'cte_conductores_crud',
+      'descripcion' => 'Documentos',
+      'url' => 'web',
+      'parent' => 354,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    347 => 
+    array (
+      'id' => 373,
+      'core_app_id' => 19,
+      'modelo_id' => 200,
+      'name' => 'cte_plantillac_crud',
+      'descripcion' => 'Listado',
+      'url' => 'web',
+      'parent' => 357,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    348 => 
+    array (
+      'id' => 374,
+      'core_app_id' => 19,
+      'modelo_id' => 212,
+      'name' => 'cte_plantillac_articulos',
+      'descripcion' => 'Artículos',
+      'url' => 'web',
+      'parent' => 357,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    349 => 
+    array (
+      'id' => 375,
+      'core_app_id' => 19,
+      'modelo_id' => 213,
+      'name' => 'cte_plantillac_numerales_articulos',
+      'descripcion' => 'Numerales artículos',
+      'url' => 'web',
+      'parent' => 357,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    350 => 
+    array (
+      'id' => 376,
+      'core_app_id' => 19,
+      'modelo_id' => 209,
+      'name' => 'cte_plantillac_numerales_tabla',
+      'descripcion' => 'Numerales tabla',
+      'url' => 'web',
+      'parent' => 357,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-25 16:24:30',
+      'updated_at' => '2020-03-25 16:24:30',
+    ),
+    351 => 
+    array (
+      'id' => 377,
+      'core_app_id' => 3,
+      'modelo_id' => 214,
+      'name' => 'teso_recaudos_libretas',
+      'descripcion' => 'Recaudos de libretas',
+      'url' => 'web',
+      'parent' => 107,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-03-27 12:00:03',
+      'updated_at' => '2020-03-27 12:02:57',
+    ),
+    352 => 
+    array (
+      'id' => 378,
+      'core_app_id' => 13,
+      'modelo_id' => 0,
+      'name' => 'vtas_bloquear_vista_index',
+      'descripcion' => 'Bloquear vista index',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-04-13 05:41:14',
+      'updated_at' => '2020-04-13 05:41:14',
+    ),
+    353 => 
+    array (
+      'id' => 379,
+      'core_app_id' => 13,
+      'modelo_id' => 175,
+      'name' => 'vtas_crear_pedido',
+      'descripcion' => 'Crear pedido',
+      'url' => 'vtas_pedidos/create',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2020-04-13 05:46:45',
+      'updated_at' => '2020-04-13 05:49:30',
+    ),
+    354 => 
+    array (
+      'id' => 380,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'pw_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 214,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-04-13 08:59:26',
+      'updated_at' => '2020-08-02 06:47:55',
+    ),
+    355 => 
+    array (
+      'id' => 381,
+      'core_app_id' => 13,
+      'modelo_id' => 173,
+      'name' => 'vtas_nota_credito_directa',
+      'descripcion' => 'Notas crédito directas',
+      'url' => 'web',
+      'parent' => 286,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2020-04-14 11:21:38',
+      'updated_at' => '2020-04-14 11:22:18',
+    ),
+    356 => 
+    array (
+      'id' => 382,
+      'core_app_id' => 13,
+      'modelo_id' => 215,
+      'name' => 'vtas_tercero_a_vendedor',
+      'descripcion' => 'Tercero a vendedor',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 0,
+      'fa_icon' => 'users',
+      'created_at' => '2020-04-21 05:34:33',
+      'updated_at' => '2020-04-21 05:35:01',
+    ),
+    357 => 
+    array (
+      'id' => 383,
+      'core_app_id' => 14,
+      'modelo_id' => 0,
+      'name' => 'contab_reasignar_grupos_cuentas_form',
+      'descripcion' => 'Arbol grupos de cuentas',
+      'url' => 'reasignar_grupos_cuentas_form',
+      'parent' => 168,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-04-24 09:27:15',
+      'updated_at' => '2020-04-24 09:28:04',
+    ),
+    358 => 
+    array (
+      'id' => 384,
+      'core_app_id' => 14,
+      'modelo_id' => 149,
+      'name' => 'contab_registros_cxp',
+      'descripcion' => 'Registros de CxP',
+      'url' => 'web',
+      'parent' => 173,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'list',
+      'created_at' => '2020-05-03 06:28:48',
+      'updated_at' => '2020-07-31 17:18:06',
+    ),
+    359 => 
+    array (
+      'id' => 385,
+      'core_app_id' => 14,
+      'modelo_id' => 156,
+      'name' => 'contab_terceros_proveedores',
+      'descripcion' => 'Crear tercero como proveedor',
+      'url' => 'compras_proveedores_tercero_a_proveedor_create',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'address-book',
+      'created_at' => '2020-05-03 08:54:48',
+      'updated_at' => '2020-05-03 08:56:20',
+    ),
+    360 => 
+    array (
+      'id' => 386,
+      'core_app_id' => 0,
+      'modelo_id' => 0,
+      'name' => 'Administer roles & permissions',
+      'descripcion' => '',
+      'url' => '',
+      'parent' => 0,
+      'orden' => 0,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-05-17 23:11:06',
+      'updated_at' => '2020-05-17 23:11:06',
+    ),
+    361 => 
+    array (
+      'id' => 387,
+      'core_app_id' => 5,
+      'modelo_id' => 219,
+      'name' => 'sga_guias_academicas',
+      'descripcion' => 'Guías académicas',
+      'url' => 'web',
+      'parent' => 334,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-05-22 09:14:49',
+      'updated_at' => '2020-05-22 09:15:17',
+    ),
+    362 => 
+    array (
+      'id' => 388,
+      'core_app_id' => 9,
+      'modelo_id' => 22,
+      'name' => 'compras_items',
+      'descripcion' => 'Items',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-05-29 10:13:41',
+      'updated_at' => '2020-05-29 10:14:08',
+    ),
+    363 => 
+    array (
+      'id' => 389,
+      'core_app_id' => 9,
+      'modelo_id' => 220,
+      'name' => 'compras_servicios',
+      'descripcion' => 'Servicios',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 8,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-05-29 10:17:00',
+      'updated_at' => '2020-05-29 10:17:27',
+    ),
+    364 => 
+    array (
+      'id' => 390,
+      'core_app_id' => 10,
+      'modelo_id' => 0,
+      'name' => 'sin_usar1',
+      'descripcion' => 'sin usar',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 12,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-06-04 03:57:45',
+      'updated_at' => '2020-06-04 04:01:46',
+    ),
+    365 => 
+    array (
+      'id' => 391,
+      'core_app_id' => 18,
+      'modelo_id' => 224,
+      'name' => 'salud_grupos_sanguineos',
+      'descripcion' => 'Grupos Sanguineos',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-06-14 16:59:33',
+      'updated_at' => '2020-06-14 17:00:06',
+    ),
+    366 => 
+    array (
+      'id' => 392,
+      'core_app_id' => 18,
+      'modelo_id' => 223,
+      'name' => 'salud_entidades_remisoras',
+      'descripcion' => 'Entidades Remisoras',
+      'url' => 'web',
+      'parent' => 232,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-06-14 17:00:09',
+      'updated_at' => '2020-06-14 17:00:33',
+    ),
+    367 => 
+    array (
+      'id' => 393,
+      'core_app_id' => 4,
+      'modelo_id' => 0,
+      'name' => 'gestion_documental_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-06-20 05:48:25',
+      'updated_at' => '2020-06-20 05:48:48',
+    ),
+    368 => 
+    array (
+      'id' => 394,
+      'core_app_id' => 2,
+      'modelo_id' => 225,
+      'name' => 'sga_logros_adicionales',
+      'descripcion' => 'Logros adicionales',
+      'url' => 'web',
+      'parent' => 10,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-06-20 07:26:54',
+      'updated_at' => '2020-06-20 07:27:37',
+    ),
+    369 => 
+    array (
+      'id' => 395,
+      'core_app_id' => 20,
+      'modelo_id' => 0,
+      'name' => 'vtas_pos_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    370 => 
+    array (
+      'id' => 396,
+      'core_app_id' => 20,
+      'modelo_id' => 0,
+      'name' => 'Ventas POS',
+      'descripcion' => 'Ventas POS',
+      'url' => 'ventas_pos',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    371 => 
+    array (
+      'id' => 397,
+      'core_app_id' => 20,
+      'modelo_id' => 0,
+      'name' => 'vtas_pos_transacciones',
+      'descripcion' => 'Transacciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    372 => 
+    array (
+      'id' => 398,
+      'core_app_id' => 20,
+      'modelo_id' => 227,
+      'name' => 'vtas_pos_pdvs',
+      'descripcion' => 'Puntos de ventas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    373 => 
+    array (
+      'id' => 399,
+      'core_app_id' => 20,
+      'modelo_id' => 226,
+      'name' => 'vtas_pos_cajeros',
+      'descripcion' => 'Cajeros',
+      'url' => 'web',
+      'parent' => 395,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    374 => 
+    array (
+      'id' => 400,
+      'core_app_id' => 20,
+      'modelo_id' => 45,
+      'name' => 'vtas_pos_cajas',
+      'descripcion' => 'Cajas',
+      'url' => 'web',
+      'parent' => 395,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    375 => 
+    array (
+      'id' => 401,
+      'core_app_id' => 20,
+      'modelo_id' => 230,
+      'name' => 'vtas_pos_facturas',
+      'descripcion' => 'Facturas POS',
+      'url' => 'web',
+      'parent' => 397,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    376 => 
+    array (
+      'id' => 402,
+      'core_app_id' => 20,
+      'modelo_id' => 232,
+      'name' => 'vtas_pos_movimientos',
+      'descripcion' => 'Movimientos POS',
+      'url' => 'web',
+      'parent' => 397,
+      'orden' => 9,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    377 => 
+    array (
+      'id' => 403,
+      'core_app_id' => 20,
+      'modelo_id' => 228,
+      'name' => 'vtas_pos_aperturas',
+      'descripcion' => 'Aperturas',
+      'url' => 'web',
+      'parent' => 397,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    378 => 
+    array (
+      'id' => 404,
+      'core_app_id' => 20,
+      'modelo_id' => 229,
+      'name' => 'vtas_pos_cierres',
+      'descripcion' => 'Cierres',
+      'url' => 'web',
+      'parent' => 397,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-06 16:24:30',
+      'updated_at' => '2020-07-06 16:24:30',
+    ),
+    379 => 
+    array (
+      'id' => 405,
+      'core_app_id' => 9,
+      'modelo_id' => 170,
+      'name' => 'compras_create_doc_cruce_cxp',
+      'descripcion' => 'Docs. Cruce de CxP',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-17 12:32:21',
+      'updated_at' => '2020-08-07 11:04:10',
+    ),
+    380 => 
+    array (
+      'id' => 406,
+      'core_app_id' => 20,
+      'modelo_id' => 158,
+      'name' => 'ventas_pos_arqueo_caja',
+      'descripcion' => 'Arqueo de caja',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-21 11:37:36',
+      'updated_at' => '2020-07-21 11:51:32',
+    ),
+    381 => 
+    array (
+      'id' => 407,
+      'core_app_id' => 13,
+      'modelo_id' => 52,
+      'name' => 'vtas_cruce_documentos_cxc',
+      'descripcion' => 'Docs. Cruce de CxC',
+      'url' => 'web',
+      'parent' => 286,
+      'orden' => 9,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-23 10:55:22',
+      'updated_at' => '2020-07-25 09:46:30',
+    ),
+    382 => 
+    array (
+      'id' => 408,
+      'core_app_id' => 18,
+      'modelo_id' => 221,
+      'name' => 'salud_facturas_medicas',
+      'descripcion' => 'Facturas Médicas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-24 05:48:25',
+      'updated_at' => '2020-07-24 05:49:32',
+    ),
+    383 => 
+    array (
+      'id' => 409,
+      'core_app_id' => 18,
+      'modelo_id' => 111,
+      'name' => 'salud_resultados_consulta',
+      'descripcion' => 'Resultados de la consulta',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-24 05:52:40',
+      'updated_at' => '2020-07-24 05:54:30',
+    ),
+    384 => 
+    array (
+      'id' => 410,
+      'core_app_id' => 18,
+      'modelo_id' => 101,
+      'name' => 'salud_formulas_opticas',
+      'descripcion' => 'Fórmulas Ópticas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-24 05:54:52',
+      'updated_at' => '2020-07-24 05:55:12',
+    ),
+    385 => 
+    array (
+      'id' => 411,
+      'core_app_id' => 18,
+      'modelo_id' => 100,
+      'name' => 'salud_resultados_examenes_medicos',
+      'descripcion' => 'Resultados Exámenes Médicos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-24 06:37:06',
+      'updated_at' => '2020-07-24 06:37:22',
+    ),
+    386 => 
+    array (
+      'id' => 412,
+      'core_app_id' => 18,
+      'modelo_id' => 153,
+      'name' => 'salud_recaudos_cxc',
+      'descripcion' => 'Recaudos de CxC',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-25 09:30:47',
+      'updated_at' => '2020-07-25 09:31:22',
+    ),
+    387 => 
+    array (
+      'id' => 413,
+      'core_app_id' => 13,
+      'modelo_id' => 153,
+      'name' => 'ventas_recaudos_cxc',
+      'descripcion' => 'Recaudos de CxC',
+      'url' => 'web',
+      'parent' => 286,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-25 09:31:30',
+      'updated_at' => '2020-07-25 09:31:58',
+    ),
+    388 => 
+    array (
+      'id' => 414,
+      'core_app_id' => 20,
+      'modelo_id' => 153,
+      'name' => 'ventas_pos_recaudos_cxc',
+      'descripcion' => 'Recaudos de CxC',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 7,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-25 09:32:08',
+      'updated_at' => '2020-07-25 09:32:27',
+    ),
+    389 => 
+    array (
+      'id' => 415,
+      'core_app_id' => 9,
+      'modelo_id' => 150,
+      'name' => 'compras_pagos_cxp',
+      'descripcion' => 'Pagos de CxP',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-07-25 09:40:55',
+      'updated_at' => '2020-07-25 09:43:05',
+    ),
+    390 => 
+    array (
+      'id' => 416,
+      'core_app_id' => 13,
+      'modelo_id' => 167,
+      'name' => 'vtas_nota_credito_directa',
+      'descripcion' => 'Notas crédito de ventas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 0,
+      'fa_icon' => 'list',
+      'created_at' => '2020-07-28 14:37:55',
+      'updated_at' => '2020-07-28 14:38:36',
+    ),
+    391 => 
+    array (
+      'id' => 417,
+      'core_app_id' => 8,
+      'modelo_id' => 164,
+      'name' => 'inv_documentos_remisiones',
+      'descripcion' => 'Remisiones de ventas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-28 15:03:35',
+      'updated_at' => '2020-07-28 15:04:12',
+    ),
+    392 => 
+    array (
+      'id' => 418,
+      'core_app_id' => 8,
+      'modelo_id' => 165,
+      'name' => 'inv_documentos_entradas',
+      'descripcion' => 'Entradas de almacén',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-28 15:05:59',
+      'updated_at' => '2020-07-28 15:06:21',
+    ),
+    393 => 
+    array (
+      'id' => 419,
+      'core_app_id' => 9,
+      'modelo_id' => 147,
+      'name' => 'compra_documentos_compras',
+      'descripcion' => 'Documentos de compras',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-28 15:10:24',
+      'updated_at' => '2020-07-28 15:10:24',
+    ),
+    394 => 
+    array (
+      'id' => 420,
+      'core_app_id' => 8,
+      'modelo_id' => 147,
+      'name' => 'inv_documentos_compras',
+      'descripcion' => 'Documentos de compras',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-28 15:10:30',
+      'updated_at' => '2020-07-28 15:10:41',
+    ),
+    395 => 
+    array (
+      'id' => 421,
+      'core_app_id' => 5,
+      'modelo_id' => 219,
+      'name' => 'sga_guias_academicas_docente',
+      'descripcion' => 'Guías académicas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:18:59',
+      'updated_at' => '2020-07-31 16:19:23',
+    ),
+    396 => 
+    array (
+      'id' => 422,
+      'core_app_id' => 5,
+      'modelo_id' => 192,
+      'name' => 'sga_aca_doc_preinforme_academico',
+      'descripcion' => 'Preinforme Académico',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 7,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:23:39',
+      'updated_at' => '2020-07-31 16:24:11',
+    ),
+    397 => 
+    array (
+      'id' => 423,
+      'core_app_id' => 5,
+      'modelo_id' => 70,
+      'name' => 'aca_doc_crear_logro',
+      'descripcion' => 'Crear logros',
+      'url' => 'web/create',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:27:49',
+      'updated_at' => '2020-07-31 16:28:08',
+    ),
+    398 => 
+    array (
+      'id' => 424,
+      'core_app_id' => 5,
+      'modelo_id' => 225,
+      'name' => 'aca_doc_logros_adicionales',
+      'descripcion' => 'Logros adicionales',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:31:10',
+      'updated_at' => '2020-07-31 16:31:27',
+    ),
+    399 => 
+    array (
+      'id' => 425,
+      'core_app_id' => 5,
+      'modelo_id' => 17,
+      'name' => 'aca_doc_novedades_observador',
+      'descripcion' => 'Novedades observador',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:34:40',
+      'updated_at' => '2020-07-31 16:35:06',
+    ),
+    400 => 
+    array (
+      'id' => 426,
+      'core_app_id' => 5,
+      'modelo_id' => 18,
+      'name' => 'aca_doc_analisis_dofa',
+      'descripcion' => 'Análisis FODA',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:37:39',
+      'updated_at' => '2020-07-31 16:38:06',
+    ),
+    401 => 
+    array (
+      'id' => 427,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'sin_usar_1',
+      'descripcion' => 'Sin usar',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'address-book',
+      'created_at' => '2020-07-31 17:01:12',
+      'updated_at' => '2020-07-31 17:11:23',
+    ),
+    402 => 
+    array (
+      'id' => 428,
+      'core_app_id' => 13,
+      'modelo_id' => 157,
+      'name' => 'ventas_terceros_a_clientes',
+      'descripcion' => 'Crear tercero como cliente',
+      'url' => 'web/create',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'child',
+      'created_at' => '2020-07-31 17:19:48',
+      'updated_at' => '2020-07-31 17:20:21',
+    ),
+    403 => 
+    array (
+      'id' => 429,
+      'core_app_id' => 20,
+      'modelo_id' => 0,
+      'name' => 'vtas_pos_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-08-02 06:46:56',
+      'updated_at' => '2020-08-02 06:47:15',
+    ),
+    404 => 
+    array (
+      'id' => 430,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'aca_calificaciones_calificar2',
+      'descripcion' => 'Calificar',
+      'url' => 'calificaciones/calificar2',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-08-10 08:37:25',
+      'updated_at' => '2020-08-10 08:38:20',
+    ),
+  ),
+  'roles' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'name' => 'SuperAdmin',
+      'created_at' => '2018-02-28 13:57:25',
+      'updated_at' => '2018-02-28 13:57:25',
+    ),
+    1 => 
+    array (
+      'id' => 2,
+      'name' => 'Profesor',
+      'created_at' => '2018-03-13 15:05:33',
+      'updated_at' => '2018-03-13 15:05:33',
+    ),
+    2 => 
+    array (
+      'id' => 3,
+      'name' => 'Administrador',
+      'created_at' => '2018-03-30 14:27:12',
+      'updated_at' => '2018-08-20 18:31:22',
+    ),
+    3 => 
+    array (
+      'id' => 4,
+      'name' => 'Estudiante',
+      'created_at' => '2018-08-10 15:54:50',
+      'updated_at' => '2018-08-10 15:54:50',
+    ),
+    4 => 
+    array (
+      'id' => 5,
+      'name' => 'Gerente',
+      'created_at' => '2018-08-20 18:32:02',
+      'updated_at' => '2018-08-20 18:32:02',
+    ),
+    5 => 
+    array (
+      'id' => 6,
+      'name' => 'Jefe de almacén',
+      'created_at' => '2018-10-05 00:58:28',
+      'updated_at' => '2018-10-05 00:58:28',
+    ),
+    6 => 
+    array (
+      'id' => 7,
+      'name' => 'Administrador PH',
+      'created_at' => '2018-10-29 03:56:14',
+      'updated_at' => '2018-10-29 03:56:14',
+    ),
+    7 => 
+    array (
+      'id' => 8,
+      'name' => 'Residente PH',
+      'created_at' => '2018-12-19 04:34:19',
+      'updated_at' => '2018-12-19 04:34:19',
+    ),
+    8 => 
+    array (
+      'id' => 9,
+      'name' => 'Admin Colegio',
+      'created_at' => '2019-01-03 09:05:08',
+      'updated_at' => '2019-01-03 09:05:08',
+    ),
+    9 => 
+    array (
+      'id' => 10,
+      'name' => 'Secretaria Colegio',
+      'created_at' => '2019-01-10 05:47:04',
+      'updated_at' => '2019-01-10 05:47:04',
+    ),
+    10 => 
+    array (
+      'id' => 11,
+      'name' => 'Coord financiero colegio',
+      'created_at' => '2019-01-14 08:29:14',
+      'updated_at' => '2019-01-14 08:29:14',
+    ),
+    11 => 
+    array (
+      'id' => 12,
+      'name' => 'Colegio - Vicerrector',
+      'created_at' => '2019-01-31 10:06:17',
+      'updated_at' => '2019-01-31 10:06:17',
+    ),
+    12 => 
+    array (
+      'id' => 13,
+      'name' => 'Director de grupo',
+      'created_at' => '2019-02-07 11:16:36',
+      'updated_at' => '2019-02-07 11:16:36',
+    ),
+    13 => 
+    array (
+      'id' => 14,
+      'name' => 'Profesional Salud',
+      'created_at' => '2019-06-13 05:01:40',
+      'updated_at' => '2019-06-13 05:01:40',
+    ),
+    14 => 
+    array (
+      'id' => 15,
+      'name' => 'Vendedor',
+      'created_at' => '2020-04-13 05:37:27',
+      'updated_at' => '2020-04-13 05:37:27',
+    ),
+    15 => 
+    array (
+      'id' => 16,
+      'name' => 'Cliente',
+      'created_at' => '2020-05-09 11:34:30',
+      'updated_at' => '2020-05-09 11:34:30',
+    ),
+    16 => 
+    array (
+      'id' => 17,
+      'name' => 'Admin Negocio Comercio',
+      'created_at' => '2020-06-07 07:20:31',
+      'updated_at' => '2020-06-07 07:20:31',
+    ),
+    17 => 
+    array (
+      'id' => 18,
+      'name' => 'Propietario vehículo (FUEC)',
+      'created_at' => '2020-06-08 04:27:38',
+      'updated_at' => '2020-06-08 04:27:38',
+    ),
+    18 => 
+    array (
+      'id' => 19,
+      'name' => 'Conductor',
+      'created_at' => '2020-06-08 09:34:06',
+      'updated_at' => '2020-06-08 09:34:06',
+    ),
+    19 => 
+    array (
+      'id' => 20,
+      'name' => 'Cajero PDV',
+      'created_at' => '2020-07-06 13:58:33',
+      'updated_at' => '2020-07-06 13:58:33',
+    ),
+  ),
+  'role_has_permissions' => 
+  array (
+    0 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 1,
+      'role_id' => 1,
+    ),
+    1 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 1,
+      'role_id' => 3,
+    ),
+    2 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 1,
+      'role_id' => 9,
+    ),
+    3 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 1,
+      'role_id' => 10,
+    ),
+    4 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 1,
+      'role_id' => 11,
+    ),
+    5 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 1,
+      'role_id' => 12,
+    ),
+    6 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 1,
+      'role_id' => 16,
+    ),
+    7 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 2,
+      'role_id' => 1,
+    ),
+    8 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 2,
+      'role_id' => 5,
+    ),
+    9 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 3,
+      'role_id' => 1,
+    ),
+    10 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 3,
+      'role_id' => 3,
+    ),
+    11 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 3,
+      'role_id' => 9,
+    ),
+    12 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 3,
+      'role_id' => 12,
+    ),
+    13 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 4,
+      'role_id' => 1,
+    ),
+    14 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 7,
+      'role_id' => 1,
+    ),
+    15 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 8,
+      'role_id' => 1,
+    ),
+    16 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 8,
+      'role_id' => 3,
+    ),
+    17 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 8,
+      'role_id' => 6,
+    ),
+    18 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 8,
+      'role_id' => 7,
+    ),
+    19 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 8,
+      'role_id' => 9,
+    ),
+    20 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 8,
+      'role_id' => 17,
+    ),
+    21 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 9,
+      'role_id' => 1,
+    ),
+    22 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 10,
+      'role_id' => 1,
+    ),
+    23 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 10,
+      'role_id' => 3,
+    ),
+    24 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 10,
+      'role_id' => 9,
+    ),
+    25 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 10,
+      'role_id' => 12,
+    ),
+    26 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 11,
+      'role_id' => 1,
+    ),
+    27 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 11,
+      'role_id' => 3,
+    ),
+    28 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 11,
+      'role_id' => 9,
+    ),
+    29 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 11,
+      'role_id' => 12,
+    ),
+    30 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 12,
+      'role_id' => 1,
+    ),
+    31 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 12,
+      'role_id' => 3,
+    ),
+    32 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 12,
+      'role_id' => 7,
+    ),
+    33 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 12,
+      'role_id' => 9,
+    ),
+    34 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 12,
+      'role_id' => 10,
+    ),
+    35 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 12,
+      'role_id' => 11,
+    ),
+    36 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 12,
+      'role_id' => 17,
+    ),
+    37 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 13,
+      'role_id' => 1,
+    ),
+    38 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 13,
+      'role_id' => 2,
+    ),
+    39 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 13,
+      'role_id' => 3,
+    ),
+    40 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 13,
+      'role_id' => 7,
+    ),
+    41 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 14,
+      'role_id' => 1,
+    ),
+    42 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 14,
+      'role_id' => 3,
+    ),
+    43 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 14,
+      'role_id' => 4,
+    ),
+    44 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 14,
+      'role_id' => 9,
+    ),
+    45 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 14,
+      'role_id' => 12,
+    ),
+    46 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 15,
+      'role_id' => 1,
+    ),
+    47 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 15,
+      'role_id' => 3,
+    ),
+    48 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 15,
+      'role_id' => 9,
+    ),
+    49 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 15,
+      'role_id' => 10,
+    ),
+    50 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 15,
+      'role_id' => 11,
+    ),
+    51 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 15,
+      'role_id' => 12,
+    ),
+    52 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 16,
+      'role_id' => 1,
+    ),
+    53 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 17,
+      'role_id' => 1,
+    ),
+    54 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 17,
+      'role_id' => 3,
+    ),
+    55 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 17,
+      'role_id' => 9,
+    ),
+    56 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 17,
+      'role_id' => 12,
+    ),
+    57 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 18,
+      'role_id' => 1,
+    ),
+    58 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 18,
+      'role_id' => 2,
+    ),
+    59 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 18,
+      'role_id' => 3,
+    ),
+    60 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 18,
+      'role_id' => 9,
+    ),
+    61 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 18,
+      'role_id' => 10,
+    ),
+    62 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 18,
+      'role_id' => 11,
+    ),
+    63 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 18,
+      'role_id' => 12,
+    ),
+    64 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 19,
+      'role_id' => 1,
+    ),
+    65 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 19,
+      'role_id' => 2,
+    ),
+    66 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 19,
+      'role_id' => 3,
+    ),
+    67 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 19,
+      'role_id' => 9,
+    ),
+    68 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 19,
+      'role_id' => 10,
+    ),
+    69 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 19,
+      'role_id' => 11,
+    ),
+    70 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 19,
+      'role_id' => 12,
+    ),
+    71 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 20,
+      'role_id' => 1,
+    ),
+    72 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 20,
+      'role_id' => 2,
+    ),
+    73 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 20,
+      'role_id' => 3,
+    ),
+    74 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 20,
+      'role_id' => 9,
+    ),
+    75 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 20,
+      'role_id' => 12,
+    ),
+    76 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 21,
+      'role_id' => 1,
+    ),
+    77 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 21,
+      'role_id' => 3,
+    ),
+    78 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 21,
+      'role_id' => 9,
+    ),
+    79 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 21,
+      'role_id' => 12,
+    ),
+    80 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 34,
+      'role_id' => 1,
+    ),
+    81 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 34,
+      'role_id' => 5,
+    ),
+    82 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 34,
+      'role_id' => 9,
+    ),
+    83 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 35,
+      'role_id' => 1,
+    ),
+    84 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 35,
+      'role_id' => 3,
+    ),
+    85 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 35,
+      'role_id' => 9,
+    ),
+    86 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 35,
+      'role_id' => 12,
+    ),
+    87 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 36,
+      'role_id' => 1,
+    ),
+    88 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 36,
+      'role_id' => 3,
+    ),
+    89 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 36,
+      'role_id' => 9,
+    ),
+    90 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 36,
+      'role_id' => 12,
+    ),
+    91 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 37,
+      'role_id' => 1,
+    ),
+    92 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 37,
+      'role_id' => 3,
+    ),
+    93 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 37,
+      'role_id' => 5,
+    ),
+    94 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 37,
+      'role_id' => 7,
+    ),
+    95 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 37,
+      'role_id' => 9,
+    ),
+    96 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 37,
+      'role_id' => 11,
+    ),
+    97 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 37,
+      'role_id' => 17,
+    ),
+    98 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 38,
+      'role_id' => 1,
+    ),
+    99 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 38,
+      'role_id' => 3,
+    ),
+    100 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 38,
+      'role_id' => 9,
+    ),
+    101 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 38,
+      'role_id' => 10,
+    ),
+    102 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 38,
+      'role_id' => 11,
+    ),
+    103 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 38,
+      'role_id' => 12,
+    ),
+    104 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 39,
+      'role_id' => 1,
+    ),
+    105 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 40,
+      'role_id' => 1,
+    ),
+    106 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 41,
+      'role_id' => 1,
+    ),
+    107 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 42,
+      'role_id' => 1,
+    ),
+    108 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 43,
+      'role_id' => 1,
+    ),
+    109 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 43,
+      'role_id' => 3,
+    ),
+    110 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 43,
+      'role_id' => 9,
+    ),
+    111 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 43,
+      'role_id' => 17,
+    ),
+    112 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 44,
+      'role_id' => 1,
+    ),
+    113 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 45,
+      'role_id' => 1,
+    ),
+    114 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 47,
+      'role_id' => 1,
+    ),
+    115 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 48,
+      'role_id' => 1,
+    ),
+    116 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 49,
+      'role_id' => 1,
+    ),
+    117 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 49,
+      'role_id' => 16,
+    ),
+    118 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 50,
+      'role_id' => 1,
+    ),
+    119 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 51,
+      'role_id' => 1,
+    ),
+    120 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 52,
+      'role_id' => 1,
+    ),
+    121 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 53,
+      'role_id' => 1,
+    ),
+    122 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 53,
+      'role_id' => 7,
+    ),
+    123 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 54,
+      'role_id' => 1,
+    ),
+    124 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 54,
+      'role_id' => 7,
+    ),
+    125 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 55,
+      'role_id' => 1,
+    ),
+    126 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 56,
+      'role_id' => 1,
+    ),
+    127 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 57,
+      'role_id' => 1,
+    ),
+    128 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 57,
+      'role_id' => 3,
+    ),
+    129 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 57,
+      'role_id' => 9,
+    ),
+    130 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 57,
+      'role_id' => 12,
+    ),
+    131 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 58,
+      'role_id' => 1,
+    ),
+    132 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 58,
+      'role_id' => 3,
+    ),
+    133 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 58,
+      'role_id' => 9,
+    ),
+    134 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 58,
+      'role_id' => 12,
+    ),
+    135 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 59,
+      'role_id' => 1,
+    ),
+    136 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 59,
+      'role_id' => 3,
+    ),
+    137 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 59,
+      'role_id' => 9,
+    ),
+    138 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 59,
+      'role_id' => 12,
+    ),
+    139 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 60,
+      'role_id' => 1,
+    ),
+    140 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 60,
+      'role_id' => 3,
+    ),
+    141 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 60,
+      'role_id' => 9,
+    ),
+    142 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 60,
+      'role_id' => 12,
+    ),
+    143 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 61,
+      'role_id' => 1,
+    ),
+    144 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 61,
+      'role_id' => 3,
+    ),
+    145 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 61,
+      'role_id' => 9,
+    ),
+    146 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 61,
+      'role_id' => 12,
+    ),
+    147 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 62,
+      'role_id' => 1,
+    ),
+    148 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 62,
+      'role_id' => 3,
+    ),
+    149 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 62,
+      'role_id' => 9,
+    ),
+    150 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 62,
+      'role_id' => 12,
+    ),
+    151 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 63,
+      'role_id' => 1,
+    ),
+    152 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 63,
+      'role_id' => 3,
+    ),
+    153 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 63,
+      'role_id' => 9,
+    ),
+    154 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 63,
+      'role_id' => 12,
+    ),
+    155 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 64,
+      'role_id' => 1,
+    ),
+    156 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 64,
+      'role_id' => 3,
+    ),
+    157 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 64,
+      'role_id' => 9,
+    ),
+    158 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 64,
+      'role_id' => 12,
+    ),
+    159 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 65,
+      'role_id' => 1,
+    ),
+    160 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 65,
+      'role_id' => 3,
+    ),
+    161 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 65,
+      'role_id' => 9,
+    ),
+    162 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 65,
+      'role_id' => 12,
+    ),
+    163 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 66,
+      'role_id' => 1,
+    ),
+    164 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 66,
+      'role_id' => 3,
+    ),
+    165 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 66,
+      'role_id' => 9,
+    ),
+    166 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 66,
+      'role_id' => 12,
+    ),
+    167 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 67,
+      'role_id' => 1,
+    ),
+    168 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 67,
+      'role_id' => 3,
+    ),
+    169 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 67,
+      'role_id' => 5,
+    ),
+    170 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 67,
+      'role_id' => 9,
+    ),
+    171 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 67,
+      'role_id' => 12,
+    ),
+    172 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 68,
+      'role_id' => 1,
+    ),
+    173 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 68,
+      'role_id' => 3,
+    ),
+    174 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 68,
+      'role_id' => 9,
+    ),
+    175 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 68,
+      'role_id' => 12,
+    ),
+    176 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 69,
+      'role_id' => 1,
+    ),
+    177 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 69,
+      'role_id' => 3,
+    ),
+    178 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 69,
+      'role_id' => 9,
+    ),
+    179 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 69,
+      'role_id' => 12,
+    ),
+    180 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 70,
+      'role_id' => 1,
+    ),
+    181 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 70,
+      'role_id' => 3,
+    ),
+    182 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 70,
+      'role_id' => 9,
+    ),
+    183 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 70,
+      'role_id' => 12,
+    ),
+    184 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 71,
+      'role_id' => 1,
+    ),
+    185 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 71,
+      'role_id' => 3,
+    ),
+    186 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 71,
+      'role_id' => 6,
+    ),
+    187 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 71,
+      'role_id' => 7,
+    ),
+    188 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 71,
+      'role_id' => 9,
+    ),
+    189 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 71,
+      'role_id' => 17,
+    ),
+    190 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 72,
+      'role_id' => 1,
+    ),
+    191 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 72,
+      'role_id' => 3,
+    ),
+    192 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 72,
+      'role_id' => 9,
+    ),
+    193 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 72,
+      'role_id' => 12,
+    ),
+    194 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 73,
+      'role_id' => 1,
+    ),
+    195 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 73,
+      'role_id' => 3,
+    ),
+    196 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 73,
+      'role_id' => 9,
+    ),
+    197 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 73,
+      'role_id' => 12,
+    ),
+    198 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 74,
+      'role_id' => 1,
+    ),
+    199 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 74,
+      'role_id' => 3,
+    ),
+    200 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 74,
+      'role_id' => 9,
+    ),
+    201 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 74,
+      'role_id' => 10,
+    ),
+    202 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 74,
+      'role_id' => 11,
+    ),
+    203 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 74,
+      'role_id' => 12,
+    ),
+    204 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 74,
+      'role_id' => 16,
+    ),
+    205 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 75,
+      'role_id' => 1,
+    ),
+    206 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 75,
+      'role_id' => 3,
+    ),
+    207 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 75,
+      'role_id' => 9,
+    ),
+    208 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 75,
+      'role_id' => 12,
+    ),
+    209 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 76,
+      'role_id' => 1,
+    ),
+    210 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 76,
+      'role_id' => 3,
+    ),
+    211 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 76,
+      'role_id' => 9,
+    ),
+    212 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 76,
+      'role_id' => 12,
+    ),
+    213 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 77,
+      'role_id' => 1,
+    ),
+    214 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 77,
+      'role_id' => 3,
+    ),
+    215 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 77,
+      'role_id' => 9,
+    ),
+    216 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 77,
+      'role_id' => 12,
+    ),
+    217 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 78,
+      'role_id' => 1,
+    ),
+    218 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 78,
+      'role_id' => 3,
+    ),
+    219 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 78,
+      'role_id' => 9,
+    ),
+    220 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 78,
+      'role_id' => 12,
+    ),
+    221 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 79,
+      'role_id' => 1,
+    ),
+    222 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 79,
+      'role_id' => 3,
+    ),
+    223 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 79,
+      'role_id' => 7,
+    ),
+    224 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 79,
+      'role_id' => 9,
+    ),
+    225 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 79,
+      'role_id' => 17,
+    ),
+    226 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 80,
+      'role_id' => 1,
+    ),
+    227 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 80,
+      'role_id' => 3,
+    ),
+    228 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 81,
+      'role_id' => 1,
+    ),
+    229 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 81,
+      'role_id' => 3,
+    ),
+    230 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 82,
+      'role_id' => 1,
+    ),
+    231 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 82,
+      'role_id' => 3,
+    ),
+    232 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 82,
+      'role_id' => 7,
+    ),
+    233 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 82,
+      'role_id' => 9,
+    ),
+    234 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 82,
+      'role_id' => 17,
+    ),
+    235 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 83,
+      'role_id' => 1,
+    ),
+    236 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 83,
+      'role_id' => 3,
+    ),
+    237 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 84,
+      'role_id' => 1,
+    ),
+    238 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 84,
+      'role_id' => 3,
+    ),
+    239 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 85,
+      'role_id' => 1,
+    ),
+    240 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 85,
+      'role_id' => 2,
+    ),
+    241 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 85,
+      'role_id' => 3,
+    ),
+    242 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 85,
+      'role_id' => 9,
+    ),
+    243 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 85,
+      'role_id' => 10,
+    ),
+    244 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 85,
+      'role_id' => 11,
+    ),
+    245 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 85,
+      'role_id' => 12,
+    ),
+    246 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 86,
+      'role_id' => 1,
+    ),
+    247 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 86,
+      'role_id' => 3,
+    ),
+    248 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 86,
+      'role_id' => 9,
+    ),
+    249 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 86,
+      'role_id' => 12,
+    ),
+    250 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 87,
+      'role_id' => 1,
+    ),
+    251 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 87,
+      'role_id' => 3,
+    ),
+    252 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 87,
+      'role_id' => 9,
+    ),
+    253 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 87,
+      'role_id' => 12,
+    ),
+    254 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 88,
+      'role_id' => 1,
+    ),
+    255 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 88,
+      'role_id' => 3,
+    ),
+    256 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 88,
+      'role_id' => 9,
+    ),
+    257 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 88,
+      'role_id' => 12,
+    ),
+    258 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 89,
+      'role_id' => 1,
+    ),
+    259 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 89,
+      'role_id' => 3,
+    ),
+    260 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 89,
+      'role_id' => 9,
+    ),
+    261 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 89,
+      'role_id' => 12,
+    ),
+    262 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 90,
+      'role_id' => 1,
+    ),
+    263 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 90,
+      'role_id' => 3,
+    ),
+    264 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 90,
+      'role_id' => 9,
+    ),
+    265 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 90,
+      'role_id' => 12,
+    ),
+    266 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 91,
+      'role_id' => 1,
+    ),
+    267 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 91,
+      'role_id' => 3,
+    ),
+    268 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 91,
+      'role_id' => 9,
+    ),
+    269 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 91,
+      'role_id' => 12,
+    ),
+    270 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 92,
+      'role_id' => 1,
+    ),
+    271 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 92,
+      'role_id' => 3,
+    ),
+    272 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 92,
+      'role_id' => 9,
+    ),
+    273 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 92,
+      'role_id' => 12,
+    ),
+    274 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 93,
+      'role_id' => 1,
+    ),
+    275 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 93,
+      'role_id' => 3,
+    ),
+    276 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 93,
+      'role_id' => 9,
+    ),
+    277 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 93,
+      'role_id' => 12,
+    ),
+    278 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 94,
+      'role_id' => 1,
+    ),
+    279 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 94,
+      'role_id' => 3,
+    ),
+    280 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 94,
+      'role_id' => 9,
+    ),
+    281 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 94,
+      'role_id' => 12,
+    ),
+    282 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 95,
+      'role_id' => 1,
+    ),
+    283 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 95,
+      'role_id' => 3,
+    ),
+    284 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 95,
+      'role_id' => 9,
+    ),
+    285 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 95,
+      'role_id' => 12,
+    ),
+    286 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 96,
+      'role_id' => 1,
+    ),
+    287 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 96,
+      'role_id' => 3,
+    ),
+    288 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 96,
+      'role_id' => 9,
+    ),
+    289 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 96,
+      'role_id' => 12,
+    ),
+    290 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 97,
+      'role_id' => 1,
+    ),
+    291 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 97,
+      'role_id' => 3,
+    ),
+    292 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 97,
+      'role_id' => 9,
+    ),
+    293 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 97,
+      'role_id' => 12,
+    ),
+    294 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 98,
+      'role_id' => 1,
+    ),
+    295 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 98,
+      'role_id' => 3,
+    ),
+    296 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 98,
+      'role_id' => 9,
+    ),
+    297 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 98,
+      'role_id' => 12,
+    ),
+    298 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 99,
+      'role_id' => 1,
+    ),
+    299 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 99,
+      'role_id' => 2,
+    ),
+    300 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 99,
+      'role_id' => 3,
+    ),
+    301 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 99,
+      'role_id' => 12,
+    ),
+    302 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 100,
+      'role_id' => 1,
+    ),
+    303 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 100,
+      'role_id' => 3,
+    ),
+    304 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 100,
+      'role_id' => 9,
+    ),
+    305 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 100,
+      'role_id' => 12,
+    ),
+    306 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 101,
+      'role_id' => 1,
+    ),
+    307 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 101,
+      'role_id' => 3,
+    ),
+    308 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 101,
+      'role_id' => 9,
+    ),
+    309 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 101,
+      'role_id' => 12,
+    ),
+    310 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 102,
+      'role_id' => 1,
+    ),
+    311 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 102,
+      'role_id' => 3,
+    ),
+    312 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 102,
+      'role_id' => 9,
+    ),
+    313 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 102,
+      'role_id' => 12,
+    ),
+    314 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 103,
+      'role_id' => 1,
+    ),
+    315 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 103,
+      'role_id' => 3,
+    ),
+    316 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 103,
+      'role_id' => 9,
+    ),
+    317 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 103,
+      'role_id' => 12,
+    ),
+    318 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 104,
+      'role_id' => 1,
+    ),
+    319 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 104,
+      'role_id' => 3,
+    ),
+    320 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 104,
+      'role_id' => 9,
+    ),
+    321 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 104,
+      'role_id' => 11,
+    ),
+    322 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 104,
+      'role_id' => 12,
+    ),
+    323 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 105,
+      'role_id' => 1,
+    ),
+    324 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 105,
+      'role_id' => 3,
+    ),
+    325 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 105,
+      'role_id' => 9,
+    ),
+    326 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 105,
+      'role_id' => 12,
+    ),
+    327 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 106,
+      'role_id' => 1,
+    ),
+    328 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 106,
+      'role_id' => 3,
+    ),
+    329 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 107,
+      'role_id' => 1,
+    ),
+    330 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 107,
+      'role_id' => 7,
+    ),
+    331 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 107,
+      'role_id' => 9,
+    ),
+    332 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 107,
+      'role_id' => 10,
+    ),
+    333 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 107,
+      'role_id' => 11,
+    ),
+    334 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 108,
+      'role_id' => 1,
+    ),
+    335 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 108,
+      'role_id' => 9,
+    ),
+    336 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 108,
+      'role_id' => 10,
+    ),
+    337 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 108,
+      'role_id' => 11,
+    ),
+    338 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 109,
+      'role_id' => 1,
+    ),
+    339 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 109,
+      'role_id' => 9,
+    ),
+    340 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 109,
+      'role_id' => 11,
+    ),
+    341 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 110,
+      'role_id' => 1,
+    ),
+    342 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 111,
+      'role_id' => 1,
+    ),
+    343 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 112,
+      'role_id' => 1,
+    ),
+    344 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 113,
+      'role_id' => 1,
+    ),
+    345 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 113,
+      'role_id' => 3,
+    ),
+    346 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 113,
+      'role_id' => 9,
+    ),
+    347 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 113,
+      'role_id' => 16,
+    ),
+    348 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 114,
+      'role_id' => 1,
+    ),
+    349 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 115,
+      'role_id' => 1,
+    ),
+    350 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 115,
+      'role_id' => 9,
+    ),
+    351 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 115,
+      'role_id' => 11,
+    ),
+    352 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 115,
+      'role_id' => 12,
+    ),
+    353 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 116,
+      'role_id' => 1,
+    ),
+    354 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 116,
+      'role_id' => 3,
+    ),
+    355 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 116,
+      'role_id' => 6,
+    ),
+    356 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 116,
+      'role_id' => 7,
+    ),
+    357 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 116,
+      'role_id' => 9,
+    ),
+    358 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 116,
+      'role_id' => 17,
+    ),
+    359 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 117,
+      'role_id' => 1,
+    ),
+    360 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 117,
+      'role_id' => 3,
+    ),
+    361 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 117,
+      'role_id' => 6,
+    ),
+    362 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 117,
+      'role_id' => 7,
+    ),
+    363 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 117,
+      'role_id' => 9,
+    ),
+    364 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 117,
+      'role_id' => 17,
+    ),
+    365 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 118,
+      'role_id' => 1,
+    ),
+    366 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 118,
+      'role_id' => 3,
+    ),
+    367 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 118,
+      'role_id' => 7,
+    ),
+    368 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 118,
+      'role_id' => 17,
+    ),
+    369 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 119,
+      'role_id' => 1,
+    ),
+    370 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 120,
+      'role_id' => 1,
+    ),
+    371 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 120,
+      'role_id' => 7,
+    ),
+    372 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 120,
+      'role_id' => 9,
+    ),
+    373 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 121,
+      'role_id' => 1,
+    ),
+    374 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 121,
+      'role_id' => 3,
+    ),
+    375 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 121,
+      'role_id' => 9,
+    ),
+    376 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 121,
+      'role_id' => 10,
+    ),
+    377 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 121,
+      'role_id' => 11,
+    ),
+    378 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 122,
+      'role_id' => 1,
+    ),
+    379 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 122,
+      'role_id' => 3,
+    ),
+    380 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 122,
+      'role_id' => 6,
+    ),
+    381 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 122,
+      'role_id' => 7,
+    ),
+    382 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 122,
+      'role_id' => 9,
+    ),
+    383 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 122,
+      'role_id' => 17,
+    ),
+    384 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 123,
+      'role_id' => 1,
+    ),
+    385 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 123,
+      'role_id' => 3,
+    ),
+    386 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 123,
+      'role_id' => 6,
+    ),
+    387 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 123,
+      'role_id' => 7,
+    ),
+    388 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 123,
+      'role_id' => 9,
+    ),
+    389 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 123,
+      'role_id' => 17,
+    ),
+    390 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 124,
+      'role_id' => 1,
+    ),
+    391 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 124,
+      'role_id' => 3,
+    ),
+    392 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 124,
+      'role_id' => 6,
+    ),
+    393 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 124,
+      'role_id' => 7,
+    ),
+    394 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 124,
+      'role_id' => 9,
+    ),
+    395 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 124,
+      'role_id' => 17,
+    ),
+    396 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 125,
+      'role_id' => 1,
+    ),
+    397 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 125,
+      'role_id' => 3,
+    ),
+    398 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 125,
+      'role_id' => 6,
+    ),
+    399 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 125,
+      'role_id' => 7,
+    ),
+    400 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 125,
+      'role_id' => 9,
+    ),
+    401 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 125,
+      'role_id' => 17,
+    ),
+    402 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 126,
+      'role_id' => 1,
+    ),
+    403 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 127,
+      'role_id' => 1,
+    ),
+    404 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 127,
+      'role_id' => 3,
+    ),
+    405 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 127,
+      'role_id' => 9,
+    ),
+    406 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 127,
+      'role_id' => 17,
+    ),
+    407 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 128,
+      'role_id' => 1,
+    ),
+    408 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 128,
+      'role_id' => 3,
+    ),
+    409 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 128,
+      'role_id' => 9,
+    ),
+    410 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 128,
+      'role_id' => 10,
+    ),
+    411 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 128,
+      'role_id' => 11,
+    ),
+    412 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 129,
+      'role_id' => 1,
+    ),
+    413 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 129,
+      'role_id' => 3,
+    ),
+    414 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 129,
+      'role_id' => 7,
+    ),
+    415 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 129,
+      'role_id' => 9,
+    ),
+    416 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 129,
+      'role_id' => 17,
+    ),
+    417 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 130,
+      'role_id' => 1,
+    ),
+    418 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 130,
+      'role_id' => 3,
+    ),
+    419 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 130,
+      'role_id' => 7,
+    ),
+    420 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 130,
+      'role_id' => 9,
+    ),
+    421 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 130,
+      'role_id' => 11,
+    ),
+    422 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 130,
+      'role_id' => 17,
+    ),
+    423 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 131,
+      'role_id' => 1,
+    ),
+    424 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 131,
+      'role_id' => 3,
+    ),
+    425 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 131,
+      'role_id' => 9,
+    ),
+    426 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 131,
+      'role_id' => 10,
+    ),
+    427 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 131,
+      'role_id' => 11,
+    ),
+    428 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 132,
+      'role_id' => 1,
+    ),
+    429 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 132,
+      'role_id' => 3,
+    ),
+    430 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 132,
+      'role_id' => 9,
+    ),
+    431 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 132,
+      'role_id' => 17,
+    ),
+    432 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 133,
+      'role_id' => 1,
+    ),
+    433 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 133,
+      'role_id' => 7,
+    ),
+    434 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 134,
+      'role_id' => 1,
+    ),
+    435 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 134,
+      'role_id' => 3,
+    ),
+    436 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 134,
+      'role_id' => 9,
+    ),
+    437 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 134,
+      'role_id' => 12,
+    ),
+    438 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 134,
+      'role_id' => 13,
+    ),
+    439 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 135,
+      'role_id' => 1,
+    ),
+    440 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 135,
+      'role_id' => 3,
+    ),
+    441 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 135,
+      'role_id' => 9,
+    ),
+    442 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 135,
+      'role_id' => 12,
+    ),
+    443 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 136,
+      'role_id' => 1,
+    ),
+    444 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 136,
+      'role_id' => 12,
+    ),
+    445 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 136,
+      'role_id' => 13,
+    ),
+    446 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 137,
+      'role_id' => 1,
+    ),
+    447 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 137,
+      'role_id' => 12,
+    ),
+    448 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 137,
+      'role_id' => 13,
+    ),
+    449 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 138,
+      'role_id' => 1,
+    ),
+    450 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 138,
+      'role_id' => 12,
+    ),
+    451 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 138,
+      'role_id' => 13,
+    ),
+    452 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 139,
+      'role_id' => 1,
+    ),
+    453 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 139,
+      'role_id' => 12,
+    ),
+    454 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 139,
+      'role_id' => 13,
+    ),
+    455 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 140,
+      'role_id' => 1,
+    ),
+    456 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 140,
+      'role_id' => 12,
+    ),
+    457 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 140,
+      'role_id' => 13,
+    ),
+    458 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 141,
+      'role_id' => 1,
+    ),
+    459 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 141,
+      'role_id' => 12,
+    ),
+    460 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 142,
+      'role_id' => 1,
+    ),
+    461 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 142,
+      'role_id' => 12,
+    ),
+    462 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 143,
+      'role_id' => 1,
+    ),
+    463 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 143,
+      'role_id' => 9,
+    ),
+    464 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 143,
+      'role_id' => 12,
+    ),
+    465 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 144,
+      'role_id' => 1,
+    ),
+    466 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 144,
+      'role_id' => 12,
+    ),
+    467 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 145,
+      'role_id' => 1,
+    ),
+    468 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 145,
+      'role_id' => 12,
+    ),
+    469 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 146,
+      'role_id' => 1,
+    ),
+    470 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 146,
+      'role_id' => 2,
+    ),
+    471 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 146,
+      'role_id' => 9,
+    ),
+    472 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 146,
+      'role_id' => 12,
+    ),
+    473 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 146,
+      'role_id' => 13,
+    ),
+    474 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 147,
+      'role_id' => 1,
+    ),
+    475 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 148,
+      'role_id' => 1,
+    ),
+    476 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 148,
+      'role_id' => 3,
+    ),
+    477 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 148,
+      'role_id' => 7,
+    ),
+    478 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 149,
+      'role_id' => 1,
+    ),
+    479 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 149,
+      'role_id' => 3,
+    ),
+    480 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 149,
+      'role_id' => 7,
+    ),
+    481 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 150,
+      'role_id' => 1,
+    ),
+    482 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 150,
+      'role_id' => 3,
+    ),
+    483 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 150,
+      'role_id' => 7,
+    ),
+    484 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 151,
+      'role_id' => 1,
+    ),
+    485 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 151,
+      'role_id' => 2,
+    ),
+    486 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 151,
+      'role_id' => 9,
+    ),
+    487 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 151,
+      'role_id' => 12,
+    ),
+    488 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 151,
+      'role_id' => 13,
+    ),
+    489 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 152,
+      'role_id' => 1,
+    ),
+    490 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 152,
+      'role_id' => 3,
+    ),
+    491 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 152,
+      'role_id' => 7,
+    ),
+    492 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 153,
+      'role_id' => 1,
+    ),
+    493 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 153,
+      'role_id' => 3,
+    ),
+    494 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 153,
+      'role_id' => 7,
+    ),
+    495 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 153,
+      'role_id' => 9,
+    ),
+    496 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 153,
+      'role_id' => 11,
+    ),
+    497 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 153,
+      'role_id' => 17,
+    ),
+    498 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 154,
+      'role_id' => 1,
+    ),
+    499 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 154,
+      'role_id' => 3,
+    ),
+    500 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 154,
+      'role_id' => 7,
+    ),
+    501 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 154,
+      'role_id' => 9,
+    ),
+    502 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 154,
+      'role_id' => 11,
+    ),
+    503 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 154,
+      'role_id' => 17,
+    ),
+    504 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 155,
+      'role_id' => 1,
+    ),
+    505 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 155,
+      'role_id' => 3,
+    ),
+    506 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 155,
+      'role_id' => 7,
+    ),
+    507 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 155,
+      'role_id' => 9,
+    ),
+    508 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 155,
+      'role_id' => 11,
+    ),
+    509 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 155,
+      'role_id' => 17,
+    ),
+    510 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 156,
+      'role_id' => 1,
+    ),
+    511 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 156,
+      'role_id' => 3,
+    ),
+    512 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 156,
+      'role_id' => 7,
+    ),
+    513 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 156,
+      'role_id' => 9,
+    ),
+    514 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 156,
+      'role_id' => 17,
+    ),
+    515 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 157,
+      'role_id' => 1,
+    ),
+    516 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 157,
+      'role_id' => 3,
+    ),
+    517 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 157,
+      'role_id' => 7,
+    ),
+    518 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 157,
+      'role_id' => 9,
+    ),
+    519 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 157,
+      'role_id' => 17,
+    ),
+    520 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 158,
+      'role_id' => 1,
+    ),
+    521 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 158,
+      'role_id' => 3,
+    ),
+    522 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 158,
+      'role_id' => 7,
+    ),
+    523 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 158,
+      'role_id' => 9,
+    ),
+    524 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 158,
+      'role_id' => 17,
+    ),
+    525 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 159,
+      'role_id' => 1,
+    ),
+    526 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 159,
+      'role_id' => 3,
+    ),
+    527 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 159,
+      'role_id' => 7,
+    ),
+    528 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 159,
+      'role_id' => 9,
+    ),
+    529 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 159,
+      'role_id' => 17,
+    ),
+    530 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 160,
+      'role_id' => 1,
+    ),
+    531 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 160,
+      'role_id' => 3,
+    ),
+    532 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 160,
+      'role_id' => 7,
+    ),
+    533 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 160,
+      'role_id' => 9,
+    ),
+    534 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 160,
+      'role_id' => 17,
+    ),
+    535 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 161,
+      'role_id' => 1,
+    ),
+    536 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 161,
+      'role_id' => 3,
+    ),
+    537 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 161,
+      'role_id' => 7,
+    ),
+    538 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 161,
+      'role_id' => 9,
+    ),
+    539 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 161,
+      'role_id' => 17,
+    ),
+    540 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 162,
+      'role_id' => 1,
+    ),
+    541 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 162,
+      'role_id' => 3,
+    ),
+    542 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 162,
+      'role_id' => 7,
+    ),
+    543 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 162,
+      'role_id' => 9,
+    ),
+    544 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 162,
+      'role_id' => 17,
+    ),
+    545 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 163,
+      'role_id' => 1,
+    ),
+    546 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 163,
+      'role_id' => 3,
+    ),
+    547 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 163,
+      'role_id' => 7,
+    ),
+    548 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 163,
+      'role_id' => 9,
+    ),
+    549 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 163,
+      'role_id' => 11,
+    ),
+    550 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 163,
+      'role_id' => 17,
+    ),
+    551 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 164,
+      'role_id' => 1,
+    ),
+    552 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 164,
+      'role_id' => 3,
+    ),
+    553 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 164,
+      'role_id' => 7,
+    ),
+    554 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 165,
+      'role_id' => 1,
+    ),
+    555 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 165,
+      'role_id' => 3,
+    ),
+    556 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 165,
+      'role_id' => 7,
+    ),
+    557 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 166,
+      'role_id' => 1,
+    ),
+    558 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 166,
+      'role_id' => 3,
+    ),
+    559 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 166,
+      'role_id' => 7,
+    ),
+    560 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 167,
+      'role_id' => 1,
+    ),
+    561 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 167,
+      'role_id' => 3,
+    ),
+    562 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 167,
+      'role_id' => 7,
+    ),
+    563 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 168,
+      'role_id' => 1,
+    ),
+    564 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 168,
+      'role_id' => 3,
+    ),
+    565 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 168,
+      'role_id' => 7,
+    ),
+    566 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 168,
+      'role_id' => 9,
+    ),
+    567 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 168,
+      'role_id' => 17,
+    ),
+    568 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 169,
+      'role_id' => 1,
+    ),
+    569 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 169,
+      'role_id' => 3,
+    ),
+    570 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 169,
+      'role_id' => 7,
+    ),
+    571 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 169,
+      'role_id' => 9,
+    ),
+    572 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 169,
+      'role_id' => 17,
+    ),
+    573 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 170,
+      'role_id' => 1,
+    ),
+    574 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 170,
+      'role_id' => 2,
+    ),
+    575 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 170,
+      'role_id' => 9,
+    ),
+    576 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 170,
+      'role_id' => 12,
+    ),
+    577 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 170,
+      'role_id' => 13,
+    ),
+    578 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 171,
+      'role_id' => 1,
+    ),
+    579 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 171,
+      'role_id' => 2,
+    ),
+    580 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 171,
+      'role_id' => 9,
+    ),
+    581 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 171,
+      'role_id' => 12,
+    ),
+    582 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 171,
+      'role_id' => 13,
+    ),
+    583 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 172,
+      'role_id' => 1,
+    ),
+    584 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 172,
+      'role_id' => 2,
+    ),
+    585 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 172,
+      'role_id' => 9,
+    ),
+    586 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 172,
+      'role_id' => 12,
+    ),
+    587 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 173,
+      'role_id' => 1,
+    ),
+    588 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 173,
+      'role_id' => 3,
+    ),
+    589 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 173,
+      'role_id' => 7,
+    ),
+    590 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 173,
+      'role_id' => 9,
+    ),
+    591 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 173,
+      'role_id' => 17,
+    ),
+    592 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 174,
+      'role_id' => 1,
+    ),
+    593 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 174,
+      'role_id' => 3,
+    ),
+    594 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 174,
+      'role_id' => 7,
+    ),
+    595 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 174,
+      'role_id' => 9,
+    ),
+    596 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 174,
+      'role_id' => 11,
+    ),
+    597 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 174,
+      'role_id' => 17,
+    ),
+    598 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 175,
+      'role_id' => 1,
+    ),
+    599 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 175,
+      'role_id' => 7,
+    ),
+    600 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 175,
+      'role_id' => 8,
+    ),
+    601 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 176,
+      'role_id' => 1,
+    ),
+    602 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 176,
+      'role_id' => 7,
+    ),
+    603 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 177,
+      'role_id' => 1,
+    ),
+    604 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 177,
+      'role_id' => 7,
+    ),
+    605 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 177,
+      'role_id' => 8,
+    ),
+    606 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 178,
+      'role_id' => 1,
+    ),
+    607 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 178,
+      'role_id' => 7,
+    ),
+    608 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 178,
+      'role_id' => 8,
+    ),
+    609 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 179,
+      'role_id' => 1,
+    ),
+    610 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 179,
+      'role_id' => 7,
+    ),
+    611 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 179,
+      'role_id' => 8,
+    ),
+    612 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 180,
+      'role_id' => 1,
+    ),
+    613 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 180,
+      'role_id' => 7,
+    ),
+    614 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 180,
+      'role_id' => 8,
+    ),
+    615 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 181,
+      'role_id' => 1,
+    ),
+    616 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 181,
+      'role_id' => 3,
+    ),
+    617 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 181,
+      'role_id' => 7,
+    ),
+    618 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 182,
+      'role_id' => 1,
+    ),
+    619 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 182,
+      'role_id' => 3,
+    ),
+    620 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 182,
+      'role_id' => 9,
+    ),
+    621 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 182,
+      'role_id' => 17,
+    ),
+    622 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 183,
+      'role_id' => 1,
+    ),
+    623 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 183,
+      'role_id' => 3,
+    ),
+    624 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 183,
+      'role_id' => 9,
+    ),
+    625 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 183,
+      'role_id' => 17,
+    ),
+    626 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 184,
+      'role_id' => 1,
+    ),
+    627 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 184,
+      'role_id' => 3,
+    ),
+    628 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 184,
+      'role_id' => 9,
+    ),
+    629 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 184,
+      'role_id' => 17,
+    ),
+    630 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 185,
+      'role_id' => 1,
+    ),
+    631 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 185,
+      'role_id' => 3,
+    ),
+    632 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 185,
+      'role_id' => 9,
+    ),
+    633 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 185,
+      'role_id' => 17,
+    ),
+    634 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 186,
+      'role_id' => 1,
+    ),
+    635 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 186,
+      'role_id' => 3,
+    ),
+    636 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 186,
+      'role_id' => 9,
+    ),
+    637 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 186,
+      'role_id' => 17,
+    ),
+    638 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 187,
+      'role_id' => 1,
+    ),
+    639 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 187,
+      'role_id' => 3,
+    ),
+    640 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 187,
+      'role_id' => 9,
+    ),
+    641 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 187,
+      'role_id' => 17,
+    ),
+    642 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 188,
+      'role_id' => 1,
+    ),
+    643 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 188,
+      'role_id' => 3,
+    ),
+    644 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 188,
+      'role_id' => 9,
+    ),
+    645 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 188,
+      'role_id' => 17,
+    ),
+    646 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 189,
+      'role_id' => 1,
+    ),
+    647 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 190,
+      'role_id' => 1,
+    ),
+    648 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 190,
+      'role_id' => 9,
+    ),
+    649 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 190,
+      'role_id' => 10,
+    ),
+    650 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 190,
+      'role_id' => 11,
+    ),
+    651 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 190,
+      'role_id' => 12,
+    ),
+    652 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 191,
+      'role_id' => 1,
+    ),
+    653 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 191,
+      'role_id' => 9,
+    ),
+    654 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 192,
+      'role_id' => 1,
+    ),
+    655 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 192,
+      'role_id' => 9,
+    ),
+    656 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 192,
+      'role_id' => 12,
+    ),
+    657 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 192,
+      'role_id' => 16,
+    ),
+    658 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 193,
+      'role_id' => 1,
+    ),
+    659 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 193,
+      'role_id' => 9,
+    ),
+    660 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 194,
+      'role_id' => 1,
+    ),
+    661 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 195,
+      'role_id' => 1,
+    ),
+    662 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 195,
+      'role_id' => 9,
+    ),
+    663 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 195,
+      'role_id' => 10,
+    ),
+    664 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 195,
+      'role_id' => 11,
+    ),
+    665 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 196,
+      'role_id' => 1,
+    ),
+    666 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 196,
+      'role_id' => 3,
+    ),
+    667 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 196,
+      'role_id' => 9,
+    ),
+    668 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 196,
+      'role_id' => 10,
+    ),
+    669 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 196,
+      'role_id' => 11,
+    ),
+    670 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 196,
+      'role_id' => 17,
+    ),
+    671 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 197,
+      'role_id' => 1,
+    ),
+    672 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 197,
+      'role_id' => 3,
+    ),
+    673 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 197,
+      'role_id' => 9,
+    ),
+    674 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 197,
+      'role_id' => 10,
+    ),
+    675 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 197,
+      'role_id' => 11,
+    ),
+    676 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 197,
+      'role_id' => 17,
+    ),
+    677 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 198,
+      'role_id' => 1,
+    ),
+    678 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 198,
+      'role_id' => 9,
+    ),
+    679 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 199,
+      'role_id' => 1,
+    ),
+    680 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 199,
+      'role_id' => 9,
+    ),
+    681 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 199,
+      'role_id' => 12,
+    ),
+    682 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 200,
+      'role_id' => 1,
+    ),
+    683 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 200,
+      'role_id' => 9,
+    ),
+    684 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 200,
+      'role_id' => 12,
+    ),
+    685 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 201,
+      'role_id' => 1,
+    ),
+    686 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 201,
+      'role_id' => 9,
+    ),
+    687 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 201,
+      'role_id' => 12,
+    ),
+    688 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 202,
+      'role_id' => 1,
+    ),
+    689 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 202,
+      'role_id' => 9,
+    ),
+    690 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 202,
+      'role_id' => 10,
+    ),
+    691 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 202,
+      'role_id' => 11,
+    ),
+    692 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 203,
+      'role_id' => 1,
+    ),
+    693 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 203,
+      'role_id' => 9,
+    ),
+    694 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 203,
+      'role_id' => 11,
+    ),
+    695 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 204,
+      'role_id' => 1,
+    ),
+    696 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 204,
+      'role_id' => 4,
+    ),
+    697 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 204,
+      'role_id' => 9,
+    ),
+    698 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 204,
+      'role_id' => 11,
+    ),
+    699 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 205,
+      'role_id' => 1,
+    ),
+    700 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 205,
+      'role_id' => 9,
+    ),
+    701 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 205,
+      'role_id' => 12,
+    ),
+    702 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 206,
+      'role_id' => 1,
+    ),
+    703 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 206,
+      'role_id' => 2,
+    ),
+    704 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 206,
+      'role_id' => 9,
+    ),
+    705 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 206,
+      'role_id' => 13,
+    ),
+    706 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 207,
+      'role_id' => 1,
+    ),
+    707 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 207,
+      'role_id' => 9,
+    ),
+    708 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 207,
+      'role_id' => 12,
+    ),
+    709 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 208,
+      'role_id' => 1,
+    ),
+    710 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 208,
+      'role_id' => 9,
+    ),
+    711 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 208,
+      'role_id' => 12,
+    ),
+    712 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 209,
+      'role_id' => 1,
+    ),
+    713 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 209,
+      'role_id' => 2,
+    ),
+    714 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 209,
+      'role_id' => 9,
+    ),
+    715 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 209,
+      'role_id' => 12,
+    ),
+    716 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 209,
+      'role_id' => 13,
+    ),
+    717 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 210,
+      'role_id' => 1,
+    ),
+    718 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 210,
+      'role_id' => 9,
+    ),
+    719 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 210,
+      'role_id' => 12,
+    ),
+    720 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 212,
+      'role_id' => 1,
+    ),
+    721 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 212,
+      'role_id' => 3,
+    ),
+    722 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 212,
+      'role_id' => 9,
+    ),
+    723 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 212,
+      'role_id' => 17,
+    ),
+    724 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 213,
+      'role_id' => 1,
+    ),
+    725 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 213,
+      'role_id' => 3,
+    ),
+    726 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 213,
+      'role_id' => 9,
+    ),
+    727 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 213,
+      'role_id' => 17,
+    ),
+    728 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 214,
+      'role_id' => 1,
+    ),
+    729 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 214,
+      'role_id' => 3,
+    ),
+    730 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 214,
+      'role_id' => 9,
+    ),
+    731 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 214,
+      'role_id' => 17,
+    ),
+    732 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 215,
+      'role_id' => 1,
+    ),
+    733 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 215,
+      'role_id' => 3,
+    ),
+    734 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 215,
+      'role_id' => 9,
+    ),
+    735 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 215,
+      'role_id' => 17,
+    ),
+    736 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 216,
+      'role_id' => 1,
+    ),
+    737 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 216,
+      'role_id' => 3,
+    ),
+    738 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 216,
+      'role_id' => 9,
+    ),
+    739 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 217,
+      'role_id' => 1,
+    ),
+    740 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 217,
+      'role_id' => 3,
+    ),
+    741 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 217,
+      'role_id' => 9,
+    ),
+    742 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 218,
+      'role_id' => 1,
+    ),
+    743 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 218,
+      'role_id' => 3,
+    ),
+    744 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 218,
+      'role_id' => 9,
+    ),
+    745 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 219,
+      'role_id' => 1,
+    ),
+    746 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 219,
+      'role_id' => 3,
+    ),
+    747 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 219,
+      'role_id' => 9,
+    ),
+    748 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 220,
+      'role_id' => 1,
+    ),
+    749 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 220,
+      'role_id' => 3,
+    ),
+    750 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 220,
+      'role_id' => 9,
+    ),
+    751 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 221,
+      'role_id' => 1,
+    ),
+    752 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 221,
+      'role_id' => 3,
+    ),
+    753 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 221,
+      'role_id' => 9,
+    ),
+    754 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 222,
+      'role_id' => 1,
+    ),
+    755 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 222,
+      'role_id' => 3,
+    ),
+    756 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 222,
+      'role_id' => 9,
+    ),
+    757 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 223,
+      'role_id' => 1,
+    ),
+    758 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 223,
+      'role_id' => 3,
+    ),
+    759 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 223,
+      'role_id' => 9,
+    ),
+    760 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 224,
+      'role_id' => 1,
+    ),
+    761 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 224,
+      'role_id' => 3,
+    ),
+    762 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 224,
+      'role_id' => 9,
+    ),
+    763 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 225,
+      'role_id' => 1,
+    ),
+    764 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 225,
+      'role_id' => 3,
+    ),
+    765 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 225,
+      'role_id' => 9,
+    ),
+    766 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 226,
+      'role_id' => 1,
+    ),
+    767 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 226,
+      'role_id' => 3,
+    ),
+    768 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 226,
+      'role_id' => 9,
+    ),
+    769 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 227,
+      'role_id' => 1,
+    ),
+    770 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 227,
+      'role_id' => 3,
+    ),
+    771 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 227,
+      'role_id' => 9,
+    ),
+    772 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 228,
+      'role_id' => 1,
+    ),
+    773 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 228,
+      'role_id' => 3,
+    ),
+    774 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 228,
+      'role_id' => 9,
+    ),
+    775 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 229,
+      'role_id' => 1,
+    ),
+    776 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 229,
+      'role_id' => 3,
+    ),
+    777 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 229,
+      'role_id' => 9,
+    ),
+    778 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 230,
+      'role_id' => 1,
+    ),
+    779 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 230,
+      'role_id' => 3,
+    ),
+    780 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 230,
+      'role_id' => 15,
+    ),
+    781 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 230,
+      'role_id' => 17,
+    ),
+    782 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 231,
+      'role_id' => 1,
+    ),
+    783 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 231,
+      'role_id' => 3,
+    ),
+    784 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 231,
+      'role_id' => 14,
+    ),
+    785 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 232,
+      'role_id' => 1,
+    ),
+    786 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 232,
+      'role_id' => 3,
+    ),
+    787 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 233,
+      'role_id' => 1,
+    ),
+    788 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 233,
+      'role_id' => 3,
+    ),
+    789 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 233,
+      'role_id' => 14,
+    ),
+    790 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 234,
+      'role_id' => 1,
+    ),
+    791 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 234,
+      'role_id' => 3,
+    ),
+    792 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 235,
+      'role_id' => 1,
+    ),
+    793 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 235,
+      'role_id' => 3,
+    ),
+    794 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 236,
+      'role_id' => 1,
+    ),
+    795 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 236,
+      'role_id' => 3,
+    ),
+    796 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 237,
+      'role_id' => 1,
+    ),
+    797 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 237,
+      'role_id' => 3,
+    ),
+    798 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 238,
+      'role_id' => 1,
+    ),
+    799 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 238,
+      'role_id' => 3,
+    ),
+    800 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 239,
+      'role_id' => 1,
+    ),
+    801 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 239,
+      'role_id' => 3,
+    ),
+    802 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 240,
+      'role_id' => 1,
+    ),
+    803 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 240,
+      'role_id' => 3,
+    ),
+    804 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 240,
+      'role_id' => 14,
+    ),
+    805 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 241,
+      'role_id' => 1,
+    ),
+    806 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 241,
+      'role_id' => 3,
+    ),
+    807 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 241,
+      'role_id' => 14,
+    ),
+    808 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 242,
+      'role_id' => 1,
+    ),
+    809 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 242,
+      'role_id' => 3,
+    ),
+    810 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 242,
+      'role_id' => 14,
+    ),
+    811 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 243,
+      'role_id' => 1,
+    ),
+    812 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 243,
+      'role_id' => 3,
+    ),
+    813 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 243,
+      'role_id' => 14,
+    ),
+    814 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 244,
+      'role_id' => 1,
+    ),
+    815 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 244,
+      'role_id' => 3,
+    ),
+    816 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 244,
+      'role_id' => 14,
+    ),
+    817 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 245,
+      'role_id' => 1,
+    ),
+    818 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 245,
+      'role_id' => 3,
+    ),
+    819 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 246,
+      'role_id' => 1,
+    ),
+    820 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 246,
+      'role_id' => 3,
+    ),
+    821 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 247,
+      'role_id' => 1,
+    ),
+    822 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 247,
+      'role_id' => 3,
+    ),
+    823 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 247,
+      'role_id' => 9,
+    ),
+    824 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 247,
+      'role_id' => 17,
+    ),
+    825 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 248,
+      'role_id' => 1,
+    ),
+    826 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 248,
+      'role_id' => 3,
+    ),
+    827 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 248,
+      'role_id' => 9,
+    ),
+    828 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 248,
+      'role_id' => 17,
+    ),
+    829 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 249,
+      'role_id' => 1,
+    ),
+    830 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 249,
+      'role_id' => 3,
+    ),
+    831 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 249,
+      'role_id' => 9,
+    ),
+    832 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 249,
+      'role_id' => 17,
+    ),
+    833 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 250,
+      'role_id' => 1,
+    ),
+    834 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 250,
+      'role_id' => 3,
+    ),
+    835 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 250,
+      'role_id' => 14,
+    ),
+    836 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 251,
+      'role_id' => 1,
+    ),
+    837 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 251,
+      'role_id' => 3,
+    ),
+    838 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 251,
+      'role_id' => 14,
+    ),
+    839 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 252,
+      'role_id' => 1,
+    ),
+    840 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 252,
+      'role_id' => 3,
+    ),
+    841 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 252,
+      'role_id' => 9,
+    ),
+    842 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 252,
+      'role_id' => 17,
+    ),
+    843 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 253,
+      'role_id' => 1,
+    ),
+    844 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 253,
+      'role_id' => 3,
+    ),
+    845 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 253,
+      'role_id' => 9,
+    ),
+    846 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 253,
+      'role_id' => 17,
+    ),
+    847 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 254,
+      'role_id' => 1,
+    ),
+    848 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 254,
+      'role_id' => 3,
+    ),
+    849 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 254,
+      'role_id' => 9,
+    ),
+    850 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 254,
+      'role_id' => 17,
+    ),
+    851 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 255,
+      'role_id' => 1,
+    ),
+    852 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 255,
+      'role_id' => 3,
+    ),
+    853 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 255,
+      'role_id' => 9,
+    ),
+    854 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 255,
+      'role_id' => 17,
+    ),
+    855 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 256,
+      'role_id' => 1,
+    ),
+    856 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 256,
+      'role_id' => 3,
+    ),
+    857 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 256,
+      'role_id' => 9,
+    ),
+    858 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 256,
+      'role_id' => 17,
+    ),
+    859 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 257,
+      'role_id' => 1,
+    ),
+    860 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 257,
+      'role_id' => 3,
+    ),
+    861 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 257,
+      'role_id' => 9,
+    ),
+    862 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 257,
+      'role_id' => 17,
+    ),
+    863 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 258,
+      'role_id' => 1,
+    ),
+    864 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 258,
+      'role_id' => 3,
+    ),
+    865 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 258,
+      'role_id' => 9,
+    ),
+    866 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 258,
+      'role_id' => 17,
+    ),
+    867 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 259,
+      'role_id' => 1,
+    ),
+    868 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 259,
+      'role_id' => 3,
+    ),
+    869 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 259,
+      'role_id' => 9,
+    ),
+    870 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 259,
+      'role_id' => 17,
+    ),
+    871 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 260,
+      'role_id' => 1,
+    ),
+    872 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 260,
+      'role_id' => 3,
+    ),
+    873 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 260,
+      'role_id' => 9,
+    ),
+    874 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 260,
+      'role_id' => 17,
+    ),
+    875 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 261,
+      'role_id' => 1,
+    ),
+    876 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 262,
+      'role_id' => 1,
+    ),
+    877 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 262,
+      'role_id' => 9,
+    ),
+    878 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 262,
+      'role_id' => 12,
+    ),
+    879 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 263,
+      'role_id' => 1,
+    ),
+    880 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 263,
+      'role_id' => 9,
+    ),
+    881 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 263,
+      'role_id' => 12,
+    ),
+    882 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 264,
+      'role_id' => 1,
+    ),
+    883 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 264,
+      'role_id' => 9,
+    ),
+    884 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 264,
+      'role_id' => 12,
+    ),
+    885 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 265,
+      'role_id' => 1,
+    ),
+    886 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 265,
+      'role_id' => 2,
+    ),
+    887 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 265,
+      'role_id' => 9,
+    ),
+    888 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 265,
+      'role_id' => 13,
+    ),
+    889 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 266,
+      'role_id' => 1,
+    ),
+    890 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 266,
+      'role_id' => 9,
+    ),
+    891 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 266,
+      'role_id' => 12,
+    ),
+    892 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 267,
+      'role_id' => 1,
+    ),
+    893 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 267,
+      'role_id' => 3,
+    ),
+    894 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 267,
+      'role_id' => 9,
+    ),
+    895 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 267,
+      'role_id' => 17,
+    ),
+    896 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 268,
+      'role_id' => 1,
+    ),
+    897 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 268,
+      'role_id' => 3,
+    ),
+    898 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 268,
+      'role_id' => 9,
+    ),
+    899 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 268,
+      'role_id' => 17,
+    ),
+    900 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 269,
+      'role_id' => 1,
+    ),
+    901 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 269,
+      'role_id' => 3,
+    ),
+    902 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 269,
+      'role_id' => 14,
+    ),
+    903 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 270,
+      'role_id' => 1,
+    ),
+    904 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 270,
+      'role_id' => 9,
+    ),
+    905 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 270,
+      'role_id' => 12,
+    ),
+    906 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 271,
+      'role_id' => 1,
+    ),
+    907 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 271,
+      'role_id' => 3,
+    ),
+    908 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 271,
+      'role_id' => 17,
+    ),
+    909 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 272,
+      'role_id' => 1,
+    ),
+    910 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 272,
+      'role_id' => 3,
+    ),
+    911 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 272,
+      'role_id' => 17,
+    ),
+    912 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 273,
+      'role_id' => 1,
+    ),
+    913 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 273,
+      'role_id' => 3,
+    ),
+    914 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 273,
+      'role_id' => 17,
+    ),
+    915 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 274,
+      'role_id' => 1,
+    ),
+    916 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 274,
+      'role_id' => 3,
+    ),
+    917 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 274,
+      'role_id' => 17,
+    ),
+    918 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 275,
+      'role_id' => 1,
+    ),
+    919 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 275,
+      'role_id' => 3,
+    ),
+    920 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 275,
+      'role_id' => 17,
+    ),
+    921 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 276,
+      'role_id' => 1,
+    ),
+    922 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 276,
+      'role_id' => 3,
+    ),
+    923 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 276,
+      'role_id' => 17,
+    ),
+    924 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 277,
+      'role_id' => 1,
+    ),
+    925 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 277,
+      'role_id' => 3,
+    ),
+    926 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 277,
+      'role_id' => 17,
+    ),
+    927 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 278,
+      'role_id' => 1,
+    ),
+    928 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 278,
+      'role_id' => 3,
+    ),
+    929 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 278,
+      'role_id' => 17,
+    ),
+    930 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 279,
+      'role_id' => 1,
+    ),
+    931 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 279,
+      'role_id' => 3,
+    ),
+    932 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 279,
+      'role_id' => 17,
+    ),
+    933 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 280,
+      'role_id' => 1,
+    ),
+    934 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 280,
+      'role_id' => 3,
+    ),
+    935 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 280,
+      'role_id' => 17,
+    ),
+    936 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 281,
+      'role_id' => 1,
+    ),
+    937 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 281,
+      'role_id' => 3,
+    ),
+    938 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 281,
+      'role_id' => 17,
+    ),
+    939 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 282,
+      'role_id' => 1,
+    ),
+    940 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 282,
+      'role_id' => 3,
+    ),
+    941 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 282,
+      'role_id' => 17,
+    ),
+    942 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 283,
+      'role_id' => 1,
+    ),
+    943 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 283,
+      'role_id' => 3,
+    ),
+    944 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 283,
+      'role_id' => 17,
+    ),
+    945 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 284,
+      'role_id' => 1,
+    ),
+    946 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 284,
+      'role_id' => 3,
+    ),
+    947 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 284,
+      'role_id' => 17,
+    ),
+    948 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 285,
+      'role_id' => 1,
+    ),
+    949 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 285,
+      'role_id' => 3,
+    ),
+    950 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 285,
+      'role_id' => 9,
+    ),
+    951 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 285,
+      'role_id' => 17,
+    ),
+    952 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 286,
+      'role_id' => 1,
+    ),
+    953 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 286,
+      'role_id' => 3,
+    ),
+    954 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 286,
+      'role_id' => 17,
+    ),
+    955 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 287,
+      'role_id' => 1,
+    ),
+    956 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 287,
+      'role_id' => 3,
+    ),
+    957 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 287,
+      'role_id' => 9,
+    ),
+    958 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 287,
+      'role_id' => 17,
+    ),
+    959 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 288,
+      'role_id' => 1,
+    ),
+    960 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 288,
+      'role_id' => 3,
+    ),
+    961 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 288,
+      'role_id' => 9,
+    ),
+    962 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 288,
+      'role_id' => 17,
+    ),
+    963 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 289,
+      'role_id' => 1,
+    ),
+    964 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 289,
+      'role_id' => 3,
+    ),
+    965 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 289,
+      'role_id' => 9,
+    ),
+    966 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 289,
+      'role_id' => 17,
+    ),
+    967 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 290,
+      'role_id' => 1,
+    ),
+    968 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 290,
+      'role_id' => 3,
+    ),
+    969 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 290,
+      'role_id' => 9,
+    ),
+    970 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 290,
+      'role_id' => 17,
+    ),
+    971 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 291,
+      'role_id' => 1,
+    ),
+    972 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 291,
+      'role_id' => 3,
+    ),
+    973 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 291,
+      'role_id' => 9,
+    ),
+    974 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 291,
+      'role_id' => 17,
+    ),
+    975 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 292,
+      'role_id' => 1,
+    ),
+    976 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 292,
+      'role_id' => 3,
+    ),
+    977 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 292,
+      'role_id' => 9,
+    ),
+    978 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 292,
+      'role_id' => 17,
+    ),
+    979 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 293,
+      'role_id' => 1,
+    ),
+    980 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 293,
+      'role_id' => 3,
+    ),
+    981 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 293,
+      'role_id' => 9,
+    ),
+    982 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 293,
+      'role_id' => 17,
+    ),
+    983 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 294,
+      'role_id' => 1,
+    ),
+    984 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 294,
+      'role_id' => 3,
+    ),
+    985 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 294,
+      'role_id' => 9,
+    ),
+    986 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 294,
+      'role_id' => 17,
+    ),
+    987 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 295,
+      'role_id' => 1,
+    ),
+    988 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 295,
+      'role_id' => 3,
+    ),
+    989 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 295,
+      'role_id' => 9,
+    ),
+    990 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 296,
+      'role_id' => 1,
+    ),
+    991 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 296,
+      'role_id' => 3,
+    ),
+    992 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 296,
+      'role_id' => 9,
+    ),
+    993 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 296,
+      'role_id' => 17,
+    ),
+    994 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 297,
+      'role_id' => 1,
+    ),
+    995 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 297,
+      'role_id' => 3,
+    ),
+    996 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 297,
+      'role_id' => 9,
+    ),
+    997 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 297,
+      'role_id' => 11,
+    ),
+    998 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 297,
+      'role_id' => 17,
+    ),
+    999 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 298,
+      'role_id' => 1,
+    ),
+    1000 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 298,
+      'role_id' => 3,
+    ),
+    1001 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 298,
+      'role_id' => 9,
+    ),
+    1002 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 298,
+      'role_id' => 17,
+    ),
+    1003 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 299,
+      'role_id' => 1,
+    ),
+    1004 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 299,
+      'role_id' => 3,
+    ),
+    1005 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 299,
+      'role_id' => 9,
+    ),
+    1006 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 299,
+      'role_id' => 17,
+    ),
+    1007 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 300,
+      'role_id' => 1,
+    ),
+    1008 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 300,
+      'role_id' => 3,
+    ),
+    1009 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 300,
+      'role_id' => 9,
+    ),
+    1010 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 300,
+      'role_id' => 17,
+    ),
+    1011 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 301,
+      'role_id' => 1,
+    ),
+    1012 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 301,
+      'role_id' => 3,
+    ),
+    1013 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 301,
+      'role_id' => 17,
+    ),
+    1014 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 302,
+      'role_id' => 1,
+    ),
+    1015 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 303,
+      'role_id' => 1,
+    ),
+    1016 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 303,
+      'role_id' => 3,
+    ),
+    1017 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 303,
+      'role_id' => 9,
+    ),
+    1018 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 303,
+      'role_id' => 17,
+    ),
+    1019 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 304,
+      'role_id' => 1,
+    ),
+    1020 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 304,
+      'role_id' => 3,
+    ),
+    1021 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 304,
+      'role_id' => 9,
+    ),
+    1022 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 304,
+      'role_id' => 11,
+    ),
+    1023 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 304,
+      'role_id' => 17,
+    ),
+    1024 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 305,
+      'role_id' => 1,
+    ),
+    1025 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 305,
+      'role_id' => 3,
+    ),
+    1026 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 305,
+      'role_id' => 9,
+    ),
+    1027 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 305,
+      'role_id' => 17,
+    ),
+    1028 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 306,
+      'role_id' => 1,
+    ),
+    1029 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 306,
+      'role_id' => 3,
+    ),
+    1030 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 306,
+      'role_id' => 17,
+    ),
+    1031 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 307,
+      'role_id' => 1,
+    ),
+    1032 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 307,
+      'role_id' => 3,
+    ),
+    1033 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 307,
+      'role_id' => 17,
+    ),
+    1034 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 308,
+      'role_id' => 1,
+    ),
+    1035 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 308,
+      'role_id' => 3,
+    ),
+    1036 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 308,
+      'role_id' => 17,
+    ),
+    1037 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 309,
+      'role_id' => 1,
+    ),
+    1038 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 309,
+      'role_id' => 3,
+    ),
+    1039 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 309,
+      'role_id' => 17,
+    ),
+    1040 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 310,
+      'role_id' => 1,
+    ),
+    1041 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 310,
+      'role_id' => 3,
+    ),
+    1042 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 310,
+      'role_id' => 9,
+    ),
+    1043 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 310,
+      'role_id' => 17,
+    ),
+    1044 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 311,
+      'role_id' => 1,
+    ),
+    1045 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 311,
+      'role_id' => 3,
+    ),
+    1046 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 311,
+      'role_id' => 9,
+    ),
+    1047 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 311,
+      'role_id' => 17,
+    ),
+    1048 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 312,
+      'role_id' => 1,
+    ),
+    1049 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 312,
+      'role_id' => 3,
+    ),
+    1050 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 312,
+      'role_id' => 9,
+    ),
+    1051 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 312,
+      'role_id' => 17,
+    ),
+    1052 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 313,
+      'role_id' => 1,
+    ),
+    1053 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 313,
+      'role_id' => 3,
+    ),
+    1054 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 313,
+      'role_id' => 9,
+    ),
+    1055 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 313,
+      'role_id' => 11,
+    ),
+    1056 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 313,
+      'role_id' => 17,
+    ),
+    1057 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 313,
+      'role_id' => 20,
+    ),
+    1058 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 314,
+      'role_id' => 1,
+    ),
+    1059 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 314,
+      'role_id' => 3,
+    ),
+    1060 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 314,
+      'role_id' => 9,
+    ),
+    1061 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 314,
+      'role_id' => 17,
+    ),
+    1062 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 315,
+      'role_id' => 1,
+    ),
+    1063 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 315,
+      'role_id' => 3,
+    ),
+    1064 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 315,
+      'role_id' => 9,
+    ),
+    1065 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 315,
+      'role_id' => 17,
+    ),
+    1066 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 316,
+      'role_id' => 1,
+    ),
+    1067 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 316,
+      'role_id' => 3,
+    ),
+    1068 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 316,
+      'role_id' => 17,
+    ),
+    1069 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 317,
+      'role_id' => 1,
+    ),
+    1070 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 317,
+      'role_id' => 3,
+    ),
+    1071 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 317,
+      'role_id' => 9,
+    ),
+    1072 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 317,
+      'role_id' => 17,
+    ),
+    1073 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 318,
+      'role_id' => 1,
+    ),
+    1074 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 318,
+      'role_id' => 17,
+    ),
+    1075 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 319,
+      'role_id' => 1,
+    ),
+    1076 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 319,
+      'role_id' => 3,
+    ),
+    1077 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 319,
+      'role_id' => 9,
+    ),
+    1078 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 319,
+      'role_id' => 17,
+    ),
+    1079 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 320,
+      'role_id' => 1,
+    ),
+    1080 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 320,
+      'role_id' => 3,
+    ),
+    1081 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 320,
+      'role_id' => 9,
+    ),
+    1082 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 320,
+      'role_id' => 17,
+    ),
+    1083 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 321,
+      'role_id' => 1,
+    ),
+    1084 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 321,
+      'role_id' => 3,
+    ),
+    1085 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 321,
+      'role_id' => 9,
+    ),
+    1086 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 321,
+      'role_id' => 17,
+    ),
+    1087 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 322,
+      'role_id' => 1,
+    ),
+    1088 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 322,
+      'role_id' => 3,
+    ),
+    1089 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 322,
+      'role_id' => 9,
+    ),
+    1090 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 322,
+      'role_id' => 17,
+    ),
+    1091 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 323,
+      'role_id' => 1,
+    ),
+    1092 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 323,
+      'role_id' => 17,
+    ),
+    1093 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 324,
+      'role_id' => 1,
+    ),
+    1094 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 324,
+      'role_id' => 3,
+    ),
+    1095 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 324,
+      'role_id' => 9,
+    ),
+    1096 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 324,
+      'role_id' => 17,
+    ),
+    1097 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 325,
+      'role_id' => 1,
+    ),
+    1098 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 325,
+      'role_id' => 3,
+    ),
+    1099 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 325,
+      'role_id' => 9,
+    ),
+    1100 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 325,
+      'role_id' => 17,
+    ),
+    1101 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 326,
+      'role_id' => 1,
+    ),
+    1102 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 326,
+      'role_id' => 3,
+    ),
+    1103 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 326,
+      'role_id' => 9,
+    ),
+    1104 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 326,
+      'role_id' => 11,
+    ),
+    1105 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 326,
+      'role_id' => 17,
+    ),
+    1106 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 327,
+      'role_id' => 1,
+    ),
+    1107 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 327,
+      'role_id' => 3,
+    ),
+    1108 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 327,
+      'role_id' => 9,
+    ),
+    1109 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 328,
+      'role_id' => 1,
+    ),
+    1110 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 328,
+      'role_id' => 3,
+    ),
+    1111 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 328,
+      'role_id' => 9,
+    ),
+    1112 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 328,
+      'role_id' => 17,
+    ),
+    1113 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 329,
+      'role_id' => 1,
+    ),
+    1114 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 329,
+      'role_id' => 9,
+    ),
+    1115 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 329,
+      'role_id' => 12,
+    ),
+    1116 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 330,
+      'role_id' => 1,
+    ),
+    1117 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 330,
+      'role_id' => 9,
+    ),
+    1118 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 330,
+      'role_id' => 12,
+    ),
+    1119 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 331,
+      'role_id' => 1,
+    ),
+    1120 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 331,
+      'role_id' => 17,
+    ),
+    1121 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 332,
+      'role_id' => 1,
+    ),
+    1122 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 332,
+      'role_id' => 9,
+    ),
+    1123 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 332,
+      'role_id' => 12,
+    ),
+    1124 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 333,
+      'role_id' => 1,
+    ),
+    1125 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 333,
+      'role_id' => 9,
+    ),
+    1126 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 333,
+      'role_id' => 12,
+    ),
+    1127 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 334,
+      'role_id' => 1,
+    ),
+    1128 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 334,
+      'role_id' => 2,
+    ),
+    1129 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 334,
+      'role_id' => 9,
+    ),
+    1130 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 334,
+      'role_id' => 12,
+    ),
+    1131 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 334,
+      'role_id' => 13,
+    ),
+    1132 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 335,
+      'role_id' => 1,
+    ),
+    1133 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 335,
+      'role_id' => 2,
+    ),
+    1134 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 335,
+      'role_id' => 9,
+    ),
+    1135 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 335,
+      'role_id' => 12,
+    ),
+    1136 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 335,
+      'role_id' => 13,
+    ),
+    1137 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 336,
+      'role_id' => 1,
+    ),
+    1138 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 336,
+      'role_id' => 9,
+    ),
+    1139 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 336,
+      'role_id' => 12,
+    ),
+    1140 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 337,
+      'role_id' => 1,
+    ),
+    1141 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 337,
+      'role_id' => 9,
+    ),
+    1142 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 337,
+      'role_id' => 12,
+    ),
+    1143 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 338,
+      'role_id' => 1,
+    ),
+    1144 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 339,
+      'role_id' => 1,
+    ),
+    1145 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 339,
+      'role_id' => 9,
+    ),
+    1146 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 339,
+      'role_id' => 12,
+    ),
+    1147 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 340,
+      'role_id' => 1,
+    ),
+    1148 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 340,
+      'role_id' => 3,
+    ),
+    1149 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 340,
+      'role_id' => 9,
+    ),
+    1150 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 341,
+      'role_id' => 1,
+    ),
+    1151 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 342,
+      'role_id' => 1,
+    ),
+    1152 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 342,
+      'role_id' => 3,
+    ),
+    1153 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 342,
+      'role_id' => 9,
+    ),
+    1154 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 342,
+      'role_id' => 17,
+    ),
+    1155 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 343,
+      'role_id' => 1,
+    ),
+    1156 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 343,
+      'role_id' => 3,
+    ),
+    1157 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 343,
+      'role_id' => 17,
+    ),
+    1158 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 344,
+      'role_id' => 1,
+    ),
+    1159 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 344,
+      'role_id' => 3,
+    ),
+    1160 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 344,
+      'role_id' => 9,
+    ),
+    1161 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 344,
+      'role_id' => 17,
+    ),
+    1162 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 345,
+      'role_id' => 1,
+    ),
+    1163 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 345,
+      'role_id' => 6,
+    ),
+    1164 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 345,
+      'role_id' => 9,
+    ),
+    1165 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 346,
+      'role_id' => 1,
+    ),
+    1166 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 346,
+      'role_id' => 3,
+    ),
+    1167 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 347,
+      'role_id' => 1,
+    ),
+    1168 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 347,
+      'role_id' => 3,
+    ),
+    1169 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 347,
+      'role_id' => 9,
+    ),
+    1170 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 347,
+      'role_id' => 17,
+    ),
+    1171 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 348,
+      'role_id' => 1,
+    ),
+    1172 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 348,
+      'role_id' => 3,
+    ),
+    1173 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 348,
+      'role_id' => 9,
+    ),
+    1174 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 348,
+      'role_id' => 17,
+    ),
+    1175 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 349,
+      'role_id' => 1,
+    ),
+    1176 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 349,
+      'role_id' => 17,
+    ),
+    1177 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 350,
+      'role_id' => 1,
+    ),
+    1178 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 350,
+      'role_id' => 9,
+    ),
+    1179 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 350,
+      'role_id' => 12,
+    ),
+    1180 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 351,
+      'role_id' => 1,
+    ),
+    1181 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 351,
+      'role_id' => 3,
+    ),
+    1182 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 351,
+      'role_id' => 17,
+    ),
+    1183 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 352,
+      'role_id' => 1,
+    ),
+    1184 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 352,
+      'role_id' => 3,
+    ),
+    1185 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 352,
+      'role_id' => 18,
+    ),
+    1186 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 352,
+      'role_id' => 19,
+    ),
+    1187 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 353,
+      'role_id' => 1,
+    ),
+    1188 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 353,
+      'role_id' => 3,
+    ),
+    1189 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 354,
+      'role_id' => 1,
+    ),
+    1190 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 354,
+      'role_id' => 3,
+    ),
+    1191 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 354,
+      'role_id' => 18,
+    ),
+    1192 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 355,
+      'role_id' => 1,
+    ),
+    1193 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 355,
+      'role_id' => 3,
+    ),
+    1194 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 356,
+      'role_id' => 1,
+    ),
+    1195 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 356,
+      'role_id' => 3,
+    ),
+    1196 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 356,
+      'role_id' => 18,
+    ),
+    1197 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 356,
+      'role_id' => 19,
+    ),
+    1198 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 357,
+      'role_id' => 1,
+    ),
+    1199 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 357,
+      'role_id' => 3,
+    ),
+    1200 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 358,
+      'role_id' => 1,
+    ),
+    1201 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 358,
+      'role_id' => 3,
+    ),
+    1202 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 359,
+      'role_id' => 1,
+    ),
+    1203 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 359,
+      'role_id' => 3,
+    ),
+    1204 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 359,
+      'role_id' => 18,
+    ),
+    1205 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 360,
+      'role_id' => 1,
+    ),
+    1206 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 360,
+      'role_id' => 3,
+    ),
+    1207 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 360,
+      'role_id' => 18,
+    ),
+    1208 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 361,
+      'role_id' => 1,
+    ),
+    1209 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 361,
+      'role_id' => 3,
+    ),
+    1210 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 362,
+      'role_id' => 1,
+    ),
+    1211 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 362,
+      'role_id' => 3,
+    ),
+    1212 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 363,
+      'role_id' => 1,
+    ),
+    1213 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 363,
+      'role_id' => 3,
+    ),
+    1214 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 363,
+      'role_id' => 18,
+    ),
+    1215 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 364,
+      'role_id' => 1,
+    ),
+    1216 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 364,
+      'role_id' => 3,
+    ),
+    1217 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 364,
+      'role_id' => 19,
+    ),
+    1218 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 365,
+      'role_id' => 1,
+    ),
+    1219 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 365,
+      'role_id' => 3,
+    ),
+    1220 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 366,
+      'role_id' => 1,
+    ),
+    1221 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 366,
+      'role_id' => 3,
+    ),
+    1222 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 366,
+      'role_id' => 18,
+    ),
+    1223 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 367,
+      'role_id' => 1,
+    ),
+    1224 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 367,
+      'role_id' => 3,
+    ),
+    1225 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 368,
+      'role_id' => 1,
+    ),
+    1226 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 368,
+      'role_id' => 3,
+    ),
+    1227 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 369,
+      'role_id' => 1,
+    ),
+    1228 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 369,
+      'role_id' => 3,
+    ),
+    1229 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 369,
+      'role_id' => 18,
+    ),
+    1230 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 370,
+      'role_id' => 1,
+    ),
+    1231 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 370,
+      'role_id' => 3,
+    ),
+    1232 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 370,
+      'role_id' => 18,
+    ),
+    1233 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 371,
+      'role_id' => 1,
+    ),
+    1234 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 371,
+      'role_id' => 3,
+    ),
+    1235 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 372,
+      'role_id' => 1,
+    ),
+    1236 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 372,
+      'role_id' => 3,
+    ),
+    1237 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 373,
+      'role_id' => 1,
+    ),
+    1238 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 373,
+      'role_id' => 3,
+    ),
+    1239 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 374,
+      'role_id' => 1,
+    ),
+    1240 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 374,
+      'role_id' => 3,
+    ),
+    1241 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 375,
+      'role_id' => 1,
+    ),
+    1242 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 375,
+      'role_id' => 3,
+    ),
+    1243 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 376,
+      'role_id' => 1,
+    ),
+    1244 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 376,
+      'role_id' => 3,
+    ),
+    1245 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 377,
+      'role_id' => 1,
+    ),
+    1246 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 377,
+      'role_id' => 9,
+    ),
+    1247 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 378,
+      'role_id' => 15,
+    ),
+    1248 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 379,
+      'role_id' => 15,
+    ),
+    1249 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 379,
+      'role_id' => 17,
+    ),
+    1250 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 380,
+      'role_id' => 1,
+    ),
+    1251 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 380,
+      'role_id' => 17,
+    ),
+    1252 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 381,
+      'role_id' => 1,
+    ),
+    1253 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 381,
+      'role_id' => 3,
+    ),
+    1254 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 381,
+      'role_id' => 17,
+    ),
+    1255 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 382,
+      'role_id' => 1,
+    ),
+    1256 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 382,
+      'role_id' => 3,
+    ),
+    1257 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 382,
+      'role_id' => 17,
+    ),
+    1258 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 383,
+      'role_id' => 1,
+    ),
+    1259 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 383,
+      'role_id' => 3,
+    ),
+    1260 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 383,
+      'role_id' => 9,
+    ),
+    1261 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 383,
+      'role_id' => 17,
+    ),
+    1262 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 384,
+      'role_id' => 1,
+    ),
+    1263 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 384,
+      'role_id' => 3,
+    ),
+    1264 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 384,
+      'role_id' => 9,
+    ),
+    1265 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 384,
+      'role_id' => 17,
+    ),
+    1266 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 385,
+      'role_id' => 17,
+    ),
+    1267 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 387,
+      'role_id' => 1,
+    ),
+    1268 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 387,
+      'role_id' => 9,
+    ),
+    1269 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 387,
+      'role_id' => 12,
+    ),
+    1270 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 388,
+      'role_id' => 1,
+    ),
+    1271 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 388,
+      'role_id' => 3,
+    ),
+    1272 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 388,
+      'role_id' => 17,
+    ),
+    1273 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 389,
+      'role_id' => 1,
+    ),
+    1274 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 389,
+      'role_id' => 3,
+    ),
+    1275 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 389,
+      'role_id' => 17,
+    ),
+    1276 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 391,
+      'role_id' => 1,
+    ),
+    1277 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 391,
+      'role_id' => 3,
+    ),
+    1278 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 392,
+      'role_id' => 1,
+    ),
+    1279 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 392,
+      'role_id' => 3,
+    ),
+    1280 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 393,
+      'role_id' => 1,
+    ),
+    1281 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 393,
+      'role_id' => 9,
+    ),
+    1282 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 394,
+      'role_id' => 1,
+    ),
+    1283 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 394,
+      'role_id' => 9,
+    ),
+    1284 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 395,
+      'role_id' => 1,
+    ),
+    1285 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 395,
+      'role_id' => 3,
+    ),
+    1286 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 395,
+      'role_id' => 17,
+    ),
+    1287 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 396,
+      'role_id' => 1,
+    ),
+    1288 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 396,
+      'role_id' => 3,
+    ),
+    1289 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 396,
+      'role_id' => 17,
+    ),
+    1290 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 396,
+      'role_id' => 20,
+    ),
+    1291 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 397,
+      'role_id' => 1,
+    ),
+    1292 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 397,
+      'role_id' => 3,
+    ),
+    1293 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 397,
+      'role_id' => 17,
+    ),
+    1294 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 397,
+      'role_id' => 20,
+    ),
+    1295 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 398,
+      'role_id' => 1,
+    ),
+    1296 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 398,
+      'role_id' => 3,
+    ),
+    1297 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 398,
+      'role_id' => 17,
+    ),
+    1298 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 399,
+      'role_id' => 1,
+    ),
+    1299 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 399,
+      'role_id' => 3,
+    ),
+    1300 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 399,
+      'role_id' => 17,
+    ),
+    1301 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 400,
+      'role_id' => 1,
+    ),
+    1302 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 400,
+      'role_id' => 3,
+    ),
+    1303 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 400,
+      'role_id' => 17,
+    ),
+    1304 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 401,
+      'role_id' => 1,
+    ),
+    1305 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 401,
+      'role_id' => 3,
+    ),
+    1306 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 401,
+      'role_id' => 17,
+    ),
+    1307 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 401,
+      'role_id' => 20,
+    ),
+    1308 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 1,
+    ),
+    1309 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 3,
+    ),
+    1310 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 17,
+    ),
+    1311 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 20,
+    ),
+    1312 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 1,
+    ),
+    1313 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 3,
+    ),
+    1314 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 17,
+    ),
+    1315 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 20,
+    ),
+    1316 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 404,
+      'role_id' => 1,
+    ),
+    1317 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 404,
+      'role_id' => 3,
+    ),
+    1318 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 404,
+      'role_id' => 17,
+    ),
+    1319 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 404,
+      'role_id' => 20,
+    ),
+    1320 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 405,
+      'role_id' => 1,
+    ),
+    1321 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 405,
+      'role_id' => 3,
+    ),
+    1322 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 406,
+      'role_id' => 1,
+    ),
+    1323 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 406,
+      'role_id' => 3,
+    ),
+    1324 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 406,
+      'role_id' => 9,
+    ),
+    1325 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 406,
+      'role_id' => 11,
+    ),
+    1326 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 406,
+      'role_id' => 17,
+    ),
+    1327 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 407,
+      'role_id' => 1,
+    ),
+    1328 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 407,
+      'role_id' => 3,
+    ),
+    1329 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 407,
+      'role_id' => 7,
+    ),
+    1330 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 408,
+      'role_id' => 1,
+    ),
+    1331 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 408,
+      'role_id' => 3,
+    ),
+    1332 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 408,
+      'role_id' => 14,
+    ),
+    1333 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 409,
+      'role_id' => 1,
+    ),
+    1334 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 409,
+      'role_id' => 3,
+    ),
+    1335 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 409,
+      'role_id' => 14,
+    ),
+    1336 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 410,
+      'role_id' => 1,
+    ),
+    1337 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 410,
+      'role_id' => 3,
+    ),
+    1338 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 410,
+      'role_id' => 14,
+    ),
+    1339 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 411,
+      'role_id' => 1,
+    ),
+    1340 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 411,
+      'role_id' => 3,
+    ),
+    1341 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 411,
+      'role_id' => 14,
+    ),
+    1342 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 412,
+      'role_id' => 1,
+    ),
+    1343 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 412,
+      'role_id' => 3,
+    ),
+    1344 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 412,
+      'role_id' => 9,
+    ),
+    1345 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 412,
+      'role_id' => 17,
+    ),
+    1346 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 413,
+      'role_id' => 1,
+    ),
+    1347 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 413,
+      'role_id' => 3,
+    ),
+    1348 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 413,
+      'role_id' => 9,
+    ),
+    1349 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 413,
+      'role_id' => 17,
+    ),
+    1350 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 414,
+      'role_id' => 1,
+    ),
+    1351 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 414,
+      'role_id' => 3,
+    ),
+    1352 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 414,
+      'role_id' => 9,
+    ),
+    1353 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 414,
+      'role_id' => 17,
+    ),
+    1354 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 415,
+      'role_id' => 1,
+    ),
+    1355 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 415,
+      'role_id' => 3,
+    ),
+    1356 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 415,
+      'role_id' => 9,
+    ),
+    1357 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 415,
+      'role_id' => 17,
+    ),
+    1358 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 416,
+      'role_id' => 1,
+    ),
+    1359 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 416,
+      'role_id' => 3,
+    ),
+    1360 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 416,
+      'role_id' => 17,
+    ),
+    1361 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 417,
+      'role_id' => 1,
+    ),
+    1362 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 417,
+      'role_id' => 3,
+    ),
+    1363 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 417,
+      'role_id' => 17,
+    ),
+    1364 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 418,
+      'role_id' => 1,
+    ),
+    1365 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 418,
+      'role_id' => 3,
+    ),
+    1366 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 418,
+      'role_id' => 17,
+    ),
+    1367 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 419,
+      'role_id' => 1,
+    ),
+    1368 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 419,
+      'role_id' => 3,
+    ),
+    1369 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 419,
+      'role_id' => 17,
+    ),
+    1370 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 420,
+      'role_id' => 1,
+    ),
+    1371 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 420,
+      'role_id' => 3,
+    ),
+    1372 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 420,
+      'role_id' => 17,
+    ),
+    1373 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 1,
+    ),
+    1374 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 2,
+    ),
+    1375 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 9,
+    ),
+    1376 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 12,
+    ),
+    1377 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 13,
+    ),
+    1378 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 1,
+    ),
+    1379 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 2,
+    ),
+    1380 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 9,
+    ),
+    1381 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 12,
+    ),
+    1382 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 13,
+    ),
+    1383 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 1,
+    ),
+    1384 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 2,
+    ),
+    1385 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 3,
+    ),
+    1386 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 9,
+    ),
+    1387 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 12,
+    ),
+    1388 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 13,
+    ),
+    1389 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 1,
+    ),
+    1390 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 2,
+    ),
+    1391 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 3,
+    ),
+    1392 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 9,
+    ),
+    1393 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 13,
+    ),
+    1394 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 1,
+    ),
+    1395 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 2,
+    ),
+    1396 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 3,
+    ),
+    1397 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 9,
+    ),
+    1398 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 12,
+    ),
+    1399 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 13,
+    ),
+    1400 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 1,
+    ),
+    1401 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 2,
+    ),
+    1402 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 3,
+    ),
+    1403 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 9,
+    ),
+    1404 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 12,
+    ),
+    1405 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 13,
+    ),
+    1406 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 428,
+      'role_id' => 1,
+    ),
+    1407 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 428,
+      'role_id' => 3,
+    ),
+    1408 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 428,
+      'role_id' => 17,
+    ),
+    1409 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 429,
+      'role_id' => 1,
+    ),
+    1410 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 429,
+      'role_id' => 17,
+    ),
+    1411 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 1,
+    ),
+    1412 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 2,
+    ),
+    1413 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 3,
+    ),
+    1414 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 9,
+    ),
+    1415 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 12,
+    ),
+    1416 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 13,
+    ),
+  ),
   'sys_campos' => 
   array (
     0 => 
@@ -12325,6 +27051,4915 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'updated_at' => '2020-08-09 08:26:04',
     ),
   ),
+  'sys_modelos' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'descripcion' => 'Cursos',
+      'modelo' => 'cursos',
+      'name_space' => 'App\\Matriculas\\Curso',
+      'modelo_relacionado' => 'director_grupo',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas',
+      'ruta_storage_imagen' => 'calificaciones/horarios_cursos/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-08-29 05:00:00',
+      'updated_at' => '2020-03-23 17:28:39',
+    ),
+    1 => 
+    array (
+      'id' => 2,
+      'descripcion' => 'Permisos',
+      'modelo' => 'permission',
+      'name_space' => 'App\\Sistema\\Permiso',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=7&id_modelo=2","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-08-29 05:00:00',
+      'updated_at' => '2020-05-01 05:23:52',
+    ),
+    2 => 
+    array (
+      'id' => 3,
+      'descripcion' => 'Modelos (CRUD)',
+      'modelo' => 'modelos',
+      'name_space' => 'App\\Sistema\\Modelo',
+      'modelo_relacionado' => 'campos',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar: no se puede, tiene campos únicos, Validación pendiente.","url":"duplicar/id_fila?id=7&id_modelo=3","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'web',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-08-29 05:00:00',
+      'updated_at' => '2020-02-18 18:55:11',
+    ),
+    3 => 
+    array (
+      'id' => 4,
+      'descripcion' => 'Campos',
+      'modelo' => 'campos',
+      'name_space' => 'App\\Sistema\\Campo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => ' {"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=7&id_modelo=4","color_bootstrap":"default","faicon":"clone","size":"xs"},"1":{"tag_html":"a","title":"Ver modelos a los que pertenece","url":"core/modelo_tiene_campos/0/id_fila?id=7&id_modelo=4","color_bootstrap":"info","faicon":"cog","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'web',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-08-29 05:00:00',
+      'updated_at' => '2020-01-07 12:14:26',
+    ),
+    4 => 
+    array (
+      'id' => 5,
+      'descripcion' => 'Usuarios',
+      'modelo' => 'User',
+      'name_space' => 'App\\User',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Cambiar contraseña","url":"core/usuario/cambiarpasswd/id_fila?id=7&id_modelo=5","color_bootstrap":"warning","faicon":"key","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'core/usuarios',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-08-29 05:00:00',
+      'updated_at' => '2020-01-21 15:05:06',
+    ),
+    5 => 
+    array (
+      'id' => 6,
+      'descripcion' => 'Mi Empresa',
+      'modelo' => 'empresa',
+      'name_space' => 'App\\Core\\Empresa',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => 'logos_empresas/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-02 09:35:56',
+      'updated_at' => '2018-11-10 18:12:22',
+    ),
+    6 => 
+    array (
+      'id' => 7,
+      'descripcion' => 'Terceros',
+      'modelo' => 'terceros',
+      'name_space' => 'App\\Core\\Tercero',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => 'fotos_terceros/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-02 11:35:58',
+      'updated_at' => '2020-02-11 14:14:28',
+    ),
+    7 => 
+    array (
+      'id' => 8,
+      'descripcion' => 'Firmas autorizadas',
+      'modelo' => 'firmas_autorizadas',
+      'name_space' => 'App\\Core\\FirmaAutorizada',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => 'firmas_autorizadas/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-02 11:41:29',
+      'updated_at' => '2019-07-23 07:49:49',
+    ),
+    8 => 
+    array (
+      'id' => 9,
+      'descripcion' => 'Perfiles',
+      'modelo' => 'perfiles',
+      'name_space' => 'Spatie\\Permission\\Models\\Role',
+      'modelo_relacionado' => '',
+      'url_crear' => 'core/roles/create',
+      'url_edit' => 'core/roles/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-02 16:45:12',
+      'updated_at' => '2020-03-17 06:35:31',
+    ),
+    9 => 
+    array (
+      'id' => 10,
+      'descripcion' => 'Configuración',
+      'modelo' => 'configuracion',
+      'name_space' => 'App\\Core\\Configuracion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-02 17:29:42',
+      'updated_at' => '2018-09-02 17:29:42',
+    ),
+    10 => 
+    array (
+      'id' => 11,
+      'descripcion' => 'Asignaturas',
+      'modelo' => 'Asignaturas',
+      'name_space' => 'App\\Calificaciones\\Asignatura',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=2&id_modelo=11","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'calificaciones,Calificaciones',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-03 17:24:26',
+      'updated_at' => '2020-01-09 08:58:23',
+    ),
+    11 => 
+    array (
+      'id' => 12,
+      'descripcion' => 'Periodos',
+      'modelo' => 'periodos',
+      'name_space' => 'App\\Calificaciones\\Periodo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=2&id_modelo=12","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'calificaciones,Calificaciones',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-03 17:58:54',
+      'updated_at' => '2020-01-06 12:11:02',
+    ),
+    12 => 
+    array (
+      'id' => 13,
+      'descripcion' => 'Escala de valoración',
+      'modelo' => 'escala_valoracion',
+      'name_space' => 'App\\Calificaciones\\EscalaValoracion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=2&id_modelo=13","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => 'calificaciones_eliminar_escala_valoracion/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'calificaciones,Calificaciones',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-03 18:59:37',
+      'updated_at' => '2020-01-09 07:26:11',
+    ),
+    13 => 
+    array (
+      'id' => 14,
+      'descripcion' => 'Catálogo Aspectos observador',
+      'modelo' => 'catalogo_aspectos',
+      'name_space' => 'App\\Matriculas\\CatalogoAspecto',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-04 01:22:33',
+      'updated_at' => '2019-01-02 13:11:27',
+    ),
+    14 => 
+    array (
+      'id' => 15,
+      'descripcion' => 'Tipos aspectos observador',
+      'modelo' => 'tipos_aspectos',
+      'name_space' => 'App\\Matriculas\\TiposAspecto',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-04 01:40:05',
+      'updated_at' => '2019-01-03 10:15:30',
+    ),
+    15 => 
+    array (
+      'id' => 16,
+      'descripcion' => 'Diseño formatos',
+      'modelo' => 'diseño_formatos',
+      'name_space' => 'App\\Core\\DifoFormato',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-04 02:11:37',
+      'updated_at' => '2019-01-14 09:14:48',
+    ),
+    16 => 
+    array (
+      'id' => 17,
+      'descripcion' => 'Novedades observador',
+      'modelo' => 'novedades_observador',
+      'name_space' => 'App\\Matriculas\\NovedadesObservador',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'matriculas/estudiantes/eliminar_novedad_observador/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-05 13:36:20',
+      'updated_at' => '2019-02-04 02:35:42',
+    ),
+    17 => 
+    array (
+      'id' => 18,
+      'descripcion' => 'Análisis FODA',
+      'modelo' => 'foda_estudiantes',
+      'name_space' => 'App\\Matriculas\\FodaEstudiante',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-05 14:57:08',
+      'updated_at' => '2019-08-07 10:30:49',
+    ),
+    18 => 
+    array (
+      'id' => 19,
+      'descripcion' => 'Matrículas',
+      'modelo' => 'matriculas',
+      'name_space' => 'App\\Matriculas\\Matricula',
+      'modelo_relacionado' => '',
+      'url_crear' => 'matriculas/create',
+      'url_edit' => 'matriculas/id_fila/edit',
+      'url_print' => 'matriculas/imprimir/id_fila',
+      'url_ver' => 'matriculas/show/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => 'matriculas/eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-05 15:40:15',
+      'updated_at' => '2019-08-10 08:33:54',
+    ),
+    19 => 
+    array (
+      'id' => 20,
+      'descripcion' => 'Sin usar',
+      'modelo' => 'sin usar',
+      'name_space' => 'App\\Sistema\\Aplicacion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-06 07:47:41',
+      'updated_at' => '2018-11-06 09:48:31',
+    ),
+    20 => 
+    array (
+      'id' => 21,
+      'descripcion' => 'Bodegas',
+      'modelo' => 'bodegas',
+      'name_space' => 'App\\Inventarios\\InvBodega',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'inventarios/eliminar_bodega/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-06 09:31:30',
+      'updated_at' => '2019-02-04 07:23:29',
+    ),
+    21 => 
+    array (
+      'id' => 22,
+      'descripcion' => 'Items',
+      'modelo' => 'productos',
+      'name_space' => 'App\\Inventarios\\InvProducto',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=22","color_bootstrap":"default","faicon":"clone","size":"xs"},"1":{"tag_html":"a","title":"Ficha Tecnica","url":"ficha_tecnica/id_fila?id=8&id_modelo=22","color_bootstrap":"info","faicon":"file-text","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => 'inventarios/eliminar_producto/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => 'inventarios/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-06 09:48:36',
+      'updated_at' => '2020-07-31 10:59:55',
+    ),
+    22 => 
+    array (
+      'id' => 24,
+      'descripcion' => 'Grupos de Inventario',
+      'modelo' => 'grupos_inventario',
+      'name_space' => 'App\\Inventarios\\InvGrupo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=24","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => 'inventarios/eliminar_grupo_inventario/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => 'inventarios/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-06 10:21:38',
+      'updated_at' => '2019-10-08 22:47:58',
+    ),
+    23 => 
+    array (
+      'id' => 25,
+      'descripcion' => 'Documentos de inventario',
+      'modelo' => 'documentos_inventario',
+      'name_space' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'inventarios/create',
+      'url_edit' => '',
+      'url_print' => 'transaccion_print/id_fila',
+      'url_ver' => 'inventarios/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'inventarios',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-06 13:51:40',
+      'updated_at' => '2019-10-30 09:17:22',
+    ),
+    24 => 
+    array (
+      'id' => 26,
+      'descripcion' => 'Tipos Transacciones',
+      'modelo' => 'tipos_transacciones',
+      'name_space' => 'App\\Sistema\\TipoTransaccion',
+      'modelo_relacionado' => 'tipos_documentos',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=7&id_modelo=26","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-07 16:01:24',
+      'updated_at' => '2019-09-20 19:19:26',
+    ),
+    25 => 
+    array (
+      'id' => 27,
+      'descripcion' => 'Tipos Docs Apps',
+      'modelo' => 'tipos_docs_apps',
+      'name_space' => 'App\\Core\\TipoDocApp',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=7&id_modelo=27","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-07 21:29:45',
+      'updated_at' => '2019-12-03 06:40:38',
+    ),
+    26 => 
+    array (
+      'id' => 28,
+      'descripcion' => 'Motivos de inventarios',
+      'modelo' => 'motivos_inventarios',
+      'name_space' => 'App\\Inventarios\\InvMotivo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => ' {"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=28","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-08 09:39:33',
+      'updated_at' => '2019-10-29 07:46:33',
+    ),
+    27 => 
+    array (
+      'id' => 29,
+      'descripcion' => 'Estudiantes',
+      'modelo' => 'estudiantes',
+      'name_space' => 'App\\Matriculas\\Estudiante',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => 'matriculas/estudiantes/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'matriculas/estudiantes/show/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Cambiar contraseña","url":"core/usuario/cambiarpasswd/user_id?id=1&id_modelo=29&estudiante_id=id_fila&ruta=web","color_bootstrap":"warning","faicon":"key","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'matriculas/estudiantes',
+      'home_miga_pan' => 'matriculas,Matrículas',
+      'ruta_storage_imagen' => 'fotos_terceros/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-11 14:54:21',
+      'updated_at' => '2020-01-27 13:35:44',
+    ),
+    28 => 
+    array (
+      'id' => 30,
+      'descripcion' => 'Aplicaciones',
+      'modelo' => 'apps',
+      'name_space' => 'App\\Sistema\\Aplicacion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-01 03:29:08',
+      'updated_at' => '2018-11-06 09:55:11',
+    ),
+    29 => 
+    array (
+      'id' => 31,
+      'descripcion' => 'Libreta de pagos',
+      'modelo' => 'libreta_pagos',
+      'name_space' => 'App\\Tesoreria\\TesoLibretasPago',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'tesoreria/editar_libreta/id_fila',
+      'url_print' => 'tesoreria/imprimir_libreta/id_fila',
+      'url_ver' => 'tesoreria/ver_plan_pagos/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => 'tesoreria/libreta_pagos/eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => 'teso_libreta_pagos',
+      'home_miga_pan' => 'tesoreria,Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-01 15:19:00',
+      'updated_at' => '2020-01-14 04:22:52',
+    ),
+    30 => 
+    array (
+      'id' => 32,
+      'descripcion' => 'Entidades financieras',
+      'modelo' => 'entidades_financieras',
+      'name_space' => 'App\\Tesoreria\\TesoEntidadFinanciera',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'tesoreria,Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-03 23:05:01',
+      'updated_at' => '2018-10-04 00:40:03',
+    ),
+    31 => 
+    array (
+      'id' => 33,
+      'descripcion' => 'Cuentas Bancarias',
+      'modelo' => 'cuentas_bancarias',
+      'name_space' => 'App\\Tesoreria\\TesoCuentaBancaria',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'tesoreria,Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-03 23:43:05',
+      'updated_at' => '2020-03-10 21:15:18',
+    ),
+    32 => 
+    array (
+      'id' => 34,
+      'descripcion' => 'DIFO Secciones',
+      'modelo' => 'difo_secciones',
+      'name_space' => 'App\\Core\\DifoSeccion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-06 09:19:44',
+      'updated_at' => '2018-10-06 09:20:55',
+    ),
+    33 => 
+    array (
+      'id' => 35,
+      'descripcion' => 'Eventos',
+      'modelo' => 'evento',
+      'name_space' => 'App\\Core\\CoreEvento',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-12 21:18:46',
+      'updated_at' => '2018-10-12 21:18:46',
+    ),
+    34 => 
+    array (
+      'id' => 36,
+      'descripcion' => 'Preguntas',
+      'modelo' => 'Preguntación',
+      'name_space' => 'App\\Cuestionarios\\Pregunta',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'academico_docente,Académico docente',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-13 19:38:13',
+      'updated_at' => '2019-07-29 12:12:23',
+    ),
+    35 => 
+    array (
+      'id' => 37,
+      'descripcion' => 'Cuestionarios',
+      'modelo' => 'cuestionarios',
+      'name_space' => 'App\\Cuestionarios\\Cuestionario',
+      'modelo_relacionado' => 'preguntas',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'academico_docente,Académico docente',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-13 20:12:44',
+      'updated_at' => '2018-11-20 11:56:44',
+    ),
+    36 => 
+    array (
+      'id' => 38,
+      'descripcion' => 'Actividades escolares',
+      'modelo' => 'actividades_escolares',
+      'name_space' => 'App\\Cuestionarios\\ActividadEscolar',
+      'modelo_relacionado' => '',
+      'url_crear' => 'actividades_escolares/create',
+      'url_edit' => 'actividades_escolares/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'actividades_escolares/ver_actividad/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'actividades_escolares',
+      'home_miga_pan' => 'academico_docente,Académico docente',
+      'ruta_storage_imagen' => 'calificaciones/actividades_escolares/',
+      'ruta_storage_archivo_adjunto' => 'calificaciones/actividades_escolares/',
+      'created_at' => '2018-10-16 10:35:21',
+      'updated_at' => '2020-05-18 13:28:21',
+    ),
+    37 => 
+    array (
+      'id' => 39,
+      'descripcion' => 'Inmuebles',
+      'modelo' => 'propiedades',
+      'name_space' => 'App\\PropiedadHorizontal\\Propiedad',
+      'modelo_relacionado' => 'servicios',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'propiedad_horizontal,Propiedad horizontal',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-18 13:40:56',
+      'updated_at' => '2020-04-03 12:51:05',
+    ),
+    38 => 
+    array (
+      'id' => 41,
+      'descripcion' => 'Empresas',
+      'modelo' => 'empresas',
+      'name_space' => 'App\\Core\\Empresa',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => 'logos_empresas/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-18 13:51:20',
+      'updated_at' => '2018-10-31 15:39:23',
+    ),
+    39 => 
+    array (
+      'id' => 42,
+      'descripcion' => 'Conceptos a facturar',
+      'modelo' => 'servicios_cxc',
+      'name_space' => 'App\\CxC\\CxcServicio',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'propiedad_horizontal,Propiedad horizontal',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-18 15:36:48',
+      'updated_at' => '2018-11-01 09:17:36',
+    ),
+    40 => 
+    array (
+      'id' => 43,
+      'descripcion' => 'Documentos de CxC',
+      'modelo' => 'documentos_cxc',
+      'name_space' => 'App\\CxC\\CxcDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => 'cxc_modificar_doc_encabezado/id_fila',
+      'url_print' => 'cxc_print/id_fila',
+      'url_ver' => 'cxc/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'cxc, C x C',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-18 20:20:37',
+      'updated_at' => '2019-02-07 16:09:01',
+    ),
+    41 => 
+    array (
+      'id' => 44,
+      'descripcion' => 'Medios de recaudo',
+      'modelo' => 'medios_recaudo',
+      'name_space' => 'App\\Tesoreria\\TesoMedioRecaudo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'tesoreria,Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-24 14:59:39',
+      'updated_at' => '2018-10-24 14:59:39',
+    ),
+    42 => 
+    array (
+      'id' => 45,
+      'descripcion' => 'Cajas',
+      'modelo' => 'teso_caja',
+      'name_space' => 'App\\Tesoreria\\TesoCaja',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'tesoreria,Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-24 15:46:03',
+      'updated_at' => '2020-03-10 21:19:07',
+    ),
+    43 => 
+    array (
+      'id' => 46,
+      'descripcion' => 'Documentos de recaudo',
+      'modelo' => 'documentos_recaudo',
+      'name_space' => 'App\\Tesoreria\\TesoDocEncabezadoRecaudo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'tesoreria/recaudos/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'tesoreria/recaudos/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'tesoreria/recaudos',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-10-24 21:56:32',
+      'updated_at' => '2020-07-28 14:46:28',
+    ),
+    44 => 
+    array (
+      'id' => 47,
+      'descripcion' => 'Documentos contables',
+      'modelo' => 'documentos_contables',
+      'name_space' => 'App\\Contabilidad\\ContabDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'contabilidad/create',
+      'url_edit' => '',
+      'url_print' => 'contabilidad_print/id_fila',
+      'url_ver' => 'contabilidad/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'contabilidad',
+      'home_miga_pan' => 'contabilidad,Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-06 10:28:06',
+      'updated_at' => '2020-02-13 13:39:34',
+    ),
+    45 => 
+    array (
+      'id' => 48,
+      'descripcion' => 'Grupo cuentas',
+      'modelo' => 'grupo_cuentas',
+      'name_space' => 'App\\Contabilidad\\ContabCuentaGrupo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'contabilidad,Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-08 09:32:53',
+      'updated_at' => '2018-11-08 10:13:05',
+    ),
+    46 => 
+    array (
+      'id' => 49,
+      'descripcion' => 'Cuentas contables',
+      'modelo' => 'cuenta',
+      'name_space' => 'App\\Contabilidad\\ContabCuenta',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=14&id_modelo=49","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'contabilidad,Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-08 09:37:14',
+      'updated_at' => '2020-02-11 13:31:49',
+    ),
+    47 => 
+    array (
+      'id' => 50,
+      'descripcion' => 'Motivo tesoreria',
+      'modelo' => 'motivo_tesoreria',
+      'name_space' => 'App\\Tesoreria\\TesoMotivo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'tesoreria,Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-17 22:52:22',
+      'updated_at' => '2018-11-17 22:52:22',
+    ),
+    48 => 
+    array (
+      'id' => 51,
+      'descripcion' => 'Cuenta de cobro',
+      'modelo' => 'cuenta_cobro',
+      'name_space' => 'App\\CxC\\CxcDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'cxc/create',
+      'url_edit' => '',
+      'url_print' => 'cxc_print/id_fila',
+      'url_ver' => 'cxc/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'cxc, C x C',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-18 16:14:30',
+      'updated_at' => '2020-04-03 12:52:42',
+    ),
+    49 => 
+    array (
+      'id' => 52,
+      'descripcion' => 'Documento cruce',
+      'modelo' => 'documento_cruce',
+      'name_space' => 'App\\CxC\\CxcDocCruceEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'doc_cruce/create',
+      'url_edit' => '',
+      'url_print' => 'doc_cruce_print/id_fila',
+      'url_ver' => 'doc_cruce/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'doc_cruce',
+      'home_miga_pan' => 'cxc, C x C',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-19 15:31:59',
+      'updated_at' => '2019-12-02 04:00:52',
+    ),
+    50 => 
+    array (
+      'id' => 53,
+      'descripcion' => 'Colegio',
+      'modelo' => 'colegio',
+      'name_space' => 'App\\Core\\Colegio',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => 'escudos/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-20 07:26:29',
+      'updated_at' => '2020-04-03 13:02:36',
+    ),
+    51 => 
+    array (
+      'id' => 54,
+      'descripcion' => 'Documentos de pago',
+      'modelo' => 'documentos_pago',
+      'name_space' => 'App\\Tesoreria\\TesoDocEncabezadoPago',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-28 20:47:02',
+      'updated_at' => '2020-06-16 09:23:01',
+    ),
+    52 => 
+    array (
+      'id' => 55,
+      'descripcion' => 'Anuncios',
+      'modelo' => 'anuncio',
+      'name_space' => 'App\\PropiedadHorizontal\\PhAnuncio',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'mi_conjunto,Mi conjunto',
+      'ruta_storage_imagen' => 'anuncios/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-02 22:55:56',
+      'updated_at' => '2018-12-19 12:26:50',
+    ),
+    53 => 
+    array (
+      'id' => 56,
+      'descripcion' => 'PQRs',
+      'modelo' => 'pqr',
+      'name_space' => 'App\\PropiedadHorizontal\\PhPqr',
+      'modelo_relacionado' => 'notas',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'mi_conjunto,Mi conjunto',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-02 22:58:10',
+      'updated_at' => '2020-04-03 12:50:17',
+    ),
+    54 => 
+    array (
+      'id' => 57,
+      'descripcion' => 'Reservas',
+      'modelo' => 'reserva',
+      'name_space' => 'App\\PropiedadHorizontal\\PhReserva',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'mi_conjunto,Mi conjunto',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-02 22:59:55',
+      'updated_at' => '2018-12-02 23:40:13',
+    ),
+    55 => 
+    array (
+      'id' => 58,
+      'descripcion' => 'Documentos digitales',
+      'modelo' => 'documentos_digitales',
+      'name_space' => 'App\\PropiedadHorizontal\\PhDocumento',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'mi_conjunto,Mi conjunto',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => 'documentos_digitales/',
+      'created_at' => '2018-12-02 23:09:05',
+      'updated_at' => '2018-12-02 23:41:16',
+    ),
+    56 => 
+    array (
+      'id' => 59,
+      'descripcion' => 'Cancelaciones y anticipos',
+      'modelo' => 'cancelaciones_antitipos',
+      'name_space' => 'App\\CxC\\CxcDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'cancelacion_anticipo/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'cancelacion_anticipo/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'cxc, C x C',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-07 08:41:03',
+      'updated_at' => '2020-04-03 12:52:15',
+    ),
+    57 => 
+    array (
+      'id' => 60,
+      'descripcion' => 'Micrositios',
+      'modelo' => 'micrositios',
+      'name_space' => 'App\\PaginaWeb\\PwebMicrositio',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'propiedad_horizontal,Propiedad horizontal',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-14 09:49:19',
+      'updated_at' => '2018-12-14 09:58:42',
+    ),
+    58 => 
+    array (
+      'id' => 61,
+      'descripcion' => 'Reportes EEFF',
+      'modelo' => 'reportes_eeff',
+      'name_space' => 'App\\Contabilidad\\ContabReporteEeff',
+      'modelo_relacionado' => 'grupos_cuentas',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'contabilidad, Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-17 20:34:13',
+      'updated_at' => '2019-01-31 11:08:52',
+    ),
+    59 => 
+    array (
+      'id' => 62,
+      'descripcion' => 'Bloques EEFF',
+      'modelo' => 'bloques_eeff',
+      'name_space' => 'App\\Contabilidad\\ContabBloqueEeff',
+      'modelo_relacionado' => 'elementos_eeff',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'contabilidad, Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-18 13:37:48',
+      'updated_at' => '2018-12-18 13:39:54',
+    ),
+    60 => 
+    array (
+      'id' => 63,
+      'descripcion' => 'Elementos EEFF',
+      'modelo' => 'elementos_eeff',
+      'name_space' => 'App\\Contabilidad\\ContabElementoEeff',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'contabilidad, Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-18 13:39:32',
+      'updated_at' => '2018-12-18 13:39:32',
+    ),
+    61 => 
+    array (
+      'id' => 64,
+      'descripcion' => 'Notas EEFF',
+      'modelo' => 'notas_eeff',
+      'name_space' => 'App\\Contabilidad\\ContabNotaEeff',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'contabilidad, Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-18 13:40:25',
+      'updated_at' => '2018-12-18 13:40:25',
+    ),
+    62 => 
+    array (
+      'id' => 65,
+      'descripcion' => 'Periodos ejercicio',
+      'modelo' => 'periodos_ejercicio',
+      'name_space' => 'App\\Contabilidad\\ContabPeriodoEjercicio',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'contabilidad, Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-18 14:48:12',
+      'updated_at' => '2018-12-18 14:48:12',
+    ),
+    63 => 
+    array (
+      'id' => 66,
+      'descripcion' => 'Inscripciones',
+      'modelo' => 'inscripciones',
+      'name_space' => 'App\\Matriculas\\Inscripcion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'matriculas/inscripcion/id_fila/edit',
+      'url_print' => 'matriculas/inscripcion_print/id_fila',
+      'url_ver' => 'matriculas/inscripcion/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'matriculas/inscripciones/eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => 'matriculas/inscripcion',
+      'home_miga_pan' => 'matriculas, Matrículas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-21 15:21:24',
+      'updated_at' => '2020-01-09 15:54:30',
+    ),
+    64 => 
+    array (
+      'id' => 67,
+      'descripcion' => 'Secuencias de códigos',
+      'modelo' => 'sys_secuencias_codigos',
+      'name_space' => 'App\\Sistema\\SecuenciaCodigo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=7&id_modelo=67","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion, Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-23 08:47:09',
+      'updated_at' => '2020-01-09 12:30:04',
+    ),
+    65 => 
+    array (
+      'id' => 68,
+      'descripcion' => 'Grados',
+      'modelo' => 'grados',
+      'name_space' => 'App\\Matriculas\\Grado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas, Matrículas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-12-29 09:33:35',
+      'updated_at' => '2018-12-29 09:39:19',
+    ),
+    66 => 
+    array (
+      'id' => 69,
+      'descripcion' => 'Mi colegio',
+      'modelo' => 'mi_colegio',
+      'name_space' => 'App\\Core\\Colegio',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion,Configuración',
+      'ruta_storage_imagen' => 'escudos/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-01-03 16:45:36',
+      'updated_at' => '2020-04-03 12:56:02',
+    ),
+    67 => 
+    array (
+      'id' => 70,
+      'descripcion' => 'Logros',
+      'modelo' => 'sga_logros',
+      'name_space' => 'App\\Calificaciones\\Logro',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => 'calificaciones_eliminar_logro/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => 'calificaciones_logros',
+      'home_miga_pan' => 'calificaciones, Calificaciones',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-02-04 02:33:37',
+      'updated_at' => '2020-01-09 07:25:56',
+    ),
+    68 => 
+    array (
+      'id' => 75,
+      'descripcion' => 'Metas',
+      'modelo' => 'metas',
+      'name_space' => 'App\\Calificaciones\\Meta',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'academico_docente_guardar_meta',
+      'home_miga_pan' => 'calificaciones, Calificaciones',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-20 07:26:29',
+      'updated_at' => '2020-01-09 10:23:42',
+    ),
+    69 => 
+    array (
+      'id' => 76,
+      'descripcion' => 'Artículos',
+      'modelo' => 'pw_articuos',
+      'name_space' => 'App\\PaginaWeb\\Articulo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'pagina_web,Página Web',
+      'ruta_storage_imagen' => 'pagina_web/articulos/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-21 23:02:16',
+      'updated_at' => '2019-10-04 11:45:47',
+    ),
+    70 => 
+    array (
+      'id' => 77,
+      'descripcion' => 'Categorías',
+      'modelo' => 'pw_categorias_articulos',
+      'name_space' => 'App\\web\\Articlecategory',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-21 23:02:16',
+      'updated_at' => '2020-06-25 09:58:14',
+    ),
+    71 => 
+    array (
+      'id' => 78,
+      'descripcion' => 'Comentarios',
+      'modelo' => 'pw_comentarios',
+      'name_space' => 'App\\PaginaWeb\\Comentario',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'pagina_web,Página Web',
+      'ruta_storage_imagen' => 'pagina_web/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-21 23:02:16',
+      'updated_at' => '2019-04-21 23:02:16',
+    ),
+    72 => 
+    array (
+      'id' => 79,
+      'descripcion' => 'Movimiento contable',
+      'modelo' => 'movimiento_contable',
+      'name_space' => 'App\\Contabilidad\\ContabMovimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'contabilidad/mov/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'contabilidad, Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-01-11 08:36:31',
+      'updated_at' => '2019-10-21 04:36:38',
+    ),
+    73 => 
+    array (
+      'id' => 80,
+      'descripcion' => 'Consecutivo documentos',
+      'modelo' => 'consecutivo_documentos_app',
+      'name_space' => 'App\\Core\\ConsecutivoDocumento',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion, Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-01-11 20:43:58',
+      'updated_at' => '2019-01-24 21:10:37',
+    ),
+    74 => 
+    array (
+      'id' => 81,
+      'descripcion' => 'Páginas',
+      'modelo' => 'pw_paginas',
+      'name_space' => 'App\\PaginaWeb\\Pagina',
+      'modelo_relacionado' => 'secciones',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=10&id_modelo=81","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'pagina_web, Página Web',
+      'ruta_storage_imagen' => 'pagina_web/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-03-01 01:41:27',
+      'updated_at' => '2020-01-23 21:04:36',
+    ),
+    75 => 
+    array (
+      'id' => 82,
+      'descripcion' => 'Intereses por mora',
+      'modelo' => 'intereses_mora',
+      'name_space' => 'App\\CxC\\CxcInteresMora',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'cxc_eliminar_interes/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'cxc,Gestión de cobros',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-03-06 04:00:12',
+      'updated_at' => '2019-03-06 04:00:12',
+    ),
+    76 => 
+    array (
+      'id' => 83,
+      'descripcion' => 'Contratos',
+      'modelo' => 'nom_contratos',
+      'name_space' => 'App\\Nomina\\NomContrato',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nomina, Nómina',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-05-01 05:19:38',
+    ),
+    77 => 
+    array (
+      'id' => 84,
+      'descripcion' => 'Conceptos',
+      'modelo' => 'nom_conceptos',
+      'name_space' => 'App\\Nomina\\NomConcepto',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nomina, Nómina',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    78 => 
+    array (
+      'id' => 85,
+      'descripcion' => 'Modos de Liquidación',
+      'modelo' => 'nom_modos_liquidacion',
+      'name_space' => 'App\\Nomina\\NomModoLiquidacion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nomina, Nómina',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    79 => 
+    array (
+      'id' => 86,
+      'descripcion' => 'Cargos',
+      'modelo' => 'nom_cargos',
+      'name_space' => 'App\\Nomina\\NomCargo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nomina, Nómina',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    80 => 
+    array (
+      'id' => 87,
+      'descripcion' => 'Cuotas',
+      'modelo' => 'nom_cuotas',
+      'name_space' => 'App\\Nomina\\NomCuota',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2020-06-30 19:04:36',
+    ),
+    81 => 
+    array (
+      'id' => 88,
+      'descripcion' => 'Préstamos',
+      'modelo' => 'nom_prestamos',
+      'name_space' => 'App\\Nomina\\NomPrestamo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nomina, Nómina',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-05-02 04:26:15',
+    ),
+    82 => 
+    array (
+      'id' => 89,
+      'descripcion' => 'Entidades Admin.  Sist. Seguridad Social',
+      'modelo' => 'nom_entidades',
+      'name_space' => 'App\\Nomina\\NomEntidad',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nomina, Nómina',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-11-02 06:28:58',
+    ),
+    83 => 
+    array (
+      'id' => 90,
+      'descripcion' => 'Documentos de nómina',
+      'modelo' => 'nom_doc_encabezados',
+      'name_space' => 'App\\Nomina\\NomDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'nomina/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nomina, Nómina',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2020-06-25 13:37:55',
+    ),
+    84 => 
+    array (
+      'id' => 91,
+      'descripcion' => 'Registros documentos nómina',
+      'modelo' => 'nom_doc_registros',
+      'name_space' => 'App\\Nomina\\NomDocRegistro',
+      'modelo_relacionado' => '',
+      'url_crear' => 'nomina/crear_registros',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nomina, Nómina',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-30 18:46:51',
+    ),
+    85 => 
+    array (
+      'id' => 92,
+      'descripcion' => 'Consultorios',
+      'modelo' => 'salud_consultorios',
+      'name_space' => 'App\\Salud\\Consultorio',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    86 => 
+    array (
+      'id' => 93,
+      'descripcion' => 'Profesionales de la Salud',
+      'modelo' => 'salud_profesionales',
+      'name_space' => 'App\\Salud\\ProfesionalSalud',
+      'modelo_relacionado' => '',
+      'url_crear' => 'consultorio_medico/profesionales/create',
+      'url_edit' => 'consultorio_medico/profesionales/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'consultorio_medico/profesionales/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'consultorio_medico/profesionales',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-06-16 16:31:11',
+    ),
+    87 => 
+    array (
+      'id' => 94,
+      'descripcion' => 'Códigos CIE10',
+      'modelo' => 'salud_cie10',
+      'name_space' => 'App\\Salud\\CodigoCie',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    88 => 
+    array (
+      'id' => 95,
+      'descripcion' => 'Pacientes',
+      'modelo' => 'salud_pacientes',
+      'name_space' => 'App\\Salud\\Paciente',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2020-06-02 10:41:29',
+    ),
+    89 => 
+    array (
+      'id' => 96,
+      'descripcion' => 'Consultas Médicas',
+      'modelo' => 'salud_consultas',
+      'name_space' => 'App\\Salud\\ConsultaMedica',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'consultorio_medico/consultas',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-07-15 21:41:25',
+    ),
+    90 => 
+    array (
+      'id' => 97,
+      'descripcion' => 'Organos del Cuerpo',
+      'modelo' => 'salud_organos_del_cuerpo',
+      'name_space' => 'App\\Salud\\OrganoDelCuerpo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    91 => 
+    array (
+      'id' => 98,
+      'descripcion' => 'Variables de Exámenes',
+      'modelo' => 'salud_variables_examenes',
+      'name_space' => 'App\\Salud\\VariableExamen',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-06-13 08:26:53',
+    ),
+    92 => 
+    array (
+      'id' => 99,
+      'descripcion' => 'Exámenes Médicos',
+      'modelo' => 'salud_examenes',
+      'name_space' => 'App\\Salud\\ExamenMedico',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-06-26 09:31:43',
+    ),
+    93 => 
+    array (
+      'id' => 100,
+      'descripcion' => 'Resultados Exámenes Médicos',
+      'modelo' => 'salud_resultados_examenes',
+      'name_space' => 'App\\Salud\\ResultadoExamenMedico',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'consultorio_medico/resultado_examen_medico',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-06-14 05:15:08',
+    ),
+    94 => 
+    array (
+      'id' => 101,
+      'descripcion' => 'Fórmulas Ópticas',
+      'modelo' => 'salud_formulas_opticas',
+      'name_space' => 'App\\Salud\\FormulaOptica',
+      'modelo_relacionado' => 'salud_examenes',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'consultorio_medico/formulas_opticas',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-06-20 04:53:20',
+    ),
+    95 => 
+    array (
+      'id' => 102,
+      'descripcion' => 'Modelos Relacionados',
+      'modelo' => 'core_modelos_relacionados',
+      'name_space' => 'App\\Core\\ModeloRelacionado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion, Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    96 => 
+    array (
+      'id' => 103,
+      'descripcion' => 'Valores de Registros de Modelos Relacionados',
+      'modelo' => 'core_valores_registros_modelos_relacionados',
+      'name_space' => 'App\\Core\\ValorRegistroModeloRelacionado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nombre_modelo, Etiqueta_a_mostrar',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    97 => 
+    array (
+      'id' => 104,
+      'descripcion' => 'Exámen Tiene Variables',
+      'modelo' => 'ExamenTieneVariables',
+      'name_space' => 'App\\Salud\\ExamenTieneVariables',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-06-13 15:25:24',
+      'updated_at' => '2019-06-13 15:25:24',
+    ),
+    98 => 
+    array (
+      'id' => 105,
+      'descripcion' => 'Exámen Tiene Órganos',
+      'modelo' => 'ExamenTieneOrganos',
+      'name_space' => 'App\\Salud\\ExamenTieneOrganos',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-06-13 15:30:12',
+      'updated_at' => '2019-06-13 15:30:12',
+    ),
+    99 => 
+    array (
+      'id' => 106,
+      'descripcion' => 'Tipos de Lentes',
+      'modelo' => 'salud_tipo_lentes',
+      'name_space' => 'App\\Salud\\TipoLente',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico,Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-06-19 10:35:21',
+      'updated_at' => '2019-06-19 09:50:11',
+    ),
+    100 => 
+    array (
+      'id' => 107,
+      'descripcion' => 'Materiales de Lentes',
+      'modelo' => 'salud_material_lentes',
+      'name_space' => 'App\\Salud\\MaterialLente',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico,Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-06-19 10:35:21',
+      'updated_at' => '2019-06-19 09:49:57',
+    ),
+    101 => 
+    array (
+      'id' => 108,
+      'descripcion' => 'Menús',
+      'modelo' => 'pw_menus',
+      'name_space' => 'App\\PaginaWeb\\Menu',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'pagina_web, Página Web',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    102 => 
+    array (
+      'id' => 109,
+      'descripcion' => 'Items de menú',
+      'modelo' => 'pw_menu_items',
+      'name_space' => 'App\\PaginaWeb\\MenuItem',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'pagina_web, Página Web',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-08-22 19:18:47',
+    ),
+    103 => 
+    array (
+      'id' => 110,
+      'descripcion' => 'Anamnesis',
+      'modelo' => 'Anamnesis',
+      'name_space' => 'App\\Core\\ModeloEavValor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'core/eav/create',
+      'url_edit' => 'core/eav/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'core/eav/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'core/eav',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-06-24 10:08:10',
+      'updated_at' => '2019-06-24 13:01:21',
+    ),
+    104 => 
+    array (
+      'id' => 111,
+      'descripcion' => 'Resultados de la consulta',
+      'modelo' => 'Resultados de la consulta',
+      'name_space' => 'App\\Core\\ModeloEavValor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'core/eav/create',
+      'url_edit' => 'core/eav/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'core/eav/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'core/eav',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-06-25 09:37:16',
+      'updated_at' => '2019-06-25 09:45:22',
+    ),
+    105 => 
+    array (
+      'id' => 112,
+      'descripcion' => 'Sintomas',
+      'modelo' => 'sin usa 1',
+      'name_space' => 'Sin usar',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-06-27 20:26:09',
+      'updated_at' => '2020-06-02 03:57:38',
+    ),
+    106 => 
+    array (
+      'id' => 113,
+      'descripcion' => 'Stock Mínimo',
+      'modelo' => 'inv_min_stocks',
+      'name_space' => 'App\\Inventarios\\MinStock',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'pagina_web, Página Web',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-04-28 09:13:22',
+    ),
+    107 => 
+    array (
+      'id' => 114,
+      'descripcion' => 'Galería de imágenes',
+      'modelo' => 'pw_mod_carousels',
+      'name_space' => 'App\\PaginaWeb\\Carousel',
+      'modelo_relacionado' => '',
+      'url_crear' => 'pagina_web/carousel/create',
+      'url_edit' => 'pagina_web/carousel/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'pagina_web/carousel/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'pagina_web/carousel',
+      'home_miga_pan' => 'pagina_web, Página Web',
+      'ruta_storage_imagen' => 'pagina_web/carousel/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-07-04 09:13:22',
+      'updated_at' => '2019-07-14 11:17:16',
+    ),
+    108 => 
+    array (
+      'id' => 115,
+      'descripcion' => 'Quienes Somos',
+      'modelo' => 'pw_about',
+      'name_space' => 'App\\Core\\ModeloEavValor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'core/eav/create',
+      'url_edit' => 'core/eav/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'core/eav/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'core/eav',
+      'home_miga_pan' => 'pagina_web, Página Web',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-07-04 09:13:22',
+      'updated_at' => '2019-07-12 18:48:49',
+    ),
+    109 => 
+    array (
+      'id' => 116,
+      'descripcion' => 'Encabezados de calificaciones',
+      'modelo' => 'sga_calificaciones_encabezados',
+      'name_space' => 'App\\Calificaciones\\EncabezadoCalificacion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'calificaciones, Calificaciones',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2020-01-11 06:28:37',
+    ),
+    110 => 
+    array (
+      'id' => 117,
+      'descripcion' => 'Secciones de páginas',
+      'modelo' => 'pw_secciones',
+      'name_space' => 'App\\web\\Seccion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'creal',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'na',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2020-05-01 06:02:59',
+    ),
+    111 => 
+    array (
+      'id' => 118,
+      'descripcion' => 'Reportes',
+      'modelo' => 'core_reportes',
+      'name_space' => 'App\\Sistema\\Reporte',
+      'modelo_relacionado' => 'campos',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=7&id_modelo=118","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'configuracion, Configuración',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2020-01-19 17:09:53',
+    ),
+    112 => 
+    array (
+      'id' => 119,
+      'descripcion' => 'Tipos de novedades',
+      'modelo' => 'TipoNovedad',
+      'name_space' => 'App\\Matriculas\\TipoNovedad',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas ',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-08-07 03:55:31',
+      'updated_at' => '2019-08-07 11:04:54',
+    ),
+    113 => 
+    array (
+      'id' => 120,
+      'descripcion' => 'Semanas académicas',
+      'modelo' => 'SemanasCalendario',
+      'name_space' => 'App\\Core\\SemanasCalendario',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas ',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-08-07 03:58:11',
+      'updated_at' => '2020-01-24 05:32:26',
+    ),
+    114 => 
+    array (
+      'id' => 121,
+      'descripcion' => 'Códigos disciplinarios',
+      'modelo' => 'CodigoDisciplinario',
+      'name_space' => 'App\\Matriculas\\CodigoDisciplinario',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas ',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-08-07 04:12:18',
+      'updated_at' => '2019-08-07 04:12:18',
+    ),
+    115 => 
+    array (
+      'id' => 122,
+      'descripcion' => 'Áreas',
+      'modelo' => 'Area',
+      'name_space' => 'App\\Calificaciones\\Area',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=2&id_modelo=122","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'calificaciones, Calificaciones',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-08-07 11:16:29',
+      'updated_at' => '2020-01-09 10:38:02',
+    ),
+    116 => 
+    array (
+      'id' => 123,
+      'descripcion' => 'Módulos',
+      'modelo' => 'pw_modulos',
+      'name_space' => 'App\\PaginaWeb\\Modulo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'pagina_web/modulos/create',
+      'url_edit' => 'pagina_web/modulos/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'pagina_web/modulos/id_fila',
+      'enlaces' => '',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => 'pagina_web/modulos',
+      'home_miga_pan' => 'pagina_web, Página Web',
+      'ruta_storage_imagen' => 'pagina_web/modulos/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2020-04-03 12:51:51',
+    ),
+    117 => 
+    array (
+      'id' => 124,
+      'descripcion' => 'Tipos de Módulos',
+      'modelo' => 'pw_tipos_modulos',
+      'name_space' => 'App\\PaginaWeb\\TipoModulo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=10&id_modelo=124","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'pagina_web, Página Web',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-04-28 09:13:22',
+      'updated_at' => '2019-10-02 04:09:22',
+    ),
+    118 => 
+    array (
+      'id' => 125,
+      'descripcion' => 'Citas',
+      'modelo' => 'Cita',
+      'name_space' => 'App\\Core\\Cita',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'consultorio_medico, Consultorio Médico',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-08-17 16:00:30',
+      'updated_at' => '2019-08-17 16:00:30',
+    ),
+    119 => 
+    array (
+      'id' => 126,
+      'descripcion' => 'Encabezados Descuento PP',
+      'modelo' => 'DescuentoPpEncabezado',
+      'name_space' => 'App\\Ventas\\DescuentoPpEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    120 => 
+    array (
+      'id' => 127,
+      'descripcion' => 'Detalles de descuento PP',
+      'modelo' => 'DescuentoPpDetalle',
+      'name_space' => 'App\\Ventas\\DescuentoPpDetalle',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    121 => 
+    array (
+      'id' => 128,
+      'descripcion' => 'Listas de precios',
+      'modelo' => 'ListaPrecioEncabezado',
+      'name_space' => 'App\\Ventas\\ListaPrecioEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    122 => 
+    array (
+      'id' => 129,
+      'descripcion' => 'Detalles de listas de precios',
+      'modelo' => 'ListaPrecioDetalle',
+      'name_space' => 'App\\Ventas\\ListaPrecioDetalle',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    123 => 
+    array (
+      'id' => 130,
+      'descripcion' => 'Listas de descuentos',
+      'modelo' => 'ListaDctoEncabezado',
+      'name_space' => 'App\\Ventas\\ListaDctoEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    124 => 
+    array (
+      'id' => 131,
+      'descripcion' => 'Detalles de listas de descuentos',
+      'modelo' => 'ListaDctoDetalle',
+      'name_space' => 'App\\Ventas\\ListaDctoDetalle',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    125 => 
+    array (
+      'id' => 132,
+      'descripcion' => 'Clases de vendedores',
+      'modelo' => 'ClaseVendedor',
+      'name_space' => 'App\\Ventas\\ClaseVendedor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    126 => 
+    array (
+      'id' => 133,
+      'descripcion' => 'Equipos de ventas',
+      'modelo' => 'EquipoVentas',
+      'name_space' => 'App\\Ventas\\EquipoVentas',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    127 => 
+    array (
+      'id' => 134,
+      'descripcion' => 'Vendedores',
+      'modelo' => 'Vendedor',
+      'name_space' => 'App\\Ventas\\Vendedor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'vtas_vendedores/create',
+      'url_edit' => 'vtas_vendedores/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'vtas_vendedores/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'vtas_vendedores',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2020-04-21 10:28:03',
+    ),
+    128 => 
+    array (
+      'id' => 135,
+      'descripcion' => 'Zonas',
+      'modelo' => 'Zona',
+      'name_space' => 'App\\Ventas\\Zona',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    129 => 
+    array (
+      'id' => 136,
+      'descripcion' => 'Condiciones de pago',
+      'modelo' => 'CondicionPago',
+      'name_space' => 'App\\Ventas\\CondicionPago',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    130 => 
+    array (
+      'id' => 137,
+      'descripcion' => 'Clases de clientes',
+      'modelo' => 'ClaseCliente',
+      'name_space' => 'App\\Ventas\\ClaseCliente',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-15 09:13:22',
+    ),
+    131 => 
+    array (
+      'id' => 138,
+      'descripcion' => 'Clientes',
+      'modelo' => 'Cliente',
+      'name_space' => 'App\\Ventas\\Cliente',
+      'modelo_relacionado' => 'retenciones',
+      'url_crear' => 'vtas_clientes/create',
+      'url_edit' => 'vtas_clientes/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'vtas_clientes/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'vtas_clientes',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 09:13:22',
+      'updated_at' => '2019-09-16 15:19:40',
+    ),
+    132 => 
+    array (
+      'id' => 139,
+      'descripcion' => 'Facturas de ventas',
+      'modelo' => 'VtasDocEncabezado',
+      'name_space' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'ventas/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'ventas/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'ventas',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-15 21:28:21',
+      'updated_at' => '2019-10-29 02:31:51',
+    ),
+    133 => 
+    array (
+      'id' => 140,
+      'descripcion' => 'Impuestos',
+      'modelo' => 'Impuesto',
+      'name_space' => 'App\\Contabilidad\\Impuesto',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=14&id_modelo=140","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'contabilidad, Contabilidad',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-09-17 09:13:22',
+      'updated_at' => '2019-10-15 03:21:07',
+    ),
+    134 => 
+    array (
+      'id' => 141,
+      'descripcion' => 'Precios de proveedores',
+      'modelo' => 'PrecioProveedor',
+      'name_space' => 'App\\Compras\\PrecioProveedor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-07 09:13:22',
+      'updated_at' => '2019-10-07 09:13:22',
+    ),
+    135 => 
+    array (
+      'id' => 142,
+      'descripcion' => 'Compradores',
+      'modelo' => 'Comprador',
+      'name_space' => 'App\\Compras\\Comprador',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-07 09:13:22',
+      'updated_at' => '2019-10-07 09:13:22',
+    ),
+    136 => 
+    array (
+      'id' => 143,
+      'descripcion' => 'Clases de proveedores',
+      'modelo' => 'ClaseProveedor',
+      'name_space' => 'App\\Compras\\ClaseProveedor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-07 09:13:22',
+      'updated_at' => '2019-10-07 09:13:22',
+    ),
+    137 => 
+    array (
+      'id' => 145,
+      'descripcion' => 'Condiciones de pago',
+      'modelo' => 'CondicionPagoProv',
+      'name_space' => 'App\\Compras\\CondicionPago',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-07 09:13:22',
+      'updated_at' => '2019-10-07 09:13:22',
+    ),
+    138 => 
+    array (
+      'id' => 146,
+      'descripcion' => 'Proveedores',
+      'modelo' => 'Proveedor',
+      'name_space' => 'App\\Compras\\Proveedor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'compras_proveedores/create',
+      'url_edit' => 'compras_proveedores/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'compras_proveedores/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'compras_proveedores',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-07 09:13:22',
+      'updated_at' => '2019-10-08 06:02:10',
+    ),
+    139 => 
+    array (
+      'id' => 147,
+      'descripcion' => 'Documentos de compras',
+      'modelo' => 'ComprasDocEncabezado',
+      'name_space' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'compras/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'compras/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'compras',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-07 09:13:22',
+      'updated_at' => '2019-10-29 01:56:46',
+    ),
+    140 => 
+    array (
+      'id' => 148,
+      'descripcion' => 'Líneas de registros de documentos de compras',
+      'modelo' => 'ComprasDocRegistro',
+      'name_space' => 'App\\Compras\\ComprasDocRegistro',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-07 09:13:22',
+      'updated_at' => '2019-10-07 09:13:22',
+    ),
+    141 => 
+    array (
+      'id' => 149,
+      'descripcion' => 'Registro de CxP',
+      'modelo' => 'cxp_registro_documentos_pendientes',
+      'name_space' => 'App\\CxP\\DocumentosPendientes',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-10 08:40:35',
+      'updated_at' => '2020-05-03 06:59:29',
+    ),
+    142 => 
+    array (
+      'id' => 150,
+      'descripcion' => 'Documentos pagos de CxP',
+      'modelo' => 'documentos_pagos_cxp',
+      'name_space' => 'App\\Tesoreria\\TesoDocEncabezadoPagoCxp',
+      'modelo_relacionado' => '',
+      'url_crear' => 'tesoreria/pagos_cxp/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'tesoreria/pagos_cxp/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'tesoreria/pagos_cxp',
+      'home_miga_pan' => 'tesoreria,Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-11-28 20:47:02',
+      'updated_at' => '2020-07-28 14:45:30',
+    ),
+    143 => 
+    array (
+      'id' => 151,
+      'descripcion' => 'Inventario Físico',
+      'modelo' => 'inv_inventario_fisico',
+      'name_space' => 'App\\Inventarios\\InvFisico',
+      'modelo_relacionado' => '',
+      'url_crear' => 'inv_fisico/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'inv_fisico/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'inv_fisico',
+      'home_miga_pan' => 'inventarios, Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-14 07:36:45',
+      'updated_at' => '2019-11-07 09:14:10',
+    ),
+    144 => 
+    array (
+      'id' => 152,
+      'descripcion' => 'Resoluciones de facturación',
+      'modelo' => 'ResolucionFacturacion',
+      'name_space' => 'App\\Ventas\\ResolucionFacturacion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-15 09:13:22',
+      'updated_at' => '2019-10-15 04:20:06',
+    ),
+    145 => 
+    array (
+      'id' => 153,
+      'descripcion' => 'Recaudos de CxC',
+      'modelo' => 'recaudos_cxc',
+      'name_space' => 'App\\Tesoreria\\TesoDocEncabezadoRecaudoCxc',
+      'modelo_relacionado' => '',
+      'url_crear' => 'tesoreria/recaudos_cxc/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'tesoreria/recaudos_cxc/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'tesoreria/recaudos_cxc',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-20 23:43:20',
+      'updated_at' => '2020-07-28 14:47:21',
+    ),
+    146 => 
+    array (
+      'id' => 154,
+      'descripcion' => 'Movimiento de inventarios',
+      'modelo' => 'inv_movimientos',
+      'name_space' => 'App\\Inventarios\\InvMovimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'inventarios, Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-21 04:42:38',
+      'updated_at' => '2019-10-21 05:11:02',
+    ),
+    147 => 
+    array (
+      'id' => 155,
+      'descripcion' => 'Cotización de ventas',
+      'modelo' => 'vtas_cotizacion',
+      'name_space' => 'App\\Ventas\\VtasCotizacion',
+      'modelo_relacionado' => '',
+      'url_crear' => 'vtas_cotizacion/create',
+      'url_edit' => '',
+      'url_print' => 'vtas_cotizacion_imprimir/id_fila',
+      'url_ver' => 'vtas_cotizacion/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'vtas_cotizacion',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-21 15:09:54',
+      'updated_at' => '2019-10-29 02:33:35',
+    ),
+    148 => 
+    array (
+      'id' => 156,
+      'descripcion' => 'Tercero a proveedor',
+      'modelo' => 'compras_tercero_a_proveedor',
+      'name_space' => 'App\\Compras\\Proveedor',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'compras_proveedores_tercero_a_proveedor_store',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-22 06:08:22',
+      'updated_at' => '2019-10-22 06:26:56',
+    ),
+    149 => 
+    array (
+      'id' => 157,
+      'descripcion' => 'Tercero a cliente',
+      'modelo' => 'vtas_tercero_a_cliente',
+      'name_space' => 'App\\Ventas\\Cliente',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'vtas_clientes_tercero_a_cliente_store',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-22 07:06:19',
+      'updated_at' => '2019-10-22 07:06:19',
+    ),
+    150 => 
+    array (
+      'id' => 158,
+      'descripcion' => 'Arqueos de cajas',
+      'modelo' => 'ArqueoCaja',
+      'name_space' => 'App\\Tesoreria\\ArqueoCaja',
+      'modelo_relacionado' => '',
+      'url_crear' => 'tesoreria/arqueo_caja/create',
+      'url_edit' => 'tesoreria/arqueo_caja/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'tesoreria/arqueo_caja/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'na',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-29 04:13:22',
+      'updated_at' => '2020-02-26 12:30:06',
+    ),
+    151 => 
+    array (
+      'id' => 159,
+      'descripcion' => 'Facturas de compras',
+      'modelo' => 'compras_doc_encabezados',
+      'name_space' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'compras/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'compras/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'compras',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-29 02:07:35',
+      'updated_at' => '2019-10-29 02:07:35',
+    ),
+    152 => 
+    array (
+      'id' => 160,
+      'descripcion' => 'Documentos equivalente a factura',
+      'modelo' => 'compras_doc_equivalente',
+      'name_space' => 'App\\Compras\\DocumentoEquivalente',
+      'modelo_relacionado' => '',
+      'url_crear' => 'compras/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'compras/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'compras',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-29 02:09:13',
+      'updated_at' => '2019-10-29 05:49:34',
+    ),
+    153 => 
+    array (
+      'id' => 161,
+      'descripcion' => 'Costo promedio de productos',
+      'modelo' => 'InvCostoPromProducto',
+      'name_space' => 'App\\Inventarios\\InvCostoPromProducto',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'inventarios, Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-31 06:31:37',
+      'updated_at' => '2019-11-05 23:18:25',
+    ),
+    154 => 
+    array (
+      'id' => 162,
+      'descripcion' => 'Movimiento de compras',
+      'modelo' => 'ComprasMovimiento',
+      'name_space' => 'App\\Compras\\ComprasMovimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-31 17:08:37',
+      'updated_at' => '2019-10-31 17:09:45',
+    ),
+    155 => 
+    array (
+      'id' => 163,
+      'descripcion' => 'Movimiento de ventas',
+      'modelo' => 'VtasMovimiento',
+      'name_space' => 'App\\Ventas\\VtasMovimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-31 17:09:34',
+      'updated_at' => '2019-10-31 17:09:34',
+    ),
+    156 => 
+    array (
+      'id' => 164,
+      'descripcion' => 'Remisiones de ventas',
+      'modelo' => 'RemisionVentas',
+      'name_space' => 'App\\Inventarios\\RemisionVentas',
+      'modelo_relacionado' => '',
+      'url_crear' => 'inventarios/create',
+      'url_edit' => '',
+      'url_print' => 'transaccion_print/id_fila',
+      'url_ver' => 'inventarios/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'inventarios',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-11-01 03:25:45',
+      'updated_at' => '2019-11-01 03:25:45',
+    ),
+    157 => 
+    array (
+      'id' => 165,
+      'descripcion' => 'Entradas por compras',
+      'modelo' => 'EntradaCompras',
+      'name_space' => 'App\\Inventarios\\EntradaCompras',
+      'modelo_relacionado' => '',
+      'url_crear' => 'inventarios/create',
+      'url_edit' => '',
+      'url_print' => 'transaccion_print/id_fila',
+      'url_ver' => 'inventarios/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'inventarios',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-11-01 23:43:34',
+      'updated_at' => '2019-11-01 23:43:34',
+    ),
+    158 => 
+    array (
+      'id' => 166,
+      'descripcion' => 'Notas crédito compras',
+      'modelo' => 'NotaCredito',
+      'name_space' => 'App\\Compras\\NotaCredito',
+      'modelo_relacionado' => '',
+      'url_crear' => 'compras_notas_credito/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'compras_notas_credito/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'compras_notas_credito',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-29 02:07:35',
+      'updated_at' => '2019-11-03 19:58:52',
+    ),
+    159 => 
+    array (
+      'id' => 167,
+      'descripcion' => 'Notas crédito ventas',
+      'modelo' => 'VtasNotaCredito',
+      'name_space' => 'App\\Ventas\\NotaCredito',
+      'modelo_relacionado' => '',
+      'url_crear' => 'ventas_notas_credito/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'ventas_notas_credito/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'ventas_notas_credito',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-11-05 22:51:42',
+      'updated_at' => '2019-11-05 22:51:42',
+    ),
+    160 => 
+    array (
+      'id' => 168,
+      'descripcion' => 'Abonos de CxC',
+      'modelo' => 'CxcAbono',
+      'name_space' => 'App\\CxC\\CxcAbono',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'tesoreria, Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-11-10 15:20:37',
+      'updated_at' => '2019-11-10 11:09:01',
+    ),
+    161 => 
+    array (
+      'id' => 169,
+      'descripcion' => 'Abonos de CxP',
+      'modelo' => 'CxpAbono',
+      'name_space' => 'App\\CxP\\CxpAbono',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'tesoreria, Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-11-10 15:20:37',
+      'updated_at' => '2019-11-10 11:09:01',
+    ),
+    162 => 
+    array (
+      'id' => 170,
+      'descripcion' => 'Cruce de CxP',
+      'modelo' => 'cruce_cxp',
+      'name_space' => 'App\\CxP\\CxpDocEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'doc_cruce_cxp/create',
+      'url_edit' => '',
+      'url_print' => 'doc_cruce_cxp_print/id_fila',
+      'url_ver' => 'doc_cruce_cxp/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'doc_cruce_cxp',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-11-27 00:31:59',
+      'updated_at' => '2019-11-27 00:31:59',
+    ),
+    163 => 
+    array (
+      'id' => 171,
+      'descripcion' => 'Devoluciones en compras',
+      'modelo' => 'devoluciones_compras',
+      'name_space' => 'App\\Inventarios\\DevolucionCompras',
+      'modelo_relacionado' => '',
+      'url_crear' => 'inventarios/create',
+      'url_edit' => '',
+      'url_print' => 'transaccion_print/id_fila',
+      'url_ver' => 'inventarios/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'inventarios',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-06 13:51:40',
+      'updated_at' => '2019-10-30 09:17:22',
+    ),
+    164 => 
+    array (
+      'id' => 172,
+      'descripcion' => 'Notas crédito directas',
+      'modelo' => 'NotaCreditoDirecta',
+      'name_space' => 'App\\Compras\\NotaCreditoDirecta',
+      'modelo_relacionado' => '',
+      'url_crear' => 'compras_notas_credito_directa/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'compras_notas_credito_directa/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'compras_notas_credito_directa',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-29 02:07:35',
+      'updated_at' => '2019-11-03 19:58:52',
+    ),
+    165 => 
+    array (
+      'id' => 173,
+      'descripcion' => 'Notas crédito directas',
+      'modelo' => 'VtasNotaCreditoDirecta',
+      'name_space' => 'App\\Ventas\\NotaCreditoDirecta',
+      'modelo_relacionado' => '',
+      'url_crear' => 'ventas_notas_credito_directa/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'ventas_notas_credito_directa/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'ventas_notas_credito_directa',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-10-29 02:07:35',
+      'updated_at' => '2019-12-03 23:11:03',
+    ),
+    166 => 
+    array (
+      'id' => 174,
+      'descripcion' => 'Devoluciones en ventas',
+      'modelo' => 'devoluciones_ventas',
+      'name_space' => 'App\\Inventarios\\DevolucionVentas',
+      'modelo_relacionado' => '',
+      'url_crear' => 'inventarios/create',
+      'url_edit' => '',
+      'url_print' => 'transaccion_print/id_fila',
+      'url_ver' => 'inventarios/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'inventarios',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-06 13:51:40',
+      'updated_at' => '2019-10-30 09:17:22',
+    ),
+    167 => 
+    array (
+      'id' => 175,
+      'descripcion' => 'Pedido de ventas',
+      'modelo' => 'vtas_pedido',
+      'name_space' => 'App\\Ventas\\VtasPedido',
+      'modelo_relacionado' => '',
+      'url_crear' => 'vtas_pedidos/create',
+      'url_edit' => '',
+      'url_print' => 'vtas_pedidos_imprimir/id_fila',
+      'url_ver' => 'vtas_pedidos/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'vtas_pedidos',
+      'home_miga_pan' => 'ventas, Ventas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-12-12 12:21:13',
+      'updated_at' => '2019-12-12 12:21:13',
+    ),
+    168 => 
+    array (
+      'id' => 176,
+      'descripcion' => 'Movimiento de tesorería',
+      'modelo' => 'movimiento_tesoreria',
+      'name_space' => 'App\\Tesoreria\\TesoMovimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'tesoreria, Tesoreria',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-01-11 03:36:31',
+      'updated_at' => '2019-10-20 23:36:38',
+    ),
+    169 => 
+    array (
+      'id' => 177,
+      'descripcion' => 'Órden de compra',
+      'modelo' => 'orden_compra',
+      'name_space' => 'App\\Compras\\OrdenCompra',
+      'modelo_relacionado' => '',
+      'url_crear' => 'orden_compra/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'orden_compra/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'orden_compra',
+      'home_miga_pan' => 'compras, Compras',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2019-12-28 02:07:35',
+      'updated_at' => '2019-12-28 02:07:35',
+    ),
+    170 => 
+    array (
+      'id' => 178,
+      'descripcion' => 'Profesores',
+      'modelo' => 'academico_docente_profesor',
+      'name_space' => 'App\\AcademicoDocente\\Profesor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => ' {"0":{"tag_html":"a","title":"Ingresar carga académica","url":"academico_docente/profesores/create_asignacion/id_fila?id=5&id_modelo=178","color_bootstrap":"primary","faicon":"list","size":"xs"},"1":{"tag_html":"a","title":"Cambiar contraseña","url":"core/usuario/cambiarpasswd/id_fila?id=5&id_modelo=178","color_bootstrap":"warning","faicon":"key","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => 'academico_docente/profesores/eliminar_profesor/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => 'core/usuarios',
+      'home_miga_pan' => 'academico_docente, Académico Docente',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-01-06 19:28:00',
+      'updated_at' => '2020-01-21 15:30:07',
+    ),
+    171 => 
+    array (
+      'id' => 179,
+      'descripcion' => 'Años lectivos',
+      'modelo' => 'sga_periodos_lectivos',
+      'name_space' => 'App\\Matriculas\\PeriodoLectivo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=1&id_modelo=179","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => 'a_i/id_fila',
+      'url_eliminar' => 'web_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas,Matrículas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2018-09-03 17:58:54',
+      'updated_at' => '2020-01-30 14:41:38',
+    ),
+    172 => 
+    array (
+      'id' => 180,
+      'descripcion' => 'Observador del estudiante',
+      'modelo' => 'sga_observador_estudiante',
+      'name_space' => 'App\\Matriculas\\ObservadorEstudiante',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => 'matriculas/estudiantes/observador/valorar_aspectos/id_fila',
+      'url_print' => 'matriculas/estudiantes/observador/imprimir_observador/id_fila',
+      'url_ver' => 'matriculas/estudiantes/observador/show/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'matriculas, Matrículas',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-01-10 11:15:42',
+      'updated_at' => '2020-01-10 11:15:42',
+    ),
+    173 => 
+    array (
+      'id' => 181,
+      'descripcion' => 'Asistencia a clases',
+      'modelo' => 'sga_asistencia_clases',
+      'name_space' => 'App\\Calificaciones\\AsistenciaClase',
+      'modelo_relacionado' => '',
+      'url_crear' => 'calificaciones/asistencia_clases/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'calificaciones, Calificaciones',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-01-12 06:06:02',
+      'updated_at' => '2020-01-12 08:20:59',
+    ),
+    174 => 
+    array (
+      'id' => 182,
+      'descripcion' => 'Plantillas de planes de clases',
+      'modelo' => 'PlanClaseEstrucPlantilla',
+      'name_space' => 'App\\AcademicoDocente\\PlanClaseEstrucPlantilla',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'academico_docente, Académico Docente',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-01-24 09:13:22',
+      'updated_at' => '2020-01-24 09:13:22',
+    ),
+    175 => 
+    array (
+      'id' => 183,
+      'descripcion' => 'Secciones de planes de clases',
+      'modelo' => 'PlanClaseEstrucElemento',
+      'name_space' => 'App\\AcademicoDocente\\PlanClaseEstrucElemento',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'academico_docente, Académico Docente',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-01-24 09:13:22',
+      'updated_at' => '2020-02-28 11:41:01',
+    ),
+    176 => 
+    array (
+      'id' => 184,
+      'descripcion' => 'Planes de Clases',
+      'modelo' => 'PlanClaseEncabezado',
+      'name_space' => 'App\\AcademicoDocente\\PlanClaseEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'sga_planes_clases/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => 'sga_planes_clases_eliminar/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => 'sga_planes_clases',
+      'home_miga_pan' => 'academico_docente, Académico Docente',
+      'ruta_storage_imagen' => 'planes_clases/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-01-24 09:13:22',
+      'updated_at' => '2020-03-21 01:53:45',
+    ),
+    177 => 
+    array (
+      'id' => 185,
+      'descripcion' => 'Registros de planes de clases',
+      'modelo' => 'PlanClaseRegistro',
+      'name_space' => 'App\\AcademicoDocente\\PlanClaseRegistro',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'academico_docente, Académico Docente',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-01-24 09:13:22',
+      'updated_at' => '2020-01-24 09:13:22',
+    ),
+    178 => 
+    array (
+      'id' => 186,
+      'descripcion' => 'Agrupaciones de conceptos',
+      'modelo' => 'AgrupacionConcepto',
+      'name_space' => 'App\\Nomina\\AgrupacionConcepto',
+      'modelo_relacionado' => 'conceptos',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'nomina, Nómina',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-02-10 09:13:22',
+      'updated_at' => '2020-06-30 06:31:56',
+    ),
+    179 => 
+    array (
+      'id' => 187,
+      'descripcion' => 'Traslado de efectivo',
+      'modelo' => 'traslado_efectivo',
+      'name_space' => 'App\\Tesoreria\\TesoDocEncabezadoTraslado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'tesoreria/traslado_efectivo/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'tesoreria, Tesorería',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-02-07 12:41:37',
+      'updated_at' => '2020-02-24 15:32:37',
+    ),
+    180 => 
+    array (
+      'id' => 188,
+      'descripcion' => 'Elementos biblioteca',
+      'modelo' => 'productos_colegios',
+      'name_space' => 'App\\Inventarios\\InvProductoColegio',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=188","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => 'inventarios/eliminar_producto/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => 'inventarios/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-02-17 09:48:36',
+      'updated_at' => '2020-02-18 08:11:10',
+    ),
+    181 => 
+    array (
+      'id' => 189,
+      'descripcion' => 'Productos',
+      'modelo' => 'productos_calzado',
+      'name_space' => 'App\\Inventarios\\InvProductoCalzado',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=189","color_bootstrap":"default","faicon":"clone","size":"xs"},"1":{"tag_html":"a","title":"Ficha Tecnica","url":"ficha_tecnica/id_fila?id=8&id_modelo=22","color_bootstrap":"info","faicon":"file-text","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => 'inventarios/eliminar_producto/id_fila',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'inventarios,Inventarios',
+      'ruta_storage_imagen' => 'inventarios/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-02-17 09:48:36',
+      'updated_at' => '2020-07-31 10:59:29',
+    ),
+    182 => 
+    array (
+      'id' => 192,
+      'descripcion' => 'Preinformes Académicos',
+      'modelo' => 'sga_preinformes_academicos',
+      'name_space' => 'App\\Calificaciones\\PreinformeAcademico',
+      'modelo_relacionado' => '',
+      'url_crear' => 'cali_preinforme_academico/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => 'cali_preinforme_academico',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-01 09:13:22',
+      'updated_at' => '2020-03-01 05:39:31',
+    ),
+    183 => 
+    array (
+      'id' => 193,
+      'descripcion' => 'Logros años anteriores',
+      'modelo' => 'sga_logros_anteriores',
+      'name_space' => 'App\\Calificaciones\\LogroAnterior',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'calificaciones, Calificaciones',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-12 02:33:37',
+      'updated_at' => '2020-03-12 07:25:56',
+    ),
+    184 => 
+    array (
+      'id' => 194,
+      'descripcion' => 'Reseteo de contraseñas',
+      'modelo' => 'password_resets',
+      'name_space' => 'App\\Core\\PasswordReset',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-12 05:00:00',
+      'updated_at' => '2020-03-12 07:50:34',
+    ),
+    185 => 
+    array (
+      'id' => 195,
+      'descripcion' => 'Conductores',
+      'modelo' => 'cte_conductores',
+      'name_space' => 'App\\Contratotransporte\\Conductor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'cte_conductores/id_fila/show',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-27 11:18:52',
+    ),
+    186 => 
+    array (
+      'id' => 196,
+      'descripcion' => 'Contratantes',
+      'modelo' => 'cte_contratantes',
+      'name_space' => 'App\\Contratotransporte\\Contratante',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-19 09:13:22',
+    ),
+    187 => 
+    array (
+      'id' => 197,
+      'descripcion' => 'Contratos',
+      'modelo' => 'cte_contratos',
+      'name_space' => 'App\\Contratotransporte\\Contrato',
+      'modelo_relacionado' => '',
+      'url_crear' => 'cte_contratos/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'cte_contratos/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-06-01 13:06:46',
+    ),
+    188 => 
+    array (
+      'id' => 198,
+      'descripcion' => 'Documentos del conductor',
+      'modelo' => 'cte_documentos_conductor',
+      'name_space' => 'App\\Contratotransporte\\Documentosconductor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'cte_documentos_conductor/id_fila/show',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-27 11:17:18',
+    ),
+    189 => 
+    array (
+      'id' => 199,
+      'descripcion' => 'Documentos de vehículo',
+      'modelo' => 'cte_documentos_vehiculo',
+      'name_space' => 'App\\Contratotransporte\\Documentosvehiculo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'cte_documentos_vehiculo/id_fila/show',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-27 11:12:44',
+    ),
+    190 => 
+    array (
+      'id' => 200,
+      'descripcion' => 'Plantillas',
+      'modelo' => 'cte_plantillas',
+      'name_space' => 'App\\Contratotransporte\\Plantilla',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'cte_plantillas/id_fila/show',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-30 07:07:15',
+    ),
+    191 => 
+    array (
+      'id' => 201,
+      'descripcion' => 'Propietarios',
+      'modelo' => 'cte_propietarios',
+      'name_space' => 'App\\Contratotransporte\\Propietario',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-19 09:13:22',
+    ),
+    192 => 
+    array (
+      'id' => 202,
+      'descripcion' => 'Vehículos',
+      'modelo' => 'cte_vehiculos',
+      'name_space' => 'App\\Contratotransporte\\Vehiculo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'cte_vehiculos/id_fila/show',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-19 09:13:22',
+      'updated_at' => '2020-03-27 07:22:13',
+    ),
+    193 => 
+    array (
+      'id' => 203,
+      'descripcion' => 'Años',
+      'modelo' => 'cte_anios',
+      'name_space' => 'App\\Contratotransporte\\Anio',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 15:26:51',
+    ),
+    194 => 
+    array (
+      'id' => 204,
+      'descripcion' => 'Periodos de años',
+      'modelo' => 'cte_anioperiodos',
+      'name_space' => 'App\\Contratotransporte\\Anioperiodo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'cte_anioperiodos/id_fila/show',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-27 07:23:11',
+    ),
+    195 => 
+    array (
+      'id' => 205,
+      'descripcion' => 'Grupos de usuarios del contrato',
+      'modelo' => 'cte_contratogrupous',
+      'name_space' => 'App\\Contratotransporte\\Contratogrupou',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    196 => 
+    array (
+      'id' => 206,
+      'descripcion' => 'Mantenimientos de vehículos',
+      'modelo' => 'cte_mantenimientos',
+      'name_space' => 'App\\Contratotransporte\\Mantenimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    197 => 
+    array (
+      'id' => 207,
+      'descripcion' => 'Observaciones de mantenimientos',
+      'modelo' => 'cte_mantobs',
+      'name_space' => 'App\\Contratotransporte\\Mantobs',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    198 => 
+    array (
+      'id' => 208,
+      'descripcion' => 'Reportes de mantenimientos',
+      'modelo' => 'cte_mantreportes',
+      'name_space' => 'App\\Contratotransporte\\Mantreportes',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    199 => 
+    array (
+      'id' => 209,
+      'descripcion' => 'Numerales tabla de plantilla',
+      'modelo' => 'cte_numeraltablas',
+      'name_space' => 'App\\Contratotransporte\\Numeraltabla',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'cte_numeraltablas/id_fila/show',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-30 07:09:28',
+    ),
+    200 => 
+    array (
+      'id' => 210,
+      'descripcion' => 'FUEC (Planillas)',
+      'modelo' => 'cte_planillacs',
+      'name_space' => 'App\\Contratotransporte\\Planillac',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-25 07:06:07',
+    ),
+    201 => 
+    array (
+      'id' => 211,
+      'descripcion' => 'Planillas de conductores',
+      'modelo' => 'cte_planillaconductors',
+      'name_space' => 'App\\Contratotransporte\\Planillaconductor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'web/id_fila',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-24 09:13:22',
+    ),
+    202 => 
+    array (
+      'id' => 212,
+      'descripcion' => 'Artículos de la plantilla',
+      'modelo' => 'cte_plantillaarticulos',
+      'name_space' => 'App\\Contratotransporte\\Plantillaarticulo',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'cte_plantillaarticulos/id_fila/show',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-30 07:07:53',
+    ),
+    203 => 
+    array (
+      'id' => 213,
+      'descripcion' => 'Numerales de artículos de planillas',
+      'modelo' => 'cte_plantillaarticulonumerals',
+      'name_space' => 'App\\Contratotransporte\\Plantillaarticulonumeral',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => 'web/id_fila/edit',
+      'url_print' => '',
+      'url_ver' => 'cte_plantillaarticulonumerals/id_fila/show',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-24 09:13:22',
+      'updated_at' => '2020-03-30 07:08:59',
+    ),
+    204 => 
+    array (
+      'id' => 214,
+      'descripcion' => 'Recaudos de Libretas',
+      'modelo' => 'teso_recaudos_libretas',
+      'name_space' => 'App\\Tesoreria\\TesoRecaudosLibreta',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => 'tesoreria/imprimir_comprobante_recaudo/id_fila',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-03-27 11:59:07',
+      'updated_at' => '2020-03-27 11:59:07',
+    ),
+    205 => 
+    array (
+      'id' => 215,
+      'descripcion' => 'Tercero a vendedor',
+      'modelo' => 'tercero_vendedor',
+      'name_space' => 'App\\Ventas\\Vendedor',
+      'modelo_relacionado' => '',
+      'url_crear' => 'web/create',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'na',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-04-20 12:35:55',
+      'updated_at' => '2020-04-21 05:34:20',
+    ),
+    206 => 
+    array (
+      'id' => 216,
+      'descripcion' => 'Clientes del vendedor',
+      'modelo' => 'vtas_clientes2',
+      'name_space' => 'App\\Ventas\\Cliente2',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'no',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-04-21 08:05:37',
+      'updated_at' => '2020-04-21 09:42:19',
+    ),
+    207 => 
+    array (
+      'id' => 217,
+      'descripcion' => 'Elementos de diseño para widgets',
+      'modelo' => 'pw_widgets_elements_designs',
+      'name_space' => 'App\\web\\WidgetsElementsDesign',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=10&id_modelo=217","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-05-02 09:14:05',
+      'updated_at' => '2020-05-17 23:11:45',
+    ),
+    208 => 
+    array (
+      'id' => 218,
+      'descripcion' => 'Clientes web',
+      'modelo' => 'vtas_clientes_web',
+      'name_space' => 'App\\Ventas\\ClienteWeb',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-05-09 10:18:09',
+      'updated_at' => '2020-05-09 10:18:09',
+    ),
+    209 => 
+    array (
+      'id' => 219,
+      'descripcion' => 'Guías académicas',
+      'modelo' => 'sga_guias_academicas',
+      'name_space' => 'App\\AcademicoDocente\\GuiaAcademica',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => 'planes_clases/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-05-22 09:13:53',
+      'updated_at' => '2020-05-22 10:09:44',
+    ),
+    210 => 
+    array (
+      'id' => 220,
+      'descripcion' => 'Servicios',
+      'modelo' => 'inv_servicios',
+      'name_space' => 'App\\Inventarios\\Servicio',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => 'inventarios/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-05-29 10:16:39',
+      'updated_at' => '2020-05-29 10:16:39',
+    ),
+    211 => 
+    array (
+      'id' => 221,
+      'descripcion' => 'Facturas Médicas',
+      'modelo' => 'vtas_facturas_medicas',
+      'name_space' => 'App\\Ventas\\VtasFacturaMedica',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-06-02 04:11:26',
+      'updated_at' => '2020-06-02 04:12:27',
+    ),
+    212 => 
+    array (
+      'id' => 222,
+      'descripcion' => 'Clientes campaña web',
+      'modelo' => 'web_terceros_campana',
+      'name_space' => 'App\\web\\TerceroFormularioCampana',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-06-04 03:53:31',
+      'updated_at' => '2020-06-04 03:53:31',
+    ),
+    213 => 
+    array (
+      'id' => 223,
+      'descripcion' => 'Entidades Remisoras',
+      'modelo' => 'salud_entidades_remisoras',
+      'name_space' => 'App\\Salud\\EntidadRemisora',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-06-14 16:55:36',
+      'updated_at' => '2020-06-14 16:55:36',
+    ),
+    214 => 
+    array (
+      'id' => 224,
+      'descripcion' => 'Grupos Sanguineos',
+      'modelo' => 'salud_grupos_sanguineos',
+      'name_space' => 'App\\Salud\\GrupoSanguineo',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-06-14 16:58:58',
+      'updated_at' => '2020-06-14 16:58:58',
+    ),
+    215 => 
+    array (
+      'id' => 225,
+      'descripcion' => 'Logros adicionales',
+      'modelo' => 'sga_logros_adicionales',
+      'name_space' => 'App\\Calificaciones\\LogroAdicional',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-06-20 07:20:58',
+      'updated_at' => '2020-06-20 07:20:58',
+    ),
+    216 => 
+    array (
+      'id' => 226,
+      'descripcion' => 'Cajeros PDV',
+      'modelo' => 'Cajero',
+      'name_space' => 'App\\VentasPos\\Cajero',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 14:58:12',
+    ),
+    217 => 
+    array (
+      'id' => 227,
+      'descripcion' => 'Puntos de ventas',
+      'modelo' => 'Pdv',
+      'name_space' => 'App\\VentasPos\\Pdv',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 09:13:22',
+    ),
+    218 => 
+    array (
+      'id' => 228,
+      'descripcion' => 'Documentos de apertura PDV',
+      'modelo' => 'AperturaEncabezado',
+      'name_space' => 'App\\VentasPos\\AperturaEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 09:13:22',
+    ),
+    219 => 
+    array (
+      'id' => 229,
+      'descripcion' => 'Documentos de cierre PDV',
+      'modelo' => 'CierreEncabezado',
+      'name_space' => 'App\\VentasPos\\CierreEncabezado',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 09:13:22',
+    ),
+    220 => 
+    array (
+      'id' => 230,
+      'descripcion' => 'Facturas POS',
+      'modelo' => 'FacturaPos',
+      'name_space' => 'App\\VentasPos\\FacturaPos',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-06 09:13:22',
+    ),
+    221 => 
+    array (
+      'id' => 231,
+      'descripcion' => 'Registros de documentos POS',
+      'modelo' => 'DocRegistros',
+      'name_space' => 'App\\VentasPos\\DocRegistro',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-08 12:28:19',
+    ),
+    222 => 
+    array (
+      'id' => 232,
+      'descripcion' => 'Movimientos de Vtas. POS',
+      'modelo' => 'Movimientos',
+      'name_space' => 'App\\VentasPos\\Movimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-07-06 09:13:22',
+      'updated_at' => '2020-07-08 12:28:07',
+    ),
+  ),
   'sys_modelo_tiene_campos' => 
   array (
     0 => 
@@ -23897,6 +43532,1637 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 50,
       'core_modelo_id' => 138,
       'core_campo_id' => 769,
+    ),
+  ),
+  'sys_reportes' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'descripcion' => 'Resumen de Consultas',
+      'core_app_id' => 18,
+      'url_form_action' => 'reportes_consultorio_medico/resumen_consultas',
+      'estado' => 'Activo',
+      'created_at' => '2019-07-16 16:26:44',
+      'updated_at' => '2019-07-17 10:38:56',
+    ),
+    1 => 
+    array (
+      'id' => 2,
+      'descripcion' => 'Flujo de efectivo',
+      'core_app_id' => 3,
+      'url_form_action' => 'tesoreria/ajax_flujo_de_efectivo',
+      'estado' => 'Inactivo',
+      'created_at' => '2019-07-16 20:12:49',
+      'updated_at' => '2019-07-16 22:33:15',
+    ),
+    2 => 
+    array (
+      'id' => 3,
+      'descripcion' => 'Cartera por curso',
+      'core_app_id' => 3,
+      'url_form_action' => '',
+      'estado' => 'Inactivo',
+      'created_at' => '2019-07-16 20:13:16',
+      'updated_at' => '2019-07-16 22:33:18',
+    ),
+    3 => 
+    array (
+      'id' => 4,
+      'descripcion' => 'Cartera de estudiantes',
+      'core_app_id' => 3,
+      'url_form_action' => '',
+      'estado' => 'Inactivo',
+      'created_at' => '2019-07-16 20:13:43',
+      'updated_at' => '2019-07-16 22:33:20',
+    ),
+    4 => 
+    array (
+      'id' => 5,
+      'descripcion' => 'Balance de comprobación',
+      'core_app_id' => 14,
+      'url_form_action' => 'contab_ajax_balance_comprobacion',
+      'estado' => 'Activo',
+      'created_at' => '2019-07-17 04:28:55',
+      'updated_at' => '2019-07-17 04:28:55',
+    ),
+    5 => 
+    array (
+      'id' => 6,
+      'descripcion' => 'Citas de control vencidas',
+      'core_app_id' => 18,
+      'url_form_action' => 'reportes_consultorio_medico/citas_control_vencidas',
+      'estado' => 'Activo',
+      'created_at' => '2019-07-17 11:33:10',
+      'updated_at' => '2019-07-17 11:33:10',
+    ),
+    6 => 
+    array (
+      'id' => 7,
+      'descripcion' => 'Consolidado periodo por curso',
+      'core_app_id' => 2,
+      'url_form_action' => 'calificaciones/consolidado_periodo_por_curso',
+      'estado' => 'Activo',
+      'created_at' => '2019-08-24 11:32:19',
+      'updated_at' => '2019-09-03 09:59:06',
+    ),
+    7 => 
+    array (
+      'id' => 8,
+      'descripcion' => 'Cuadro de honor',
+      'core_app_id' => 2,
+      'url_form_action' => 'calificaciones/cuadro_honor_estudiantes',
+      'estado' => 'Activo',
+      'created_at' => '2019-08-24 20:25:11',
+      'updated_at' => '2019-08-24 20:25:11',
+    ),
+    8 => 
+    array (
+      'id' => 9,
+      'descripcion' => 'Promedio acumulado periodos',
+      'core_app_id' => 2,
+      'url_form_action' => 'calificaciones/promedio_acumulado_periodos',
+      'estado' => 'Activo',
+      'created_at' => '2019-09-03 06:47:08',
+      'updated_at' => '2019-09-03 07:02:41',
+    ),
+    9 => 
+    array (
+      'id' => 10,
+      'descripcion' => 'Promedio proyectado por asignatura',
+      'core_app_id' => 2,
+      'url_form_action' => 'calificaciones/promedio_proyectado_asignaturas',
+      'estado' => 'Activo',
+      'created_at' => '2019-09-04 04:17:26',
+      'updated_at' => '2019-09-04 04:17:26',
+    ),
+    10 => 
+    array (
+      'id' => 11,
+      'descripcion' => 'CxP > Documentos pendientes por pagar',
+      'core_app_id' => 9,
+      'url_form_action' => 'compras_ctas_por_pagar',
+      'estado' => 'Activo',
+      'created_at' => '2019-10-10 05:54:13',
+      'updated_at' => '2020-07-17 12:07:30',
+    ),
+    11 => 
+    array (
+      'id' => 12,
+      'descripcion' => 'Documentos pendientes por cobrar',
+      'core_app_id' => 12,
+      'url_form_action' => 'cxc_documentos_pendientes',
+      'estado' => 'Activo',
+      'created_at' => '2019-10-20 23:23:30',
+      'updated_at' => '2019-10-20 23:24:17',
+    ),
+    12 => 
+    array (
+      'id' => 13,
+      'descripcion' => 'Estadística de precios de compra',
+      'core_app_id' => 9,
+      'url_form_action' => 'compras_precio_compra_por_producto',
+      'estado' => 'Activo',
+      'created_at' => '2019-11-01 02:11:54',
+      'updated_at' => '2019-11-01 02:11:54',
+    ),
+    13 => 
+    array (
+      'id' => 14,
+      'descripcion' => 'Comparación Precios de compra vs Costo Promedio',
+      'core_app_id' => 9,
+      'url_form_action' => 'compras_compara_precio_compra_vs_costo_promedio',
+      'estado' => 'Inactivo',
+      'created_at' => '2019-11-07 07:47:26',
+      'updated_at' => '2019-11-07 07:52:30',
+    ),
+    14 => 
+    array (
+      'id' => 15,
+      'descripcion' => 'Estadística de precios de venta',
+      'core_app_id' => 13,
+      'url_form_action' => 'vtas_precio_venta_por_producto',
+      'estado' => 'Activo',
+      'created_at' => '2019-11-15 23:32:06',
+      'updated_at' => '2019-11-15 23:32:23',
+    ),
+    15 => 
+    array (
+      'id' => 16,
+      'descripcion' => 'Promedio consolidado por asignatura',
+      'core_app_id' => 2,
+      'url_form_action' => 'calificaciones/promedio_consolidado_asignaturas',
+      'estado' => 'Activo',
+      'created_at' => '2020-01-19 19:58:31',
+      'updated_at' => '2020-01-19 19:58:57',
+    ),
+    16 => 
+    array (
+      'id' => 17,
+      'descripcion' => 'Certificado de notas',
+      'core_app_id' => 4,
+      'url_form_action' => 'cali_repo_certificado_notas',
+      'estado' => 'Activo',
+      'created_at' => '2020-02-06 12:15:13',
+      'updated_at' => '2020-02-06 12:15:13',
+    ),
+    17 => 
+    array (
+      'id' => 18,
+      'descripcion' => 'Constancia de estudios',
+      'core_app_id' => 4,
+      'url_form_action' => 'matri_constancia_estudios',
+      'estado' => 'Activo',
+      'created_at' => '2020-02-07 00:04:15',
+      'updated_at' => '2020-02-07 00:05:01',
+    ),
+    18 => 
+    array (
+      'id' => 20,
+      'descripcion' => 'Etiquetas de códigos de barra',
+      'core_app_id' => 8,
+      'url_form_action' => 'inv_etiquetas_codigos_barra',
+      'estado' => 'Activo',
+      'created_at' => '2020-02-17 04:59:35',
+      'updated_at' => '2020-02-17 05:00:17',
+    ),
+    19 => 
+    array (
+      'id' => 21,
+      'descripcion' => 'Existencias a un corte',
+      'core_app_id' => 8,
+      'url_form_action' => 'inv_existencias_corte',
+      'estado' => 'Activo',
+      'created_at' => '2020-02-18 18:47:34',
+      'updated_at' => '2020-02-18 18:47:56',
+    ),
+    20 => 
+    array (
+      'id' => 22,
+      'descripcion' => 'CxC > Documentos pendientes por cobrar',
+      'core_app_id' => 13,
+      'url_form_action' => 'cxc_documentos_pendientes',
+      'estado' => 'Activo',
+      'created_at' => '2020-02-19 04:50:06',
+      'updated_at' => '2020-07-17 12:06:13',
+    ),
+    21 => 
+    array (
+      'id' => 23,
+      'descripcion' => 'Movimiento de Caja/Bancos',
+      'core_app_id' => 3,
+      'url_form_action' => 'teso_movimiento_caja_bancos',
+      'estado' => 'Activo',
+      'created_at' => '2020-02-26 18:35:18',
+      'updated_at' => '2020-02-26 18:35:50',
+    ),
+    22 => 
+    array (
+      'id' => 24,
+      'descripcion' => 'Reporte de ventas',
+      'core_app_id' => 13,
+      'url_form_action' => 'vtas_reporte_ventas',
+      'estado' => 'Activo',
+      'created_at' => '2020-04-02 08:22:57',
+      'updated_at' => '2020-04-02 08:23:37',
+    ),
+    23 => 
+    array (
+      'id' => 25,
+      'descripcion' => 'CxP > Documentos pendientes por pagar',
+      'core_app_id' => 14,
+      'url_form_action' => 'compras_ctas_por_pagar',
+      'estado' => 'Activo',
+      'created_at' => '2020-05-03 06:31:27',
+      'updated_at' => '2020-07-17 12:07:57',
+    ),
+    24 => 
+    array (
+      'id' => 26,
+      'descripcion' => 'Listado de documentos descuadrados',
+      'core_app_id' => 14,
+      'url_form_action' => 'contab_lista_documentos_descuadrados',
+      'estado' => 'Activo',
+      'created_at' => '2020-05-08 04:04:21',
+      'updated_at' => '2020-05-08 04:04:36',
+    ),
+    25 => 
+    array (
+      'id' => 27,
+      'descripcion' => 'Cuadre Contabilidad vs Tesorería',
+      'core_app_id' => 14,
+      'url_form_action' => 'contab_cuadre_contabilidad_vs_tesoreria',
+      'estado' => 'Activo',
+      'created_at' => '2020-05-08 04:06:16',
+      'updated_at' => '2020-05-08 04:07:00',
+    ),
+    26 => 
+    array (
+      'id' => 28,
+      'descripcion' => 'CxC > Documentos pendientes por cobrar',
+      'core_app_id' => 14,
+      'url_form_action' => 'cxc_documentos_pendientes',
+      'estado' => 'Activo',
+      'created_at' => '2020-05-11 05:51:51',
+      'updated_at' => '2020-07-17 12:05:58',
+    ),
+    27 => 
+    array (
+      'id' => 29,
+      'descripcion' => 'Resumen de cartera por curso',
+      'core_app_id' => 3,
+      'url_form_action' => 'tesoreria/ajax_reporte_cartera_por_curso',
+      'estado' => 'Activo',
+      'created_at' => '2020-05-13 09:59:33',
+      'updated_at' => '2020-05-13 09:59:33',
+    ),
+    28 => 
+    array (
+      'id' => 30,
+      'descripcion' => 'Flujo de efectivo',
+      'core_app_id' => 3,
+      'url_form_action' => 'tesoreria/ajax_flujo_de_efectivo',
+      'estado' => 'Activo',
+      'created_at' => '2020-05-13 10:18:11',
+      'updated_at' => '2020-05-13 10:18:11',
+    ),
+    29 => 
+    array (
+      'id' => 31,
+      'descripcion' => 'Resumen de planes de clases',
+      'core_app_id' => 5,
+      'url_form_action' => 'sga_resumen_planes_clases',
+      'estado' => 'Activo',
+      'created_at' => '2020-05-22 19:41:44',
+      'updated_at' => '2020-05-22 19:42:12',
+    ),
+    30 => 
+    array (
+      'id' => 32,
+      'descripcion' => 'Consulta calificaciones auxiliares',
+      'core_app_id' => 2,
+      'url_form_action' => 'calificaciones_consulta_notas_auxiliares',
+      'estado' => 'Activo',
+      'created_at' => '2020-07-16 02:05:13',
+      'updated_at' => '2020-07-16 02:06:10',
+    ),
+    31 => 
+    array (
+      'id' => 33,
+      'descripcion' => 'Auxiliar por cuentas',
+      'core_app_id' => 14,
+      'url_form_action' => 'contab_ajax_auxiliar_por_cuenta',
+      'estado' => 'Activo',
+      'created_at' => '2020-07-28 12:29:15',
+      'updated_at' => '2020-07-28 12:29:51',
+    ),
+    32 => 
+    array (
+      'id' => 34,
+      'descripcion' => 'Resumen de actividades académicas',
+      'core_app_id' => 5,
+      'url_form_action' => 'sga_resumen_actividades_academicas',
+      'estado' => 'Activo',
+      'created_at' => '2020-07-30 13:12:17',
+      'updated_at' => '2020-07-30 13:12:56',
+    ),
+    33 => 
+    array (
+      'id' => 35,
+      'descripcion' => 'Balance de inventarios',
+      'core_app_id' => 8,
+      'url_form_action' => 'inv_balance_inventarios',
+      'estado' => 'Activo',
+      'created_at' => '2020-08-04 10:18:43',
+      'updated_at' => '2020-08-04 10:19:06',
+    ),
+  ),
+  'sys_reporte_tiene_campos' => 
+  array (
+    0 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 20,
+      'core_campo_id' => 22,
+    ),
+    1 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 8,
+      'core_campo_id' => 177,
+    ),
+    2 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 7,
+      'core_campo_id' => 182,
+    ),
+    3 => 
+    array (
+      'orden' => 1,
+      'core_reporte_id' => 9,
+      'core_campo_id' => 182,
+    ),
+    4 => 
+    array (
+      'orden' => 1,
+      'core_reporte_id' => 10,
+      'core_campo_id' => 182,
+    ),
+    5 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 16,
+      'core_campo_id' => 182,
+    ),
+    6 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 17,
+      'core_campo_id' => 182,
+    ),
+    7 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 18,
+      'core_campo_id' => 182,
+    ),
+    8 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 29,
+      'core_campo_id' => 182,
+    ),
+    9 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 32,
+      'core_campo_id' => 182,
+    ),
+    10 => 
+    array (
+      'orden' => 5,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 215,
+    ),
+    11 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 15,
+      'core_campo_id' => 215,
+    ),
+    12 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 248,
+    ),
+    13 => 
+    array (
+      'orden' => 5,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 249,
+    ),
+    14 => 
+    array (
+      'orden' => 7,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 250,
+    ),
+    15 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 20,
+      'core_campo_id' => 287,
+    ),
+    16 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 7,
+      'core_campo_id' => 293,
+    ),
+    17 => 
+    array (
+      'orden' => 0,
+      'core_reporte_id' => 9,
+      'core_campo_id' => 293,
+    ),
+    18 => 
+    array (
+      'orden' => 0,
+      'core_reporte_id' => 10,
+      'core_campo_id' => 293,
+    ),
+    19 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 16,
+      'core_campo_id' => 293,
+    ),
+    20 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 17,
+      'core_campo_id' => 293,
+    ),
+    21 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 18,
+      'core_campo_id' => 293,
+    ),
+    22 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 32,
+      'core_campo_id' => 293,
+    ),
+    23 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 32,
+      'core_campo_id' => 312,
+    ),
+    24 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 1,
+      'core_campo_id' => 473,
+    ),
+    25 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 2,
+      'core_campo_id' => 473,
+    ),
+    26 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 5,
+      'core_campo_id' => 473,
+    ),
+    27 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 6,
+      'core_campo_id' => 473,
+    ),
+    28 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 473,
+    ),
+    29 => 
+    array (
+      'orden' => 1,
+      'core_reporte_id' => 15,
+      'core_campo_id' => 473,
+    ),
+    30 => 
+    array (
+      'orden' => 1,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 473,
+    ),
+    31 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 24,
+      'core_campo_id' => 473,
+    ),
+    32 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 26,
+      'core_campo_id' => 473,
+    ),
+    33 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 27,
+      'core_campo_id' => 473,
+    ),
+    34 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 30,
+      'core_campo_id' => 473,
+    ),
+    35 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 31,
+      'core_campo_id' => 473,
+    ),
+    36 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 33,
+      'core_campo_id' => 473,
+    ),
+    37 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 473,
+    ),
+    38 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 1,
+      'core_campo_id' => 474,
+    ),
+    39 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 2,
+      'core_campo_id' => 474,
+    ),
+    40 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 5,
+      'core_campo_id' => 474,
+    ),
+    41 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 474,
+    ),
+    42 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 15,
+      'core_campo_id' => 474,
+    ),
+    43 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 23,
+      'core_campo_id' => 474,
+    ),
+    44 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 24,
+      'core_campo_id' => 474,
+    ),
+    45 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 26,
+      'core_campo_id' => 474,
+    ),
+    46 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 27,
+      'core_campo_id' => 474,
+    ),
+    47 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 30,
+      'core_campo_id' => 474,
+    ),
+    48 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 31,
+      'core_campo_id' => 474,
+    ),
+    49 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 33,
+      'core_campo_id' => 474,
+    ),
+    50 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 474,
+    ),
+    51 => 
+    array (
+      'orden' => 9,
+      'core_reporte_id' => 5,
+      'core_campo_id' => 476,
+    ),
+    52 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 8,
+      'core_campo_id' => 489,
+    ),
+    53 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 8,
+      'core_campo_id' => 490,
+    ),
+    54 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 8,
+      'core_campo_id' => 491,
+    ),
+    55 => 
+    array (
+      'orden' => 7,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 536,
+    ),
+    56 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 15,
+      'core_campo_id' => 561,
+    ),
+    57 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 11,
+      'core_campo_id' => 588,
+    ),
+    58 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 12,
+      'core_campo_id' => 588,
+    ),
+    59 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 22,
+      'core_campo_id' => 588,
+    ),
+    60 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 25,
+      'core_campo_id' => 588,
+    ),
+    61 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 28,
+      'core_campo_id' => 588,
+    ),
+    62 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 33,
+      'core_campo_id' => 588,
+    ),
+    63 => 
+    array (
+      'orden' => 0,
+      'core_reporte_id' => 31,
+      'core_campo_id' => 592,
+    ),
+    64 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 34,
+      'core_campo_id' => 592,
+    ),
+    65 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 7,
+      'core_campo_id' => 599,
+    ),
+    66 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 17,
+      'core_campo_id' => 599,
+    ),
+    67 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 32,
+      'core_campo_id' => 599,
+    ),
+    68 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 34,
+      'core_campo_id' => 599,
+    ),
+    69 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 31,
+      'core_campo_id' => 604,
+    ),
+    70 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 34,
+      'core_campo_id' => 604,
+    ),
+    71 => 
+    array (
+      'orden' => 0,
+      'core_reporte_id' => 17,
+      'core_campo_id' => 613,
+    ),
+    72 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 17,
+      'core_campo_id' => 614,
+    ),
+    73 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 18,
+      'core_campo_id' => 614,
+    ),
+    74 => 
+    array (
+      'orden' => 10,
+      'core_reporte_id' => 17,
+      'core_campo_id' => 615,
+    ),
+    75 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 18,
+      'core_campo_id' => 615,
+    ),
+    76 => 
+    array (
+      'orden' => 12,
+      'core_reporte_id' => 17,
+      'core_campo_id' => 616,
+    ),
+    77 => 
+    array (
+      'orden' => 10,
+      'core_reporte_id' => 18,
+      'core_campo_id' => 616,
+    ),
+    78 => 
+    array (
+      'orden' => 14,
+      'core_reporte_id' => 17,
+      'core_campo_id' => 617,
+    ),
+    79 => 
+    array (
+      'orden' => 16,
+      'core_reporte_id' => 17,
+      'core_campo_id' => 618,
+    ),
+    80 => 
+    array (
+      'orden' => 7,
+      'core_reporte_id' => 18,
+      'core_campo_id' => 619,
+    ),
+    81 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 20,
+      'core_campo_id' => 622,
+    ),
+    82 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 21,
+      'core_campo_id' => 622,
+    ),
+    83 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 622,
+    ),
+    84 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 20,
+      'core_campo_id' => 623,
+    ),
+    85 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 20,
+      'core_campo_id' => 629,
+    ),
+    86 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 21,
+      'core_campo_id' => 630,
+    ),
+    87 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 21,
+      'core_campo_id' => 632,
+    ),
+    88 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 21,
+      'core_campo_id' => 633,
+    ),
+    89 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 633,
+    ),
+    90 => 
+    array (
+      'orden' => 10,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 636,
+    ),
+    91 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 637,
+    ),
+    92 => 
+    array (
+      'orden' => 12,
+      'core_reporte_id' => 24,
+      'core_campo_id' => 637,
+    ),
+    93 => 
+    array (
+      'orden' => 15,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 638,
+    ),
+    94 => 
+    array (
+      'orden' => 16,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 639,
+    ),
+    95 => 
+    array (
+      'orden' => 17,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 640,
+    ),
+    96 => 
+    array (
+      'orden' => 18,
+      'core_reporte_id' => 13,
+      'core_campo_id' => 641,
+    ),
+    97 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 24,
+      'core_campo_id' => 723,
+    ),
+    98 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 24,
+      'core_campo_id' => 724,
+    ),
+    99 => 
+    array (
+      'orden' => 10,
+      'core_reporte_id' => 24,
+      'core_campo_id' => 725,
+    ),
+    100 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 29,
+      'core_campo_id' => 739,
+    ),
+    101 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 30,
+      'core_campo_id' => 766,
+    ),
+    102 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 33,
+      'core_campo_id' => 767,
+    ),
+    103 => 
+    array (
+      'orden' => 10,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 768,
+    ),
+  ),
+  'sys_tipos_transacciones' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'core_app_id' => 8,
+      'core_modelo_id' => 25,
+      'descripcion' => 'Entrada de almacén',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2018-09-06 14:23:20',
+      'updated_at' => '2019-12-02 09:22:20',
+    ),
+    1 => 
+    array (
+      'id' => 2,
+      'core_app_id' => 8,
+      'core_modelo_id' => 25,
+      'descripcion' => 'Transferencia',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 2,
+      'estado' => 'Activo',
+      'created_at' => '2018-09-06 05:00:00',
+      'updated_at' => '2019-09-15 11:38:47',
+    ),
+    2 => 
+    array (
+      'id' => 3,
+      'core_app_id' => 8,
+      'core_modelo_id' => 25,
+      'descripcion' => 'Salida de inventario',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 3,
+      'estado' => 'Activo',
+      'created_at' => '2018-09-06 05:00:00',
+      'updated_at' => '2019-12-07 07:51:54',
+    ),
+    3 => 
+    array (
+      'id' => 4,
+      'core_app_id' => 8,
+      'core_modelo_id' => 25,
+      'descripcion' => 'Fabricación',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 4,
+      'estado' => 'Activo',
+      'created_at' => '2018-09-06 14:21:26',
+      'updated_at' => '2019-09-15 11:39:55',
+    ),
+    4 => 
+    array (
+      'id' => 5,
+      'core_app_id' => 11,
+      'core_modelo_id' => 51,
+      'descripcion' => 'Generar CxC',
+      'modelo_encabezados_documentos' => 'App\\CxC\\CxcDocEncabezado',
+      'modelo_registros_documentos' => 'App\\CxC\\CxcDocRegistro',
+      'modelo_movimientos' => 'App\\CxC\\CxcMovimiento',
+      'orden' => 5,
+      'estado' => 'Activo',
+      'created_at' => '2018-10-18 19:23:14',
+      'updated_at' => '2018-12-05 10:23:55',
+    ),
+    5 => 
+    array (
+      'id' => 6,
+      'core_app_id' => 9,
+      'core_modelo_id' => 177,
+      'descripcion' => 'Órden de compra',
+      'modelo_encabezados_documentos' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Compras\\ComprasDocRegistro',
+      'modelo_movimientos' => 'App\\Compras\\ComprasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2018-10-19 09:53:28',
+      'updated_at' => '2019-12-28 00:42:56',
+    ),
+    6 => 
+    array (
+      'id' => 7,
+      'core_app_id' => 14,
+      'core_modelo_id' => 47,
+      'descripcion' => 'Venta',
+      'modelo_encabezados_documentos' => 'App\\Contabilidad\\ContabDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Contabilidad\\ContabDocRegistro',
+      'modelo_movimientos' => 'App\\Contabilidad\\ContabMovimiento',
+      'orden' => 7,
+      'estado' => 'Inactivo',
+      'created_at' => '2018-10-19 10:01:37',
+      'updated_at' => '2018-11-18 23:18:16',
+    ),
+    7 => 
+    array (
+      'id' => 8,
+      'core_app_id' => 3,
+      'core_modelo_id' => 46,
+      'descripcion' => 'Recaudo',
+      'modelo_encabezados_documentos' => 'App\\Tesoreria\\TesoDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Tesoreria\\TesoDocRegistro',
+      'modelo_movimientos' => 'App\\Tesoreria\\TesoMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2018-10-24 15:35:45',
+      'updated_at' => '2019-10-18 06:23:37',
+    ),
+    8 => 
+    array (
+      'id' => 9,
+      'core_app_id' => 14,
+      'core_modelo_id' => 47,
+      'descripcion' => 'Nota contable',
+      'modelo_encabezados_documentos' => 'App\\Contabilidad\\ContabDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Contabilidad\\ContabDocRegistro',
+      'modelo_movimientos' => 'App\\Contabilidad\\ContabMovimiento',
+      'orden' => 3,
+      'estado' => 'Activo',
+      'created_at' => '2018-11-04 17:16:02',
+      'updated_at' => '2019-09-25 20:18:00',
+    ),
+    9 => 
+    array (
+      'id' => 10,
+      'core_app_id' => 14,
+      'core_modelo_id' => 47,
+      'descripcion' => 'Saldos iniciales',
+      'modelo_encabezados_documentos' => 'App\\Contabilidad\\ContabDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Contabilidad\\ContabDocRegistro',
+      'modelo_movimientos' => 'App\\Contabilidad\\ContabMovimiento',
+      'orden' => 9,
+      'estado' => 'Inactivo',
+      'created_at' => '2018-11-04 17:33:09',
+      'updated_at' => '2018-11-04 17:33:09',
+    ),
+    10 => 
+    array (
+      'id' => 11,
+      'core_app_id' => 14,
+      'core_modelo_id' => 47,
+      'descripcion' => 'Egreso',
+      'modelo_encabezados_documentos' => 'App\\Contabilidad\\ContabDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Contabilidad\\ContabDocRegistro',
+      'modelo_movimientos' => 'App\\Contabilidad\\ContabMovimiento',
+      'orden' => 2,
+      'estado' => 'Inactivo',
+      'created_at' => '2018-11-04 17:33:55',
+      'updated_at' => '2018-11-04 17:33:55',
+    ),
+    11 => 
+    array (
+      'id' => 12,
+      'core_app_id' => 14,
+      'core_modelo_id' => 47,
+      'descripcion' => 'Ingreso',
+      'modelo_encabezados_documentos' => 'App\\Contabilidad\\ContabDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Contabilidad\\ContabDocRegistro',
+      'modelo_movimientos' => 'App\\Contabilidad\\ContabMovimiento',
+      'orden' => 1,
+      'estado' => 'Inactivo',
+      'created_at' => '2018-11-04 17:34:44',
+      'updated_at' => '2018-11-04 17:42:04',
+    ),
+    12 => 
+    array (
+      'id' => 13,
+      'core_app_id' => 14,
+      'core_modelo_id' => 47,
+      'descripcion' => 'Recaudo',
+      'modelo_encabezados_documentos' => 'App\\Contabilidad\\ContabDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Contabilidad\\ContabDocRegistro',
+      'modelo_movimientos' => 'App\\Contabilidad\\ContabMovimiento',
+      'orden' => 1,
+      'estado' => 'Inactivo',
+      'created_at' => '2018-11-04 17:36:22',
+      'updated_at' => '2018-11-18 23:18:44',
+    ),
+    13 => 
+    array (
+      'id' => 14,
+      'core_app_id' => 17,
+      'core_modelo_id' => 90,
+      'descripcion' => 'Liquidación de nómina',
+      'modelo_encabezados_documentos' => 'App\\Nomina\\NomDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Nomina\\NomDocRegistro',
+      'modelo_movimientos' => 'App\\Nomina\\NomMovimiento',
+      'orden' => 6,
+      'estado' => 'Activo',
+      'created_at' => '2018-11-16 10:00:34',
+      'updated_at' => '2019-12-18 14:11:51',
+    ),
+    14 => 
+    array (
+      'id' => 15,
+      'core_app_id' => 12,
+      'core_modelo_id' => 51,
+      'descripcion' => 'Cuenta de cobro',
+      'modelo_encabezados_documentos' => 'App\\CxC\\CxcDocEncabezado',
+      'modelo_registros_documentos' => 'App\\CxC\\CxcDocRegistro',
+      'modelo_movimientos' => 'App\\CxC\\CxcMovimiento',
+      'orden' => 1,
+      'estado' => 'Inactivo',
+      'created_at' => '2018-11-18 12:32:11',
+      'updated_at' => '2019-11-25 05:33:13',
+    ),
+    15 => 
+    array (
+      'id' => 16,
+      'core_app_id' => 13,
+      'core_modelo_id' => 52,
+      'descripcion' => 'Cruce de documentos de CxC',
+      'modelo_encabezados_documentos' => 'App\\CxC\\CxcDocEncabezado',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'App\\CxC\\CxcMovimiento',
+      'orden' => 9,
+      'estado' => 'Activo',
+      'created_at' => '2018-11-19 17:36:16',
+      'updated_at' => '2020-07-23 10:53:29',
+    ),
+    16 => 
+    array (
+      'id' => 17,
+      'core_app_id' => 3,
+      'core_modelo_id' => 54,
+      'descripcion' => 'Pagos de tesorería',
+      'modelo_encabezados_documentos' => 'App\\Tesoreria\\TesoDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Tesoreria\\TesoDocRegistro',
+      'modelo_movimientos' => 'App\\Tesoreria\\TesoMovimiento',
+      'orden' => 2,
+      'estado' => 'Activo',
+      'created_at' => '2018-11-29 02:19:45',
+      'updated_at' => '2019-10-18 06:24:03',
+    ),
+    17 => 
+    array (
+      'id' => 18,
+      'core_app_id' => 12,
+      'core_modelo_id' => 59,
+      'descripcion' => 'Cancelaciones y anticipos',
+      'modelo_encabezados_documentos' => 'App\\CxC\\CxcDocEncabezado',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'App\\CxC\\CxcMovimiento',
+      'orden' => 2,
+      'estado' => 'Inactivo',
+      'created_at' => '2018-12-07 09:45:21',
+      'updated_at' => '2019-11-25 05:33:23',
+    ),
+    18 => 
+    array (
+      'id' => 19,
+      'core_app_id' => 1,
+      'core_modelo_id' => 0,
+      'descripcion' => 'Inscripción estudiante',
+      'modelo_encabezados_documentos' => 'App\\Matriculas\\Inscripcion',
+      'modelo_registros_documentos' => 'App\\Matriculas\\Inscripcion',
+      'modelo_movimientos' => 'App\\Matriculas\\Inscripcion',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2018-12-22 13:59:13',
+      'updated_at' => '2018-12-22 13:59:13',
+    ),
+    19 => 
+    array (
+      'id' => 20,
+      'core_app_id' => 14,
+      'core_modelo_id' => 47,
+      'descripcion' => 'Facturación',
+      'modelo_encabezados_documentos' => 'App\\Contabilidad\\ContabDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Contabilidad\\ContabDocRegistro',
+      'modelo_movimientos' => 'App\\Contabilidad\\ContabMovimiento',
+      'orden' => 2,
+      'estado' => 'Inactivo',
+      'created_at' => '2019-01-11 15:17:33',
+      'updated_at' => '2019-01-11 15:17:33',
+    ),
+    20 => 
+    array (
+      'id' => 21,
+      'core_app_id' => 3,
+      'core_modelo_id' => 0,
+      'descripcion' => 'Recaudo libreta de pago',
+      'modelo_encabezados_documentos' => 'App\\Tesoreria\\TesoRecaudosLibreta',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'App\\Tesoreria\\TesoMovimiento',
+      'orden' => 3,
+      'estado' => 'Inactivo',
+      'created_at' => '2019-01-15 10:40:27',
+      'updated_at' => '2019-12-19 17:22:34',
+    ),
+    21 => 
+    array (
+      'id' => 22,
+      'core_app_id' => 3,
+      'core_modelo_id' => 0,
+      'descripcion' => 'Generación libreta de pagos',
+      'modelo_encabezados_documentos' => 'App\\Tesoreria\\TesoLibretasPago',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'App\\Tesoreria\\TesoMovimiento',
+      'orden' => 5,
+      'estado' => 'Inactivo',
+      'created_at' => '2019-01-15 12:39:06',
+      'updated_at' => '2019-12-19 17:22:44',
+    ),
+    22 => 
+    array (
+      'id' => 23,
+      'core_app_id' => 13,
+      'core_modelo_id' => 139,
+      'descripcion' => 'Factura de ventas',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2019-09-15 20:40:22',
+      'updated_at' => '2019-09-15 20:40:22',
+    ),
+    23 => 
+    array (
+      'id' => 24,
+      'core_app_id' => 13,
+      'core_modelo_id' => 164,
+      'descripcion' => 'Remisión de ventas',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 3,
+      'estado' => 'Activo',
+      'created_at' => '2019-09-20 19:19:42',
+      'updated_at' => '2019-11-01 03:28:03',
+    ),
+    24 => 
+    array (
+      'id' => 25,
+      'core_app_id' => 9,
+      'core_modelo_id' => 159,
+      'descripcion' => 'Factura de compras',
+      'modelo_encabezados_documentos' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Compras\\ComprasDocRegistro',
+      'modelo_movimientos' => 'App\\Compras\\ComprasMovimiento',
+      'orden' => 3,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-08 05:16:52',
+      'updated_at' => '2019-10-29 05:35:02',
+    ),
+    25 => 
+    array (
+      'id' => 26,
+      'core_app_id' => 9,
+      'core_modelo_id' => 147,
+      'descripcion' => 'Recepción por compras',
+      'modelo_encabezados_documentos' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Compras\\ComprasDocRegistro',
+      'modelo_movimientos' => 'App\\Compras\\ComprasMovimiento',
+      'orden' => 2,
+      'estado' => 'Inactivo',
+      'created_at' => '2019-10-08 05:17:22',
+      'updated_at' => '2019-10-11 09:51:33',
+    ),
+    26 => 
+    array (
+      'id' => 27,
+      'core_app_id' => 8,
+      'core_modelo_id' => 151,
+      'descripcion' => 'Inventario Físico',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 99,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-14 07:13:04',
+      'updated_at' => '2019-10-14 23:07:49',
+    ),
+    27 => 
+    array (
+      'id' => 28,
+      'core_app_id' => 8,
+      'core_modelo_id' => 25,
+      'descripcion' => 'Ajuste de inventarios',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 2,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-14 23:02:55',
+      'updated_at' => '2019-11-07 13:19:06',
+    ),
+    28 => 
+    array (
+      'id' => 29,
+      'core_app_id' => 9,
+      'core_modelo_id' => 160,
+      'descripcion' => 'Documentos equivalente a factura',
+      'modelo_encabezados_documentos' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Compras\\ComprasDocRegistro',
+      'modelo_movimientos' => 'App\\Compras\\ComprasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-15 02:57:18',
+      'updated_at' => '2019-10-29 05:49:21',
+    ),
+    29 => 
+    array (
+      'id' => 30,
+      'core_app_id' => 13,
+      'core_modelo_id' => 155,
+      'descripcion' => 'Cotización de ventas',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-21 05:54:03',
+      'updated_at' => '2019-10-21 05:54:17',
+    ),
+    30 => 
+    array (
+      'id' => 31,
+      'core_app_id' => 9,
+      'core_modelo_id' => 149,
+      'descripcion' => 'Registro de CxP',
+      'modelo_encabezados_documentos' => 'App\\CxP\\DocumentosPendientes',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'App\\CxP\\CxpMovimiento',
+      'orden' => 3,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-25 10:40:27',
+      'updated_at' => '2020-05-03 06:56:18',
+    ),
+    31 => 
+    array (
+      'id' => 32,
+      'core_app_id' => 3,
+      'core_modelo_id' => 153,
+      'descripcion' => 'Recaudos de CxC',
+      'modelo_encabezados_documentos' => 'App\\Tesoreria\\TesoDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Tesoreria\\TesoDocRegistro',
+      'modelo_movimientos' => 'App\\Tesoreria\\TesoMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-28 23:19:27',
+      'updated_at' => '2019-10-28 23:19:50',
+    ),
+    32 => 
+    array (
+      'id' => 33,
+      'core_app_id' => 3,
+      'core_modelo_id' => 150,
+      'descripcion' => 'Pagos de CxP',
+      'modelo_encabezados_documentos' => 'App\\Tesoreria\\TesoDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Tesoreria\\TesoDocRegistro',
+      'modelo_movimientos' => 'App\\Tesoreria\\TesoMovimiento',
+      'orden' => 2,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-28 23:20:38',
+      'updated_at' => '2019-10-28 23:20:54',
+    ),
+    33 => 
+    array (
+      'id' => 34,
+      'core_app_id' => 13,
+      'core_modelo_id' => 174,
+      'descripcion' => 'Devolución en ventas',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-29 07:51:59',
+      'updated_at' => '2019-11-06 00:54:17',
+    ),
+    34 => 
+    array (
+      'id' => 35,
+      'core_app_id' => 9,
+      'core_modelo_id' => 165,
+      'descripcion' => 'Entrada por compras',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-31 00:38:59',
+      'updated_at' => '2019-11-01 23:46:07',
+    ),
+    35 => 
+    array (
+      'id' => 36,
+      'core_app_id' => 9,
+      'core_modelo_id' => 166,
+      'descripcion' => 'Nota crédito compras',
+      'modelo_encabezados_documentos' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Compras\\ComprasDocRegistro',
+      'modelo_movimientos' => 'App\\Compras\\ComprasMovimiento',
+      'orden' => 3,
+      'estado' => 'Inactivo',
+      'created_at' => '2019-10-08 00:16:52',
+      'updated_at' => '2019-10-29 00:35:02',
+    ),
+    36 => 
+    array (
+      'id' => 37,
+      'core_app_id' => 9,
+      'core_modelo_id' => 171,
+      'descripcion' => 'Devolución en compras',
+      'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
+      'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
+      'orden' => 1,
+      'estado' => 'Inactivo',
+      'created_at' => '2019-10-29 02:51:59',
+      'updated_at' => '2019-11-30 07:04:55',
+    ),
+    37 => 
+    array (
+      'id' => 38,
+      'core_app_id' => 13,
+      'core_modelo_id' => 167,
+      'descripcion' => 'Nota crédito ventas',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 3,
+      'estado' => 'Inactivo',
+      'created_at' => '2019-11-05 22:47:55',
+      'updated_at' => '2019-11-06 17:41:28',
+    ),
+    38 => 
+    array (
+      'id' => 39,
+      'core_app_id' => 9,
+      'core_modelo_id' => 170,
+      'descripcion' => 'Cruce de documentos de CxP',
+      'modelo_encabezados_documentos' => 'App\\CxP\\CxpDocEncabezado',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'App\\CxP\\CxpMovimiento',
+      'orden' => 6,
+      'estado' => 'Activo',
+      'created_at' => '2019-11-27 00:27:16',
+      'updated_at' => '2019-11-27 00:27:16',
+    ),
+    39 => 
+    array (
+      'id' => 40,
+      'core_app_id' => 9,
+      'core_modelo_id' => 172,
+      'descripcion' => 'Nota crédito directa',
+      'modelo_encabezados_documentos' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Compras\\ComprasDocRegistro',
+      'modelo_movimientos' => 'App\\Compras\\ComprasMovimiento',
+      'orden' => 5,
+      'estado' => 'Activo',
+      'created_at' => '2019-10-08 00:16:52',
+      'updated_at' => '2019-11-30 18:49:28',
+    ),
+    40 => 
+    array (
+      'id' => 41,
+      'core_app_id' => 13,
+      'core_modelo_id' => 173,
+      'descripcion' => 'Nota crédito directa',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 3,
+      'estado' => 'Activo',
+      'created_at' => '2019-12-03 06:37:31',
+      'updated_at' => '2019-12-03 23:07:08',
+    ),
+    41 => 
+    array (
+      'id' => 42,
+      'core_app_id' => 13,
+      'core_modelo_id' => 175,
+      'descripcion' => 'Pedido de ventas',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 2,
+      'estado' => 'Activo',
+      'created_at' => '2019-12-12 12:13:34',
+      'updated_at' => '2019-12-12 12:42:08',
+    ),
+    42 => 
+    array (
+      'id' => 43,
+      'core_app_id' => 3,
+      'core_modelo_id' => 187,
+      'descripcion' => 'Traslados de efectivo',
+      'modelo_encabezados_documentos' => 'App\\Tesoreria\\TesoDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Tesoreria\\TesoDocRegistro',
+      'modelo_movimientos' => 'App\\Tesoreria\\TesoMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-02-07 12:34:26',
+      'updated_at' => '2020-02-10 07:20:15',
+    ),
+    43 => 
+    array (
+      'id' => 44,
+      'core_app_id' => 18,
+      'core_modelo_id' => 221,
+      'descripcion' => 'Factura Médica',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-06-02 04:13:59',
+      'updated_at' => '2020-06-02 04:20:03',
+    ),
+    44 => 
+    array (
+      'id' => 45,
+      'core_app_id' => 20,
+      'core_modelo_id' => 228,
+      'descripcion' => 'Apertura PDV',
+      'modelo_encabezados_documentos' => 'App\\VentasPos\\AperturaEncabezado',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'NA',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-07-07 04:20:06',
+      'updated_at' => '2020-07-07 04:22:03',
+    ),
+    45 => 
+    array (
+      'id' => 46,
+      'core_app_id' => 20,
+      'core_modelo_id' => 229,
+      'descripcion' => 'Cierre PDV',
+      'modelo_encabezados_documentos' => 'App\\VentasPos\\CierreEncabezado',
+      'modelo_registros_documentos' => 'NA',
+      'modelo_movimientos' => 'NA',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-07-07 07:55:42',
+      'updated_at' => '2020-07-07 07:56:00',
+    ),
+    46 => 
+    array (
+      'id' => 47,
+      'core_app_id' => 20,
+      'core_modelo_id' => 230,
+      'descripcion' => 'Factura de ventas POS',
+      'modelo_encabezados_documentos' => 'App\\VentasPos\\FacturaPos',
+      'modelo_registros_documentos' => 'App\\VentasPos\\DocRegistro',
+      'modelo_movimientos' => 'App\\VentasPos\\Movimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-07-07 08:36:01',
+      'updated_at' => '2020-07-08 12:02:17',
     ),
   ),
 ) ;

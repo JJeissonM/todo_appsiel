@@ -59,7 +59,7 @@ class EncabezadoCalificacionController extends Controller
             $modificado_por = '';
         }            
 
-        $formulario = '<h4>Actividad para la calificación '.Input::get('columna_calificacion').'</h4>'.Form::open( ['url'=>url('calificaciones/encabezados?id=5'), 'id' => 'formulario_modal' ] ).'
+        $formulario = '<h4>Actividad para la calificación '.Input::get('columna_calificacion').'</h4>'.Form::open( ['url'=>url('calificaciones_encabezados?id=5'), 'id' => 'formulario_modal' ] ).'
                           <div class="form-group">
                             <label for="fecha">Fecha actividad:</label>
                             <input name="fecha" type="date" class="form-control" id="fecha" value="'.$fecha.'" required="required">

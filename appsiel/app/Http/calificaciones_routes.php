@@ -71,7 +71,7 @@ Route::post('calificaciones/almacenar_calificacion','Calificaciones\Calificacion
 
 
 // ENCABEZADOS CALIFICACIONES
-Route::resource('calificaciones/encabezados', 'Calificaciones\EncabezadoCalificacionController');
+Route::resource('calificaciones_encabezados', 'Calificaciones\EncabezadoCalificacionController');
 
 
 // Este resource debe ser el último
