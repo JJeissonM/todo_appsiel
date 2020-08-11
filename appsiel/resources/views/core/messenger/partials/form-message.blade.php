@@ -3,7 +3,7 @@
     <div class="col-md-8 col-md-offset-2" style="vertical-align: center; border: 1px solid gray;">
         <h3>Responder</h3>
         <hr>
-        <form action="{{ route('messages.update', $thread->id) }}" method="post">
+        <form action="{{ route('messages.update', $thread->id . '?id=5') }}" method="post">
             {{ method_field('put') }}
             {{ csrf_field() }}
                 

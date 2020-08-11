@@ -90,7 +90,7 @@ class TransaccionController extends Controller
     {
         $this->set_variables_globales();
 
-        $permisos = Permission::where( 'core_app_id', $this->app->id)
+        $permisos = Permission::where( 'core_app_id', $this->app->id )
                                 ->where('parent',0)
                                 ->orderBy('orden','ASC')
                                 ->get()
@@ -244,6 +244,7 @@ class TransaccionController extends Controller
         return $costo_prom;
     }
 
+    // Almacenar el costo promedio en la tabla de la BD
     public static function set_costo_promedio($id_bodega,$id_producto,$costo_prom)
     {
         $existe = InvCostoPromProducto::where('inv_bodega_id',$id_bodega)

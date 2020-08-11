@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
+use App\Tesoreria\TesoMedioRecaudo;
+
 class TesoDocEncabezado extends Model
 {
     //protected $table = 'teso_doc_encabezados'; 
@@ -15,6 +19,22 @@ class TesoDocEncabezado extends Model
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_empresa_id','core_tercero_id','codigo_referencia_tercero','teso_tipo_motivo','documento_soporte','descripcion','teso_medio_recaudo_id','teso_caja_id','teso_cuenta_bancaria_id','valor_total','estado','creado_por','modificado_por'];
 
     public $encabezado_tabla = ['Documento','Fecha','Tercero','Detalle','Acción'];
+
+
+    public function caja()
+    {
+        return $this->belongsTo(TesoCaja::class, 'teso_caja_id');
+    }
+
+    public function cuenta_bancaria()
+    {
+        return $this->belongsTo(TesoCuentaBancaria::class, 'teso_cuenta_bancaria_id');
+    }
+
+    public function medio_recaudo()
+    {
+        return $this->belongsTo(TesoMedioRecaudo::class, 'teso_medio_recaudo_id');
+    }
 
     public static function consultar_registros()
     {
@@ -48,7 +68,7 @@ class TesoDocEncabezado extends Model
     */
     public static function get_registro_impresion($id)
     {
-        
+
         return TesoDocEncabezadoPago::where('teso_doc_encabezados.id',$id)
                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
@@ -61,6 +81,10 @@ class TesoDocEncabezado extends Model
                                 'teso_doc_encabezados.consecutivo',
                                 'teso_doc_encabezados.fecha',
                                 'teso_doc_encabezados.descripcion',
+                                'teso_doc_encabezados.teso_medio_recaudo_id',
+                                'teso_doc_encabezados.teso_caja_id',
+                                'teso_doc_encabezados.teso_cuenta_bancaria_id',
+                                'teso_doc_encabezados.valor_total',
                                 'teso_doc_encabezados.estado',
                                 'teso_doc_encabezados.creado_por',
                                 'teso_doc_encabezados.modificado_por',

@@ -29,7 +29,7 @@ class VtasDocEncabezado extends Model
             ->select(
                 'vtas_doc_encabezados.fecha AS campo1',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                DB::raw('core_terceros.descripcion AS campo3'),
                 'vtas_doc_encabezados.descripcion AS campo4',
                 'vtas_doc_encabezados.valor_total AS campo5',
                 'vtas_doc_encabezados.estado AS campo6',
@@ -59,7 +59,7 @@ class VtasDocEncabezado extends Model
             ->select(
                 'vtas_doc_encabezados.fecha AS campo1',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                DB::raw('core_terceros.descripcion AS campo3'),
                 'vtas_doc_encabezados.descripcion AS campo4',
                 'vtas_doc_encabezados.valor_total AS campo5',
                 'vtas_doc_encabezados.estado AS campo6',

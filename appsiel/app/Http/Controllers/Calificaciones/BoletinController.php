@@ -142,6 +142,7 @@ class BoletinController extends Controller
         $mostrar_nombre_docentes = $request->mostrar_nombre_docentes;
         $mostrar_escala_valoracion = $request->mostrar_escala_valoracion;
         $mostrar_usuarios_estudiantes = $request->mostrar_usuarios_estudiantes;
+        $mostrar_etiqueta_final = $request->mostrar_etiqueta_final;
 
         $firmas = [];
         if ( $request->file('firma_rector') != null ) {
@@ -183,7 +184,7 @@ class BoletinController extends Controller
 
 			$banner = View::make('banner_colegio')->render();
 
-			$view =  View::make('calificaciones.boletines.'.$request->formato, compact('estudiantes','asignaturas','colegio','curso','periodo','anio','tam_letra','banner','convetir_logros_mayusculas','mostrar_areas','mostrar_nombre_docentes','mostrar_escala_valoracion','firmas','mostrar_usuarios_estudiantes'))->render();
+			$view =  View::make('calificaciones.boletines.'.$request->formato, compact('estudiantes','asignaturas','colegio','curso','periodo','anio','tam_letra','banner','convetir_logros_mayusculas','mostrar_areas','mostrar_nombre_docentes','mostrar_escala_valoracion','firmas','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final'))->render();
 			
             $pdf = \App::make('dompdf.wrapper');			
             $pdf->loadHTML(($view))->setPaper($request->tam_hoja,$orientacion);

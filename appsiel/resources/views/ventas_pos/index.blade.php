@@ -57,7 +57,19 @@
 		        @endif
 
 		        	<?php 
+		        		
 		        		$num_facturas = App\VentasPos\FacturaPos::where('pdv_id', $pdv->id)->where('estado', 'Pendiente')->count();
+		        		
+		        		$fecha_primera_factura = date('Y-m-d');
+		        		$primera_factura = App\VentasPos\FacturaPos::where('pdv_id', $pdv->id)->where('estado', 'Pendiente')->first();
+		        		if ( !is_null($primera_factura ) )
+		        		{
+		        			$fecha_primera_factura = $primera_factura->fecha;
+		        		}
+		        		$fecha_hoy = date('Y-m-d');
+
+
+
 		        		$apertura = App\VentasPos\AperturaEncabezado::where('pdv_id', $pdv->id)->get()->last();
 		        		$cierre = App\VentasPos\CierreEncabezado::where('pdv_id', $pdv->id)->get()->last();
 
@@ -69,7 +81,7 @@
 
 		        		$btn_cerrar = '<a href="' . url('web/create') . '?id=20&id_modelo=229&id_transaccion=46&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-danger" > Cierre </a>';
 
-		        		$btn_acumular = '<button class="btn btn-xs btn-warning" id="btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  > Acumular </button>';
+		        		$btn_acumular = '<button class="btn btn-xs btn-warning btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  > Acumular </button>';
 
 		        		$btn_hacer_arqueo = '<a href="'.url( '/web/create' . '?id=20&id_modelo=158&vista=tesoreria.arqueo_caja.create&teso_caja_id='.$pdv->caja_default_id ) .'" class="btn btn-xs btn-info" id="btn_hacer_arqueo"> Hacer arqueo </a>';
 
@@ -144,7 +156,7 @@
 											<td>
 												<span class="badge">{{ $num_facturas }}</span>
 												@if( $num_facturas > 0 )
-													<button style="background: transparent; border: 0px; text-decoration: underline; color: #069;" id="btn_consultar_facturas" href="#"> Consultar </button>
+													<button style="background: transparent; border: 0px; text-decoration: underline; color: #069;" class="btn_consultar_facturas" href="#" data-pdv_id="{{$pdv->id}}" data-lbl_ventana="Facturas de ventas" data-fecha_primera_factura="{{$fecha_primera_factura}}" data-fecha_hoy="{{$fecha_hoy}}"> Consultar </button>
 												@endif
 											</td>
 										</tr>
@@ -182,14 +194,21 @@
 
 	@include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
 
+	@include( 'components.design.ventana_modal2',[ 'titulo2' => '', 'texto_mensaje2' => '', 'clase_tamanio' => 'modal-lg' ] )
+
 @endsection
 
 @section('scripts')
 
 	<script type="text/javascript">
+		
+		var pdv_id;
+
 		$(document).ready(function(){
 
-			$("#btn_acumular").click(function(event){
+			$(".btn_acumular").click(function(event){
+
+				pdv_id = $(this).attr('data-pdv_id');
 
 		        $("#myModal").modal({backdrop: "static"});
 		        $("#div_spin").show();
@@ -198,26 +217,38 @@
 
 		        $('#contenido_modal').html( '<h1> Acumulando facturas POS... </h1>' );
 
-		        var url = "{{url('pos_factura_acumular')}}" + "/" + $(this).attr('data-pdv_id');
+		        var url = "{{url('pos_factura_acumular')}}" + "/" + pdv_id;
 
 				$.get( url )
 					.done(function( data ) {
+							
+						$('#contenido_modal').html( '<h1>Acumulación completada exitosamente. </h1> <h1> Contabilizando documentos... </h1>' );
 
-		                $('#contenido_modal').html( '<h1>Acumulación completada exitosamente. </h1>' );
+						// Nueva petición AJAX
+						var url_2 = "{{url('pos_factura_contabilizar')}}" + "/" + pdv_id;
 
-		                $("#div_spin").hide();
+						$.get( url_2 )
+							.done(function( data ) {
+									
+								$('#contenido_modal').html( '<h1>Acumulación completada exitosamente. </h1> <h1> Contabilización completada exitosamente. </h1>' );
+								
+				                $("#div_spin").hide();
 
-		                location.reload();
+				                location.reload();
+
+							});
 
 					});		        
 		    });
 		    
 
-			$(document).on('click',".btn_consultar_estado_pdv",function(event){
+
+
+			$(document).on('click',".btn_consultar_facturas",function(event){
 				event.preventDefault();
 
 		        $('#contenido_modal2').html('');
-				$('#div_spin').fadeIn();
+				$('#div_spin2').fadeIn();
 
 		        $("#myModal2").modal(
 		        	{backdrop: "static"}
@@ -228,10 +259,10 @@
 		        $("#myModal2 .btn_edit_modal").hide();
 				$("#myModal2 .btn_save_modal").hide();
 		        
-		        var url = "{{ url('pos_get_saldos_caja_pdv') }}" + "/" + $('#pdv_id').val() + "/" + "{{date('Y-m-d')}}" + "/" + "{{date('Y-m-d')}}";
+		        var url = "{{ url('pos_consultar_documentos_pendientes') }}" + "/" + $(this).attr('data-pdv_id') + "/" + $(this).attr('data-fecha_primera_factura') + "/" + $(this).attr('data-fecha_hoy');
 
 		        $.get( url, function( respuesta ){
-		        	$('#div_spin').hide();
+		        	$('#div_spin2').hide();
 		        	$('#contenido_modal2').html( respuesta );
 		        });/**/
 		    });

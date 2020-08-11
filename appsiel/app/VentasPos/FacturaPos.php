@@ -14,7 +14,7 @@ class FacturaPos extends Model
     protected $table = 'vtas_pos_doc_encabezados';
 	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'orden_compras', 'descripcion', 'valor_total', 'estado', 'creado_por', 'modificado_por'];
 
-    public $urls_acciones = '{"store":"pos_factura","imprimir":"pos_factura_imprimir/id_fila","show":"no"}'; // ,"eliminar":"pos_factura_anular/id_fila"
+    public $urls_acciones = '{"store":"pos_factura","imprimir":"pos_factura_imprimir/id_fila","show":"pos_factura/id_fila"}'; // ,"eliminar":"pos_factura_anular/id_fila"
 	
     public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente', 'Cond. pago', 'Detalle', 'Valor total', 'PDV', 'Estado', 'Acción'];
 
@@ -31,7 +31,7 @@ class FacturaPos extends Model
                                 ->select(
                                     'vtas_pos_doc_encabezados.fecha AS campo1',
                                     DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo) AS campo2'),
-                                    DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                                    DB::raw('core_terceros.descripcion AS campo3'),
                                     'vtas_pos_doc_encabezados.forma_pago AS campo4',
                                     'vtas_pos_doc_encabezados.descripcion AS campo5',
                                     'vtas_pos_doc_encabezados.valor_total AS campo6',
@@ -95,7 +95,7 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.consecutivo AS documento_transaccion_consecutivo',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo'),
                 DB::raw('CONCAT(doc_inventarios.prefijo," ",inv_doc_encabezados.consecutivo) AS documento_remision_prefijo_consecutivo'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero_nombre_completo'),
+                DB::raw('core_terceros.descripcion AS tercero_nombre_completo'),
                 'core_terceros.numero_identificacion',
                 'core_terceros.direccion1',
                 'core_terceros.telefono1',

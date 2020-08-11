@@ -66,7 +66,6 @@
 				<b>Periodo:</b>	<code>{{ $periodo->descripcion }}</code>
 				<b>Curso:</b><code>{{ $curso->descripcion }}</code>
 				<b>Asignatura:</b><code>{{ $datos_asignatura->descripcion }}</code>
-
 			</div>							
 		</div>
 
@@ -77,20 +76,20 @@
 			</br></br>							
 		</div>
 
-			<p style="color: gray; text-align: right;" id="mensaje_formulario">
-				
-				<spam id="mensaje_inicial">
-				&nbsp;</spam>
-				
-				<spam id="mensaje_sin_guardar" style="background-color:#eaabab; display: none;">
-				Sin guardar</spam>
-				
-				<spam id="mensaje_guardando" style="background-color:#a3e7fe; display: none;">
-				Guardando...</spam>
-				
-				<spam id="mensaje_guardadas" style="background-color: #b1e6b2;">
-				Calificaciones guardadas</spam>
-			</p>
+		<p style="color: gray; text-align: right;" id="mensaje_formulario">
+			
+			<spam id="mensaje_inicial">
+			&nbsp;</spam>
+			
+			<spam id="mensaje_sin_guardar" style="background-color:#eaabab; display: none;">
+			Sin guardar</spam>
+			
+			<spam id="mensaje_guardando" style="background-color:#a3e7fe; display: none;">
+			Guardando...</spam>
+			
+			<spam id="mensaje_guardadas" style="background-color: #b1e6b2;">
+			Calificaciones guardadas</spam>
+		</p>
 
 		<div class="row">
 			<div class="col-sm-12">
@@ -356,16 +355,18 @@
 				$("#alert_mensaje").hide();
 
 				$("#contenido_modal").html( '' );
+				
 
 		        $("#myModal").modal(
 		        	{keyboard: 'true'}
 		        );
+
 				$('#div_spin').fadeIn();
 				$('.btn_edit_modal').hide();
 		        $(".btn_save_modal").show();
+		        $(".modal-title").html('Ingreso/Actualización encabezados de calificaciones');
 
-
-				var url = '../calificaciones/encabezados/create?columna_calificacion=' + $(this).val() + '&periodo_id=' + $('#id_periodo').val() + '&curso_id=' + $('#curso_id').val() + '&asignatura_id=' + $('#id_asignatura').val() + '&anio=' + $('#anio').val();
+				var url = "{{url('/')}}" + '/calificaciones_encabezados/create?columna_calificacion=' + $(this).val() + '&periodo_id=' + $('#id_periodo').val() + '&curso_id=' + $('#curso_id').val() + '&asignatura_id=' + $('#id_asignatura').val() + '&anio=' + $('#anio').val();
 
 				$.get(url, function( respuesta ){
 					$('#div_spin').hide();
@@ -377,17 +378,28 @@
 			$(document).on('click', '.btn_save_modal', function(e) {
 
 				e.preventDefault();
+
 				$("#alert_mensaje").hide();
 
 				$('#div_spin').fadeIn();
 
-				var url = $("#formulario_modal").attr('action');
-				var data = $("#formulario_modal").serialize();
+				var url2 = $("#myModal #formulario_modal").attr('action');
+				var data = $("#myModal #formulario_modal").serialize();
 
-				$.post(url, data, function( respuesta ){
+				console.log( $("#myModal #formulario_modal") );
+				console.log( document.getElementById("formulario_modal") );
+				console.log( [ url2, data ] );
+				
+				$.post(url2, data, function( respuesta ){
+					
+					console.log('ingresa');
+
 					$('#div_spin').hide();
+					
 					$("#alert_mensaje").fadeIn();
-					if ( respuesta == "true" ) {
+					
+					if ( respuesta == "true" )
+					{
 						$("#myModal").modal('hide');
 						alert('Encabezado de la calificación guardado.');
 					}
@@ -395,12 +407,15 @@
 				
 			});
 
-			function setCookie(cname, cvalue, exdays) {
+
+			function setCookie(cname, cvalue, exdays)
+			{
 			  var d = new Date();
 			  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
 			  var expires = "expires="+d.toUTCString();
 			  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 			}
+
 
 			function getCookie(cname) {
 			  var name = cname + "=";
@@ -419,8 +434,6 @@
 
 			function checkCookie() {
 			  var mostrar_ayuda = getCookie("mostrar_ayuda_calificaciones_form");
-
-			  //alert(mostrar_ayuda);
 
 			  if (mostrar_ayuda == "true" || mostrar_ayuda == "") {
 			    

@@ -245,6 +245,7 @@ class PagoCxpController extends TransaccionController
         $modelo = Modelo::find(Input::get('id_modelo'));
 
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
+        $encabezado_documento = TesoDocEncabezado::find( $id );
         
         $id_transaccion = $doc_encabezado->core_tipo_transaccion_id;
         $transaccion = TipoTransaccion::find( $id_transaccion );
@@ -266,7 +267,7 @@ class PagoCxpController extends TransaccionController
                 ['url'=>'NO','etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
             ];
         
-        return view( 'tesoreria.pagos_cxp.show', compact( 'id', 'botones_anterior_siguiente', 'id_transaccion', 'miga_pan','doc_encabezado','registros_contabilidad','doc_pagados','empresa','documento_vista') );
+        return view( 'tesoreria.pagos_cxp.show', compact( 'id', 'botones_anterior_siguiente', 'id_transaccion', 'miga_pan','doc_encabezado','registros_contabilidad','doc_pagados','empresa','documento_vista', 'encabezado_documento') );
     }
 
 

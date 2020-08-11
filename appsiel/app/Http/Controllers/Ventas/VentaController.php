@@ -162,7 +162,6 @@ class VentaController extends TransaccionController
         return $remision_creada_id;
     }
 
-
     /*
         Crea los registros, el movimiento y la contabilización de un documento. 
         Todas estas operaciones se crean juntas porque se almacenena en cada iteración de las lineas de registros
@@ -204,7 +203,7 @@ class VentaController extends TransaccionController
                                     $linea_datos
                                 );
 
-            // CONTABILIZAR
+            // CONTABILIZAR INGRESOS
             $detalle_operacion = $datos['descripcion'];
             VentaController::contabilizar_movimiento_credito( $datos + $linea_datos, $detalle_operacion );
 
@@ -226,7 +225,7 @@ class VentaController extends TransaccionController
         
     }
 
-    public static function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion )
+    public static function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion, $caja_banco_id = null )
     {
         /*
             WARNING. Esto debe ser un parámetro de la configuración. Si se quiere llevar la factura contado a la caja directamente o si se causa una cuenta por cobrar
@@ -250,17 +249,22 @@ class VentaController extends TransaccionController
         // Agregar el movimiento a tesorería
         if ( $forma_pago == 'contado')
         {
-            // WARNING: Esta cuenta en realidad la debe tomar de la caja por defecto asociada al ususario,
-            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            $caja = TesoCaja::get()->first();
+            if( is_null( $caja_banco_id ) )
+            {
+                $caja = TesoCaja::get()->first();
+            }else{
+                $caja = TesoCaja::find( $caja_banco_id );
+            }
+            
             $cta_caja_id = $caja->contab_cuenta_id;
+            
             ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, $total_documento, 0, $caja->id, 0);
         }
     }
 
+    // Contabilizar Ingresos de ventas e Impuestos
     public static function contabilizar_movimiento_credito( $una_linea_registro, $detalle_operacion )
-    {
-        
+    {    
         // IVA generado (CR)
         // Si se ha liquidado impuestos en la transacción
         $valor_total_impuesto = 0;
@@ -711,15 +715,7 @@ class VentaController extends TransaccionController
         // Si no está vacío el array $producto
         if( !empty($producto) )
         {
-            $costo_promedio = InvCostoPromProducto::where('inv_bodega_id','=',$bodega_id)
-                                    ->where('inv_producto_id','=',$producto['id'])
-                                    ->value('costo_promedio');
-
-            if ( ! ($costo_promedio>0) ) 
-            {
-                $costo_promedio = 0;
-            }
-
+            $costo_promedio = InvCostoPromProducto::get_costo_promedio($bodega_id, $producto['id'] );
 
             /*
                 El precio de venta se trae de a cuerdo al parámetro de la configuración

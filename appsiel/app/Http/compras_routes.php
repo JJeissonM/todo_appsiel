@@ -32,7 +32,7 @@ Route::get('compras_enviar_por_email/{id}', 'Compras\CompraController@enviar_por
 Route::get('compras_catalogos', 'Compras\CompraController@catalogos');
 
 Route::post('compras_proveedores_tercero_a_proveedor_store', 'Compras\ProveedorController@tercero_a_proveedor_store');
-Route::get('compras_proveedores_tercero_a_proveedor_create', 'Compras\ProveedorController@tercero_a_proveedor_create');
+//Route::get('compras_proveedores_tercero_a_proveedor_create', 'Compras\ProveedorController@tercero_a_proveedor_create');
 Route::resource('compras_proveedores', 'Compras\ProveedorController');
 
 

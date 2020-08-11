@@ -35,17 +35,21 @@
 		          		$url=$fila['url'].'?id='.Input::get('id').'&id_modelo='.$fila['modelo_id'];
 		          ?>
 		          @can($fila['name'])
+
+		          	@if($fila['descripcion'] != App\Sistema\Aplicacion::find(Input::get('id'))->descripcion )
+			          
 			          <div class="col-sm-{{12/$cant_cols}}">
 			          		<a href="{{url($url)}}">
 			          			<h1><i class="fa fa-{{$fila['fa_icon']}}"></i></h1>
 				                {{$fila['descripcion']}}
 				            </a>
 			          </div>
+			          
+			        @endif
+
 			     @endcan
 		    <?php
 		          $i++;
-
-		          $modelo_tercero_a_proveedor_id = 156;
 		      ?>
 		          @if($i % $cant_cols == 0)
 		            </div>
@@ -53,12 +57,6 @@
 		          @endif
 		        @endforeach
 
-		        <div class="col-sm-{{12/$cant_cols}}">
-	          		<a href="{{ url('compras_proveedores_tercero_a_proveedor_create'.'?id='.Input::get('id').'&id_modelo='.$modelo_tercero_a_proveedor_id )}}">
-	          			<h1><i class="fa fa-child"></i></h1>
-		                Crear tercero como proveedor
-		            </a>
-	          </div>
 		</div>
 	</div>
 @endsection

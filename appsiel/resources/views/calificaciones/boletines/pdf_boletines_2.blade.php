@@ -159,6 +159,19 @@
 						@endif
 						</td>
 				</tr>
+
+				@if( $mostrar_etiqueta_final != 'No' )
+					<tr style="font-size: {{$tam_letra}}mm;">
+						@if($curso->maneja_calificacion)
+							<td colspan="4">
+						@else
+							<td colspan="3">
+						@endif
+							@include('calificaciones.boletines.mostrar_etiqueta_final')
+						</td>
+					</tr>
+				@endif
+				
 			</tbody>
 		</table>
 

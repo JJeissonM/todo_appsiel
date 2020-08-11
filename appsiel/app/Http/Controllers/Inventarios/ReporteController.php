@@ -313,9 +313,34 @@ class ReporteController extends Controller
         $estado = $request->estado;
         $etiqueta = $request->etiqueta;
                 
-        $items = InvProducto::get_datos_basicos($grupo_inventario_id, $estado);
+        $items = InvProducto::get_datos_basicos( $grupo_inventario_id, $estado);
 
         $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta') )->render();
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+   
+        return $vista;
+
+    }
+
+
+    public function balance_inventarios(Request $request)
+    {
+        $grupo_inventario_id = $request->grupo_inventario_id;
+        $inv_bodega_id = $request->inv_bodega_id;
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
+        $mostrar_items_sin_movimiento = $request->mostrar_items_sin_movimiento;
+                
+        $items = InvProducto::get_datos_basicos( $grupo_inventario_id, 'Activo' );
+
+        $saldos_items = InvMovimiento::get_saldos_iniciales_items( $grupo_inventario_id, $inv_bodega_id, $fecha_desde );
+
+        $movimientos_entradas = InvMovimiento::get_suma_movimientos( $grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'entrada' );
+
+        $movimientos_salidas = InvMovimiento::get_suma_movimientos( $grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'salida' );
+
+        $vista = View::make( 'inventarios.reportes.balance_inventarios', compact('items', 'mostrar_items_sin_movimiento', 'saldos_items', 'movimientos_entradas', 'movimientos_salidas', 'fecha_desde', 'fecha_hasta', 'inv_bodega_id' ) )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
    

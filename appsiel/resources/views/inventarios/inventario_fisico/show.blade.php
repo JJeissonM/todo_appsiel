@@ -10,7 +10,7 @@
 @endsection
 
 @section('botones_imprimir_email')
-	{{ Form::bsBtnPrint( 'inv_fisico_imprimir/'.$id ) }}
+	{{ Form::bsBtnPrint( 'inv_fisico_imprimir/'.$id.$variables_url ) }}
 @endsection
 
 @section('botones_anterior_siguiente')

@@ -66,7 +66,7 @@ class MessagesController extends Controller
 
         $miga_pan = [
                         ['url'=>'/','etiqueta'=>'Inicio'],
-                        ['url'=>'messages','etiqueta'=>'Mensajería interna'],
+                        ['url'=>'messages?id=5','etiqueta'=>'Mensajería interna'],
                         ['url'=>'NO','etiqueta'=>'Nueva conversación']
                     ];
 
@@ -100,7 +100,7 @@ class MessagesController extends Controller
 
         $miga_pan = [
                         ['url'=>'/','etiqueta'=>'Inicio'],
-                        ['url'=>'messages','etiqueta'=>'Mensajería interna'],
+                        ['url'=>'messages?id=5','etiqueta'=>'Mensajería interna'],
                         ['url'=>'NO','etiqueta'=>'Secuencia de la conversación']
                     ];
 
@@ -159,10 +159,10 @@ class MessagesController extends Controller
             // Recipients
             $thread->addParticipant( $vec_ids_usuarios );
 
-            return redirect()->route('messages')->with('flash_message','Mensaje enviado correctamente a '.$indice.' usuarios.');
+            return redirect()->route('messages','id=5')->with('flash_message','Mensaje enviado correctamente a '.$indice.' usuarios.');
                         
         }else{
-            return redirect()->route('messages')->with('mensaje_error','Ningún mensaje enviado. Revise las direcciones ingresadas.');
+            return redirect()->route('messages','id=5')->with('mensaje_error','Ningún mensaje enviado. Revise las direcciones ingresadas.');
         }
     }
 
@@ -204,6 +204,6 @@ class MessagesController extends Controller
             $thread->addParticipant(Input::get('recipients'));
         }
 
-        return redirect()->route('messages.show', $id);
+        return redirect()->route('messages.show', $id . '?id=5');
     }
 }

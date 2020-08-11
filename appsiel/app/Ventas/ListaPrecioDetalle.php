@@ -16,7 +16,7 @@ class ListaPrecioDetalle extends Model
 	public $encabezado_tabla = ['Lista de precios', 'Producto', 'Fecha activación', 'Precio', 'Acción'];
 
 	// Las acciones tienen valores predeterminados, si el modelo no va a tener una acción, se debe asignar la palabra "no" a la acción.
-    public $urls_acciones = '{"imprimir":"no","cambiar_estado":"no","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
+    public $urls_acciones = '{"imprimir":"no","cambiar_estado":"no","eliminar":"web_eliminar/id_fila","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
 
 	public static function consultar_registros()
 	{

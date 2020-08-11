@@ -523,8 +523,8 @@ class CompraController extends TransaccionController
         }
 
         // Linea crear nuevo registro
-        //$modelo_id = 146;
-        //$html .= '<a class="list-group-item list-group-item-proveedor boton_crear list-group-item-info" data-modelo_id="'.$modelo_id.  '" > + Crear nuevo </a>';
+        $modelo_id = 146; // App\Ventas\Proveedores
+        $html .= '<a href="'.url('compras_proveedores/create?id=9&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
 
         $html .= '</div>';
 

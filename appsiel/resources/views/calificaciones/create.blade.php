@@ -366,7 +366,7 @@
 				$('.btn_edit_modal').hide();
 
 
-				var url = '../calificaciones/encabezados/create?columna_calificacion=' + $(this).val() + '&periodo_id=' + $('#id_periodo').val() + '&curso_id=' + $('#curso_id').val() + '&asignatura_id=' + $('#id_asignatura').val() + '&anio=' + $('#anio').val();
+				var url = "{{url('/')}}" + '/calificaciones_encabezados/create?columna_calificacion=' + $(this).val() + '&periodo_id=' + $('#id_periodo').val() + '&curso_id=' + $('#curso_id').val() + '&asignatura_id=' + $('#id_asignatura').val() + '&anio=' + $('#anio').val();
 
 				$.get(url, function( respuesta ){
 					$('#div_spin').hide();

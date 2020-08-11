@@ -204,9 +204,7 @@ class ProcesoController extends Controller
             foreach ($registros as $un_registro)
             {
                 // Por cada registro se obtiene el costo promedio ACTUAL del producto para la bodega
-                $costo_promedio = InvCostoPromProducto::where( 'inv_bodega_id', $un_registro->inv_bodega_id )
-                                                    ->where( 'inv_producto_id', $un_registro->inv_producto_id )
-                                                    ->value( 'costo_promedio');
+                $costo_promedio = InvCostoPromProducto::get_costo_promedio( $un_registro->inv_bodega_id, $un_registro->inv_producto_id );
                 
                 $costo_total = $un_registro->cantidad * $costo_promedio;
 
