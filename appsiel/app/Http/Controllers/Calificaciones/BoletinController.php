@@ -160,9 +160,14 @@ class BoletinController extends Controller
         	$firmas[1] = 'No cargada';
         }
 
-        
+        $estudiante_id = null;
+        if ( isset( $request->estudiante_id ) )
+        {
+            $estudiante_id = $request->estudiante_id;
+        }
+
 		// Listado de estudiantes con matriculas activas en el curso y año indicados
-		$estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, null );
+		$estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, null, $estudiante_id );
 		
         $curso = Curso::find($request->curso_id);
 

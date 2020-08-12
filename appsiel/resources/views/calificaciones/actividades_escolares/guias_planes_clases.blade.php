@@ -10,15 +10,18 @@
 
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped" id="myTable">
-			{{ Form::bsTableHeader(['Semana académica', 'Fecha', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Imprimir']) }}
+			{{ Form::bsTableHeader([ 'Fecha', 'Descripción', 'Semana académica', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Imprimir']) }}
 			<tbody>
 				@foreach ($planes as $fila)
 					<tr>
 						<td>
-							{{ $fila->semana }}
+							{{ $fila->fecha }}
 						</td>
 						<td>
-							{{ $fila->fecha }}
+							{{ $fila->descripcion }}
+						</td>
+						<td>
+							{{ $fila->semana }}
 						</td>
 						<td>
 							{{ $fila->periodo_decripcion }}

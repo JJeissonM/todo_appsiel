@@ -149,7 +149,7 @@
 
 			$("#btn_imprimir").on('click',function(){
 				$('#formulario').submit();
-			});		
+			});
 		});
 	</script>
 @endsection

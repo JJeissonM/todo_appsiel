@@ -97,6 +97,70 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['formato_boletin_default'] ) )
+								{
+									$formato_boletin_default = $parametros['formato_boletin_default'];
+								}else{
+									$formato_boletin_default = 'pdf_boletines_3';
+								}
+
+								$formatos_boletines = [
+                        						'pdf_boletines_1' => 'Formato # 1 (estándar)',
+						                        'pdf_boletines_2' => 'Formato # 2 (moderno)',
+						                        'pdf_boletines_3' => 'Formato # 3 (visual)',
+						                        'pdf_boletines_4' => 'Formato # 4 (metas)'
+						                    ];
+
+							?>
+							{{ Form::bsSelect('formato_boletin_default', $formato_boletin_default, 'Formato de boletín por defecto', $formatos_boletines, ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['estudiante_revisar_guia_academicas'] ) )
+								{
+									$estudiante_revisar_guia_academicas = $parametros['estudiante_revisar_guia_academicas'];
+								}else{
+									$estudiante_revisar_guia_academicas = 'No';
+								}
+							?>
+							{{ Form::bsSelect('estudiante_revisar_guia_academicas', $estudiante_revisar_guia_academicas, 'Estudiante puede revisar guías académicas', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['estudiante_activar_foros_discucion'] ) )
+								{
+									$estudiante_activar_foros_discucion = $parametros['estudiante_activar_foros_discucion'];
+								}else{
+									$estudiante_activar_foros_discucion = 'No';
+								}
+							?>
+							{{ Form::bsSelect('estudiante_activar_foros_discucion', $estudiante_activar_foros_discucion, 'Estudiante puede participar en foros', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				{{ Form::hidden('url_id',Input::get('id')) }}
 				{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
 				

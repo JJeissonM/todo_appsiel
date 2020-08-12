@@ -371,6 +371,7 @@ class PlanClaseEncabezado extends Model
                                         'sga_plan_clases_struc_plantillas.descripcion AS plantilla_decripcion',
                                         'sga_plan_clases_encabezados.fecha',
                                         'sga_plan_clases_encabezados.archivo_adjunto',
+                                        'sga_plan_clases_encabezados.descripcion',
                                         'sga_semanas_calendario.descripcion AS semana_decripcion',
                                         'sga_periodos.descripcion AS periodo_decripcion',
                                         'sga_cursos.descripcion AS curso_decripcion',
@@ -401,6 +402,7 @@ class PlanClaseEncabezado extends Model
                                     ->select(
                                         'sga_plan_clases_struc_plantillas.descripcion AS plan_clases',
                                         'sga_plan_clases_encabezados.fecha',
+                                        'sga_plan_clases_encabezados.descripcion',
                                         'sga_semanas_calendario.descripcion AS semana',
                                         'sga_periodos.descripcion AS periodo_decripcion',
                                         'sga_cursos.descripcion AS curso_decripcion',

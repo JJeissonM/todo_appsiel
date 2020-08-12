@@ -53,7 +53,7 @@ class EscalaValoracion extends Model
         {
             $array_wheres = array_merge($array_wheres, [ ['sga_escala_valoracion.periodo_lectivo_id', $periodo_lectivo_id] ]);          
         }
-        //dd($array_wheres);
+        
         return EscalaValoracion::leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_escala_valoracion.periodo_lectivo_id')
                                     ->where( $array_wheres )
                                     ->select('sga_escala_valoracion.id','sga_escala_valoracion.nombre_escala','sga_escala_valoracion.calificacion_minima','sga_escala_valoracion.calificacion_maxima')

@@ -21,9 +21,9 @@ class GuiaAcademica extends Model
 {
     protected $table = 'sga_plan_clases_encabezados';
 
-	protected $fillable = ['plantilla_plan_clases_id', 'fecha', 'semana_calendario_id', 'periodo_id', 'curso_id', 'asignatura_id', 'user_id','archivo_adjunto', 'estado'];
+	protected $fillable = ['plantilla_plan_clases_id', 'fecha', 'semana_calendario_id', 'periodo_id', 'curso_id', 'asignatura_id', 'user_id','archivo_adjunto', 'descripcion', 'estado'];
 	
-    public $encabezado_tabla = ['Fecha', 'Semana académica', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Estado', 'Acción'];
+    public $encabezado_tabla = ['Fecha', 'Descripción', 'Semana académica', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Estado', 'Acción'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"sga_planes_clases/id_fila","eliminar":"sga_planes_clases_eliminar/id_fila"}';
     
@@ -49,13 +49,14 @@ class GuiaAcademica extends Model
                                     ->where( $array_wheres )
                                     ->select(
                                         'sga_plan_clases_encabezados.fecha AS campo1',
-                                        'sga_semanas_calendario.descripcion AS campo2',
-                                        'sga_periodos.descripcion AS campo3',
-                                        'sga_cursos.descripcion AS campo4',
-                                        'sga_asignaturas.descripcion AS campo5',
-                                        'users.name AS campo6',
-                                        'sga_plan_clases_encabezados.estado AS campo7',
-                                        'sga_plan_clases_encabezados.id AS campo8' )
+                                        'sga_plan_clases_encabezados.descripcion AS campo2',
+                                        'sga_semanas_calendario.descripcion AS campo3',
+                                        'sga_periodos.descripcion AS campo4',
+                                        'sga_cursos.descripcion AS campo5',
+                                        'sga_asignaturas.descripcion AS campo6',
+                                        'users.name AS campo7',
+                                        'sga_plan_clases_encabezados.estado AS campo8',
+                                        'sga_plan_clases_encabezados.id AS campo9' )
                             	    ->get()
                             	    ->toArray();
 	}
@@ -349,6 +350,7 @@ class GuiaAcademica extends Model
                                     ->select(
                                         'sga_plan_clases_struc_plantillas.descripcion AS plantilla_decripcion',
                                         'sga_plan_clases_encabezados.fecha',
+                                        'sga_plan_clases_encabezados.descripcion',
                                         'sga_plan_clases_encabezados.archivo_adjunto',
                                         'sga_semanas_calendario.descripcion AS semana_decripcion',
                                         'sga_periodos.descripcion AS periodo_decripcion',

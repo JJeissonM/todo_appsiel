@@ -54,9 +54,10 @@ class ReporteController extends Controller
      */
     public function consolidado_periodo_por_curso(Request $request)
     {
-        $tope_escala_valoracion_minima = EscalaValoracion::orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
         
         $periodo = Periodo::find($request->periodo_id);
+
+        $tope_escala_valoracion_minima = EscalaValoracion::where( 'periodo_lectivo_id', $periodo->periodo_lectivo_id )->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
 
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, $request->periodo_id );
 
@@ -188,7 +189,7 @@ class ReporteController extends Controller
     */
     public function promedio_acumulado_periodos(Request $request)
     {
-        $tope_escala_valoracion_minima = EscalaValoracion::orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
+        $tope_escala_valoracion_minima = EscalaValoracion::where( 'periodo_lectivo_id', $request->periodo_lectivo_id )->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
 
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
 
@@ -264,9 +265,11 @@ class ReporteController extends Controller
      */
     public function promedio_consolidado_asignaturas(Request $request)
     {
-        $tope_escala_valoracion_minima = EscalaValoracion::orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
+        $tope_escala_valoracion_minima = EscalaValoracion::where( 'periodo_lectivo_id', $request->periodo_lectivo_id )
+                                                        ->orderBy('calificacion_minima','ASC')
+                                                        ->first()->calificacion_maxima;
 
-        $calificaciones = CalificacionAuxiliar::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
+        $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
 
         $estado_matricula = null; // Todas las matriculas. ¿Está bien así?
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, $estado_matricula );

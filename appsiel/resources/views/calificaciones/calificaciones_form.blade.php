@@ -383,16 +383,10 @@
 
 				$('#div_spin').fadeIn();
 
-				var url2 = $("#myModal #formulario_modal").attr('action');
-				var data = $("#myModal #formulario_modal").serialize();
+				var url = $("#formulario_modal").attr('action');
+				var data = $("#formulario_modal").serialize();
 
-				console.log( $("#myModal #formulario_modal") );
-				console.log( document.getElementById("formulario_modal") );
-				console.log( [ url2, data ] );
-				
-				$.post(url2, data, function( respuesta ){
-					
-					console.log('ingresa');
+				$.post(url, data, function( respuesta ){
 
 					$('#div_spin').hide();
 					
