@@ -21,7 +21,7 @@ class PaginaController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth')->except('showPage');
+        $this->middleware('auth')->except('showPage','nuevaSeccion');
     }
 
     public function index()
