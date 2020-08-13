@@ -18,10 +18,9 @@ use Illuminate\Http\Request;
 class PaginaController extends Controller
 {
 
-
     public function __construct()
     {
-        $this->middleware('auth')->except('showPage','nuevaSeccion');
+        //$this->middleware('auth')->except('showPage');
     }
 
     public function index()
