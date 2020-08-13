@@ -3,7 +3,7 @@
 @section('content')
 <div class="login-form">
     <form role="form" method="POST" action="{{ url('/login') }}">
-        {{ csrf_field() }}
+        {{ csrf_token() }}
           
           <?php
             if( app()->environment() != 'demo' )

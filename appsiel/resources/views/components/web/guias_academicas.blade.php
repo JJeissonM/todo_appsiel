@@ -90,7 +90,7 @@
     document.getElementById("btn_consultar").addEventListener("click", function(event){
         
         event.preventDefault();
-        
+        $("#div_lista_guias_academicas").html( '' );
         $('#div_spin2').show();
         
         var curso_id = document.getElementById('curso_id').value;
