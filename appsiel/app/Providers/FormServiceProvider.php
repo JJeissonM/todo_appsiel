@@ -97,6 +97,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('pqr', 'components.web.pqr', ['registro', 'pagina']);
         Form::component('parallax', 'components.web.parallax', ['parallax']);
         Form::component('sticky', 'components.web.sticky', ['sticky']);
+        Form::component('guias_academicas', 'components.web.guias_academicas', ['cursos']);
     }
 
     /**
