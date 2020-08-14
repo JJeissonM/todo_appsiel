@@ -70,7 +70,7 @@
             }
         };
 
-        xhttp.open("GET", "{{ url('get_select_asignaturas') }}" + "/" + curso_id + "/" + null, true);
+        xhttp.open("GET", "{{ url('pw_get_select_asignaturas') }}" + "/" + curso_id + "/" + null, true);
         xhttp.send();
     }
 
