@@ -19,6 +19,7 @@ class Authenticate
      */
     public function handle($request, Closure $next, $guard = null)
     {
+
         if (Auth::guard($guard)->guest()) {
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
@@ -26,6 +27,12 @@ class Authenticate
                 return redirect()->guest('/login');
             }
         }
+
+        if( $request->method() == 'POST' )
+        {
+            return $next($request);
+        }
+
         $user = Auth::user();
 
         if(isset($request->id) && isset($request->id_modelo)){

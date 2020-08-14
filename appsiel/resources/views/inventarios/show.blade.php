@@ -10,9 +10,15 @@
         @if( !in_array( $doc_encabezado->estado, ['Anulado', 'Facturada'] ) )
             <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
         @endif
+        
         @if( $doc_encabezado->estado == 'Pendiente' && Input::get('id_transaccion') == 35 )
-            <a class="btn btn-success btn-xs" href="{{ url('compras/create') . '?id=9&id_modelo=159&id_transaccion=25' }}"><i class="fa fa-btn fa-plus"></i> Crear Factura </a>
+            <a class="btn btn-success btn-xs" href="{{ url('compras/create') . '?id=9&id_modelo=159&id_transaccion=25' }}"><i class="fa fa-btn fa-plus"></i> Crear Factura de Compras </a>
         @endif
+        
+        @if( $doc_encabezado->estado == 'Pendiente' && Input::get('id_transaccion') == 24 )
+            <a class="btn btn-success btn-xs" href="{{ url('ventas/create') . '?id=13&id_modelo=139&id_transaccion=23' }}"><i class="fa fa-btn fa-plus"></i> Crear Factura de Ventas </a>
+        @endif
+
     <!-- @ endif -->
 @endsection
 
