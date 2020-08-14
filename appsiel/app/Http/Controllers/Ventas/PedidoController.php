@@ -173,13 +173,12 @@ class PedidoController extends TransaccionController
 
         $cantidad_registros = count($lineas_registros);
 
-
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
-            if(!isset($lineas_registros[$i]->inv_Imotivo_id))
+            if(!isset($lineas_registros[$i]->inv_motivo_id))
                 $inv_motivo_id = config('pagina_web.pedidos_inv_motivo_id');
             else
-                $inv_motivo_id = $lineas_registros[$i]->inv_Imotivo_id;
+                $inv_motivo_id = $lineas_registros[$i]->inv_motivo_id;
 
             // Se llama nuevamente el precio de venta para estar SEGURO
           $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
@@ -206,9 +205,9 @@ class PedidoController extends TransaccionController
               ['estado' => 'Activo'];
 
             VtasDocRegistro::create(
-                    ['vtas_doc_encabezado_id' => $doc_encabezado->id] +
-                    $linea_datos
-            );
+                                        ['vtas_doc_encabezado_id' => $doc_encabezado->id] +
+                                        $linea_datos
+                                    );
 
             $total_documento += $lineas_registros[$i]->precio_total;
 

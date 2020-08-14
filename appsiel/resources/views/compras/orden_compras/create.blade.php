@@ -143,6 +143,7 @@
 
 
 			$('#fecha').val( get_fecha_hoy() );
+			$('#fecha_recepcion').val( get_fecha_hoy() );
 
 			$('#fecha_vencimiento').attr( 'readonly','readonly' );
 

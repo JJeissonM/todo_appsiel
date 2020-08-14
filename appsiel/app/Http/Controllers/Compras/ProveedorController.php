@@ -181,6 +181,7 @@ class ProveedorController extends ModeloController
         $registro->tipo = $tercero->tipo;
         $registro->razon_social = $tercero->razon_social;
         $registro->email = $tercero->email;
+        $registro->pagina_web = $tercero->pagina_web;
         
         $form_create = [
                         'url' => $modelo->url_form_create,
