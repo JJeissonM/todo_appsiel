@@ -95,17 +95,27 @@ class OrdenCompraController extends TransaccionController
 
             $precio_total = $precio_unitario * $cantidad;
 
+            $tasa_descuento = 0;
+            $valor_total_descuento = 0;
+            if ( isset( $lineas_registros[$i]->tasa_descuento ) )
+            {
+                $tasa_descuento = $lineas_registros[$i]->tasa_descuento;
+                $valor_total_descuento = $lineas_registros[$i]->valor_total_descuento;
+            }
+
             $linea_datos = ['inv_bodega_id' => (int) $lineas_registros[$i]->inv_bodega_id] +
-                ['inv_motivo_id' => (int) $lineas_registros[$i]->inv_motivo_id] +
-                ['inv_producto_id' => (int) $lineas_registros[$i]->inv_producto_id] +
-                ['precio_unitario' => $precio_unitario] +
-                ['cantidad' => $cantidad] +
-                ['precio_total' => $precio_total] +
-                ['base_impuesto' =>  $total_base_impuesto] +
-                ['tasa_impuesto' => $tasa_impuesto ] +
-                ['valor_impuesto' => (abs($precio_total) - $total_base_impuesto)] +
-                ['creado_por' => Auth::user()->email] +
-                ['estado' => 'Activo'];
+                            ['inv_motivo_id' => (int) $lineas_registros[$i]->inv_motivo_id] +
+                            ['inv_producto_id' => (int) $lineas_registros[$i]->inv_producto_id] +
+                            ['precio_unitario' => $precio_unitario] +
+                            ['cantidad' => $cantidad] +
+                            ['precio_total' => $precio_total] +
+                            ['base_impuesto' =>  $total_base_impuesto] +
+                            ['tasa_impuesto' => $tasa_impuesto ] +
+                            ['valor_impuesto' => (abs($precio_total) - $total_base_impuesto)] +
+                            [ 'tasa_descuento' => $tasa_descuento ] +
+                            [ 'valor_total_descuento' => $valor_total_descuento ] +
+                            ['creado_por' => Auth::user()->email] +
+                            ['estado' => 'Activo'];
 
             ComprasDocRegistro::create(
                 $datos +
