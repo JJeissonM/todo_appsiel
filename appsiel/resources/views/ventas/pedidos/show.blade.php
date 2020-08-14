@@ -58,6 +58,7 @@ Formato: {{ Form::select('formato_impresion_id',['1'=>'POS','2'=>'Estándar'],nu
 	<input type="hidden" name="lineas_registros" id="lineas_registros" />
 	<input type="hidden" name="url_id" value="{{Input::get('id')}}" />
 	<input type="hidden" name="cliente_id" value="{{$cliente->id}}" />
+	<input type="hidden" name="core_tercero_id" value="{{$cliente->core_tercero_id}}" />
 	<input type="hidden" name="inv_bodega_id" value="{{$cliente->inv_bodega_id}}" />
 	<input type="hidden" name="core_empresa_id" value="{{$doc_encabezado->core_empresa_id}}" />
 	<table class="table table-bordered table-striped">

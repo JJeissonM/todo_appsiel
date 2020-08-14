@@ -449,10 +449,12 @@ class PedidoController extends TransaccionController
         $hoy = getdate();
         $request['fecha'] = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
         $remision_creada_id = InventarioController::crear_documento($request, $lineas_registros, $rm_modelo_id);
+        
         $pedido = VtasDocEncabezado::get_registro_impresion($request->id);
         $pedido->remision_doc_encabezado_id = $remision_creada_id;
         $pedido->estado = "Cumplido";
         $pedido->save();
+        
         return redirect('inventarios/' . $remision_creada_id . '?id=' . $request->url_id . '&id_modelo=' . $rm_modelo_id . '&id_transaccion=' . $rm_tipo_transaccion_id);
     }
 }

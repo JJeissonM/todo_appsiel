@@ -181,9 +181,11 @@ class OrdenCompraController extends TransaccionController
         $request['descripcion'] = $orden->descripcion;
         $hoy = getdate();
         $request['fecha'] = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
+        
         $entrada_almacen_id = InventarioController::crear_documento($request, $lineas_registros, $ea_modelo_id);
         $orden->entrada_almacen_id = $entrada_almacen_id;
         $orden->save();
+        
         return redirect('inventarios/' . $entrada_almacen_id . '?id=' . $request->url_id . '&id_modelo=' . $ea_modelo_id . '&id_transaccion=' . $ea_tipo_transaccion_id);
     }
 }
