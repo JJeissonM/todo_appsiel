@@ -286,10 +286,10 @@
 				<button id="btn_listar_items" style="border: 0; background: transparent;"> <i class="fa fa-btn fa-search"></i> </button>
 			</td>
 			<td>
-				{{ Form::text( 'inv_producto_id', null, [ 'class' => 'form-control', 'id' => 'inv_producto_id' ] ) }}
+				{{ Form::text( 'inv_producto_id', null, [ 'class' => 'form-control', 'id' => 'inv_producto_id', 'autocomplete' => 'off' ] ) }}
 			</td>
 			<td> 
-				<input class="form-control" id="cantidad" width="30px" name="cantidad" type="text">
+				<input class="form-control" id="cantidad" width="30px" name="cantidad" type="text" autocomplete="off">
 			</td>
 			<td>
 				<input class="form-control" id="precio_unitario" name="precio_unitario" type="text">
@@ -956,11 +956,23 @@
 
 			function agregar_la_linea()
 			{
+				$('#popup_alerta').hide();
+
 				// Se escogen los campos de la fila ingresada
 				var fila = $('#linea_ingreso_default');
 
+				var string_fila = generar_string_celdas( fila );
+
+				if ( string_fila == false )
+				{
+					$('#popup_alerta').show();
+					$('#popup_alerta').css('background-color','red');
+					$('#popup_alerta').text( 'Producto no encontrado.' );
+					return false;
+				}
+
 				// agregar nueva fila a la tabla
-				$('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="'+numero_linea+'">' + generar_string_celdas( fila ) + '</tr>');
+				$('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="'+numero_linea+'">' + string_fila + '</tr>');
 				
 				// Se calculan los totales
 				calcular_totales();
@@ -984,6 +996,11 @@
 			// Debe ser complatible con las columnas de la tabla de ingreso de registros
 			function generar_string_celdas( fila )
 			{
+				if ( inv_producto_id === undefined )
+				{
+					return false;
+				}
+
 				var celdas = [];
 				var num_celda = 0;
 
@@ -1061,6 +1078,8 @@
 				{
 					string_celdas = string_celdas + celdas[i];
 				}
+
+				inv_producto_id = undefined; // para que no quede en memoria el código del producto
 
 				return string_celdas;
 			}
