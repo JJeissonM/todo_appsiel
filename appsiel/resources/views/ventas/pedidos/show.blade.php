@@ -5,14 +5,18 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
 @extends('transaccion.show')
 
 @section('botones_acciones')
-{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
-@if($doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado=='Pendiente')
-<!--{{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'vtas_pedidos/id_fila/edit'.$variables_url ),'Editar') }}-->
-<button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
-@endif
-@if($doc_encabezado->estado=='Pendiente')
-<button onclick="enviar()" class="btn btn-success btn-xs" id="btn_remision"><i class="fa fa-send"></i> Crear Remisión </button>
-@endif
+
+	{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
+	
+	@if($doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado=='Pendiente')
+		<!--{{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'vtas_pedidos/id_fila/edit'.$variables_url ),'Editar') }}-->
+		<button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
+	@endif
+	
+	@if($doc_encabezado->estado=='Pendiente')
+		<button onclick="enviar()" class="btn btn-success btn-xs" id="btn_remision"><i class="fa fa-send"></i> Crear Remisión </button>
+	@endif
+
 @endsection
 
 @section('botones_imprimir_email')

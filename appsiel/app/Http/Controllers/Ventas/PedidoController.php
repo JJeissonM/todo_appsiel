@@ -280,7 +280,7 @@ class PedidoController extends TransaccionController
 
         $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista);
 
-        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with($vec['tipo_mensaje'], $vec['texto_mensaje']);
+        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') )->with($vec['tipo_mensaje'], $vec['texto_mensaje']);
     }
 
     public function enviar_pedidoweb_email($id){
@@ -422,7 +422,7 @@ class PedidoController extends TransaccionController
 
         $pedido->update(['estado' => 'Anulado']);
 
-        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Pedido ANULADO correctamente.');
+        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with('flash_message', 'Pedido ANULADO correctamente.');
     }
 
     //Crea remision a partir del pedido
