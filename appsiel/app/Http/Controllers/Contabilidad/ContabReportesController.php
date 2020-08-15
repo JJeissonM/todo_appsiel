@@ -677,7 +677,7 @@ class ContabReportesController extends Controller
         $registros = ContabCuenta::where('core_empresa_id','=',Auth::user()->empresa_id)->orderBy('codigo')->get();
         $cuentas[''] = '';
         foreach ($registros as $fila) {
-            $cuentas[$fila->codigo]=$fila->codigo." ".$fila->descripcion; 
+            $cuentas[$fila->id]=$fila->codigo." ".$fila->descripcion; 
         }
 
         // Verificar módulo de propiedad horizontal
@@ -696,7 +696,7 @@ class ContabReportesController extends Controller
         $registros2 = Tercero::where('core_empresa_id','=',Auth::user()->empresa_id)->orderBy('descripcion')->get();
         $terceros[''] = '';
         foreach ($registros2 as $fila) {
-            $terceros[$fila->numero_identificacion]=$fila->numero_identificacion." ".$fila->descripcion; 
+            $terceros[$fila->id]=$fila->numero_identificacion." ".$fila->descripcion; 
         }
 
         $miga_pan = [
@@ -711,8 +711,8 @@ class ContabReportesController extends Controller
     public function contab_ajax_auxiliar_por_cuenta(Request $request)
     {
         $contab_cuenta_id = $request->contab_cuenta_id;
-        $fecha_desde = $request->fecha_desde;
-        $fecha_hasta = $request->fecha_hasta;
+        $fecha_desde = $request->fecha_inicial;
+        $fecha_hasta = $request->fecha_final;
 
         $core_tercero_id = $request->core_tercero_id;
 
@@ -732,7 +732,6 @@ class ContabReportesController extends Controller
         }
 
         $saldo_inicial = ContabMovimiento::get_saldo_inicial_v2($fecha_desde, $contab_cuenta_id, $core_tercero_id );
-        
 
         $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id );
 

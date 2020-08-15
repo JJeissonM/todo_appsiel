@@ -689,35 +689,36 @@ class NominaController extends TransaccionController
                                 ->where('core_tercero_id', $una_persona->core_tercero_id)
                                 ->where('nom_concepto_id', $un_concepto->id)
                                 ->where('fecha_inicio', '<=', $documento->fecha)
-                                ->get();
+                                ->get()
+                                ->first();
 
-        if ( count($prestamo) > 0)
+        if ( !is_null($prestamo) )
         {
             // El valor_acumulado no se puede pasar del valor_prestamo
-            $saldo_pendiente = $prestamo[0]->valor_prestamo - $prestamo[0]->valor_acumulado;
+            $saldo_pendiente = $prestamo->valor_prestamo - $prestamo->valor_acumulado;
                 
-            if ( $saldo_pendiente < $prestamo[0]->valor_prestamo )
+            if ( $saldo_pendiente < $prestamo->valor_prestamo )
             {
-                $prestamo[0]->valor_acumulado += $saldo_pendiente;
+                $prestamo->valor_acumulado += $saldo_pendiente;
                 $valor_real_prestamo = $saldo_pendiente;
             }else{
-                $prestamo[0]->valor_acumulado += $prestamo[0]->valor_cuota;
-                $valor_real_prestamo = $prestamo[0]->valor_cuota;
+                $prestamo->valor_acumulado += $prestamo->valor_cuota;
+                $valor_real_prestamo = $prestamo->valor_cuota;
             }
 
-            if ( $prestamo[0]->valor_acumulado >= $prestamo[0]->valor_prestamo ) 
+            if ( $prestamo->valor_acumulado >= $prestamo->valor_prestamo ) 
             {
-                $prestamo[0]->estado = "Inactivo";
+                $prestamo->estado = "Inactivo";
             }
             
-            $prestamo[0]->save();
+            $prestamo->save();
             
             $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_real_prestamo );
 
-            $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => $prestamo[0]->id, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
-        }/*else{
-            $this->vec_campos = (object)[ 'nom_cuota_id' => 'no', 'nom_prestamo_id' => 'no', 'valor_devengo' => 0, 'valor_deduccion' => 0 ];
-        }*/
+            $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => $prestamo->id, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
+        }else{
+            $this->vec_campos = (object)[ 'nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => 0, 'valor_deduccion' => 0 ];
+        }
     }
 
 
@@ -729,8 +730,11 @@ class NominaController extends TransaccionController
         {
             
             // LOS REGISTROS QUE TIENEN ESE CONCEPTO
-            $registros = NomDocRegistro::where('nom_doc_encabezado_id', $id)->where('nom_concepto_id', $un_concepto->id)->get();
+            $registros = NomDocRegistro::where( 'nom_doc_encabezado_id', $id)
+                                        ->where( 'nom_concepto_id', $un_concepto->id)
+                                        ->get();
 
+            // Para cuotas y préstamos
             foreach ($registros as $un_registro)
             {
                 // Para cuotas, reverso los valores acumulados y el estado
@@ -738,20 +742,23 @@ class NominaController extends TransaccionController
                 {
                     $cuota = NomCuota::find( $un_registro->nom_cuota_id );
 
-                    switch( $un_concepto->naturaleza )
+                    if ( !is_null($cuota) )
                     {
-                        case 'devengo':
-                            $cuota->valor_acumulado -= $un_registro->valor_devengo;
-                            break;
-                        case 'deduccion':
-                            $cuota->valor_acumulado -= $un_registro->valor_deduccion;
-                            break;
-                        default:
-                            break;
-                    }
+                        switch( $un_concepto->naturaleza )
+                        {
+                            case 'devengo':
+                                $cuota->valor_acumulado -= $un_registro->valor_devengo;
+                                break;
+                            case 'deduccion':
+                                $cuota->valor_acumulado -= $un_registro->valor_deduccion;
+                                break;
+                            default:
+                                break;
+                        }
 
-                    $cuota->estado = "Activo";
-                    $cuota->save();                    
+                        $cuota->estado = "Activo";
+                        $cuota->save();
+                    }       
 
                 }
 
@@ -760,21 +767,23 @@ class NominaController extends TransaccionController
                 {
                     $prestamo = NomPrestamo::find( $un_registro->nom_prestamo_id );
 
-                    switch( $un_concepto->naturaleza )
+                    if ( !is_null($prestamo) ) 
                     {
-                        case 'devengo':
-                            $prestamo->valor_acumulado -= $un_registro->valor_devengo;
-                            break;
-                        case 'deduccion':
-                            $prestamo->valor_acumulado -= $un_registro->valor_deduccion;
-                            break;
-                        default:
-                            break;
+                        switch( $un_concepto->naturaleza )
+                        {
+                            case 'devengo':
+                                $prestamo->valor_acumulado -= $un_registro->valor_devengo;
+                                break;
+                            case 'deduccion':
+                                $prestamo->valor_acumulado -= $un_registro->valor_deduccion;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        $prestamo->estado = "Activo";
+                        $prestamo->save();
                     }
-
-                    $prestamo->estado = "Activo";
-                    $prestamo->save();                    
-
                 }
             }
 
