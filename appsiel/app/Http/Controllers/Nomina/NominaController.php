@@ -697,7 +697,7 @@ class NominaController extends TransaccionController
             // El valor_acumulado no se puede pasar del valor_prestamo
             $saldo_pendiente = $prestamo->valor_prestamo - $prestamo->valor_acumulado;
                 
-            if ( $saldo_pendiente < $prestamo->valor_prestamo )
+            if ( $saldo_pendiente < $prestamo->valor_cuota )
             {
                 $prestamo->valor_acumulado += $saldo_pendiente;
                 $valor_real_prestamo = $saldo_pendiente;
