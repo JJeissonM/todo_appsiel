@@ -6092,6 +6092,21 @@
       'created_at' => '2020-08-12 13:23:57',
       'updated_at' => '2020-08-12 13:24:51',
     ),
+    406 => 
+    array (
+      'id' => 432,
+      'core_app_id' => 9,
+      'modelo_id' => 233,
+      'name' => 'compras_documento_soporte_adquisiciones',
+      'descripcion' => 'Documentos soporte en adquisiciones',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-08-17 20:13:54',
+      'updated_at' => '2020-08-17 20:15:39',
+    ),
   ),
   'roles' => 
   array (
@@ -14763,6 +14778,30 @@
       'orden' => 0,
       'permission_id' => 431,
       'role_id' => 12,
+    ),
+    1421 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 432,
+      'role_id' => 1,
+    ),
+    1422 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 432,
+      'role_id' => 3,
+    ),
+    1423 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 432,
+      'role_id' => 9,
+    ),
+    1424 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 432,
+      'role_id' => 17,
     ),
   ),
   'sys_campos' => 
@@ -28195,7 +28234,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'modelo_relacionado' => '',
       'url_crear' => 'doc_cruce/create',
       'url_edit' => '',
-      'url_print' => 'doc_cruce_print/id_fila',
+      'url_print' => '',
       'url_ver' => 'doc_cruce/id_fila',
       'enlaces' => '',
       'url_estado' => '',
@@ -28206,7 +28245,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2018-11-19 15:31:59',
-      'updated_at' => '2019-12-02 04:00:52',
+      'updated_at' => '2020-08-17 17:58:39',
     ),
     50 => 
     array (
@@ -30681,7 +30720,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'modelo_relacionado' => '',
       'url_crear' => 'doc_cruce_cxp/create',
       'url_edit' => '',
-      'url_print' => 'doc_cruce_cxp_print/id_fila',
+      'url_print' => '',
       'url_ver' => 'doc_cruce_cxp/id_fila',
       'enlaces' => '',
       'url_estado' => '',
@@ -30692,7 +30731,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2019-11-27 00:31:59',
-      'updated_at' => '2019-11-27 00:31:59',
+      'updated_at' => '2020-08-17 18:16:10',
     ),
     163 => 
     array (
@@ -32013,6 +32052,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-07-06 09:13:22',
       'updated_at' => '2020-07-08 12:28:07',
+    ),
+    223 => 
+    array (
+      'id' => 233,
+      'descripcion' => 'Documentos soporte en adquisiciones efectuadas a SNOAEF',
+      'modelo' => 'compras_documentos_soporte',
+      'name_space' => 'App\\Compras\\DocumentoSoporteAdquisiciones',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-08-17 19:04:49',
+      'updated_at' => '2020-08-17 19:04:49',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -43595,6 +43656,111 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 146,
       'core_campo_id' => 57,
     ),
+    1654 => 
+    array (
+      'id' => 1932,
+      'orden' => 16,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 8,
+    ),
+    1655 => 
+    array (
+      'id' => 1933,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 87,
+    ),
+    1656 => 
+    array (
+      'id' => 1934,
+      'orden' => 3,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 88,
+    ),
+    1657 => 
+    array (
+      'id' => 1935,
+      'orden' => 13,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 90,
+    ),
+    1658 => 
+    array (
+      'id' => 1936,
+      'orden' => 4,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 93,
+    ),
+    1659 => 
+    array (
+      'id' => 1937,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 94,
+    ),
+    1660 => 
+    array (
+      'id' => 1938,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 95,
+    ),
+    1661 => 
+    array (
+      'id' => 1939,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 98,
+    ),
+    1662 => 
+    array (
+      'id' => 1940,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 100,
+    ),
+    1663 => 
+    array (
+      'id' => 1941,
+      'orden' => 12,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 194,
+    ),
+    1664 => 
+    array (
+      'id' => 1942,
+      'orden' => 2,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 201,
+    ),
+    1665 => 
+    array (
+      'id' => 1943,
+      'orden' => 10,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 523,
+    ),
+    1666 => 
+    array (
+      'id' => 1944,
+      'orden' => 6,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 538,
+    ),
+    1667 => 
+    array (
+      'id' => 1945,
+      'orden' => 18,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 539,
+    ),
+    1668 => 
+    array (
+      'id' => 1946,
+      'orden' => 20,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 540,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -45225,6 +45391,20 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'estado' => 'Activo',
       'created_at' => '2020-07-07 08:36:01',
       'updated_at' => '2020-07-08 12:02:17',
+    ),
+    47 => 
+    array (
+      'id' => 48,
+      'core_app_id' => 9,
+      'core_modelo_id' => 233,
+      'descripcion' => 'Documentos soporte en adquisiciones efectuadas a SNOAEF',
+      'modelo_encabezados_documentos' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Compras\\ComprasDocRegistro',
+      'modelo_movimientos' => 'App\\Compras\\ComprasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-08-17 18:57:30',
+      'updated_at' => '2020-08-17 19:05:04',
     ),
   ),
 ) ;
