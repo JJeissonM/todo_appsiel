@@ -1,5 +1,5 @@
 @if( !empty( $registros_contabilidad ) )
-    <h4 style="text-align: center;">Registros contables</h4>
+    <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Registros contables</div>
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Código','Cuenta','Débito','Crédito']) }}
         <tbody>

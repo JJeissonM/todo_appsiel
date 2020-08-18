@@ -46,6 +46,11 @@ class Tercero extends Model
         return $registro;
     }
 
+    public function ciudad()
+    {
+        return $this->belongsTo('App\Core\Ciudad', 'codigo_ciudad');
+    }
+
     public function cuenta_anticipos()
     {
         return $this->belongsTo('App\Contabilidad\ContabCuenta', 'contab_anticipo_cta_id');

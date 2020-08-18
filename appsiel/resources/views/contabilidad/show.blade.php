@@ -29,7 +29,7 @@
 
 		<div class="col-md-4 text-center">
 			<div class="btn-group">
-				{{ Form::bsBtnPrint( 'contabilidad_print/'.$id ) }}
+				{{ Form::bsBtnPrint( 'contabilidad_print/' . $id . $variables_url ) }}
 			</div>			
 		</div>
 

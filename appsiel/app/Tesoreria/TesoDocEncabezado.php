@@ -20,6 +20,10 @@ class TesoDocEncabezado extends Model
 
     public $encabezado_tabla = ['Documento','Fecha','Tercero','Detalle','Acción'];
 
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
 
     public function caja()
     {
@@ -69,7 +73,7 @@ class TesoDocEncabezado extends Model
     public static function get_registro_impresion($id)
     {
 
-        return TesoDocEncabezadoPago::where('teso_doc_encabezados.id',$id)
+        return TesoDocEncabezado::where('teso_doc_encabezados.id',$id)
                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
                     ->select(
@@ -79,6 +83,7 @@ class TesoDocEncabezado extends Model
                                 'teso_doc_encabezados.core_tipo_transaccion_id',
                                 'teso_doc_encabezados.core_tipo_doc_app_id',
                                 'teso_doc_encabezados.consecutivo',
+                                'teso_doc_encabezados.teso_caja_id',
                                 'teso_doc_encabezados.fecha',
                                 'teso_doc_encabezados.descripcion',
                                 'teso_doc_encabezados.teso_medio_recaudo_id',

@@ -86,5 +86,30 @@
             <td> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> ${{ number_format($total_impuestos, 0, ',', '.') }}</td>
             <td> <span style="text-align: right; font-weight: bold;"> Total: </span> ${{ number_format($total_factura, 0, ',', '.') }}</td>
         </tr>
+
+        @if( !is_null($resolucion) ) 
+            <tr>
+                <td colspan="4">
+                    Documento con tipo de solicitud {{ $resolucion->tipo_solicitud }} por la DIAN. Resolución No. {{ $resolucion->numero_resolucion }} del {{ $resolucion->fecha_expedicion }}. Prefijo {{ $resolucion->prefijo }} desde {{ $resolucion->numero_fact_inicial }} hasta {{ $resolucion->numero_fact_final }}
+                </td>
+            </tr>
+        @endif
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td width="15%"> </td>
+            <td width="30%"> _______________________ </td>
+            <td width="10%"> </td>
+            <td width="30%"> _______________________ </td>
+            <td width="15%"> </td>
+        </tr>
+        <tr>
+            <td width="15%"> </td>
+            <td width="30%"> Emisor: {{ explode('@',$doc_encabezado->creado_por)[0] }} </td>
+            <td width="10%"> </td>
+            <td width="30%"> Proveedor </td>
+            <td width="15%"> </td>
+        </tr>
     </table>
 @endsection

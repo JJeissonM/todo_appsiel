@@ -1144,6 +1144,15 @@ class ModeloController extends Controller
         $registro = app($this->modelo->name_space)->find($id_registro);
 
         $nuevo_registro = $registro->replicate();
+
+        if ( isset( $nuevo_registro->imagen ) )
+        {
+            $nuevo_registro->imagen = '';
+        }
+        
+        $nuevo_registro = $registro->replicate();
+
+
         $nuevo_registro->save();
 
         return redirect('web/' . $nuevo_registro->id . '/edit?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Registro DUPLICADO correctamente.');

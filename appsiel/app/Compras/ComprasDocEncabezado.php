@@ -17,6 +17,11 @@ class ComprasDocEncabezado extends Model
 
 	public $encabezado_tabla = ['Fecha', 'Documento compra', 'Proveedor', 'Factura', 'Detalle', 'Valor total', 'Estado', 'Acción'];
 
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
 	public static function consultar_registros()
 	{
         $core_tipo_transaccion_id = 25; // Facturas de compras
