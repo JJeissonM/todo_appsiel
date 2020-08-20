@@ -112,7 +112,7 @@
 			// Click para generar la consulta
 			$('#btn_generar').click(function(event){
 				if(!valida_campos()){
-					alert('Debe diligenciar las fechas y seleccionar una cuenta.');
+					alert('Debe diligenciar las fechas.');
 					return false;
 				}
 
@@ -146,7 +146,8 @@
 
 			function valida_campos(){
 				var valida = true;
-				if($('#fecha_inicial').val()=='' || $('#fecha_final').val()=='' || $('#contab_cuenta_id').val()=='' ){
+				if($('#fecha_inicial').val()=='' || $('#fecha_final').val()=='' )
+				{
 					valida = false;
 				}
 				return valida;
