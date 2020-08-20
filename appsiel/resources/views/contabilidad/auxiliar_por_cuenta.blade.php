@@ -116,6 +116,7 @@
 					return false;
 				}
 
+				$('#resultado_consulta').html('');
 				$('#div_cargando').show();
 
 				// Preparar datos de los controles para enviar formulario
