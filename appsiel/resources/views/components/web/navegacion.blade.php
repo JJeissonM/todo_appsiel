@@ -44,7 +44,7 @@
 
     #navegacion > header.sticky {
           position: fixed;
-          z-index: 99999;
+          z-index: 1000;
           top: 0;
           width: 100%;
           background: {{ $fondos['background_1'] }};
