@@ -77,6 +77,13 @@
                 {!! Form::model($item,['route' => ['slider.update',$item],'method'=>'PUT','files'=>'true','style' => 'margin:10px;']) !!}
                 <input type="hidden" name="variables_url" value="{{$variables_url}}">
                 <input type="hidden" name="widget_id" value="{{$widget}}">
+                  <div class="form-group">
+                      <label for="disposicion">Tipo</label>
+                      <select class="form-control" name="disposicion">
+                          <option value="DEFAULT"> Deslizante </option>
+                          <option value="FIXED"> Fijo </option>
+                      </select>
+                  </div>
                 <div class="form-group">
                     <label for="">Titulo</label>
                     <input type="text" class="form-control" placeholder="" name="titulo" value="{{$item->titulo}}">

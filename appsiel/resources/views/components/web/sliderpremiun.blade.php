@@ -13,7 +13,9 @@
 </style>
 
 <div id="slider" class="container-fluid">
-    <img src="{{asset('img/corazon/01.jpg')}}" alt="">
+
+    <img class="image" src="{{asset($slider->items->first()->imagen)}}" alt="">
+
 </div>
 
 

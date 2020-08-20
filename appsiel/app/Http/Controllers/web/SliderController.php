@@ -102,8 +102,8 @@ class SliderController extends Controller
 
     }
 
-    public function  edit($id){
-
+    public function  edit($id)
+    {
         $item = ItemSlider::find($id);
         $widget =  $item->slider->widget->id;
         if($item){
@@ -143,6 +143,10 @@ class SliderController extends Controller
 
         if($item){
             
+            $slider = Slider::find( $item->slider->id );
+            $slider->fill( $request->all() );
+            $slider->save();
+
             $old_image = $item->imagen;
 
             $item->fill($request->all());
