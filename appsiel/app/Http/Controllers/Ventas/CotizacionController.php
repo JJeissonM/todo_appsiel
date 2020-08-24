@@ -30,6 +30,7 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 // Modelos
 use App\Core\Empresa;
 use App\Sistema\TipoTransaccion;
+use App\Sistema\Modelo;
 use App\Core\Tercero;
 
 use App\Ventas\VtasTransaccion;
@@ -40,6 +41,8 @@ use App\Ventas\ResolucionFacturacion;
 class CotizacionController extends TransaccionController
 {
     protected $doc_encabezado;
+
+    protected $duplicado = false;
 
     /**
      * Show the form for creating a new resource.
@@ -80,6 +83,26 @@ class CotizacionController extends TransaccionController
         return redirect('vtas_cotizacion/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
+    public function show( $id )
+    {
+        $this->set_variables_globales();
+
+        $botones_anterior_siguiente = new BotonesAnteriorSiguiente( $this->transaccion, $id );
+
+        $documento_vista = $this->generar_documento_vista( $id, 'documento_vista' );
+
+        $id_transaccion = $this->transaccion->id;
+        $doc_encabezado = $this->doc_encabezado;
+
+        $registros_contabilidad = [];
+
+        $empresa = $this->empresa;
+
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo );
+        
+        return view( 'ventas.cotizaciones.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','registros_contabilidad','empresa') );
+    }
+
 
     /*
         Crea los registros, el movimiento y la contabilización de un documento. 
@@ -96,17 +119,20 @@ class CotizacionController extends TransaccionController
         $cantidad_registros = count($lineas_registros);
         for ($i=0; $i < $cantidad_registros; $i++) 
         {
-            $linea_datos = [ 'vtas_motivo_id' => $lineas_registros[$i]->inv_motivo_id ] +
-                                    [ 'inv_producto_id' => $lineas_registros[$i]->inv_producto_id ] +
-                                    [ 'precio_unitario' => $lineas_registros[$i]->precio_unitario ] +
-                                    [ 'cantidad' => $lineas_registros[$i]->cantidad ] +
-                                    [ 'precio_total' => $lineas_registros[$i]->precio_total ] +
-                                    [ 'base_impuesto' => $lineas_registros[$i]->base_impuesto ] +
-                                    [ 'tasa_impuesto' => $lineas_registros[$i]->tasa_impuesto ] +
-                                    [ 'valor_impuesto' => $lineas_registros[$i]->valor_impuesto ] +
-                                    [ 'base_impuesto_total' => $lineas_registros[$i]->base_impuesto_total ] +
-                                    [ 'creado_por' => Auth::user()->email ] +
-                                    [ 'estado' => 'Activo' ];
+
+            $linea_datos = [ 'vtas_motivo_id' => (int)$lineas_registros[$i]->inv_motivo_id ] +
+                            [ 'inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id ] +
+                            [ 'precio_unitario' => (float)$lineas_registros[$i]->precio_unitario ] +
+                            [ 'cantidad' => (float)$lineas_registros[$i]->cantidad ] +
+                            [ 'precio_total' => (float)$lineas_registros[$i]->precio_total ] +
+                            [ 'base_impuesto' => (float)$lineas_registros[$i]->base_impuesto ] +
+                            [ 'tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto ] +
+                            [ 'valor_impuesto' => (float)$lineas_registros[$i]->valor_impuesto ] +
+                            [ 'base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total ] +
+                            [ 'tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento ] +
+                            [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
+                            [ 'creado_por' => Auth::user()->email ] +
+                            [ 'estado' => 'Activo' ];
 
 
             VtasDocRegistro::create( 
@@ -115,44 +141,13 @@ class CotizacionController extends TransaccionController
                                     $linea_datos
                                 );
 
-            $total_documento += $lineas_registros[$i]->precio_total;
+            $total_documento += (float)$lineas_registros[$i]->precio_total;
 
         } // Fin por cada registro
 
         $doc_encabezado->valor_total = $total_documento;
         $doc_encabezado->save();
 
-    }
-
-
-    /**
-     * Mostrar las EXISTENCIAS de una bodega ($id).
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $this->set_variables_globales();
-
-        $botones_anterior_siguiente = new BotonesAnteriorSiguiente( $this->transaccion, $id );
-
-        $documento_vista = $this->generar_documento_vista( $id, 'documento_vista' );
-
-        $id_transaccion = $this->transaccion->id;
-        $doc_encabezado = $this->doc_encabezado;
-
-        $registros_contabilidad = [];
-
-        $empresa = $this->empresa;
-
-        $miga_pan = [
-                ['url'=>'ventas?id='.Input::get('id'),'etiqueta'=>'Ventas'],
-                ['url'=>'vtas_cotizacion?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $this->modelo->descripcion ],
-                ['url'=>'NO','etiqueta' => $this->doc_encabezado->documento_transaccion_prefijo_consecutivo ]
-            ];
-        
-        return view( 'ventas.cotizaciones.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','registros_contabilidad','empresa') );
     }
 
     /*
@@ -215,71 +210,115 @@ class CotizacionController extends TransaccionController
     }
 
 
+
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Editar documento
      */
     public function edit($id)
     {
-        $general = new ModeloController();
-        $id_transaccion = Input::get('id_transaccion');
-
-        // Se obtiene el modelo según la variable modelo_id  de la url
-        $modelo = Modelo::find(Input::get('id_modelo'));
+        $this->set_variables_globales();
 
         // Se obtiene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id);
-        $registros = VtasDocRegistro::get_registros_impresion($registro->id);
+        $registro = app($this->modelo->name_space)->find($id);
 
-        $lista_campos = $general->get_campos_modelo($modelo,$registro,'edit');
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro,'edit');
 
-        $cantidad_campos = count($lista_campos);
+        $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
+        $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
+        //dd( $doc_registros );
+        $lineas_documento = View::make( 'ventas.cotizaciones.lineas_documento', compact('doc_registros') )->render();
 
-        $tipo_transaccion = TipoTransaccion::find($id_transaccion);
+        $linea_num = count( $doc_registros->toArray() );
 
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create',null);
-
-        $tercero = Tercero::find($registro->core_tercero_id);
-        $registro->cliente_input = $tercero->apellido1." ".$tercero->apellido2." ".$tercero->nombre1." ".$tercero->otros_nombres;
-
-        $registro->inv_bodega_id = 1;
+        $url_action = 'web/'.$id.$this->variables_url;
+        
+        if ($this->modelo->url_form_create != '') {
+            $url_action = $this->modelo->url_form_create.'/'.$id.$this->variables_url;
+        }
 
         $form_create = [
-                        'url' => $modelo->url_form_create,
+                        'url' => $url_action,
                         'campos' => $lista_campos
                     ];
 
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Modificar: '.$doc_encabezado->documento_transaccion_prefijo_consecutivo );
 
-        $body = View::make('ventas.incluir.lineas_registros', compact('registro','registros') )->render();
+        $archivo_js = app($this->modelo->name_space)->archivo_js;
 
-        // Enviar valores predeterminados
-        // WARNING!!!! Este motivo es de INVENTARIOS
+        $mensaje_duplicado = '';
+        if ( $this->duplicado )
+        {
+            $mensaje_duplicado = '<div class="alert alert-success">
+                                      <strong> ¡Documento duplicado correctamente! </strong>
+                                    </div>
+
+                                    <div class="alert alert-warning">
+                                      <strong> ¡Nota! </strong> Debe guardar el documento para afectar el movimiento contable. Además, todos los registros de <b>cxc</b> y <b>cxp</b> se cambiaron por registros de <b>causacion</b>.
+                                    </div>';
+            $this->duplicado = false;
+        }
+
         $motivos = ['10-salida'=>'Ventas POS'];
 
-        $miga_pan = [
-                ['url'=>'ventas?id='.Input::get('id'),'etiqueta'=>'Ventas'],
-                ['url'=>'NO','etiqueta'=>$tipo_transaccion->descripcion]
-            ];
+        $fila_controles_formulario = VtasTransaccion::get_fila_controles( $this->transaccion, $motivos );
 
-        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
-        $tabla = new TablaIngresoLineaRegistros( VtasTransaccion::get_datos_tabla_ingreso_lineas_registros( $tipo_transaccion, $motivos, $body ) );
+        return view( 'ventas.cotizaciones.edit', compact( 'form_create', 'miga_pan', 'registro', 'archivo_js', 'lineas_documento', 'linea_num', 'mensaje_duplicado', 'doc_encabezado', 'fila_controles_formulario') );
+    }
 
-        return view('ventas.cotizaciones.edit', compact('form_create','id_transaccion','miga_pan','tabla','registro','registros'));
+    public function duplicar_documento( $doc_encabezado_id )
+    {
+        $doc_encabezado = ContabDocEncabezado::find( $doc_encabezado_id );
+
+        $registros_doc_encabezado = ContabDocRegistro::where( 'contab_doc_encabezado_id', $doc_encabezado->id )->get();
+
+        /*
+            Al duplicar el documento no se realiza contabilización, por tanto se puede duplicar aunque tenga movimientos de cxc o cxp. Pero los registros de con estos movimientos, se llamaran como registros de causacion en el formulario de editar.
+        */
+
+        // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
+        $consecutivo = TipoDocApp::get_consecutivo_actual( $doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id) + 1;
+
+        // Se incementa el consecutivo para ese tipo de documento y la empresa
+        TipoDocApp::aumentar_consecutivo($doc_encabezado->core_empresa_id, $doc_encabezado->core_tipo_doc_app_id);
+
+        $nuevo_doc_encabezado = $doc_encabezado->replicate();
+        $nuevo_doc_encabezado->consecutivo = $consecutivo;
+        $nuevo_doc_encabezado->save();
+
+        foreach ($registros_doc_encabezado as $linea )
+        {
+            $nueva_linea = $linea->toArray();
+            $nueva_linea['contab_doc_encabezado_id'] = $nuevo_doc_encabezado->id;
+
+            $nueva_linea_registro = ContabDocRegistro::create( $nueva_linea );
+        }
+
+        $this->duplicado = true;
+
+        return $this->edit( $nuevo_doc_encabezado->id );
     }
 
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
     public function update(Request $request, $id)
     {
-        //
+        $modelo = Modelo::find( $request->url_id_modelo );
+
+        $registro_encabezado_doc = app( $modelo->name_space )->find($id);
+
+        // Borrar registros viejos del documento
+        VtasDocRegistro::where( 'vtas_doc_encabezado_id', $id )->delete();
+
+        $request['core_tipo_transaccion_id'] = $registro_encabezado_doc->core_tipo_transaccion_id;
+        $request['core_tipo_doc_app_id'] = $registro_encabezado_doc->core_tipo_doc_app_id;
+        $request['consecutivo'] = $registro_encabezado_doc->consecutivo;
+        
+        CotizacionController::crear_registros_documento( $request, $registro_encabezado_doc, json_decode($request->lineas_registros) );
+
+        $registro_encabezado_doc->fill( $request->all() );
+        $registro_encabezado_doc->save();
+
+        return redirect( 'vtas_cotizacion/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
     /**
@@ -306,7 +345,7 @@ class CotizacionController extends TransaccionController
 
         $cotizacion->update(['estado'=>'Anulado']);
 
-        return redirect( 'vtas_cotizacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('flash_message','Cotización ANULADA correctamente.');
+        return redirect( 'vtas_cotizacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Cotización ANULADA correctamente.');
         
     }
 

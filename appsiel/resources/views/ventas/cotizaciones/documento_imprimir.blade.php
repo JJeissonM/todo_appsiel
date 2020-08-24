@@ -26,12 +26,12 @@
 
     <table class="table table-bordered">
         <tr>
-            <td style="border: solid 1px #ddd; margin-top: -40px;" width="70%">
+            <td style="border: solid 1px #ddd; margin-top: -40px;" width="60%">
                     @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir' ] )
             </td>
-            <td style="border: solid 1px #ddd; padding-top: -20px;">
+            <td style="border: solid 1px #ddd;">
 
-                <b style="font-size: 1.6em; text-align: right; display: block;">
+                <b style="font-size: 1.2em; text-align: center; display: block;">
                     {{ $doc_encabezado->documento_transaccion_descripcion }}
                     <br/>
                     <b>No.</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
@@ -83,8 +83,11 @@
             $total_cantidad = 0;
             $subtotal = 0;
             $total_impuestos = 0;
+            $total_descuentos = 0;
             $total_factura = 0;
             $array_tasas = [];
+
+            $cantidad_items = 0;
             ?>
             @foreach($doc_registros as $linea )
                 <tr>
@@ -99,9 +102,10 @@
                 <?php
                     $i++;
                     $total_cantidad += $linea->cantidad;
-                    $subtotal += (float)$linea->base_impuesto * (float)$linea->cantidad;
+                    $subtotal += (float)($linea->precio_unitario - $linea->valor_impuesto) * (float)$linea->cantidad;
                     $total_impuestos += (float)$linea->valor_impuesto * (float)$linea->cantidad;
                     $total_factura += $linea->precio_total;
+                    $total_descuentos += $linea->valor_total_descuento;
 
                     // Si la tasa no está en el array, se agregan sus valores por primera vez
                     if ( !isset( $array_tasas[$linea->tasa_impuesto] ) )
@@ -129,31 +133,22 @@
                         $array_tasas[$linea->tasa_impuesto]['base_impuesto'] += (float)$linea->base_impuesto * (float)$linea->cantidad;
                         $array_tasas[$linea->tasa_impuesto]['valor_impuesto'] += (float)$linea->valor_impuesto * (float)$linea->cantidad;
                     }
+
+
+                    $cantidad_items++;
                 ?>
             @endforeach
         </tbody>
-    </table>
-
-    <table class="table table-bordered">
-        <tr>
-            <td width="75%"> <b> &nbsp; </b> <br> </td>
-            <td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td>
-            <td style="text-align: right; font-weight: bold;"> $ {{ number_format($subtotal, 2, ',', '.') }} </td>
-        </tr>
-
-        @foreach( $array_tasas as $key => $value )
-            <tr>
-                <td width="75%"> <b> &nbsp; </b> <br> </td>
-                <td style="text-align: right; font-weight: bold;"> {{ $value['tipo'] }} </td>
-                <td style="text-align: right; font-weight: bold;"> ${{ number_format( $value['valor_impuesto'], 0, ',', '.') }} </td>
+        <tfoot>
+            <tr style="font-weight: bold;">
+                <td colspan="2"> Cantidad de items: {{ $cantidad_items }} </td>
+                <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
+                <td colspan="4">&nbsp;</td>
             </tr>
-        @endforeach
-        <tr>
-            <td width="75%"> <b> &nbsp; </b> <br> </td>
-            <td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td>
-            <td style="text-align: right; font-weight: bold;"> $ {{ number_format($total_factura, 2, ',', '.') }} </td>
-        </tr>
+        </tfoot>
     </table>
+
+    @include('ventas.incluir.factura_firma_totales')
 
 </body>
 </html>
