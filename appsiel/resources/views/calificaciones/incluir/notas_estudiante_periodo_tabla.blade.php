@@ -98,7 +98,11 @@
                             <td>
                                <ul>
                                     @foreach($logros as $un_logro)
-                                        <li>{{$un_logro->descripcion}}</li>
+                                        @if( !is_null( $un_logro ) )
+                                            <li>{{ $un_logro->descripcion }}</li>
+                                        @else
+                                            <li> </li>
+                                        @endif
                                     @endforeach
                                 </ul>
                             </td>

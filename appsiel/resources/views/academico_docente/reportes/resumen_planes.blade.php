@@ -23,15 +23,11 @@
         <tr>
             <th>Curso</th>
             <th>Asignatura</th>
-            <th>Fecha</th>
-            @foreach( $elementos_plantilla as $elemento )
-                <th>{{ $elemento->descripcion }}</th>
-                <?php $cant_elementos++; ?>
-            @endforeach
+            <th>Lista de planes de clases</th>
         </tr>
     </thead>
     <tbody>
-        @foreach( $lineas_asignaturas as $linea )
+        @foreach( $lineas_planes_clases as $linea )
             <tr>
                 <td>
                     {{ $linea->curso }}
@@ -40,20 +36,12 @@
                     {{ $linea->asignatura }}
                 </td>
                 <td>
-                    {{ $linea->fecha }}
+                    <ol>
+                        @foreach( $linea->lista_planes_clases as $pla_clases )
+                            <li> {{ $etiqueta_primer_elemento_plantilla }}: {!! $pla_clases['contenido_primer_elemento_plantilla'] !!} > Fecha: {{ $pla_clases['fecha_plan_clases'] }} > {!! $pla_clases['enlace_plan_clases'] !!}</li>
+                        @endforeach
+                    <ol>
                 </td>
-
-                @if( is_null($linea->contenido_elementos) )
-                    @for($i = 0; $i < $cant_elementos; $i++)
-                        <td> &nbsp; </td>
-                    @endfor
-                @else
-                    @foreach( $linea->contenido_elementos as $key => $value )
-                        <td>
-                            {!! $value !!}
-                        </td>
-                    @endforeach
-                @endif
             </tr>
         @endforeach
     </tbody>
