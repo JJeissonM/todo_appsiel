@@ -345,7 +345,11 @@ class ContabilidadController extends TransaccionController
     public function vista_preliminar($id,$vista)
     {
 
-        $doc_encabezado = ContabDocEncabezado::get_registro_impresion( $id );
+        $this->set_variables_globales();
+        
+        $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
+
+        //$doc_encabezado = ContabDocEncabezado::get_registro_impresion( $id );
 
         $doc_registros = ContabDocRegistro::get_registros_impresion( $doc_encabezado->id );
 

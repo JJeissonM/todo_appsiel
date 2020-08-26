@@ -143,6 +143,10 @@ Route::resource('custom_html', 'web\CustomHtmlController');
 Route::resource('pqr_form', 'web\PqrFormController');
 
 
+//		GUIAS ACADEMICAS
+Route::get('pw_guias_planes_clases/{curso_id}/{asignatura_id}', 'web\GuiasAcademicasController@guias_planes_clases');
+Route::get('pw_get_select_asignaturas/{curso_id}/{periodo_lectivo_id?}', 'web\GuiasAcademicasController@get_select_asignaturas');
+
 Route::get('formulario_campana', 'web\CustomHtmlController@formulario_campana');
 
 

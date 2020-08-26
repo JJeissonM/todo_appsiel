@@ -1,7 +1,11 @@
 @extends('transaccion.formatos_impresion.estandar')
 
 @section('documento_transaccion_prefijo_consecutivo')
-    {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
+    @if( !is_null( $resolucion ) )
+        {{ $resolucion->prefijo }} {{ $doc_encabezado->documento_transaccion_consecutivo }}
+    @else
+        {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
+    @endif
 @endsection
 
 @section('documento_datos_adicionales')
@@ -85,10 +89,36 @@
             <td> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> ${{ number_format($total_impuestos, 0, ',', '.') }}</td>
             <td> <span style="text-align: right; font-weight: bold;"> Total factura: </span> ${{ number_format($total_factura, 0, ',', '.') }}</td>
         </tr>
+
+        @if( !is_null($resolucion) ) 
+            <tr>
+                <td colspan="4">
+                    Documento con tipo de solicitud {{ $resolucion->tipo_solicitud }} por la DIAN. Resolución No. {{ $resolucion->numero_resolucion }} del {{ $resolucion->fecha_expedicion }}. Prefijo {{ $resolucion->prefijo }} desde {{ $resolucion->numero_fact_inicial }} hasta {{ $resolucion->numero_fact_final }}
+                </td>
+            </tr>
+        @endif
+
     </table>
 @endsection
 
 @section('tabla_registros_3')
     @include('transaccion.registros_contables')
     @include('transaccion.auditoria')
+    <br>
+    <table>
+        <tr>
+            <td width="15%"> </td>
+            <td width="30%"> _______________________ </td>
+            <td width="10%"> </td>
+            <td width="30%"> _______________________ </td>
+            <td width="15%"> </td>
+        </tr>
+        <tr>
+            <td width="15%"> </td>
+            <td width="30%"> Emisor: {{ explode('@',$doc_encabezado->creado_por)[0] }} </td>
+            <td width="10%"> </td>
+            <td width="30%"> Proveedor </td>
+            <td width="15%"> </td>
+        </tr>
+    </table>
 @endsection

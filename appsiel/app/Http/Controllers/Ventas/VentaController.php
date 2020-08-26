@@ -324,6 +324,8 @@ class VentaController extends TransaccionController
 
         $botones_anterior_siguiente = new BotonesAnteriorSiguiente( $this->transaccion, $id );
 
+        $encabezado_documento = app( $this->transaccion->modelo_encabezados_documentos )->find( $id );
+
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
@@ -352,7 +354,7 @@ class VentaController extends TransaccionController
             $vista = Input::get('vista');
         }
 
-        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito') );
+        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'encabezado_documento', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito') );
     }
 
 

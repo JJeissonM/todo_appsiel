@@ -5,9 +5,12 @@
 
 <table class="table table-fluid" style="font-size: 11px;">
     <tr>
-        <td colspan="2" align="center"> <b>{{ $encabezado->plantilla_decripcion }}</b></td>
+        <td colspan="3" align="center"> <b>{{ $encabezado->plantilla_decripcion }}</b></td>
     </tr>
     <tr>
+        <td>
+            <b> Descripción: </b> {{ $encabezado->descripcion }}
+        </td>
         <td>
             <b> Fecha: </b> {{ $encabezado->fecha }}
         </td>
@@ -22,12 +25,12 @@
         <td>
             <b> Curso: </b> {{ $encabezado->curso_decripcion }}
         </td>
-    </tr>
-    <tr>
         <td>
             <b> Asignatura: </b> {{ $encabezado->asignatura_decripcion }}
         </td>
-        <td>
+    </tr>
+    <tr>
+        <td colspan="3">
             <b> Profesor: </b> {{ $encabezado->usuario_decripcion }}
         </td>
     </tr>
@@ -36,7 +39,7 @@
             $user = \Auth::user();
         ?>
 
-        <td colspan="2">
+        <td colspan="3">
             @if( $encabezado->archivo_adjunto != '')
                 <div class="row">
                     <div class="col-md-8">

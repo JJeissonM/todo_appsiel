@@ -49,6 +49,16 @@ class VtasDocEncabezado extends Model
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
 
+    public function cliente()
+    {
+        return $this->belongsTo( Cliente::class,'cliente_id');
+    }
+
+    public function vendedor()
+    {
+        return $this->belongsTo( Vendedor::class,'vendedor_id');
+    }
+
     public static function consultar_registros2()
     {
         $core_tipo_transaccion_id = 23; // Facturas
@@ -98,6 +108,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.consecutivo',
                 'vtas_doc_encabezados.fecha',
                 'vtas_doc_encabezados.fecha_vencimiento',
+                'vtas_doc_encabezados.vendedor_id',
                 'vtas_doc_encabezados.descripcion',
                 'vtas_doc_encabezados.estado',
                 'vtas_doc_encabezados.creado_por',

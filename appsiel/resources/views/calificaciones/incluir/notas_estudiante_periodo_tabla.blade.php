@@ -1,3 +1,9 @@
+<?php 
+    $periodo = App\Calificaciones\Periodo::find($periodo_id);
+?>
+
+<input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
+
 <h3> Calificaciones </h3>
 <h4> Pase el mouse por encima de la nota para ver el detalle de la actividad calificada. </h4>
 
@@ -8,6 +14,7 @@
 @endif
 
 <div class="table-responsive" id="table_content">
+
     <table class="table table-striped tabla_registros" style="margin-top: -4px;">
         <thead>
             <tr>
@@ -71,10 +78,7 @@
                             if ( $prom > 0 ) 
                             {
                                 // Si la calificacion $prom no está en alguna escala de valoración, entonces $escala = null
-                                $escala = App\Calificaciones\EscalaValoracion::where('calificacion_minima','<=',$prom)
-                                                                    ->where('calificacion_maxima','>=',$prom)
-                                                                    ->get()
-                                                                    ->first();
+                                $escala = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $prom, $periodo->periodo_lectivo_id );
                             }
                         
                             $desempeno = '';
@@ -94,7 +98,11 @@
                             <td>
                                <ul>
                                     @foreach($logros as $un_logro)
-                                        <li>{{$un_logro->descripcion}}</li>
+                                        @if( !is_null( $un_logro ) )
+                                            <li>{{ $un_logro->descripcion }}</li>
+                                        @else
+                                            <li> </li>
+                                        @endif
                                     @endforeach
                                 </ul>
                             </td>
@@ -118,8 +126,7 @@
 </div>
 
 <br>
-<?php 
-    $periodo = App\Calificaciones\Periodo::find($periodo_id);
+<?php
 
     $escala = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->get();
 

@@ -80,6 +80,9 @@
             			<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td> <td> <div id="subtotal"> $ 0 </div> </td>
             		</tr>
             		<tr>
+            			<td style="text-align: right; font-weight: bold;"> Descuento: &nbsp; </td> <td> <div id="descuento"> $ 0 </div> </td>
+            		</tr>
+            		<tr>
             			<td style="text-align: right; font-weight: bold;"> Impuestos: &nbsp; </td> <td> <div id="total_impuestos"> $ 0 </div> </td>
             		</tr>
             		<tr>
@@ -94,6 +97,7 @@
 @endsection
 
 @section('scripts')
+
 	<script type="text/javascript">
 
 		var producto_id, precio_total, costo_total, base_impuesto_total, valor_impuesto_total, tasa_impuesto, tasa_descuento, valor_total_descuento, cantidad, inv_producto_id, inv_bodega_id, inv_motivo_id;
@@ -577,7 +581,7 @@
             	$('#div_cargando').show();
             	var url = '../vtas_consultar_existencia_producto';
 
-				$.get( url, { transaccion_id: $('#core_tipo_transaccion_id').val(), bodega_id: bodega_id, producto_id: producto_id, fecha: $('#fecha').val(), lista_precios_id: $('#lista_precios_id').val(), cliente_id: $('#cliente_id').val() } )
+				$.get( url, { transaccion_id: $('#core_tipo_transaccion_id').val(), bodega_id: bodega_id, producto_id: producto_id, fecha: $('#fecha').val(), lista_precios_id: $('#lista_precios_id').val(), lista_descuentos_id: $('#lista_descuentos_id').val(), cliente_id: $('#cliente_id').val() } )
 					.done(function( respuesta ) {
 
 						$('#div_cargando').hide();
@@ -775,15 +779,19 @@
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td>'+ cantidad + ' </td>';
+				/*var celda_debito = ;
+		        var celda_credito = ;
+		        var celda_detalle = ;*/
+
+				celdas[ num_celda ] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + cantidad + '</div> </div> </td>';
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td> '+ '$ ' + new Intl.NumberFormat("de-DE").format( precio_unitario ) + '</td>';
+				celdas[ num_celda ] = '<td> '+ '$ <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + precio_unitario + '</div> </div> </td>';
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td>'+ tasa_descuento + '% </td>';
+				celdas[ num_celda ] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + tasa_descuento + '</div> </div> % </td>';
 				
 				num_celda++;
 				// ¿se va  amostrar valor del descuento?
@@ -1043,6 +1051,104 @@
 			  	$('#modo_ingreso').removeAttr('checked');
 		        $('#modo_ingreso').val( "false" );
 			  }
+			}
+
+			var valor_actual, elemento_modificar, elemento_padre;
+				
+			// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
+			$(document).on('dblclick','.elemento_modificar',function(){
+				
+				elemento_modificar = $(this);
+
+				elemento_padre = elemento_modificar.parent();
+
+				valor_actual = $(this).html();
+
+				elemento_modificar.hide();
+
+				elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+
+				document.getElementById('valor_nuevo').value = valor_actual;
+				document.getElementById('valor_nuevo').select();
+
+			});
+
+			// Si la caja de texto pierde el foco
+			$(document).on('blur','#valor_nuevo',function(){
+				guardar_valor_nuevo();
+			});/**/
+
+			// Al presiona teclas en la caja de texto
+			$(document).on('keyup','#valor_nuevo',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Abortar la edición
+				if( x == 27 ) // 27 = ESC
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+		        	elemento_modificar.show();
+		        	return false;
+				}
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	guardar_valor_nuevo();
+				}
+			});
+
+			function guardar_valor_nuevo()
+			{
+				var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+				// Si no cambió el valor_nuevo, no pasa nada
+				if ( valor_nuevo == valor_actual) { return false; }
+
+				elemento_modificar.html( valor_nuevo );
+				elemento_modificar.show();
+
+				elemento_padre.find('#valor_nuevo').remove();
+
+				recalcular_linea_editada( elemento_padre.closest('tr') );
+				
+			}
+
+			function recalcular_linea_editada( fila )
+			{
+				var elemento_modificar = fila.find('.elemento_modificar'); // son tres
+
+				console.log( elemento_modificar );
+
+				var cantidad = parseFloat( elemento_modificar[0].innerHTML );
+				var precio_unitario = parseFloat( elemento_modificar[1].innerHTML );
+				var tasa_descuento = parseFloat( elemento_modificar[2].innerHTML );
+
+				var valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
+
+				var tasa_impuesto = parseFloat( fila.find('.tasa_impuesto').html() );
+
+				var base_impuesto_unitario = precio_unitario * ( ( 100 - tasa_descuento ) / ( 100 + tasa_impuesto ) );
+				
+				var precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
+
+				fila.find('.cantidad').html( cantidad );
+				fila.find('.precio_unitario').html( precio_unitario );
+				fila.find('.tasa_descuento').html( tasa_descuento );
+
+				fila.find('.base_impuesto').html( base_impuesto_unitario );
+				fila.find('.base_impuesto_total').html( base_impuesto_unitario * cantidad );
+				fila.find('.valor_impuesto').html( precio_unitario - base_impuesto_unitario );
+				fila.find('.precio_total').html( precio_total );
+
+				fila.find('.valor_total_descuento').html( valor_unitario_descuento * cantidad );
+
+
+				var celdas = fila.find('td');
+				celdas[21].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( valor_unitario_descuento * cantidad );
+				celdas[23].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( precio_total );
+
+				calcular_totales();
 			}
 
 

@@ -34,6 +34,7 @@ class CxcDocEncabezado extends Model
                     'campo' => 'cxc_doc_encabezados.id']
                     ];
 
+
     
     // Se consultan los documentos para la empresa que tiene asignada el usuario
     public static function consultar_registros()
@@ -54,6 +55,11 @@ class CxcDocEncabezado extends Model
                     ->toArray();
 
         return $registros;
+    }
+    
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
 
     public function documentos()

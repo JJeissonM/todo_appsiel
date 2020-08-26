@@ -13,7 +13,7 @@ class CxpDocEncabezado extends Model
 
     public $encabezado_tabla = ['Fecha','Documento','Tercero','Detalle','Valor Total','Estado','Acción'];
 
-    // Este array se puede usar para automatizar los campos que se muestran en la vista idex, permitiendo agregar o quitar campos a la tabla
+    // Este array se puede usar para automatizar los campos que se muestran en la vista index (ruta /web), permitiendo agregar o quitar campos a la tabla
     public $campos_vista_index = [
                     ['modo_select' => 'raw',
                     'etiqueta' => 'Documento',
@@ -52,6 +52,11 @@ class CxpDocEncabezado extends Model
                                 'cxp_doc_encabezados.id AS campo7')
                     ->get()
                     ->toArray();
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
 
     public function documentos()
@@ -105,7 +110,7 @@ class CxpDocEncabezado extends Model
                     ->select( DB::raw($select_raw),
                         'cxp_doc_encabezados.id',
                         'cxp_doc_encabezados.fecha',
-                        'core_terceros.descripcion',
+                        'cxp_doc_encabezados.descripcion',
                         'core_terceros.numero_identificacion',
                         'core_terceros.direccion1',
                         'core_terceros.telefono1',

@@ -702,8 +702,8 @@
 			*/
 			function validar_existencia_actual()
 			{
-				// Si es una factura de compras o documento equivalente, no se valida la existencia
-				if( $('#url_id_transaccion').val() == 25 || $('#url_id_transaccion').val() == 29 ) 
+				// Si es una factura de compras, documento equivalente o documento soporte en adquisiciones, no se valida la existencia
+				if( $('#url_id_transaccion').val() == 25 || $('#url_id_transaccion').val() == 29 || $('#url_id_transaccion').val() == 48 ) 
 				{ 
 					return true;
 				}

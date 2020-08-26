@@ -55,7 +55,7 @@ class Matricula extends Model
         return $this->belongsTo('App\Matriculas\Estudiante','id_estudiante');
     }
 
-    public static function estudiantes_matriculados( $curso_id, $periodo_lectivo_id, $estado_matricula )
+    public static function estudiantes_matriculados( $curso_id, $periodo_lectivo_id, $estado_matricula, $estudiante_id = null )
     {
         $array_wheres = [ ['sga_matriculas.id' ,'>', 0] ];
 
@@ -69,6 +69,10 @@ class Matricula extends Model
 
         if ( $estado_matricula != null ) {
             $array_wheres = array_merge($array_wheres, ['sga_matriculas.estado' => $estado_matricula ]);
+        }
+
+        if ( $estudiante_id != null ) {
+            $array_wheres = array_merge($array_wheres, ['sga_matriculas.id_estudiante' => $estudiante_id ]);
         }
 
         return Matricula::where($array_wheres)

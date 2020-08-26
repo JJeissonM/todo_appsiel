@@ -883,9 +883,11 @@ class InventarioController extends TransaccionController
         $registros = InvDocRegistro::where('inv_doc_encabezado_id', $documento->id)->get();
 
         // Calcular costos promedios de cada producto del documento, cuando el motivo del movimiento es de entrada
-        foreach ($registros as $linea) {
+        foreach ($registros as $linea)
+        {
             $motivo = InvMotivo::find($linea->inv_motivo_id);
-            if ($motivo->movimiento == 'entrada') {
+            if ($motivo->movimiento == 'entrada')
+            {
                 // Se CALCULA el nuevo costo promedio del movimiento con el producto YA retirado
                 $costo_prom = TransaccionController::calcular_costo_promedio($linea->inv_bodega_id, $linea->inv_producto_id, $linea->costo_unitario, $documento->fecha);
 
@@ -895,6 +897,30 @@ class InventarioController extends TransaccionController
                 // Marcar cada registro del documento como Anulado
                 $linea->update(['estado' => 'Anulado', 'modificado_por' => Auth::user()->email]);
             }
+        }
+
+        // Para una remisión de ventas, se activa nuevamente el pedido de ventas, si se gene´ró con base en pedido
+        if( $documento->core_tipo_transaccion_id == 24 ) 
+        {
+            $pedido = VtasDocEncabezado::where( 'remision_doc_encabezado_id', $documento->id )->get()->first();
+            if( !is_null($pedido) )
+            {
+                $pedido->remision_doc_encabezado_id = 0;
+                $pedido->estado = "Pendiente";
+                $pedido->save();
+            }       
+        }
+
+        // Para una entrada de almacén, se activa nuevamente la orden de compras, si se generó con base en OC
+        if( $documento->core_tipo_transaccion_id == 35 ) 
+        {
+            $orden_compra = ComprasDocEncabezado::where( 'entrada_almacen_id', $documento->id )->get()->first();
+            if( !is_null($orden_compra) )
+            {
+                $orden_compra->entrada_almacen_id = 0;
+                $orden_compra->estado = "Pendiente";
+                $orden_compra->save();
+            }       
         }
 
         // Marcar documento como Anulado

@@ -74,12 +74,3 @@ Route::get('ventas_recontabilizar/{id}', 'Ventas\ProcesoController@recontabiliza
 Route::get('ventas_recontabilizar_nota/{id}', 'Ventas\ProcesoController@recontabilizar_documento_nota_credito');
 Route::get('actualizar_valor_total_vtas_encabezados_doc', 'Ventas\ProcesoController@actualizar_valor_total_vtas_encabezados_doc');
 Route::get('recontabilizar_documentos_ventas', 'Ventas\ProcesoController@recontabilizar_documentos_ventas');
-
-
-
-/*
-	Desarrollo personalizado para el Cliente AVIPOULET
-	Obtener los productos pesados en una balanza marca DIBAL y agrgarlos a las líneas de registros
-	al momento de hacer una factura
-*/
-Route::get('vtas_get_productos_por_facturar','Ventas\BasculaDibalController@get_productos_por_facturar');

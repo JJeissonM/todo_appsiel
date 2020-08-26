@@ -44,53 +44,58 @@ class ReportesController extends ModeloController
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
 
-        $listado_asignaciones = AsignacionProfesor::get_asignaturas_x_curso( $request->user_id, $request->periodo_lectivo_id );
+        $carga_academica_profesor = AsignacionProfesor::get_asignaturas_x_curso( $request->user_id, $request->periodo_lectivo_id );
 
         $plantilla = PlanClaseEstrucPlantilla::get_actual( $request->periodo_lectivo_id );
-
-        $elementos_plantilla = $plantilla->elementos()->orderBy('orden')->get();
-
-        $planes_profesor = PlanClaseEncabezado::where( 'plantilla_plan_clases_id', $plantilla->id )
-                                            ->whereBetween( 'fecha', [ $request->fecha_desde, $request->fecha_hasta ] )
-                                            ->where( 'user_id', $request->user_id )
-                                            ->get();
+        $primer_elemento_plantilla = $plantilla->elementos()->get()->first();
+        $etiqueta_primer_elemento_plantilla = '';
+        $id_primer_elemento_plantilla = 0;
+        if ( !is_null($primer_elemento_plantilla) )
+        {
+            $etiqueta_primer_elemento_plantilla = $primer_elemento_plantilla->descripcion;
+            $id_primer_elemento_plantilla = $primer_elemento_plantilla->id;
+        }
 
         $curso = '';
         
-        $lineas_asignaturas = [];
+        $lineas_planes_clases = [];
 
-        // NOTA: SOLO SE VA A MOSTRAR UN PLAN POR ASIGNATURA
-        foreach ($listado_asignaciones as $asignacion)
+        foreach ($carga_academica_profesor as $asignacion)
         {
             $curso = Curso::find($asignacion->curso_id);
 
-            $linea = (object)[ 'curso' => $curso->descripcion, 'asignatura' => $asignacion->Asignatura, 'fecha' => '', 'contenido_elementos' => null];
+            $linea = (object)[ 'curso' => $curso->descripcion, 'asignatura' => $asignacion->Asignatura, 'lista_planes_clases' => '' ];
 
-            foreach ($planes_profesor as $plan)
+            $planes_profesor_asignatura = PlanClaseEncabezado::where( 'plantilla_plan_clases_id', $plantilla->id )
+                                                ->whereBetween( 'fecha', [ $request->fecha_desde, $request->fecha_hasta ] )
+                                                ->where( 'curso_id', $asignacion->curso_id )
+                                                ->where( 'asignatura_id', $asignacion->id_asignatura )
+                                                ->where( 'user_id', $request->user_id )
+                                                ->get();
+
+            $a = 0;
+            $lista_planes_asignatura = [];
+            foreach ($planes_profesor_asignatura as $plan)
             {
 
-                if ( $plan->asignatura_id == $asignacion->id_asignatura && $plan->curso_id == $asignacion->curso_id )
-                {
-                    $linea->fecha = $plan->fecha;
-                    $array_elementos = [];
-                    foreach ($elementos_plantilla as $elemento)
-                    {
-                        $array_elementos[] =  PlanClaseRegistro::where( 'plan_clase_encabezado_id', $plan->id )
-                                                        ->where( 'plan_clase_estruc_elemento_id', $elemento->id )
+                $lista_planes_asignatura[$a]['contenido_primer_elemento_plantilla'] = PlanClaseRegistro::where( 'plan_clase_encabezado_id', $plan->id )
+                                                        ->where( 'plan_clase_estruc_elemento_id', $id_primer_elemento_plantilla )
                                                         ->value('contenido');
-                    }
 
-                    $linea->contenido_elementos = $array_elementos;
-                }
+                $lista_planes_asignatura[$a]['fecha_plan_clases'] = $plan->fecha;
+
+                $lista_planes_asignatura[$a]['enlace_plan_clases'] = '<a href="' . url('sga_planes_clases/' . $plan->id . '?id=5&id_modelo=184&id_transaccion=') . '" target="_blank"> Revisar plan de clases </a>';
+                $a++;
             }
-
-            $lineas_asignaturas[] = $linea;
             
+            $linea->lista_planes_clases = $lista_planes_asignatura;
+            
+            $lineas_planes_clases[] = $linea;
         }
         
         $profesor = User::find( $request->user_id );
 
-        $vista = View::make('academico_docente.reportes.resumen_planes', compact( 'plantilla', 'elementos_plantilla', 'lineas_asignaturas', 'curso', 'profesor', 'fecha_desde', 'fecha_hasta') )->render();
+        $vista = View::make('academico_docente.reportes.resumen_planes', compact( 'plantilla', 'etiqueta_primer_elemento_plantilla', 'lineas_planes_clases', 'curso', 'profesor', 'fecha_desde', 'fecha_hasta') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

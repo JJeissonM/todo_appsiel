@@ -25,6 +25,8 @@ use View;
 use Form;
 use Lava;
 
+use App\Sistema\Html\BotonesAnteriorSiguiente;
+
 // Modelos del core
 use App\Sistema\Aplicacion;
 use App\Sistema\TipoTransaccion;
@@ -189,9 +191,8 @@ class TransaccionController extends Controller
 
 
     // Mostra el documento de una transacción
-    public function show($id)
+    public function show( $id )
     {
-
         /**/
     }
 

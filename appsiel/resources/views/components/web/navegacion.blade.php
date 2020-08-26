@@ -31,9 +31,9 @@
 <style>
 
     #navegacion {
-        position: fixed;
+        /*position: fixed;
         z-index: 99999;
-        /*top: 50px;*/
+        top: 50px;*/
         width: 100%;
     }
 
@@ -44,7 +44,7 @@
 
     #navegacion > header.sticky {
           position: fixed;
-          z-index: 99999;
+          z-index: 1000;
           top: 0;
           width: 100%;
           background: {{ $fondos['background_1'] }};
@@ -61,6 +61,7 @@
 
 
     #navegacion > header.sticky .icono img{
+        height: 80px;
         max-height: 80px;
         width: auto;
     }
@@ -89,7 +90,7 @@
             
             <!-- Text based logo -->
             @if( $nav->logo != '' )
-                <a style="width: 50%;" class="navbar-brand p-0 icono" href="{{url('/')}}">
+                <a style="width: 30%;" class="navbar-brand p-0 icono" href="{{url('/')}}">
                     <img src="{{asset( $logo['imagen_logo'] )}}">
                 </a>
             @endif

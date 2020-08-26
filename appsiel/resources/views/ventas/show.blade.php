@@ -46,7 +46,7 @@
             <br/>
             <b>Documento ID: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
             <br/>
-            <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
+            <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}, {{ $encabezado_documento->tercero->ciudad->descripcion }} - {{ $encabezado_documento->tercero->ciudad->departamento->descripcion }}
             <br/>
             <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
         </td>

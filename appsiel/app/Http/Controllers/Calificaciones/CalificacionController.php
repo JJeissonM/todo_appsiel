@@ -61,7 +61,7 @@ class CalificacionController extends Controller
         {
             $periodo_id = '';
             $periodo_lbl = 'Todos';
-            $periodos = Periodo::where('id_colegio',$this->colegio->id)->where('estado','Activo')->get();
+            $periodos = Periodo::where( 'periodo_lectivo_id', PeriodoLectivo::get_actual()->id )->where('id_colegio',$this->colegio->id)->where('estado','Activo')->get();
             if ( Input::get('periodo_id')!==null ) 
             {
                 $periodo_id = Input::get('periodo_id');
@@ -93,7 +93,7 @@ class CalificacionController extends Controller
             $cursos = $vec2;
 
 
-            $escalas = EscalaValoracion::orderBy('calificacion_minima','ASC')->get();
+            $escalas = EscalaValoracion::where( 'periodo_lectivo_id', PeriodoLectivo::get_actual()->id )->orderBy('calificacion_minima','ASC')->get();
 
 
             // Gráfica de rendimiento académico
@@ -409,7 +409,7 @@ class CalificacionController extends Controller
     // LLenar select dependiente
     public function get_select_asignaturas( $curso_id, $periodo_id = null)
     {
-        if ( is_null($periodo_id) )
+        if ( is_null($periodo_id) or $periodo_id == 'null')
         {
             $periodo_lectivo = PeriodoLectivo::get_actual();
         }else{
