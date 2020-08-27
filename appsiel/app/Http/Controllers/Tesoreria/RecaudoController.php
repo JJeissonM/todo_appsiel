@@ -36,6 +36,8 @@ use App\CxC\CxcDocEncabezado;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
 
+use App\CxP\CxpMovimiento;
+
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMotivo;
@@ -220,7 +222,7 @@ class RecaudoController extends TransaccionController
         $doc_encabezado->valor_total = $total_recaudo;
         $doc_encabezado->save();
         
-        // Solo los anticipos se guardan en el movimiento de cartera
+        // Solo los anticipos se guardan en el movimiento de cartera (CxC)
         if ( $request->teso_tipo_motivo == 'Anticipo' )
         {
             $this->datos['valor_documento'] = $total_recaudo * -1;
@@ -229,6 +231,17 @@ class RecaudoController extends TransaccionController
             $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
             $this->datos['estado'] = 'Pendiente';
             CxcMovimiento::create( $this->datos );
+        }
+ 
+        // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
+        if ( $request->teso_tipo_motivo == 'Prestamo financiero' )
+        {
+            $this->datos['valor_documento'] = $total_recaudo;
+            $this->datos['valor_pagado'] = 0;
+            $this->datos['saldo_pendiente'] = $total_recaudo;
+            $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
+            $this->datos['estado'] = 'Pendiente';
+            CxpMovimiento::create( $this->datos );
         }
 
         // se llama la vista de RecaudoController@show
