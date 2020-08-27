@@ -229,17 +229,6 @@ class PagoController extends TransaccionController
                 $this->datos['estado'] = 'Pendiente';
                 CxpMovimiento::create( $this->datos );
             }
- 
-            // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
-            if ( $motivo->teso_tipo_motivo == 'Prestamo financiero' )
-            {
-                $this->datos['valor_documento'] = $valor;
-                $this->datos['valor_pagado'] = 0;
-                $this->datos['saldo_pendiente'] = $valor;
-                $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
-                $this->datos['estado'] = 'Pendiente';
-                CxpMovimiento::create( $this->datos );
-            }
 
             // Generar CxC por algún dinero prestado o anticipado a trabajadores o clientes.
             if ( $motivo->teso_tipo_motivo == 'Pago anticipado' )
