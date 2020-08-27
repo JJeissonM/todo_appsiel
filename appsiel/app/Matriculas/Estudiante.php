@@ -9,6 +9,7 @@ use DB;
 
 use App\Matriculas\Matricula;
 use App\Core\Colegio;
+use App\Core\Tercero;
 
 class Estudiante extends Model
 {
@@ -19,7 +20,10 @@ class Estudiante extends Model
      *
      * @var array
      */
-    protected $fillable = ['imagen', 'id_colegio', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'papa', 'cedula_papa', 'ocupacion_papa', 'telefono_papa', 'email_papa', 'mama', 'cedula_mama', 'ocupacion_mama', 'telefono_mama', 'email_mama', 'grupo_sanguineo', 'alergias', 'medicamentos', 'eps', 'user_id'];
+    //inactivamos campos que ahora se guardarán en otra tabla: terceros, sga_responsableestudiantes, papa y mama
+    //protected $fillable = ['imagen', 'id_colegio', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'papa', 'cedula_papa', 'ocupacion_papa', 'telefono_papa', 'email_papa', 'mama', 'cedula_mama', 'ocupacion_mama', 'telefono_mama', 'email_mama', 'grupo_sanguineo', 'alergias', 'medicamentos', 'eps', 'user_id'];
+
+    protected $fillable = ['imagen', 'id_colegio', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'grupo_sanguineo', 'alergias', 'medicamentos', 'eps', 'user_id'];
 
     public $encabezado_tabla = ['ID', 'Nombre', 'Documento', 'Género', 'Fecha nacimiento', 'Teléfono', 'Email papá', 'Email mamá', 'Acción'];
 
@@ -191,5 +195,11 @@ class Estudiante extends Model
     public function responsableestudiantes()
     {
         return $this->hasMany(Responsableestudiante::class);
+    }
+
+    public function getTercero($id)
+    {
+        $e = Estudiante::find($id);
+        return Tercero::find($e->core_tercero_id);
     }
 }
