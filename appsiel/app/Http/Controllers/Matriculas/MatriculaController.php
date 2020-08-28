@@ -424,6 +424,15 @@ class MatriculaController extends ModeloController
 
         $lista_campos = ModeloController::get_campos_modelo($modelo, $registro, 'edit');
 
+        //eliminamos los campos de acudiente por defecto en el modelo
+        if (count($lista_campos) > 0) {
+            foreach ($lista_campos as $key => $lc) {
+                if ($lc['name'] == 'acudiente' || $lc['name'] == 'cedula_acudiente' || $lc['name'] == 'telefono_acudiente' || $lc['name'] == 'email_acudiente') {
+                    unset($lista_campos[$key]);
+                }
+            }
+        }
+
         //Algunas personalizaciones
         $cantidad_campos = count($lista_campos);
 
@@ -504,11 +513,9 @@ class MatriculaController extends ModeloController
             $request,
             [
                 'fecha_matricula' => 'required',
-                'curso_id' => 'required',
-                'acudiente' => 'required|max:100',
-                'cedula_acudiente' => 'required'
+                'curso_id' => 'required'
             ],
-            ['required' => 'Los campos de fecha de matrícula, curso, cédula y nombre de acudiente son obligatorios.']
+            ['required' => 'Los campos de fecha de matrícula y curso son obligatorios.']
         );
 
         $requisitos = $request->requisito1 . "-" . $request->requisito2 . "-" . $request->requisito3 . "-" . $request->requisito4
