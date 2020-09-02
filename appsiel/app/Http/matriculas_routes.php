@@ -44,6 +44,10 @@ Route::get('matriculas/imprimir/{id}', 'Matriculas\MatriculaController@imprimir'
 Route::post('matriculas/crear_nuevo', 'Matriculas\MatriculaController@crear_nuevo');
 Route::resource('matriculas', 'Matriculas\MatriculaController', ['except' => ['show']]);
 
+
+// FACTURACION ESTUDIANTES
+Route::resource('facturas_estudiantes', 'Matriculas\FacturaEstudianteController');
+
 // Observador
 Route::get('/matriculas/estudiantes/observador/valorar_aspectos/{id_estudiante}', 'Matriculas\ObservadorEstudianteController@valorar_aspectos');
 

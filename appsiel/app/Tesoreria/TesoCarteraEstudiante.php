@@ -8,8 +8,15 @@ use DB;
 
 class TesoCarteraEstudiante extends Model
 {
+    // NOTA: el campo "concepto" debe cambiar por uno tipo ID, que es el que se usa en la facturas.
     protected $fillable = ['id_libreta','id_estudiante','concepto',
     						'valor_cartera','valor_pagado','saldo_pendiente','fecha_vencimiento','estado'];
+
+
+    public function facturas_estudiantes()
+    {
+        return $this->hasMany('App\Matriculas\FacturaEstudiante','cartera_estudiante_id');
+    }
 
     public static function get_cartera_estudiantes_curso( $curso_id, $fecha_vencimiento, $concepto)
     {

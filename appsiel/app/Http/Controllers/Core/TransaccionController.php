@@ -166,6 +166,7 @@ class TransaccionController extends Controller
         
         return view( $vista, compact('form_create','miga_pan','tabla'));
     }
+    
     /*
         Crea el encabezado de un documento
         Devuelve LA INSTANCIA del documento creado
