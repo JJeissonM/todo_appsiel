@@ -35,7 +35,8 @@ class Authenticate
 
         $user = Auth::user();
 
-        if(isset($request->id) && isset($request->id_modelo)){
+        if(isset($request->id) && isset($request->id_modelo))
+        {
 
             $permisos = DB::table('users')
                 ->join('user_has_roles','users.id','=','user_has_roles.user_id')

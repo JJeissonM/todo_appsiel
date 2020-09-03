@@ -84,7 +84,6 @@
 				
 				<br>
 
-
 				@if( isset($cuestionario->id) )
 					<h4><b>Cuestionario</b></h4>
 					<hr>

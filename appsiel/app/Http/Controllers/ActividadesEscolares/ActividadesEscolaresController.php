@@ -209,7 +209,15 @@ class ActividadesEscolaresController extends ModeloController
      */
     public function hacer_actividad($actividad_id)
     {
-        $estudiante = Estudiante::where('user_id', Auth::user()->id )->get()->first();
+        $user = Auth::user();
+
+        // Si se terminó la sesión
+        if ( is_null( $user ) )
+        {
+            return redirect('inicio');
+        }
+        
+        $estudiante = Estudiante::where('user_id', $user->id )->get()->first();
 
         $modelo = Modelo::where('modelo', 'actividades_escolares')->get()->first();
 
