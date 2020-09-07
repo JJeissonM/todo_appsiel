@@ -1103,7 +1103,12 @@
 				var valor_nuevo = document.getElementById('valor_nuevo').value;
 
 				// Si no cambió el valor_nuevo, no pasa nada
-				if ( valor_nuevo == valor_actual) { return false; }
+				if ( valor_nuevo == valor_actual)
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+		        	elemento_modificar.show();
+		        	return false;
+				}
 
 				elemento_modificar.html( valor_nuevo );
 				elemento_modificar.show();

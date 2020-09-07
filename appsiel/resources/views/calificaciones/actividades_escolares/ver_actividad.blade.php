@@ -175,7 +175,8 @@
 			var valor_actual, elemento_modificar, elemento_padre;
 			
 			// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
-			$('.elemento_modificar').on('dblclick',function(){
+			$(document).on('dblclick','.elemento_modificar',function(){
+
 
 				$('#popup_alerta_success').hide();
 				
@@ -187,7 +188,7 @@
 
 				elemento_modificar.hide();
 
-				elemento_modificar.after( '<textarea name="valor_nuevo" id="valor_nuevo" class="form-control"></textarea>');
+				elemento_modificar.after('<textarea name="valor_nuevo" id="valor_nuevo" class="form-control"></textarea>');
 
 				document.getElementById('valor_nuevo').value = valor_actual;
 				document.getElementById('valor_nuevo').select();
@@ -207,7 +208,7 @@
 				// Abortar la edición
 				if( x == 27 ) // 27 = ESC
 				{
-					elemento_padre.find('#valor_nuevo').remove();
+					quitar_caja_texto_valor_nuevo();
 		        	elemento_modificar.show();
 		        	return false;
 				}
@@ -226,10 +227,15 @@
 				// Si no cambió el valor_nuevo, no pasa nada
 				if ( valor_nuevo == valor_actual)
 				{
-					elemento_padre.find('#valor_nuevo').remove();
+					quitar_caja_texto_valor_nuevo();					
 					elemento_modificar.show();
 					return false;
 				}
+
+				elemento_modificar.html( valor_nuevo );
+				elemento_modificar.show();
+
+				quitar_caja_texto_valor_nuevo();
 
 				// Se llama al método en ActividadesEscolaresController
 				var url = "{{url('almacenar_calificacion_a_respuesta_estudiante')}}";
@@ -237,15 +243,19 @@
 				$.get( url, { respuesta_id: elemento_modificar.attr('data-respuesta_id'), estudiante_id: elemento_modificar.attr('data-estudiante_id'), actividad_id: elemento_modificar.attr('data-actividad_id'), campo: elemento_modificar.attr('data-campo'), valor_nuevo: valor_nuevo } )
 					.done(function( data ) {
 						
-						elemento_modificar.html( valor_nuevo );
-						elemento_modificar.show();
-
 						elemento_modificar.attr('data-respuesta_id', data)
-
-						elemento_padre.find('#valor_nuevo').remove();
 
 						mostrar_popup( 'Calificación actualizada correctamente.' );
 					});
+			}
+
+
+			function quitar_caja_texto_valor_nuevo()
+			{
+				if ( document.getElementById('valor_nuevo') !== null )
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+				}
 			}
 
 
