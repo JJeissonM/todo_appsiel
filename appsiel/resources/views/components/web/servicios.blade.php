@@ -78,13 +78,13 @@
 -moz-box-shadow: 5px 5px 10px -8px rgba(0,0,0,0.75);
 box-shadow: 5px 5px 10px -8px rgba(0,0,0,0.75);" class="col-md-12">
                             <div style="border-top: 10px solid; border-color: #7bb0e7; top: 0;"></div>
-                            <div class="media service-box" style="height: 150px">
+                            <div class="media service-box" style="height: 150px;margin: 20px 0;">
                                 <div class="pull-left">
                                     <i class="fa fa-{{$item->icono}}"></i>
                                 </div>
                                 <div class="media-body">
-                                    <h4 class="media-heading">{{$item->titulo}}</h4>
-                                    <p>{!! str_limit($item->descripcion,120) !!} </p>
+                                    <h4 class="media-heading" style="margin-top: 0px;">{{$item->titulo}}</h4>
+                                    <p>{!! str_limit($item->descripcion,90) !!} </p>
                                 </div>
                             </div>
                             <div class="pull-right">

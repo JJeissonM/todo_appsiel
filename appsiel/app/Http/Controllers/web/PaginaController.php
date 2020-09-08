@@ -370,7 +370,6 @@ class PaginaController extends Controller
     {
 
         $widget = Widget::find($id);
-
         if ($widget) {
 
             $flag = $widget->delete();

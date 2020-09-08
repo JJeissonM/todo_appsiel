@@ -97,7 +97,25 @@
                     <label for="">Imagen</label>
                     <input type="file" class="form-control" name="imagen">
                 </div>
-
+                <div class="form-group">
+                    <label>Disposición</label>
+                    <div class="input-group-addon">
+                        @if($slider == null || $slider->disposicion == 'DEFAULT')
+                            <label for="disposicion">Premium</label>
+                            <input type="radio" class="form-control" name="disposicion" id="disposicion"
+                                   value="PREMIUM">
+                            <label for="default">Default</label>
+                            <input type="radio" class="form-control" name="disposicion" id="default" value="DEFAULT"
+                                   checked>
+                        @else
+                            <label for="disposicion">Premium</label>
+                            <input type="radio" class="form-control" name="disposicion" id="disposicion" value="PREMIUM"
+                                   checked>
+                            <label for="default">Default</label>
+                            <input type="radio" class="form-control" name="disposicion" id="default" value="DEFAULT">
+                        @endif
+                    </div>
+                </div>
                 <div class="col-md-12">
                     <h5>Enlazar a</h5>
                     <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="enlace">

@@ -35,7 +35,8 @@ class InvBodega extends Model
                             ->where( 'core_empresa_id', Auth::user()->empresa_id )
                             ->get();
 
-        $vec['']='';
+        //$vec['']='';
+        $vec = [];
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

@@ -31,7 +31,7 @@ class Album extends Model
         return '<div class="abrir_modal" data-elemento_id="'.$this->id.'" style="margin: 5px; font-size: 0.9em; color: black;" title="'.$this->titulo.'">
                     <img src="'.$url_primera_foto.'" style="border-radius: 5px; height: 210px; width=210px;">
                     <div class="titulo" style="font-weight: bold;">'.$this->titulo.'</div>
-                    <div class="subtitulo" style="margin-top: -10px;">'.count($this->fotos).' elementos</div>
+                    <div class="subtitulo" style="margin-top: 3px;">'.count($this->fotos).' elementos</div>
                 </div>';
 
     }
