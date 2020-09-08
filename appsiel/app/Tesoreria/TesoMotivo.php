@@ -9,6 +9,11 @@ use Auth;
 
 class TesoMotivo extends Model
 {
+
+    /*
+        movimiento: (ENUM) { entrada | salida }
+        teso_tipo_motivo: (ENUM) { Recaudo cartera | Otros recaudos | Pago proveedores | Otros pagos | Anticipo | Anticipo proveedor | Traslado | Pago anticipado | Prestamo financiero }
+    */
     protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','descripcion','movimiento','estado','teso_tipo_motivo','contab_cuenta_id'];
 
     public $encabezado_tabla = ['ID','Descripción','Tipo de transacción','Movimiento','Cuenta contrapartida','Estado','Acción'];

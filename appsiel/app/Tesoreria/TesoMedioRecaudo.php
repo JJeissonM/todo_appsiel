@@ -8,6 +8,9 @@ class TesoMedioRecaudo extends Model
 {
     protected $table = 'teso_medios_recaudo';
 
+    /*
+        comportamiento: { Efectivo | Tarjeta bancaria | Otro }
+    */
     protected $fillable = ['descripcion','comportamiento','por_defecto','maneja_puntos'];
 
     public $encabezado_tabla = ['Descripción','Comportamiento','Por defecto','Maneja puntos','Acción'];

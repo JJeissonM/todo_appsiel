@@ -57,7 +57,7 @@
                     		'fila_foot' => '<tr>
 								                <td colspan="4">&nbsp;</td>
 								                <td> <div id="total_valor_total">$0.00</div> </td>
-								                <td> &nbsp;</td>
+								                <td> &nbsp; </td>
 								            </tr>'
 						];
 			?>
@@ -114,28 +114,37 @@
 
 			$('#teso_medio_recaudo_id').change(function(){
 				var valor = $(this).val().split('-');
+
+				if ( valor == '' )
+				{
+					$('#div_cuenta_bancaria').hide();
+					$('#div_caja').hide();
+					deshabilitar_text($('#valor_total'));
+					$(this).focus();
+					alert('Debe escoger un medio de recaudo');
+					return false;
+				}
+
 				var texto_motivo = $( "#teso_motivo_id" ).html();//[ , $( "#teso_motivo_id option:selected" ).text() ];
-				if (texto_motivo == '') {
+				
+				if (texto_motivo == '')
+				{
 					alert('No se han creado motivos para el TIPO DE RECAUDO selecccionado. Debe crear al menos un MOTIVO para cada TIPO DE RECAUDO. No puede continuar.');
 					$('#teso_tipo_motivo').focus();
 				}else{
-					if (valor!='') {
-						if (valor[1]=='Tarjeta bancaria'){
-							$('#div_caja').hide();
-							$('#div_cuenta_bancaria').show();
-						}else{
-							$('#div_cuenta_bancaria').hide();
-							$('#div_caja').show();
-						}
-						habilitar_text($('#valor_total'));
-						//$('#btn_agregar').show();
-						$('#valor_total').focus();
-					}else{
-						$('#div_cuenta_bancaria').hide();
+					
+					$('#div_cuenta_bancaria').hide();
+					$('#div_caja').show();
+
+					if ( valor[1] == 'Tarjeta bancaria' )
+					{
 						$('#div_caja').hide();
-						deshabilitar_text($('#valor_total'));
-						$(this).focus();
+						$('#div_cuenta_bancaria').show();
 					}
+
+					habilitar_text($('#valor_total'));
+					$('#valor_total').focus();
+					
 				}
 								
 			});
