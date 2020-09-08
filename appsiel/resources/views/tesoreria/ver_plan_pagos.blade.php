@@ -70,12 +70,10 @@
 								<td>{{$fila->fecha_vencimiento}}</td>
 								<td>{{$fila->estado}}</td>
 								<td>
-									
-									<!-- 
-									@ if( empty( $fila->facturas_estudiantes->toArray() ) )
-										<a class="btn btn-success btn-xs btn-detail" href="{ { url('facturas_estudiantes/create?id='.Input::get('id').'&id_modelo=234&id_transaccion=49&estudiante_id='.$fila->id_estudiante) }}" title="Facturar"><i class="fa fa-btn fa-file"></i>&nbsp;Facturar</a>
-									@ endif
-								-->
+
+{{--									@if( empty( $fila->facturas_estudiantes->toArray() ) )--}}
+{{--										<a class="btn btn-success btn-xs btn-detail" href="{{ url('facturas_estudiantes/create?id='.Input::get('id').'&id_modelo=234&id_transaccion=49&estudiante_id='.$fila->id_estudiante) }}" title="Facturar"><i class="fa fa-btn fa-file"></i>&nbsp;Facturar</a>--}}
+{{--									@endif--}}
 
 									@if($fila->estado!='Pagada')
 										<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/hacer_recaudo_cartera/'.$fila->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}" title="Recaudar"><i class="fa fa-btn fa-money"></i>&nbsp;Recaudar</a>

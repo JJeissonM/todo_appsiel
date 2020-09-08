@@ -25,9 +25,8 @@ class SliderComponent implements IDrawComponent
 
         if ($slider != null) {
             if ($slider->disposicion == 'DEFAULT')
-            {
                 return Form::slider($slider);
-            }else {
+            else {
                 return Form::sliderpremiun($slider);
             }
         }

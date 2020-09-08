@@ -392,7 +392,7 @@
 
 </style>
 <section id="testimonial-area">
-    <div class="container" style="max-width: 540px">
+    <div class="container" style="max-width: 540px;overflow: visible !important;">
         <div class="row" style="margin-left: -50px; margin-right: -405px;">
             <!--start section heading-->
             <div class="col-md-8 offset-md-2">
