@@ -119,7 +119,8 @@ class Widget extends Model
         return $this->hasMany(Sticky::class);
     }
 
-    public function logins(){
+    public function logins()
+    {
         return $this->hasMany(Login::class);
     }
 }

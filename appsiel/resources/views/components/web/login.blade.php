@@ -22,7 +22,7 @@
             <div class="fusion-secondary-header" style="background-color: #2FAF72">
                 <div class="fusion-row">
                     <div class="fusion-alignleft">
-                        <div class="fusion-contact-info"><span class="fusion-contact-info-phone-number"><span style="color: #ffffff;">Llámanos hoy al:</span> <span style="color: #fff200;">  +57 333.333.3333</span></span></div>			</div>
+                        <div class="fusion-contact-info"><span class="fusion-contact-info-phone-number"><span style="color: #ffffff;">Llámanos hoy al:</span> <span style="color: #fff200;">  +57 (5) 585 8349</span></span></div>			</div>
                 </div>
             </div>
             <div class="fusion-sticky-header-wrapper" style="height: 263px">

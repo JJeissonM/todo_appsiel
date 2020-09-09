@@ -81,6 +81,8 @@
 				
 				<div id="popup_alerta"> </div>
 
+				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
+
 			{{ Form::close() }}
 
 			<br/>
@@ -941,6 +943,14 @@
 
 				// Se asigna el objeto JSON a un campo oculto del formulario
 		 		$('#lineas_registros').val( JSON.stringify(table) );
+
+		 		/*		Para Recaudos
+		 		// Se transfoma la tabla a formato JSON a través de un plugin JQuery
+				//var tabla_recaudos = $('#ingreso_registros_medios_recaudo').tableToJSON();
+
+				// Se asigna el objeto JSON a un campo oculto del formulario
+		 		//$('#lineas_registros_medios_recaudo').val( JSON.stringify(tabla_recaudos) );
+				*/
 
 		 		// Se envía el formulario
 				$('#form_create').submit();

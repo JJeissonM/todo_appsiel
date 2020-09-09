@@ -269,7 +269,7 @@ class ReporteController extends Controller
                                                         ->orderBy('calificacion_minima','ASC')
                                                         ->first()->calificacion_maxima;
 
-        $calificaciones = CalificacionAuxiliar::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
+        $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
 
         $estado_matricula = null; // Todas las matriculas. ¿Está bien así?
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, $estado_matricula );

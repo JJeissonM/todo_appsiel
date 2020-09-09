@@ -171,7 +171,7 @@ class FacturaPosController extends TransaccionController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * ALMACENA FACTURA POS
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
