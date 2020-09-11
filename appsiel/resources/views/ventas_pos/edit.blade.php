@@ -37,19 +37,7 @@
     		padding: 5px;
     		opacity: 0.7;
 		}
-
-
-
-		@media only screen and (min-width: 993px) {
-			.elemento_fondo{
-			    position: fixed;
-			    z-index: 9999;
-				bottom: 0;
-			    margin-bottom: 0;
-			    float: left;
-			}
-		}
-		
+			
 	</style>
 @endsection
 
@@ -92,7 +80,8 @@
 
 			<h4>Nuevo registro</h4>
 			<hr>
-			{{ Form::open([ 'url' => $form_create['url'], 'id'=>'form_create']) }}
+
+			{{ Form::model($registro, ['url' => [$url_action], 'method' => 'PUT','files' => true,'id' => 'form_create']) }}
 				<?php
 				  if (count($form_create['campos'])>0) {
 				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
@@ -100,6 +89,9 @@
 				  }else{
 				  	echo "<p>El modelo no tiene campos asociados.</p>";
 				  }
+
+				  //dd( $registro->cliente() );
+
 				?>
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
@@ -121,8 +113,9 @@
 				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$pdv->cliente->core_tercero_id}}" required="required">
 
 				<input type="hidden" name="cliente_descripcion" id="cliente_descripcion" value="{{$pdv->cliente->tercero->descripcion}}" required="required">
+
 				{{ Form::bsText( 'numero_identificacion', $pdv->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
-				{{ Form::bsText( 'direccion1', $pdv->cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
+				{{ Form::bsText( 'direccion1', $registro->cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
 				{{ Form::bsText( 'telefono1', $pdv->cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
 
 				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{$pdv->cliente->lista_precios_id}}" required="required">
@@ -151,8 +144,14 @@
 			<div class="container-fluid">
 				<div class="row">					
 					<div class="col-md-8">
-						{!! $tabla->dibujar() !!}
-						Productos ingresados: <span id="numero_lineas"> 0 </span>
+
+
+
+						{!! str_replace("<tbody>
+                
+            </tbody>", $lineas_registros, $tabla->dibujar() ) !!}
+
+						Productos ingresados: <span id="numero_lineas"> {{ $numero_linea - 1 }} </span>
 					</div>
 
 					<div class="col-md-4 well" style="font-size: 1.2em;">
@@ -167,7 +166,7 @@
 											<strong> Subtotal </strong>
 										</td>
 										<td style="text-align: right; border: 0px; background-color: transparent !important;">
-											<div id="subtotal" style="display: inline;"> $ 0 </div>
+											<div id="subtotal" style="display: inline;"> $ {{ number_format($registro->lineas_registros->sum('base_impuesto_total') + $registro->lineas_registros->sum('valor_total_descuento'),'2',',','.') }} </div>
 										</td>
 									</tr>
 								</table>								
@@ -180,7 +179,7 @@
 											<strong> Descuento </strong>
 										</td>
 										<td style="text-align: right; border: 0px; background-color: transparent !important;">
-											<div id="descuento" style="display: inline;"> $ 0 </div>
+											<div id="descuento" style="display: inline;"> $ {{ number_format( $registro->lineas_registros->sum('valor_total_descuento'),'2',',','.') }} </div>
 										</td>
 									</tr>
 								</table>								
@@ -193,7 +192,7 @@
 											<strong> Impuestos </strong>
 										</td>
 										<td style="text-align: right; border: 0px; background-color: transparent !important;">
-											<div id="total_impuestos" style="display: inline;"> $ 0 </div>
+											<div id="total_impuestos" style="display: inline;"> $ {{ number_format( $registro->lineas_registros->sum('precio_total') - $registro->lineas_registros->sum('base_impuesto_total'),'2',',','.') }} </div>
 										</td>
 									</tr>
 								</table>								
@@ -206,8 +205,8 @@
 											<strong> Total factura </strong>
 										</td>
 										<td style="text-align: right; border: 0px; background-color: transparent !important;">
-											<div id="total_factura" style="display: inline;"> $ 0 </div>
-											<input type="hidden" name="valor_total_factura" id="valor_total_factura" value="0">
+											<div id="total_factura" style="display: inline;"> $ {{ number_format($registro->lineas_registros->sum('precio_total'),'2',',','.') }} </div>
+											<input type="hidden" name="valor_total_factura" id="valor_total_factura" value="{{ $registro->lineas_registros->sum('precio_total') }}">
 											<br>
 											<div id="lbl_ajuste_al_peso" style="display: inline; font-size: 9px;"> $ 0 </div>
 										</td>
@@ -322,9 +321,6 @@
 		{!! $plantilla_factura !!}
 	</div>
 
-
-	<div class="container-fluid elemento_fondo" style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;"> </div>
-
 @endsection
 
 @section('scripts')
@@ -341,13 +337,15 @@
 	var total_cambio = 0;
 	var valor_ajuste_al_peso = 0;
 
-	var hay_productos = 0;
+	var hay_productos = {{ $numero_linea - 1 }};
 
 	var redondear_centena = {{ $redondear_centena }}
 
 	var productos = {!! json_encode($productos) !!};
 	var precios = {!! json_encode($precios) !!};
 	var descuentos = {!! json_encode($descuentos) !!};
+
+	var numero_linea = {{ $numero_linea }};
 
 	function get_precio( producto_id )
 	{
@@ -421,8 +419,6 @@
 			checkCookie();
 
 			$('#btn_guardar').hide();
-
-			$('#fecha').val( get_fecha_hoy() );
 
 			agregar_la_linea_ini();	
 
@@ -934,7 +930,6 @@
 				$("html, body").animate( { scrollTop: $(document).height()+"px"} );
             }
 
-			var numero_linea = 1;
 			function agregar_nueva_linea()
 			{
 				if ( !calcular_precio_total() )
@@ -1070,7 +1065,7 @@
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td><div class="lbl_tasa_impuesto" style="display: inline;">'+ tasa_impuesto + '</div></td>';
+				celdas[ num_celda ] = '<td><div class="lbl_tasa_impuesto" style="display: inline;">'+ tasa_impuesto + '%</div></td>';
 				
 				num_celda++;
 
@@ -1168,7 +1163,9 @@
 					
 					ventana_imprimir();
 
-					location.reload();
+					//location.reload();
+					location.href = "{{url('/')}}" + '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' + $('#pdv_id').val();
+
 				});
 					
 			});
@@ -1180,7 +1177,7 @@
 
 				$('.linea_registro').each(function( ){
 
-					linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> '+ $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text()  + '  (' + $(this).find('.lbl_precio_unitario').text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '% </td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
+					linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> '+ $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text()  + '  (' + $(this).find('.lbl_precio_unitario').text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '</td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
 
 	                if( parseFloat( $(this).find('.valor_total_descuento').text() )  != 0 )
 	                {
@@ -1561,7 +1558,6 @@
 			        	$('#div_spin2').hide();
 
 			        	fila.find('td').eq(6).text('Anulado');
-			        	fila.find('.btn_modificar_factura').hide();
 			        	fila.find('.btn_anular_factura').hide();
 			        	alert('Documento anulado correctamente.');
 			        });
@@ -1645,21 +1641,7 @@
 
 			function checkCookie()
 			{
-			  var ultimo_valor_total_factura = parseFloat( getCookie("ultimo_valor_total_factura") );
-			  var ultimo_valor_efectivo_recibido = parseFloat( getCookie("ultimo_valor_efectivo_recibido") );
-			  var ultimo_valor_total_cambio = parseFloat( getCookie("ultimo_valor_total_cambio") );
-			  var ultimo_valor_ajuste_al_peso = parseFloat( getCookie("ultimo_valor_ajuste_al_peso") );
-
-			  if( ultimo_valor_total_factura > 0 )
-			  {
-			  	$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( redondear_a_centena( ultimo_valor_total_factura ) ) );
-			  	$('#lbl_efectivo_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( ultimo_valor_efectivo_recibido.toFixed(2) ) );
-			  	//$('#total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( redondear_a_centena( ultimo_valor_total_cambio) ) );
-			  	$('#total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( ( ultimo_valor_total_cambio) ) );
-			  	$('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format( ultimo_valor_ajuste_al_peso ) );
-			  	$("html, body").animate( { scrollTop: $(document).height()+"px"} );
-			  }
-
+			  $("html, body").animate( { scrollTop: $(document).height()+"px"} );
 			}
 
 		});

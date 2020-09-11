@@ -279,4 +279,16 @@ class TransaccionController extends Controller
                             [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id]
                         );
     }
+
+    public function get_total_campo_lineas_registros( $lineas_registros, string $campo )
+    {
+        $total = 0;
+        foreach ($lineas_registros as $linea )
+        {
+            if ( isset($linea->$campo) )
+                $total += (float)$linea->$campo;
+        }
+
+        return $total;
+    }
 }

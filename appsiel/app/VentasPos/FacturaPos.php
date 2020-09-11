@@ -14,9 +14,30 @@ class FacturaPos extends Model
     protected $table = 'vtas_pos_doc_encabezados';
 	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'orden_compras', 'descripcion', 'valor_total', 'estado', 'creado_por', 'modificado_por'];
 
-    public $urls_acciones = '{"store":"pos_factura","imprimir":"pos_factura_imprimir/id_fila","show":"pos_factura/id_fila"}'; // ,"eliminar":"pos_factura_anular/id_fila"
+    public $urls_acciones = '{"store":"pos_factura","update":"pos_factura/id_fila","imprimir":"pos_factura_imprimir/id_fila","show":"pos_factura/id_fila"}'; // ,"eliminar":"pos_factura_anular/id_fila"
 	
     public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente', 'Cond. pago', 'Detalle', 'Valor total', 'PDV', 'Estado', 'Acción'];
+
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function cliente()
+    {
+        return $this->belongsTo( 'App\Ventas\Cliente','cliente_id');
+    }
+
+    public function vendedor()
+    {
+        return $this->belongsTo( 'App\Ventas\Vendedor','vendedor_id');
+    }
+
+    public function lineas_registros()
+    {
+        return $this->hasMany( DocRegistro::class, 'vtas_pos_doc_encabezado_id' );
+    }
 
     public static function consultar_registros()
     {
@@ -83,6 +104,7 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.consecutivo',
                 'vtas_pos_doc_encabezados.fecha',
                 'vtas_pos_doc_encabezados.fecha_vencimiento',
+                'vtas_pos_doc_encabezados.pdv_id',
                 'vtas_pos_doc_encabezados.descripcion',
                 'vtas_pos_doc_encabezados.estado',
                 'vtas_pos_doc_encabezados.creado_por',

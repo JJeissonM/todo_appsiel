@@ -24,7 +24,12 @@
                         &nbsp;&nbsp;&nbsp;
                         <a class="btn btn-primary btn-xs btn-detail" href="{{ url('ventas/'.$fila['campo8'].'?id=20&id_modelo=230&id_transaccion=47') }}" title="Consultar" id="btn_print" target="_blank"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>
                         &nbsp;&nbsp;&nbsp;
-                        @if( $fila['campo7'] != 'Anulado' )
+                        @if( $fila['campo7'] != 'Anulado' && $fila['campo7'] == 'Pendiente' )
+                            
+                            <a class="btn btn-warning btn-xs btn_modificar_factura" href="{{ url( 'pos_factura/' . $fila['campo8'] . '/edit?id=20&id_modelo=230&id_transaccion=47' ) }}" title="Modificar"> <i class="fa fa-edit"></i> </a> <!-- target="_blank"  -->
+                            
+                            &nbsp;&nbsp;&nbsp;
+
                             <button class="btn btn-danger btn-xs btn_anular_factura" data-pdv_id="{{ $pdv->id }}" data-doc_encabezado_id="{{$fila['campo8']}}" data-lbl_factura="{{$fila['campo2']}}" title="Anular"> <i class="fa fa-trash"></i> </button>
                         @endif
                     </td>
