@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\VentasPos;
 
+use App\Http\Controllers\Tesoreria\RecaudoController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
@@ -154,6 +155,11 @@ class FacturaPosController extends TransaccionController
                         'url' => $acciones->store,
                         'campos' => $lista_campos
                     ];
+        $id_transaccion = 8;// 8 = Recaudo cartera
+        $motivos = [''];//RecaudoController::get_motivos($id_transaccion);
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Crear: '.$this->transaccion->descripcion );
         
@@ -167,7 +173,7 @@ class FacturaPosController extends TransaccionController
 
         $redondear_centena = config('ventas_pos.redondear_centena');
 
-        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura', 'redondear_centena') );
+        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura', 'redondear_centena','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias') );
     }
 
     /**

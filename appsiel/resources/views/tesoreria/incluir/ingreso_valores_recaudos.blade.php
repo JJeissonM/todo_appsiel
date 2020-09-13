@@ -2,7 +2,7 @@
 	$estilo_text=' style="border: none;border-color: transparent;border-bottom: 1px solid gray;"';
 ?>
 
-<div id="myModal" class="modal fade" role="dialog">
+<div id="recaudoModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
     <!-- Modal content-->
