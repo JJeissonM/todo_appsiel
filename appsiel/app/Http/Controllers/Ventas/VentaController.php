@@ -634,7 +634,6 @@ class VentaController extends TransaccionController
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
-        $es_el_primero = true;
         $ultimo_item = 0;
         $num_item = 1;
         $cantidad_datos = count( $clientes->toArray() ); // si datos es null?

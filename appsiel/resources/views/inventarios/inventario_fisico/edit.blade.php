@@ -14,7 +14,9 @@
 		<div class="marco_formulario">
 		    <h4>Nuevo registro</h4>
 		    <hr>
-			{{ Form::open(['url'=> $form_create['url'],'id'=>'form_create']) }}
+
+			{{ Form::model($registro, ['url' => [ $form_create['url'] ], 'method' => 'PUT','files' => true,'id'=>'form_create']) }}
+			
 				<?php
 				  if (count($form_create['campos'])>0) {
 				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
@@ -60,6 +62,7 @@
 		            </tr>
 		        </thead>
 		        <tbody>
+		        	{!! $lineas_registros !!}
 		        </tbody>
 		        <tfoot>
 		        	<tr id="linea_ingreso_default">
@@ -94,8 +97,12 @@
 		$(document).ready(function(){
 			$('#core_empresa_id').val(1);
 
-			$('#fecha').val( get_fecha_hoy() );
-			$('#fecha').focus();			
+			$('#fecha').focus();
+
+			$('#movimiento').removeAttr('disabled');
+
+			$('#total_cantidad').text( {{ $cantidad_total }} );
+			$('#total_costo_total').text( {{ $costo_total }} );
 
 			$('#hora_inicio').val( get_hora_actual() );
 
@@ -297,10 +304,18 @@
 					$('#movimiento').val(JSON.stringify(table));
 
 					$('#linea_ingreso_default').remove();
+
+					habilitar_campos_encabezado();
+
 					$('#form_create').submit();
 				}
 					
-			});			
+			});
+
+			function habilitar_campos_encabezado()
+			{
+				$('#inv_bodega_id').removeAttr('disabled');
+			}
 			
 
 			function calcular_totales()
@@ -653,8 +668,6 @@
 			{
 				var costo_unitario = fila.find("td.lbl_costo_unitario").html();
 				var cantidad = fila.find("div.elemento_modificar").html();
-
-				console.log( [ parseFloat(costo_unitario), parseFloat( cantidad ), parseFloat(costo_unitario) * parseFloat( cantidad ) ] );
 				
 				fila.find('td.lbl_costo_total').html( parseFloat(costo_unitario) * parseFloat( cantidad ) );
 			}

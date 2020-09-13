@@ -177,7 +177,6 @@
 			// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
 			$(document).on('dblclick','.elemento_modificar',function(){
 
-
 				$('#popup_alerta_success').hide();
 				
 				elemento_modificar = $(this);

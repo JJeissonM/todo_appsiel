@@ -124,7 +124,7 @@
 		        		}
 		        	?>
 
-			     	<div class="col-sm-{{12/$cant_cols}} col-xs-1" style="padding: 5px;">
+			     	<div class="col-md-{{12/$cant_cols}} col-xs-12 col-sm-12" style="padding: 5px;">
 		          		<div class="tienda">
 							<p style="text-align: center; margin: 10px;">
 								<img src="{{asset('assets/images/canopy_shop_pos.jpg') }}" style="display: inline; height: 120px; width: 100%;" />
@@ -134,46 +134,44 @@
 
 									<br>
 
-									<table width="100%">
-										<tr>
-											<td style="text-align: center; font-size: 1.1em; font-weight: bold;" colspan="2">
-												{{ $pdv->descripcion }}
-												<hr>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<b> Estado: </b>
-											</td>
-											<td>
-												<i class="fa fa-circle" style="color: {{$color}}"> </i> {{ $pdv->estado }} <small> | desde {{ $fecha_desde }} </small>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<b> # facturas: </b>
-											</td>
-											<td>
-												<span class="badge">{{ $num_facturas }}</span>
-												@if( $num_facturas > 0 )
-													<button style="background: transparent; border: 0px; text-decoration: underline; color: #069;" class="btn_consultar_facturas" href="#" data-pdv_id="{{$pdv->id}}" data-lbl_ventana="Facturas de ventas" data-fecha_primera_factura="{{$fecha_primera_factura}}" data-fecha_hoy="{{$fecha_hoy}}"> Consultar </button>
-												@endif
-											</td>
-										</tr>
-									</table>
-
-									<div class="btn-group">
-				
-										{!! $btn_abrir !!}
-										{!! $btn_facturar !!}
-										{!! $btn_cerrar !!}
-										{!! $btn_acumular !!}
-										{!! $btn_hacer_arqueo !!}
-										
+									<div class="table-responsive">
+										<div class="table">
+											
+												<div style="text-align: center; font-size: 1.1em; font-weight: bold;" colspan="2">
+													{{ $pdv->descripcion }}
+													<hr>
+												</div>
+											
+											
+												<div>
+													<b> Estado: </b> <i class="fa fa-circle" style="color: {{$color}}"> </i> {{ $pdv->estado }} <small> | desde {{ $fecha_desde }} </small>
+												</div>
+											
+											
+												<div>
+													<b> # facturas: </b>
+													<span class="badge">{{ $num_facturas }}</span>
+													@if( $num_facturas > 0 )
+														<button style="background: transparent; border: 0px; text-decoration: underline; color: #069;" class="btn_consultar_facturas" href="#" data-pdv_id="{{$pdv->id}}" data-lbl_ventana="Facturas de ventas" data-fecha_primera_factura="{{$fecha_primera_factura}}" data-fecha_hoy="{{$fecha_hoy}}"> Consultar </button>
+													@endif
+												</div>
+											
+										</div>
+										<div class="btn-group">
+					
+											{!! $btn_abrir !!}
+											{!! $btn_facturar !!}
+											{!! $btn_cerrar !!}
+											{!! $btn_acumular !!}
+											{!! $btn_hacer_arqueo !!}
+											
+										</div>
+										<br><br>
+										{!! $btn_consultar_estado !!}
 									</div>
+										
 
-									<br><br>
-									{!! $btn_consultar_estado !!}
+
 
 								</div>										
 							</div>

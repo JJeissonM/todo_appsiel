@@ -129,38 +129,40 @@ $cajas = ReporteController::reporte_cajas( $fecha_hoy );
 
 		<br><br>
 		<div class="row">
-			<div class="col-md-6 col-md-offset-2">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>Fecha</th>
-							<th>Recaudos</th>
-							<th>Pagos</th>
-							<th>Saldo</th>
-						</tr>
-					</thead>
-					<tbody>
-						@for($i=0; $i < $cant; $i++) <tr>
-							<td> {{ $tabla[$i]['fecha'] }} </td>
-							<td style="text-align: right;"> ${{ number_format($tabla[$i]['valor_entradas'], 2, ',', '.') }} </td>
-							<td style="text-align: right;"> ${{ number_format($tabla[$i]['valor_salidas'], 2, ',', '.') }} </td>
-							<td style="text-align: right;"> ${{ number_format( $tabla[$i]['valor_entradas'] - $tabla[$i]['valor_salidas'], 2, ',', '.') }} </td>
+			<div class="col-md-12">
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered">
+						<thead>
+							<tr>
+								<th>Fecha</th>
+								<th>Recaudos</th>
+								<th>Pagos</th>
+								<th>Saldo</th>
 							</tr>
-							@php
-							$totales_entradas += $tabla[$i]['valor_entradas'];
-							$totales_salidas += $tabla[$i]['valor_salidas'];
-							@endphp
-							@endfor
-					</tbody>
-					<tfoot>
-						<tr>
-							<td> </td>
-							<td style="text-align: right;"> <b> ${{ number_format($totales_entradas, 2, ',', '.') }} </b> </td>
-							<td style="text-align: right;"> <b> ${{ number_format($totales_salidas, 2, ',', '.') }} </b> </td>
-							<td style="text-align: right;"> <b> ${{ number_format( $totales_entradas - $totales_salidas, 2, ',', '.') }} </b> </td>
-						</tr>
-					</tfoot>
-				</table>
+						</thead>
+						<tbody>
+							@for($i=0; $i < $cant; $i++) <tr>
+								<td> {{ $tabla[$i]['fecha'] }} </td>
+								<td style="text-align: right;"> ${{ number_format($tabla[$i]['valor_entradas'], 2, ',', '.') }} </td>
+								<td style="text-align: right;"> ${{ number_format($tabla[$i]['valor_salidas'], 2, ',', '.') }} </td>
+								<td style="text-align: right;"> ${{ number_format( $tabla[$i]['valor_entradas'] - $tabla[$i]['valor_salidas'], 2, ',', '.') }} </td>
+								</tr>
+								@php
+								$totales_entradas += $tabla[$i]['valor_entradas'];
+								$totales_salidas += $tabla[$i]['valor_salidas'];
+								@endphp
+								@endfor
+						</tbody>
+						<tfoot>
+							<tr>
+								<td> </td>
+								<td style="text-align: right;"> <b> ${{ number_format($totales_entradas, 2, ',', '.') }} </b> </td>
+								<td style="text-align: right;"> <b> ${{ number_format($totales_salidas, 2, ',', '.') }} </b> </td>
+								<td style="text-align: right;"> <b> ${{ number_format( $totales_entradas - $totales_salidas, 2, ',', '.') }} </b> </td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 			</div>
 		</div>
 

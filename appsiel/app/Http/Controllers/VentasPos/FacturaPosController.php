@@ -445,12 +445,14 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado->descripcion = $request->descripcion;
         $doc_encabezado->vendedor_id = $request->vendedor_id;
         $doc_encabezado->valor_total = $this->get_total_campo_lineas_registros( $lineas_registros, 'precio_total' );
+        $doc_encabezado->modificado_por = Auth::user()->email;
         $doc_encabezado->save();
 
         // Borrar líneas de registros anteriores
         DocRegistro::where('vtas_pos_doc_encabezado_id',$doc_encabezado->id)->delete();
 
         // Crear nuevamente las líneas de registros
+        $request['creado_por'] = Auth::user()->email;
         $request['modificado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 

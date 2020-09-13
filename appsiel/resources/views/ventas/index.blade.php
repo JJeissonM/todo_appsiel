@@ -96,7 +96,7 @@
 						<h4 style="text-align: center; width: 100%; background-color: #faf4d4; color: #636363;">Pedidos ésta semana</h4>
 						<div class="table-responsive">
 							@if($semana!=null)
-							<table class="table table-striped table-responsive">
+							<table class="table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th>LUNES</th>
@@ -144,7 +144,7 @@
 					<div class="col-md-6">
 						<h4 style="text-align: center; width: 100%; background-color: #FFD3D3; color: #636363;">Pedidos vencidos</h4>
 						@if($vencidas!=null)
-						<table class="table table-striped">
+						<table class="table table-striped table-bordered">
 							<thead>
 								<tr>
 									<th>Pedido</th>
@@ -170,7 +170,7 @@
 						<h4 style="text-align: center; width: 100%; background-color: #d3eac9; color: #636363;">Pedidos futuros</h4>
 
 						@if($futuras!=null)
-						<table class="table table-striped">
+						<table class="table table-striped table-bordered">
 							<thead>
 								<tr>
 									<th>Pedido</th>
@@ -212,7 +212,7 @@
 				<br><br>
 				<div class="row">
 					<div class="col-md-4 col-md-offset-4">
-						<table class="table table-striped">
+						<table class="table table-striped table-bordered">
 							<thead>
 								<tr>
 									<th>Fecha</th>
