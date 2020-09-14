@@ -156,7 +156,7 @@ class FacturaPosController extends TransaccionController
                         'campos' => $lista_campos
                     ];
         $id_transaccion = 8;// 8 = Recaudo cartera
-        $motivos = [''];//RecaudoController::get_motivos($id_transaccion);
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
         $medios_recaudo = RecaudoController::get_medios_recaudo();
         $cajas = RecaudoController::get_cajas();
         $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();

@@ -51,6 +51,22 @@ class TesoMotivo extends Model
         return $vec;
     }
 
+    public static function opciones_campo_select_tipo_transaccion( $teso_tipo_motivo )
+    {
+        $opciones = TesoMotivo::where('teso_motivos.estado','Activo')
+                    ->where('teso_tipo_motivo',$teso_tipo_motivo)
+                    ->select('teso_motivos.id','teso_motivos.descripcion')
+                    ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
 
     public function cuenta_contable()
     {

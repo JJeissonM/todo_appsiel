@@ -95,7 +95,7 @@ $('#btn_agregar').click(function(event){
 
         var medio_recaudo = $( "#teso_medio_recaudo_id" ).val().split('-');
         var texto_medio_recaudo = [ medio_recaudo[0], $( "#teso_medio_recaudo_id option:selected" ).text() ];
-        console.log(medio_recaudo);
+        
         if ( medio_recaudo[1] == 'Tarjeta bancaria')
         {
             var texto_caja = [0,''];
@@ -114,7 +114,7 @@ $('#btn_agregar').click(function(event){
         var texto_motivo = [ $( "#teso_motivo_id" ).val(), $( "#teso_motivo_id option:selected" ).text() ];
 
 
-        var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
+        var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar_linea_medio_recaudo'><i class='fa fa-btn fa-trash'></i></button>";
 
 
         celda_valor_total = '<td class="valor_total">$'+valor_total+'</td>';
@@ -151,9 +151,9 @@ $('#btn_agregar').click(function(event){
 /*
     ** Al eliminar una fila
     */
-// Se utiliza otra forma con $(document) porque el $('#btn_eliminar') no funciona pues
+// Se utiliza otra forma con $(document) porque el $('#btn_eliminar_linea_medio_recaudo') no funciona pues
 // es un elemento agregadi despues de que se cargó la página
-$(document).on('click', '.btn_eliminar', function(event) {
+$(document).on('click', '.btn_eliminar_linea_medio_recaudo', function(event) {
     event.preventDefault();
     var fila = $(this).closest("tr");
     fila.remove();
@@ -164,7 +164,8 @@ $(document).on('click', '.btn_eliminar', function(event) {
     }
 });
 
-function calcular_totales_medio_recaudos(){
+function calcular_totales_medio_recaudos()
+{
     var sum = 0.0;
     sum = 0.0;
     $('.valor_total').each(function()
@@ -175,7 +176,7 @@ function calcular_totales_medio_recaudos(){
 
     $('#total_valor_total').text("$"+sum.toFixed(2));
     $('#suma_cambio').val(sum);
-    // jordan(event,sum);
+    $('#total_valor_total').actualizar_medio_recaudo();
 }
 
 function habilitar_text($control){
@@ -190,10 +191,11 @@ function deshabilitar_text($control){
 
 function reset_form_registro(){
 
-    var url = '../../tesoreria/ajax_get_motivos/'+$('#teso_tipo_motivo').val();
+    /*var url = '../../tesoreria/ajax_get_motivos/'+$('#teso_tipo_motivo').val();
     $.get( url, function( datos ) {
         $('#teso_motivo_id').html(datos);
     });
+    */
 
      $('#form_registro input[type="text"]').val('');
 

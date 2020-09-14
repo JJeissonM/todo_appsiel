@@ -244,7 +244,7 @@ use App\Http\Controllers\Sistema\VistaController;
                             <table style="width: 100%; margin: 0px;">
                                 <tr>
                                     <td width="35%" style="border: 0px;">
-                                        <strong> Efectivo Recibido </strong>
+                                        <strong> Dinero Recibido </strong>
                                     </td>
                                     <td style="text-align: right; border: 0px; background-color: transparent !important;">
                                         <input type="text" name="efectivo_recibido" id="efectivo_recibido"
@@ -379,6 +379,91 @@ use App\Http\Controllers\Sistema\VistaController;
         var productos = {!! json_encode($productos) !!};
         var precios = {!! json_encode($precios) !!};
         var descuentos = {!! json_encode($descuentos) !!};
+        
+        $('#teso_motivo_id').val( 1 );
+        $('#btn_nuevo').hide();
+
+        $.fn.actualizar_medio_recaudo = function(){
+            
+            var texto_total_recaudos = this.html().substring(1);
+            
+            $.fn.calcular_total_cambio( texto_total_recaudos );
+
+            $('#efectivo_recibido').val( parseFloat( texto_total_recaudos ) );
+
+            $.fn.set_label_efectivo_recibido( texto_total_recaudos );
+
+            $.fn.cambiar_estilo_div_total_cambio();
+
+        };
+
+        // 
+        $.fn.calcular_total_cambio = function( efectivo_recibido )
+        {
+            total_cambio = ( $.fn.redondear_a_centena( parseFloat( $('#valor_total_factura').val())) - parseFloat( efectivo_recibido ) ) * -1;
+            // Label
+            $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format(total_cambio.toFixed(0)));
+            // Input hidden
+            $('#valor_total_cambio').val(total_cambio);
+        };
+
+        $.fn.set_label_efectivo_recibido = function( efectivo_recibido )
+        {
+            $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( efectivo_recibido ).toFixed(2) ) );
+        };
+
+        $.fn.activar_boton_guardar_factura = function(){
+            
+            $('#btn_guardar_factura').attr('disabled', 'disabled');
+
+            if (total_cambio.toFixed(0) >= 0)
+                $('#btn_guardar_factura').removeAttr('disabled'); 
+
+        };
+
+        $.fn.cambiar_estilo_div_total_cambio = function(){
+            
+            $('#div_total_cambio').attr('class', 'alert alert-danger');
+
+            if (total_cambio.toFixed(0) >= 0)
+                $('#div_total_cambio').attr('class', 'alert alert-success');
+        };
+
+        
+
+        $.fn.checkCookie = function()
+        {
+            var ultimo_valor_total_factura = parseFloat( $.fn.getCookie("ultimo_valor_total_factura"));
+            var ultimo_valor_efectivo_recibido = parseFloat( $.fn.getCookie("ultimo_valor_efectivo_recibido"));
+            var ultimo_valor_total_cambio = parseFloat( $.fn.getCookie("ultimo_valor_total_cambio"));
+            var ultimo_valor_ajuste_al_peso = parseFloat( $.fn.getCookie("ultimo_valor_ajuste_al_peso"));
+
+            if (ultimo_valor_total_factura > 0)
+            {
+                $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(ultimo_valor_total_factura ) ) );
+                $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_efectivo_recibido.toFixed(2)));
+                $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format((ultimo_valor_total_cambio)));
+                $('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_ajuste_al_peso));
+                $("html, body").animate({scrollTop: $(document).height() + "px"});
+            }
+        };
+
+
+        $.fn.getCookie = function(cname)
+        {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        };
 
         function get_precio(producto_id) {
             var precio = precios.find(item => item.producto_codigo === producto_id);
@@ -423,7 +508,8 @@ use App\Http\Controllers\Sistema\VistaController;
 
         }
 
-        function mandar_codigo(item_id) {
+        function mandar_codigo(item_id)
+        {
             $('#myModal').modal("hide");
 
             var producto = productos.find(item => item.id === parseInt(item_id));
@@ -437,46 +523,11 @@ use App\Http\Controllers\Sistema\VistaController;
             $('#tasa_descuento').val(get_descuento(producto.id));
 
             $('#cantidad').select();
-
-
         }
-
-        // function jordan(suma){
-        //
-        //     alert(event);
-        //
-        //     if ($('#valor_total_factura').val() <= 0) {
-        //         return false;
-        //     }
-        //     if (total_cambio.toFixed(0) >= 0) {
-        //         $('#btn_guardar_factura').focus();
-        //     } else {
-        //         return false;
-        //     }
-        //     $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(parseFloat($(this).val()).toFixed(2)));
-        //
-        //     total_cambio = (redondear_a_centena(parseFloat($('#valor_total_factura').val())) - parseFloat($(this).val())) * -1;
-        //
-        //     if (total_cambio.toFixed(0) >= 0) {
-        //         $('#btn_guardar_factura').removeAttr('disabled');
-        //         $('#div_total_cambio').attr('class', 'alert alert-success');
-        //
-        //     } else {
-        //         $('#btn_guardar_factura').attr('disabled', 'disabled');
-        //         $('#div_total_cambio').attr('class', 'alert alert-danger');
-        //     }
-        //
-        //     // Label
-        //     $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format(total_cambio.toFixed(0)));
-        //     // Input hidden
-        //     $('#valor_total_cambio').val(total_cambio);
-        //
-        //     calcular_totales();
-        // }
 
         $(document).ready(function () {
 
-            checkCookie();
+            $.fn.checkCookie();
 
             $('#btn_guardar').hide();
 
@@ -706,7 +757,8 @@ use App\Http\Controllers\Sistema\VistaController;
                     return false;
                 }
 
-                if (validar_input_numerico($(this)) && $(this).val() > 0) {
+                if ( validar_input_numerico($(this)) && $(this).val() > 0)
+                {
                     switch (codigo_tecla_presionada) {
                         case 13: // Al presionar Enter
 
@@ -720,23 +772,15 @@ use App\Http\Controllers\Sistema\VistaController;
 
                         default :
 
-                            $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(parseFloat($(this).val()).toFixed(2)));
+                            //$('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(parseFloat($(this).val()).toFixed(2)));
 
-                            total_cambio = (redondear_a_centena(parseFloat($('#valor_total_factura').val())) - parseFloat($(this).val())) * -1;
+                            $.fn.set_label_efectivo_recibido( $(this).val() );
 
-                            if (total_cambio.toFixed(0) >= 0) {
-                                $('#btn_guardar_factura').removeAttr('disabled');
-                                $('#div_total_cambio').attr('class', 'alert alert-success');
+                            $.fn.calcular_total_cambio( $(this).val() );
 
-                            } else {
-                                $('#btn_guardar_factura').attr('disabled', 'disabled');
-                                $('#div_total_cambio').attr('class', 'alert alert-danger');
-                            }
+                            $.fn.activar_boton_guardar_factura();
 
-                            // Label
-                            $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format(total_cambio.toFixed(0)));
-                            // Input hidden
-                            $('#valor_total_cambio').val(total_cambio);
+                            $.fn.cambiar_estilo_div_total_cambio();
 
                             calcular_totales();
 
@@ -1007,6 +1051,7 @@ use App\Http\Controllers\Sistema\VistaController;
                 calcular_totales();
 
                 hay_productos++;
+                $('#btn_nuevo').show();
                 $('#numero_lineas').text(hay_productos);
                 deshabilitar_campos_encabezado();
 
@@ -1138,6 +1183,8 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 if (hay_productos == 0) {
                     habilitar_campos_encabezado();
+                    reset_efectivo_recibido();
+                    $('#btn_nuevo').hide();
                 }
 
                 reset_linea_ingreso_default();
@@ -1152,6 +1199,7 @@ use App\Http\Controllers\Sistema\VistaController;
                     alert('No ha ingresado productos.');
                     reset_linea_ingreso_default();
                     reset_efectivo_recibido();
+                    $('#btn_nuevo').hide();
                     return false;
                 }
 
@@ -1208,10 +1256,10 @@ use App\Http\Controllers\Sistema\VistaController;
                 });
 
 
-                $('.lbl_total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(redondear_a_centena(lbl_total_factura)));
+                $('.lbl_total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
                 $('.lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
                 $('.lbl_total_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(parseFloat($('#efectivo_recibido').val())));
-                $('.lbl_total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format(redondear_a_centena(total_cambio)));
+                $('.lbl_total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(total_cambio)));
 
                 if ($('#forma_pago').val() == 'credito') {
                     $('#tr_fecha_vencimiento').show();
@@ -1228,7 +1276,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
             }
 
-            function redondear_a_centena(numero, aproximacion_superior = false) {
+            $.fn.redondear_a_centena = function(numero, aproximacion_superior = false) {
                 if (!redondear_centena) {
                     return numero.toFixed(0);
                 }
@@ -1261,7 +1309,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 return (millones + millares + centenas);
 
-            }
+            };
 
             function reset_campos_formulario() {
                 $('#cliente_id').val('');
@@ -1375,7 +1423,7 @@ use App\Http\Controllers\Sistema\VistaController;
                 $('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2)));
 
                 // label Total factura  (Sumatoria de precio_total)
-                var valor_redondeado = redondear_a_centena(total_factura);
+                var valor_redondeado = $.fn.redondear_a_centena(total_factura);
                 $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_redondeado));
 
                 // input hidden
@@ -1636,39 +1684,8 @@ use App\Http\Controllers\Sistema\VistaController;
                 document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
             }
 
-            function getCookie(cname) {
-                var name = cname + "=";
-                var ca = document.cookie.split(';');
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i];
-                    while (c.charAt(0) == ' ') {
-                        c = c.substring(1);
-                    }
-                    if (c.indexOf(name) == 0) {
-                        return c.substring(name.length, c.length);
-                    }
-                }
-                return "";
-            }
-
-            function checkCookie() {
-                var ultimo_valor_total_factura = parseFloat(getCookie("ultimo_valor_total_factura"));
-                var ultimo_valor_efectivo_recibido = parseFloat(getCookie("ultimo_valor_efectivo_recibido"));
-                var ultimo_valor_total_cambio = parseFloat(getCookie("ultimo_valor_total_cambio"));
-                var ultimo_valor_ajuste_al_peso = parseFloat(getCookie("ultimo_valor_ajuste_al_peso"));
-
-                if (ultimo_valor_total_factura > 0) {
-                    $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(redondear_a_centena(ultimo_valor_total_factura)));
-                    $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_efectivo_recibido.toFixed(2)));
-                    //$('#total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( redondear_a_centena( ultimo_valor_total_cambio) ) );
-                    $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format((ultimo_valor_total_cambio)));
-                    $('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_ajuste_al_peso));
-                    $("html, body").animate({scrollTop: $(document).height() + "px"});
-                }
-
-            }
-
         });
+
     </script>
     <script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
 @endsection

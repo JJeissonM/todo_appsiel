@@ -109,12 +109,17 @@ class TransaccionController extends Controller
 
     public function get_boton_select_crear( $app )
     {
+        $tipos_transacciones = [];
 
-        // Botón crear con el listado de las transacciones asociadas a la aplicación
-        $tipos_transacciones = $app->tipos_transacciones()->where('estado','Activo')->get();
+        if ( !is_null( $app ) )
+        {
+            // Botón crear con el listado de las transacciones asociadas a la aplicación
+            $tipos_transacciones = $app->tipos_transacciones()->where('estado','Activo')->get();
+        }
         
         $opciones = [];
         $key = 0;
+
         foreach($tipos_transacciones as $fila)
         {
             $modelo = Modelo::find( $fila->core_modelo_id );

@@ -53,7 +53,9 @@ $datos = [
                     <tfoot>
                     <tr>
                         <td colspan="4">&nbsp;</td>
-                        <td> <div id="total_valor_total">$0.00</div> </td>
+                        <td> 
+                            <div id="total_valor_total">$0.00</div>
+                        </td>
                         <td> &nbsp; </td>
                     </tr>
                     </tfoot>
@@ -61,7 +63,7 @@ $datos = [
             </div>
         </div>
 
-        <a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
+        <a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none; cursor: pointer;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
     </div>
     <input type="hidden" name="suma_cambio" id="suma_cambio" onselect="jordan()">
 </div>
