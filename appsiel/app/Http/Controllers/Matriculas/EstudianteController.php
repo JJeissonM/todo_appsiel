@@ -418,27 +418,33 @@ class EstudianteController extends ModeloController
     //guarda un responsable
     public function gestionresponsables_store(Request $request)
     {
-        $t = new Tercero($request->all());
-        $t->imagen = " ";
-        $t->tipo = "Persona natural";
-        $t->razon_social = " ";
-        $t->digito_verificacion = 0;
-        $t->direccion1 = " ";
-        $t->direccion2 = " ";
-        $t->barrio = " ";
-        $t->descripcion = $t->nombre1 . " " . $t->otros_nombres . " " . $t->apellido1 . " " . $t->apellido2;
-        $t->codigo_ciudad = 0;
-        $t->codigo_postal = 0;
-        $t->telefono2 = 0;
-        $t->pagina_web = " ";
-        $t->estado = "Activo";
-        $t->user_id = 0;
-        $t->contab_anticipo_cta_id = 0;
-        $t->contab_cartera_cta_id = 0;
-        $t->contab_cxp_cta_id = 0;
-        $t->creado_por = " ";
-        $t->modificado_por = " ";
-        if ($t->save()) {
+        $t = null;
+        //si el tercero ya existe solamente es asignado como responsable y si no existe se crea
+        $t = Tercero::where('numero_identificacion', $request->numero_identificacion)->first();
+        if ($t == null) {
+            $t = new Tercero($request->all());
+            $t->imagen = " ";
+            $t->tipo = "Persona natural";
+            $t->razon_social = " ";
+            $t->digito_verificacion = 0;
+            $t->direccion1 = " ";
+            $t->direccion2 = " ";
+            $t->barrio = " ";
+            $t->descripcion = $t->nombre1 . " " . $t->otros_nombres . " " . $t->apellido1 . " " . $t->apellido2;
+            $t->codigo_ciudad = 0;
+            $t->codigo_postal = 0;
+            $t->telefono2 = 0;
+            $t->pagina_web = " ";
+            $t->estado = "Activo";
+            $t->user_id = 0;
+            $t->contab_anticipo_cta_id = 0;
+            $t->contab_cartera_cta_id = 0;
+            $t->contab_cxp_cta_id = 0;
+            $t->creado_por = " ";
+            $t->modificado_por = " ";
+            $t->save();
+        }
+        if ($t != null) {
             $r = new Responsableestudiante($request->all());
             if ($request->tiporesponsable_id != 3) {
                 $r->direccion_trabajo = " ";
@@ -515,6 +521,17 @@ class EstudianteController extends ModeloController
             }
         } else {
             return redirect('matriculas/estudiantes/gestionresponsables/estudiante_id' . $request->variables_url)->with('mensaje_error', 'Error, no se pudo modificar el responsable.');
+        }
+    }
+
+    //consulta un tercero a partir de la identificacion
+    public function gestionresponsables_tercero($id)
+    {
+        $tercero = Tercero::where('numero_identificacion', $id)->first();
+        if ($tercero != null) {
+            return json_encode($tercero);
+        } else {
+            return "null";
         }
     }
 }

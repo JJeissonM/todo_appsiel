@@ -282,36 +282,41 @@ class MatriculaController extends ModeloController
     //crea un tercero para los papás
     public function setTercero($estudiante, $td, $numero_docp, $nombre1p, $otros_nombresp, $apellido1p, $apellido2p, $telefono1p, $emailp)
     {
-        $t = new Tercero();
-        $t->core_empresa_id = $estudiante->getTercero($estudiante->id)->core_empresa_id;
-        $t->imagen = " ";
-        $t->tipo = "Persona natural";
-        $t->razon_social = " ";
-        $t->nombre1 = $nombre1p;
-        $t->otros_nombres = $otros_nombresp;
-        $t->apellido1 = $apellido1p;
-        $t->apellido2 = $apellido2p;
-        $t->descripcion = $nombre1p . " " . $otros_nombresp . " " . $apellido1p . " " . $apellido2p;
-        $t->id_tipo_documento_id = $td;
-        $t->numero_identificacion = $numero_docp;
-        $t->digito_verificacion = 0;
-        $t->direccion1 = " ";
-        $t->direccion2 = " ";
-        $t->barrio = " ";
-        $t->codigo_ciudad = 0;
-        $t->codigo_postal = 0;
-        $t->telefono1 = $telefono1p;
-        $t->telefono2 = 0;
-        $t->email = $emailp;
-        $t->pagina_web = " ";
-        $t->estado = "Activo";
-        $t->user_id = 0;
-        $t->contab_anticipo_cta_id = 0;
-        $t->contab_cartera_cta_id = 0;
-        $t->contab_cxp_cta_id = 0;
-        $t->creado_por = " ";
-        $t->modificado_por = " ";
-        $t->save();
+        $t = null;
+        //si el tercero ya existe solamente es asignado como responsable y si no existe se crea
+        $t = Tercero::where('numero_identificacion', $numero_docp)->first();
+        if ($t == null) {
+            $t = new Tercero();
+            $t->core_empresa_id = $estudiante->getTercero($estudiante->id)->core_empresa_id;
+            $t->imagen = " ";
+            $t->tipo = "Persona natural";
+            $t->razon_social = " ";
+            $t->nombre1 = $nombre1p;
+            $t->otros_nombres = $otros_nombresp;
+            $t->apellido1 = $apellido1p;
+            $t->apellido2 = $apellido2p;
+            $t->descripcion = $nombre1p . " " . $otros_nombresp . " " . $apellido1p . " " . $apellido2p;
+            $t->id_tipo_documento_id = $td;
+            $t->numero_identificacion = $numero_docp;
+            $t->digito_verificacion = 0;
+            $t->direccion1 = " ";
+            $t->direccion2 = " ";
+            $t->barrio = " ";
+            $t->codigo_ciudad = 0;
+            $t->codigo_postal = 0;
+            $t->telefono1 = $telefono1p;
+            $t->telefono2 = 0;
+            $t->email = $emailp;
+            $t->pagina_web = " ";
+            $t->estado = "Activo";
+            $t->user_id = 0;
+            $t->contab_anticipo_cta_id = 0;
+            $t->contab_cartera_cta_id = 0;
+            $t->contab_cxp_cta_id = 0;
+            $t->creado_por = " ";
+            $t->modificado_por = " ";
+            $t->save();
+        }
         return $t;
     }
 
@@ -605,4 +610,5 @@ class MatriculaController extends ModeloController
 
         return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Matrícula ELIMINADA correctamente. Código: ' . $registro->codigo);
     }
+
 }

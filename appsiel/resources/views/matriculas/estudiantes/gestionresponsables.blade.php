@@ -74,6 +74,9 @@
 				</button>
 			</div>
 			<div class="modal-body">
+				<div class="alert alert-success" role="alert">
+					Al escribir la identificación del responsable el sistema buscará automáticamente y rrellenará los campos en caso de que ya exista.
+				</div>
 				<form action="{{ url('matriculas/estudiantes/gestionresponsables/store') }}" method="POST">
 					{{ csrf_field() }}
 
@@ -85,7 +88,7 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Tipo Documento*</label>
-								<select class="form-control" name="id_tipo_documento_id" required>
+								<select class="form-control" name="id_tipo_documento_id" id="txt1" required>
 									@foreach($tiposdoc as $td)
 									<option value="{{$td->id}}">{{$td->descripcion}}</option>
 									@endforeach
@@ -93,25 +96,25 @@
 							</div>
 							<div class="form-group">
 								<label class="control-label">Número de Identificación*</label>
-								<input type="text" class="form-control" name="numero_identificacion" required>
+								<input type="text" onkeyup="buscar()" class="form-control" id="txtID" name="numero_identificacion" required>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Primer Nombre*</label>
-								<input type="text" class="form-control" name="nombre1" required>
+								<input type="text" class="form-control" id="txt2" name="nombre1" required>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Segundo Nombre*</label>
-								<input type="text" class="form-control" name="otros_nombres" required>
+								<input type="text" class="form-control" id="txt3" name="otros_nombres" required>
 							</div>
 						</div>
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Primer Apellido*</label>
-								<input type="text" class="form-control" name="apellido1" required>
+								<input type="text" class="form-control" id="txt4" name="apellido1" required>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Segundo Apellido*</label>
-								<input type="text" class="form-control" name="apellido2" required>
+								<input type="text" class="form-control" id="txt5" name="apellido2" required>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Tipo Responsable*</label>
@@ -125,11 +128,11 @@
 						<div class="col-md-4">
 							<div class="form-group">
 								<label class="control-label">Teléfono*</label>
-								<input type="text" class="form-control" name="telefono1" required>
+								<input type="text" class="form-control" id="txt6" name="telefono1" required>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Correo*</label>
-								<input type="text" class="form-control" name="email" required>
+								<input type="text" class="form-control" id="txt7" name="email" required>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Ocupación*</label>
@@ -510,6 +513,27 @@
 				}
 			});
 		}
+	}
+
+	function buscar() {
+		var id = $("#txtID").val();
+		$.ajax({
+			type: 'GET',
+			url: "{{url('')}}/" + "matriculas/estudiantes/gestionresponsables/consultar/" + id + "/tercero",
+			data: {},
+		}).done(function(msg) {
+			if (msg !== 'null') {
+				var m = JSON.parse(msg);
+				$("#txt1").val(m.id_tipo_documento_id);
+				$("#txtID").val(m.numero_identificacion);
+				$("#txt2").val(m.nombre1);
+				$("#txt3").val(m.otros_nombres);
+				$("#txt4").val(m.apellido1);
+				$("#txt5").val(m.apellido2);
+				$("#txt6").val(m.telefono1);
+				$("#txt7").val(m.email);
+			}
+		});
 	}
 </script>
 @endsection
