@@ -1,4 +1,4 @@
-<div>
+<div class="table-responsive">
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Cód.','Producto','Bodega','Motivo','Costo unitario','Cantidad','Costo Total','']) }}
         <tbody>

@@ -34,9 +34,6 @@ class VtasDocRegistro extends Model
     										]; // 9 campos
 
 
-
-
-
     public function producto()
     {
         return $this->belongsTo('App\Inventarios\InvProducto','inv_producto_id');

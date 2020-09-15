@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\VentasPos;
 
+use App\Http\Controllers\Tesoreria\RecaudoController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
@@ -154,6 +155,11 @@ class FacturaPosController extends TransaccionController
                         'url' => $acciones->store,
                         'campos' => $lista_campos
                     ];
+        $id_transaccion = 8;// 8 = Recaudo cartera
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Crear: '.$this->transaccion->descripcion );
         
@@ -167,11 +173,11 @@ class FacturaPosController extends TransaccionController
 
         $redondear_centena = config('ventas_pos.redondear_centena');
 
-        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura', 'redondear_centena') );
+        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura', 'redondear_centena','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias') );
     }
 
     /**
-     * Store a newly created resource in storage.
+     * ALMACENA FACTURA POS
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -332,6 +338,133 @@ class FacturaPosController extends TransaccionController
 
         return View::make( 'ventas_pos.plantilla_factura', compact( 'empresa', 'resolucion', 'etiquetas', 'pdv' ) )->render();
     }
+
+    /**
+     * Prepara la vista para Editar una Factura POS
+     */
+    public function edit($id)
+    {
+        $this->set_variables_globales();
+
+        // Se obtiene el registro a modificar del modelo
+        $registro = app( $this->modelo->name_space )->find($id);
+
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro,'edit');
+
+        $doc_encabezado = FacturaPos::get_registro_impresion( $id );
+
+        $cantidad = count( $lista_campos );
+
+        // Agregar al comienzo del documento
+        array_unshift($lista_campos, [
+                                            "id" => 201,
+                                            "descripcion" => "Empresa",
+                                            "tipo" => "personalizado",
+                                            "name" => "encabezado",
+                                            "opciones" => "",
+                                            "value" => '<div style="border: solid 1px #ddd; padding-top: -20px;">
+                                                            <b style="font-size: 1.6em; text-align: center; display: block;">
+                                                                '.$doc_encabezado->documento_transaccion_descripcion.'
+                                                                <br/>
+                                                                <b>No.</b> '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'
+                                                                <br/>
+                                                                <b>Fecha:</b> '.$doc_encabezado->fecha.'
+                                                            </b>
+                                                            <br/>
+                                                            <b>Cliente:</b> '.$doc_encabezado->tercero_nombre_completo.'
+                                                            <br/>
+                                                            <b>NIT: &nbsp;&nbsp;</b> '.number_format( $doc_encabezado->numero_identificacion, 0, ',', '.').'
+                                                        </div>',
+                                            "atributos" => [],
+                                            "definicion" => "",
+                                            "requerido" => 0,
+                                            "editable" => 1,
+                                            "unico" => 0
+                                        ] );
+
+
+        $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
+
+        $url_action = str_replace('id_fila', $registro->id, $acciones->update);
+        
+        $form_create = [
+                            'url' => $url_action,
+                            'campos' => $lista_campos
+                        ];
+
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Modificar: '.$doc_encabezado->documento_transaccion_prefijo_consecutivo );
+
+        $archivo_js = app($this->modelo->name_space)->archivo_js;
+
+        $pdv = Pdv::find( $registro->pdv_id );
+
+        $motivos = ['10-salida' => 'Ventas POS' ]; 
+        $inv_motivo_id  = 10;
+
+        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
+        $tabla = new TablaIngresoLineaRegistros( PreparaTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
+
+        if ( is_null($tabla) )
+        {
+            $tabla = '';
+        }
+
+        $numero_linea = count( $registro->lineas_registros ) + 1;
+
+        $lineas_registros = '<tbody>';
+        $i = 1;
+        foreach ( $registro->lineas_registros as $linea )
+        {
+            
+            $lineas_registros .= '<tr class="linea_registro" data-numero_linea="'.$i.'"><td style="display: none;"><div class="inv_producto_id">'.$linea->inv_producto_id.'</div></td><td style="display: none;"><div class="precio_unitario">'.$linea->precio_unitario.'</div></td><td style="display: none;"><div class="base_impuesto">'.$linea->base_impuesto.'</div></td><td style="display: none;"><div class="tasa_impuesto">'.$linea->tasa_impuesto.'</div></td><td style="display: none;"><div class="valor_impuesto">'.$linea->valor_impuesto.'</div></td><td style="display: none;"><div class="base_impuesto_total">'.$linea->base_impuesto_total.'</div></td><td style="display: none;"><div class="cantidad">'.$linea->cantidad.'</div></td><td style="display: none;"><div class="precio_total">'.$linea->precio_total.'</div></td><td style="display: none;"><div class="tasa_descuento">'.$linea->tasa_descuento.'</div></td><td style="display: none;"><div class="valor_total_descuento">'.$linea->valor_total_descuento.'</div></td><td> &nbsp; </td><td> <span style="background-color:#F7B2A3;">'.$linea->inv_producto_id.'</span> <div class="lbl_producto_descripcion" style="display: inline;"> '.$linea->item->descripcion.' </div> </td><td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> '.$linea->cantidad.'</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">'.$linea->item->unidad_medida1.'</div>) </td><td> <div class="lbl_precio_unitario" style="display: inline;">$ '.number_format($linea->precio_unitario,'0',',','.').'</div></td><td>'.$linea->tasa_descuento.'% ( $<div class="lbl_valor_total_descuento" style="display: inline;">'.number_format($linea->valor_total_descuento,'0',',','.').'</div> ) </td><td><div class="lbl_tasa_impuesto" style="display: inline;">'.$linea->tasa_impuesto.'%</div></td><td> <div class="lbl_precio_total" style="display: inline;">$ '.number_format( $linea->precio_total,'0',',','.' ).' </div> </td> <td><button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button></td></tr>';
+            $i++;
+        }
+
+        $lineas_registros .= '</tbody>';
+
+        $productos = InvProducto::get_datos_basicos( '', 'Activo' );
+        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id );
+        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id );
+
+        $contenido_modal = View::make('ventas_pos.lista_items',compact( 'productos') )->render();
+
+        $plantilla_factura = $this->generar_plantilla_factura( $pdv );
+
+        $redondear_centena = config('ventas_pos.redondear_centena');
+
+        return view( 'ventas_pos.edit', compact('form_create','miga_pan','registro','archivo_js','url_action','pdv', 'inv_motivo_id', 'tabla', 'productos', 'precios', 'descuentos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros' ) );
+    }
+
+
+
+    /**
+     * ACTUALIZA FACTURA POS
+     *
+     */
+    public function update(Request $request, $id)
+    {
+
+        $lineas_registros = json_decode($request->lineas_registros);
+
+        $doc_encabezado = FacturaPos::find($id);
+        $doc_encabezado->fecha = $request->fecha;
+        $doc_encabezado->descripcion = $request->descripcion;
+        $doc_encabezado->vendedor_id = $request->vendedor_id;
+        $doc_encabezado->valor_total = $this->get_total_campo_lineas_registros( $lineas_registros, 'precio_total' );
+        $doc_encabezado->modificado_por = Auth::user()->email;
+        $doc_encabezado->save();
+
+        // Borrar líneas de registros anteriores
+        DocRegistro::where('vtas_pos_doc_encabezado_id',$doc_encabezado->id)->delete();
+
+        // Crear nuevamente las líneas de registros
+        $request['creado_por'] = Auth::user()->email;
+        $request['modificado_por'] = Auth::user()->email;
+        FacturaPosController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
+
+        return $doc_encabezado->consecutivo;
+    }
+
 
     /*
         Proceso de eliminar FACTURA POS 

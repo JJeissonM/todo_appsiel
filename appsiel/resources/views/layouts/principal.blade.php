@@ -60,7 +60,19 @@
 	<!-- Select2 -->
 	<link rel="stylesheet" href="{{ asset('assets/bower_components/select2/dist/css/select2.min.css')}}">
 
+	@if( app()->environment() == 'demo' )
+		<!-- Global site tag (gtag.js) - Google Analytics -->
+	    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123891072-2"></script>
+	    <script>
+	        window.dataLayer = window.dataLayer || [];
 
+	        function gtag() {
+	            dataLayer.push(arguments);
+	        }
+	        gtag('js', new Date());
+	        gtag('config', 'UA-123891072-2');
+	    </script>
+	@endif
 
 	<style>
 		body {

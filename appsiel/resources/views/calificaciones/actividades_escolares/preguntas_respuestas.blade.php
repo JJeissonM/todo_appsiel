@@ -57,16 +57,19 @@
 									 <strong>{{ $i }}. <div class="pregunta_descripcion" style="display: inline;"> {{ $pregunta->descripcion }} </div> </strong> 
 			                      <br/>
 			                      <?php
-			                      	switch ($pregunta->tipo) {
+			                      	switch ($pregunta->tipo)
+			                      	{
 			                      		case 'Abierta':
 			                      			$respuesta = '<br/>'.Form::textarea( 'pregunta_'.$pregunta->id, $valor_respuesta, [ 'id' => 'pregunta_'.$pregunta->id, 'class' => 'form-control' ] );
 			                      			break;
 
 			                      		case 'Seleccion multiple única respuesta':
 			                      			$respuesta = '';
+			                      			$respuesta = '';
 			                      			$opciones = json_decode($pregunta->opciones,true);
 
-			                      			if ( !is_null($opciones) ) {
+			                      			if ( !is_null($opciones) )
+			                      			{
 			                      				foreach ($opciones as $respuesta_opcion => $value) 
 				                      			{
 				                      				$checked = "";
@@ -79,7 +82,11 @@
 																  <label><input type="radio" name="pregunta_'.$pregunta->id.'" value="'.$respuesta_opcion.'" '.$checked.'> <div style="display:inline;">'.' '.$respuesta_opcion.') '.$value.'</div></label>
 																</div>';
 				                      			}
-			                      			}				                      			
+			                      			}else{
+			                      				$respuesta = '<div class="alert alert-danger">
+                              <strong>¡Error!</strong> Hay un problema en la creación de la pregunta. Consulte con el docente o administrador del sistema.</div>';
+			                      			}
+
 			                      			break;
 
 			                      		case 'Falso-Verdadero':

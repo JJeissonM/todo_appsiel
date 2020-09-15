@@ -94,13 +94,20 @@ class InvFisicoController extends TransaccionController
     public function store(Request $request)
     {
         
-        $lineas_registros = json_decode($request->movimiento);
+        $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento );
+        
+        $doc_encabezado_id = InvFisicoController::crear_documento( $request, $lineas_registros, $request->url_id_modelo );
+
+        return redirect('inv_fisico/'.$doc_encabezado_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+    }
+
+    public function preparar_array_lineas_registros( $request_registros )
+    {
+        $lineas_registros = json_decode( $request_registros );
 
         // Quitar las dos últimas líneas
         array_pop($lineas_registros);
         array_pop($lineas_registros);
-
-        //dd($lineas_registros);
 
         $cantidad = count( $lineas_registros );
         for ($i=0; $i < $cantidad; $i++) 
@@ -110,10 +117,8 @@ class InvFisicoController extends TransaccionController
             $lineas_registros[$i]->cantidad = (float)$lineas_registros[$i]->cantidad;
             $lineas_registros[$i]->costo_total = (float)$lineas_registros[$i]->costo_total;
         }
-        
-        $doc_encabezado_id = InvFisicoController::crear_documento( $request, $lineas_registros, $request->url_id_modelo );
 
-        return redirect('inv_fisico/'.$doc_encabezado_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+        return $lineas_registros;
     }
 
 
@@ -187,6 +192,7 @@ class InvFisicoController extends TransaccionController
         foreach ($doc_registros as $fila)
         {
             $existencia = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha );
+
             $fila->cantidad_sistema = $existencia->Cantidad;
             $fila->costo_total_sistema = $existencia->Costo;
         }
@@ -257,21 +263,6 @@ class InvFisicoController extends TransaccionController
 
         $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create',$tipo_tranferencia);
 
-
-        /*array_push($lista_campos, [
-                                            "id" => 201,
-                                            "descripcion" => "Modo ajuste",
-                                            "tipo" => "select",
-                                            "name" => "modo_ajuste",
-                                            "opciones" => ['solo_cantidad'=>'En cantidad sin afectar costo','cantidad_y_costo'=>'En cantidad afectado costo'],
-                                            "value" => 'null',
-                                            "atributos" => [],
-                                            "definicion" => "",
-                                            "requerido" => 0,
-                                            "editable" => 1,
-                                            "unico" => 0
-                                        ] );*/
-
         $productos = $this->get_productos('r');
         $servicios = $this->get_productos('servicio');
 
@@ -290,18 +281,10 @@ class InvFisicoController extends TransaccionController
 
         foreach ($doc_registros as $fila)
         {
-            $existencia = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha );
 
-            $costo_promedio = InvCostoPromProducto::get_costo_promedio( $fila->inv_bodega_id, $fila->producto_id  );
-                      
-            $fila->costo_prom_sistema = 0;
+            $fila->cantidad_sistema = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha )->Cantidad;
             
-            $fila->cantidad_sistema = $existencia->Cantidad;
-            
-            if ( $existencia->Cantidad != 0 )
-            {
-                $fila->costo_prom_sistema = $costo_promedio;
-            }
+            $fila->costo_prom_sistema = InvCostoPromProducto::get_costo_promedio( $fila->inv_bodega_id, $fila->producto_id  );
                 
         }
 
@@ -347,7 +330,101 @@ class InvFisicoController extends TransaccionController
      */
     public function edit($id)
     {
-        //
+        $tipo_tranferencia=2;
+
+        $id_transaccion = Input::get('id_transaccion');
+
+        // Se obtiene el modelo según la variable modelo_id  de la url
+        $modelo = Modelo::find(Input::get('id_modelo'));
+
+        $lista_campos = ModeloController::get_campos_modelo($modelo,'','edit');
+
+        $cantidad_campos = count($lista_campos);
+
+        $tipo_transaccion = TipoTransaccion::find($id_transaccion);
+
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create',$tipo_tranferencia);
+
+        $registro = InvDocEncabezado::get_registro_impresion( $id );
+
+        foreach ($lista_campos as $key => $value)
+        {
+            if ($value['name'] == 'inv_bodega_id')
+            {
+                $lista_campos[$key]['value'] = $registro->inv_bodega_id;
+            }
+
+            if ($value['name'] == 'fecha')
+            {
+                $lista_campos[$key]['value'] = $registro->fecha;
+            }
+
+            if ($value['name'] == 'descripcion')
+            {
+                $lista_campos[$key]['value'] = $registro->descripcion;
+            }
+
+            if ($value['name'] == 'core_tercero_id')
+            {
+                $lista_campos[$key]['value'] = $registro->core_tercero_id;
+            }
+        }
+
+        $numero_linea = count( $registro->lineas_registros );
+
+        $lineas_registros = '';
+        $cantidad_total = 0;
+        $costo_total = 0;
+        $i = 1;
+        foreach ( $registro->lineas_registros as $linea )
+        {
+            $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
+
+            if( $linea->item->unidad_medida2 != '' )
+            {
+                $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ') - Talla: ' . $linea->item->unidad_medida2;
+            }
+
+            $lineas_registros .= '<tr id="' . $linea->inv_producto_id . '">' . 
+                                                                '<td>' . $linea->inv_producto_id . '</td>' . 
+                                                                '<td class="nom_prod">' . $descripcion_item . '</td>' . 
+                                                                '<td><span style="color:white;">12-</span><span style="color:green;">Inventario Físico</span><input type="hidden" class="movimiento" value="entrada"></td>' . 
+                                                                '<td class="lbl_costo_unitario">' . $linea->costo_unitario . '</td>' . 
+                                                                '<td class="lbl_cantidad"> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> '.$linea->cantidad.'</div> </div> </td>' . 
+                                                                '<td class="lbl_costo_total">' . $linea->costo_total . '</td>' . 
+                                                                '<td> <button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button> </td>' . 
+                                                                '</tr>';
+            $i++;
+            $cantidad_total += $linea->cantidad;
+            $costo_total += $linea->costo_total;
+        }
+
+        $url_form_create = 'web';
+
+        if ( $modelo->url_form_create != '')
+        {
+            $url_form_create = $modelo->url_form_create . '/' . $id;
+        }
+
+        $form_create = [
+                        'url' => $url_form_create,
+                        'campos' => $lista_campos
+                    ];
+
+        $motivos = InvMotivo::get_motivos_transaccion($id_transaccion);
+
+        //dd($motivos);
+        $miga_pan = [
+                ['url'=>'inventarios?id='.Input::get('id'),'etiqueta'=>'Inventarios'],
+                ['url'=>'NO','etiqueta'=>$tipo_transaccion->descripcion]
+            ];
+
+        $grupos = InvGrupo::opciones_campo_select();
+
+        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
+        $tabla = '';
+
+        return view('inventarios.inventario_fisico.edit', compact('form_create','id_transaccion','motivos','miga_pan','tabla','grupos','registro','lineas_registros', 'cantidad_total', 'costo_total'));
     }
 
     /**
@@ -359,7 +436,25 @@ class InvFisicoController extends TransaccionController
      */
     public function update(Request $request, $id)
     {
-        //
+        $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento );
+
+        // Actualizar datos del encabezado
+        $doc_encabezado = InvDocEncabezado::find($id);
+        $doc_encabezado->fecha = $request->fecha;
+        $doc_encabezado->descripcion = $request->descripcion;
+        $doc_encabezado->core_tercero_id = $request->core_tercero_id;
+        $doc_encabezado->modificado_por = Auth::user()->email;
+        $doc_encabezado->save();
+
+        // Borrar líneas de registros anteriores
+        InvDocRegistro::where('inv_doc_encabezado_id',$doc_encabezado->id)->delete();
+
+        // Crear nuevamente las líneas de registros
+        $request['creado_por'] = $doc_encabezado->creado_por;
+        $request['modificado_por'] = Auth::user()->email;
+        InvFisicoController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
+
+        return redirect('inv_fisico/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
 
     /**
@@ -439,7 +534,8 @@ class InvFisicoController extends TransaccionController
         $bodega_id = Input::get('bodega_id');
         
         $productos = InvProducto::where('inv_productos.inv_grupo_id', $grupo_id)
-                                    ->select(DB::raw('CONCAT(inv_productos.descripcion, " (",inv_productos.unidad_medida1,")") AS producto_descripcion'),'inv_productos.id AS producto_id')
+                                    ->select(
+                                                DB::raw('CONCAT(inv_productos.descripcion, " (",inv_productos.unidad_medida1,") - Talla: ",inv_productos.unidad_medida2) AS producto_descripcion'),'inv_productos.id AS producto_id')
                                     ->get()
                                     ->toArray();
 

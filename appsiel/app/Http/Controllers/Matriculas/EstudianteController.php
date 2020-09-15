@@ -34,6 +34,8 @@ use App\Core\TipoDocumentoId;
 use App\Matriculas\Responsableestudiante;
 use App\Matriculas\Tiporesponsable;
 
+use App\Ventas\Cliente;
+
 class EstudianteController extends ModeloController
 {
     protected $modelo;
@@ -457,6 +459,18 @@ class EstudianteController extends ModeloController
             }
             $r->tercero_id = $t->id;
             if ($r->save()) {
+
+                // Crear Tercero como cliente, cuando es un Responsable financiero
+                if ( is_null( Cliente::where( 'core_tercero_id', $t->id)->get()->first() ) &&  $request->tiporesponsable_id == 3)
+                {
+                    // Datos del Cliente
+                    $cliente = new Cliente;
+                    $cliente->fill( 
+                                    ['core_tercero_id' => $t->id, 'encabezado_dcto_pp_id' => 1, 'clase_cliente_id' => 1, 'lista_precios_id' => 1, 'lista_descuentos_id' => 1, 'vendedor_id' => 1,'inv_bodega_id' => 1, 'zona_id' => 1, 'liquida_impuestos' => 1, 'condicion_pago_id' => 1, 'estado' => 'Activo' ]
+                                     );
+                    $cliente->save();
+                }
+
                 return redirect('matriculas/estudiantes/gestionresponsables/estudiante_id' . $request->variables_url)->with('flash_message', 'Responsable creado correctamente.');
             } else {
                 $t->delete();

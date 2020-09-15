@@ -510,7 +510,6 @@ class CompraController extends TransaccionController
                 $primer_item = 1;
             }
 
-
             if ( $num_item == $cantidad_proveedores)
             {
                 $ultimo_item = 1;

@@ -22,6 +22,24 @@ class InvDocEncabezado extends Model
 
     public $encabezado_tabla = ['Fecha','Documento','Bodega','Tercero','Detalle','Estado','Acción'];
 
+    
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+
+    public function lineas_registros()
+    {
+        return $this->hasMany( InvDocRegistro::class, 'inv_doc_encabezado_id' );
+    }
+
+    public function movimientos()
+    {
+        return $this->hasMany('App\Inventarios\InvMovimiento');
+    }
+
+
     public static function consultar_registros()
     {   
         /*
@@ -51,11 +69,6 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.id AS campo7')
                     ->get()
                     ->toArray();
-    }
-
-    public function movimientos()
-    {
-        return $this->hasMany('App\Inventarios\InvMovimiento');
     }
 
     public static function get_registro($id)

@@ -13,12 +13,28 @@ class Matricula extends Model
 {
     protected $table = 'sga_matriculas';
 
-    //inactivamos campos que ahora se guardarán en otra tabla: terceros, sga_responsableestudiantes, acudiente y responsable financiero
-    //protected $fillable = ['periodo_lectivo_id','id_colegio','codigo','fecha_matricula','id_estudiante','curso_id','cedula_acudiente','acudiente','telefono_acudiente','email_acudiente','requisitos','estado'];
+    protected $casts = [
+        'id_estudiante' => 'int',
+    ];
 
     protected $fillable = ['periodo_lectivo_id', 'id_colegio', 'codigo', 'fecha_matricula', 'id_estudiante', 'curso_id', 'requisitos', 'estado'];
 
     public $encabezado_tabla = ['Código', 'Fecha matricula', 'Año lectivo', 'Nombres', 'Apellidos', 'Doc. Identidad', 'Email/Usuario', 'Acudiente', 'Curso', 'Estado', 'Acción'];
+
+    public function periodo_lectivo()
+    {
+        return $this->belongsTo(PeriodoLectivo::class, 'periodo_lectivo_id');
+    }
+    
+    public function estudiante()
+    {
+        return $this->belongsTo(Estudiante::class, 'id_estudiante');
+    }
+    
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class, 'curso_id');
+    }
 
     public static function consultar_registros()
     {
@@ -43,22 +59,6 @@ class Matricula extends Model
             ->toArray();
     }
 
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'id_estudiante' => 'int',
-    ];
-
-    /**
-     * Obtener el estudiante de una matricula.
-     */
-    public function estudiante()
-    {
-        return $this->belongsTo('App\Matriculas\Estudiante', 'id_estudiante');
-    }
 
     public static function estudiantes_matriculados($curso_id, $periodo_lectivo_id, $estado_matricula, $estudiante_id = null)
     {

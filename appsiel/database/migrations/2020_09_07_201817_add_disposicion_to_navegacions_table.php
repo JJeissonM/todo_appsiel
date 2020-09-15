@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddColumnsToStickyboton extends Migration
+class AddDisposicionToNavegacionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,8 @@ class AddColumnsToStickyboton extends Migration
      */
     public function up()
     {
-        Schema::table('pw_stickybotons', function (Blueprint $table) {
-            $table->string('imagen')->nullable()->after('texto');
+        Schema::table('pw_navegacion',function (Blueprint $table){
+            $table->string('disposicion',20)->default('DEFAULT')->after('fixed');
         });
     }
 
@@ -24,8 +24,8 @@ class AddColumnsToStickyboton extends Migration
      */
     public function down()
     {
-        Schema::table('pw_stickybotons', function (Blueprint $table) {
-            $table->dropColumn('imagen');
+        Schema::table('pw_navegacion',function (Blueprint $table){
+            $table->dropColumn('disposicion');
         });
     }
 }

@@ -109,12 +109,17 @@ class TransaccionController extends Controller
 
     public function get_boton_select_crear( $app )
     {
+        $tipos_transacciones = [];
 
-        // Botón crear con el listado de las transacciones asociadas a la aplicación
-        $tipos_transacciones = $app->tipos_transacciones()->where('estado','Activo')->get();
+        if ( !is_null( $app ) )
+        {
+            // Botón crear con el listado de las transacciones asociadas a la aplicación
+            $tipos_transacciones = $app->tipos_transacciones()->where('estado','Activo')->get();
+        }
         
         $opciones = [];
         $key = 0;
+
         foreach($tipos_transacciones as $fila)
         {
             $modelo = Modelo::find( $fila->core_modelo_id );
@@ -166,6 +171,7 @@ class TransaccionController extends Controller
         
         return view( $vista, compact('form_create','miga_pan','tabla'));
     }
+    
     /*
         Crea el encabezado de un documento
         Devuelve LA INSTANCIA del documento creado
@@ -277,5 +283,17 @@ class TransaccionController extends Controller
                             [ 'teso_caja_id' => $teso_caja_id] + 
                             [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id]
                         );
+    }
+
+    public function get_total_campo_lineas_registros( $lineas_registros, string $campo )
+    {
+        $total = 0;
+        foreach ($lineas_registros as $linea )
+        {
+            if ( isset($linea->$campo) )
+                $total += (float)$linea->$campo;
+        }
+
+        return $total;
     }
 }

@@ -64,12 +64,16 @@ class PacienteController extends Controller
         $registro_creado->save();
 
         // Crear Tercero como cliente
-        // Datos del Cliente
-        $cliente = new Cliente;
-        $cliente->fill( 
-                        ['core_tercero_id' => $tercero->id, 'encabezado_dcto_pp_id' => 1, 'clase_cliente_id' => 1, 'lista_precios_id' => 1, 'lista_descuentos_id' => 1, 'vendedor_id' => 1,'inv_bodega_id' => 1, 'zona_id' => 1, 'liquida_impuestos' => 1, 'condicion_pago_id' => 1, 'estado' => 'Activo' ]
-                         );
-        $cliente->save();
+        if ( is_null( Cliente::where( 'core_tercero_id', $tercero->id)->get()->first() ) )
+        {
+            // Datos del Cliente
+            $cliente = new Cliente;
+            $cliente->fill( 
+                            ['core_tercero_id' => $tercero->id, 'encabezado_dcto_pp_id' => 1, 'clase_cliente_id' => 1, 'lista_precios_id' => 1, 'lista_descuentos_id' => 1, 'vendedor_id' => 1,'inv_bodega_id' => 1, 'zona_id' => 1, 'liquida_impuestos' => 1, 'condicion_pago_id' => 1, 'estado' => 'Activo' ]
+                             );
+            $cliente->save();
+        }
+        
 
         return redirect( 'consultorio_medico/pacientes/'.$registro_creado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
     }

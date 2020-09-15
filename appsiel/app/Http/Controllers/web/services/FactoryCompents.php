@@ -71,6 +71,9 @@ class FactoryCompents
             case "Guías académicas":
                 $component = new GuiasAcademicasComponent($this->widget);
                 break;
+            case "Login":
+                $component = new LoginComponent($this->widget);
+                break;
             default:
                 $component = false;
         }

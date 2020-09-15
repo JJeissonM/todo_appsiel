@@ -61,90 +61,94 @@ Formato: {{ Form::select('formato_impresion_id',['1'=>'POS','2'=>'Estándar'],nu
 	<input type="hidden" name="core_tercero_id" value="{{$cliente->core_tercero_id}}" />
 	<input type="hidden" name="inv_bodega_id" value="{{$cliente->inv_bodega_id}}" />
 	<input type="hidden" name="core_empresa_id" value="{{$doc_encabezado->core_empresa_id}}" />
-	<table class="table table-bordered table-striped">
-		{{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
-		<tbody>
-			<?php
-			$i = 1;
-			$total_cantidad = 0;
-			$subtotal = 0;
-			$total_impuestos = 0;
-			$total_factura = 0;
-			$array_tasas = [];
-			?>
-			@foreach($doc_registros as $linea )
-			<tr>
-				<td> {{ $i }} </td>
-				<td width="250px"> {{ $linea->producto_descripcion }} </td>
-				@if($doc_encabezado->estado=='Cumplido')
-				<td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-				<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
-				<td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-				<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
-				<td> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
-				@else
-				<td> <input class="cant" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->cantidad}}" style="width: 100%" name="dcantidad_{{$linea->id}}" /> </td>
-				<td> <input class="preciou" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{round($linea->precio_unitario / (1+$linea->tasa_impuesto/100),2,PHP_ROUND_HALF_UP)}}" style="width: 100%" name="dpreciounitario_{{$linea->id}}" /> </td>
-				<td> <input readonly class="imp" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->tasa_impuesto}}" style="width: 100%" name="dimpuesto_{{$linea->id}}" /></td>
-				<td> <input readonly class="valor_bruto" type="text" id="{{$linea->id}}" value="{{round( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad,2,PHP_ROUND_HALF_UP) }}" style="width: 100%" name="dprecio_bruto_{{$linea->id}}"> </td>
-				<td> <input class="total" type="text" id="{{$linea->id}}" value="{{round( $linea->precio_total,2,PHP_ROUND_HALF_UP)}}" style="width: 100%" name="dpreciototal_{{$linea->id}}" readonly></td>
-				@endif
-			</tr>
-			<?php
-			$i++;
-			$total_cantidad += $linea->cantidad;
-			$subtotal += (float) $linea->base_impuesto * (float) $linea->cantidad;
-			$total_impuestos += (float) $linea->valor_impuesto * (float) $linea->cantidad;
-			$total_factura += $linea->precio_total;
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped">
+			{{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
+			<tbody>
+				<?php
+				$i = 1;
+				$total_cantidad = 0;
+				$subtotal = 0;
+				$total_impuestos = 0;
+				$total_factura = 0;
+				$array_tasas = [];
+				?>
+				@foreach($doc_registros as $linea )
+				<tr>
+					<td> {{ $i }} </td>
+					<td width="250px"> {{ $linea->producto_descripcion }} </td>
+					@if($doc_encabezado->estado=='Cumplido')
+					<td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
+					<td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
+					<td> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
+					@else
+					<td> <input class="cant" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->cantidad}}" style="width: 100%" name="dcantidad_{{$linea->id}}" /> </td>
+					<td> <input class="preciou" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{round($linea->precio_unitario / (1+$linea->tasa_impuesto/100),2,PHP_ROUND_HALF_UP)}}" style="width: 100%" name="dpreciounitario_{{$linea->id}}" /> </td>
+					<td> <input readonly class="imp" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->tasa_impuesto}}" style="width: 100%" name="dimpuesto_{{$linea->id}}" /></td>
+					<td> <input readonly class="valor_bruto" type="text" id="{{$linea->id}}" value="{{round( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad,2,PHP_ROUND_HALF_UP) }}" style="width: 100%" name="dprecio_bruto_{{$linea->id}}"> </td>
+					<td> <input class="total" type="text" id="{{$linea->id}}" value="{{round( $linea->precio_total,2,PHP_ROUND_HALF_UP)}}" style="width: 100%" name="dpreciototal_{{$linea->id}}" readonly></td>
+					@endif
+				</tr>
+				<?php
+				$i++;
+				$total_cantidad += $linea->cantidad;
+				$subtotal += (float) $linea->base_impuesto * (float) $linea->cantidad;
+				$total_impuestos += (float) $linea->valor_impuesto * (float) $linea->cantidad;
+				$total_factura += $linea->precio_total;
 
-			// Si la tasa no está en el array, se agregan sus valores por primera vez
-			if (!isset($array_tasas[$linea->tasa_impuesto])) {
-				// Clasificar el impuesto
-				$array_tasas[$linea->tasa_impuesto]['tipo'] = 'IVA ' . $linea->tasa_impuesto . '%';
-				if ($linea->tasa_impuesto == 0) {
-					$array_tasas[$linea->tasa_impuesto]['tipo'] = 'IVA 0%';
+				// Si la tasa no está en el array, se agregan sus valores por primera vez
+				if (!isset($array_tasas[$linea->tasa_impuesto])) {
+					// Clasificar el impuesto
+					$array_tasas[$linea->tasa_impuesto]['tipo'] = 'IVA ' . $linea->tasa_impuesto . '%';
+					if ($linea->tasa_impuesto == 0) {
+						$array_tasas[$linea->tasa_impuesto]['tipo'] = 'IVA 0%';
+					}
+					// Guardar la tasa en el array
+					$array_tasas[$linea->tasa_impuesto]['tasa'] = $linea->tasa_impuesto;
+
+
+					// Guardar el primer valor del impuesto y base en el array
+					$array_tasas[$linea->tasa_impuesto]['precio_total'] = (float) $linea->precio_total;
+					$array_tasas[$linea->tasa_impuesto]['base_impuesto'] = (float) $linea->base_impuesto * (float) $linea->cantidad;
+					$array_tasas[$linea->tasa_impuesto]['valor_impuesto'] = (float) $linea->valor_impuesto * (float) $linea->cantidad;
+				} else {
+					// Si ya está la tasa creada en el array
+					// Acumular los siguientes valores del valor base y valor de impuesto según el tipo
+					$precio_total_antes = $array_tasas[$linea->tasa_impuesto]['precio_total'];
+					$array_tasas[$linea->tasa_impuesto]['precio_total'] = $precio_total_antes + (float) $linea->precio_total;
+					$array_tasas[$linea->tasa_impuesto]['base_impuesto'] += (float) $linea->base_impuesto * (float) $linea->cantidad;
+					$array_tasas[$linea->tasa_impuesto]['valor_impuesto'] += (float) $linea->valor_impuesto * (float) $linea->cantidad;
 				}
-				// Guardar la tasa en el array
-				$array_tasas[$linea->tasa_impuesto]['tasa'] = $linea->tasa_impuesto;
+				?>
+				@endforeach
+			</tbody>
+		</table>
+	</div>
+		
+	<div class="table-responsive">
+		<table class="table table-bordered">
+			<tr>
+				<td width="75%"> <b> &nbsp; </b> <br> </td>
+				<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td>
+				<td style="text-align: right; font-weight: bold;" id="tbstotal"> $ {{ round($subtotal,2,PHP_ROUND_HALF_UP) }} </td>
+			</tr>
 
-
-				// Guardar el primer valor del impuesto y base en el array
-				$array_tasas[$linea->tasa_impuesto]['precio_total'] = (float) $linea->precio_total;
-				$array_tasas[$linea->tasa_impuesto]['base_impuesto'] = (float) $linea->base_impuesto * (float) $linea->cantidad;
-				$array_tasas[$linea->tasa_impuesto]['valor_impuesto'] = (float) $linea->valor_impuesto * (float) $linea->cantidad;
-			} else {
-				// Si ya está la tasa creada en el array
-				// Acumular los siguientes valores del valor base y valor de impuesto según el tipo
-				$precio_total_antes = $array_tasas[$linea->tasa_impuesto]['precio_total'];
-				$array_tasas[$linea->tasa_impuesto]['precio_total'] = $precio_total_antes + (float) $linea->precio_total;
-				$array_tasas[$linea->tasa_impuesto]['base_impuesto'] += (float) $linea->base_impuesto * (float) $linea->cantidad;
-				$array_tasas[$linea->tasa_impuesto]['valor_impuesto'] += (float) $linea->valor_impuesto * (float) $linea->cantidad;
-			}
-			?>
+			@foreach( $array_tasas as $key => $value )
+			<tr>
+				<td width="75%"> <b> &nbsp; </b> <br> </td>
+				<td style="text-align: right; font-weight: bold;"> {{ $value['tipo'] }} </td>
+				<td style="text-align: right; font-weight: bold;" id="tbimpuesto"> ${{ round($value['valor_impuesto'],2,PHP_ROUND_HALF_UP) }} </td>
+			</tr>
 			@endforeach
-		</tbody>
-	</table>
-
-	<table class="table table-bordered">
-		<tr>
-			<td width="75%"> <b> &nbsp; </b> <br> </td>
-			<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td>
-			<td style="text-align: right; font-weight: bold;" id="tbstotal"> $ {{ round($subtotal,2,PHP_ROUND_HALF_UP) }} </td>
-		</tr>
-
-		@foreach( $array_tasas as $key => $value )
-		<tr>
-			<td width="75%"> <b> &nbsp; </b> <br> </td>
-			<td style="text-align: right; font-weight: bold;"> {{ $value['tipo'] }} </td>
-			<td style="text-align: right; font-weight: bold;" id="tbimpuesto"> ${{ round($value['valor_impuesto'],2,PHP_ROUND_HALF_UP) }} </td>
-		</tr>
-		@endforeach
-		<tr>
-			<td width="75%"> <b> &nbsp; </b> <br> </td>
-			<td style="text-align: right; font-weight: bold;"> Total Pedido: &nbsp; </td>
-			<td style="text-align: right; font-weight: bold;" id="tbtotal"> $ {{ round($total_factura,2,PHP_ROUND_HALF_UP) }} </td>
-		</tr>
-	</table>
+			<tr>
+				<td width="75%"> <b> &nbsp; </b> <br> </td>
+				<td style="text-align: right; font-weight: bold;"> Total Pedido: &nbsp; </td>
+				<td style="text-align: right; font-weight: bold;" id="tbtotal"> $ {{ round($total_factura,2,PHP_ROUND_HALF_UP) }} </td>
+			</tr>
+		</table>
+	</div>
 </form>
 @endsection
 @section('otros_scripts')

@@ -1,5 +1,5 @@
-<table style="font-size: 15px; border: 1px solid; border-collapse: collapse;" border="1" width="100%">
-
+<div class="table-responsive">
+    <table class="table table-bordered table-striped" style="font-size: 15px; border: 1px solid; border-collapse: collapse;" border="1" width="100%">
         <tr style="background: #ccc; font-weight: bold; text-align: center;">
             @if( $bodega == 'TODAS')
                 <td> Bodega </td>
@@ -52,4 +52,5 @@
                 <td> &nbsp; </td>
             @endif
         </tr>
-</table>
+    </table>
+</div>

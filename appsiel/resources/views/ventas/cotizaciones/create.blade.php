@@ -1103,7 +1103,12 @@
 				var valor_nuevo = document.getElementById('valor_nuevo').value;
 
 				// Si no cambió el valor_nuevo, no pasa nada
-				if ( valor_nuevo == valor_actual) { return false; }
+				if ( valor_nuevo == valor_actual)
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+		        	elemento_modificar.show();
+		        	return false;
+				}
 
 				elemento_modificar.html( valor_nuevo );
 				elemento_modificar.show();
@@ -1111,14 +1116,13 @@
 				elemento_padre.find('#valor_nuevo').remove();
 
 				recalcular_linea_editada( elemento_padre.closest('tr') );
+				calcular_totales();
 				
 			}
 
 			function recalcular_linea_editada( fila )
 			{
 				var elemento_modificar = fila.find('.elemento_modificar'); // son tres
-
-				console.log( elemento_modificar );
 
 				var cantidad = parseFloat( elemento_modificar[0].innerHTML );
 				var precio_unitario = parseFloat( elemento_modificar[1].innerHTML );
@@ -1147,8 +1151,6 @@
 				var celdas = fila.find('td');
 				celdas[21].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( valor_unitario_descuento * cantidad );
 				celdas[23].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( precio_total );
-
-				calcular_totales();
 			}
 
 

@@ -160,8 +160,19 @@ class InventarioController extends TransaccionController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
+    {  
+        $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
+
+        $doc_encabezado_id = InventarioController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
+
+        return redirect('inventarios/' . $doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+    }
+
+
+
+    public function preparar_array_lineas_registros( $request_registros, $modo_ajuste )
     {
-        $lineas_registros = json_decode($request->movimiento);
+        $lineas_registros = json_decode( $request_registros );
 
         // Quitar primera línea
         array_shift($lineas_registros);
@@ -171,24 +182,24 @@ class InventarioController extends TransaccionController
         array_pop($lineas_registros);
 
         $cantidad = count($lineas_registros);
-        for ($i = 0; $i < $cantidad; $i++) {
+        for ($i = 0; $i < $cantidad; $i++)
+        {
 
             $lineas_registros[$i]->inv_motivo_id = explode("-", $lineas_registros[$i]->motivo)[0];
             $lineas_registros[$i]->costo_unitario = (float) substr($lineas_registros[$i]->costo_unitario, 1);
             $lineas_registros[$i]->cantidad = (float) substr($lineas_registros[$i]->cantidad, 0, strpos($lineas_registros[$i]->cantidad, " "));
             $lineas_registros[$i]->costo_total = (float) substr($lineas_registros[$i]->costo_total, 1);
 
-            if (!is_null($request->modo_ajuste)) {
-                if ($request->modo_ajuste == 'solo_cantidad') {
+            if (!is_null($modo_ajuste)) {
+                if ($modo_ajuste == 'solo_cantidad')
+                {
                     $lineas_registros[$i]->costo_unitario = 0;
                     $lineas_registros[$i]->costo_total = 0;
                 }
             }
         }
 
-        $doc_encabezado_id = InventarioController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
-
-        return redirect('inventarios/' . $doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        return $lineas_registros;
     }
 
 

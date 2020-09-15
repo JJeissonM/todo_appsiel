@@ -140,7 +140,7 @@
 					return false;	
 				}
 
-		    	var url = '../inv_get_productos_del_grupo';
+		    	var url = "{{ url('inv_get_productos_del_grupo') }}";
 
 		    	var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
 
@@ -198,14 +198,15 @@
 		    	var fila_siguiente = fila.next('tr');
 
 				var x = event.which || event.keyCode;
-				if( x == 13 )
-				{
-					fila.find('input.input_cantidad').parent().html( $(this).val() );
-					fila_siguiente.find('input.input_cantidad').select();
-				}
 
 				if ( validar_input_numerico( $(this) ) )
 				{
+					if( x == 13 )
+					{
+						cambiar_input_cantidad_a_texto( fila, $(this).val() );
+
+						fila_siguiente.find('input.input_cantidad').select();
+					}
 					var costo_unitario = fila.find("td.lbl_costo_unitario").html();
 					
 					fila.find('td.lbl_costo_total').html( parseFloat(costo_unitario) * parseFloat( $(this).val() ) );
@@ -218,6 +219,11 @@
 			});
 
 
+
+		    function cambiar_input_cantidad_a_texto( fila, control_input )
+		    {
+		    	fila.find('input.input_cantidad').parent().html( '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + control_input + '</div> </div>' );
+		    }
 
 
 		    $(document).on('blur','.input_cantidad',function(){
@@ -235,9 +241,10 @@
 
 						calcular_totales();
 
-						fila.find('input.input_cantidad').parent().html( $(this).val() );
+						cambiar_input_cantidad_a_texto( fila, $(this).val() );
 
 					}else{
+						$(this).select();
 						fila.find('td.lbl_costo_total').html( 0 );
 						return false;
 					}
@@ -295,29 +302,9 @@
 					
 			});			
 			
-			/*
-			var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
-			function validar_requeridos()
+
+			function calcular_totales()
 			{
-				control_requeridos = true;
-
-				$( "*[required]" ).each(function() {
-					if ( $(this).val() == "" )
-					{
-					  $(this).focus();
-					  alert( 'Este campo es requerido: ' + $(this).attr('name') );
-					  control_requeridos = false;
-					  return false;
-					}
-				});
-
-				return control_requeridos;
-			}
-			*/
-
-
-
-			function calcular_totales(){
 				var sum = 0.0;
 
 				
@@ -329,7 +316,6 @@
 					}
 				});
 				
-
 
 				var texto = sum.toFixed(2);
 
@@ -439,7 +425,7 @@
 		    	terminar = 0;
 
 		    	// Realizar consulta y mostar sugerencias
-		    	var url = '../inv_consultar_productos';
+		    	var url = "{{ url('inv_consultar_productos') }}";
 
 				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
 					.done(function( data ) {
@@ -493,7 +479,12 @@
 				// Se escogen los campos de la fila ingresada
 				var fila = $('#linea_ingreso_default');
 
-				console.log( fila );
+				if( fila.find('td.inv_producto_id').html() == "" )
+				{
+					$('#inv_producto_id').select();
+					alert('Producto mal ingresado.');
+					return false;
+				}
 
 				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
 
@@ -516,7 +507,7 @@
 																'<td class="nom_prod">'+$('#inv_producto_id').val()+'</td>'+
 																'<td><span style="color:white;">'+mov[0]+'-</span><span '+estilo+'>'+motivo+'</span><input type="hidden" class="movimiento" value="'+mov[1]+'"></td>'+
 																'<td class="lbl_costo_unitario">'+ fila.find('.costo_unitario').html() +'</td>'+
-																'<td class="lbl_cantidad">' + $('#cantidad').val() +' </td>'+
+																'<td class="lbl_cantidad">' + '<div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + $('#cantidad').val() + '</div> </div>' + ' </td>'+
 																'<td class="lbl_costo_total">' + parseFloat( fila.find('.costo_unitario').html() ) * parseFloat( $('#cantidad').val() ) + '</td>'+
 																'<td>'+btn_borrar+'</td>'+
 																'</tr>');
@@ -551,7 +542,7 @@
             function consultar_existencia(bodega_id, producto_id)
             {
             	$('#div_cargando').show();
-            	var url = '../vtas_consultar_existencia_producto';
+            	var url = "{{ url('vtas_consultar_existencia_producto') }}";
 
 				$.get( url, { transaccion_id: $('#core_tipo_transaccion_id').val(), bodega_id: bodega_id, producto_id: producto_id, fecha: $('#fecha').val() } )
 					.done(function( respuesta ) {
@@ -572,6 +563,8 @@
 
 			function reset_linea_ingreso_default()
 			{
+				$('#linea_ingreso_default td.inv_producto_id').html('');
+
 				$('#linea_ingreso_default input[type="text"]').val('');
 				$('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
 				$('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
@@ -587,6 +580,92 @@
 				$('#inv_producto_id').removeAttr('disabled');				
 				$('#inv_producto_id').focus();
 				$("[data-toggle='tooltip']").tooltip('show');
+			}
+
+
+			var valor_actual, elemento_modificar, elemento_padre;
+			
+			// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
+			$(document).on('dblclick','.elemento_modificar',function(){
+
+				elemento_modificar = $(this);
+
+				elemento_padre = elemento_modificar.parent();
+
+				valor_actual = $(this).html();
+
+				elemento_modificar.hide();
+
+				elemento_modificar.after('<input type="text" name="valor_nuevo" id="valor_nuevo" class="form-control">');
+
+				document.getElementById('valor_nuevo').value = valor_actual;
+				document.getElementById('valor_nuevo').select();
+
+			});
+
+			// Si la caja de texto pierde el foco
+			$(document).on('blur','#valor_nuevo',function(){
+				guardar_valor_nuevo();
+			});
+
+			// Al presiona teclas en la caja de texto
+			$(document).on('keyup','#valor_nuevo',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Abortar la edición
+				if( x == 27 ) // 27 = ESC
+				{
+					quitar_caja_texto_valor_nuevo();
+		        	elemento_modificar.show();
+		        	return false;
+				}
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	guardar_valor_nuevo();
+				}
+			});
+
+			function guardar_valor_nuevo()
+			{
+				var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+				// Si no cambió el valor_nuevo, no pasa nada
+				if ( valor_nuevo == valor_actual)
+				{
+					quitar_caja_texto_valor_nuevo();					
+					elemento_modificar.show();
+					return false;
+				}
+
+				elemento_modificar.html( valor_nuevo );
+				elemento_modificar.show();
+
+				quitar_caja_texto_valor_nuevo();
+
+				recalcular_linea_editada( elemento_padre.closest('tr') );
+				calcular_totales();
+			}
+
+			function recalcular_linea_editada( fila )
+			{
+				var costo_unitario = fila.find("td.lbl_costo_unitario").html();
+				var cantidad = fila.find("div.elemento_modificar").html();
+
+				console.log( [ parseFloat(costo_unitario), parseFloat( cantidad ), parseFloat(costo_unitario) * parseFloat( cantidad ) ] );
+				
+				fila.find('td.lbl_costo_total').html( parseFloat(costo_unitario) * parseFloat( cantidad ) );
+			}
+
+
+			function quitar_caja_texto_valor_nuevo()
+			{
+				if ( document.getElementById('valor_nuevo') !== null )
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+				}
 			}
 
 

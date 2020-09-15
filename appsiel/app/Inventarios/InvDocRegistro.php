@@ -25,6 +25,12 @@ class InvDocRegistro extends Model
     											['','10px']
     										];
 
+    
+    public function item()
+    {
+        return $this->belongsTo( 'App\Inventarios\InvProducto','inv_producto_id');
+    }
+
     /*
         Obtener un registro de encabezado de documento con sus datos relacionados
     */
@@ -37,6 +43,7 @@ class InvDocRegistro extends Model
                     ->select(
                                 'inv_doc_registros.id',
                                 'inv_doc_registros.estado',
+                                'inv_doc_registros.inv_producto_id',
                                 'inv_doc_registros.creado_por',
                                 'inv_doc_registros.modificado_por',
                                 'inv_doc_registros.costo_unitario',
@@ -68,6 +75,7 @@ class InvDocRegistro extends Model
                     ->select(
                                 'inv_doc_registros.id',
                                 'inv_doc_registros.inv_doc_encabezado_id',
+                                'inv_doc_registros.inv_producto_id',
                                 'inv_doc_registros.estado',
                                 'inv_doc_registros.creado_por',
                                 'inv_doc_registros.modificado_por',

@@ -19,6 +19,28 @@ class VtasDocEncabezado extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function cliente()
+    {
+        return $this->belongsTo( Cliente::class,'cliente_id');
+    }
+
+    public function vendedor()
+    {
+        return $this->belongsTo( Vendedor::class,'vendedor_id');
+    }
+
+    public function movimientos()
+    {
+        return $this->hasMany('App\Ventas\InvMovimiento');
+    }
+    
+
     public static function consultar_registros()
     {
         $core_tipo_transaccion_id = 23; // Facturas
@@ -44,21 +66,6 @@ class VtasDocEncabezado extends Model
                     */
     }
 
-    public function tercero()
-    {
-        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
-    }
-
-    public function cliente()
-    {
-        return $this->belongsTo( Cliente::class,'cliente_id');
-    }
-
-    public function vendedor()
-    {
-        return $this->belongsTo( Vendedor::class,'vendedor_id');
-    }
-
     public static function consultar_registros2()
     {
         $core_tipo_transaccion_id = 23; // Facturas
@@ -77,11 +84,6 @@ class VtasDocEncabezado extends Model
             )
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->paginate(500);
-    }
-
-    public function movimientos()
-    {
-        return $this->hasMany('App\Ventas\InvMovimiento');
     }
 
     /*

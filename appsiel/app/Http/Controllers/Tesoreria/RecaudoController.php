@@ -539,7 +539,7 @@ class RecaudoController extends TransaccionController
         return $view_pdf;
     }
 
-    public function get_medios_recaudo(){
+    public static function get_medios_recaudo(){
         $registros = TesoMedioRecaudo::all();  
         $vec_m['']=''; 
         foreach ($registros as $fila) {
@@ -549,7 +549,7 @@ class RecaudoController extends TransaccionController
         return $vec_m;
     }
 
-    public function get_cajas(){
+    public static function get_cajas(){
         $vec_m = [];
         $registros = TesoCaja::where('core_empresa_id',Auth::user()->empresa_id)->get();       
         foreach ($registros as $fila) {
@@ -559,7 +559,7 @@ class RecaudoController extends TransaccionController
         return $vec_m;
     }
 
-    public function get_cuentas_bancarias(){
+    public static function get_cuentas_bancarias(){
         $vec_m = [];
         $registros = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
                     ->where('core_empresa_id',Auth::user()->empresa_id)

@@ -60,20 +60,23 @@
 				              	{
 				              		$opciones = json_decode($pregunta->opciones,true);
 
-				          			foreach ($opciones as $respuesta_opcion => $value) 
-				          			{
-				          				if ( $respuesta_opcion == $respuesta_correcta ) 
-				          				{
-				          					$respuesta_correcta = $respuesta_opcion.') '.$value;
-				          				}else{
-				          				}
+				              		if ( !is_null( $opciones) )
+				              		{
+				              			foreach ($opciones as $respuesta_opcion => $value) 
+					          			{
+					          				if ( $respuesta_opcion == $respuesta_correcta ) 
+					          				{
+					          					$respuesta_correcta = $respuesta_opcion.') '.$value;
+					          				}else{
+					          				}
 
-				          				if ( $respuesta_opcion == $respuesta_enviada ) 
-				          				{
-				          					$respuesta_enviada = $respuesta_opcion.') '.$value;
-				          				}
+					          				if ( $respuesta_opcion == $respuesta_enviada ) 
+					          				{
+					          					$respuesta_enviada = $respuesta_opcion.') '.$value;
+					          				}
 
-				          			}
+					          			}
+				              		}					          			
 
 				              	}
 
