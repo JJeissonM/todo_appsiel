@@ -119,7 +119,7 @@
 			var datos = form_producto.serialize();
 
 
-			// Enviar formulario de ingreso de productos vía POST
+			// Enviar formulario de ingreso de productos vía POST (InventarioController > post_ajax)
 			$.post(url,datos,function(respuesta){
 				
 				var mov = $('#motivo').val().split('-');

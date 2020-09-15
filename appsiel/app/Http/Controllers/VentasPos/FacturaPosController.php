@@ -184,8 +184,20 @@ class FacturaPosController extends TransaccionController
      */
     public function store(Request $request)
     {
-
         $lineas_registros = json_decode($request->lineas_registros);
+
+        $lineas_registros_medios_recaudos = json_decode( $request->lineas_registros_medios_recaudos, true );
+
+        dd( $lineas_registros_medios_recaudos );
+
+        $request->lineas_registros_medios_recaudos = '';
+
+        if( !is_null( $lineas_registros_medios_recaudos ) )
+        {
+            $request->lineas_registros_medios_recaudos = array_pop( $lineas_registros_medios_recaudos );
+        }
+
+        //[{"teso_medio_recaudo_id":"","teso_motivo_id":"$0.00","teso_caja_id":"","teso_cuenta_bancaria_id":""}]
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);

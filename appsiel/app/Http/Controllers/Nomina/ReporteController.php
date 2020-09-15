@@ -103,7 +103,7 @@ class ReporteController extends Controller
                     </body>
                 </html>';
 
-        $tam_hoja = array(0, 0, 612.00, 390.00);//'folio';
+        $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
         $orientacion='portrait';
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);

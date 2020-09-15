@@ -12,9 +12,18 @@
             //print_r($doc_registros);
             ?>
             @foreach($doc_registros as $linea )
+                <?php
+
+                    $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
+
+                    if( $linea->item->unidad_medida2 != '' )
+                    {
+                        $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ') - Talla: ' . $linea->item->unidad_medida2;
+                    }
+                ?>
                 <tr>
                     <td> {{ $linea->producto_id }} </td>
-                    <td> {{ $linea->producto_descripcion }} </td>
+                    <td> {{ $descripcion_item }} </td>
                     <td> {{ $linea->bodega_descripcion }} </td>
                     <td> {{ $linea->inv_motivo_id }} -  {{ $linea->motivo_descripcion }} </td>
                     <td style="text-align: right;"> $ {{ number_format( $linea->costo_unitario, 2, ',', '.') }} </td>

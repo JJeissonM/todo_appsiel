@@ -160,7 +160,7 @@ $(document).on('click', '.btn_eliminar_linea_medio_recaudo', function(event) {
     calcular_totales_medio_recaudos();
     if ($('#total_valor_total').text()=='$0.00')
     {
-        // habilitar_campos_form_create();
+        $('#efectivo_recibido').removeAttr( 'readonly' );
     }
 });
 
