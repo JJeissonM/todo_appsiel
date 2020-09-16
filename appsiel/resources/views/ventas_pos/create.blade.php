@@ -166,6 +166,7 @@ use App\Http\Controllers\Sistema\VistaController;
             <input type="hidden" name="caja_id" id="saldo_original" value="0">
 
             <input type="hidden" name="valor_total_cambio" id="valor_total_cambio" value="0">
+            <input type="hidden" name="total_efectivo_recibido" id="total_efectivo_recibido">
 
             <div id="popup_alerta"></div>
 
@@ -396,6 +397,7 @@ use App\Http\Controllers\Sistema\VistaController;
             $.fn.calcular_total_cambio( texto_total_recaudos );
 
             $('#efectivo_recibido').val( parseFloat( texto_total_recaudos ) );
+            $('#total_efectivo_recibido').val( parseFloat( texto_total_recaudos ) );
             $('#efectivo_recibido').attr( 'readonly', 'readonly' );
 
             $.fn.set_label_efectivo_recibido( texto_total_recaudos );
@@ -787,6 +789,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
                             calcular_totales();
 
+                            $('#total_efectivo_recibido').val( $(this).val() );
                             $.fn.set_label_efectivo_recibido( $(this).val() );
 
                             $.fn.calcular_total_cambio( $(this).val() );
@@ -807,6 +810,7 @@ use App\Http\Controllers\Sistema\VistaController;
             function reset_efectivo_recibido()
             {
                 $('#efectivo_recibido').val('');
+                $('#total_efectivo_recibido').val(0);
                 $('#lbl_efectivo_recibido').text('$ 0');
                 $('#total_cambio').text('$ 0');
                 $('#lbl_ajuste_al_peso').text('$ ');
@@ -1195,14 +1199,14 @@ use App\Http\Controllers\Sistema\VistaController;
                 numero_linea--;
                 $('#numero_lineas').text(hay_productos);
 
+                $('#total_valor_total').actualizar_medio_recaudo();
+                reset_linea_ingreso_default();
+
                 if ( hay_productos == 0 )
                 {
                     habilitar_campos_encabezado();
                     reset_efectivo_recibido();
                 }
-
-                $('#total_valor_total').actualizar_medio_recaudo();
-                reset_linea_ingreso_default();
 
             });
 
@@ -1246,11 +1250,11 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 $.post(url, data, function (doc_encabezado_consecutivo) {
                     $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
-                    //llenar_tabla_productos_facturados();
+                    llenar_tabla_productos_facturados();
 
-                    //ventana_imprimir();
+                    ventana_imprimir();
 
-                    //location.reload();
+                    location.reload();
                 });
 
             });
@@ -1626,8 +1630,6 @@ use App\Http\Controllers\Sistema\VistaController;
                 cantidad = parseFloat(valor_nuevo);
 
                 $('#inv_producto_id').focus();
-
-                reset_efectivo_recibido();
 
                 calcular_precio_total_lbl(fila);
                 calcular_totales();

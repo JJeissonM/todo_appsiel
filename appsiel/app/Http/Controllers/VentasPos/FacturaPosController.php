@@ -186,18 +186,7 @@ class FacturaPosController extends TransaccionController
     {
         $lineas_registros = json_decode($request->lineas_registros);
 
-        $lineas_registros_medios_recaudos = json_decode( $request->lineas_registros_medios_recaudos, true );
-
-        dd( $lineas_registros_medios_recaudos );
-
-        $request->lineas_registros_medios_recaudos = '';
-
-        if( !is_null( $lineas_registros_medios_recaudos ) )
-        {
-            $request->lineas_registros_medios_recaudos = array_pop( $lineas_registros_medios_recaudos );
-        }
-
-        //[{"teso_medio_recaudo_id":"","teso_motivo_id":"$0.00","teso_caja_id":"","teso_cuenta_bancaria_id":""}]
+        $this->actualizar_campo_lineas_registros_medios_recaudos_request( $request );
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
@@ -207,6 +196,22 @@ class FacturaPosController extends TransaccionController
         FacturaPosController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
         return $doc_encabezado->consecutivo;
+    }
+
+    public function actualizar_campo_lineas_registros_medios_recaudos_request( &$request_2 )
+    {
+        $lineas_registros_medios_recaudos = json_decode( $request_2->lineas_registros_medios_recaudos, true ); // true convierte en un array asociativo al JSON
+
+        $aux = array_pop( $lineas_registros_medios_recaudos ); // eliminar ultimo elemento del array
+
+        if( json_encode( $lineas_registros_medios_recaudos ) == "[]" )
+        {
+            $pdv = Pdv::find( $request_2->pdv_id );
+
+            $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"'.$pdv->caja_default_id.'-'.$pdv->caja->descripcion.'","teso_cuenta_bancaria_id":"0-","valor":"$'.$request_2->total_efectivo_recibido.'"}]';
+        }else{
+            $request_2['lineas_registros_medios_recaudos'] = json_encode( $lineas_registros_medios_recaudos ); // Se convierte a string JSON
+        }
     }
 
 
@@ -455,13 +460,15 @@ class FacturaPosController extends TransaccionController
      */
     public function update(Request $request, $id)
     {
-
         $lineas_registros = json_decode($request->lineas_registros);
+
+        $this->actualizar_campo_lineas_registros_medios_recaudos_request( $request );
 
         $doc_encabezado = FacturaPos::find($id);
         $doc_encabezado->fecha = $request->fecha;
         $doc_encabezado->descripcion = $request->descripcion;
         $doc_encabezado->vendedor_id = $request->vendedor_id;
+        $doc_encabezado->lineas_registros_medios_recaudos = $request->lineas_registros_medios_recaudos;
         $doc_encabezado->valor_total = $this->get_total_campo_lineas_registros( $lineas_registros, 'precio_total' );
         $doc_encabezado->modificado_por = Auth::user()->email;
         $doc_encabezado->save();
@@ -706,6 +713,7 @@ class FacturaPosController extends TransaccionController
             
             $pdv = Pdv::find( $datos['pdv_id'] );
 
+            //$medios_recaudo = ;
             $caja = TesoCaja::find( $pdv->caja_default_id );
             // El motivo lo debe traer de unparámetro de la configuración
             $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
