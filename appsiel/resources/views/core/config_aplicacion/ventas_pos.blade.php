@@ -40,7 +40,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								if( isset($parametros['plantilla_factura_pos_default'] ) )
+								{
+									$plantilla_factura_pos_default = $parametros['plantilla_factura_pos_default'];
+								}else{
+									$plantilla_factura_pos_default = 'plantilla_factura';
+								}
+							?>
+							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', ['plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

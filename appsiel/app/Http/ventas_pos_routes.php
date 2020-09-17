@@ -7,6 +7,7 @@ Route::get('pos_consultar_documentos_pendientes/{pdv_id}/{fecha_desde}/{fecha_ha
 
 Route::get('pos_factura_imprimir/{doc_encabezado_id}', 'VentasPos\FacturaPosController@imprimir');
 
+// Anular factura que no esté acumulada
 Route::get('pos_factura_anular/{doc_encabezado_id}', 'VentasPos\FacturaPosController@anular_factura_pos');
 
 Route::get('pos_factura_acumular/{pdv_id}', 'VentasPos\FacturaPosController@acumular');

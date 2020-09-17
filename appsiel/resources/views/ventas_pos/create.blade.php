@@ -250,7 +250,7 @@ use App\Http\Controllers\Sistema\VistaController;
                                     </td>
                                     <td style="text-align: right; border: 0px; background-color: transparent !important;">
                                         <input type="text" name="efectivo_recibido" id="efectivo_recibido"
-                                               class="form-control">
+                                               class="form-control" autocomplete="off">
                                         <div id="lbl_efectivo_recibido" style="display: inline;"> $ 0</div>
                                     </td>
                                 </tr>

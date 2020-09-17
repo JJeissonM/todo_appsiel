@@ -6,12 +6,7 @@
 
 @section('botones_acciones')	
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Pendiente' )
-
-		@if( !$docs_relacionados[1] )
-			{{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'ventas/id_fila/edit'.$variables_url ),'Editar') }}
-        	<a class="btn btn-default btn-xs" href="{{ url('ventas_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=167&id_transaccion=38') }}"><i class="fa fa-file-o"></i> Nota crédito </a>
-		@endif
-	    
+		    
 	    
 	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn btn-success btn-xs"><i class="fa fa-btn fa-money"></i> Hacer abono </a>
 
