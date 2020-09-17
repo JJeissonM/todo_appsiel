@@ -17,6 +17,14 @@
                 ?>
                 @foreach($doc_registros as $linea )
                             <?php
+
+                                $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
+
+                                if( $linea->item->unidad_medida2 != '' )
+                                {
+                                    $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ') - Talla: ' . $linea->item->unidad_medida2;
+                                }
+
                                 $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 0);
 
                                 $diferencia_costo = $linea->costo_total - $linea->costo_total_sistema;
@@ -36,7 +44,7 @@
                             ?>
                     <tr>
                         <td> {{ $linea->producto_id }} </td>
-                        <td> {{ $linea->producto_descripcion }} ({{ $linea->unidad_medida1 }}) </td>
+                        <td> {{ $descripcion_item }} </td>
 
                         <!-- Datos del conteo físico -->
                         <td> {{ number_format( $linea->cantidad, 2, ',', '.') }}  </td>

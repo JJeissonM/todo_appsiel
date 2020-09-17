@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Core;
 
 use App\Contabilidad\Impuesto;
+use App\Http\Controllers\Tesoreria\RecaudoController;
+use App\Tesoreria\TesoMotivo;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\VtasDocRegistro;
@@ -167,9 +169,15 @@ class TransaccionController extends Controller
                         'campos' => $lista_campos
                     ];
 
+        $id_transaccion = 8;// 8 = Recaudo cartera
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+
         $miga_pan = $this->get_array_miga_pan( $app, $modelo, 'Crear: '.$transaccion->descripcion );
         
-        return view( $vista, compact('form_create','miga_pan','tabla'));
+        return view( $vista, compact('form_create','miga_pan','tabla','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias'));
     }
     
     /*

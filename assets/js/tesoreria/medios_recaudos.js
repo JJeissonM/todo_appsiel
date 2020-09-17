@@ -160,7 +160,7 @@ $(document).on('click', '.btn_eliminar_linea_medio_recaudo', function(event) {
     calcular_totales_medio_recaudos();
     if ($('#total_valor_total').text()=='$0.00')
     {
-        // habilitar_campos_form_create();
+        $('#efectivo_recibido').removeAttr( 'readonly' );
     }
 });
 
@@ -198,6 +198,12 @@ function reset_form_registro(){
     */
 
      $('#form_registro input[type="text"]').val('');
+
+     $('#teso_medio_recaudo_id').val('');
+     $('#teso_cuenta_bancaria_id').val('');
+     $('#teso_caja_id').val('');
+     $('#valor_total').val('');
+
 
     // $('#form_registro input[type="text"]').attr('style','background-color:#ECECE5;');
     // $('#form_registro input[type="text"]').attr('disabled','disabled');

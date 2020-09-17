@@ -152,6 +152,7 @@ use App\Http\Controllers\Sistema\VistaController;
             <input type="hidden" name="inv_motivo_id" id="inv_motivo_id" value="{{$inv_motivo_id}}">
 
             <input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
+            <input type="hidden" name="lineas_registros_medios_recaudos" id="lineas_registros_medios_recaudos" value="0">
 
             <input type="hidden" name="estado" id="estado" value="Pendiente">
 
@@ -165,6 +166,7 @@ use App\Http\Controllers\Sistema\VistaController;
             <input type="hidden" name="caja_id" id="saldo_original" value="0">
 
             <input type="hidden" name="valor_total_cambio" id="valor_total_cambio" value="0">
+            <input type="hidden" name="total_efectivo_recibido" id="total_efectivo_recibido">
 
             <div id="popup_alerta"></div>
 
@@ -248,7 +250,7 @@ use App\Http\Controllers\Sistema\VistaController;
                                     </td>
                                     <td style="text-align: right; border: 0px; background-color: transparent !important;">
                                         <input type="text" name="efectivo_recibido" id="efectivo_recibido"
-                                               class="form-control">
+                                               class="form-control" autocomplete="off">
                                         <div id="lbl_efectivo_recibido" style="display: inline;"> $ 0</div>
                                     </td>
                                 </tr>
@@ -350,7 +352,6 @@ use App\Http\Controllers\Sistema\VistaController;
         {!! $plantilla_factura !!}
     </div>
 
-
     <div class="container-fluid elemento_fondo"
          style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;"></div>
 
@@ -383,24 +384,36 @@ use App\Http\Controllers\Sistema\VistaController;
         $('#teso_motivo_id').val( 1 );
         $('#btn_nuevo').hide();
 
+        // Se debe llamar desde el DIV con ID total_valor_total
         $.fn.actualizar_medio_recaudo = function(){
             
             var texto_total_recaudos = this.html().substring(1);
             
+            if( parseFloat( texto_total_recaudos ) == 0 )
+            {
+                return false;
+            }
+
             $.fn.calcular_total_cambio( texto_total_recaudos );
 
             $('#efectivo_recibido').val( parseFloat( texto_total_recaudos ) );
+            $('#total_efectivo_recibido').val( parseFloat( texto_total_recaudos ) );
+            $('#efectivo_recibido').attr( 'readonly', 'readonly' );
 
             $.fn.set_label_efectivo_recibido( texto_total_recaudos );
 
             $.fn.cambiar_estilo_div_total_cambio();
+
+            $.fn.activar_boton_guardar_factura();
 
         };
 
         // 
         $.fn.calcular_total_cambio = function( efectivo_recibido )
         {
-            total_cambio = ( $.fn.redondear_a_centena( parseFloat( $('#valor_total_factura').val())) - parseFloat( efectivo_recibido ) ) * -1;
+            
+            total_cambio = ( $.fn.redondear_a_centena( parseFloat( $('#valor_total_factura').val() ) ) - parseFloat( efectivo_recibido ) ) * -1;
+            
             // Label
             $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format(total_cambio.toFixed(0)));
             // Input hidden
@@ -412,6 +425,14 @@ use App\Http\Controllers\Sistema\VistaController;
             $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( efectivo_recibido ).toFixed(2) ) );
         };
 
+        $.fn.cambiar_estilo_div_total_cambio = function(){
+            
+            $('#div_total_cambio').attr('class', 'alert alert-danger');
+
+            if (total_cambio.toFixed(0) >= 0)
+                $('#div_total_cambio').attr('class', 'alert alert-success');
+        };
+
         $.fn.activar_boton_guardar_factura = function(){
             
             $('#btn_guardar_factura').attr('disabled', 'disabled');
@@ -419,14 +440,6 @@ use App\Http\Controllers\Sistema\VistaController;
             if (total_cambio.toFixed(0) >= 0)
                 $('#btn_guardar_factura').removeAttr('disabled'); 
 
-        };
-
-        $.fn.cambiar_estilo_div_total_cambio = function(){
-            
-            $('#div_total_cambio').attr('class', 'alert alert-danger');
-
-            if (total_cambio.toFixed(0) >= 0)
-                $('#div_total_cambio').attr('class', 'alert alert-success');
         };
 
         
@@ -774,6 +787,9 @@ use App\Http\Controllers\Sistema\VistaController;
 
                             //$('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(parseFloat($(this).val()).toFixed(2)));
 
+                            calcular_totales();
+
+                            $('#total_efectivo_recibido').val( $(this).val() );
                             $.fn.set_label_efectivo_recibido( $(this).val() );
 
                             $.fn.calcular_total_cambio( $(this).val() );
@@ -781,8 +797,6 @@ use App\Http\Controllers\Sistema\VistaController;
                             $.fn.activar_boton_guardar_factura();
 
                             $.fn.cambiar_estilo_div_total_cambio();
-
-                            calcular_totales();
 
                             break;
                     }
@@ -793,10 +807,12 @@ use App\Http\Controllers\Sistema\VistaController;
 
             });
 
-            function reset_efectivo_recibido() {
+            function reset_efectivo_recibido()
+            {
                 $('#efectivo_recibido').val('');
+                $('#total_efectivo_recibido').val(0);
                 $('#lbl_efectivo_recibido').text('$ 0');
-                $('#total_cambio').text('$ ');
+                $('#total_cambio').text('$ 0');
                 $('#lbl_ajuste_al_peso').text('$ ');
                 total_cambio = 0;
                 $('#btn_guardar_factura').attr('disabled', 'disabled');
@@ -1061,6 +1077,8 @@ use App\Http\Controllers\Sistema\VistaController;
                 reset_linea_ingreso_default();
                 reset_efectivo_recibido();
 
+                $('#total_valor_total').actualizar_medio_recaudo();
+
                 numero_linea++;
             }
 
@@ -1181,13 +1199,14 @@ use App\Http\Controllers\Sistema\VistaController;
                 numero_linea--;
                 $('#numero_lineas').text(hay_productos);
 
-                if (hay_productos == 0) {
+                $('#total_valor_total').actualizar_medio_recaudo();
+                reset_linea_ingreso_default();
+
+                if ( hay_productos == 0 )
+                {
                     habilitar_campos_encabezado();
                     reset_efectivo_recibido();
-                    $('#btn_nuevo').hide();
                 }
-
-                reset_linea_ingreso_default();
 
             });
 
@@ -1204,16 +1223,19 @@ use App\Http\Controllers\Sistema\VistaController;
                 }
 
                 // Desactivar el click del botón
-                $(this).off(event);
-                $(this).attr('disabled', 'disabled');
+                //$(this).off(event);
+                //$(this).attr('disabled', 'disabled');
 
                 $('#linea_ingreso_default').remove();
                 $('#linea_ingreso_default_aux').remove();
 
                 var table = $('#ingreso_registros').tableToJSON();
+                var table2 = $('#ingreso_registros_medios_recaudo').tableToJSON();
+                
 
                 // Se asigna el objeto JSON a un campo oculto del formulario
-                $('#lineas_registros').val(JSON.stringify(table));
+                $('#lineas_registros').val( JSON.stringify( table ) );
+                $('#lineas_registros_medios_recaudos').val( JSON.stringify( table2 ) );
 
                 // No se puede enviar controles disabled
                 habilitar_campos_encabezado();
@@ -1275,41 +1297,6 @@ use App\Http\Controllers\Sistema\VistaController;
                 $('.lbl_descripcion_doc_encabezado').text($('#descripcion').val());
 
             }
-
-            $.fn.redondear_a_centena = function(numero, aproximacion_superior = false) {
-                if (!redondear_centena) {
-                    return numero.toFixed(0);
-                }
-
-                var millones = 0;
-                var millares = 0;
-                var centenas = 0;
-
-                var saldo1, saldo2, saldo3;
-
-                if (numero > 999999.99999) {
-                    // se obtiene solo la parte entera
-                    millones = Math.trunc(numero / 1000000) * 1000000;
-                }
-
-                saldo1 = numero - millones;
-
-                if (saldo1 > 999.99999) {
-                    // se obtiene solo la parte entera
-                    millares = Math.trunc(saldo1 / 1000) * 1000;
-                }
-
-                saldo2 = saldo1 - millares;
-
-                if (saldo2 > 99.99999) {
-                    // se obtiene solo la parte entera
-                    //centenas = Math.trunc( saldo2 / 100 ) * 100;
-                    centenas = (saldo2 / 100).toFixed(0) * 100;
-                }
-
-                return (millones + millares + centenas);
-
-            };
 
             function reset_campos_formulario() {
                 $('#cliente_id').val('');
@@ -1644,10 +1631,10 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 $('#inv_producto_id').focus();
 
-                reset_efectivo_recibido();
-
                 calcular_precio_total_lbl(fila);
                 calcular_totales();
+                reset_efectivo_recibido();
+                $('#total_valor_total').actualizar_medio_recaudo();
 
                 elemento_padre.find('#valor_nuevo').remove();
             }
@@ -1685,6 +1672,41 @@ use App\Http\Controllers\Sistema\VistaController;
             }
 
         });
+
+            $.fn.redondear_a_centena = function(numero, aproximacion_superior = false) {
+                if (!redondear_centena) {
+                    return numero.toFixed(0);
+                }
+
+                var millones = 0;
+                var millares = 0;
+                var centenas = 0;
+
+                var saldo1, saldo2, saldo3;
+
+                if (numero > 999999.99999) {
+                    // se obtiene solo la parte entera
+                    millones = Math.trunc(numero / 1000000) * 1000000;
+                }
+
+                saldo1 = numero - millones;
+
+                if (saldo1 > 999.99999) {
+                    // se obtiene solo la parte entera
+                    millares = Math.trunc(saldo1 / 1000) * 1000;
+                }
+
+                saldo2 = saldo1 - millares;
+
+                if (saldo2 > 99.99999) {
+                    // se obtiene solo la parte entera
+                    //centenas = Math.trunc( saldo2 / 100 ) * 100;
+                    centenas = (saldo2 / 100).toFixed(0) * 100;
+                }
+
+                return (millones + millares + centenas);
+
+            };
 
     </script>
     <script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>

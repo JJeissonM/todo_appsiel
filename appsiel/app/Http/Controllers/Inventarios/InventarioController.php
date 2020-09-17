@@ -652,7 +652,9 @@ class InventarioController extends TransaccionController
                             ->where( $campo_busqueda, 'LIKE', $texto_busqueda)
                             ->select(
                                         'id',
-                                        'descripcion')
+                                        'descripcion',
+                                        'unidad_medida1',
+                                        'unidad_medida2')
                             ->get()
                             ->take(7);
 
@@ -682,7 +684,15 @@ class InventarioController extends TransaccionController
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
 
-            $html .=            '" > '.$linea->id.' '.$linea->descripcion.' </a>';
+
+            $descripcion_item = $linea->descripcion . ' (' . $linea->unidad_medida1 . ')';
+
+            if( $linea->unidad_medida2 != '' )
+            {
+                $descripcion_item = $linea->descripcion . ' (' . $linea->unidad_medida1 . ') - Talla: ' . $linea->unidad_medida2;
+            }
+
+            $html .=            '" > '.$linea->id.' '.$descripcion_item.' </a>';
 
             $num_item++;
         }
@@ -735,17 +745,24 @@ class InventarioController extends TransaccionController
     // AL cambiar la selección de un producto en el formulario de ingreso_productos_2.blade.php
     public function post_ajax(Request $request)
     {
-        $producto = InvProducto::find($request->inv_producto_id)->toArray();
+        $producto = InvProducto::find($request->inv_producto_id);
+
+        $producto->descripcion = $producto->descripcion . ' (' . $producto->unidad_medida1 . ')';
+
+        if( $producto->unidad_medida2 != '' )
+        {
+            $producto->descripcion .= ' - Talla: ' . $producto->unidad_medida2;
+        }
 
         $costo_prom = InvCostoPromProducto::get_costo_promedio( $request->id_bodega, $request->inv_producto_id);
 
-        $producto = array_merge($producto, ['precio_compra' => $costo_prom]);
+        $producto->precio_compra = $costo_prom;
 
         // Obtener existencia actual
         $existencia_actual = InvMovimiento::get_existencia_actual($request->inv_producto_id, $request->id_bodega, $request->fecha_aux);
 
-        $producto = array_merge($producto, ['existencia_actual' => $existencia_actual], ['tipo' => $producto['tipo']]);
-
+        $producto->existencia_actual = $existencia_actual;
+        //dd( $producto->toArray() );
         return $producto;
     }
 

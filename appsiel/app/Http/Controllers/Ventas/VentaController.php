@@ -225,6 +225,7 @@ class VentaController extends TransaccionController
         
     }
 
+
     public static function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion, $caja_banco_id = null )
     {
         /*

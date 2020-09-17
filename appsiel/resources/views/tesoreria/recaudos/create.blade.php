@@ -97,7 +97,7 @@
 					    </div>
 					</div>
 
-					<a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
+					<a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none; cursor: pointer;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
 				</div>
 
 			</div>
@@ -121,21 +121,22 @@
 			*/
 			$("#btn_nuevo").click(function(event){
 				event.preventDefault();
-				if (validar_requeridos()) {
+				if ( validar_requeridos() )
+				{
 					//$('#div_ingreso_registros_medios_recaudo').show();
 					reset_form_registro();
-			        $("#myModal").modal(
+			        $("#recaudoModal").modal(
 			        	{backdrop: "static",keyboard: 'true'}
 			        );
 				}
 		    });
 		    	
 		    	// Al mostrar la ventana modal
-		    $("#myModal,#myModal2").on('shown.bs.modal', function () {
+		    $("#recaudoModal,#myModal2").on('shown.bs.modal', function () {
 		    	$('#teso_medio_recaudo_id').focus();
 		    });
 			// Al OCULTAR la ventana modal
-		    $("#myModal,#myModal2").on('hidden.bs.modal', function () {
+		    $("#recaudoModal,#myModal2").on('hidden.bs.modal', function () {
 		       $('#btn_continuar2').focus();
 		    });
 

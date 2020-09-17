@@ -12,12 +12,13 @@ use App\VentasPos\Pdv;
 class FacturaPos extends Model
 {
     protected $table = 'vtas_pos_doc_encabezados';
-	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'orden_compras', 'descripcion', 'valor_total', 'estado', 'creado_por', 'modificado_por'];
+	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'lineas_registros_medios_recaudos', 'descripcion', 'valor_total', 'estado', 'creado_por', 'modificado_por'];
 
     public $urls_acciones = '{"store":"pos_factura","update":"pos_factura/id_fila","imprimir":"pos_factura_imprimir/id_fila","show":"pos_factura/id_fila"}'; // ,"eliminar":"pos_factura_anular/id_fila"
 	
     public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente', 'Cond. pago', 'Detalle', 'Valor total', 'PDV', 'Estado', 'Acción'];
 
+    public $vistas = '{"index":"layouts.index3"}';
 
     public function tercero()
     {
@@ -45,8 +46,6 @@ class FacturaPos extends Model
         return FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
                                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
                                 ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
-                                //->where('vtas_pos_doc_encabezados.pdv_id', $pdv->id )
-                                //->where('vtas_pos_doc_encabezados.estado', 'Pendiente')
                                 ->where('vtas_pos_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
                                 ->where('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
                                 ->select(
@@ -63,6 +62,29 @@ class FacturaPos extends Model
                                 ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
                                 ->get()
                                 ->toArray();
+    }
+
+    public static function consultar_registros2()
+    {
+        $core_tipo_transaccion_id = 47; // Facturas POS
+        return FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
+                                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
+                                ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
+                                ->where('vtas_pos_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+                                ->select(
+                                    'vtas_pos_doc_encabezados.fecha AS campo1',
+                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo) AS campo2'),
+                                    DB::raw('core_terceros.descripcion AS campo3'),
+                                    'vtas_pos_doc_encabezados.forma_pago AS campo4',
+                                    'vtas_pos_doc_encabezados.descripcion AS campo5',
+                                    'vtas_pos_doc_encabezados.valor_total AS campo6',
+                                    'vtas_pos_puntos_de_ventas.descripcion AS campo7',
+                                    'vtas_pos_doc_encabezados.estado AS campo8',
+                                    'vtas_pos_doc_encabezados.id AS campo9'
+                                )
+                                ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
+                                ->paginate(500);
     }
 
 	public static function opciones_campo_select()
@@ -110,7 +132,7 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.creado_por',
                 'vtas_pos_doc_encabezados.modificado_por',
                 'vtas_pos_doc_encabezados.created_at',
-                'vtas_pos_doc_encabezados.orden_compras',
+                'vtas_pos_doc_encabezados.lineas_registros_medios_recaudos',
                 'vtas_pos_doc_encabezados.ventas_doc_relacionado_id',
                 'vtas_pos_doc_encabezados.forma_pago AS condicion_pago',
                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',

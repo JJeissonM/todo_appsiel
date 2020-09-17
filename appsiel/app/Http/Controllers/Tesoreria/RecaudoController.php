@@ -127,8 +127,7 @@ class RecaudoController extends TransaccionController
                                         'documento_cartera_id' => $doc_encabezado->id
                                     ] );
 
-
-        $lineas_registros = json_decode( $request->lineas_registros );
+        $lineas_registros = json_decode( $request->lineas_registros_medios_recaudo );
 
         // NOTA: Se registra el movimiento contable, sin importar que la empresa no tenga la APP de Contabilidad
         //      Cuenta              DB          CR
