@@ -71,6 +71,7 @@ use App\CxC\CxcAbono;
 use App\CxP\CxpMovimiento;
 
 use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
 
@@ -116,8 +117,6 @@ class FacturaPosController extends TransaccionController
         $user = Auth::user();        
 
         $pdv = Pdv::find( Input::get('pdv_id') );
-
-        //dd( $pdv->bodega );
 
         //Personalización de la lista de campos
         for ($i = 0; $i < $cantidad_campos; $i++)
@@ -353,7 +352,7 @@ class FacturaPosController extends TransaccionController
 
         $etiquetas = $this->get_etiquetas();
 
-        return View::make( 'ventas_pos.plantilla_factura', compact( 'empresa', 'resolucion', 'etiquetas', 'pdv' ) )->render();
+        return View::make( 'ventas_pos.' . config('ventas_pos.plantilla_factura_pos_default'), compact( 'empresa', 'resolucion', 'etiquetas', 'pdv' ) )->render();
     }
 
     /**
@@ -604,7 +603,7 @@ class FacturaPosController extends TransaccionController
                 $linea->estado = 'Acumulado';
                 $linea->save();
             } 
-
+            /**/
             // Actualiza Movimiento POS
             Movimiento::where( 'core_tipo_transaccion_id', $factura->core_tipo_transaccion_id )
                         ->where( 'core_tipo_doc_app_id', $factura->core_tipo_doc_app_id )
@@ -618,7 +617,7 @@ class FacturaPosController extends TransaccionController
             $doc_remision = InventarioController::crear_encabezado_remision_ventas( $datos_remision );
 
             InventarioController::crear_registros_remision_ventas( $doc_remision, $lineas_registros );
-
+            
             // Movimiento de Tesoreria ó CxC
             $datos['estado'] = 'Activo';
             FacturaPosController::crear_registro_pago( $factura->forma_pago, $datos, $factura->valor_total, $factura->descripcion );
@@ -674,7 +673,7 @@ class FacturaPosController extends TransaccionController
             $forma_pago = $factura->forma_pago;
             $datos = $factura->toArray();
             $datos['estado'] = 'Activo';
-            VentaController::contabilizar_movimiento_debito( $forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $pdv->caja_default_id );
+            FacturaPosController::contabilizar_movimiento_debito( $forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $pdv->caja_default_id );
 
             // Inventarios (Inventarios y Costos)
             InventarioController::contabilizar_documento_inventario( $factura->remision_doc_encabezado_id, $detalle_operacion );
@@ -688,11 +687,7 @@ class FacturaPosController extends TransaccionController
     }
 
     public static function crear_registro_pago( $forma_pago, $datos, $total_documento, $detalle_operacion )
-    {
-        /*
-            WARNING. Esto debe ser un parámetro de la configuración. Si se quiere llevar la factura contado a la caja directamente o si se causa una cuenta por cobrar
-        */
-        
+    {        
         // Cargar la cuenta por cobrar (CxC)
         if ( $forma_pago == 'credito')
         {
@@ -708,19 +703,90 @@ class FacturaPosController extends TransaccionController
         // Agregar el movimiento a tesorería
         if ( $forma_pago == 'contado')
         {
-            // WARNING: La caja la debe tomar de la caja por defecto asociada al usuario,
-            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            
-            $pdv = Pdv::find( $datos['pdv_id'] );
+            $lineas_recaudos = json_decode( $datos['lineas_registros_medios_recaudos'] );
 
-            //$medios_recaudo = ;
-            $caja = TesoCaja::find( $pdv->caja_default_id );
-            // El motivo lo debe traer de unparámetro de la configuración
-            $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
-            $datos['teso_caja_id'] = $caja->id;
-            $datos['teso_cuenta_bancaria_id'] = 0;
-            $datos['valor_movimiento'] = $total_documento;
-            TesoMovimiento::create( $datos );
+            if ( !is_null( $lineas_recaudos ) ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
+            {
+                foreach( $lineas_recaudos as $linea )
+                {
+                    $datos['teso_motivo_id'] = explode("-", $linea->teso_motivo_id)[0];
+                    $datos['teso_caja_id'] = explode("-", $linea->teso_caja_id)[0];
+                    $datos['teso_cuenta_bancaria_id'] = explode("-", $linea->teso_cuenta_bancaria_id)[0];
+                    $datos['valor_movimiento'] = (float)substr($linea->valor, 1);
+                    TesoMovimiento::create( $datos );
+                }
+            }else{
+                // Para viejas versiones
+                $pdv = Pdv::find( $datos['pdv_id'] );
+
+                $caja = TesoCaja::find( $pdv->caja_default_id );
+                // El motivo lo debe traer de unparÃ¡metro de la configuraciÃ³n
+                $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
+                $datos['teso_caja_id'] = $caja->id;
+                $datos['teso_cuenta_bancaria_id'] = 0;
+                $datos['valor_movimiento'] = $total_documento;
+                TesoMovimiento::create( $datos );
+            }
+                                
+        }
+    }
+
+    public static function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion, $caja_banco_id = null )
+    {
+        /*
+            WARNING. Esto debe ser un parámetro de la configuración. Si se quiere llevar la factura contado a la caja directamente o si se causa una cuenta por cobrar
+        */
+        
+        if ( $forma_pago == 'credito')
+        {
+            // Se resetean estos campos del registro
+            $datos['inv_producto_id'] = 0;
+            $datos['cantidad '] = 0;
+            $datos['tasa_impuesto'] = 0;
+            $datos['base_impuesto'] = 0;
+            $datos['valor_impuesto'] = 0;
+            $datos['inv_bodega_id'] = 0;
+
+            // La cuenta de CARTERA se toma de la clase del cliente
+            $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $datos['cliente_id'] );
+            ContabilidadController::contabilizar_registro2( $datos, $cta_x_cobrar_id, $detalle_operacion, $total_documento, 0);
+        }
+        
+        // Agregar el movimiento a tesorería
+        if ( $forma_pago == 'contado')
+        {
+            $lineas_recaudos = json_decode( $datos['lineas_registros_medios_recaudos'] );
+
+            if ( !is_null( $lineas_recaudos ) ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
+            {
+                foreach( $lineas_recaudos as $linea )
+                {
+                    $teso_caja_id = explode("-", $linea->teso_caja_id)[0];
+                    if ($teso_caja_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
+                    }
+
+                    $teso_cuenta_bancaria_id = explode("-", $linea->teso_cuenta_bancaria_id)[0];
+                    if ($teso_cuenta_bancaria_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
+                    }
+
+                    ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, (float)substr($linea->valor, 1), 0, $teso_caja_id, $teso_cuenta_bancaria_id );
+                }
+            }else{
+                // Para viejas versiones
+                $pdv = Pdv::find( $datos['pdv_id'] );
+
+                $caja = TesoCaja::find( $pdv->caja_default_id );
+                
+                $cta_caja_id = $caja->contab_cuenta_id;
+                
+                ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, $total_documento, 0, $caja->id, 0);
+            }
+
+            
         }
     }
 
