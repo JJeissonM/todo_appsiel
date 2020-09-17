@@ -368,14 +368,16 @@ class MatriculaController extends ModeloController
         $reg_siguiente = Matricula::where('id', '>', $id)->min('id');
 
         $view_pdf = MatriculaController::vista_preliminar($id);
-
+        $app = Input::get('id');
+        $modelo = Input::get('id_modelo');
+        $matricula = Matricula::get_registro_impresion($id);
         $miga_pan = [
-            ['url' => 'matriculas?id=' . Input::get('id'), 'etiqueta' => 'Matrículas'],
-            ['url' => 'web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'), 'etiqueta' => 'Matrículas'],
+            ['url' => 'matriculas?id=' . $app, 'etiqueta' => 'Matrículas'],
+            ['url' => 'web?id=' . $app . '&id_modelo=' . $modelo, 'etiqueta' => 'Matrículas'],
             ['url' => 'NO', 'etiqueta' => 'Consulta']
         ];
 
-        return view('matriculas.show_matricula', compact('reg_anterior', 'reg_siguiente', 'miga_pan', 'view_pdf', 'id'));
+        return view('matriculas.show_matricula', compact('modelo', 'app', 'matricula', 'reg_anterior', 'reg_siguiente', 'miga_pan', 'view_pdf', 'id'));
     }
 
     public function imprimir($id)
@@ -610,5 +612,4 @@ class MatriculaController extends ModeloController
 
         return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Matrícula ELIMINADA correctamente. Código: ' . $registro->codigo);
     }
-
 }
