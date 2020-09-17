@@ -124,6 +124,9 @@
             		</tr>
             	</table>
 			</div>
+			<div>
+				@include('tesoreria.incluir.medios_recaudos')
+			</div>
 
 			<hr>
 			<h4>Parámetros</h4>
@@ -152,5 +155,5 @@
 @section('scripts')
 	
 	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
-
+	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
 @endsection
