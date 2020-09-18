@@ -288,12 +288,15 @@ class TransaccionController extends Controller
     public function get_total_campo_lineas_registros( $lineas_registros, string $campo )
     {
         $total = 0;
+
         foreach ($lineas_registros as $linea )
         {
             if ( isset($linea->$campo) )
+            {
                 $total += (float)$linea->$campo;
+            }
         }
-
+        
         return $total;
     }
 }

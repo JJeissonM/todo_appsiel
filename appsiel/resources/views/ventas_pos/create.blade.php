@@ -136,6 +136,8 @@ use App\Http\Controllers\Sistema\VistaController;
             <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$pdv->cliente->core_tercero_id}}"
                    required="required">
 
+            <input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
+
             <input type="hidden" name="cliente_descripcion" id="cliente_descripcion"
                    value="{{$pdv->cliente->tercero->descripcion}}" required="required">
             {{ Form::bsText( 'numero_identificacion', $pdv->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
@@ -358,310 +360,29 @@ use App\Http\Controllers\Sistema\VistaController;
 @endsection
 
 @section('scripts')
+    
+    <script type="text/javascript" src="{{asset('assets/js/ventas_pos/facturas.js')}}"></script>
 
     <script type="text/javascript">
 
-        // Variables de cada línea de ingresos de registros.
-        var producto_id, precio_total, costo_total, base_impuesto_total, valor_impuesto_total, tasa_impuesto,
-            tasa_descuento, valor_total_descuento, cantidad, inv_producto_id, inv_bodega_id, inv_motivo_id,
-            unidad_medida, total_factura;
-        var costo_unitario = 0;
-        var precio_unitario = 0;
-        var base_impuesto_unitario = 0;
-        var valor_impuesto_unitario = 0;
-        var valor_unitario_descuento = 0;
-        var total_cambio = 0;
-        var valor_ajuste_al_peso = 0;
-
         var hay_productos = 0;
 
-        var redondear_centena = {{ $redondear_centena }}
-
+        var redondear_centena = {{ $redondear_centena }};
         var productos = {!! json_encode($productos) !!};
         var precios = {!! json_encode($precios) !!};
         var descuentos = {!! json_encode($descuentos) !!};
         
-        $('#teso_motivo_id').val( 1 );
         $('#btn_nuevo').hide();
-
-        // Se debe llamar desde el DIV con ID total_valor_total
-        $.fn.actualizar_medio_recaudo = function(){
-            
-            var texto_total_recaudos = this.html().substring(1);
-            
-            if( parseFloat( texto_total_recaudos ) == 0 )
-            {
-                return false;
-            }
-
-            $.fn.calcular_total_cambio( texto_total_recaudos );
-
-            $('#efectivo_recibido').val( parseFloat( texto_total_recaudos ) );
-            $('#total_efectivo_recibido').val( parseFloat( texto_total_recaudos ) );
-            $('#efectivo_recibido').attr( 'readonly', 'readonly' );
-
-            $.fn.set_label_efectivo_recibido( texto_total_recaudos );
-
-            $.fn.cambiar_estilo_div_total_cambio();
-
-            $.fn.activar_boton_guardar_factura();
-
-        };
-
-        // 
-        $.fn.calcular_total_cambio = function( efectivo_recibido )
-        {
-            
-            total_cambio = ( $.fn.redondear_a_centena( parseFloat( $('#valor_total_factura').val() ) ) - parseFloat( efectivo_recibido ) ) * -1;
-            
-            // Label
-            $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format(total_cambio.toFixed(0)));
-            // Input hidden
-            $('#valor_total_cambio').val(total_cambio);
-        };
-
-        $.fn.set_label_efectivo_recibido = function( efectivo_recibido )
-        {
-            $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( efectivo_recibido ).toFixed(2) ) );
-        };
-
-        $.fn.cambiar_estilo_div_total_cambio = function(){
-            
-            $('#div_total_cambio').attr('class', 'alert alert-danger');
-
-            if (total_cambio.toFixed(0) >= 0)
-                $('#div_total_cambio').attr('class', 'alert alert-success');
-        };
-
-        $.fn.activar_boton_guardar_factura = function(){
-            
-            $('#btn_guardar_factura').attr('disabled', 'disabled');
-
-            if (total_cambio.toFixed(0) >= 0)
-                $('#btn_guardar_factura').removeAttr('disabled'); 
-
-        };
-
-        
-
-        $.fn.checkCookie = function()
-        {
-            var ultimo_valor_total_factura = parseFloat( $.fn.getCookie("ultimo_valor_total_factura"));
-            var ultimo_valor_efectivo_recibido = parseFloat( $.fn.getCookie("ultimo_valor_efectivo_recibido"));
-            var ultimo_valor_total_cambio = parseFloat( $.fn.getCookie("ultimo_valor_total_cambio"));
-            var ultimo_valor_ajuste_al_peso = parseFloat( $.fn.getCookie("ultimo_valor_ajuste_al_peso"));
-
-            if (ultimo_valor_total_factura > 0)
-            {
-                $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(ultimo_valor_total_factura ) ) );
-                $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_efectivo_recibido.toFixed(2)));
-                $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format((ultimo_valor_total_cambio)));
-                $('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_ajuste_al_peso));
-                $("html, body").animate({scrollTop: $(document).height() + "px"});
-            }
-        };
-
-
-        $.fn.getCookie = function(cname)
-        {
-            var name = cname + "=";
-            var ca = document.cookie.split(';');
-            for (var i = 0; i < ca.length; i++) {
-                var c = ca[i];
-                while (c.charAt(0) == ' ') {
-                    c = c.substring(1);
-                }
-                if (c.indexOf(name) == 0) {
-                    return c.substring(name.length, c.length);
-                }
-            }
-            return "";
-        };
-
-        function get_precio(producto_id) {
-            var precio = precios.find(item => item.producto_codigo === producto_id);
-
-            if (precio === undefined) {
-                precio = 0;
-            } else {
-                precio = precio.precio;
-            }
-
-
-            precio_unitario = precio;
-
-            return precio;
-        }
-
-        function get_descuento(producto_id) {
-            var descuento = descuentos.find(item => item.producto_codigo === producto_id);
-
-            if (descuento === undefined) {
-                descuento = 0;
-            } else {
-                descuento = descuento.descuento1;
-            }
-
-            tasa_descuento = descuento;
-
-            return descuento;
-        }
-
-        var ventana_factura;
-
-        function ventana_imprimir() {
-
-            ventana_factura = window.open("", "Impresión de factura POS", "width=400,height=600,menubar=no");
-
-            ventana_factura.document.write($('#div_plantilla_factura').html());
-
-            ventana_factura.print();
-
-            //location.reload();
-
-        }
-
-        function mandar_codigo(item_id)
-        {
-            $('#myModal').modal("hide");
-
-            var producto = productos.find(item => item.id === parseInt(item_id));
-
-            tasa_impuesto = producto.tasa_impuesto;
-            inv_producto_id = producto.id;
-            unidad_medida = producto.unidad_medida1;
-
-            $('#inv_producto_id').val(producto.descripcion);
-            $('#precio_unitario').val(get_precio(producto.id));
-            $('#tasa_descuento').val(get_descuento(producto.id));
-
-            $('#cantidad').select();
-        }
 
         $(document).ready(function () {
 
-            $.fn.checkCookie();
-
-            $('#btn_guardar').hide();
-
             $('#fecha').val(get_fecha_hoy());
-            agregar_la_linea_ini();
-
-            // Elementos al final de la página
-            $('#cliente_input').parent().parent().attr('class', 'elemento_fondo');
-            $('#vendedor_id').parent().parent().attr('class', 'elemento_fondo');
-
-
-            // Al cambiar la fecha
-            $('#fecha').on('change', function () {
-
-                // Reset línea de registro de productos
-                $('#linea_ingreso_default input[type="text"]').val('');
-                $('#linea_ingreso_default input[type="text"]').attr('style', 'background-color:#ECECE5;');
-                $('#linea_ingreso_default input[type="text"]').attr('disabled', 'disabled');
-
-                // Se habilitan los campos necesarios
-                $('#precio_unitario').removeAttr('style');
-                $('#precio_unitario').removeAttr('disabled');
-
-                $('#inv_producto_id').removeAttr('style');
-                $('#inv_producto_id').removeAttr('disabled');
-            });
-
-
-            $('#cliente_input').on('focus', function () {
-                $(this).select();
-            });
-
-            $("#cliente_input").after('<div id="clientes_suggestions"> </div>');
-
-            // Al ingresar código, descripción o código de barras del producto
-            $('#cliente_input').on('keyup', function () {
-
-                reset_campos_formulario();
-
-                var codigo_tecla_presionada = event.which || event.keyCode;
-
-                switch (codigo_tecla_presionada) {
-                    case 27:// 27 = ESC
-                        $('#clientes_suggestions').html('');
-                        $('#clientes_suggestions').hide();
-                        break;
-
-                    case 40:// Flecha hacia abajo
-                        var item_activo = $("a.list-group-item.active");
-                        item_activo.next().attr('class', 'list-group-item list-group-item-cliente active');
-                        item_activo.attr('class', 'list-group-item list-group-item-cliente');
-                        $('#cliente_input').val(item_activo.next().html());
-                        break;
-
-                    case 38:// Flecha hacia arriba
-                        $(".flecha_mover:focus").prev().focus();
-                        var item_activo = $("a.list-group-item.active");
-                        item_activo.prev().attr('class', 'list-group-item list-group-item-cliente active');
-                        item_activo.attr('class', 'list-group-item list-group-item-cliente');
-                        $('#cliente_input').val(item_activo.prev().html());
-                        break;
-
-                    case 13:// Al presionar Enter
-
-                        if ($(this).val() == '') {
-                            return false;
-                        }
-
-                        var item = $('a.list-group-item.active');
-
-                        if (item.attr('data-cliente_id') === undefined) {
-                            alert('El cliente ingresado no existe.');
-                            reset_campos_formulario();
-                        } else {
-                            seleccionar_cliente(item);
-                        }
-                        break;
-
-                    default :
-                        // Manejo código de producto o nombre
-                        var campo_busqueda = 'descripcion';
-                        if ($.isNumeric($(this).val())) {
-                            var campo_busqueda = 'numero_identificacion';
-                        }
-
-                        // Si la longitud es menor a tres, todavía no busca
-                        if ($(this).val().length < 2) {
-                            return false;
-                        }
-
-                        var url = '../vtas_consultar_clientes';
-
-                        $.get(url, {texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda})
-                            .done(function (data) {
-                                // Se llena el DIV con las sugerencias que arooja la consulta
-                                $('#clientes_suggestions').show().html(data);
-                                $('a.list-group-item.active').focus();
-                            });
-                        break;
-                }
-            });
 
 
             //Al hacer click en alguna de las sugerencias (escoger un producto)
             $(document).on('click', '.list-group-item-cliente', function () {
                 seleccionar_cliente($(this));
                 return false;
-            });
-
-
-            // Al seleccionar una bodega, se ubica en el siguiente elemento
-            $('#inv_bodega_id').change(function () {
-
-                reset_linea_ingreso_default();
-
-                $('#inv_producto_id').focus();
-
-                if ($('#url_id_transaccion').val() == 2) { // Si es una transferencia
-                    $('#bodega_destino_id').focus();
-                }
-
             });
 
 
@@ -761,21 +482,25 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 var codigo_tecla_presionada = event.which || event.keyCode;
 
-                if (codigo_tecla_presionada == 27) {
+                if (codigo_tecla_presionada == 27) 
+                {
                     $('#inv_producto_id').focus();
                     return false;
                 }
 
-                if ($('#valor_total_factura').val() <= 0) {
+                if ($('#valor_total_factura').val() <= 0) 
+                {
                     return false;
                 }
 
                 if ( validar_input_numerico($(this)) && $(this).val() > 0)
                 {
-                    switch (codigo_tecla_presionada) {
+                    switch (codigo_tecla_presionada) 
+                    {
                         case 13: // Al presionar Enter
 
-                            if (total_cambio.toFixed(0) >= 0) {
+                            if (total_cambio.toFixed(0) >= 0) 
+                            {
                                 $('#btn_guardar_factura').focus();
                             } else {
                                 return false;
@@ -784,8 +509,6 @@ use App\Http\Controllers\Sistema\VistaController;
                             break;
 
                         default :
-
-                            //$('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(parseFloat($(this).val()).toFixed(2)));
 
                             calcular_totales();
 
@@ -827,12 +550,14 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 var codigo_tecla_presionada = event.which || event.keyCode;
 
-                if (codigo_tecla_presionada == 13 && $(this).val() == '') {
+                if (codigo_tecla_presionada == 13 && $(this).val() == '') 
+                {
                     $('#precio_unitario').select();
                     return false;
                 }
 
-                if (validar_input_numerico($(this)) && $(this).val() > 0) {
+                if (validar_input_numerico($(this)) && $(this).val() > 0) 
+                {
                     cantidad = parseFloat($(this).val());
 
                     if (codigo_tecla_presionada == 13) // ENTER
@@ -840,7 +565,8 @@ use App\Http\Controllers\Sistema\VistaController;
                         agregar_nueva_linea();
                     }
 
-                    if ($(this).val() != '') {
+                    if ($(this).val() != '') 
+                    {
                         calcular_valor_descuento();
                         calcular_impuestos();
                         calcular_precio_total();
@@ -1024,8 +750,10 @@ use App\Http\Controllers\Sistema\VistaController;
 
             var numero_linea = 1;
 
-            function agregar_nueva_linea() {
-                if (!calcular_precio_total()) {
+            function agregar_nueva_linea() 
+            {
+                if (!calcular_precio_total()) 
+                {
                     $('#popup_alerta').show();
                     $('#popup_alerta').css('background-color', 'red');
                     $('#popup_alerta').text('Error en precio total. Por favor verifique');
@@ -1035,25 +763,17 @@ use App\Http\Controllers\Sistema\VistaController;
                 agregar_la_linea();
             }
 
-            function agregar_la_linea_ini() {
-                // Se escogen los campos de la fila ingresada
-                var fila = $('#linea_ingreso_default_aux');
-
-                // agregar nueva fila a la tabla
-                $('#ingreso_registros').find('tfoot:last').append(fila);
-
-                $('#inv_producto_id').focus();
-            }
-
-            function agregar_la_linea() {
+            function agregar_la_linea() 
+            {
                 $('#popup_alerta').hide();
 
                 // Se escogen los campos de la fila ingresada
                 var fila = $('#linea_ingreso_default');
 
-                var string_fila = generar_string_celdas(fila);
+                var string_fila = $.fn.generar_string_celdas( fila );
 
-                if (string_fila == false) {
+                if (string_fila == false) 
+                {
                     $('#popup_alerta').show();
                     $('#popup_alerta').css('background-color', 'red');
                     $('#popup_alerta').text('Producto no encontrado.');
@@ -1082,103 +802,15 @@ use App\Http\Controllers\Sistema\VistaController;
                 numero_linea++;
             }
 
-
-            // Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
-            // Debe ser complatible con las columnas de la tabla de ingreso de registros
-            function generar_string_celdas(fila) {
-                if (inv_producto_id === undefined) {
-                    return false;
-                }
-
-                var celdas = [];
-                var num_celda = 0;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="inv_producto_id">' + inv_producto_id + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="precio_unitario">' + precio_unitario + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="base_impuesto">' + base_impuesto_unitario + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="tasa_impuesto">' + tasa_impuesto + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="valor_impuesto">' + valor_impuesto_unitario + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="base_impuesto_total">' + base_impuesto_unitario * cantidad + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="cantidad">' + cantidad + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="precio_total">' + precio_total + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="tasa_descuento">' + tasa_descuento + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td style="display: none;"><div class="valor_total_descuento">' + valor_total_descuento + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td> &nbsp; </td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td> <span style="background-color:#F7B2A3;">' + inv_producto_id + '</span> <div class="lbl_producto_descripcion" style="display: inline;"> ' + $('#inv_producto_id').val() + ' </div> </td>';
-
-                num_celda++;
-
-                //celdas[ num_celda ] = '<td>' + cantidad + ' </td>';
-                celdas[num_celda] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + cantidad + '</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">' + unidad_medida + '</div>)' + ' </td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td> <div class="lbl_precio_unitario" style="display: inline;">' + '$ ' + new Intl.NumberFormat("de-DE").format(precio_unitario) + '</div></td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td>' + tasa_descuento + '% ( $<div class="lbl_valor_total_descuento" style="display: inline;">' + new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(0)) + '</div> ) </td>';
-
-                num_celda++;
-
-                celdas[num_celda] = '<td><div class="lbl_tasa_impuesto" style="display: inline;">' + tasa_impuesto + '</div></td>';
-
-                num_celda++;
-
-                var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
-                celdas[num_celda] = '<td> <div class="lbl_precio_total" style="display: inline;">' + '$ ' + new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)) + ' </div> </td> <td>' + btn_borrar + '</td>';
-
-                var cantidad_celdas = celdas.length;
-                var string_celdas = '';
-                for (var i = 0; i < cantidad_celdas; i++) {
-                    string_celdas = string_celdas + celdas[i];
-                }
-
-                inv_producto_id = undefined; // para que no quede en memoria el código del producto
-
-                return string_celdas;
-            }
-
-            function deshabilitar_campos_encabezado() {
+            function deshabilitar_campos_encabezado() 
+            {
                 $('#cliente_input').attr('disabled', 'disabled');
                 $('#fecha').attr('disabled', 'disabled');
                 $('#inv_bodega_id').attr('disabled', 'disabled');
             }
 
-            function habilitar_campos_encabezado() {
+            function habilitar_campos_encabezado() 
+            {
                 $('#cliente_input').removeAttr('disabled');
                 $('#fecha').removeAttr('disabled');
                 $('#inv_bodega_id').removeAttr('disabled');
@@ -1211,10 +843,11 @@ use App\Http\Controllers\Sistema\VistaController;
             });
 
             // GUARDAR EL FORMULARIO
-            $('#btn_guardar_factura').click(function (event) {
+            $('#btn_guardar_factura').click(function (event){
                 event.preventDefault();
 
-                if (hay_productos == 0) {
+                if( hay_productos == 0 )
+                {
                     alert('No ha ingresado productos.');
                     reset_linea_ingreso_default();
                     reset_efectivo_recibido();
@@ -1223,15 +856,14 @@ use App\Http\Controllers\Sistema\VistaController;
                 }
 
                 // Desactivar el click del botón
-                //$(this).off(event);
-                //$(this).attr('disabled', 'disabled');
+                $( this ).off( event );
+                $( this ).attr( 'disabled', 'disabled' );
 
                 $('#linea_ingreso_default').remove();
                 $('#linea_ingreso_default_aux').remove();
 
                 var table = $('#ingreso_registros').tableToJSON();
-                var table2 = $('#ingreso_registros_medios_recaudo').tableToJSON();
-                
+                var table2 = $('#ingreso_registros_medios_recaudo').tableToJSON();                
 
                 // Se asigna el objeto JSON a un campo oculto del formulario
                 $('#lineas_registros').val( JSON.stringify( table ) );
@@ -1243,12 +875,13 @@ use App\Http\Controllers\Sistema\VistaController;
                 var url = $("#form_create").attr('action');
                 var data = $("#form_create").serialize();
 
-                setCookie('ultimo_valor_total_cambio', total_cambio, 1);
-                setCookie('ultimo_valor_total_factura', total_factura, 1);
-                setCookie('ultimo_valor_efectivo_recibido', parseFloat($('#efectivo_recibido').val()), 1);
-                setCookie('ultimo_valor_ajuste_al_peso', valor_ajuste_al_peso, 1);
+                setCookie( 'ultimo_valor_total_cambio', total_cambio, 1);
+                setCookie( 'ultimo_valor_total_factura', total_factura, 1);
+                setCookie( 'ultimo_valor_efectivo_recibido', parseFloat($('#efectivo_recibido').val()), 1);
+                setCookie( 'ultimo_valor_ajuste_al_peso', valor_ajuste_al_peso, 1);
 
                 $.post(url, data, function (doc_encabezado_consecutivo) {
+                    $('title').append(doc_encabezado_consecutivo);
                     $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
                     llenar_tabla_productos_facturados();
 
@@ -1259,31 +892,34 @@ use App\Http\Controllers\Sistema\VistaController;
 
             });
 
-            function llenar_tabla_productos_facturados() {
+            function llenar_tabla_productos_facturados()
+            {
                 var linea_factura;
                 var lbl_total_factura = 0;
 
-                $('.linea_registro').each(function () {
+                $('.linea_registro').each(function( ){
 
-                    linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + '  (' + $(this).find('.lbl_precio_unitario').text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '% </td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
+                    linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' (' + $(this).find('.lbl_precio_unitario').text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '% </td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
 
-                    if (parseFloat($(this).find('.valor_total_descuento').text()) != 0) {
-                        linea_factura += '<tr> <td colspan="2" style="text-align: right;">Dcto.</td> <td colspan="2"> ( -$' + new Intl.NumberFormat("de-DE").format(parseFloat($(this).find('.valor_total_descuento').text()).toFixed(0)) + ' ) </td> </tr>';
+                    if( parseFloat( $(this).find('.valor_total_descuento').text() ) != 0 )
+                    {
+                        linea_factura += '<tr> <td colspan="2" style="text-align: right;">Dcto.</td> <td colspan="2"> ( -$' + new Intl.NumberFormat("de-DE").format( parseFloat( $(this).find('.valor_total_descuento').text() ).toFixed(0) ) + ' ) </td> </tr>';
                     }
 
-                    $('#tabla_productos_facturados').find('tbody:last').append(linea_factura);
+                    $('#tabla_productos_facturados').find('tbody:last').append( linea_factura );
 
-                    lbl_total_factura += parseFloat($(this).find('.precio_total').text());
+                    lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
 
                 });
 
 
-                $('.lbl_total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
-                $('.lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
-                $('.lbl_total_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(parseFloat($('#efectivo_recibido').val())));
-                $('.lbl_total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(total_cambio)));
+                $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
+                $('.lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_ajuste_al_peso));
+                $('.lbl_total_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat($('#efectivo_recibido').val())));
+                $('.lbl_total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(total_cambio)));
 
-                if ($('#forma_pago').val() == 'credito') {
+                if ($('#forma_pago').val() == 'credito')
+                {
                     $('#tr_fecha_vencimiento').show();
                     $('.lbl_condicion_pago').text($('#forma_pago').val());
                     $('.lbl_fecha_vencimiento').text($('#fecha_vencimiento').val());
@@ -1298,24 +934,8 @@ use App\Http\Controllers\Sistema\VistaController;
 
             }
 
-            function reset_campos_formulario() {
-                $('#cliente_id').val('');
-                $('#cliente_input').css('background-color', '#FF8C8C');
-                $('#vendedor_id').val('');
-                $('#inv_bodega_id').val('');
-                $('#forma_pago').val('contado');
-                $('#fecha_vencimiento').val('');
-                $('#lista_precios_id').val('');
-                $('#lista_descuentos_id').val('');
-                $('#liquida_impuestos').val('');
-
-                $('#core_tercero_id').val('');
-                $('#lineas_registros').val(0);
-                $('#zona_id').val('');
-                $('#clase_cliente_id').val('');
-            }
-
-            function reset_tabla_ingreso() {
+            function reset_tabla_ingreso() 
+            {
                 $('.linea_registro').each(function () {
                     $(this).remove();
                 });
@@ -1339,7 +959,8 @@ use App\Http\Controllers\Sistema\VistaController;
             }
 
 
-            function reset_linea_ingreso_default() {
+            function reset_linea_ingreso_default()
+            {
                 $('#inv_producto_id').val('');
                 $('#cantidad').val('');
                 $('#precio_unitario').val('');
@@ -1367,12 +988,14 @@ use App\Http\Controllers\Sistema\VistaController;
                 valor_unitario_descuento = 0;
             }
 
-            function calcular_precio_total() {
+            function calcular_precio_total()
+            {
                 precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
 
                 $('#precio_total').val(0);
 
-                if ($.isNumeric(precio_total) && precio_total > 0) {
+                if ($.isNumeric(precio_total) && precio_total > 0) 
+                {
                     $('#precio_total').val(precio_total);
                     return true;
                 } else {
@@ -1382,27 +1005,28 @@ use App\Http\Controllers\Sistema\VistaController;
             }
 
 
-            function calcular_totales() {
+            function calcular_totales() 
+            {
                 var cantidad = 0.0;
                 var subtotal = 0.0;
                 var valor_total_descuento = 0.0;
                 var total_impuestos = 0.0;
                 total_factura = 0.0;
 
-                $('.linea_registro').each(function () {
-                    cantidad += parseFloat($(this).find('.cantidad').text());
-                    subtotal += parseFloat($(this).find('.base_impuesto').text()) * parseFloat($(this).find('.cantidad').text());
-                    valor_total_descuento += parseFloat($(this).find('.valor_total_descuento').text());
-                    total_impuestos += parseFloat($(this).find('.valor_impuesto').text()) * parseFloat($(this).find('.cantidad').text());
-                    total_factura += parseFloat($(this).find('.precio_total').text());
+                $('.linea_registro').each(function() {
+                    cantidad += parseFloat( $(this).find('.cantidad').text() );
+                    subtotal += parseFloat( $(this).find('.base_impuesto').text() ) * parseFloat( $(this).find('.cantidad').text() );
+                    valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
+                    total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * parseFloat( $(this).find('.cantidad').text() );
+                    total_factura += parseFloat( $(this).find('.precio_total').text() );
 
                 });
 
-                $('#total_cantidad').text(new Intl.NumberFormat("de-DE").format(cantidad));
+                $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format(cantidad));
 
                 // Subtotal (Sumatoria de base_impuestos por cantidad)
                 //var valor = ;
-                $('#subtotal').text('$ ' + new Intl.NumberFormat("de-DE").format((subtotal + valor_total_descuento).toFixed(2)));
+                $('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(2) ) );
 
                 $('#descuento').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
 
@@ -1425,7 +1049,7 @@ use App\Http\Controllers\Sistema\VistaController;
             var valor_actual, elemento_modificar, elemento_padre;
 
             // Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
-            $(document).on('dblclick', '.elemento_modificar', function () {
+            $(document).on('dblclick', '.elemento_modificar', function(){
 
                 elemento_modificar = $(this);
 
@@ -1435,7 +1059,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 elemento_modificar.hide();
 
-                elemento_modificar.after('<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+                elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
 
                 document.getElementById('valor_nuevo').value = valor_actual;
                 document.getElementById('valor_nuevo').select();
@@ -1443,10 +1067,10 @@ use App\Http\Controllers\Sistema\VistaController;
             });
 
             // Si la caja de texto pierde el foco
-            $(document).on('blur', '#valor_nuevo', function (event) {
+            $(document).on('blur', '#valor_nuevo', function(event){
 
                 var x = event.which || event.keyCode; // Capturar la tecla presionada
-                if (x != 13) // 13 = Tecla Enter
+                if( x != 13 ) // 13 = Tecla Enter
                 {
                     elemento_padre.find('#valor_nuevo').remove();
                     elemento_modificar.show();
@@ -1616,11 +1240,13 @@ use App\Http\Controllers\Sistema\VistaController;
             });
 
 
-            function guardar_valor_nuevo(fila) {
+            function guardar_valor_nuevo(fila) 
+            {
                 var valor_nuevo = document.getElementById('valor_nuevo').value;
 
                 // Si no cambió el valor_nuevo, no pasa nada
-                if (valor_nuevo == valor_actual) {
+                if (valor_nuevo == valor_actual)
+                {
                     return false;
                 }
 
@@ -1640,7 +1266,8 @@ use App\Http\Controllers\Sistema\VistaController;
             }
 
 
-            function calcular_precio_total_lbl(fila) {
+            function calcular_precio_total_lbl(fila) 
+            {
                 precio_unitario = parseFloat(fila.find('.precio_unitario').text());
                 base_impuesto_unitario = parseFloat(fila.find('.base_impuesto').text());
                 tasa_descuento = parseFloat(fila.find('.tasa_descuento').text());
@@ -1663,8 +1290,8 @@ use App\Http\Controllers\Sistema\VistaController;
                 fila.find('.lbl_precio_total').text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
             }
 
-
-            function setCookie(cname, cvalue, exdays) {
+            function setCookie(cname, cvalue, exdays)
+            {
                 var d = new Date();
                 d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
                 var expires = "expires=" + d.toUTCString();
@@ -1673,40 +1300,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
         });
 
-            $.fn.redondear_a_centena = function(numero, aproximacion_superior = false) {
-                if (!redondear_centena) {
-                    return numero.toFixed(0);
-                }
-
-                var millones = 0;
-                var millares = 0;
-                var centenas = 0;
-
-                var saldo1, saldo2, saldo3;
-
-                if (numero > 999999.99999) {
-                    // se obtiene solo la parte entera
-                    millones = Math.trunc(numero / 1000000) * 1000000;
-                }
-
-                saldo1 = numero - millones;
-
-                if (saldo1 > 999.99999) {
-                    // se obtiene solo la parte entera
-                    millares = Math.trunc(saldo1 / 1000) * 1000;
-                }
-
-                saldo2 = saldo1 - millares;
-
-                if (saldo2 > 99.99999) {
-                    // se obtiene solo la parte entera
-                    //centenas = Math.trunc( saldo2 / 100 ) * 100;
-                    centenas = (saldo2 / 100).toFixed(0) * 100;
-                }
-
-                return (millones + millares + centenas);
-
-            };
+            
 
     </script>
     <script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>

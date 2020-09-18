@@ -48,6 +48,10 @@ $datos = [
                     </tr>
                     </thead>
                     <tbody>
+                        
+                        @if( isset( $cuerpo_tabla_medios_recaudos ) )
+                            {!! $cuerpo_tabla_medios_recaudos !!}
+                        @endif
 
                     </tbody>
                     <tfoot>
@@ -65,7 +69,7 @@ $datos = [
 
         <a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none; cursor: pointer;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
     </div>
-    <input type="hidden" name="suma_cambio" id="suma_cambio" onselect="jordan()">
+
 </div>
 
 <!-- Modal -->

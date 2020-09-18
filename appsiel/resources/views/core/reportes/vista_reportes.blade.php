@@ -204,8 +204,12 @@
 			$('#teso_medio_recaudo_id').on('change',function()
 			{
 				$('#resultado_consulta').html('');
+				
 				$('#teso_caja_id').html('<option value=""></option>');
+				$('#teso_caja_id').removeAttr( 'required' );
+
 				$('#teso_cuenta_bancaria_id').html('<option value=""></option>');
+				$('#teso_cuenta_bancaria_id').removeAttr( 'required' );
 
 				if ( $(this).val() == '') { return false; }
 
