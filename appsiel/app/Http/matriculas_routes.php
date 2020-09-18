@@ -22,7 +22,7 @@ Route::get('matriculas/estudiantes/modificar/{id}', 'Matriculas\EstudianteContro
 Route::get('matriculas/estudiantes/listar', 'Matriculas\EstudianteController@listar');
 Route::get('matriculas/estudiantes/show/{estudiante_id}', 'Matriculas\EstudianteController@show');
 Route::get('get_estudiantes_matriculados/{periodo_lectivo_id}/{curso_id}', 'Matriculas\EstudianteController@get_estudiantes_matriculados');
-Route::get('matriculas/estudiantes/gestionresponsables/estudiante_id', 'Matriculas\EstudianteController@gestionresponsables');
+Route::get('matriculas/estudiantes/gestionresponsables/estudiante_id', 'Matriculas\EstudianteController@gestionresponsables')->name('responsables.index');
 Route::post('matriculas/estudiantes/gestionresponsables/store', 'Matriculas\EstudianteController@gestionresponsables_store');
 Route::get('matriculas/estudiantes/gestionresponsables/{id}/delete', 'Matriculas\EstudianteController@gestionresponsables_delete')->name('gestionresponsables_delete');
 Route::post('matriculas/estudiantes/gestionresponsables/update', 'Matriculas\EstudianteController@gestionresponsables_update');

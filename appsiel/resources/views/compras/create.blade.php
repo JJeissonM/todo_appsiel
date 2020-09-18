@@ -116,7 +116,9 @@
 				</div>
 
 			</div>
-			
+			<div id="mostrar_medios_recaudos">
+			@include('tesoreria.incluir.medios_recaudos')
+		</div>
 		</div>
 	</div>
 	<br/><br/>
@@ -152,6 +154,13 @@
 
 			$("#proveedor_input").after('<div id="div_list_suggestions"> </div>');
 
+			$('#forma_pago').on('change',function (event){
+				if($('#forma_pago').val() == 'contado'){
+					$('#mostrar_medios_recaudos').removeAttr('style','display');
+				}else{
+					$('#mostrar_medios_recaudos').attr('style','display:none');
+				}
+			});
 			$('#fecha').on('change',function(event){
 				var fecha = new Date( $(this).val() );
 				$('#fecha_vencimiento').val( actualizar_fecha_vencimiento( fecha ) );
@@ -1243,4 +1252,5 @@
 
 		});
 	</script>
+	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
 @endsection

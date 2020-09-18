@@ -56,6 +56,9 @@ use App\Http\Controllers\Sistema\VistaController;
             <div class="panel panel-primary">
                 <div class="panel-heading">DATOS DE PADRES, ACUDIENTE, RESPONSABLE FINANCIERO, ETC.</div>
                 <div class="panel-body">
+                    <div class="alert alert-warning" role="alert">
+                        <h4><b>Atención! </b>Debe como mínimo incluir al acudiente y al responsable financiero, de no ser así la matrícula no será registrada y tendrá que realizar el procedimiento de nuevo</h4>
+                    </div>
                     <a onclick="addRow()" class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> Agregar Persona</a>
                     <table id="tbPersonas" class="table table-hover table-dark table-responsive">
                         <thead>
