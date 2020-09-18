@@ -214,6 +214,22 @@ class MatriculaController extends ModeloController
         // Si el estudiante no existe, Se crea usuario y Estudiante
         if ($request->estudiante_existe == false) {
 
+            $total = 0;
+
+            if (isset($request->id_tipo_documento_idp)) {
+                if (count($request->id_tipo_documento_idp) > 0) {
+                    foreach ($request->id_tipo_documento_idp as $key => $td) {
+                        if ($request->tiporesponsable_idp[$key] == '3' || $request->tiporesponsable_idp[$key] == '4') {
+                            $total = $total + 1;
+                        }
+                    }
+                }
+            }
+
+            if ($total < 2) {
+                return redirect('matriculas/create?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('mensaje_error', 'Debe indicar como mínimo el acudiente y el responsable financiero para crear la matrícula del estudiante');
+            }
+
             $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
             $email = $request->email;
             $user = User::crear_y_asignar_role($name, $email, 4); // 4 = Role Estudiante
