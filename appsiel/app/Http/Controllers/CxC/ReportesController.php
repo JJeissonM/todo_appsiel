@@ -32,7 +32,6 @@ class ReportesController extends Controller
     }
 
     public function documentos_pendientes(Request $request) {
-        //dd($request->all());
         $operador = '=';
         $cadena = $request->core_tercero_id;
 
