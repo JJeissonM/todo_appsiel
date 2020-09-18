@@ -214,6 +214,22 @@ class MatriculaController extends ModeloController
         // Si el estudiante no existe, Se crea usuario y Estudiante
         if ($request->estudiante_existe == false) {
 
+            $total = 0;
+
+            if (isset($request->id_tipo_documento_idp)) {
+                if (count($request->id_tipo_documento_idp) > 0) {
+                    foreach ($request->id_tipo_documento_idp as $key => $td) {
+                        if ($request->tiporesponsable_idp[$key] == '3' || $request->tiporesponsable_idp[$key] == '4') {
+                            $total = $total + 1;
+                        }
+                    }
+                }
+            }
+
+            if ($total < 2) {
+                return redirect('matriculas/create?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('mensaje_error', 'Debe indicar como mínimo el acudiente y el responsable financiero para crear la matrícula del estudiante');
+            }
+
             $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
             $email = $request->email;
             $user = User::crear_y_asignar_role($name, $email, 4); // 4 = Role Estudiante
@@ -368,14 +384,16 @@ class MatriculaController extends ModeloController
         $reg_siguiente = Matricula::where('id', '>', $id)->min('id');
 
         $view_pdf = MatriculaController::vista_preliminar($id);
-
+        $app = Input::get('id');
+        $modelo = Input::get('id_modelo');
+        $matricula = Matricula::get_registro_impresion($id);
         $miga_pan = [
-            ['url' => 'matriculas?id=' . Input::get('id'), 'etiqueta' => 'Matrículas'],
-            ['url' => 'web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'), 'etiqueta' => 'Matrículas'],
+            ['url' => 'matriculas?id=' . $app, 'etiqueta' => 'Matrículas'],
+            ['url' => 'web?id=' . $app . '&id_modelo=' . $modelo, 'etiqueta' => 'Matrículas'],
             ['url' => 'NO', 'etiqueta' => 'Consulta']
         ];
 
-        return view('matriculas.show_matricula', compact('reg_anterior', 'reg_siguiente', 'miga_pan', 'view_pdf', 'id'));
+        return view('matriculas.show_matricula', compact('modelo', 'app', 'matricula', 'reg_anterior', 'reg_siguiente', 'miga_pan', 'view_pdf', 'id'));
     }
 
     public function imprimir($id)
@@ -610,5 +628,4 @@ class MatriculaController extends ModeloController
 
         return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Matrícula ELIMINADA correctamente. Código: ' . $registro->codigo);
     }
-
 }
