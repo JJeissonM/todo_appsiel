@@ -50,4 +50,20 @@ class DocumentosPendientes extends Model
                                 ->get()->toArray(); 
     }
 
+    public static function get_documentos_pendientes_clase_cliente($clase){
+        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_movimientos.consecutivo) AS documento';
+
+        return DocumentosPendientes::leftJoin('core_terceros','core_terceros.id','=','cxc_movimientos.core_tercero_id')
+            ->leftJoin('core_tipos_docs_apps','core_tipos_docs_apps.id','=','cxc_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('vtas_clientes','vtas_clientes.core_tercero_id','=','cxc_movimientos.core_tercero_id')
+            ->where('cxc_movimientos.core_empresa_id',Auth::user()->empresa_id)
+            ->where('cxc_movimientos.core_tercero_id', 'LIKE', '%%')
+            ->where('cxc_movimientos.saldo_pendiente', '<>', 0)
+            ->where('vtas_clientes.clase_cliente_id','=',$clase)
+            ->select('cxc_movimientos.id','cxc_movimientos.core_tipo_transaccion_id','cxc_movimientos.core_tipo_doc_app_id','cxc_movimientos.consecutivo','core_terceros.descripcion AS tercero',DB::raw($select_raw),'cxc_movimientos.fecha','cxc_movimientos.fecha_vencimiento','cxc_movimientos.valor_documento','cxc_movimientos.valor_pagado','cxc_movimientos.saldo_pendiente','vtas_clientes.clase_cliente_id','cxc_movimientos.core_tercero_id')
+           // ->groupBy('cxc_movimientos.core_tercero_id')
+            ->orderBy('cxc_movimientos.core_tercero_id')
+            ->get()->toArray();
+    }
+
 }
