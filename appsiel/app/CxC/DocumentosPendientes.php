@@ -43,8 +43,8 @@ class DocumentosPendientes extends Model
             ->where('cxc_movimientos.core_empresa_id', Auth::user()->empresa_id)
             ->where('cxc_movimientos.core_tercero_id', $operador, $cadena)
             ->where('cxc_movimientos.saldo_pendiente', '<>', 0)
-            ->select('cxc_movimientos.id', 'cxc_movimientos.core_tipo_transaccion_id', 'cxc_movimientos.core_tipo_doc_app_id', 'cxc_movimientos.consecutivo', 'core_terceros.descripcion AS tercero', DB::raw($select_raw), 'cxc_movimientos.fecha', 'cxc_movimientos.fecha_vencimiento', 'cxc_movimientos.valor_documento', 'cxc_movimientos.valor_pagado', 'cxc_movimientos.saldo_pendiente')
-            ->orderBy('cxc_movimientos.fecha')
+            ->select('cxc_movimientos.id', 'cxc_movimientos.core_tipo_transaccion_id', 'cxc_movimientos.core_tipo_doc_app_id', 'cxc_movimientos.consecutivo', 'core_terceros.descripcion AS tercero', DB::raw($select_raw), 'cxc_movimientos.fecha', 'cxc_movimientos.fecha_vencimiento', 'cxc_movimientos.valor_documento', 'cxc_movimientos.valor_pagado', 'cxc_movimientos.saldo_pendiente', 'cxc_movimientos.core_tercero_id')
+            ->orderBy('cxc_movimientos.core_tercero_id')
             ->get()->toArray();
     }
 

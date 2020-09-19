@@ -58,7 +58,7 @@
                 } ?>
 
 
-            <tr style="background: #252525; color: white;">
+            <tr style="background: #4a4a4a; color: white;">
                 <td> &nbsp; </td>
                 <td> ${{ number_format( $total_entradas_cajas, 0, ',','.') }} </td>
                 <td> ${{ number_format( $total_salidas_cajas, 0, ',','.') }} </td>
@@ -104,7 +104,7 @@
                 } ?>
 
 
-            <tr style="background: #252525; color: white;">
+            <tr style="background: #4a4a4a; color: white;">
                 <td> &nbsp; </td>
                 <td> ${{ number_format( $total_entradas_cuentas_bancarias, 0, ',','.') }} </td>
                 <td> ${{ number_format( $total_salidas_cuentas_bancarias, 0, ',','.') }} </td>

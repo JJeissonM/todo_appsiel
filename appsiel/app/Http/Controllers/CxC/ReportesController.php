@@ -35,13 +35,19 @@ class ReportesController extends Controller
         $operador = '=';
         $cadena = $request->core_tercero_id;
 
-        if ($request->core_tercero_id == '') {
+        if ( $request->core_tercero_id == '' )
+        {
             $operador = 'LIKE';
             $cadena = '%' . $request->core_tercero_id . '%';
+        }
+
+        if ( $request->clase_cliente_id != '' )
+        {
             $movimiento = DocumentosPendientes::get_documentos_pendientes_clase_cliente($request->clase_cliente_id);
         }else{
             $movimiento = DocumentosPendientes::get_documentos_referencia_tercero( $operador, $cadena );
         }
+
         if (count($movimiento) > 0) {
             $movimiento = collect($movimiento);
             $group = $movimiento->groupBy('core_tercero_id');

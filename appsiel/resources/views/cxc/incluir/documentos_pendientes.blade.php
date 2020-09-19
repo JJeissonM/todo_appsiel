@@ -28,22 +28,25 @@
             { 
         ?>
                     
-            <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}">
-                @if($movimiento[$i]['id'] != 0)
-                <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
-                <td> {{ $movimiento[$i]['tercero'] }} </td>
-                <td> {{ $movimiento[$i]['documento'] }} </td>
-                <td> {{ $movimiento[$i]['fecha'] }} </td>
-                <td> {{ $movimiento[$i]['fecha_vencimiento'] }} </td>
-                <td> ${{ number_format($movimiento[$i]['valor_documento'], 2, ',', '.') }} </td>
-                <td> ${{ number_format($movimiento[$i]['valor_pagado'], 2, ',', '.') }} </td>
-                <td class="col_saldo_pendiente" data-saldo_pendiente="{{$movimiento[$i]['saldo_pendiente']}}"> ${{ number_format($movimiento[$i]['saldo_pendiente'], 2, ',', '.') }} </td>
+                
+            @if($movimiento[$i]['id'] != 0)
+                <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}">
+                    <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
+                    <td> {{ $movimiento[$i]['tercero'] }} </td>
+                    <td> {{ $movimiento[$i]['documento'] }} </td>
+                    <td> {{ $movimiento[$i]['fecha'] }} </td>
+                    <td> {{ $movimiento[$i]['fecha_vencimiento'] }} </td>
+                    <td> ${{ number_format($movimiento[$i]['valor_documento'], 2, ',', '.') }} </td>
+                    <td> ${{ number_format($movimiento[$i]['valor_pagado'], 2, ',', '.') }} </td>
+                    <td class="col_saldo_pendiente" data-saldo_pendiente="{{$movimiento[$i]['saldo_pendiente']}}"> ${{ number_format($movimiento[$i]['saldo_pendiente'], 2, ',', '.') }} </td>
 
-                <td style="display: none;" class="td_boton"> 
-                    {{ Form::text('text_aplicar_'.$movimiento[$i]['id'], $movimiento[$i]['saldo_pendiente'], [ 'id' => 'text_aplicar_'.$movimiento[$i]['id'], 'class' => 'text_aplicar' ] ) }} 
-                    <a href="#" class="btn btn-success btn-xs btn_agregar_documento" style="display: none;"><i class="fa fa-check"></i></a>
-                </td>
-                @else
+                    <td style="display: none;" class="td_boton"> 
+                        {{ Form::text('text_aplicar_'.$movimiento[$i]['id'], $movimiento[$i]['saldo_pendiente'], [ 'id' => 'text_aplicar_'.$movimiento[$i]['id'], 'class' => 'text_aplicar' ] ) }} 
+                        <a href="#" class="btn btn-success btn-xs btn_agregar_documento" style="display: none;"><i class="fa fa-check"></i></a>
+                    </td>
+                </tr>
+            @else
+                <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}" style="background: #4a4a4a; color: white;">
                     <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
                     <td></td>
                     <td></td>
@@ -52,8 +55,8 @@
                     <td></td>
                     <td><strong>Sub Total</strong></td>
                     <td class="col_saldo_pendiente" data-saldo_pendiente="{{$movimiento[$i]['sub_total']}}"><strong> ${{ number_format($movimiento[$i]['sub_total'], 2, ',', '.') }} </strong></td>
-                @endif
-            </tr>
+                </tr>
+            @endif
          <?php
             $j++;
             if ($j==3) {
