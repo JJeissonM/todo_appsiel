@@ -74,17 +74,15 @@ $('#valor_total').keyup(function(event){
 
     if ( $('#teso_medio_recaudo_id').val() == '1-Efectivo' )
     {
-        console.log( 'valor caja: ' + $('#teso_caja_id').val() );
         $('#teso_caja_id').attr('style','background-color:white;');
-        if ( $('#teso_caja_id').val() == '' )
+        if ( $('#teso_caja_id').val() === null || $('#teso_caja_id').val() === '' )
         {
             $('#teso_caja_id').attr('style','background-color:#FF8C8C;');
             return false;
         }
     }else{
-        console.log( 'valor cuenta bancaria: ' + $('#teso_cuenta_bancaria_id').val() );
         $('#teso_cuenta_bancaria_id').attr('style','background-color:white;');
-        if ( $('#teso_cuenta_bancaria_id').val() == '' )
+        if ( $('#teso_cuenta_bancaria_id').val() === null || $('#teso_cuenta_bancaria_id').val() === '' )
         {
             $('#teso_cuenta_bancaria_id').attr('style','background-color:#FF8C8C;');
             return false;
