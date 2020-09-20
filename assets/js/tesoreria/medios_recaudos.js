@@ -78,6 +78,7 @@ $('#valor_total').keyup(function(event){
         if ( $('#teso_caja_id').val() === null || $('#teso_caja_id').val() === '' )
         {
             $('#teso_caja_id').attr('style','background-color:#FF8C8C;');
+            $('#btn_agregar').hide();
             return false;
         }
     }else{
@@ -85,6 +86,7 @@ $('#valor_total').keyup(function(event){
         if ( $('#teso_cuenta_bancaria_id').val() === null || $('#teso_cuenta_bancaria_id').val() === '' )
         {
             $('#teso_cuenta_bancaria_id').attr('style','background-color:#FF8C8C;');
+            $('#btn_agregar').hide();
             return false;
         }
     }
