@@ -1,3 +1,4 @@
+$("#teso_motivo_id option:first").next().attr('selected','selected');
 
 /*
 			**	Abrir formulario de medios de pago
@@ -69,6 +70,25 @@ $('#valor_total').keyup(function(event){
         $(this).attr('style','background-color:#FF8C8C;');
         $(this).focus();
         ok = false;
+    }
+
+    if ( $('#teso_medio_recaudo_id').val() == '1-Efectivo' )
+    {
+        console.log( 'valor caja: ' + $('#teso_caja_id').val() );
+        $('#teso_caja_id').attr('style','background-color:white;');
+        if ( $('#teso_caja_id').val() == '' )
+        {
+            $('#teso_caja_id').attr('style','background-color:#FF8C8C;');
+            return false;
+        }
+    }else{
+        console.log( 'valor cuenta bancaria: ' + $('#teso_cuenta_bancaria_id').val() );
+        $('#teso_cuenta_bancaria_id').attr('style','background-color:white;');
+        if ( $('#teso_cuenta_bancaria_id').val() == '' )
+        {
+            $('#teso_cuenta_bancaria_id').attr('style','background-color:#FF8C8C;');
+            return false;
+        }
     }
 
     var x = event.which || event.keyCode;

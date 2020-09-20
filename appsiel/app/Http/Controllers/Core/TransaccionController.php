@@ -170,7 +170,7 @@ class TransaccionController extends Controller
                     ];
 
         $id_transaccion = 8;// 8 = Recaudo cartera
-        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Otros pagos' );
         $medios_recaudo = RecaudoController::get_medios_recaudo();
         $cajas = RecaudoController::get_cajas();
         $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();

@@ -106,23 +106,19 @@
 
 				{{ Form::hidden('inv_bodega_id_aux',$pdv->bodega_default_id,['id'=>'inv_bodega_id_aux']) }}
 
-				<input type="hidden" name="cliente_id" id="cliente_id" value="{{$pdv->cliente_default_id}}" required="required">
-				<input type="hidden" name="zona_id" id="zona_id" value="{{$pdv->cliente->zona_id}}" required="required">
-				<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="{{$pdv->cliente->clase_cliente_id}}" required="required">
-
-				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$pdv->cliente->core_tercero_id}}" required="required">
+				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$registro->cliente->core_tercero_id}}" required="required">
 
 				<input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
 
-				<input type="hidden" name="cliente_descripcion" id="cliente_descripcion" value="{{$pdv->cliente->tercero->descripcion}}" required="required">
+				<input type="hidden" name="cliente_descripcion" id="cliente_descripcion" value="{{$registro->cliente->tercero->descripcion}}" required="required">
 
-				{{ Form::bsText( 'numero_identificacion', $pdv->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
+				{{ Form::bsText( 'numero_identificacion', $registro->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
 				{{ Form::bsText( 'direccion1', $registro->cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
-				{{ Form::bsText( 'telefono1', $pdv->cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
+				{{ Form::bsText( 'telefono1', $registro->cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
 
-				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{$pdv->cliente->lista_precios_id}}" required="required">
-				<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="{{$pdv->cliente->lista_descuentos_id}}" required="required">
-				<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="{{$pdv->cliente->liquida_impuestos}}" required="required">
+				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{$registro->cliente->lista_precios_id}}" required="required">
+				<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="{{$registro->cliente->lista_descuentos_id}}" required="required">
+				<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="{{$registro->cliente->liquida_impuestos}}" required="required">
 
 				<input type="hidden" name="inv_motivo_id" id="inv_motivo_id" value="{{$inv_motivo_id}}">
 

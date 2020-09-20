@@ -207,7 +207,7 @@ class FacturaPosController extends TransaccionController
         {
             $pdv = Pdv::find( $request_2->pdv_id );
 
-            $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"'.$pdv->caja_default_id.'-'.$pdv->caja->descripcion.'","teso_cuenta_bancaria_id":"0-","valor":"$'.$request_2->total_efectivo_recibido.'"}]';
+            $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"'.$pdv->caja_default_id.'-'.$pdv->caja->descripcion.'","teso_cuenta_bancaria_id":"0-","valor":"$'. ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) .'"}]';
         }else{
             $request_2['lineas_registros_medios_recaudos'] = json_encode( $lineas_registros_medios_recaudos ); // Se convierte a string JSON
         }
@@ -451,8 +451,8 @@ class FacturaPosController extends TransaccionController
         $total_efectivo_recibido = $this->get_total_campo_lineas_registros( json_decode( str_replace("$", "", $registro->lineas_registros_medios_recaudos) ), 'valor' );
 
         $productos = InvProducto::get_datos_basicos( '', 'Activo' );
-        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id );
-        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id );
+        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $registro->cliente->lista_precios_id );
+        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $registro->cliente->lista_descuentos_id );
 
         $contenido_modal = View::make('ventas_pos.lista_items',compact( 'productos') )->render();
 
