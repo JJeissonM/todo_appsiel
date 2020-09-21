@@ -21,7 +21,7 @@
 	$flujo_efectivo_neto = ContabReportesController::grafica_flujo_efectivo_neto( $fecha_hoy );
 	$class_flujo_efectivo = 'success';
 	
-	if ($flujo_efectivo_neto->resultado < 0 )
+	if ($flujo_efectivo_neto->resultado > 0 )
 	{
 		$class_flujo_efectivo = 'danger';
 	}
@@ -65,12 +65,12 @@
 					?>
 					<div id="flujo-neto-chart"></div>
 					<div class="alert alert-{{$class_flujo_efectivo}}" style="font-size: 13px; color: black;">
-					  {{ Form::TextoMoneda( $flujo_efectivo_neto->ingresos, '(+) Ingresos:'  ) }}
+					  {{ Form::TextoMoneda( $flujo_efectivo_neto->ingresos * -1, '(+) Ingresos:'  ) }}
 					  <br>
-					  {{ Form::TextoMoneda( $flujo_efectivo_neto->costos_y_gastos, '(-) Costos y Gastos:'  ) }}
+					  {{ Form::TextoMoneda( $flujo_efectivo_neto->costos_y_gastos * -1, '(-) Costos y Gastos:'  ) }}
 					  <br>
 					  <hr>
-					  {{ Form::TextoMoneda( $flujo_efectivo_neto->resultado, '(=) Flujo de Efectivo Neto:'  ) }}
+					  {{ Form::TextoMoneda( $flujo_efectivo_neto->resultado * -1, '(=) Flujo de Efectivo Neto:'  ) }}
 					</div>
 				</div>
 			</div>
