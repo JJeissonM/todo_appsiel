@@ -281,11 +281,8 @@ class InvFisicoController extends TransaccionController
 
         foreach ($doc_registros as $fila)
         {
-
             $fila->cantidad_sistema = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha )->Cantidad;
-            
-            $fila->costo_prom_sistema = InvCostoPromProducto::get_costo_promedio( $fila->inv_bodega_id, $fila->producto_id  );
-                
+            $fila->costo_prom_sistema = InvCostoPromProducto::get_costo_promedio( $fila->inv_bodega_id, $fila->producto_id  );              
         }
 
         foreach ($lista_campos as $key => $value)
