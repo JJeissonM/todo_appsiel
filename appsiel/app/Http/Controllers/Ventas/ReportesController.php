@@ -32,11 +32,57 @@ class ReportesController extends Controller
 
     public static function grafica_ventas_diarias($fecha_inicial, $fecha_final)
     {
+        $fechas = VtasMovimiento::whereBetween('fecha', [$fecha_inicial, $fecha_final])
+                                    ->select('fecha')
+                                    ->groupBy('fecha')
+                                    ->orderBy('fecha')
+                                    ->get();
+
+        // Gráfica de rendimiento académico
+        $stocksTable1 = Lava::DataTable();
+
+        $stocksTable1->addStringColumn('Ventas')
+            ->addNumberColumn('Fecha');
+
+        $i = 0;
+        $tabla = [];
+        foreach ($fechas as $key => $value)
+        {
+            $registros = VtasMovimiento::where('fecha', $value->fecha )
+                                    ->select(DB::raw('SUM(precio_total) as total_ventas'), 'fecha', 'tasa_impuesto')
+                                    ->groupBy('tasa_impuesto')
+                                    ->get();
+
+            $total_ventas = 0;
+            foreach ($registros as $linea)
+            {
+                $total_ventas += (float) $linea->total_ventas / (1 + (float)$linea->tasa_impuesto / 100 );
+            }
+
+            $stocksTable1->addRow([$value->fecha, $total_ventas]);
+
+            $tabla[$i]['fecha'] = $value->fecha;
+            $tabla[$i]['valor'] = $total_ventas;
+            $i++;
+        }
+
+        // Se almacena la gráfica en ventas_diarias, luego se llama en la vista [ como mágia :) ]
+        Lava::BarChart('ventas_diarias', $stocksTable1, [
+            'is3D' => True,
+            'orientation' => 'horizontal',
+        ]);
+
+        return $tabla;
+    }
+
+    /*
+    public static function grafica_ventas_diarias($fecha_inicial, $fecha_final)
+    {
         $registros = VtasMovimiento::whereBetween('fecha', [$fecha_inicial, $fecha_final])
-            ->select(DB::raw('SUM(precio_total) as total_ventas'), 'fecha', 'tasa_impuesto')
-            ->groupBy('fecha')
-            ->orderBy('fecha')
-            ->get();
+                                    ->select(DB::raw('SUM(precio_total) as total_ventas'), 'fecha', 'tasa_impuesto')
+                                    ->groupBy('fecha')
+                                    ->orderBy('fecha')
+                                    ->get();
 
         // Gráfica de rendimiento académico
         $stocksTable1 = Lava::DataTable();
@@ -64,6 +110,7 @@ class ReportesController extends Controller
 
         return $tabla;
     }
+    */
 
     public function precio_venta_por_producto(Request $request)
     {

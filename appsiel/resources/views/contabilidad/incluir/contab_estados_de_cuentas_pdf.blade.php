@@ -3,47 +3,49 @@
 
     $elaboro = Auth::user()->email;
 ?>
-<table style="font-size: 15px; border: 1px solid; border-collapse: collapse;" width="100%">
-    <tr>
-        <td width="50%" style="border: solid 1px black; padding-top: -20px;">
-            <div>
-                @include('core.dis_formatos.plantillas.banner_logo_datos_empresa')
-            </div>
-        </td>
-        <td style="border: solid 1px black; padding-top: -20px;">
-            <div style="vertical-align: center;">
-                <b style="font-size: 1.4em; text-align: center; display: block;">
-                    Estado de cuentas
-                </b>
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2" style="border: solid 1px black;">
-            @php $fecha = explode("-", date('Y-m-d') ) @endphp
-            <b>Fecha generación: </b> &nbsp; {{ $fecha[2] }} de {{ Form::NombreMes([$fecha[1]]) }} de {{ $fecha[0] }}
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2" style="border: solid 1px black;">
-            <b style="width: 100%;text-align: center;">Residente </b>
-            <br/>
-            <b>Nombre: </b>{{ $propiedad->nombre_arrendatario }}
-            <br/>
-            <b>Teléfono: </b>{{ $propiedad->telefono_arrendatario }}
-            <br/>
-            <b>Email: </b>{{ $propiedad->email_arrendatario }}
-        </td>
-    </tr>
-    <tr>
-        <td style="border: solid 1px black;">
-            <b>{{ $propiedad->tipo_propiedad }}: </b> {{ $propiedad->nomenclatura }}
-        </td>
-        <td style="border: solid 1px black;">
-            <b>Cód. inmueble: </b> {{ $propiedad->codigo }}
-        </td>
-    </tr>
-</table>
+<div class="table-responsive">
+    <table style="font-size: 15px; border: 1px solid; border-collapse: collapse;" width="100%">
+        <tr>
+            <td width="50%" style="border: solid 1px black; padding-top: -20px;">
+                <div>
+                    @include('core.dis_formatos.plantillas.banner_logo_datos_empresa')
+                </div>
+            </td>
+            <td style="border: solid 1px black; padding-top: -20px;">
+                <div style="vertical-align: center;">
+                    <b style="font-size: 1.4em; text-align: center; display: block;">
+                        Estado de cuentas
+                    </b>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: solid 1px black;">
+                @php $fecha = explode("-", date('Y-m-d') ) @endphp
+                <b>Fecha generación: </b> &nbsp; {{ $fecha[2] }} de {{ Form::NombreMes([$fecha[1]]) }} de {{ $fecha[0] }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border: solid 1px black;">
+                <b style="width: 100%;text-align: center;">Residente </b>
+                <br/>
+                <b>Nombre: </b>{{ $propiedad->nombre_arrendatario }}
+                <br/>
+                <b>Teléfono: </b>{{ $propiedad->telefono_arrendatario }}
+                <br/>
+                <b>Email: </b>{{ $propiedad->email_arrendatario }}
+            </td>
+        </tr>
+        <tr>
+            <td style="border: solid 1px black;">
+                <b>{{ $propiedad->tipo_propiedad }}: </b> {{ $propiedad->nomenclatura }}
+            </td>
+            <td style="border: solid 1px black;">
+                <b>Cód. inmueble: </b> {{ $propiedad->codigo }}
+            </td>
+        </tr>
+    </table>
+</div>
 
 <?php
     $total_debito = 0;

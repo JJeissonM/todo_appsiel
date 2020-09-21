@@ -2,7 +2,7 @@
 
 $cols = 1; // cantidad de columnas, una por cada lapso a mostrar 
 
-$tabla = '<table id="myTable" class="table table-striped" style="margin-top: -4px; font-size: 1.1em;">
+$tabla = '<div class="table-responsive"> <table id="myTable" class="table table-striped" style="margin-top: -4px; font-size: 1.1em;">
                     <thead>
                         <th>
                            &nbsp;

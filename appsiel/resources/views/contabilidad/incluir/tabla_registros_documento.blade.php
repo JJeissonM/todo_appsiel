@@ -1,5 +1,5 @@
 <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Registros del documento </div>
-
+<div class="table-responsive">
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Tipo transacción','Cuenta',' NIT / Tercero','Detalle','Débito','Crédito']) }}
         <tbody>
@@ -32,3 +32,4 @@
             </tr>
         </tfoot>
     </table>
+</div>

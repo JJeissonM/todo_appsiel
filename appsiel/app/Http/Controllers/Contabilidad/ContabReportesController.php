@@ -229,7 +229,7 @@ class ContabReportesController extends Controller
 
         $tabla.='<td></td></tr>';
 
-        $tabla.='</tbody> </table>';
+        $tabla.='</tbody> </table> </div>';
 
         echo $tabla;
     }
@@ -285,7 +285,7 @@ class ContabReportesController extends Controller
 
         $tabla.='<td></td></tr>';
 
-        $tabla.='</tbody> </table>';
+        $tabla.='</tbody> </table> </div>';
 
         $empresa = Empresa::find( Auth::user()->empresa_id );
         

@@ -83,58 +83,63 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 		<input type="hidden" name="lineas_registros" id="lineas_registros" />
 		<input type="hidden" name="url_id" value="{{Input::get('id')}}" />
 		<input type="hidden" name="inv_bodega_id" value="{{$proveedor->inv_bodega_id}}" />
-		<table class="table table-bordered table-striped">
-			{{ Form::bsTableHeader(['Cód.','Producto','Precio','IVA','Cantidad','Total']) }}
-			<tbody>
-				<?php
 
-				$total_cantidad = 0;
-				$subtotal = 0;
-				$total_impuestos = 0;
-				$total_factura = 0;
-				?>
-				@foreach($doc_registros as $linea )
-				<tr>
-					<td> {{ $linea->producto_id }} </td>
-					<td> {{ $linea->producto_descripcion }} </td>
-					@if($doc_encabezado->estado=='Cumplida')
-					<td> $ {{$linea->precio_unitario}}</td>
-					<td> {{$linea->tasa_impuesto}} %</td>
-					<td> {{$linea->cantidad}}</td>
-					<td> $ {{$linea->precio_total}}</td>
-					@else
-					<td> <input class="preciou" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->precio_unitario}}" style="width: 100%" name="dpreciounitario_{{$linea->id}}" /> </td>
-					<td> <input readonly class="imp" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->tasa_impuesto}}" style="width: 100%" name="dimpuesto_{{$linea->id}}" /> </td>
-					<td> <input class="cant" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->cantidad}}" style="width: 100%" name="dcantidad_{{$linea->id}}" /> </td>
-					<td> <input class="total" type="text" id="{{$linea->id}}" value="{{$linea->precio_total}}" style="width: 100%" name="dpreciototal_{{$linea->id}}" readonly> </td>
-					@endif
-				</tr>
-				<?php
-				$total_cantidad += $linea->cantidad;
-				$subtotal += (float) $linea->base_impuesto;
-				$total_impuestos += (float) $linea->valor_impuesto;
-				$total_factura += $linea->precio_total;
-				?>
-				@endforeach
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="4">&nbsp;</td>
-					<td id="tbcant"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
-					<td>&nbsp;</td>
-					<td>&nbsp;</td>
-				</tr>
-			</tfoot>
-		</table>
+		<div class="table-responsive">
+			<table class="table table-bordered table-striped">
+				{{ Form::bsTableHeader(['Cód.','Producto','Precio','IVA','Cantidad','Total']) }}
+				<tbody>
+					<?php
 
-		<table class="table table-bordered">
-			<tr>
-				<td id="tbstotal"> <span style="text-align: right; font-weight: bold;"> Subtotal: </span> $ {{ number_format($subtotal, 0, ',', '.') }}</td>
-				<td id="tbimp"> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> $ {{ number_format($total_impuestos, 0, ',', '.') }}</td>
-				<td id="tbtotal"> <span style="text-align: right; font-weight: bold;"> Total factura: </span> $ {{ number_format($total_factura, 0, ',', '.') }}</td>
-			</tr>
-		</table>
-		{{ Form::close() }}
+					$total_cantidad = 0;
+					$subtotal = 0;
+					$total_impuestos = 0;
+					$total_factura = 0;
+					?>
+					@foreach($doc_registros as $linea )
+					<tr>
+						<td> {{ $linea->producto_id }} </td>
+						<td> {{ $linea->producto_descripcion }} </td>
+						@if($doc_encabezado->estado=='Cumplida')
+						<td> $ {{$linea->precio_unitario}}</td>
+						<td> {{$linea->tasa_impuesto}} %</td>
+						<td> {{$linea->cantidad}}</td>
+						<td> $ {{$linea->precio_total}}</td>
+						@else
+						<td> <input class="preciou" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->precio_unitario}}" style="width: 100%" name="dpreciounitario_{{$linea->id}}" /> </td>
+						<td> <input readonly class="imp" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->tasa_impuesto}}" style="width: 100%" name="dimpuesto_{{$linea->id}}" /> </td>
+						<td> <input class="cant" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->cantidad}}" style="width: 100%" name="dcantidad_{{$linea->id}}" /> </td>
+						<td> <input class="total" type="text" id="{{$linea->id}}" value="{{$linea->precio_total}}" style="width: 100%" name="dpreciototal_{{$linea->id}}" readonly> </td>
+						@endif
+					</tr>
+					<?php
+					$total_cantidad += $linea->cantidad;
+					$subtotal += (float) $linea->base_impuesto;
+					$total_impuestos += (float) $linea->valor_impuesto;
+					$total_factura += $linea->precio_total;
+					?>
+					@endforeach
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="4">&nbsp;</td>
+						<td id="tbcant"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+
+		<div class="table-responsive">
+			<table class="table table-bordered">
+				<tr>
+					<td id="tbstotal"> <span style="text-align: right; font-weight: bold;"> Subtotal: </span> $ {{ number_format($subtotal, 0, ',', '.') }}</td>
+					<td id="tbimp"> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> $ {{ number_format($total_impuestos, 0, ',', '.') }}</td>
+					<td id="tbtotal"> <span style="text-align: right; font-weight: bold;"> Total factura: </span> $ {{ number_format($total_factura, 0, ',', '.') }}</td>
+				</tr>
+			</table>
+		</div>
+	{{ Form::close() }}
 </div>
 @endsection
 

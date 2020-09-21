@@ -42,32 +42,34 @@
 @endsection
 
 @section('encabezado2')
-	<table class="table table-bordered">
-		<tr>
-	        <td style="border: solid 1px #ddd;" colspan="2">
-	            <b>Paciente/Cliente:</b> {{ $documento->tercero->descripcion }}
-	        </td>
-	        <td style="border: solid 1px #ddd;">
-	            <b>C.C. o NIT: &nbsp;&nbsp;</b> {{ number_format( $documento->tercero->numero_identificacion, 0, ',', '.') }}
-	        </td>
-	    </tr>
-	    <tr>
-	        <td style="border: solid 1px #ddd;">
-	            <b>Historia clínica No.: &nbsp;&nbsp;</b> {{ App\Salud\Paciente::where( 'core_tercero_id', $doc_encabezado->core_tercero_id )->value('codigo_historia_clinica') }}
-	        </td>
-	        <td style="border: solid 1px #ddd;">
-	            <b>Dirección: &nbsp;&nbsp;</b> {{ $documento->tercero->direccion1 }}
-	        </td>
-	        <td style="border: solid 1px #ddd;">
-	            <b>Teléfono: &nbsp;&nbsp;</b> {{ $documento->tercero->telefono1 }}
-	        </td>
-	    </tr>
-	    <tr>        
-	        <td colspan="3" style="border: solid 1px #ddd;">
-	            <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
-	        </td>
-	    </tr>
-	</table>
+	<div class="table-responsive">
+		<table class="table table-bordered">
+			<tr>
+		        <td style="border: solid 1px #ddd;" colspan="2">
+		            <b>Paciente/Cliente:</b> {{ $documento->tercero->descripcion }}
+		        </td>
+		        <td style="border: solid 1px #ddd;">
+		            <b>C.C. o NIT: &nbsp;&nbsp;</b> {{ number_format( $documento->tercero->numero_identificacion, 0, ',', '.') }}
+		        </td>
+		    </tr>
+		    <tr>
+		        <td style="border: solid 1px #ddd;">
+		            <b>Historia clínica No.: &nbsp;&nbsp;</b> {{ App\Salud\Paciente::where( 'core_tercero_id', $doc_encabezado->core_tercero_id )->value('codigo_historia_clinica') }}
+		        </td>
+		        <td style="border: solid 1px #ddd;">
+		            <b>Dirección: &nbsp;&nbsp;</b> {{ $documento->tercero->direccion1 }}
+		        </td>
+		        <td style="border: solid 1px #ddd;">
+		            <b>Teléfono: &nbsp;&nbsp;</b> {{ $documento->tercero->telefono1 }}
+		        </td>
+		    </tr>
+		    <tr>        
+		        <td colspan="3" style="border: solid 1px #ddd;">
+		            <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+		        </td>
+		    </tr>
+		</table>
+	</div>
 
 	@if( $formula_medica != '' )
 		<h5 style="width: 100%; text-align: center; font-weight: bold;"> Exámen de {{ $formula_medica->examenes->first()->descripcion }}</h5>
@@ -81,39 +83,41 @@
             $datos = json_decode( $formula_asociada_factura->contenido_formula );
         ?>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>&nbsp;</th>
-                    <th> Esfera </th>
-                    <th> Cilindro </th>
-                    <th> Eje </th>
-                    <th> Adición </th>
-                    <th> Agudeza Visual </th>
-                    <th> Distancia Pupilar </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td> O. D. </td>
-                    <td> {{ $datos->esfera_ojo_derecho }}  </td>
-                    <td> {{ $datos->cilindro_ojo_derecho }}  </td>
-                    <td> {{ $datos->eje_ojo_derecho }}  </td>
-                    <td> {{ $datos->adicion_ojo_derecho }}  </td>
-                    <td> {{ $datos->agudeza_visual_ojo_derecho }}  </td>
-                    <td> {{ $datos->distancia_pupilar_ojo_derecho }}  </td>
-                </tr>
-                <tr>
-                    <td> O. I. </td>
-                    <td> {{ $datos->esfera_ojo_izquierdo }}  </td>
-                    <td> {{ $datos->cilindro_ojo_izquierdo }}  </td>
-                    <td> {{ $datos->eje_ojo_izquierdo }}  </td>
-                    <td> {{ $datos->adicion_ojo_izquierdo }}  </td>
-                    <td> {{ $datos->agudeza_visual_ojo_izquierdo }}  </td>
-                    <td> {{ $datos->distancia_pupilar_ojo_izquierdo }}  </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="table-responsive">
+	        <table class="table table-bordered">
+	            <thead>
+	                <tr>
+	                    <th>&nbsp;</th>
+	                    <th> Esfera </th>
+	                    <th> Cilindro </th>
+	                    <th> Eje </th>
+	                    <th> Adición </th>
+	                    <th> Agudeza Visual </th>
+	                    <th> Distancia Pupilar </th>
+	                </tr>
+	            </thead>
+	            <tbody>
+	                <tr>
+	                    <td> O. D. </td>
+	                    <td> {{ $datos->esfera_ojo_derecho }}  </td>
+	                    <td> {{ $datos->cilindro_ojo_derecho }}  </td>
+	                    <td> {{ $datos->eje_ojo_derecho }}  </td>
+	                    <td> {{ $datos->adicion_ojo_derecho }}  </td>
+	                    <td> {{ $datos->agudeza_visual_ojo_derecho }}  </td>
+	                    <td> {{ $datos->distancia_pupilar_ojo_derecho }}  </td>
+	                </tr>
+	                <tr>
+	                    <td> O. I. </td>
+	                    <td> {{ $datos->esfera_ojo_izquierdo }}  </td>
+	                    <td> {{ $datos->cilindro_ojo_izquierdo }}  </td>
+	                    <td> {{ $datos->eje_ojo_izquierdo }}  </td>
+	                    <td> {{ $datos->adicion_ojo_izquierdo }}  </td>
+	                    <td> {{ $datos->agudeza_visual_ojo_izquierdo }}  </td>
+	                    <td> {{ $datos->distancia_pupilar_ojo_izquierdo }}  </td>
+	                </tr>
+	            </tbody>
+	        </table>
+	    </div>
         <br>
     @endif
 	
