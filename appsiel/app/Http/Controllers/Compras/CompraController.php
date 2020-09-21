@@ -805,13 +805,20 @@ class CompraController extends TransaccionController
                                     ['valor_total' => $nuevo_total_encabezado]
                                 );
 
-        // 2. Actualiza total de la cuenta por pagar
+        // 2. Actualiza total de la cuenta por pagar o Tesorería
         DocumentosPendientes::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                     ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                     ->where('consecutivo',$doc_encabezado->consecutivo)
                     ->update( [ 
                                 'valor_documento' => $nuevo_total_encabezado,
                                 'saldo_pendiente' => $nuevo_total_encabezado
+                            ] );
+
+        TesoMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                    ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                    ->where('consecutivo',$doc_encabezado->consecutivo)
+                    ->update( [ 
+                                'valor_movimiento' => $nuevo_total_encabezado * -1
                             ] );
 
         // 3. Actualiza movimiento de compras

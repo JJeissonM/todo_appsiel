@@ -922,13 +922,20 @@ class VentaController extends TransaccionController
                                     ['valor_total' => $nuevo_total_encabezado]
                                 );
 
-        // 2. Actualiza total de la cuenta por cobrar
+        // 2. Actualiza total de la cuenta por cobrar o Tesorería
         DocumentosPendientes::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                     ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                     ->where('consecutivo',$doc_encabezado->consecutivo)
                     ->update( [ 
                                 'valor_documento' => $nuevo_total_encabezado,
                                 'saldo_pendiente' => $nuevo_total_encabezado
+                            ] );
+
+        TesoMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                    ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                    ->where('consecutivo',$doc_encabezado->consecutivo)
+                    ->update( [ 
+                                'valor_movimiento' => $nuevo_total_encabezado * -1
                             ] );
 
         // 3. Actualiza movimiento de ventas
@@ -951,16 +958,38 @@ class VentaController extends TransaccionController
 
         // 4. Actualizar movimiento contable del registro de la factura
 
-        // Cartera. Con el total del documento
-        $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $doc_encabezado->cliente_id );
-        ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo', $doc_encabezado->consecutivo)
-                    ->where('contab_cuenta_id',$cta_x_cobrar_id)
-                    ->update( [ 
-                                'valor_debito' => $nuevo_total_encabezado,
-                                'valor_saldo' => $nuevo_total_encabezado
-                            ] );
+        // Cartera o Tesoreria. Con el total del documento
+        switch ( $doc_encabezado->forma_pago )
+        {
+            case 'contado':
+                $caja = TesoCaja::get()->first();
+                $cta_caja_id = $caja->contab_cuenta_id;
+                $mov_contab = ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                                            ->where('consecutivo',$doc_encabezado->consecutivo)
+                                            ->where('contab_cuenta_id',$cta_caja_id)
+                                            ->update( [ 
+                                                        'valor_debito' => $nuevo_total_encabezado,
+                                                        'valor_saldo' => $nuevo_total_encabezado
+                                                    ] );
+                break;
+            case 'credito':
+                $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $doc_encabezado->cliente_id );
+                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+                            ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+                            ->where('consecutivo', $doc_encabezado->consecutivo)
+                            ->where('contab_cuenta_id',$cta_x_cobrar_id)
+                            ->update( [ 
+                                        'valor_debito' => $nuevo_total_encabezado,
+                                        'valor_saldo' => $nuevo_total_encabezado
+                                    ] );
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+                
 
         // Contabilizar CR: Ingresos e Impuestos
         if ( $linea_registro->tasa_impuesto > 0 )
