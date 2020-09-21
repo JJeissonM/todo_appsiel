@@ -26,7 +26,7 @@ border-collapse: collapse;" align="center">
             if( !is_null($calificacion) )
             {
                 if ( $calificacion->valor > 0 ) {
-                    $desempeno = App\Calificaciones\EscalaValoracion::where('calificacion_minima','<=',$calificacion->valor)->where('calificacion_maxima','>=',$calificacion->valor)->get()->first();
+                    $desempeno = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $calificacion->valor );
                 }                    
             }else{
                 $calificacion = (object)['valor'=>0 ];

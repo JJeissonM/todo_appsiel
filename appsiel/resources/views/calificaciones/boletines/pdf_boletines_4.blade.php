@@ -165,6 +165,15 @@
 						@endif
 					</td>
 				</tr>
+
+				@if( $mostrar_etiqueta_final != 'No' )
+					<tr style="font-size: {{$tam_letra}}mm;">
+						<td>
+							@include('calificaciones.boletines.mostrar_etiqueta_final')
+						</td>
+					</tr>
+				@endif
+				
 			</tbody>
 		</table>
 

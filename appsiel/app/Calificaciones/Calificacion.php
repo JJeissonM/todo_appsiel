@@ -112,10 +112,14 @@ class Calificacion extends Model
     {
         $periodo = Periodo::find( $periodo_id );
 
-        $calificacion = Calificacion::where(['id_periodo'=>$periodo_id,
-            'curso_id' => $curso_id,
-            'id_estudiante' => $estudiante_id,
-            'id_asignatura' => $asignatura_id ])->get()->first();
+        $calificacion = Calificacion::where( [
+                                                'id_periodo' => $periodo_id,
+                                                'curso_id' => $curso_id,
+                                                'id_estudiante' => $estudiante_id,
+                                                'id_asignatura' => $asignatura_id 
+                                            ] )
+                                    ->get()
+                                    ->first();
                     
         if ( !is_null($calificacion) ) 
         {

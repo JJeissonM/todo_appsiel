@@ -82,7 +82,27 @@
 				
 			{{ Form::close() }}
 			<!--	<button id="btn_ir">ir</button>	-->
+
+
+			{{ Form::open( [ 'url' => 'calificaciones/boletines/generarPDF', 'files' => true, 'id' => 'formulario_boletin'] ) }}
+
+				<input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
+				<input type="hidden" name="periodo_id" value="0" id="boletin_periodo_id">
+				<input type="hidden" name="curso_id" value="{{ $curso->id }}">
+				<input type="hidden" name="formato" value="{{ config('calificaciones.formato_boletin_default') }}">
+				<input type="hidden" name="mostrar_areas" value="Si">
+				<input type="hidden" name="mostrar_nombre_docentes" value="Si">
+				<input type="hidden" name="mostrar_etiqueta_final" value="No">
+				<input type="hidden" name="mostrar_escala_valoracion" value="Si">
+				<input type="hidden" name="tam_hoja" value="folio">
+				<input type="hidden" name="tam_letra" value="4">
+				<input type="hidden" name="convetir_logros_mayusculas" value="No">
+				<input type="hidden" name="mostrar_usuarios_estudiantes" value="No">
+
+			{{Form::close()}}
 			
+			<input type="hidden" name="fecha_hoy" id="fecha_hoy" value="{{ date('Y-m-d') }}">
+
 		</div>
 	</div>
 	<hr>
@@ -93,6 +113,9 @@
 		<div class="marco_formulario">
 			
 			{{ Form::bsBtnExcel('calificaciones') }}
+			<a class="btn btn-primary btn-sm" id="btn_imprimir" target="_blank" style="display: none;">
+				<i class="fa fa-btn fa-print"></i> Imprimir
+			</a>
 
 			<div id="resultado_consulta">
 
@@ -129,21 +152,32 @@
 					return false;
 				}
 
+				$('#boletin_periodo_id').val( $('#periodo_id').val() ); // En el formulario boletín
+
+				$('#resultado_consulta').html('');
+				$('#btn_imprimir').hide();
 				$('#div_cargando').show();
 
 				// Preparar datos de los controles para enviar formulario
 				var form_consulta = $('#form_consulta');
 				var url = form_consulta.attr('action');
 				var datos = form_consulta.serialize();
+
 				// Enviar formulario de ingreso de productos vía POST
 				$.post(url,datos,function(respuesta){
 					$('#div_cargando').hide();
 					$('#resultado_consulta').html(respuesta);
 					$('#btn_excel').show(500);
+
+					if ( document.getElementById('fecha_termina_periodo').value <= document.getElementById('fecha_hoy').value )
+					{
+						$('#btn_imprimir').show(500);
+					}
 				});
 			});
 
-			function valida_campos(){
+			function valida_campos()
+			{
 				var valida = true;
 				if( $('#periodo_id').val() == '' ){
 					valida = false;
@@ -178,8 +212,11 @@
 					$('#contenido_modal').html( '' );
 					alert('Debe Seleccionar un periodo.');
 				}
-					
+			});
 
+
+			$("#btn_imprimir").on('click',function(){
+				$('#formulario_boletin').submit();
 			});
 
 		});

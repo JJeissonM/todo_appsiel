@@ -30,7 +30,7 @@
 				{{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
 				{{ Form::hidden( 'url_id_transaccion', Input::get( 'id_transaccion' ) ) }}
 
-				<input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
+				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
 
 			{{ Form::close() }}
 
@@ -57,7 +57,7 @@
                     		'fila_foot' => '<tr>
 								                <td colspan="4">&nbsp;</td>
 								                <td> <div id="total_valor_total">$0.00</div> </td>
-								                <td> &nbsp;</td>
+								                <td> &nbsp; </td>
 								            </tr>'
 						];
 			?>
@@ -69,14 +69,41 @@
 			<div class="tab-content">
 				
 				<div id="home" class="tab-pane fade in active">
-					@include('layouts.elementos.tabla_ingreso_lineas_registros')
-					<a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
+					<div id="div_ingreso_registros_medios_recaudo">
+						<br>
+					        <div class="table-responsive" id="table_content">
+					        <table class="table table-striped" id="ingreso_registros_medios_recaudo">
+					            <thead>
+					                <tr>
+					                	<th data-override="teso_medio_recaudo_id">Medio de recaudo</th>
+					                	<th data-override="teso_motivo_id">Motivo</th>
+					                	<th data-override="teso_caja_id">Caja</th>
+					                	<th data-override="teso_cuenta_bancaria_id">Cta. Bancaria</th>
+					                	<th data-override="valor">Valor</th>
+					                	<th width="10px"> </th>
+					                </tr>
+					            </thead>
+					            <tbody>
+					                
+					            </tbody>
+					            <tfoot>
+					                <tr>
+						                <td colspan="4">&nbsp;</td>
+						                <td> <div id="total_valor_total">$0.00</div> </td>
+						                <td> &nbsp; </td>
+						            </tr>
+					            </tfoot>
+					        </table>
+					    </div>
+					</div>
+
+					<a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none; cursor: pointer;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
 				</div>
 
 			</div>
 
 			<!-- Modal -->
-			@include('tesoreria.incluir.ingreso_valores_recaudos')	
+			@include('tesoreria.incluir.ingreso_valores_recaudos')
 		</div>
 	</div>
 @endsection
@@ -94,48 +121,58 @@
 			*/
 			$("#btn_nuevo").click(function(event){
 				event.preventDefault();
-				if (validar_requeridos()) {
-					//$('#div_ingreso_registros').show();
+				if ( validar_requeridos() )
+				{
+					//$('#div_ingreso_registros_medios_recaudo').show();
 					reset_form_registro();
-			        $("#myModal").modal(
+			        $("#recaudoModal").modal(
 			        	{backdrop: "static",keyboard: 'true'}
 			        );
 				}
 		    });
 		    	
 		    	// Al mostrar la ventana modal
-		    $("#myModal,#myModal2").on('shown.bs.modal', function () {
+		    $("#recaudoModal,#myModal2").on('shown.bs.modal', function () {
 		    	$('#teso_medio_recaudo_id').focus();
 		    });
 			// Al OCULTAR la ventana modal
-		    $("#myModal,#myModal2").on('hidden.bs.modal', function () {
+		    $("#recaudoModal,#myModal2").on('hidden.bs.modal', function () {
 		       $('#btn_continuar2').focus();
 		    });
 
 			$('#teso_medio_recaudo_id').change(function(){
 				var valor = $(this).val().split('-');
+
+				if ( valor == '' )
+				{
+					$('#div_cuenta_bancaria').hide();
+					$('#div_caja').hide();
+					deshabilitar_text($('#valor_total'));
+					$(this).focus();
+					alert('Debe escoger un medio de recaudo');
+					return false;
+				}
+
 				var texto_motivo = $( "#teso_motivo_id" ).html();//[ , $( "#teso_motivo_id option:selected" ).text() ];
-				if (texto_motivo == '') {
+				
+				if (texto_motivo == '')
+				{
 					alert('No se han creado motivos para el TIPO DE RECAUDO selecccionado. Debe crear al menos un MOTIVO para cada TIPO DE RECAUDO. No puede continuar.');
 					$('#teso_tipo_motivo').focus();
 				}else{
-					if (valor!='') {
-						if (valor[1]=='Tarjeta bancaria'){
-							$('#div_caja').hide();
-							$('#div_cuenta_bancaria').show();
-						}else{
-							$('#div_cuenta_bancaria').hide();
-							$('#div_caja').show();
-						}
-						habilitar_text($('#valor_total'));
-						//$('#btn_agregar').show();
-						$('#valor_total').focus();
-					}else{
-						$('#div_cuenta_bancaria').hide();
+					
+					$('#div_cuenta_bancaria').hide();
+					$('#div_caja').show();
+
+					if ( valor[1] == 'Tarjeta bancaria' )
+					{
 						$('#div_caja').hide();
-						deshabilitar_text($('#valor_total'));
-						$(this).focus();
+						$('#div_cuenta_bancaria').show();
 					}
+
+					habilitar_text($('#valor_total'));
+					$('#valor_total').focus();
+					
 				}
 								
 			});
@@ -202,7 +239,7 @@
 
 					celda_valor_total = '<td class="valor_total">$'+valor_total+'</td>';
 
-					$('#ingreso_registros').find('tbody:last').append('<tr>'+
+					$('#ingreso_registros_medios_recaudo').find('tbody:last').append('<tr>'+
 																	'<td><span style="color:white;">'+texto_medio_recaudo[0]+'-</span><span>'+texto_medio_recaudo[1]+'</span></td>'+
 																	'<td><span style="color:white;">'+texto_motivo[0]+'-</span><span>'+texto_motivo[1]+'</span></td>'+
 																	'<td><span style="color:white;">'+texto_caja[0]+'-</span><span>'+texto_caja[1]+'</span></td>'+
@@ -268,10 +305,10 @@
 					habilitar_campos_form_create();
 
 					// Se transfoma la tabla a formato JSON a través de un plugin JQuery
-					var table = $('#ingreso_registros').tableToJSON();
+					var table = $('#ingreso_registros_medios_recaudo').tableToJSON();
 
 					// Se asigna el objeto JSON a un campo oculto del formulario
-			 		$('#lineas_registros').val( JSON.stringify(table) );
+			 		$('#lineas_registros_medios_recaudo').val( JSON.stringify(table) );
 
 					$('#form_create').submit();
 				}

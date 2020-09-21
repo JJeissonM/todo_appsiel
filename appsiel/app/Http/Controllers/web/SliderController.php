@@ -29,10 +29,10 @@ class SliderController extends Controller
                 'etiqueta' => 'Slider'
             ]
         ];
-
+        $slider = Slider::where('widget_id',$widget)->first();
         $paginas = Pagina::all();
         $variables_url = '?id='.Input::get('id');
-        return view('web.components.slider.create',compact('miga_pan','variables_url','widget','paginas'));
+        return view('web.components.slider.create',compact('miga_pan','variables_url','widget','slider','paginas'));
     }
 
     public function store(Request $request)
@@ -42,6 +42,9 @@ class SliderController extends Controller
 
         if ($slider == null) {
             $slider = new Slider($request->all());
+            $slider->save();
+        }else{
+            $slider->disposicion = $request->disposicion;
             $slider->save();
         }
 
@@ -122,10 +125,10 @@ class SliderController extends Controller
                     'etiqueta' => 'Item slider'
                 ]
             ];
-
+            $slider = $item->slider;
             $paginas = Pagina::all();
             $variables_url = '?id='.Input::get('id');
-            return view('web.components.slider.edit',compact('miga_pan','variables_url','widget','paginas','item'));
+            return view('web.components.slider.edit',compact('miga_pan','variables_url','widget','paginas','item','slider'));
 
         }else {
 
@@ -194,6 +197,9 @@ class SliderController extends Controller
             $flag = $item->save();
 
             if($flag){
+                $slider = Slider::find($item->slider_id);
+                $slider->disposicion = $request->disposicion;
+                $slider->save();
                 $message = 'item almacenado correctamente';
                 return redirect(url('seccion/'.$request->widget_id).$request->variables_url)->with('flash_message',$message);
             }else {

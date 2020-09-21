@@ -3,7 +3,9 @@
     $menus = Menu::menus(Input::get('id'));
 
     $item_reporte = "";
+    
     $reportes = App\Sistema\Reporte::where( ['core_app_id' => Input::get('id'), 'estado' => 'Activo'] )->get();
+    
     if ( !$reportes->isEmpty() ) {
 
             $item_reporte = '<li class="dropdown">

@@ -19,6 +19,13 @@ class DocRegistro extends Model
 
     public $campos_invisibles_linea_registro = ['inv_producto_id','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','base_impuesto_total','cantidad','precio_total', 'tasa_descuento', 'valor_total_descuento']; // 13 campos
 
+
+
+    public function item()
+    {
+        return $this->belongsTo( 'App\Inventarios\InvProducto','inv_producto_id');
+    }
+
     public $campos_visibles_linea_registro = [ 
     											['&nbsp;','10px'],
     											['Item','250px'],

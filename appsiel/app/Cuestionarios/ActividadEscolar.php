@@ -20,7 +20,7 @@ class ActividadEscolar extends Model
 
     protected $fillable = ['descripcion','tematica','instrucciones','tipo_recurso','url_recurso','cuestionario_id','fecha_entrega','fecha_desde','fecha_hasta','periodo_id','curso_id','asignatura_id','estado','created_by'];
 
-    public $encabezado_tabla = ['Título','Temática','Fecha de entrega','Curso','Asignatura','Estado','Acción'];
+    public $encabezado_tabla = ['Título','Temática','Fecha de entrega','Periodo','Curso','Asignatura','Estado','Acción'];
     
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/calificaciones/actividades_escolares/actividades.js';
@@ -48,16 +48,18 @@ class ActividadEscolar extends Model
         return ActividadEscolar::leftJoin('core_acl','core_acl.recurso_id','=','sga_actividades_escolares.id')
                                 ->leftJoin('sga_cursos','sga_cursos.id','=','sga_actividades_escolares.curso_id')
                                 ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_actividades_escolares.asignatura_id')
+                                ->leftJoin('sga_periodos','sga_periodos.id','=','sga_actividades_escolares.periodo_id')
                                 ->where( $array_wheres )
                                 ->whereIn( 'sga_actividades_escolares.periodo_id', $periodos )
                                 ->select(
                                             'sga_actividades_escolares.descripcion AS campo1',
                                             'sga_actividades_escolares.tematica AS campo2',
                                             'sga_actividades_escolares.fecha_entrega AS campo3',
-                                            'sga_cursos.descripcion AS campo4',
-                                            'sga_asignaturas.descripcion AS campo5',
-                                            'sga_actividades_escolares.estado AS campo6',
-                                            'sga_actividades_escolares.id AS campo7')
+                                            'sga_periodos.descripcion AS campo4',
+                                            'sga_cursos.descripcion AS campo5',
+                                            'sga_asignaturas.descripcion AS campo6',
+                                            'sga_actividades_escolares.estado AS campo7',
+                                            'sga_actividades_escolares.id AS campo8')
                                 ->distinct('core_acl.user_id')
                                 ->get()
                                 ->toArray();

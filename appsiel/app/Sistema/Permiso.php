@@ -20,7 +20,19 @@ class Permiso extends Permission
         return Permission::leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'permissions.core_app_id')
                     ->leftJoin('sys_modelos', 'sys_modelos.id', '=', 'permissions.modelo_id')
                     ->orderBy('sys_aplicaciones.id','ASC')
-                    ->select('permissions.id AS campo1','sys_aplicaciones.descripcion AS campo2','sys_modelos.descripcion AS campo3','permissions.name AS campo4','permissions.descripcion AS campo5','permissions.url AS campo6','permissions.parent AS campo7','permissions.orden AS campo8','permissions.enabled AS campo9','permissions.fa_icon AS campo10','permissions.id AS campo11')
+                    ->select(
+                                'permissions.id AS campo1',
+                                'sys_aplicaciones.descripcion AS campo2',
+                                DB::raw('CONCAT(sys_modelos.descripcion," (",sys_modelos.id,")") AS campo3'),
+                                'permissions.name AS campo4',
+                                'permissions.descripcion AS campo5',
+                                'permissions.url AS campo6',
+                                'permissions.parent AS campo7',
+                                'permissions.orden AS campo8',
+                                'permissions.enabled AS campo9',
+                                'permissions.fa_icon AS campo10',
+                                'permissions.id AS campo11'
+                            )
                     ->get()
                     ->toArray();
     }

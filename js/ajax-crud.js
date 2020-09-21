@@ -6,7 +6,7 @@ $(document).ready(function(){
     //display modal form for task editing
     $('.open-modal').click(function(){
         var task_id = $(this).val();
-
+ 
         $.get(url + '/' + task_id, function (data) {
             //success data
             console.log(data);

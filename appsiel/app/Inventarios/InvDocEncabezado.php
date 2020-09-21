@@ -22,6 +22,24 @@ class InvDocEncabezado extends Model
 
     public $encabezado_tabla = ['Fecha','Documento','Bodega','Tercero','Detalle','Estado','Acción'];
 
+    
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+
+    public function lineas_registros()
+    {
+        return $this->hasMany( InvDocRegistro::class, 'inv_doc_encabezado_id' );
+    }
+
+    public function movimientos()
+    {
+        return $this->hasMany('App\Inventarios\InvMovimiento');
+    }
+
+
     public static function consultar_registros()
     {   
         /*
@@ -45,17 +63,12 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.fecha AS campo1',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2' ),
                                 'inv_bodegas.descripcion AS campo3',
-                                DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo4' ),
+                                DB::raw( 'core_terceros.descripcion AS campo4' ),
                                 'inv_doc_encabezados.descripcion AS campo5',
                                 'inv_doc_encabezados.estado AS campo6',
                                 'inv_doc_encabezados.id AS campo7')
                     ->get()
                     ->toArray();
-    }
-
-    public function movimientos()
-    {
-        return $this->hasMany('App\Inventarios\InvMovimiento');
     }
 
     public static function get_registro($id)
@@ -101,7 +114,7 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.hora_finalizacion',
                                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' ),
-                                DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero_nombre_completo' ),
+                                DB::raw( 'core_terceros.descripcion AS tercero_nombre_completo' ),
                                 'core_terceros.numero_identificacion',
                                 'core_terceros.direccion1',
                                 'core_terceros.telefono1'

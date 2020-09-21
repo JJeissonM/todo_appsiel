@@ -76,7 +76,8 @@ Route::resource('sga_planes_clases', 'AcademicoDocente\PlanClasesController');
 
 
 // REPORTES PLANES DE CLASES
-Route::post( 'sga_resumen_planes_clases', 'AcademicoDocente\PlanClasesController@resumen_planes_clases');
+Route::post( 'sga_resumen_planes_clases', 'AcademicoDocente\ReportesController@resumen_planes_clases');
+Route::post( 'sga_resumen_actividades_academicas', 'AcademicoDocente\ReportesController@resumen_actividades_academicas');
 
 
 Route::resource('sga_guias_academicas', 'AcademicoDocente\GuiasAcademicasController');

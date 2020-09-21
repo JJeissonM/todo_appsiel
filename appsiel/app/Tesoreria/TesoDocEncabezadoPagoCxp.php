@@ -15,6 +15,11 @@ class TesoDocEncabezadoPagoCxp extends Model
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_empresa_id','core_tercero_id','codigo_referencia_tercero','teso_tipo_motivo','documento_soporte','descripcion','teso_medio_recaudo_id','teso_caja_id','teso_cuenta_bancaria_id','valor_total','estado','creado_por','modificado_por'];
 
     public $encabezado_tabla = ['Fecha','Documento','Tercero','Detalle','Valor','Estado','Acción'];
+    
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
 
     public static function consultar_registros()
     {

@@ -17,7 +17,7 @@ class EncabezadoCalificacionController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        //$this->middleware('auth');
     }
     
     /**
@@ -59,7 +59,7 @@ class EncabezadoCalificacionController extends Controller
             $modificado_por = '';
         }            
 
-        $formulario = '<h4>Actividad para la calificación '.Input::get('columna_calificacion').'</h4>'.Form::open( ['url'=>url('calificaciones/encabezados'), 'id' => 'formulario_modal' ] ).'
+        $formulario = '<h4>Actividad para la calificación '.Input::get('columna_calificacion').'</h4>'.Form::open( ['url'=>url( 'calificaciones_encabezados' ), 'id' => 'formulario_modal' ] ).'
                           <div class="form-group">
                             <label for="fecha">Fecha actividad:</label>
                             <input name="fecha" type="date" class="form-control" id="fecha" value="'.$fecha.'" required="required">
@@ -81,6 +81,51 @@ class EncabezadoCalificacionController extends Controller
 
         return $formulario;
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function guardar_encabezado()
+    {
+        $datos = [ 'fecha' => Input::get('fecha') ] +
+                 [ 'descripcion' => Input::get('descripcion') ] +
+                 [ 'opcion' => Input::get('opcion') ] +
+                 [ 'id' => Input::get('id') ] +
+                 [ 'columna_calificacion' => Input::get('columna_calificacion') ] +
+                 [ 'anio' => Input::get('anio') ] +
+                 [ 'periodo_id' => Input::get('periodo_id') ] +
+                 [ 'curso_id' => Input::get('curso_id') ] +
+                 [ 'asignatura_id' => Input::get('asignatura_id') ] +
+                 [ 'creado_por' => Input::get('creado_por') ] +
+                 [ 'modificado_por' => Input::get('modificado_por') ];
+
+        dd( $datos );
+
+        $cerrar_modal = "true";
+
+        switch ( $datos['id'] )
+        {
+            case '0':
+                // Crear
+                EncabezadoCalificacion::create( $datos );
+                $cerrar_modal = "true";
+                break;
+            
+            default:
+                // Actualizar
+                $registro = EncabezadoCalificacion::find( $datos['id'] );
+                $registro->fill( $datos );
+                $registro->save();
+                $cerrar_modal = "false";
+                break;
+        }
+
+        return $cerrar_modal;
+    }
+
 
     /**
      * Store a newly created resource in storage.

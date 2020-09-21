@@ -17,6 +17,16 @@ class TesoMovimiento extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
+    public function caja()
+    {
+        return $this->belongsTo( TesoCaja::class,'teso_caja_id');
+    }
+
+    public function cuenta_bancaria()
+    {
+        return $this->belongsTo( TesoCuentaBancaria::class,'teso_cuenta_bancaria_id');
+    }
+
     public static function consultar_registros()
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS campo2';
@@ -79,8 +89,19 @@ class TesoMovimiento extends Model
 
     public static function get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde )
     {
-        $saldo_inicial = TesoMovimiento::where( 'teso_caja_id','=',$teso_caja_id)
-                            ->where( 'teso_cuenta_bancaria_id','=', $teso_cuenta_bancaria_id)
+        $array_wheres = [ ['teso_movimientos.id' ,'>', 0 ] ];
+        
+        if ( $teso_caja_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
+        }
+        
+        if ( $teso_cuenta_bancaria_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_cuenta_bancaria_id' => (int) $teso_cuenta_bancaria_id ]);
+        }
+
+        $saldo_inicial = TesoMovimiento::where( $array_wheres )
                             ->where( 'fecha','<',$fecha_desde )
                             ->select(
                                         DB::raw('sum(valor_movimiento) as valor_movimiento') )
@@ -95,19 +116,39 @@ class TesoMovimiento extends Model
         return $saldo_inicial->valor_movimiento;
     }
 
-    public static function get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta )
+    public static function get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, $tipo_movimiento = null )
     {
+
+        $array_wheres = [ ['teso_movimientos.id' ,'>', 0 ] ];
+        
+        if ( !is_null($tipo_movimiento) ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_motivos.movimiento' => $tipo_movimiento ]);
+        }
+        
+        if ( $teso_caja_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
+        }
+        
+        if ( $teso_cuenta_bancaria_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_cuenta_bancaria_id' => (int) $teso_cuenta_bancaria_id ]);
+        }
+
         return TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
                             ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
-                            ->where( 'teso_caja_id','=',$teso_caja_id)
-                            ->where( 'teso_cuenta_bancaria_id','=', $teso_cuenta_bancaria_id)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->where( $array_wheres )
                             ->select(
                                         DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS documento_transaccion_prefijo_consecutivo'),
                                         'teso_motivos.descripcion AS motivo_descripcion',
                                         'teso_movimientos.fecha',
                                         'teso_movimientos.valor_movimiento',
+                                        'teso_movimientos.teso_motivo_id',
+                                        'teso_movimientos.teso_caja_id',
+                                        'teso_movimientos.teso_cuenta_bancaria_id',
                                         'core_terceros.descripcion as tercero_descripcion' )
                             ->orderBy('teso_movimientos.fecha')
                             ->orderBy('teso_movimientos.created_at')

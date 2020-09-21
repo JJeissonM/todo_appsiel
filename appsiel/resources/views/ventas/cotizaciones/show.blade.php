@@ -44,6 +44,6 @@
 		<br>
 		La anulación no se puede revertir.
 		<br>
-		Si realmente quiere anular el documento, haga click en el siguiente enlace: <small> <a href="{{ url('vtas_cotizacion_anular/'.$variables_url ) }}"> Anular </a> </small>
+		Si realmente quiere anular el documento, haga click en el siguiente enlace: <small> <a href="{{ url('vtas_cotizacion_anular/'.$id.$variables_url ) }}"> Anular </a> </small>
 	</div>
 @endsection

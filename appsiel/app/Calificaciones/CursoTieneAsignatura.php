@@ -22,7 +22,14 @@ class CursoTieneAsignatura extends Model
 
     public static function asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas = null )
     {
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
+        $empresa_id = 1;
+        $user = Auth::user();
+        if ( !is_null($user) )
+        {
+            $empresa_id = Auth::user()->empresa_id;
+        }
+
+        $colegio = Colegio::where('empresa_id', $empresa_id)->get()->first();
 
         $array_wheres = [
                             'sga_asignaturas.id_colegio' => $colegio->id

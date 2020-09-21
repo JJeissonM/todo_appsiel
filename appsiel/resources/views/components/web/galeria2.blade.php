@@ -31,7 +31,7 @@
 
 </style>
 
-<section id="portfolio">
+<section id="portfolio" style="background: white">
     <div class="container">
     
         @if($galeria != null)
@@ -60,7 +60,7 @@
     </div>
 
     <!-- The Modal -->
-    <div class="modal fade" id="myModal" data-url_busqueda="{{ url('galeria_ver_album_carousel') }}">
+    <div class="modal" id="myModal" data-url_busqueda="{{ url('galeria_ver_album_carousel') }}">
       <div class="modal-dialog modal-lg modal-dialog-centered" style="height: 100% !important;">
         <div class="modal-content">
           

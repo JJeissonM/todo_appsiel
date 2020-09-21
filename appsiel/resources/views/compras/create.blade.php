@@ -81,6 +81,8 @@
 				
 				<div id="popup_alerta"> </div>
 
+				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
+
 			{{ Form::close() }}
 
 			<br/>
@@ -114,7 +116,9 @@
 				</div>
 
 			</div>
-			
+			<div id="mostrar_medios_recaudos">
+			@include('tesoreria.incluir.medios_recaudos')
+		</div>
 		</div>
 	</div>
 	<br/><br/>
@@ -150,6 +154,13 @@
 
 			$("#proveedor_input").after('<div id="div_list_suggestions"> </div>');
 
+			$('#forma_pago').on('change',function (event){
+				if($('#forma_pago').val() == 'contado'){
+					$('#mostrar_medios_recaudos').removeAttr('style','display');
+				}else{
+					$('#mostrar_medios_recaudos').attr('style','display:none');
+				}
+			});
 			$('#fecha').on('change',function(event){
 				var fecha = new Date( $(this).val() );
 				$('#fecha_vencimiento').val( actualizar_fecha_vencimiento( fecha ) );
@@ -702,8 +713,8 @@
 			*/
 			function validar_existencia_actual()
 			{
-				// Si es una factura de compras o documento equivalente, no se valida la existencia
-				if( $('#url_id_transaccion').val() == 25 || $('#url_id_transaccion').val() == 29 ) 
+				// Si es una factura de compras, documento equivalente o documento soporte en adquisiciones, no se valida la existencia
+				if( $('#url_id_transaccion').val() == 25 || $('#url_id_transaccion').val() == 29 || $('#url_id_transaccion').val() == 48 ) 
 				{ 
 					return true;
 				}
@@ -941,6 +952,14 @@
 
 				// Se asigna el objeto JSON a un campo oculto del formulario
 		 		$('#lineas_registros').val( JSON.stringify(table) );
+
+		 		/*		Para Recaudos
+		 		// Se transfoma la tabla a formato JSON a través de un plugin JQuery
+				//var tabla_recaudos = $('#ingreso_registros_medios_recaudo').tableToJSON();
+
+				// Se asigna el objeto JSON a un campo oculto del formulario
+		 		//$('#lineas_registros_medios_recaudo').val( JSON.stringify(tabla_recaudos) );
+				*/
 
 		 		// Se envía el formulario
 				$('#form_create').submit();
@@ -1233,4 +1252,5 @@
 
 		});
 	</script>
+	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
 @endsection

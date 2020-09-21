@@ -2,9 +2,7 @@
 
 @section('content')
 <div class="login-form">
-    <form role="form" method="POST" action="{{ url('/login') }}">
-        {{ csrf_field() }}
-          
+    {{ Form::open( [ 'url' => url('/login') ] ) }}
           <?php
             if( app()->environment() != 'demo' )
             {
@@ -61,7 +59,7 @@
             <button type="submit" class="btn btn-primary btn-lg btn-block">Ingresar</button>
             {!! $mensaje2 !!}
         </div>
-    </form>
+    {{ Form::close() }}
 </div>
 
 <div class="footer">

@@ -1,1 +1,1 @@
-<a class="btn btn-primary btn-xs btn-detail" href="{{ url($url) }}" title="Ver"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>
+<a class="btn btn-primary btn-xs btn-detail" href="{{ url($url) }}" title="Consultar"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>

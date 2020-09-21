@@ -285,50 +285,6 @@ class CrudController extends Controller
     }
 
     /*
-        **
-    */
-    // VISTA TIPO TABLA PARA MOSTRAR UN REGISTRO
-    public function show($id)
-    {
-        // Se obtiene el registro del modelo indicado y el anterior y siguiente registro
-        $registro = app($modelo->name_space)->find($id);
-        $reg_anterior = app($modelo->name_space)->where('id', '<', $registro->id)->max('id');
-        $reg_siguiente = app($modelo->name_space)->where('id', '>', $registro->id)->min('id');
-        
-        // Se obtienen los campos asociados a ese modelo
-        $lista_campos1 = $modelo->campos()->orderBy('orden')->get();
-        
-        $lista_campos = $this->asignar_valores_de_campo_al_registro($modelo, $registro, $lista_campos1->toArray() );
-
-        $form_create = [
-                        'url' => $modelo->url_form_create,
-                        'campos' => $lista_campos
-                    ];
-        
-        $miga_pan = ModeloController::get_miga_pan($modelo,$registro->descripcion);
-
-        // Se le asigna a cada variable url, su valor en el modelo correspondiente
-        $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
-        if ($modelo->url_crear!='') {
-            $url_crear = $modelo->url_crear.$variables_url;    
-        }
-        if ($modelo->url_edit!='') {
-            $url_edit = $modelo->url_edit.$variables_url;
-        }
-
-        // Para lo modelos que tienen otro modelo relacionado. Ejemplo, El modelo Modelo tiene Campos. El modelo Cuestionario, tiene Preguntas
-        $respuesta = ModeloController::get_tabla_relacionada($modelo,$registro);
-        
-        $tabla=$respuesta['tabla'];
-        $opciones = $respuesta['opciones'];
-        $registro_modelo_padre_id = $respuesta['registro_modelo_padre_id'];
-        $titulo_tab = $respuesta['titulo_tab'];
-        
-        return view('layouts.show',compact('form_create','miga_pan','registro','url_crear','url_edit','tabla','opciones','registro_modelo_padre_id','reg_anterior','reg_siguiente','titulo_tab'));       
-    }
-
-
-    /*
         ** Esta función crea el array lista_campos que es el que se va a pasar a las vistas (create, edit, show) para visualizar los campos a través de VistaController según los tipos de campos y la vista.
         ** 
         $lista_campo = [ 'tipo', 'name', 'descripcion', 'opciones', 'value', 'atributos', 'definicion', 'html_clase', 'html_id', 'requerido', 'editable', 'unico' ];

@@ -99,15 +99,6 @@
 			<br/>
 
 
-
-			<!--
-			<div class="well">
-				<h3>Llamar datos de la bascula</h3>
-				<label class="radio-inline"><input type="radio" name="bascula_id" value="3">Bascula 1</label>
-				<label class="radio-inline"><input type="radio" name="bascula_id" value="34">Bascula 2</label>
-				<label class="radio-inline"> <button class="btn btn-default btn-xs" id="cargar_datos_producto"> Cargar productos </button> </label>
-			</div>
-		-->
 			@if( Input::get('id_transaccion') == 41 )
 				<h4 style="color: red;">¡¡¡Los precios serán almacenados con los precios de la lista de precios del cliente.!!!</h4>
 			@endif
@@ -132,6 +123,9 @@
             			<td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td> <td> <div id="total_factura"> $ 0 </div> </td>
             		</tr>
             	</table>
+			</div>
+			<div>
+				@include('tesoreria.incluir.medios_recaudos')
 			</div>
 
 			<hr>
@@ -161,5 +155,5 @@
 @section('scripts')
 	
 	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
-
+	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
 @endsection

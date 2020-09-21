@@ -14,6 +14,14 @@
     </tr>
     <tr>        
         <td colspan="2" style="border: solid 1px #ddd;">
+            @if( !is_null( $caja ) )
+                <b>Caja: &nbsp;&nbsp;</b> {{ $caja->descripcion }}
+                <br>
+            @endif
+            @if( !is_null( $cuenta_bancaria ) )
+                <b>Cuenta bancaria: &nbsp;&nbsp;</b> Cuenta {{ $cuenta_bancaria->tipo_cuenta }} {{ $cuenta_bancaria->entidad_financiera->descripcion }} No. {{ $cuenta_bancaria->descripcion }}
+                <br>
+            @endif
             <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
         </td>
     </tr>

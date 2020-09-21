@@ -1,4 +1,4 @@
-<div>
+<div class="table-responsive">
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cantidad','Precio','Total bruto','Sub-total <br> (Sin IVA)','% Dcto.','Total Dcto.','IVA','Total IVA','Total','Acción']) }}
         <tbody>
@@ -66,7 +66,9 @@
         </tr>
         </tfoot>
     </table>
+</div>
 
+<div class="table-responsive">
     <table class="table table-bordered">
         <tr>
             <td> <span style="text-align: right; font-weight: bold;"> Subtotal: </span> $ {{ number_format($subtotal, 0, ',', '.') }}</td>

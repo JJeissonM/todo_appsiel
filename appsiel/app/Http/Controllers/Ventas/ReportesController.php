@@ -136,7 +136,7 @@ class ReportesController extends Controller
         $parametros = config('ventas');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '<', $fecha], ['estado', 'Pendiente']])->get();
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha', '<', $fecha], ['estado', 'Pendiente']])->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -154,7 +154,7 @@ class ReportesController extends Controller
         $parametros = config('ventas');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $fecha], ['estado', 'Pendiente']])->get();
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha', '>', $fecha], ['estado', 'Pendiente']])->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -183,7 +183,7 @@ class ReportesController extends Controller
         $parametros = config('ventas');
 
         foreach ($fechas as $f) {
-            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'], ['estado', 'Pendiente']])->get();
+            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha', 'like','%'.$f.'%'], ['estado', 'Pendiente']])->get();
             $pedidos = null;
             if (count($pedidos_db) > 0) {
                 foreach ($pedidos_db as $o) {
@@ -205,13 +205,13 @@ class ReportesController extends Controller
         $tercero = Tercero::find($p->core_tercero_id);
         $cliente = $tercero->razon_social;
         if ($cliente == "") {
-            $cliente = $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2;
+            $cliente = $tercero->descripcion;
         }
         $orden = [
             'id' => $o->id,
             'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " - " . $o->consecutivo,
             'cliente' => $cliente,
-            'fecha_entrega' => $o->fecha_entrega
+            'fecha' => $o->fecha
         ];
         return $orden;
     }

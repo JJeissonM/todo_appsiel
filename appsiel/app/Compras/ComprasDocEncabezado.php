@@ -17,6 +17,11 @@ class ComprasDocEncabezado extends Model
 
 	public $encabezado_tabla = ['Fecha', 'Documento compra', 'Proveedor', 'Factura', 'Detalle', 'Valor total', 'Estado', 'Acción'];
 
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
 	public static function consultar_registros()
 	{
         $core_tipo_transaccion_id = 25; // Facturas de compras
@@ -89,6 +94,7 @@ class ComprasDocEncabezado extends Model
                                 'compras_doc_encabezados.doc_proveedor_consecutivo',
                                 'compras_doc_encabezados.forma_pago AS condicion_pago',
                                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
+                                'compras_doc_encabezados.consecutivo AS documento_transaccion_consecutivo',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' ),
                                 DB::raw( 'CONCAT(doc_inventarios.prefijo," ",inv_doc_encabezados.consecutivo) AS documento_remision_prefijo_consecutivo' ),
                                 DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero_nombre_completo' ),

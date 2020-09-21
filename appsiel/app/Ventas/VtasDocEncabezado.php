@@ -19,6 +19,28 @@ class VtasDocEncabezado extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function cliente()
+    {
+        return $this->belongsTo( Cliente::class,'cliente_id');
+    }
+
+    public function vendedor()
+    {
+        return $this->belongsTo( Vendedor::class,'vendedor_id');
+    }
+
+    public function movimientos()
+    {
+        return $this->hasMany('App\Ventas\InvMovimiento');
+    }
+    
+
     public static function consultar_registros()
     {
         $core_tipo_transaccion_id = 23; // Facturas
@@ -29,7 +51,7 @@ class VtasDocEncabezado extends Model
             ->select(
                 'vtas_doc_encabezados.fecha AS campo1',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                DB::raw('core_terceros.descripcion AS campo3'),
                 'vtas_doc_encabezados.descripcion AS campo4',
                 'vtas_doc_encabezados.valor_total AS campo5',
                 'vtas_doc_encabezados.estado AS campo6',
@@ -44,11 +66,6 @@ class VtasDocEncabezado extends Model
                     */
     }
 
-    public function tercero()
-    {
-        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
-    }
-
     public static function consultar_registros2()
     {
         $core_tipo_transaccion_id = 23; // Facturas
@@ -59,7 +76,7 @@ class VtasDocEncabezado extends Model
             ->select(
                 'vtas_doc_encabezados.fecha AS campo1',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                DB::raw('core_terceros.descripcion AS campo3'),
                 'vtas_doc_encabezados.descripcion AS campo4',
                 'vtas_doc_encabezados.valor_total AS campo5',
                 'vtas_doc_encabezados.estado AS campo6',
@@ -67,11 +84,6 @@ class VtasDocEncabezado extends Model
             )
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->paginate(500);
-    }
-
-    public function movimientos()
-    {
-        return $this->hasMany('App\Ventas\InvMovimiento');
     }
 
     /*
@@ -98,6 +110,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.consecutivo',
                 'vtas_doc_encabezados.fecha',
                 'vtas_doc_encabezados.fecha_vencimiento',
+                'vtas_doc_encabezados.vendedor_id',
                 'vtas_doc_encabezados.descripcion',
                 'vtas_doc_encabezados.estado',
                 'vtas_doc_encabezados.creado_por',

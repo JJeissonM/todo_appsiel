@@ -116,12 +116,12 @@ class ContabMovimiento extends Model
 
         if ( !is_null( $cuenta_id ) )
         {
-            $array_wheres = array_merge( $array_wheres, [ 'contab_cuenta_id' => $cuenta_id ] );
+            $array_wheres = array_merge( $array_wheres, [ [ 'contab_cuenta_id', '=', $cuenta_id ] ] );
         }
 
         if ( !is_null( $tercero_id ) )
         {
-            $array_wheres = array_merge( $array_wheres, [ 'core_tercero_id' => $tercero_id ] );
+            $array_wheres = array_merge( $array_wheres, [ [ 'core_tercero_id', '=', $tercero_id ] ] );
         }
 
         return ContabMovimiento::where( $array_wheres )->sum( 'valor_saldo' );

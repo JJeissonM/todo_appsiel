@@ -353,6 +353,58 @@
             showAlpha: true
         });
 
+
+            $('#curso_id').on('change',function(){
+
+                $("#asignatura_id").html('<option value="">Seleccionar...</option>');
+
+                if ( $(this).val() == '')
+                {
+                    alert('Debe seleccionar un curso.');
+                    return false;
+                }
+
+                $('#div_lista_guias_academicas').html( '' );
+
+                var curso_id = $(this).val();
+                
+                if( curso_id != '' ){
+
+                    $('#div_spin').show();
+
+                    var url = "{{ url('get_select_asignaturas') }}" + "/" + curso_id + "/" + null;
+                    $.ajax({
+                        url: url,
+                        type: 'get',
+                        success: function(datos){
+                            
+                            $('#div_spin').hide();
+                            
+                            $("#asignatura_id").html(datos);
+                            
+                            $("#asignatura_id").focus();
+                        },
+                        error: function(xhr) {
+                            $('#div_spin').hide();
+                            alert('Error en los datos seleccionados. '+xhr);
+                        }
+                    });
+                }else{
+                    
+                }
+            });
+
+            $("#asignatura_id").on('change',function(){
+                $('#div_lista_guias_academicas').html( '' );
+                $("#btn_consultar").removeAttr('disabled');
+            });
+
+            $("#btn_consultar").on('click',function(event){
+                event.preventDefault();
+                console.log('btn_consultar');
+            });
+
+
   });
 </script>
 

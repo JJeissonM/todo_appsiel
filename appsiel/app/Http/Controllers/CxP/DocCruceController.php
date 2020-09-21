@@ -361,6 +361,7 @@ class DocCruceController extends TransaccionController
 
     public function imprimir($id)
     {
+
       $this->set_variables_globales();
 
       $id_transaccion = $this->transaccion->id;

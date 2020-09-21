@@ -26,16 +26,17 @@
 
 								&nbsp;&nbsp;&nbsp;
 
+								@if( config('calificaciones.estudiante_revisar_guia_academicas') == 'Si' )
 
-								<a href="{{ url('academico_estudiante/guias_planes_clases/'.$curso_id.'/'.$fila->id.'?id='.Input::get('id'))}}" class="btn btn-sm btn-danger"><i class="fa fa-book"></i> Guías académicas </a>
+									<a href="{{ url('academico_estudiante/guias_planes_clases/'.$curso_id.'/'.$fila->id.'?id='.Input::get('id'))}}" class="btn btn-sm btn-danger"><i class="fa fa-book"></i> Guías académicas </a>
 
-								&nbsp;&nbsp;&nbsp;
+									&nbsp;&nbsp;&nbsp;
+								@endif
 
+								@if( config('calificaciones.estudiante_activar_foros_discucion') == 'Si' )
 
-								<a href="{{ url( 'foros/'.$curso_id.'/'.$fila->id.'/'.$periodo_lectivo->id.'/inicio?id='.Input::get('id') ) }}" class="btn btn-sm btn-info" target="_blank"><i class="fa fa-bullhorn"></i> Foros de discusión </a>
-
-
-
+									<a href="{{ url( 'foros/'.$curso_id.'/'.$fila->id.'/'.$periodo_lectivo->id.'/inicio?id='.Input::get('id') ) }}" class="btn btn-sm btn-info" target="_blank"><i class="fa fa-bullhorn"></i> Foros de discusión </a>
+								@endif
 							</td>
 					</tr>
 				@endforeach

@@ -156,8 +156,10 @@ class FooterController extends Controller
 
         $enlace = new EnlaceFooter($request->all());
 
-        if($request->tipo_enlace == 'pagina' ){
-            if($request->seccion == 'principio' ){
+        if($request->tipo_enlace == 'pagina' )
+        {
+            if($request->seccion == 'principio' )
+            {
                 $pagina = Pagina::find($request->pagina);
                 $enlace->enlace = url('/'.$pagina->slug);
             }else {

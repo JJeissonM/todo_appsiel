@@ -12,10 +12,11 @@ Route::get('calificaciones_logros/inactivos', 'Calificaciones\LogroController@co
 Route::resource('calificaciones_logros', 'Calificaciones\LogroController');
 
 //Calificaciones
-Route::post('/calificaciones/calificar2', 'Calificaciones\CalificacionController@calificar2');
+Route::post('calificaciones/calificar2', 'Calificaciones\CalificacionController@calificar2');
+
 //  Asistencia a clases
-Route::get('/calificaciones/asistencia_clases/reportes', 'Calificaciones\AsistenciaClaseController@reportes');
-Route::get('/calificaciones/asistencia_clases/generar_reporte/{fecha_inicial}/{fecha_final}/{curso_id}/{tipo_reporte}', 'Calificaciones\AsistenciaClaseController@generar_reporte');
+Route::get('calificaciones/asistencia_clases/reportes', 'Calificaciones\AsistenciaClaseController@reportes');
+Route::get('calificaciones/asistencia_clases/generar_reporte/{fecha_inicial}/{fecha_final}/{curso_id}/{tipo_reporte}', 'Calificaciones\AsistenciaClaseController@generar_reporte');
 Route::post('calificaciones/asistencia_clases/continuar_creacion', 'Calificaciones\AsistenciaClaseController@continuar_creacion');
 Route::resource('calificaciones/asistencia_clases', 'Calificaciones\AsistenciaClaseController');
 
@@ -68,6 +69,13 @@ Route::resource('calificaciones/boletines', 'Calificaciones\BoletinController', 
 Route::get('calificaciones/index2','Calificaciones\CalificacionController@index2');
 Route::post('calificaciones/almacenar_calificacion','Calificaciones\CalificacionController@almacenar_calificacion');
 
+
+// ENCABEZADOS CALIFICACIONES
+//Route::get('calificaciones_encabezados_guardar', 'Calificaciones\EncabezadoCalificacionController@guardar_encabezado');
+Route::resource('calificaciones_encabezados', 'Calificaciones\EncabezadoCalificacionController');
+
+
+// Este resource debe ser el último
 Route::resource('calificaciones', 'Calificaciones\CalificacionController', ['except' => ['show']]);
 
 
@@ -92,12 +100,6 @@ Route::get('calificaciones/periodo_lectivo_tiene_asignaciones/{periodo_lectivo_i
 
 // Obtener la tabla de las asignturas que ya tiene el curso
 Route::get('calificaciones/asignar_asignaturas/get_tabla_asignaturas_asignadas/{periodo_lectivo_id}/{curso_id}', 'Calificaciones\PensumController@get_tabla_asignaturas_asignadas');
-
-
-
-// ENCABEZADOS CALIFICACIONES
-
-Route::resource('calificaciones/encabezados', 'Calificaciones\EncabezadoCalificacionController');
 
 
 

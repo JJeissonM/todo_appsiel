@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Tesoreria\TesoEntidadFinanciera;
+
 class TesoCuentaBancaria extends Model
 {
     protected $table = 'teso_cuentas_bancarias';
@@ -14,6 +16,11 @@ class TesoCuentaBancaria extends Model
     protected $fillable = ['core_empresa_id','entidad_financiera_id','tipo_cuenta','descripcion','por_defecto','estado','contab_cuenta_id'];
 
     public $encabezado_tabla = ['ID','Entidad financiera','Tipo cuenta','Número','Cta. contable','Por defecto','Estado','Acción'];
+
+    public function entidad_financiera()
+    {
+        return $this->belongsTo( TesoEntidadFinanciera::class, 'entidad_financiera_id');
+    }
 
     /*public $vistas = [ 
                         'create' => 'web',

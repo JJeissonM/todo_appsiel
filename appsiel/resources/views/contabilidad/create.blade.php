@@ -349,65 +349,65 @@
 			}
 
 
-				var valor_actual, elemento_modificar, elemento_padre;
-					
-				// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
-				$(document).on('dblclick','.elemento_modificar',function(){
-					
-					elemento_modificar = $(this);
+			var valor_actual, elemento_modificar, elemento_padre;
+				
+			// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
+			$(document).on('dblclick','.elemento_modificar',function(){
+				
+				elemento_modificar = $(this);
 
-					elemento_padre = elemento_modificar.parent();
+				elemento_padre = elemento_modificar.parent();
 
-					valor_actual = $(this).html();
+				valor_actual = $(this).html();
 
-					elemento_modificar.hide();
+				elemento_modificar.hide();
 
-					elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+				elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
 
-					document.getElementById('valor_nuevo').value = valor_actual;
-					document.getElementById('valor_nuevo').select();
+				document.getElementById('valor_nuevo').value = valor_actual;
+				document.getElementById('valor_nuevo').select();
 
-				});
+			});
 
-				// Si la caja de texto pierde el foco
-				$(document).on('blur','#valor_nuevo',function(){
-					guardar_valor_nuevo();
-				});
+			// Si la caja de texto pierde el foco
+			$(document).on('blur','#valor_nuevo',function(){
+				guardar_valor_nuevo();
+			});
 
-				// Al presiona teclas en la caja de texto
-				$(document).on('keyup','#valor_nuevo',function(){
+			// Al presiona teclas en la caja de texto
+			$(document).on('keyup','#valor_nuevo',function(){
 
-					var x = event.which || event.keyCode; // Capturar la tecla presionada
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
 
-					// Abortar la edición
-					if( x == 27 ) // 27 = ESC
-					{
-						elemento_padre.find('#valor_nuevo').remove();
-			        	elemento_modificar.show();
-			        	return false;
-					}
-
-					// Guardar
-					if( x == 13 ) // 13 = ENTER
-					{
-			        	guardar_valor_nuevo();
-					}
-				});
-
-				function guardar_valor_nuevo()
+				// Abortar la edición
+				if( x == 27 ) // 27 = ESC
 				{
-					var valor_nuevo = document.getElementById('valor_nuevo').value;
-
-					// Si no cambió el valor_nuevo, no pasa nada
-					if ( valor_nuevo == valor_actual) { return false; }
-
-					elemento_modificar.html( valor_nuevo );
-					elemento_modificar.show();
-
 					elemento_padre.find('#valor_nuevo').remove();
-
-					calcular_totales();
+		        	elemento_modificar.show();
+		        	return false;
 				}
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	guardar_valor_nuevo();
+				}
+			});
+
+			function guardar_valor_nuevo()
+			{
+				var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+				// Si no cambió el valor_nuevo, no pasa nada
+				if ( valor_nuevo == valor_actual) { return false; }
+
+				elemento_modificar.html( valor_nuevo );
+				elemento_modificar.show();
+
+				elemento_padre.find('#valor_nuevo').remove();
+
+				calcular_totales();
+			}
 
 
 			$("#btn_crear_cxc").click(function(event){

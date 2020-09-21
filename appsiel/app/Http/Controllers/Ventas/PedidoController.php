@@ -173,13 +173,12 @@ class PedidoController extends TransaccionController
 
         $cantidad_registros = count($lineas_registros);
 
-
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
-            if(!isset($lineas_registros[$i]->inv_Imotivo_id))
+            if(!isset($lineas_registros[$i]->inv_motivo_id))
                 $inv_motivo_id = config('pagina_web.pedidos_inv_motivo_id');
             else
-                $inv_motivo_id = $lineas_registros[$i]->inv_Imotivo_id;
+                $inv_motivo_id = $lineas_registros[$i]->inv_motivo_id;
 
             // Se llama nuevamente el precio de venta para estar SEGURO
           $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
@@ -206,9 +205,9 @@ class PedidoController extends TransaccionController
               ['estado' => 'Activo'];
 
             VtasDocRegistro::create(
-                    ['vtas_doc_encabezado_id' => $doc_encabezado->id] +
-                    $linea_datos
-            );
+                                        ['vtas_doc_encabezado_id' => $doc_encabezado->id] +
+                                        $linea_datos
+                                    );
 
             $total_documento += $lineas_registros[$i]->precio_total;
 
@@ -281,7 +280,7 @@ class PedidoController extends TransaccionController
 
         $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista);
 
-        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with($vec['tipo_mensaje'], $vec['texto_mensaje']);
+        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') )->with($vec['tipo_mensaje'], $vec['texto_mensaje']);
     }
 
     public function enviar_pedidoweb_email($id){
@@ -423,7 +422,7 @@ class PedidoController extends TransaccionController
 
         $pedido->update(['estado' => 'Anulado']);
 
-        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Pedido ANULADO correctamente.');
+        return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with('flash_message', 'Pedido ANULADO correctamente.');
     }
 
     //Crea remision a partir del pedido
@@ -450,10 +449,12 @@ class PedidoController extends TransaccionController
         $hoy = getdate();
         $request['fecha'] = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
         $remision_creada_id = InventarioController::crear_documento($request, $lineas_registros, $rm_modelo_id);
+        
         $pedido = VtasDocEncabezado::get_registro_impresion($request->id);
         $pedido->remision_doc_encabezado_id = $remision_creada_id;
         $pedido->estado = "Cumplido";
         $pedido->save();
+        
         return redirect('inventarios/' . $remision_creada_id . '?id=' . $request->url_id . '&id_modelo=' . $rm_modelo_id . '&id_transaccion=' . $rm_tipo_transaccion_id);
     }
 }

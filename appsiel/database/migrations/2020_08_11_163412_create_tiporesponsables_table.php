@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddColumnsToStickyboton extends Migration
+class CreateTiporesponsablesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,10 @@ class AddColumnsToStickyboton extends Migration
      */
     public function up()
     {
-        Schema::table('pw_stickybotons', function (Blueprint $table) {
-            $table->string('imagen')->nullable()->after('texto');
+        Schema::create('sga_tiporesponsables', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('descripcion');
+            $table->timestamps();
         });
     }
 
@@ -24,8 +26,6 @@ class AddColumnsToStickyboton extends Migration
      */
     public function down()
     {
-        Schema::table('pw_stickybotons', function (Blueprint $table) {
-            $table->dropColumn('imagen');
-        });
+        Schema::drop('sga_tiporesponsables');
     }
 }

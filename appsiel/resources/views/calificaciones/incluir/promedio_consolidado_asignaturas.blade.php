@@ -181,7 +181,7 @@
                             foreach($periodos as $periodo)
                             {
                                     
-                                $cali = $calificaciones->whereLoose('estudiante_id',$estudiante->id_estudiante)->whereLoose('periodo_id',$periodo->id)->whereLoose('asignatura_id', $asignaturas[$j]['id'])->first();
+                                $cali = $calificaciones->whereLoose('estudiante_id',$estudiante->id_estudiante)->whereLoose('periodo_id',$periodo->id)->whereLoose('asignatura_id', $asignaturas[$k]['id'])->first();
 
                                 if ( !is_null($cali) ) 
                                 {

@@ -119,7 +119,11 @@
 					$vec_logros[0] = 0;
 					if( !is_null($calificacion) )
 					{
-						$desempeno = App\Calificaciones\EscalaValoracion::where('calificacion_minima','<=',$calificacion->calificacion)->where('calificacion_maxima','>=',$calificacion->calificacion)->value('nombre_escala');
+						$desempeno = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id', $periodo->periodo_lectivo_id)
+															->where('calificacion_minima','<=',$calificacion->calificacion)
+															->where('calificacion_maxima','>=',$calificacion->calificacion)
+															->value('nombre_escala');
+															
 						$n_nom_logros=strlen($calificacion->logros); //Longitud de la cadena de logros
 									$vec_logros = explode(",",$calificacion->logros);
 					}

@@ -18,10 +18,9 @@ use Illuminate\Http\Request;
 class PaginaController extends Controller
 {
 
-
     public function __construct()
     {
-        $this->middleware('auth')->except('showPage');
+        //$this->middleware('auth')->except('showPage');
     }
 
     public function index()
@@ -371,7 +370,6 @@ class PaginaController extends Controller
     {
 
         $widget = Widget::find($id);
-
         if ($widget) {
 
             $flag = $widget->delete();
@@ -400,16 +398,20 @@ class PaginaController extends Controller
     public function cambiarOrden($id, $orden)
     {
         $widget = Widget::find($id);
-        $count = Widget::where('pagina_id', $widget->pagina_id)->count();
+        /*$count = Widget::where('pagina_id', $widget->pagina_id)->count();
         if ($orden > $count) {
             $orden = $count;
         }
+        
         $existe = Widget::where([['pagina_id', $widget->pagina_id], ['orden', $orden]])->first();
+        
         if ($existe != null) {
             $existe->orden = $widget->orden;
             $existe->save();
-        }
+        }*/
+
         $widget->orden = $orden;
+        
         $widget->save();
     }
 

@@ -20,6 +20,7 @@ use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Contabilidad\ContabilidadController;
 use App\Http\Controllers\Compras\ReportesController;
+use App\Http\Controllers\Sistema\ModeloController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
@@ -42,6 +43,8 @@ use App\Compras\ComprasDocRegistro;
 use App\Compras\ComprasMovimiento;
 use App\Compras\NotaCredito;
 use App\Compras\Proveedor;
+
+use App\Ventas\ResolucionFacturacion;
 
 use App\Contabilidad\ContabMovimiento;
 
@@ -393,7 +396,10 @@ class CompraController extends TransaccionController
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo );
 
-        $url_crear = $this->modelo->url_crear.$this->variables_url;
+        $modelo_controller = New ModeloController();
+        $acciones = $modelo_controller->acciones_basicas_modelo( $this->modelo, $this->variables_url );
+
+        $url_crear = $acciones->create;
         
         $vista = 'compras.show';
 
@@ -418,7 +424,9 @@ class CompraController extends TransaccionController
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
-        $documento_vista = View::make( 'compras.formatos_impresion.'.Input::get('formato_impresion_id'), compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad' ) )->render();        
+        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->last(); 
+
+        $documento_vista = View::make( 'compras.formatos_impresion.'.Input::get('formato_impresion_id'), compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'resolucion' ) )->render();
 
         // Se prepara el PDF
         $orientacion='portrait';
@@ -502,7 +510,6 @@ class CompraController extends TransaccionController
                 $primer_item = 1;
             }
 
-
             if ( $num_item == $cantidad_proveedores)
             {
                 $ultimo_item = 1;
@@ -523,8 +530,8 @@ class CompraController extends TransaccionController
         }
 
         // Linea crear nuevo registro
-        //$modelo_id = 146;
-        //$html .= '<a class="list-group-item list-group-item-proveedor boton_crear list-group-item-info" data-modelo_id="'.$modelo_id.  '" > + Crear nuevo </a>';
+        $modelo_id = 146; // App\Ventas\Proveedores
+        $html .= '<a href="'.url('compras_proveedores/create?id=9&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
 
         $html .= '</div>';
 

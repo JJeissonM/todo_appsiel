@@ -34,6 +34,15 @@ class VtasDocRegistro extends Model
     										]; // 9 campos
 
 
+    public function producto()
+    {
+        return $this->belongsTo('App\Inventarios\InvProducto','inv_producto_id');
+    }
+
+    public function motivo()
+    {
+        return $this->belongsTo('App\Inventarios\InvMotivo','vtas_motivo_id');
+    }
 
 
     public static function get_registros_impresion( $doc_encabezado_id )
@@ -52,6 +61,7 @@ class VtasDocRegistro extends Model
                                 'inv_productos.unidad_medida1',
                                 'inv_productos.referencia',
                                 'inv_productos.codigo_barras',
+                                'vtas_doc_registros.inv_producto_id',
                                 'vtas_doc_registros.precio_unitario',
                                 'vtas_doc_registros.cantidad',
                                 'vtas_doc_registros.precio_total',
@@ -86,6 +96,7 @@ class VtasDocRegistro extends Model
                                 'inv_productos.referencia',
                                 'inv_productos.codigo_barras',
                                 'vtas_doc_registros.precio_unitario',
+                                'vtas_doc_registros.inv_producto_id',
                                 'vtas_doc_registros.cantidad',
                                 'vtas_doc_registros.precio_total',
                                 'vtas_doc_registros.base_impuesto',

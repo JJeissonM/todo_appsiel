@@ -23,9 +23,17 @@
         }
 
         if ( $ajustar ) {
+
+            $etiqueta_producto = $linea->producto_descripcion . ' (' . $linea->item->unidad_medida1 . ')';
+
+            if ( $linea->item->unidad_medida2 != '')
+            {
+                $etiqueta_producto = $linea->producto_descripcion . ' (' . $linea->item->unidad_medida1 . ')' . ' - Talla: ' . $linea->item->unidad_medida2 . ')';
+            }
+
             $filas_tabla .= '<tr id="'.$linea->producto_id.'">
                         <td>'.$linea->producto_id.'</td>
-                        <td class="nom_prod">'.$linea->producto_descripcion.'</td>
+                        <td class="nom_prod">'. $etiqueta_producto .'</td>
                         <td>'.$motivo.'</td>
                         <td>$'.number_format( $linea->costo_prom_sistema, 2, '.', '').'</td>
                         <td class="cantidad">'.number_format( $cantidad_dif, 2, '.', '').' '.$linea->unidad_medida1.'</td>

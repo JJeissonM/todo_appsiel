@@ -40,35 +40,36 @@
 		<div class="marco_formulario">
 
 			<br><br>
+			<div class="table-responsive">
+				<table class="table table-bordered">
+			        <tr>
+			            <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
+			                @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
+			            </td>
+			            <td style="border: solid 1px #ddd; padding-top: -20px;">
+			                <div style="vertical-align: center;">
+			                    <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado->documento_transaccion_descripcion }}</b>
+			                    <br/>
+			                    <b>Documento:</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
+			                    <br/>
+			                    <b>Fecha:</b> {{ $doc_encabezado->fecha }}
 
-			<table class="table table-bordered">
-		        <tr>
-		            <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
-		                @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
-		            </td>
-		            <td style="border: solid 1px #ddd; padding-top: -20px;">
-		                <div style="vertical-align: center;">
-		                    <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado->documento_transaccion_descripcion }}</b>
-		                    <br/>
-		                    <b>Documento:</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
-		                    <br/>
-		                    <b>Fecha:</b> {{ $doc_encabezado->fecha }}
-
-		                    @yield('datos_adicionales_encabezado')
-		                    
-		                </div>
-		                @if($doc_encabezado->estado == 'Anulado')
-		                    <div class="alert alert-danger" class="center">
-		                        <strong>Documento Anulado</strong>
-		                    </div>
-		                @endif
-		            </td>
-		        </tr>
-		        @yield('filas_adicionales_encabezado')
-		    </table>
+			                    @yield('datos_adicionales_encabezado')
+			                    
+			                </div>
+			                @if($doc_encabezado->estado == 'Anulado')
+			                    <div class="alert alert-danger" class="center">
+			                        <strong>Documento Anulado</strong>
+			                    </div>
+			                @endif
+			            </td>
+			        </tr>
+			        @yield('filas_adicionales_encabezado')
+			    </table>
 
 
-		    @yield('encabezado2')
+			    @yield('encabezado2')
+			</div>
 
 		    <!-- se usa yield porque es una estructura particular para la vista de cada transacción -->
 		    @yield('documento_vista')

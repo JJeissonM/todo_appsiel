@@ -22,6 +22,9 @@
         case 'core_tipo_transaccion_id':
             $primer_encabezado = 'Tipos de transacciones';
             break;
+        case 'forma_pago':
+            $primer_encabezado = 'Forma de pago';
+            break;
         
         default:
             $primer_encabezado = '';

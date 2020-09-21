@@ -229,17 +229,6 @@ class PagoController extends TransaccionController
                 $this->datos['estado'] = 'Pendiente';
                 CxpMovimiento::create( $this->datos );
             }
- 
-            // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
-            if ( $motivo->teso_tipo_motivo == 'Prestamo financiero' )
-            {
-                $this->datos['valor_documento'] = $valor;
-                $this->datos['valor_pagado'] = 0;
-                $this->datos['saldo_pendiente'] = $valor;
-                $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
-                $this->datos['estado'] = 'Pendiente';
-                CxpMovimiento::create( $this->datos );
-            }
 
             // Generar CxC por algún dinero prestado o anticipado a trabajadores o clientes.
             if ( $motivo->teso_tipo_motivo == 'Pago anticipado' )
@@ -276,6 +265,8 @@ class PagoController extends TransaccionController
 
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
 
+        $encabezado_documento = TesoDocEncabezado::find( $id );
+
         $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
         $empresa = $this->empresa;
@@ -291,7 +282,7 @@ class PagoController extends TransaccionController
                 ['url'=>'NO','etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
             ];
         
-        return view( 'tesoreria.pagos.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','doc_registros','registros_contabilidad','empresa') );
+        return view( 'tesoreria.pagos.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','doc_registros','registros_contabilidad','empresa', 'encabezado_documento') );
     }
 
     /**

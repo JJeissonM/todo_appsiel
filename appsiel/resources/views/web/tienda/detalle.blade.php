@@ -71,7 +71,7 @@
                                 $url_imagen_producto = '#';
                                 if ( $inv_producto->imagen != '' )
                                 {
-                                    $url_imagen_producto = asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen );
+                                    $url_imagen_producto = asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $inv_producto->imagen );
                                 }
                                 ?>
                                 <div class="col-left sidebar col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-bottom: 20px;">

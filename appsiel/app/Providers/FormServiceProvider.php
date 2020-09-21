@@ -78,6 +78,7 @@ class FormServiceProvider extends ServiceProvider
     {
         //componentes utilizado en el diseñador de la pagina web
         Form::component('navegacion', 'components.web.navegacion', ['nav']);
+        Form::component('navegacionpremium','components.web.navegacionpremium',['nav']);
         Form::component('slider', 'components.web.slider', ['slider']);
         Form::component('sliderpremiun', 'components.web.sliderpremiun', ['slider']);
         Form::component('aboutus', 'components.web.aboutus', ['aboutus']);
@@ -98,6 +99,8 @@ class FormServiceProvider extends ServiceProvider
         Form::component('parallax', 'components.web.parallax', ['parallax']);
         Form::component('sticky', 'components.web.sticky', ['sticky']);
         Form::component('modal', 'components.web.modal', ['modal']);
+        Form::component('guias_academicas', 'components.web.guias_academicas', ['cursos']);
+        Form::component('login', 'components.web.login', ['login','nav']);
     }
 
     /**

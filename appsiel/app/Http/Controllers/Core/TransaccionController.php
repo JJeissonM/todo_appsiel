@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Core;
 
 use App\Contabilidad\Impuesto;
+use App\Http\Controllers\Tesoreria\RecaudoController;
+use App\Tesoreria\TesoMotivo;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\VtasDocRegistro;
@@ -24,6 +26,8 @@ use Input;
 use View;
 use Form;
 use Lava;
+
+use App\Sistema\Html\BotonesAnteriorSiguiente;
 
 // Modelos del core
 use App\Sistema\Aplicacion;
@@ -90,7 +94,7 @@ class TransaccionController extends Controller
     {
         $this->set_variables_globales();
 
-        $permisos = Permission::where( 'core_app_id', $this->app->id)
+        $permisos = Permission::where( 'core_app_id', $this->app->id )
                                 ->where('parent',0)
                                 ->orderBy('orden','ASC')
                                 ->get()
@@ -107,12 +111,17 @@ class TransaccionController extends Controller
 
     public function get_boton_select_crear( $app )
     {
+        $tipos_transacciones = [];
 
-        // Botón crear con el listado de las transacciones asociadas a la aplicación
-        $tipos_transacciones = $app->tipos_transacciones()->where('estado','Activo')->get();
+        if ( !is_null( $app ) )
+        {
+            // Botón crear con el listado de las transacciones asociadas a la aplicación
+            $tipos_transacciones = $app->tipos_transacciones()->where('estado','Activo')->get();
+        }
         
         $opciones = [];
         $key = 0;
+
         foreach($tipos_transacciones as $fila)
         {
             $modelo = Modelo::find( $fila->core_modelo_id );
@@ -160,10 +169,17 @@ class TransaccionController extends Controller
                         'campos' => $lista_campos
                     ];
 
+        $id_transaccion = 8;// 8 = Recaudo cartera
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Otros pagos' );
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+
         $miga_pan = $this->get_array_miga_pan( $app, $modelo, 'Crear: '.$transaccion->descripcion );
         
-        return view( $vista, compact('form_create','miga_pan','tabla'));
+        return view( $vista, compact('form_create','miga_pan','tabla','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias'));
     }
+    
     /*
         Crea el encabezado de un documento
         Devuelve LA INSTANCIA del documento creado
@@ -189,9 +205,8 @@ class TransaccionController extends Controller
 
 
     // Mostra el documento de una transacción
-    public function show($id)
+    public function show( $id )
     {
-
         /**/
     }
 
@@ -244,6 +259,7 @@ class TransaccionController extends Controller
         return $costo_prom;
     }
 
+    // Almacenar el costo promedio en la tabla de la BD
     public static function set_costo_promedio($id_bodega,$id_producto,$costo_prom)
     {
         $existe = InvCostoPromProducto::where('inv_bodega_id',$id_bodega)
@@ -275,5 +291,20 @@ class TransaccionController extends Controller
                             [ 'teso_caja_id' => $teso_caja_id] + 
                             [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id]
                         );
+    }
+
+    public function get_total_campo_lineas_registros( $lineas_registros, string $campo )
+    {
+        $total = 0;
+
+        foreach ($lineas_registros as $linea )
+        {
+            if ( isset($linea->$campo) )
+            {
+                $total += (float)$linea->$campo;
+            }
+        }
+        
+        return $total;
     }
 }

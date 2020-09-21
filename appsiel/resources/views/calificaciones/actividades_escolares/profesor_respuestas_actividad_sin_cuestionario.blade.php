@@ -65,10 +65,10 @@
 <div class="row">
 	<div class="col-md-12">
 		<div class="container-fluid">
-	        <div class="alert alert-success">
+	        <div class="alert alert-warning">
 	            NOTA: Cuando se le registra una anotación a un estudiante, este ya no podrá modificar la respuesta enviada.
 				<br>
-				Mientras la anotación sea cero (0) ó está vacía, el estudiante podrá seguir modificando la respuesta.
+				Mientras la anotación este vacía, el estudiante podrá seguir modificando la respuesta.
 	        </div>
 	    </div>
 				

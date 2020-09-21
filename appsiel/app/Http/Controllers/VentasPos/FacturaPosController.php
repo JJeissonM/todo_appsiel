@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\VentasPos;
 
+use App\Http\Controllers\Tesoreria\RecaudoController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
@@ -15,12 +16,14 @@ use Form;
 
 use Spatie\Permission\Models\Permission;
 
+
 use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Inventarios\InventarioController;
+use App\Http\Controllers\Ventas\VentaController;
 
 use App\Http\Controllers\Contabilidad\ContabilidadController;
 use App\Http\Controllers\Ventas\ReportesController;
@@ -56,6 +59,8 @@ use App\Ventas\Cliente;
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
+use App\Ventas\VtasDocEncabezado;
+use App\Ventas\NotaCredito;
 
 use App\Ventas\VtasMovimiento;
 
@@ -66,6 +71,7 @@ use App\CxC\CxcAbono;
 use App\CxP\CxpMovimiento;
 
 use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
 
@@ -86,9 +92,9 @@ class FacturaPosController extends TransaccionController
 
         // Enviar valores predeterminados
         // WARNING!!!! Este motivo es de INVENTARIOS
-        $motivos = ['22-salida'=>'Ventas POS'];
+        $motivos = ['10-salida' => 'Ventas POS' ]; 
 
-        $inv_motivo_id = 22;
+        $inv_motivo_id = 10;
 
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros( PreparaTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
@@ -111,8 +117,6 @@ class FacturaPosController extends TransaccionController
         $user = Auth::user();        
 
         $pdv = Pdv::find( Input::get('pdv_id') );
-
-        //dd( $pdv->bodega );
 
         //Personalización de la lista de campos
         for ($i = 0; $i < $cantidad_campos; $i++)
@@ -150,6 +154,11 @@ class FacturaPosController extends TransaccionController
                         'url' => $acciones->store,
                         'campos' => $lista_campos
                     ];
+        $id_transaccion = 8;// 8 = Recaudo cartera
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Crear: '.$this->transaccion->descripcion );
         
@@ -161,31 +170,47 @@ class FacturaPosController extends TransaccionController
 
         $plantilla_factura = $this->generar_plantilla_factura( $pdv );
 
-        //echo $plantilla_factura;
+        $redondear_centena = config('ventas_pos.redondear_centena');
 
-        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura') );
+        return view( 'ventas_pos.create', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura', 'redondear_centena','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias') );
     }
 
     /**
-     * Store a newly created resource in storage.
+     * ALMACENA FACTURA POS
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-
         $lineas_registros = json_decode($request->lineas_registros);
+
+        $this->actualizar_campo_lineas_registros_medios_recaudos_request( $request );
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-
 
         // Crear Registros del documento de ventas
         $request['creado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
         return $doc_encabezado->consecutivo;
+    }
+
+    public function actualizar_campo_lineas_registros_medios_recaudos_request( &$request_2 )
+    {
+        $lineas_registros_medios_recaudos = json_decode( $request_2->lineas_registros_medios_recaudos, true ); // true convierte en un array asociativo al JSON
+
+        $aux = array_pop( $lineas_registros_medios_recaudos ); // eliminar ultimo elemento del array
+
+        if( json_encode( $lineas_registros_medios_recaudos ) == "[]" )
+        {
+            $pdv = Pdv::find( $request_2->pdv_id );
+
+            $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"'.$pdv->caja_default_id.'-'.$pdv->caja->descripcion.'","teso_cuenta_bancaria_id":"0-","valor":"$'. ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) .'"}]';
+        }else{
+            $request_2['lineas_registros_medios_recaudos'] = json_encode( $lineas_registros_medios_recaudos ); // Se convierte a string JSON
+        }
     }
 
 
@@ -250,7 +275,7 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
-        $docs_relacionados = FacturaPos::get_documentos_relacionados( $doc_encabezado );
+        $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
         $empresa = $this->empresa;
         $id_transaccion = $this->transaccion->id;
 
@@ -268,7 +293,7 @@ class FacturaPosController extends TransaccionController
 
         $url_crear = $this->modelo->url_crear.$this->variables_url;
         
-        $vista = 'ventas.show';
+        $vista = 'ventas_pos.show';
 
         if( !is_null( Input::get('vista') ) )
         {
@@ -327,8 +352,195 @@ class FacturaPosController extends TransaccionController
 
         $etiquetas = $this->get_etiquetas();
 
-        return View::make( 'ventas_pos.plantilla_factura', compact( 'empresa', 'resolucion', 'etiquetas', 'pdv' ) )->render();
+        return View::make( 'ventas_pos.' . config('ventas_pos.plantilla_factura_pos_default'), compact( 'empresa', 'resolucion', 'etiquetas', 'pdv' ) )->render();
     }
+
+    /**
+     * Prepara la vista para Editar una Factura POS
+     */
+    public function edit($id)
+    {
+        $this->set_variables_globales();
+
+        // Se obtiene el registro a modificar del modelo
+        $registro = app( $this->modelo->name_space )->find($id);
+
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro,'edit');
+
+        $doc_encabezado = FacturaPos::get_registro_impresion( $id );
+
+        $cantidad = count( $lista_campos );
+
+        // Agregar al comienzo del documento
+        array_unshift($lista_campos, [
+                                            "id" => 201,
+                                            "descripcion" => "Empresa",
+                                            "tipo" => "personalizado",
+                                            "name" => "encabezado",
+                                            "opciones" => "",
+                                            "value" => '<div style="border: solid 1px #ddd; padding-top: -20px;">
+                                                            <b style="font-size: 1.6em; text-align: center; display: block;">
+                                                                '.$doc_encabezado->documento_transaccion_descripcion.'
+                                                                <br/>
+                                                                <b>No.</b> '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'
+                                                                <br/>
+                                                                <b>Fecha:</b> '.$doc_encabezado->fecha.'
+                                                            </b>
+                                                            <br/>
+                                                            <b>Cliente:</b> '.$doc_encabezado->tercero_nombre_completo.'
+                                                            <br/>
+                                                            <b>NIT: &nbsp;&nbsp;</b> '.number_format( $doc_encabezado->numero_identificacion, 0, ',', '.').'
+                                                        </div>',
+                                            "atributos" => [],
+                                            "definicion" => "",
+                                            "requerido" => 0,
+                                            "editable" => 1,
+                                            "unico" => 0
+                                        ] );
+
+
+        foreach ($lista_campos as $key => $value)
+        {
+            if ($value['name'] == 'cliente_input')
+            {
+                $lista_campos[$key]['value'] = $doc_encabezado->tercero_nombre_completo;
+            }
+        }
+
+        $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
+
+        $url_action = str_replace('id_fila', $registro->id, $acciones->update);
+        
+        $form_create = [
+                            'url' => $url_action,
+                            'campos' => $lista_campos
+                        ];
+
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Modificar: '.$doc_encabezado->documento_transaccion_prefijo_consecutivo );
+
+        $archivo_js = app($this->modelo->name_space)->archivo_js;
+
+        $pdv = Pdv::find( $registro->pdv_id );
+
+        $motivos = ['10-salida' => 'Ventas POS' ]; 
+        $inv_motivo_id  = 10;
+
+        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
+        $tabla = new TablaIngresoLineaRegistros( PreparaTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
+
+        if ( is_null($tabla) )
+        {
+            $tabla = '';
+        }
+
+
+        $id_transaccion = 8;// 8 = Recaudo cartera
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+
+        $numero_linea = count( $registro->lineas_registros ) + 1;
+
+        $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros( $registro->lineas_registros );
+
+        $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos( $registro );
+        
+        $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact( 'id_transaccion', 'motivos','medios_recaudo','cajas','cuentas_bancarias', 'cuerpo_tabla_medios_recaudos') )->render();
+
+        $total_efectivo_recibido = $this->get_total_campo_lineas_registros( json_decode( str_replace("$", "", $registro->lineas_registros_medios_recaudos) ), 'valor' );
+
+        $productos = InvProducto::get_datos_basicos( '', 'Activo' );
+        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $registro->cliente->lista_precios_id );
+        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $registro->cliente->lista_descuentos_id );
+
+        $contenido_modal = View::make('ventas_pos.lista_items',compact( 'productos') )->render();
+
+        $plantilla_factura = $this->generar_plantilla_factura( $pdv );
+
+        $redondear_centena = config('ventas_pos.redondear_centena');
+
+        return view( 'ventas_pos.edit', compact('form_create','miga_pan','registro','archivo_js','url_action','pdv', 'inv_motivo_id', 'tabla', 'productos', 'precios', 'descuentos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido' ) );
+    }
+
+
+
+    public function armar_cuerpo_tabla_lineas_registros( $lineas_registros_documento )
+    {
+
+        $cuerpo_tabla_lineas_registros = '<tbody>';
+        $i = 1;
+        foreach ( $lineas_registros_documento as $linea )
+        {
+            
+            $cuerpo_tabla_lineas_registros .= '<tr class="linea_registro" data-numero_linea="'.$i.'"><td style="display: none;"><div class="inv_producto_id">'.$linea->inv_producto_id.'</div></td><td style="display: none;"><div class="precio_unitario">'.$linea->precio_unitario.'</div></td><td style="display: none;"><div class="base_impuesto">'.$linea->base_impuesto.'</div></td><td style="display: none;"><div class="tasa_impuesto">'.$linea->tasa_impuesto.'</div></td><td style="display: none;"><div class="valor_impuesto">'.$linea->valor_impuesto.'</div></td><td style="display: none;"><div class="base_impuesto_total">'.$linea->base_impuesto_total.'</div></td><td style="display: none;"><div class="cantidad">'.$linea->cantidad.'</div></td><td style="display: none;"><div class="precio_total">'.$linea->precio_total.'</div></td><td style="display: none;"><div class="tasa_descuento">'.$linea->tasa_descuento.'</div></td><td style="display: none;"><div class="valor_total_descuento">'.$linea->valor_total_descuento.'</div></td><td> &nbsp; </td><td> <span style="background-color:#F7B2A3;">'.$linea->inv_producto_id.'</span> <div class="lbl_producto_descripcion" style="display: inline;"> '.$linea->item->descripcion.' </div> </td><td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> '.$linea->cantidad.'</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">'.$linea->item->unidad_medida1.'</div>) </td><td> <div class="lbl_precio_unitario" style="display: inline;">$ '.number_format($linea->precio_unitario,'0',',','.').'</div></td><td>'.$linea->tasa_descuento.'% ( $<div class="lbl_valor_total_descuento" style="display: inline;">'.number_format($linea->valor_total_descuento,'0',',','.').'</div> ) </td><td><div class="lbl_tasa_impuesto" style="display: inline;">'.$linea->tasa_impuesto.'%</div></td><td> <div class="lbl_precio_total" style="display: inline;">$ '.number_format( $linea->precio_total,'0',',','.' ).' </div> </td> <td><button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button></td></tr>';
+            $i++;
+        }
+
+        $cuerpo_tabla_lineas_registros .= '</tbody>';
+
+        return $cuerpo_tabla_lineas_registros;
+
+    }
+
+
+    public function armar_cuerpo_tabla_medios_recaudos( $doc_encabezado )
+    {
+        $cuerpo_tabla = '';
+        $lineas_recaudos = json_decode( $doc_encabezado->lineas_registros_medios_recaudos );
+
+        if( !is_null( $lineas_recaudos ) )
+        {
+            foreach( $lineas_recaudos as $linea )        
+            {
+                $medio_recaudo = explode('-', $linea->teso_medio_recaudo_id);
+                $motivo = explode('-', $linea->teso_motivo_id);
+                $caja = explode('-', $linea->teso_caja_id);
+                $cuenta_bancaria = explode('-', $linea->teso_cuenta_bancaria_id);
+
+                $cuerpo_tabla .= '<tr> <td> <span style="color:white;">'.$medio_recaudo[0].'-</span>'.$medio_recaudo[1].'</td>' .
+                            '<td><span style="color:white;">' . $motivo[0] . '-</span>' . $motivo[1] . '</td>' . 
+                            '<td><span style="color:white;">' . $caja[0] . '-</span>' . $caja[1] . '</td>' . 
+                            '<td><span style="color:white;">' . $cuenta_bancaria[0] . '-</span>' . $cuenta_bancaria[1] . '</td>' .
+                            '<td class="valor_total">' . $linea->valor . '</td>' .
+                            '<td> <button type="button" class="btn btn-danger btn-xs btn_eliminar_linea_medio_recaudo"><i class="fa fa-btn fa-trash"></i></button> </td> </tr>';
+            }
+        }
+
+        return $cuerpo_tabla;
+    }
+
+
+    /**
+     * ACTUALIZA FACTURA POS
+     *
+     */
+    public function update(Request $request, $id)
+    {
+        $lineas_registros = json_decode($request->lineas_registros);
+
+        $this->actualizar_campo_lineas_registros_medios_recaudos_request( $request );
+
+        $doc_encabezado = FacturaPos::find($id);
+        $doc_encabezado->fecha = $request->fecha;
+        $doc_encabezado->descripcion = $request->descripcion;
+        $doc_encabezado->vendedor_id = $request->vendedor_id;
+        $doc_encabezado->lineas_registros_medios_recaudos = $request->lineas_registros_medios_recaudos;
+        $doc_encabezado->valor_total = $this->get_total_campo_lineas_registros( $lineas_registros, 'precio_total' );
+        $doc_encabezado->modificado_por = Auth::user()->email;
+        $doc_encabezado->save();
+
+        // Borrar líneas de registros anteriores
+        DocRegistro::where('vtas_pos_doc_encabezado_id',$doc_encabezado->id)->delete();
+
+        // Crear nuevamente las líneas de registros
+        $request['creado_por'] = Auth::user()->email;
+        $request['modificado_por'] = Auth::user()->email;
+        FacturaPosController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
+
+        return $doc_encabezado->consecutivo;
+    }
+
 
     /*
         Proceso de eliminar FACTURA POS 
@@ -343,6 +555,12 @@ class FacturaPosController extends TransaccionController
 
         $modificado_por = Auth::user()->email;
 
+        // Se elimina el Mov. Vtas. POS
+        Movimiento::where( 'core_tipo_transaccion_id', $factura->core_tipo_transaccion_id )
+                        ->where( 'core_tipo_doc_app_id', $factura->core_tipo_doc_app_id )
+                        ->where( 'consecutivo', $factura->consecutivo )
+                        ->delete();
+
         // Se marcan como anulados los registros del documento
         DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
 
@@ -353,49 +571,172 @@ class FacturaPosController extends TransaccionController
         
     }
 
+    public static function anular_factura_acumulada(Request $request)
+    {        
+        $factura = FacturaPos::find( $request->factura_id );
 
+        $array_wheres = ['core_empresa_id'=>$factura->core_empresa_id, 
+                            'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id,
+                            'consecutivo' => $factura->consecutivo];
+
+        // Verificar si la factura tiene abonos, si tiene no se puede eliminar
+        $cantidad = CxcAbono::where('doc_cxc_transacc_id',$factura->core_tipo_transaccion_id)
+                            ->where('doc_cxc_tipo_doc_id',$factura->core_tipo_doc_app_id)
+                            ->where('doc_cxc_consecutivo',$factura->consecutivo)
+                            ->count();
+
+        if($cantidad != 0)
+        {
+            return redirect( 'pos_factura/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error','Factura NO puede ser eliminada. Se le han hecho Recaudos de CXC (Tesorería).');
+        }
+
+        $modificado_por = Auth::user()->email;
+
+        // 1ro. Anular documento asociado de inventarios
+        // Obtener las remisiones relacionadas con la factura y anularlas o dejarlas en estado Pendiente
+        $ids_documentos_relacionados = explode( ',', $factura->remision_doc_encabezado_id );
+        $cant_registros = count($ids_documentos_relacionados);
+        for ($i=0; $i < $cant_registros; $i++)
+        { 
+            $remision = InvDocEncabezado::find( $ids_documentos_relacionados[$i] );
+            if ( !is_null($remision) )
+            {
+                if ( $request->anular_remision ) // anular_remision es tipo boolean
+                {
+                    InventarioController::anular_documento_inventarios( $remision->id );
+                }else{
+                    $remision->update( [ 'estado'=>'Pendiente', 'modificado_por' => $modificado_por]);
+                }    
+            }
+        }
+
+        // 2do. Borrar registros contables del documento
+        ContabMovimiento::where($array_wheres)->delete();
+
+        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar y de tesorería
+        CxcMovimiento::where($array_wheres)->delete();
+        TesoMovimiento::where($array_wheres)->delete();
+
+        // 4to. Se elimina el movimiento de ventas POS y Ventas Estándar
+        Movimiento::where($array_wheres)->delete();
+        VtasMovimiento::where($array_wheres)->delete();
+
+        // 5to. Se marcan como anulados los registros del documento
+        DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
+
+        // 6to. Se marca como anulado el documento
+        $factura->update(['estado'=>'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
+
+        return redirect( 'pos_factura/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Factura de ventas ANULADA correctamente.');
+        
+    }
+
+
+    /*
+        ACUMULAR
+        => Genera movimiento de ventas
+        => Genera Documentos de Remisión y movimiento de inventarios
+        => Genera Movimiento de Tesorería O CxC
+    */
     public function acumular( $pdv_id )
     {
-        $encabezados_documentos = FacturaPos::where('pdv_id',$pdv_id)->where('estado','Pendiente')->get();
+        $pdv = Pdv::find( $pdv_id );
+
+        $encabezados_documentos = FacturaPos::where( 'pdv_id', $pdv_id )->where( 'estado', 'Pendiente' )->get();
 
         foreach ($encabezados_documentos as $factura)
         {
-            $lineas_registros = DocRegistro::where('vtas_pos_doc_encabezado_id',$factura->id)->get();
+            $lineas_registros = DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->get();
 
             foreach ($lineas_registros as $linea)
             {
                 $datos = $factura->toArray() + $linea->toArray();
 
-                // Falta Movimientos y Documentos de Inventarios
-                /*
-                    
-                */
-
-
                 // Movimiento de Ventas
                 $datos['estado'] = 'Activo';
+
                 VtasMovimiento::create( $datos );
 
-                $linea->estado ='Acumulado';
+                $linea->estado = 'Acumulado';
                 $linea->save();
+            } 
+            /**/
+            // Actualiza Movimiento POS
+            Movimiento::where( 'core_tipo_transaccion_id', $factura->core_tipo_transaccion_id )
+                        ->where( 'core_tipo_doc_app_id', $factura->core_tipo_doc_app_id )
+                        ->where( 'consecutivo', $factura->consecutivo )
+                        ->update( [ 'estado' => 'Acumulado' ] );
 
-                // Actualiza Movimiento POS
-                $movimiento_pos = Movimiento::where('pdv_id', $datos['pdv_id'])
-                                                ->where('core_tipo_transaccion_id', $datos['core_tipo_transaccion_id'])
-                                                ->where('core_tipo_doc_app_id', $datos['core_tipo_doc_app_id'])
-                                                ->where('consecutivo', $datos['consecutivo'])
-                                                ->get()
-                                                ->first();
+            // Crear Remisión y Mov. de inventarios
+            $datos_remision = $factura->toArray();
+            $datos_remision['inv_bodega_id'] = $pdv->bodega_default_id;
 
-                $movimiento_pos->estado ='Acumulado';
-                $movimiento_pos->save();
-            }
+            $doc_remision = InventarioController::crear_encabezado_remision_ventas( $datos_remision );
 
+            InventarioController::crear_registros_remision_ventas( $doc_remision, $lineas_registros );
+            
             // Movimiento de Tesoreria ó CxC
             $datos['estado'] = 'Activo';
             FacturaPosController::crear_registro_pago( $factura->forma_pago, $datos, $factura->valor_total, $factura->descripcion );
 
-            $factura->estado ='Acumulado';
+            $factura->remision_doc_encabezado_id = $doc_remision->id;
+            $factura->estado = 'Acumulado';
+            $factura->save();
+        }
+
+        return 1;        
+    }
+
+    /*
+        CONTABILIZAR
+        => Genera Movimiento Contable para:
+            * Movimiento de Ventas (Ingresos e Impuestos)
+            * Movimiento de Inventarios (Inventarios y Costos)
+            * Movimiento de Tesorería (Caja y Bancos)
+            * Movimiento de CxC (Cartera de clientes)
+    */
+    public function contabilizar( $pdv_id )
+    {
+        $pdv = Pdv::find( $pdv_id );
+
+        $encabezados_documentos = FacturaPos::where( 'pdv_id', $pdv_id )->where( 'estado', 'Acumulado' )->get();
+
+        $detalle_operacion = 'Acumulación PDV: ' . $pdv->descripcion;
+
+        foreach ($encabezados_documentos as $factura)
+        {
+            $lineas_registros = DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->get();
+
+            foreach ($lineas_registros as $linea)
+            {
+                $una_linea_registro = $factura->toArray() + $linea->toArray();
+
+                $una_linea_registro['estado'] = 'Activo';
+
+                // Contabilizar Ventas (Ingresos e Impuestos)
+                VentaController::contabilizar_movimiento_credito( $una_linea_registro, $detalle_operacion );
+
+                $linea->estado = 'Contabilizado';
+                $linea->save();
+            }
+
+            // Actualiza Movimiento POS
+            Movimiento::where( 'core_tipo_transaccion_id', $factura->core_tipo_transaccion_id )
+                        ->where( 'core_tipo_doc_app_id', $factura->core_tipo_doc_app_id )
+                        ->where( 'consecutivo', $factura->consecutivo )
+                        ->update( [ 'estado' => 'Contabilizado' ] );
+
+            // Contabilizar Caja y Bancos ó Cartera de clientes
+            $forma_pago = $factura->forma_pago;
+            $datos = $factura->toArray();
+            $datos['estado'] = 'Activo';
+            FacturaPosController::contabilizar_movimiento_debito( $forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $pdv->caja_default_id );
+
+            // Inventarios (Inventarios y Costos)
+            InventarioController::contabilizar_documento_inventario( $factura->remision_doc_encabezado_id, $detalle_operacion );
+
+            $factura->estado = 'Contabilizado';
             $factura->save();
         }
 
@@ -404,11 +745,7 @@ class FacturaPosController extends TransaccionController
     }
 
     public static function crear_registro_pago( $forma_pago, $datos, $total_documento, $detalle_operacion )
-    {
-        /*
-            WARNING. Esto debe ser un parámetro de la configuración. Si se quiere llevar la factura contado a la caja directamente o si se causa una cuenta por cobrar
-        */
-        
+    {        
         // Cargar la cuenta por cobrar (CxC)
         if ( $forma_pago == 'credito')
         {
@@ -424,18 +761,90 @@ class FacturaPosController extends TransaccionController
         // Agregar el movimiento a tesorería
         if ( $forma_pago == 'contado')
         {
-            // WARNING: La caja la debe tomar de la caja por defecto asociada al usuario,
-            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            
-            $pdv = Pdv::find( $datos['pdv_id'] );
+            $lineas_recaudos = json_decode( $datos['lineas_registros_medios_recaudos'] );
 
-            $caja = TesoCaja::find( $pdv->caja_default_id );
-            // El motivo lo debe traer de unparámetro de la configuración
-            $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
-            $datos['teso_caja_id'] = $caja->id;
-            $datos['teso_cuenta_bancaria_id'] = 0;
-            $datos['valor_movimiento'] = $total_documento;
-            TesoMovimiento::create( $datos );
+            if ( !is_null( $lineas_recaudos ) ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
+            {
+                foreach( $lineas_recaudos as $linea )
+                {
+                    $datos['teso_motivo_id'] = explode("-", $linea->teso_motivo_id)[0];
+                    $datos['teso_caja_id'] = explode("-", $linea->teso_caja_id)[0];
+                    $datos['teso_cuenta_bancaria_id'] = explode("-", $linea->teso_cuenta_bancaria_id)[0];
+                    $datos['valor_movimiento'] = (float)substr($linea->valor, 1);
+                    TesoMovimiento::create( $datos );
+                }
+            }else{
+                // Para viejas versiones
+                $pdv = Pdv::find( $datos['pdv_id'] );
+
+                $caja = TesoCaja::find( $pdv->caja_default_id );
+                // El motivo lo debe traer de unparÃ¡metro de la configuraciÃ³n
+                $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
+                $datos['teso_caja_id'] = $caja->id;
+                $datos['teso_cuenta_bancaria_id'] = 0;
+                $datos['valor_movimiento'] = $total_documento;
+                TesoMovimiento::create( $datos );
+            }
+                                
+        }
+    }
+
+    public static function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion, $caja_banco_id = null )
+    {
+        /*
+            WARNING. Esto debe ser un parámetro de la configuración. Si se quiere llevar la factura contado a la caja directamente o si se causa una cuenta por cobrar
+        */
+        
+        if ( $forma_pago == 'credito')
+        {
+            // Se resetean estos campos del registro
+            $datos['inv_producto_id'] = 0;
+            $datos['cantidad '] = 0;
+            $datos['tasa_impuesto'] = 0;
+            $datos['base_impuesto'] = 0;
+            $datos['valor_impuesto'] = 0;
+            $datos['inv_bodega_id'] = 0;
+
+            // La cuenta de CARTERA se toma de la clase del cliente
+            $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $datos['cliente_id'] );
+            ContabilidadController::contabilizar_registro2( $datos, $cta_x_cobrar_id, $detalle_operacion, $total_documento, 0);
+        }
+        
+        // Agregar el movimiento a tesorería
+        if ( $forma_pago == 'contado')
+        {
+            $lineas_recaudos = json_decode( $datos['lineas_registros_medios_recaudos'] );
+
+            if ( !is_null( $lineas_recaudos ) ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
+            {
+                foreach( $lineas_recaudos as $linea )
+                {
+                    $teso_caja_id = explode("-", $linea->teso_caja_id)[0];
+                    if ($teso_caja_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
+                    }
+
+                    $teso_cuenta_bancaria_id = explode("-", $linea->teso_cuenta_bancaria_id)[0];
+                    if ($teso_cuenta_bancaria_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
+                    }
+
+                    ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, (float)substr($linea->valor, 1), 0, $teso_caja_id, $teso_cuenta_bancaria_id );
+                }
+            }else{
+                // Para viejas versiones
+                $pdv = Pdv::find( $datos['pdv_id'] );
+
+                $caja = TesoCaja::find( $pdv->caja_default_id );
+                
+                $cta_caja_id = $caja->contab_cuenta_id;
+                
+                ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, $total_documento, 0, $caja->id, 0);
+            }
+
+            
         }
     }
 
@@ -463,6 +872,37 @@ class FacturaPosController extends TransaccionController
 
         return View::make( 'ventas_pos.form_registro_ingresos_gastos', compact('pdv','campos') )->render();
     }
+
+
+
+    /*
+        Proceso especial para generar remisiones de documentos YA acumulados
+    */
+    public function generar_remisiones( $pdv_id )
+    {
+        $pdv = Pdv::find( $pdv_id );
+
+        $encabezados_documentos = FacturaPos::where( 'pdv_id', $pdv_id )->where( 'estado', 'Acumulado' )->get();
+
+        foreach ($encabezados_documentos as $factura)
+        {
+            $lineas_registros = DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->get();
+
+            // Crear Remisión y Mov. de inventarios
+            $datos_remision = $factura->toArray();
+            $datos_remision['inv_bodega_id'] = $pdv->bodega_default_id;
+
+            $doc_remision = InventarioController::crear_encabezado_remision_ventas( $datos_remision );
+
+            InventarioController::crear_registros_remision_ventas( $doc_remision, $lineas_registros );
+
+            $factura->remision_doc_encabezado_id = $doc_remision->id;
+            $factura->save();
+        }
+
+        return 1;        
+    }
+
 
     public function store_registro_ingresos_gastos( Request $request )
     {

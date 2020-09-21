@@ -4047,10 +4047,10 @@
       'url' => 'web',
       'parent' => 0,
       'orden' => 4,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => 'list',
       'created_at' => '2019-10-10 08:47:31',
-      'updated_at' => '2019-10-11 08:35:34',
+      'updated_at' => '2020-07-31 17:17:44',
     ),
     270 => 
     array (
@@ -4266,16 +4266,16 @@
     array (
       'id' => 310,
       'core_app_id' => 9,
-      'modelo_id' => 0,
-      'name' => 'compras_terceros_proveedores',
+      'modelo_id' => 156,
+      'name' => 'compras_terceros_proveedores_ok',
       'descripcion' => 'Crear tercero como proveedor',
-      'url' => 'web',
+      'url' => 'web/create',
       'parent' => 0,
       'orden' => 2,
       'enabled' => 0,
-      'fa_icon' => 'address-book',
+      'fa_icon' => 'child',
       'created_at' => '2019-10-22 05:51:40',
-      'updated_at' => '2019-10-22 05:58:39',
+      'updated_at' => '2020-07-31 17:06:20',
     ),
     285 => 
     array (
@@ -4812,10 +4812,10 @@
       'url' => 'web',
       'parent' => 71,
       'orden' => 2,
-      'enabled' => 0,
+      'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-02-18 19:07:46',
-      'updated_at' => '2020-04-03 05:25:04',
+      'updated_at' => '2020-07-30 13:15:12',
     ),
     321 => 
     array (
@@ -5317,7 +5317,7 @@
       'id' => 380,
       'core_app_id' => 10,
       'modelo_id' => 0,
-      'name' => 'pw_config',
+      'name' => 'pw_configuracion',
       'descripcion' => 'Configuración',
       'url' => 'config',
       'parent' => 214,
@@ -5325,7 +5325,7 @@
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-04-13 08:59:26',
-      'updated_at' => '2020-05-02 09:47:30',
+      'updated_at' => '2020-08-02 06:47:55',
     ),
     355 => 
     array (
@@ -5382,10 +5382,10 @@
       'url' => 'web',
       'parent' => 173,
       'orden' => 2,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => 'list',
       'created_at' => '2020-05-03 06:28:48',
-      'updated_at' => '2020-05-03 06:29:30',
+      'updated_at' => '2020-07-31 17:18:06',
     ),
     359 => 
     array (
@@ -5694,13 +5694,13 @@
       'modelo_id' => 170,
       'name' => 'compras_create_doc_cruce_cxp',
       'descripcion' => 'Docs. Cruce de CxP',
-      'url' => 'doc_cruce_cxp/create',
+      'url' => 'web',
       'parent' => 292,
       'orden' => 6,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-07-17 12:32:21',
-      'updated_at' => '2020-07-25 09:45:47',
+      'updated_at' => '2020-08-07 11:04:10',
     ),
     380 => 
     array (
@@ -5926,6 +5926,216 @@
       'fa_icon' => '',
       'created_at' => '2020-07-28 15:10:30',
       'updated_at' => '2020-07-28 15:10:41',
+    ),
+    395 => 
+    array (
+      'id' => 421,
+      'core_app_id' => 5,
+      'modelo_id' => 219,
+      'name' => 'sga_guias_academicas_docente',
+      'descripcion' => 'Guías académicas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:18:59',
+      'updated_at' => '2020-07-31 16:19:23',
+    ),
+    396 => 
+    array (
+      'id' => 422,
+      'core_app_id' => 5,
+      'modelo_id' => 192,
+      'name' => 'sga_aca_doc_preinforme_academico',
+      'descripcion' => 'Preinforme Académico',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 7,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:23:39',
+      'updated_at' => '2020-07-31 16:24:11',
+    ),
+    397 => 
+    array (
+      'id' => 423,
+      'core_app_id' => 5,
+      'modelo_id' => 70,
+      'name' => 'aca_doc_crear_logro',
+      'descripcion' => 'Crear logros',
+      'url' => 'web/create',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:27:49',
+      'updated_at' => '2020-07-31 16:28:08',
+    ),
+    398 => 
+    array (
+      'id' => 424,
+      'core_app_id' => 5,
+      'modelo_id' => 225,
+      'name' => 'aca_doc_logros_adicionales',
+      'descripcion' => 'Logros adicionales',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:31:10',
+      'updated_at' => '2020-07-31 16:31:27',
+    ),
+    399 => 
+    array (
+      'id' => 425,
+      'core_app_id' => 5,
+      'modelo_id' => 17,
+      'name' => 'aca_doc_novedades_observador',
+      'descripcion' => 'Novedades observador',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:34:40',
+      'updated_at' => '2020-07-31 16:35:06',
+    ),
+    400 => 
+    array (
+      'id' => 426,
+      'core_app_id' => 5,
+      'modelo_id' => 18,
+      'name' => 'aca_doc_analisis_dofa',
+      'descripcion' => 'Análisis FODA',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-07-31 16:37:39',
+      'updated_at' => '2020-07-31 16:38:06',
+    ),
+    401 => 
+    array (
+      'id' => 427,
+      'core_app_id' => 7,
+      'modelo_id' => 0,
+      'name' => 'sin_usar_1',
+      'descripcion' => 'Sin usar',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'address-book',
+      'created_at' => '2020-07-31 17:01:12',
+      'updated_at' => '2020-07-31 17:11:23',
+    ),
+    402 => 
+    array (
+      'id' => 428,
+      'core_app_id' => 13,
+      'modelo_id' => 157,
+      'name' => 'ventas_terceros_a_clientes',
+      'descripcion' => 'Crear tercero como cliente',
+      'url' => 'web/create',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'child',
+      'created_at' => '2020-07-31 17:19:48',
+      'updated_at' => '2020-07-31 17:20:21',
+    ),
+    403 => 
+    array (
+      'id' => 429,
+      'core_app_id' => 20,
+      'modelo_id' => 0,
+      'name' => 'vtas_pos_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-08-02 06:46:56',
+      'updated_at' => '2020-08-02 06:47:15',
+    ),
+    404 => 
+    array (
+      'id' => 430,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'aca_calificaciones_calificar2',
+      'descripcion' => 'Calificar',
+      'url' => 'calificaciones/calificar2',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-08-10 08:37:25',
+      'updated_at' => '2020-08-10 08:38:20',
+    ),
+    405 => 
+    array (
+      'id' => 431,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'acdo_cambiar_estado_actividades_escolares',
+      'descripcion' => 'Cambiar estado Actividades escolares',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-08-12 13:23:57',
+      'updated_at' => '2020-08-12 13:24:51',
+    ),
+    406 => 
+    array (
+      'id' => 432,
+      'core_app_id' => 9,
+      'modelo_id' => 233,
+      'name' => 'compras_documento_soporte_adquisiciones',
+      'descripcion' => 'Documentos soporte en adquisiciones',
+      'url' => 'web',
+      'parent' => 292,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-08-17 20:13:54',
+      'updated_at' => '2020-08-17 20:15:39',
+    ),
+    407 => 
+    array (
+      'id' => 433,
+      'core_app_id' => 1,
+      'modelo_id' => 0,
+      'name' => 'matriculas_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-08-31 04:57:01',
+      'updated_at' => '2020-08-31 04:57:28',
+    ),
+    408 => 
+    array (
+      'id' => 434,
+      'core_app_id' => 3,
+      'modelo_id' => 234,
+      'name' => 'sga_facturas_estudiantes',
+      'descripcion' => 'Facturas de estudiantes',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 3,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-09-01 05:50:30',
+      'updated_at' => '2020-09-01 05:51:01',
     ),
   ),
   'roles' => 
@@ -8843,5467 +9053,5827 @@
     array (
       'orden' => 0,
       'permission_id' => 142,
-      'role_id' => 12,
+      'role_id' => 4,
     ),
     462 => 
     array (
       'orden' => 0,
-      'permission_id' => 143,
-      'role_id' => 1,
+      'permission_id' => 142,
+      'role_id' => 12,
     ),
     463 => 
     array (
       'orden' => 0,
       'permission_id' => 143,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     464 => 
     array (
       'orden' => 0,
       'permission_id' => 143,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     465 => 
     array (
       'orden' => 0,
-      'permission_id' => 144,
-      'role_id' => 1,
+      'permission_id' => 143,
+      'role_id' => 12,
     ),
     466 => 
     array (
       'orden' => 0,
       'permission_id' => 144,
-      'role_id' => 12,
+      'role_id' => 1,
     ),
     467 => 
     array (
       'orden' => 0,
-      'permission_id' => 145,
-      'role_id' => 1,
+      'permission_id' => 144,
+      'role_id' => 12,
     ),
     468 => 
     array (
       'orden' => 0,
       'permission_id' => 145,
-      'role_id' => 12,
+      'role_id' => 1,
     ),
     469 => 
     array (
       'orden' => 0,
-      'permission_id' => 146,
-      'role_id' => 1,
+      'permission_id' => 145,
+      'role_id' => 12,
     ),
     470 => 
     array (
       'orden' => 0,
       'permission_id' => 146,
-      'role_id' => 2,
+      'role_id' => 1,
     ),
     471 => 
     array (
       'orden' => 0,
       'permission_id' => 146,
-      'role_id' => 9,
+      'role_id' => 2,
     ),
     472 => 
     array (
       'orden' => 0,
       'permission_id' => 146,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     473 => 
     array (
       'orden' => 0,
       'permission_id' => 146,
-      'role_id' => 13,
+      'role_id' => 12,
     ),
     474 => 
     array (
       'orden' => 0,
-      'permission_id' => 147,
-      'role_id' => 1,
+      'permission_id' => 146,
+      'role_id' => 13,
     ),
     475 => 
     array (
       'orden' => 0,
-      'permission_id' => 148,
+      'permission_id' => 147,
       'role_id' => 1,
     ),
     476 => 
     array (
       'orden' => 0,
       'permission_id' => 148,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     477 => 
     array (
       'orden' => 0,
       'permission_id' => 148,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     478 => 
     array (
       'orden' => 0,
-      'permission_id' => 149,
-      'role_id' => 1,
+      'permission_id' => 148,
+      'role_id' => 7,
     ),
     479 => 
     array (
       'orden' => 0,
       'permission_id' => 149,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     480 => 
     array (
       'orden' => 0,
       'permission_id' => 149,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     481 => 
     array (
       'orden' => 0,
-      'permission_id' => 150,
-      'role_id' => 1,
+      'permission_id' => 149,
+      'role_id' => 7,
     ),
     482 => 
     array (
       'orden' => 0,
       'permission_id' => 150,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     483 => 
     array (
       'orden' => 0,
       'permission_id' => 150,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     484 => 
     array (
       'orden' => 0,
-      'permission_id' => 151,
-      'role_id' => 1,
+      'permission_id' => 150,
+      'role_id' => 7,
     ),
     485 => 
     array (
       'orden' => 0,
       'permission_id' => 151,
-      'role_id' => 2,
+      'role_id' => 1,
     ),
     486 => 
     array (
       'orden' => 0,
       'permission_id' => 151,
-      'role_id' => 9,
+      'role_id' => 2,
     ),
     487 => 
     array (
       'orden' => 0,
       'permission_id' => 151,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     488 => 
     array (
       'orden' => 0,
       'permission_id' => 151,
-      'role_id' => 13,
+      'role_id' => 12,
     ),
     489 => 
     array (
       'orden' => 0,
-      'permission_id' => 152,
-      'role_id' => 1,
+      'permission_id' => 151,
+      'role_id' => 13,
     ),
     490 => 
     array (
       'orden' => 0,
       'permission_id' => 152,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     491 => 
     array (
       'orden' => 0,
       'permission_id' => 152,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     492 => 
     array (
       'orden' => 0,
-      'permission_id' => 153,
-      'role_id' => 1,
+      'permission_id' => 152,
+      'role_id' => 7,
     ),
     493 => 
     array (
       'orden' => 0,
       'permission_id' => 153,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     494 => 
     array (
       'orden' => 0,
       'permission_id' => 153,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     495 => 
     array (
       'orden' => 0,
       'permission_id' => 153,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     496 => 
     array (
       'orden' => 0,
       'permission_id' => 153,
-      'role_id' => 11,
+      'role_id' => 9,
     ),
     497 => 
     array (
       'orden' => 0,
       'permission_id' => 153,
-      'role_id' => 17,
+      'role_id' => 11,
     ),
     498 => 
     array (
       'orden' => 0,
-      'permission_id' => 154,
-      'role_id' => 1,
+      'permission_id' => 153,
+      'role_id' => 17,
     ),
     499 => 
     array (
       'orden' => 0,
       'permission_id' => 154,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     500 => 
     array (
       'orden' => 0,
       'permission_id' => 154,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     501 => 
     array (
       'orden' => 0,
       'permission_id' => 154,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     502 => 
     array (
       'orden' => 0,
       'permission_id' => 154,
-      'role_id' => 11,
+      'role_id' => 9,
     ),
     503 => 
     array (
       'orden' => 0,
       'permission_id' => 154,
-      'role_id' => 17,
+      'role_id' => 11,
     ),
     504 => 
     array (
       'orden' => 0,
-      'permission_id' => 155,
-      'role_id' => 1,
+      'permission_id' => 154,
+      'role_id' => 17,
     ),
     505 => 
     array (
       'orden' => 0,
       'permission_id' => 155,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     506 => 
     array (
       'orden' => 0,
       'permission_id' => 155,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     507 => 
     array (
       'orden' => 0,
       'permission_id' => 155,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     508 => 
     array (
       'orden' => 0,
       'permission_id' => 155,
-      'role_id' => 11,
+      'role_id' => 9,
     ),
     509 => 
     array (
       'orden' => 0,
       'permission_id' => 155,
-      'role_id' => 17,
+      'role_id' => 11,
     ),
     510 => 
     array (
       'orden' => 0,
-      'permission_id' => 156,
-      'role_id' => 1,
+      'permission_id' => 155,
+      'role_id' => 17,
     ),
     511 => 
     array (
       'orden' => 0,
       'permission_id' => 156,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     512 => 
     array (
       'orden' => 0,
       'permission_id' => 156,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     513 => 
     array (
       'orden' => 0,
       'permission_id' => 156,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     514 => 
     array (
       'orden' => 0,
       'permission_id' => 156,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     515 => 
     array (
       'orden' => 0,
-      'permission_id' => 157,
-      'role_id' => 1,
+      'permission_id' => 156,
+      'role_id' => 17,
     ),
     516 => 
     array (
       'orden' => 0,
       'permission_id' => 157,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     517 => 
     array (
       'orden' => 0,
       'permission_id' => 157,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     518 => 
     array (
       'orden' => 0,
       'permission_id' => 157,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     519 => 
     array (
       'orden' => 0,
       'permission_id' => 157,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     520 => 
     array (
       'orden' => 0,
-      'permission_id' => 158,
-      'role_id' => 1,
+      'permission_id' => 157,
+      'role_id' => 17,
     ),
     521 => 
     array (
       'orden' => 0,
       'permission_id' => 158,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     522 => 
     array (
       'orden' => 0,
       'permission_id' => 158,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     523 => 
     array (
       'orden' => 0,
       'permission_id' => 158,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     524 => 
     array (
       'orden' => 0,
       'permission_id' => 158,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     525 => 
     array (
       'orden' => 0,
-      'permission_id' => 159,
-      'role_id' => 1,
+      'permission_id' => 158,
+      'role_id' => 17,
     ),
     526 => 
     array (
       'orden' => 0,
       'permission_id' => 159,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     527 => 
     array (
       'orden' => 0,
       'permission_id' => 159,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     528 => 
     array (
       'orden' => 0,
       'permission_id' => 159,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     529 => 
     array (
       'orden' => 0,
       'permission_id' => 159,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     530 => 
     array (
       'orden' => 0,
-      'permission_id' => 160,
-      'role_id' => 1,
+      'permission_id' => 159,
+      'role_id' => 17,
     ),
     531 => 
     array (
       'orden' => 0,
       'permission_id' => 160,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     532 => 
     array (
       'orden' => 0,
       'permission_id' => 160,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     533 => 
     array (
       'orden' => 0,
       'permission_id' => 160,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     534 => 
     array (
       'orden' => 0,
       'permission_id' => 160,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     535 => 
     array (
       'orden' => 0,
-      'permission_id' => 161,
-      'role_id' => 1,
+      'permission_id' => 160,
+      'role_id' => 17,
     ),
     536 => 
     array (
       'orden' => 0,
       'permission_id' => 161,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     537 => 
     array (
       'orden' => 0,
       'permission_id' => 161,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     538 => 
     array (
       'orden' => 0,
       'permission_id' => 161,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     539 => 
     array (
       'orden' => 0,
       'permission_id' => 161,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     540 => 
     array (
       'orden' => 0,
-      'permission_id' => 162,
-      'role_id' => 1,
+      'permission_id' => 161,
+      'role_id' => 17,
     ),
     541 => 
     array (
       'orden' => 0,
       'permission_id' => 162,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     542 => 
     array (
       'orden' => 0,
       'permission_id' => 162,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     543 => 
     array (
       'orden' => 0,
       'permission_id' => 162,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     544 => 
     array (
       'orden' => 0,
       'permission_id' => 162,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     545 => 
     array (
       'orden' => 0,
-      'permission_id' => 163,
-      'role_id' => 1,
+      'permission_id' => 162,
+      'role_id' => 17,
     ),
     546 => 
     array (
       'orden' => 0,
       'permission_id' => 163,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     547 => 
     array (
       'orden' => 0,
       'permission_id' => 163,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     548 => 
     array (
       'orden' => 0,
       'permission_id' => 163,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     549 => 
     array (
       'orden' => 0,
       'permission_id' => 163,
-      'role_id' => 11,
+      'role_id' => 9,
     ),
     550 => 
     array (
       'orden' => 0,
       'permission_id' => 163,
-      'role_id' => 17,
+      'role_id' => 11,
     ),
     551 => 
     array (
       'orden' => 0,
-      'permission_id' => 164,
-      'role_id' => 1,
+      'permission_id' => 163,
+      'role_id' => 17,
     ),
     552 => 
     array (
       'orden' => 0,
       'permission_id' => 164,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     553 => 
     array (
       'orden' => 0,
       'permission_id' => 164,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     554 => 
     array (
       'orden' => 0,
-      'permission_id' => 165,
-      'role_id' => 1,
+      'permission_id' => 164,
+      'role_id' => 7,
     ),
     555 => 
     array (
       'orden' => 0,
       'permission_id' => 165,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     556 => 
     array (
       'orden' => 0,
       'permission_id' => 165,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     557 => 
     array (
       'orden' => 0,
-      'permission_id' => 166,
-      'role_id' => 1,
+      'permission_id' => 165,
+      'role_id' => 7,
     ),
     558 => 
     array (
       'orden' => 0,
       'permission_id' => 166,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     559 => 
     array (
       'orden' => 0,
       'permission_id' => 166,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     560 => 
     array (
       'orden' => 0,
-      'permission_id' => 167,
-      'role_id' => 1,
+      'permission_id' => 166,
+      'role_id' => 7,
     ),
     561 => 
     array (
       'orden' => 0,
       'permission_id' => 167,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     562 => 
     array (
       'orden' => 0,
       'permission_id' => 167,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     563 => 
     array (
       'orden' => 0,
-      'permission_id' => 168,
-      'role_id' => 1,
+      'permission_id' => 167,
+      'role_id' => 7,
     ),
     564 => 
     array (
       'orden' => 0,
       'permission_id' => 168,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     565 => 
     array (
       'orden' => 0,
       'permission_id' => 168,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     566 => 
     array (
       'orden' => 0,
       'permission_id' => 168,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     567 => 
     array (
       'orden' => 0,
       'permission_id' => 168,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     568 => 
     array (
       'orden' => 0,
-      'permission_id' => 169,
-      'role_id' => 1,
+      'permission_id' => 168,
+      'role_id' => 17,
     ),
     569 => 
     array (
       'orden' => 0,
       'permission_id' => 169,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     570 => 
     array (
       'orden' => 0,
       'permission_id' => 169,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     571 => 
     array (
       'orden' => 0,
       'permission_id' => 169,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     572 => 
     array (
       'orden' => 0,
       'permission_id' => 169,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     573 => 
     array (
       'orden' => 0,
-      'permission_id' => 170,
-      'role_id' => 1,
+      'permission_id' => 169,
+      'role_id' => 17,
     ),
     574 => 
     array (
       'orden' => 0,
       'permission_id' => 170,
-      'role_id' => 2,
+      'role_id' => 1,
     ),
     575 => 
     array (
       'orden' => 0,
       'permission_id' => 170,
-      'role_id' => 9,
+      'role_id' => 2,
     ),
     576 => 
     array (
       'orden' => 0,
       'permission_id' => 170,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     577 => 
     array (
       'orden' => 0,
       'permission_id' => 170,
-      'role_id' => 13,
+      'role_id' => 12,
     ),
     578 => 
     array (
       'orden' => 0,
-      'permission_id' => 171,
-      'role_id' => 1,
+      'permission_id' => 170,
+      'role_id' => 13,
     ),
     579 => 
     array (
       'orden' => 0,
       'permission_id' => 171,
-      'role_id' => 2,
+      'role_id' => 1,
     ),
     580 => 
     array (
       'orden' => 0,
       'permission_id' => 171,
-      'role_id' => 9,
+      'role_id' => 2,
     ),
     581 => 
     array (
       'orden' => 0,
       'permission_id' => 171,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     582 => 
     array (
       'orden' => 0,
       'permission_id' => 171,
-      'role_id' => 13,
+      'role_id' => 12,
     ),
     583 => 
     array (
       'orden' => 0,
-      'permission_id' => 172,
-      'role_id' => 1,
+      'permission_id' => 171,
+      'role_id' => 13,
     ),
     584 => 
     array (
       'orden' => 0,
       'permission_id' => 172,
-      'role_id' => 2,
+      'role_id' => 1,
     ),
     585 => 
     array (
       'orden' => 0,
       'permission_id' => 172,
-      'role_id' => 9,
+      'role_id' => 2,
     ),
     586 => 
     array (
       'orden' => 0,
       'permission_id' => 172,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     587 => 
     array (
       'orden' => 0,
-      'permission_id' => 173,
-      'role_id' => 1,
+      'permission_id' => 172,
+      'role_id' => 12,
     ),
     588 => 
     array (
       'orden' => 0,
       'permission_id' => 173,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     589 => 
     array (
       'orden' => 0,
       'permission_id' => 173,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     590 => 
     array (
       'orden' => 0,
       'permission_id' => 173,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     591 => 
     array (
       'orden' => 0,
       'permission_id' => 173,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     592 => 
     array (
       'orden' => 0,
-      'permission_id' => 174,
-      'role_id' => 1,
+      'permission_id' => 173,
+      'role_id' => 17,
     ),
     593 => 
     array (
       'orden' => 0,
       'permission_id' => 174,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     594 => 
     array (
       'orden' => 0,
       'permission_id' => 174,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     595 => 
     array (
       'orden' => 0,
       'permission_id' => 174,
-      'role_id' => 9,
+      'role_id' => 7,
     ),
     596 => 
     array (
       'orden' => 0,
       'permission_id' => 174,
-      'role_id' => 11,
+      'role_id' => 9,
     ),
     597 => 
     array (
       'orden' => 0,
       'permission_id' => 174,
-      'role_id' => 17,
+      'role_id' => 11,
     ),
     598 => 
     array (
       'orden' => 0,
-      'permission_id' => 175,
-      'role_id' => 1,
+      'permission_id' => 174,
+      'role_id' => 17,
     ),
     599 => 
     array (
       'orden' => 0,
       'permission_id' => 175,
-      'role_id' => 7,
+      'role_id' => 1,
     ),
     600 => 
     array (
       'orden' => 0,
       'permission_id' => 175,
-      'role_id' => 8,
+      'role_id' => 7,
     ),
     601 => 
     array (
       'orden' => 0,
-      'permission_id' => 176,
-      'role_id' => 1,
+      'permission_id' => 175,
+      'role_id' => 8,
     ),
     602 => 
     array (
       'orden' => 0,
       'permission_id' => 176,
-      'role_id' => 7,
+      'role_id' => 1,
     ),
     603 => 
     array (
       'orden' => 0,
-      'permission_id' => 177,
-      'role_id' => 1,
+      'permission_id' => 176,
+      'role_id' => 7,
     ),
     604 => 
     array (
       'orden' => 0,
       'permission_id' => 177,
-      'role_id' => 7,
+      'role_id' => 1,
     ),
     605 => 
     array (
       'orden' => 0,
       'permission_id' => 177,
-      'role_id' => 8,
+      'role_id' => 7,
     ),
     606 => 
     array (
       'orden' => 0,
-      'permission_id' => 178,
-      'role_id' => 1,
+      'permission_id' => 177,
+      'role_id' => 8,
     ),
     607 => 
     array (
       'orden' => 0,
       'permission_id' => 178,
-      'role_id' => 7,
+      'role_id' => 1,
     ),
     608 => 
     array (
       'orden' => 0,
       'permission_id' => 178,
-      'role_id' => 8,
+      'role_id' => 7,
     ),
     609 => 
     array (
       'orden' => 0,
-      'permission_id' => 179,
-      'role_id' => 1,
+      'permission_id' => 178,
+      'role_id' => 8,
     ),
     610 => 
     array (
       'orden' => 0,
       'permission_id' => 179,
-      'role_id' => 7,
+      'role_id' => 1,
     ),
     611 => 
     array (
       'orden' => 0,
       'permission_id' => 179,
-      'role_id' => 8,
+      'role_id' => 7,
     ),
     612 => 
     array (
       'orden' => 0,
-      'permission_id' => 180,
-      'role_id' => 1,
+      'permission_id' => 179,
+      'role_id' => 8,
     ),
     613 => 
     array (
       'orden' => 0,
       'permission_id' => 180,
-      'role_id' => 7,
+      'role_id' => 1,
     ),
     614 => 
     array (
       'orden' => 0,
       'permission_id' => 180,
-      'role_id' => 8,
+      'role_id' => 7,
     ),
     615 => 
     array (
       'orden' => 0,
-      'permission_id' => 181,
-      'role_id' => 1,
+      'permission_id' => 180,
+      'role_id' => 8,
     ),
     616 => 
     array (
       'orden' => 0,
       'permission_id' => 181,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     617 => 
     array (
       'orden' => 0,
       'permission_id' => 181,
-      'role_id' => 7,
+      'role_id' => 3,
     ),
     618 => 
     array (
       'orden' => 0,
-      'permission_id' => 182,
-      'role_id' => 1,
+      'permission_id' => 181,
+      'role_id' => 7,
     ),
     619 => 
     array (
       'orden' => 0,
       'permission_id' => 182,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     620 => 
     array (
       'orden' => 0,
       'permission_id' => 182,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     621 => 
     array (
       'orden' => 0,
       'permission_id' => 182,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     622 => 
     array (
       'orden' => 0,
-      'permission_id' => 183,
-      'role_id' => 1,
+      'permission_id' => 182,
+      'role_id' => 17,
     ),
     623 => 
     array (
       'orden' => 0,
       'permission_id' => 183,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     624 => 
     array (
       'orden' => 0,
       'permission_id' => 183,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     625 => 
     array (
       'orden' => 0,
       'permission_id' => 183,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     626 => 
     array (
       'orden' => 0,
-      'permission_id' => 184,
-      'role_id' => 1,
+      'permission_id' => 183,
+      'role_id' => 17,
     ),
     627 => 
     array (
       'orden' => 0,
       'permission_id' => 184,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     628 => 
     array (
       'orden' => 0,
       'permission_id' => 184,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     629 => 
     array (
       'orden' => 0,
       'permission_id' => 184,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     630 => 
     array (
       'orden' => 0,
-      'permission_id' => 185,
-      'role_id' => 1,
+      'permission_id' => 184,
+      'role_id' => 17,
     ),
     631 => 
     array (
       'orden' => 0,
       'permission_id' => 185,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     632 => 
     array (
       'orden' => 0,
       'permission_id' => 185,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     633 => 
     array (
       'orden' => 0,
       'permission_id' => 185,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     634 => 
     array (
       'orden' => 0,
-      'permission_id' => 186,
-      'role_id' => 1,
+      'permission_id' => 185,
+      'role_id' => 17,
     ),
     635 => 
     array (
       'orden' => 0,
       'permission_id' => 186,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     636 => 
     array (
       'orden' => 0,
       'permission_id' => 186,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     637 => 
     array (
       'orden' => 0,
       'permission_id' => 186,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     638 => 
     array (
       'orden' => 0,
-      'permission_id' => 187,
-      'role_id' => 1,
+      'permission_id' => 186,
+      'role_id' => 17,
     ),
     639 => 
     array (
       'orden' => 0,
       'permission_id' => 187,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     640 => 
     array (
       'orden' => 0,
       'permission_id' => 187,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     641 => 
     array (
       'orden' => 0,
       'permission_id' => 187,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     642 => 
     array (
       'orden' => 0,
-      'permission_id' => 188,
-      'role_id' => 1,
+      'permission_id' => 187,
+      'role_id' => 17,
     ),
     643 => 
     array (
       'orden' => 0,
       'permission_id' => 188,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     644 => 
     array (
       'orden' => 0,
       'permission_id' => 188,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     645 => 
     array (
       'orden' => 0,
       'permission_id' => 188,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     646 => 
     array (
       'orden' => 0,
-      'permission_id' => 189,
-      'role_id' => 1,
+      'permission_id' => 188,
+      'role_id' => 17,
     ),
     647 => 
     array (
       'orden' => 0,
-      'permission_id' => 190,
+      'permission_id' => 189,
       'role_id' => 1,
     ),
     648 => 
     array (
       'orden' => 0,
       'permission_id' => 190,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     649 => 
     array (
       'orden' => 0,
       'permission_id' => 190,
-      'role_id' => 10,
+      'role_id' => 9,
     ),
     650 => 
     array (
       'orden' => 0,
       'permission_id' => 190,
-      'role_id' => 11,
+      'role_id' => 10,
     ),
     651 => 
     array (
       'orden' => 0,
       'permission_id' => 190,
-      'role_id' => 12,
+      'role_id' => 11,
     ),
     652 => 
     array (
       'orden' => 0,
-      'permission_id' => 191,
-      'role_id' => 1,
+      'permission_id' => 190,
+      'role_id' => 12,
     ),
     653 => 
     array (
       'orden' => 0,
       'permission_id' => 191,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     654 => 
     array (
       'orden' => 0,
-      'permission_id' => 192,
-      'role_id' => 1,
+      'permission_id' => 191,
+      'role_id' => 9,
     ),
     655 => 
     array (
       'orden' => 0,
       'permission_id' => 192,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     656 => 
     array (
       'orden' => 0,
       'permission_id' => 192,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     657 => 
     array (
       'orden' => 0,
       'permission_id' => 192,
-      'role_id' => 16,
+      'role_id' => 12,
     ),
     658 => 
     array (
       'orden' => 0,
-      'permission_id' => 193,
-      'role_id' => 1,
+      'permission_id' => 192,
+      'role_id' => 16,
     ),
     659 => 
     array (
       'orden' => 0,
       'permission_id' => 193,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     660 => 
     array (
       'orden' => 0,
-      'permission_id' => 194,
-      'role_id' => 1,
+      'permission_id' => 193,
+      'role_id' => 9,
     ),
     661 => 
     array (
       'orden' => 0,
-      'permission_id' => 195,
+      'permission_id' => 194,
       'role_id' => 1,
     ),
     662 => 
     array (
       'orden' => 0,
       'permission_id' => 195,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     663 => 
     array (
       'orden' => 0,
       'permission_id' => 195,
-      'role_id' => 10,
+      'role_id' => 9,
     ),
     664 => 
     array (
       'orden' => 0,
       'permission_id' => 195,
-      'role_id' => 11,
+      'role_id' => 10,
     ),
     665 => 
     array (
       'orden' => 0,
-      'permission_id' => 196,
-      'role_id' => 1,
+      'permission_id' => 195,
+      'role_id' => 11,
     ),
     666 => 
     array (
       'orden' => 0,
       'permission_id' => 196,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     667 => 
     array (
       'orden' => 0,
       'permission_id' => 196,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     668 => 
     array (
       'orden' => 0,
       'permission_id' => 196,
-      'role_id' => 10,
+      'role_id' => 9,
     ),
     669 => 
     array (
       'orden' => 0,
       'permission_id' => 196,
-      'role_id' => 11,
+      'role_id' => 10,
     ),
     670 => 
     array (
       'orden' => 0,
       'permission_id' => 196,
-      'role_id' => 17,
+      'role_id' => 11,
     ),
     671 => 
     array (
       'orden' => 0,
-      'permission_id' => 197,
-      'role_id' => 1,
+      'permission_id' => 196,
+      'role_id' => 17,
     ),
     672 => 
     array (
       'orden' => 0,
       'permission_id' => 197,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     673 => 
     array (
       'orden' => 0,
       'permission_id' => 197,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     674 => 
     array (
       'orden' => 0,
       'permission_id' => 197,
-      'role_id' => 10,
+      'role_id' => 9,
     ),
     675 => 
     array (
       'orden' => 0,
       'permission_id' => 197,
-      'role_id' => 11,
+      'role_id' => 10,
     ),
     676 => 
     array (
       'orden' => 0,
       'permission_id' => 197,
-      'role_id' => 17,
+      'role_id' => 11,
     ),
     677 => 
     array (
       'orden' => 0,
-      'permission_id' => 198,
-      'role_id' => 1,
+      'permission_id' => 197,
+      'role_id' => 17,
     ),
     678 => 
     array (
       'orden' => 0,
       'permission_id' => 198,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     679 => 
     array (
       'orden' => 0,
-      'permission_id' => 199,
-      'role_id' => 1,
+      'permission_id' => 198,
+      'role_id' => 9,
     ),
     680 => 
     array (
       'orden' => 0,
       'permission_id' => 199,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     681 => 
     array (
       'orden' => 0,
       'permission_id' => 199,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     682 => 
     array (
       'orden' => 0,
-      'permission_id' => 200,
-      'role_id' => 1,
+      'permission_id' => 199,
+      'role_id' => 12,
     ),
     683 => 
     array (
       'orden' => 0,
       'permission_id' => 200,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     684 => 
     array (
       'orden' => 0,
       'permission_id' => 200,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     685 => 
     array (
       'orden' => 0,
-      'permission_id' => 201,
-      'role_id' => 1,
+      'permission_id' => 200,
+      'role_id' => 12,
     ),
     686 => 
     array (
       'orden' => 0,
       'permission_id' => 201,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     687 => 
     array (
       'orden' => 0,
       'permission_id' => 201,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     688 => 
     array (
       'orden' => 0,
-      'permission_id' => 202,
-      'role_id' => 1,
+      'permission_id' => 201,
+      'role_id' => 12,
     ),
     689 => 
     array (
       'orden' => 0,
       'permission_id' => 202,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     690 => 
     array (
       'orden' => 0,
       'permission_id' => 202,
-      'role_id' => 10,
+      'role_id' => 9,
     ),
     691 => 
     array (
       'orden' => 0,
       'permission_id' => 202,
-      'role_id' => 11,
+      'role_id' => 10,
     ),
     692 => 
     array (
       'orden' => 0,
-      'permission_id' => 203,
-      'role_id' => 1,
+      'permission_id' => 202,
+      'role_id' => 11,
     ),
     693 => 
     array (
       'orden' => 0,
       'permission_id' => 203,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     694 => 
     array (
       'orden' => 0,
       'permission_id' => 203,
-      'role_id' => 11,
+      'role_id' => 9,
     ),
     695 => 
     array (
       'orden' => 0,
-      'permission_id' => 204,
-      'role_id' => 1,
+      'permission_id' => 203,
+      'role_id' => 11,
     ),
     696 => 
     array (
       'orden' => 0,
       'permission_id' => 204,
-      'role_id' => 4,
+      'role_id' => 1,
     ),
     697 => 
     array (
       'orden' => 0,
       'permission_id' => 204,
-      'role_id' => 9,
+      'role_id' => 4,
     ),
     698 => 
     array (
       'orden' => 0,
       'permission_id' => 204,
-      'role_id' => 11,
+      'role_id' => 9,
     ),
     699 => 
     array (
       'orden' => 0,
-      'permission_id' => 205,
-      'role_id' => 1,
+      'permission_id' => 204,
+      'role_id' => 11,
     ),
     700 => 
     array (
       'orden' => 0,
       'permission_id' => 205,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     701 => 
     array (
       'orden' => 0,
       'permission_id' => 205,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     702 => 
     array (
       'orden' => 0,
-      'permission_id' => 206,
-      'role_id' => 1,
+      'permission_id' => 205,
+      'role_id' => 12,
     ),
     703 => 
     array (
       'orden' => 0,
       'permission_id' => 206,
-      'role_id' => 2,
+      'role_id' => 1,
     ),
     704 => 
     array (
       'orden' => 0,
       'permission_id' => 206,
-      'role_id' => 9,
+      'role_id' => 2,
     ),
     705 => 
     array (
       'orden' => 0,
       'permission_id' => 206,
-      'role_id' => 13,
+      'role_id' => 9,
     ),
     706 => 
     array (
       'orden' => 0,
-      'permission_id' => 207,
-      'role_id' => 1,
+      'permission_id' => 206,
+      'role_id' => 13,
     ),
     707 => 
     array (
       'orden' => 0,
       'permission_id' => 207,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     708 => 
     array (
       'orden' => 0,
       'permission_id' => 207,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     709 => 
     array (
       'orden' => 0,
-      'permission_id' => 208,
-      'role_id' => 1,
+      'permission_id' => 207,
+      'role_id' => 12,
     ),
     710 => 
     array (
       'orden' => 0,
       'permission_id' => 208,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     711 => 
     array (
       'orden' => 0,
       'permission_id' => 208,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     712 => 
     array (
       'orden' => 0,
-      'permission_id' => 209,
-      'role_id' => 1,
+      'permission_id' => 208,
+      'role_id' => 12,
     ),
     713 => 
     array (
       'orden' => 0,
       'permission_id' => 209,
-      'role_id' => 2,
+      'role_id' => 1,
     ),
     714 => 
     array (
       'orden' => 0,
       'permission_id' => 209,
-      'role_id' => 9,
+      'role_id' => 2,
     ),
     715 => 
     array (
       'orden' => 0,
       'permission_id' => 209,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     716 => 
     array (
       'orden' => 0,
       'permission_id' => 209,
-      'role_id' => 13,
+      'role_id' => 12,
     ),
     717 => 
     array (
       'orden' => 0,
-      'permission_id' => 210,
-      'role_id' => 1,
+      'permission_id' => 209,
+      'role_id' => 13,
     ),
     718 => 
     array (
       'orden' => 0,
       'permission_id' => 210,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     719 => 
     array (
       'orden' => 0,
       'permission_id' => 210,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     720 => 
     array (
       'orden' => 0,
-      'permission_id' => 212,
-      'role_id' => 1,
+      'permission_id' => 210,
+      'role_id' => 12,
     ),
     721 => 
     array (
       'orden' => 0,
       'permission_id' => 212,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     722 => 
     array (
       'orden' => 0,
       'permission_id' => 212,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     723 => 
     array (
       'orden' => 0,
       'permission_id' => 212,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     724 => 
     array (
       'orden' => 0,
-      'permission_id' => 213,
-      'role_id' => 1,
+      'permission_id' => 212,
+      'role_id' => 17,
     ),
     725 => 
     array (
       'orden' => 0,
       'permission_id' => 213,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     726 => 
     array (
       'orden' => 0,
       'permission_id' => 213,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     727 => 
     array (
       'orden' => 0,
       'permission_id' => 213,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     728 => 
     array (
       'orden' => 0,
-      'permission_id' => 214,
-      'role_id' => 1,
+      'permission_id' => 213,
+      'role_id' => 17,
     ),
     729 => 
     array (
       'orden' => 0,
       'permission_id' => 214,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     730 => 
     array (
       'orden' => 0,
       'permission_id' => 214,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     731 => 
     array (
       'orden' => 0,
       'permission_id' => 214,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     732 => 
     array (
       'orden' => 0,
-      'permission_id' => 215,
-      'role_id' => 1,
+      'permission_id' => 214,
+      'role_id' => 17,
     ),
     733 => 
     array (
       'orden' => 0,
       'permission_id' => 215,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     734 => 
     array (
       'orden' => 0,
       'permission_id' => 215,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     735 => 
     array (
       'orden' => 0,
       'permission_id' => 215,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     736 => 
     array (
       'orden' => 0,
-      'permission_id' => 216,
-      'role_id' => 1,
+      'permission_id' => 215,
+      'role_id' => 17,
     ),
     737 => 
     array (
       'orden' => 0,
       'permission_id' => 216,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     738 => 
     array (
       'orden' => 0,
       'permission_id' => 216,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     739 => 
     array (
       'orden' => 0,
-      'permission_id' => 217,
-      'role_id' => 1,
+      'permission_id' => 216,
+      'role_id' => 9,
     ),
     740 => 
     array (
       'orden' => 0,
       'permission_id' => 217,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     741 => 
     array (
       'orden' => 0,
       'permission_id' => 217,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     742 => 
     array (
       'orden' => 0,
-      'permission_id' => 218,
-      'role_id' => 1,
+      'permission_id' => 217,
+      'role_id' => 9,
     ),
     743 => 
     array (
       'orden' => 0,
       'permission_id' => 218,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     744 => 
     array (
       'orden' => 0,
       'permission_id' => 218,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     745 => 
     array (
       'orden' => 0,
-      'permission_id' => 219,
-      'role_id' => 1,
+      'permission_id' => 218,
+      'role_id' => 9,
     ),
     746 => 
     array (
       'orden' => 0,
       'permission_id' => 219,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     747 => 
     array (
       'orden' => 0,
       'permission_id' => 219,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     748 => 
     array (
       'orden' => 0,
-      'permission_id' => 220,
-      'role_id' => 1,
+      'permission_id' => 219,
+      'role_id' => 9,
     ),
     749 => 
     array (
       'orden' => 0,
       'permission_id' => 220,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     750 => 
     array (
       'orden' => 0,
       'permission_id' => 220,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     751 => 
     array (
       'orden' => 0,
-      'permission_id' => 221,
-      'role_id' => 1,
+      'permission_id' => 220,
+      'role_id' => 9,
     ),
     752 => 
     array (
       'orden' => 0,
       'permission_id' => 221,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     753 => 
     array (
       'orden' => 0,
       'permission_id' => 221,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     754 => 
     array (
       'orden' => 0,
-      'permission_id' => 222,
-      'role_id' => 1,
+      'permission_id' => 221,
+      'role_id' => 9,
     ),
     755 => 
     array (
       'orden' => 0,
       'permission_id' => 222,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     756 => 
     array (
       'orden' => 0,
       'permission_id' => 222,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     757 => 
     array (
       'orden' => 0,
-      'permission_id' => 223,
-      'role_id' => 1,
+      'permission_id' => 222,
+      'role_id' => 9,
     ),
     758 => 
     array (
       'orden' => 0,
       'permission_id' => 223,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     759 => 
     array (
       'orden' => 0,
       'permission_id' => 223,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     760 => 
     array (
       'orden' => 0,
-      'permission_id' => 224,
-      'role_id' => 1,
+      'permission_id' => 223,
+      'role_id' => 9,
     ),
     761 => 
     array (
       'orden' => 0,
       'permission_id' => 224,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     762 => 
     array (
       'orden' => 0,
       'permission_id' => 224,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     763 => 
     array (
       'orden' => 0,
-      'permission_id' => 225,
-      'role_id' => 1,
+      'permission_id' => 224,
+      'role_id' => 9,
     ),
     764 => 
     array (
       'orden' => 0,
       'permission_id' => 225,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     765 => 
     array (
       'orden' => 0,
       'permission_id' => 225,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     766 => 
     array (
       'orden' => 0,
-      'permission_id' => 226,
-      'role_id' => 1,
+      'permission_id' => 225,
+      'role_id' => 9,
     ),
     767 => 
     array (
       'orden' => 0,
       'permission_id' => 226,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     768 => 
     array (
       'orden' => 0,
       'permission_id' => 226,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     769 => 
     array (
       'orden' => 0,
-      'permission_id' => 227,
-      'role_id' => 1,
+      'permission_id' => 226,
+      'role_id' => 9,
     ),
     770 => 
     array (
       'orden' => 0,
       'permission_id' => 227,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     771 => 
     array (
       'orden' => 0,
       'permission_id' => 227,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     772 => 
     array (
       'orden' => 0,
-      'permission_id' => 228,
-      'role_id' => 1,
+      'permission_id' => 227,
+      'role_id' => 9,
     ),
     773 => 
     array (
       'orden' => 0,
       'permission_id' => 228,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     774 => 
     array (
       'orden' => 0,
       'permission_id' => 228,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     775 => 
     array (
       'orden' => 0,
-      'permission_id' => 229,
-      'role_id' => 1,
+      'permission_id' => 228,
+      'role_id' => 9,
     ),
     776 => 
     array (
       'orden' => 0,
       'permission_id' => 229,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     777 => 
     array (
       'orden' => 0,
       'permission_id' => 229,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     778 => 
     array (
       'orden' => 0,
-      'permission_id' => 230,
-      'role_id' => 1,
+      'permission_id' => 229,
+      'role_id' => 9,
     ),
     779 => 
     array (
       'orden' => 0,
       'permission_id' => 230,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     780 => 
     array (
       'orden' => 0,
       'permission_id' => 230,
-      'role_id' => 15,
+      'role_id' => 3,
     ),
     781 => 
     array (
       'orden' => 0,
       'permission_id' => 230,
-      'role_id' => 17,
+      'role_id' => 15,
     ),
     782 => 
     array (
       'orden' => 0,
-      'permission_id' => 231,
-      'role_id' => 1,
+      'permission_id' => 230,
+      'role_id' => 17,
     ),
     783 => 
     array (
       'orden' => 0,
       'permission_id' => 231,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     784 => 
     array (
       'orden' => 0,
       'permission_id' => 231,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     785 => 
     array (
       'orden' => 0,
-      'permission_id' => 232,
-      'role_id' => 1,
+      'permission_id' => 231,
+      'role_id' => 14,
     ),
     786 => 
     array (
       'orden' => 0,
       'permission_id' => 232,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     787 => 
     array (
       'orden' => 0,
-      'permission_id' => 233,
-      'role_id' => 1,
+      'permission_id' => 232,
+      'role_id' => 3,
     ),
     788 => 
     array (
       'orden' => 0,
       'permission_id' => 233,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     789 => 
     array (
       'orden' => 0,
       'permission_id' => 233,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     790 => 
     array (
       'orden' => 0,
-      'permission_id' => 234,
-      'role_id' => 1,
+      'permission_id' => 233,
+      'role_id' => 14,
     ),
     791 => 
     array (
       'orden' => 0,
       'permission_id' => 234,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     792 => 
     array (
       'orden' => 0,
-      'permission_id' => 235,
-      'role_id' => 1,
+      'permission_id' => 234,
+      'role_id' => 3,
     ),
     793 => 
     array (
       'orden' => 0,
       'permission_id' => 235,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     794 => 
     array (
       'orden' => 0,
-      'permission_id' => 236,
-      'role_id' => 1,
+      'permission_id' => 235,
+      'role_id' => 3,
     ),
     795 => 
     array (
       'orden' => 0,
       'permission_id' => 236,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     796 => 
     array (
       'orden' => 0,
-      'permission_id' => 237,
-      'role_id' => 1,
+      'permission_id' => 236,
+      'role_id' => 3,
     ),
     797 => 
     array (
       'orden' => 0,
       'permission_id' => 237,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     798 => 
     array (
       'orden' => 0,
-      'permission_id' => 238,
-      'role_id' => 1,
+      'permission_id' => 237,
+      'role_id' => 3,
     ),
     799 => 
     array (
       'orden' => 0,
       'permission_id' => 238,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     800 => 
     array (
       'orden' => 0,
-      'permission_id' => 239,
-      'role_id' => 1,
+      'permission_id' => 238,
+      'role_id' => 3,
     ),
     801 => 
     array (
       'orden' => 0,
       'permission_id' => 239,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     802 => 
     array (
       'orden' => 0,
-      'permission_id' => 240,
-      'role_id' => 1,
+      'permission_id' => 239,
+      'role_id' => 3,
     ),
     803 => 
     array (
       'orden' => 0,
       'permission_id' => 240,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     804 => 
     array (
       'orden' => 0,
       'permission_id' => 240,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     805 => 
     array (
       'orden' => 0,
-      'permission_id' => 241,
-      'role_id' => 1,
+      'permission_id' => 240,
+      'role_id' => 14,
     ),
     806 => 
     array (
       'orden' => 0,
       'permission_id' => 241,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     807 => 
     array (
       'orden' => 0,
       'permission_id' => 241,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     808 => 
     array (
       'orden' => 0,
-      'permission_id' => 242,
-      'role_id' => 1,
+      'permission_id' => 241,
+      'role_id' => 14,
     ),
     809 => 
     array (
       'orden' => 0,
       'permission_id' => 242,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     810 => 
     array (
       'orden' => 0,
       'permission_id' => 242,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     811 => 
     array (
       'orden' => 0,
-      'permission_id' => 243,
-      'role_id' => 1,
+      'permission_id' => 242,
+      'role_id' => 14,
     ),
     812 => 
     array (
       'orden' => 0,
       'permission_id' => 243,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     813 => 
     array (
       'orden' => 0,
       'permission_id' => 243,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     814 => 
     array (
       'orden' => 0,
-      'permission_id' => 244,
-      'role_id' => 1,
+      'permission_id' => 243,
+      'role_id' => 14,
     ),
     815 => 
     array (
       'orden' => 0,
       'permission_id' => 244,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     816 => 
     array (
       'orden' => 0,
       'permission_id' => 244,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     817 => 
     array (
       'orden' => 0,
-      'permission_id' => 245,
-      'role_id' => 1,
+      'permission_id' => 244,
+      'role_id' => 14,
     ),
     818 => 
     array (
       'orden' => 0,
       'permission_id' => 245,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     819 => 
     array (
       'orden' => 0,
-      'permission_id' => 246,
-      'role_id' => 1,
+      'permission_id' => 245,
+      'role_id' => 3,
     ),
     820 => 
     array (
       'orden' => 0,
       'permission_id' => 246,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     821 => 
     array (
       'orden' => 0,
-      'permission_id' => 247,
-      'role_id' => 1,
+      'permission_id' => 246,
+      'role_id' => 3,
     ),
     822 => 
     array (
       'orden' => 0,
       'permission_id' => 247,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     823 => 
     array (
       'orden' => 0,
       'permission_id' => 247,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     824 => 
     array (
       'orden' => 0,
       'permission_id' => 247,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     825 => 
     array (
       'orden' => 0,
-      'permission_id' => 248,
-      'role_id' => 1,
+      'permission_id' => 247,
+      'role_id' => 17,
     ),
     826 => 
     array (
       'orden' => 0,
       'permission_id' => 248,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     827 => 
     array (
       'orden' => 0,
       'permission_id' => 248,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     828 => 
     array (
       'orden' => 0,
       'permission_id' => 248,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     829 => 
     array (
       'orden' => 0,
-      'permission_id' => 249,
-      'role_id' => 1,
+      'permission_id' => 248,
+      'role_id' => 17,
     ),
     830 => 
     array (
       'orden' => 0,
       'permission_id' => 249,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     831 => 
     array (
       'orden' => 0,
       'permission_id' => 249,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     832 => 
     array (
       'orden' => 0,
       'permission_id' => 249,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     833 => 
     array (
       'orden' => 0,
-      'permission_id' => 250,
-      'role_id' => 1,
+      'permission_id' => 249,
+      'role_id' => 17,
     ),
     834 => 
     array (
       'orden' => 0,
       'permission_id' => 250,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     835 => 
     array (
       'orden' => 0,
       'permission_id' => 250,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     836 => 
     array (
       'orden' => 0,
-      'permission_id' => 251,
-      'role_id' => 1,
+      'permission_id' => 250,
+      'role_id' => 14,
     ),
     837 => 
     array (
       'orden' => 0,
       'permission_id' => 251,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     838 => 
     array (
       'orden' => 0,
       'permission_id' => 251,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     839 => 
     array (
       'orden' => 0,
-      'permission_id' => 252,
-      'role_id' => 1,
+      'permission_id' => 251,
+      'role_id' => 14,
     ),
     840 => 
     array (
       'orden' => 0,
       'permission_id' => 252,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     841 => 
     array (
       'orden' => 0,
       'permission_id' => 252,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     842 => 
     array (
       'orden' => 0,
       'permission_id' => 252,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     843 => 
     array (
       'orden' => 0,
-      'permission_id' => 253,
-      'role_id' => 1,
+      'permission_id' => 252,
+      'role_id' => 17,
     ),
     844 => 
     array (
       'orden' => 0,
       'permission_id' => 253,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     845 => 
     array (
       'orden' => 0,
       'permission_id' => 253,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     846 => 
     array (
       'orden' => 0,
       'permission_id' => 253,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     847 => 
     array (
       'orden' => 0,
-      'permission_id' => 254,
-      'role_id' => 1,
+      'permission_id' => 253,
+      'role_id' => 17,
     ),
     848 => 
     array (
       'orden' => 0,
       'permission_id' => 254,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     849 => 
     array (
       'orden' => 0,
       'permission_id' => 254,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     850 => 
     array (
       'orden' => 0,
       'permission_id' => 254,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     851 => 
     array (
       'orden' => 0,
-      'permission_id' => 255,
-      'role_id' => 1,
+      'permission_id' => 254,
+      'role_id' => 17,
     ),
     852 => 
     array (
       'orden' => 0,
       'permission_id' => 255,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     853 => 
     array (
       'orden' => 0,
       'permission_id' => 255,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     854 => 
     array (
       'orden' => 0,
       'permission_id' => 255,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     855 => 
     array (
       'orden' => 0,
-      'permission_id' => 256,
-      'role_id' => 1,
+      'permission_id' => 255,
+      'role_id' => 17,
     ),
     856 => 
     array (
       'orden' => 0,
       'permission_id' => 256,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     857 => 
     array (
       'orden' => 0,
       'permission_id' => 256,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     858 => 
     array (
       'orden' => 0,
       'permission_id' => 256,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     859 => 
     array (
       'orden' => 0,
-      'permission_id' => 257,
-      'role_id' => 1,
+      'permission_id' => 256,
+      'role_id' => 17,
     ),
     860 => 
     array (
       'orden' => 0,
       'permission_id' => 257,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     861 => 
     array (
       'orden' => 0,
       'permission_id' => 257,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     862 => 
     array (
       'orden' => 0,
       'permission_id' => 257,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     863 => 
     array (
       'orden' => 0,
-      'permission_id' => 258,
-      'role_id' => 1,
+      'permission_id' => 257,
+      'role_id' => 17,
     ),
     864 => 
     array (
       'orden' => 0,
       'permission_id' => 258,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     865 => 
     array (
       'orden' => 0,
       'permission_id' => 258,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     866 => 
     array (
       'orden' => 0,
       'permission_id' => 258,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     867 => 
     array (
       'orden' => 0,
-      'permission_id' => 259,
-      'role_id' => 1,
+      'permission_id' => 258,
+      'role_id' => 17,
     ),
     868 => 
     array (
       'orden' => 0,
       'permission_id' => 259,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     869 => 
     array (
       'orden' => 0,
       'permission_id' => 259,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     870 => 
     array (
       'orden' => 0,
       'permission_id' => 259,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     871 => 
     array (
       'orden' => 0,
-      'permission_id' => 260,
-      'role_id' => 1,
+      'permission_id' => 259,
+      'role_id' => 17,
     ),
     872 => 
     array (
       'orden' => 0,
       'permission_id' => 260,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     873 => 
     array (
       'orden' => 0,
       'permission_id' => 260,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     874 => 
     array (
       'orden' => 0,
       'permission_id' => 260,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     875 => 
     array (
       'orden' => 0,
-      'permission_id' => 261,
-      'role_id' => 1,
+      'permission_id' => 260,
+      'role_id' => 17,
     ),
     876 => 
     array (
       'orden' => 0,
-      'permission_id' => 262,
+      'permission_id' => 261,
       'role_id' => 1,
     ),
     877 => 
     array (
       'orden' => 0,
       'permission_id' => 262,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     878 => 
     array (
       'orden' => 0,
       'permission_id' => 262,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     879 => 
     array (
       'orden' => 0,
-      'permission_id' => 263,
-      'role_id' => 1,
+      'permission_id' => 262,
+      'role_id' => 12,
     ),
     880 => 
     array (
       'orden' => 0,
       'permission_id' => 263,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     881 => 
     array (
       'orden' => 0,
       'permission_id' => 263,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     882 => 
     array (
       'orden' => 0,
-      'permission_id' => 264,
-      'role_id' => 1,
+      'permission_id' => 263,
+      'role_id' => 12,
     ),
     883 => 
     array (
       'orden' => 0,
       'permission_id' => 264,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     884 => 
     array (
       'orden' => 0,
       'permission_id' => 264,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     885 => 
     array (
       'orden' => 0,
-      'permission_id' => 265,
-      'role_id' => 1,
+      'permission_id' => 264,
+      'role_id' => 12,
     ),
     886 => 
     array (
       'orden' => 0,
       'permission_id' => 265,
-      'role_id' => 2,
+      'role_id' => 1,
     ),
     887 => 
     array (
       'orden' => 0,
       'permission_id' => 265,
-      'role_id' => 9,
+      'role_id' => 2,
     ),
     888 => 
     array (
       'orden' => 0,
       'permission_id' => 265,
-      'role_id' => 13,
+      'role_id' => 9,
     ),
     889 => 
     array (
       'orden' => 0,
-      'permission_id' => 266,
-      'role_id' => 1,
+      'permission_id' => 265,
+      'role_id' => 13,
     ),
     890 => 
     array (
       'orden' => 0,
       'permission_id' => 266,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     891 => 
     array (
       'orden' => 0,
       'permission_id' => 266,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     892 => 
     array (
       'orden' => 0,
-      'permission_id' => 267,
-      'role_id' => 1,
+      'permission_id' => 266,
+      'role_id' => 12,
     ),
     893 => 
     array (
       'orden' => 0,
       'permission_id' => 267,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     894 => 
     array (
       'orden' => 0,
       'permission_id' => 267,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     895 => 
     array (
       'orden' => 0,
       'permission_id' => 267,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     896 => 
     array (
       'orden' => 0,
-      'permission_id' => 268,
-      'role_id' => 1,
+      'permission_id' => 267,
+      'role_id' => 17,
     ),
     897 => 
     array (
       'orden' => 0,
       'permission_id' => 268,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     898 => 
     array (
       'orden' => 0,
       'permission_id' => 268,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     899 => 
     array (
       'orden' => 0,
       'permission_id' => 268,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     900 => 
     array (
       'orden' => 0,
-      'permission_id' => 269,
-      'role_id' => 1,
+      'permission_id' => 268,
+      'role_id' => 17,
     ),
     901 => 
     array (
       'orden' => 0,
       'permission_id' => 269,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     902 => 
     array (
       'orden' => 0,
       'permission_id' => 269,
-      'role_id' => 14,
+      'role_id' => 3,
     ),
     903 => 
     array (
       'orden' => 0,
-      'permission_id' => 270,
-      'role_id' => 1,
+      'permission_id' => 269,
+      'role_id' => 14,
     ),
     904 => 
     array (
       'orden' => 0,
       'permission_id' => 270,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     905 => 
     array (
       'orden' => 0,
       'permission_id' => 270,
-      'role_id' => 12,
+      'role_id' => 9,
     ),
     906 => 
     array (
       'orden' => 0,
-      'permission_id' => 271,
-      'role_id' => 1,
+      'permission_id' => 270,
+      'role_id' => 12,
     ),
     907 => 
     array (
       'orden' => 0,
       'permission_id' => 271,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     908 => 
     array (
       'orden' => 0,
       'permission_id' => 271,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     909 => 
     array (
       'orden' => 0,
-      'permission_id' => 272,
-      'role_id' => 1,
+      'permission_id' => 271,
+      'role_id' => 17,
     ),
     910 => 
     array (
       'orden' => 0,
       'permission_id' => 272,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     911 => 
     array (
       'orden' => 0,
       'permission_id' => 272,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     912 => 
     array (
       'orden' => 0,
-      'permission_id' => 273,
-      'role_id' => 1,
+      'permission_id' => 272,
+      'role_id' => 17,
     ),
     913 => 
     array (
       'orden' => 0,
       'permission_id' => 273,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     914 => 
     array (
       'orden' => 0,
       'permission_id' => 273,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     915 => 
     array (
       'orden' => 0,
-      'permission_id' => 274,
-      'role_id' => 1,
+      'permission_id' => 273,
+      'role_id' => 17,
     ),
     916 => 
     array (
       'orden' => 0,
       'permission_id' => 274,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     917 => 
     array (
       'orden' => 0,
       'permission_id' => 274,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     918 => 
     array (
       'orden' => 0,
-      'permission_id' => 275,
-      'role_id' => 1,
+      'permission_id' => 274,
+      'role_id' => 17,
     ),
     919 => 
     array (
       'orden' => 0,
       'permission_id' => 275,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     920 => 
     array (
       'orden' => 0,
       'permission_id' => 275,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     921 => 
     array (
       'orden' => 0,
-      'permission_id' => 276,
-      'role_id' => 1,
+      'permission_id' => 275,
+      'role_id' => 17,
     ),
     922 => 
     array (
       'orden' => 0,
       'permission_id' => 276,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     923 => 
     array (
       'orden' => 0,
       'permission_id' => 276,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     924 => 
     array (
       'orden' => 0,
-      'permission_id' => 277,
-      'role_id' => 1,
+      'permission_id' => 276,
+      'role_id' => 17,
     ),
     925 => 
     array (
       'orden' => 0,
       'permission_id' => 277,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     926 => 
     array (
       'orden' => 0,
       'permission_id' => 277,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     927 => 
     array (
       'orden' => 0,
-      'permission_id' => 278,
-      'role_id' => 1,
+      'permission_id' => 277,
+      'role_id' => 17,
     ),
     928 => 
     array (
       'orden' => 0,
       'permission_id' => 278,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     929 => 
     array (
       'orden' => 0,
       'permission_id' => 278,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     930 => 
     array (
       'orden' => 0,
-      'permission_id' => 279,
-      'role_id' => 1,
+      'permission_id' => 278,
+      'role_id' => 17,
     ),
     931 => 
     array (
       'orden' => 0,
       'permission_id' => 279,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     932 => 
     array (
       'orden' => 0,
       'permission_id' => 279,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     933 => 
     array (
       'orden' => 0,
-      'permission_id' => 280,
-      'role_id' => 1,
+      'permission_id' => 279,
+      'role_id' => 17,
     ),
     934 => 
     array (
       'orden' => 0,
       'permission_id' => 280,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     935 => 
     array (
       'orden' => 0,
       'permission_id' => 280,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     936 => 
     array (
       'orden' => 0,
-      'permission_id' => 281,
-      'role_id' => 1,
+      'permission_id' => 280,
+      'role_id' => 17,
     ),
     937 => 
     array (
       'orden' => 0,
       'permission_id' => 281,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     938 => 
     array (
       'orden' => 0,
       'permission_id' => 281,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     939 => 
     array (
       'orden' => 0,
-      'permission_id' => 282,
-      'role_id' => 1,
+      'permission_id' => 281,
+      'role_id' => 17,
     ),
     940 => 
     array (
       'orden' => 0,
       'permission_id' => 282,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     941 => 
     array (
       'orden' => 0,
       'permission_id' => 282,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     942 => 
     array (
       'orden' => 0,
-      'permission_id' => 283,
-      'role_id' => 1,
+      'permission_id' => 282,
+      'role_id' => 17,
     ),
     943 => 
     array (
       'orden' => 0,
       'permission_id' => 283,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     944 => 
     array (
       'orden' => 0,
       'permission_id' => 283,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     945 => 
     array (
       'orden' => 0,
-      'permission_id' => 284,
-      'role_id' => 1,
+      'permission_id' => 283,
+      'role_id' => 17,
     ),
     946 => 
     array (
       'orden' => 0,
       'permission_id' => 284,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     947 => 
     array (
       'orden' => 0,
       'permission_id' => 284,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     948 => 
     array (
       'orden' => 0,
-      'permission_id' => 285,
-      'role_id' => 1,
+      'permission_id' => 284,
+      'role_id' => 17,
     ),
     949 => 
     array (
       'orden' => 0,
       'permission_id' => 285,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     950 => 
     array (
       'orden' => 0,
       'permission_id' => 285,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     951 => 
     array (
       'orden' => 0,
       'permission_id' => 285,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     952 => 
     array (
       'orden' => 0,
-      'permission_id' => 286,
-      'role_id' => 1,
+      'permission_id' => 285,
+      'role_id' => 17,
     ),
     953 => 
     array (
       'orden' => 0,
       'permission_id' => 286,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     954 => 
     array (
       'orden' => 0,
       'permission_id' => 286,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     955 => 
     array (
       'orden' => 0,
-      'permission_id' => 287,
-      'role_id' => 1,
+      'permission_id' => 286,
+      'role_id' => 17,
     ),
     956 => 
     array (
       'orden' => 0,
       'permission_id' => 287,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     957 => 
     array (
       'orden' => 0,
       'permission_id' => 287,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     958 => 
     array (
       'orden' => 0,
       'permission_id' => 287,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     959 => 
     array (
       'orden' => 0,
-      'permission_id' => 288,
-      'role_id' => 1,
+      'permission_id' => 287,
+      'role_id' => 17,
     ),
     960 => 
     array (
       'orden' => 0,
       'permission_id' => 288,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     961 => 
     array (
       'orden' => 0,
       'permission_id' => 288,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     962 => 
     array (
       'orden' => 0,
       'permission_id' => 288,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     963 => 
     array (
       'orden' => 0,
-      'permission_id' => 289,
-      'role_id' => 1,
+      'permission_id' => 288,
+      'role_id' => 17,
     ),
     964 => 
     array (
       'orden' => 0,
       'permission_id' => 289,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     965 => 
     array (
       'orden' => 0,
       'permission_id' => 289,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     966 => 
     array (
       'orden' => 0,
       'permission_id' => 289,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     967 => 
     array (
       'orden' => 0,
-      'permission_id' => 290,
-      'role_id' => 1,
+      'permission_id' => 289,
+      'role_id' => 17,
     ),
     968 => 
     array (
       'orden' => 0,
       'permission_id' => 290,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     969 => 
     array (
       'orden' => 0,
       'permission_id' => 290,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     970 => 
     array (
       'orden' => 0,
       'permission_id' => 290,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     971 => 
     array (
       'orden' => 0,
-      'permission_id' => 291,
-      'role_id' => 1,
+      'permission_id' => 290,
+      'role_id' => 17,
     ),
     972 => 
     array (
       'orden' => 0,
       'permission_id' => 291,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     973 => 
     array (
       'orden' => 0,
       'permission_id' => 291,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     974 => 
     array (
       'orden' => 0,
       'permission_id' => 291,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     975 => 
     array (
       'orden' => 0,
-      'permission_id' => 292,
-      'role_id' => 1,
+      'permission_id' => 291,
+      'role_id' => 17,
     ),
     976 => 
     array (
       'orden' => 0,
       'permission_id' => 292,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     977 => 
     array (
       'orden' => 0,
       'permission_id' => 292,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     978 => 
     array (
       'orden' => 0,
       'permission_id' => 292,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     979 => 
     array (
       'orden' => 0,
-      'permission_id' => 293,
-      'role_id' => 1,
+      'permission_id' => 292,
+      'role_id' => 17,
     ),
     980 => 
     array (
       'orden' => 0,
       'permission_id' => 293,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     981 => 
     array (
       'orden' => 0,
       'permission_id' => 293,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     982 => 
     array (
       'orden' => 0,
       'permission_id' => 293,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     983 => 
     array (
       'orden' => 0,
-      'permission_id' => 294,
-      'role_id' => 1,
+      'permission_id' => 293,
+      'role_id' => 17,
     ),
     984 => 
     array (
       'orden' => 0,
       'permission_id' => 294,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     985 => 
     array (
       'orden' => 0,
       'permission_id' => 294,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     986 => 
     array (
       'orden' => 0,
       'permission_id' => 294,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     987 => 
     array (
       'orden' => 0,
-      'permission_id' => 295,
-      'role_id' => 1,
+      'permission_id' => 294,
+      'role_id' => 17,
     ),
     988 => 
     array (
       'orden' => 0,
       'permission_id' => 295,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     989 => 
     array (
       'orden' => 0,
       'permission_id' => 295,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     990 => 
     array (
       'orden' => 0,
-      'permission_id' => 296,
-      'role_id' => 1,
+      'permission_id' => 295,
+      'role_id' => 9,
     ),
     991 => 
     array (
       'orden' => 0,
       'permission_id' => 296,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     992 => 
     array (
       'orden' => 0,
       'permission_id' => 296,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     993 => 
     array (
       'orden' => 0,
       'permission_id' => 296,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     994 => 
     array (
       'orden' => 0,
-      'permission_id' => 297,
-      'role_id' => 1,
+      'permission_id' => 296,
+      'role_id' => 17,
     ),
     995 => 
     array (
       'orden' => 0,
       'permission_id' => 297,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     996 => 
     array (
       'orden' => 0,
       'permission_id' => 297,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     997 => 
     array (
       'orden' => 0,
       'permission_id' => 297,
-      'role_id' => 11,
+      'role_id' => 9,
     ),
     998 => 
     array (
       'orden' => 0,
       'permission_id' => 297,
-      'role_id' => 17,
+      'role_id' => 11,
     ),
     999 => 
     array (
       'orden' => 0,
-      'permission_id' => 298,
-      'role_id' => 1,
+      'permission_id' => 297,
+      'role_id' => 17,
     ),
     1000 => 
     array (
       'orden' => 0,
       'permission_id' => 298,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     1001 => 
     array (
       'orden' => 0,
       'permission_id' => 298,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     1002 => 
     array (
       'orden' => 0,
       'permission_id' => 298,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     1003 => 
     array (
       'orden' => 0,
-      'permission_id' => 299,
-      'role_id' => 1,
+      'permission_id' => 298,
+      'role_id' => 17,
     ),
     1004 => 
     array (
       'orden' => 0,
       'permission_id' => 299,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     1005 => 
     array (
       'orden' => 0,
       'permission_id' => 299,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     1006 => 
     array (
       'orden' => 0,
       'permission_id' => 299,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     1007 => 
     array (
       'orden' => 0,
-      'permission_id' => 300,
-      'role_id' => 1,
+      'permission_id' => 299,
+      'role_id' => 17,
     ),
     1008 => 
     array (
       'orden' => 0,
       'permission_id' => 300,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     1009 => 
     array (
       'orden' => 0,
       'permission_id' => 300,
-      'role_id' => 9,
+      'role_id' => 3,
     ),
     1010 => 
     array (
       'orden' => 0,
       'permission_id' => 300,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     1011 => 
     array (
       'orden' => 0,
-      'permission_id' => 301,
-      'role_id' => 1,
+      'permission_id' => 300,
+      'role_id' => 17,
     ),
     1012 => 
     array (
       'orden' => 0,
       'permission_id' => 301,
-      'role_id' => 3,
+      'role_id' => 1,
     ),
     1013 => 
     array (
       'orden' => 0,
       'permission_id' => 301,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1014 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 301,
+      'role_id' => 9,
+    ),
+    1015 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 301,
+      'role_id' => 17,
+    ),
+    1016 => 
     array (
       'orden' => 0,
       'permission_id' => 302,
       'role_id' => 1,
     ),
-    1015 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 303,
-      'role_id' => 1,
-    ),
-    1016 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 303,
-      'role_id' => 3,
-    ),
     1017 => 
     array (
       'orden' => 0,
       'permission_id' => 303,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1018 => 
     array (
       'orden' => 0,
       'permission_id' => 303,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1019 => 
     array (
       'orden' => 0,
-      'permission_id' => 304,
-      'role_id' => 1,
+      'permission_id' => 303,
+      'role_id' => 9,
     ),
     1020 => 
     array (
       'orden' => 0,
-      'permission_id' => 304,
-      'role_id' => 3,
+      'permission_id' => 303,
+      'role_id' => 17,
     ),
     1021 => 
     array (
       'orden' => 0,
       'permission_id' => 304,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1022 => 
     array (
       'orden' => 0,
       'permission_id' => 304,
-      'role_id' => 11,
+      'role_id' => 3,
     ),
     1023 => 
     array (
       'orden' => 0,
       'permission_id' => 304,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     1024 => 
     array (
       'orden' => 0,
-      'permission_id' => 305,
-      'role_id' => 1,
+      'permission_id' => 304,
+      'role_id' => 11,
     ),
     1025 => 
     array (
       'orden' => 0,
-      'permission_id' => 305,
-      'role_id' => 3,
+      'permission_id' => 304,
+      'role_id' => 17,
     ),
     1026 => 
     array (
       'orden' => 0,
       'permission_id' => 305,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1027 => 
     array (
       'orden' => 0,
       'permission_id' => 305,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1028 => 
     array (
       'orden' => 0,
-      'permission_id' => 306,
-      'role_id' => 1,
+      'permission_id' => 305,
+      'role_id' => 9,
     ),
     1029 => 
     array (
       'orden' => 0,
-      'permission_id' => 306,
-      'role_id' => 3,
+      'permission_id' => 305,
+      'role_id' => 17,
     ),
     1030 => 
     array (
       'orden' => 0,
       'permission_id' => 306,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1031 => 
     array (
       'orden' => 0,
-      'permission_id' => 307,
-      'role_id' => 1,
+      'permission_id' => 306,
+      'role_id' => 3,
     ),
     1032 => 
     array (
       'orden' => 0,
-      'permission_id' => 307,
-      'role_id' => 3,
+      'permission_id' => 306,
+      'role_id' => 17,
     ),
     1033 => 
     array (
       'orden' => 0,
       'permission_id' => 307,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1034 => 
     array (
       'orden' => 0,
-      'permission_id' => 308,
-      'role_id' => 1,
+      'permission_id' => 307,
+      'role_id' => 3,
     ),
     1035 => 
     array (
       'orden' => 0,
-      'permission_id' => 308,
-      'role_id' => 3,
+      'permission_id' => 307,
+      'role_id' => 17,
     ),
     1036 => 
     array (
       'orden' => 0,
       'permission_id' => 308,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1037 => 
     array (
       'orden' => 0,
-      'permission_id' => 309,
-      'role_id' => 1,
+      'permission_id' => 308,
+      'role_id' => 3,
     ),
     1038 => 
     array (
       'orden' => 0,
-      'permission_id' => 309,
-      'role_id' => 3,
+      'permission_id' => 308,
+      'role_id' => 17,
     ),
     1039 => 
     array (
       'orden' => 0,
       'permission_id' => 309,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1040 => 
     array (
       'orden' => 0,
-      'permission_id' => 310,
-      'role_id' => 1,
+      'permission_id' => 309,
+      'role_id' => 3,
     ),
     1041 => 
     array (
       'orden' => 0,
-      'permission_id' => 310,
-      'role_id' => 3,
+      'permission_id' => 309,
+      'role_id' => 17,
     ),
     1042 => 
     array (
       'orden' => 0,
       'permission_id' => 310,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1043 => 
     array (
       'orden' => 0,
       'permission_id' => 310,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1044 => 
     array (
       'orden' => 0,
-      'permission_id' => 311,
-      'role_id' => 1,
+      'permission_id' => 310,
+      'role_id' => 9,
     ),
     1045 => 
     array (
       'orden' => 0,
-      'permission_id' => 311,
-      'role_id' => 3,
+      'permission_id' => 310,
+      'role_id' => 17,
     ),
     1046 => 
     array (
       'orden' => 0,
       'permission_id' => 311,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1047 => 
     array (
       'orden' => 0,
       'permission_id' => 311,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1048 => 
     array (
       'orden' => 0,
-      'permission_id' => 312,
-      'role_id' => 1,
+      'permission_id' => 311,
+      'role_id' => 9,
     ),
     1049 => 
     array (
       'orden' => 0,
-      'permission_id' => 312,
-      'role_id' => 3,
+      'permission_id' => 311,
+      'role_id' => 17,
     ),
     1050 => 
     array (
       'orden' => 0,
       'permission_id' => 312,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1051 => 
     array (
       'orden' => 0,
       'permission_id' => 312,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1052 => 
     array (
       'orden' => 0,
-      'permission_id' => 313,
-      'role_id' => 1,
+      'permission_id' => 312,
+      'role_id' => 9,
     ),
     1053 => 
     array (
       'orden' => 0,
-      'permission_id' => 313,
-      'role_id' => 3,
+      'permission_id' => 312,
+      'role_id' => 17,
     ),
     1054 => 
     array (
       'orden' => 0,
       'permission_id' => 313,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1055 => 
     array (
       'orden' => 0,
       'permission_id' => 313,
-      'role_id' => 11,
+      'role_id' => 3,
     ),
     1056 => 
     array (
       'orden' => 0,
       'permission_id' => 313,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     1057 => 
     array (
       'orden' => 0,
       'permission_id' => 313,
-      'role_id' => 20,
+      'role_id' => 11,
     ),
     1058 => 
     array (
       'orden' => 0,
-      'permission_id' => 314,
-      'role_id' => 1,
+      'permission_id' => 313,
+      'role_id' => 17,
     ),
     1059 => 
     array (
       'orden' => 0,
-      'permission_id' => 314,
-      'role_id' => 3,
+      'permission_id' => 313,
+      'role_id' => 20,
     ),
     1060 => 
     array (
       'orden' => 0,
       'permission_id' => 314,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1061 => 
     array (
       'orden' => 0,
       'permission_id' => 314,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1062 => 
     array (
       'orden' => 0,
-      'permission_id' => 315,
-      'role_id' => 1,
+      'permission_id' => 314,
+      'role_id' => 9,
     ),
     1063 => 
     array (
       'orden' => 0,
-      'permission_id' => 315,
-      'role_id' => 3,
+      'permission_id' => 314,
+      'role_id' => 17,
     ),
     1064 => 
     array (
       'orden' => 0,
       'permission_id' => 315,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1065 => 
     array (
       'orden' => 0,
       'permission_id' => 315,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1066 => 
     array (
       'orden' => 0,
-      'permission_id' => 316,
-      'role_id' => 1,
+      'permission_id' => 315,
+      'role_id' => 9,
     ),
     1067 => 
     array (
       'orden' => 0,
-      'permission_id' => 316,
-      'role_id' => 3,
+      'permission_id' => 315,
+      'role_id' => 17,
     ),
     1068 => 
     array (
       'orden' => 0,
       'permission_id' => 316,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1069 => 
     array (
       'orden' => 0,
-      'permission_id' => 317,
-      'role_id' => 1,
+      'permission_id' => 316,
+      'role_id' => 3,
     ),
     1070 => 
     array (
       'orden' => 0,
-      'permission_id' => 317,
-      'role_id' => 3,
+      'permission_id' => 316,
+      'role_id' => 17,
     ),
     1071 => 
     array (
       'orden' => 0,
       'permission_id' => 317,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1072 => 
     array (
       'orden' => 0,
       'permission_id' => 317,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1073 => 
     array (
       'orden' => 0,
-      'permission_id' => 318,
-      'role_id' => 1,
+      'permission_id' => 317,
+      'role_id' => 9,
     ),
     1074 => 
     array (
       'orden' => 0,
-      'permission_id' => 318,
+      'permission_id' => 317,
       'role_id' => 17,
     ),
     1075 => 
     array (
       'orden' => 0,
-      'permission_id' => 319,
+      'permission_id' => 318,
       'role_id' => 1,
     ),
     1076 => 
     array (
       'orden' => 0,
-      'permission_id' => 319,
-      'role_id' => 3,
+      'permission_id' => 318,
+      'role_id' => 17,
     ),
     1077 => 
     array (
       'orden' => 0,
       'permission_id' => 319,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1078 => 
     array (
       'orden' => 0,
       'permission_id' => 319,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1079 => 
     array (
       'orden' => 0,
-      'permission_id' => 320,
-      'role_id' => 1,
+      'permission_id' => 319,
+      'role_id' => 9,
     ),
     1080 => 
     array (
       'orden' => 0,
-      'permission_id' => 320,
-      'role_id' => 3,
+      'permission_id' => 319,
+      'role_id' => 17,
     ),
     1081 => 
     array (
       'orden' => 0,
       'permission_id' => 320,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1082 => 
     array (
       'orden' => 0,
       'permission_id' => 320,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1083 => 
     array (
       'orden' => 0,
-      'permission_id' => 321,
-      'role_id' => 1,
+      'permission_id' => 320,
+      'role_id' => 9,
     ),
     1084 => 
     array (
       'orden' => 0,
-      'permission_id' => 321,
-      'role_id' => 3,
+      'permission_id' => 320,
+      'role_id' => 17,
     ),
     1085 => 
     array (
       'orden' => 0,
       'permission_id' => 321,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1086 => 
     array (
       'orden' => 0,
       'permission_id' => 321,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1087 => 
     array (
       'orden' => 0,
-      'permission_id' => 322,
-      'role_id' => 1,
+      'permission_id' => 321,
+      'role_id' => 9,
     ),
     1088 => 
     array (
       'orden' => 0,
-      'permission_id' => 322,
-      'role_id' => 3,
+      'permission_id' => 321,
+      'role_id' => 17,
     ),
     1089 => 
     array (
       'orden' => 0,
       'permission_id' => 322,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1090 => 
     array (
       'orden' => 0,
       'permission_id' => 322,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1091 => 
     array (
       'orden' => 0,
-      'permission_id' => 323,
-      'role_id' => 1,
+      'permission_id' => 322,
+      'role_id' => 9,
     ),
     1092 => 
     array (
       'orden' => 0,
-      'permission_id' => 323,
+      'permission_id' => 322,
       'role_id' => 17,
     ),
     1093 => 
     array (
       'orden' => 0,
-      'permission_id' => 324,
+      'permission_id' => 323,
       'role_id' => 1,
     ),
     1094 => 
     array (
       'orden' => 0,
-      'permission_id' => 324,
-      'role_id' => 3,
+      'permission_id' => 323,
+      'role_id' => 17,
     ),
     1095 => 
     array (
       'orden' => 0,
       'permission_id' => 324,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1096 => 
     array (
       'orden' => 0,
       'permission_id' => 324,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1097 => 
     array (
       'orden' => 0,
-      'permission_id' => 325,
-      'role_id' => 1,
+      'permission_id' => 324,
+      'role_id' => 9,
     ),
     1098 => 
     array (
       'orden' => 0,
-      'permission_id' => 325,
-      'role_id' => 3,
+      'permission_id' => 324,
+      'role_id' => 17,
     ),
     1099 => 
     array (
       'orden' => 0,
       'permission_id' => 325,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1100 => 
     array (
       'orden' => 0,
       'permission_id' => 325,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1101 => 
     array (
       'orden' => 0,
-      'permission_id' => 326,
-      'role_id' => 1,
+      'permission_id' => 325,
+      'role_id' => 9,
     ),
     1102 => 
     array (
       'orden' => 0,
-      'permission_id' => 326,
-      'role_id' => 3,
+      'permission_id' => 325,
+      'role_id' => 17,
     ),
     1103 => 
     array (
       'orden' => 0,
       'permission_id' => 326,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1104 => 
     array (
       'orden' => 0,
       'permission_id' => 326,
-      'role_id' => 11,
+      'role_id' => 3,
     ),
     1105 => 
     array (
       'orden' => 0,
       'permission_id' => 326,
-      'role_id' => 17,
+      'role_id' => 9,
     ),
     1106 => 
     array (
       'orden' => 0,
-      'permission_id' => 327,
-      'role_id' => 1,
+      'permission_id' => 326,
+      'role_id' => 11,
     ),
     1107 => 
     array (
       'orden' => 0,
-      'permission_id' => 327,
-      'role_id' => 3,
+      'permission_id' => 326,
+      'role_id' => 17,
     ),
     1108 => 
     array (
       'orden' => 0,
       'permission_id' => 327,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1109 => 
     array (
       'orden' => 0,
-      'permission_id' => 328,
-      'role_id' => 1,
+      'permission_id' => 327,
+      'role_id' => 3,
     ),
     1110 => 
     array (
       'orden' => 0,
-      'permission_id' => 328,
-      'role_id' => 3,
+      'permission_id' => 327,
+      'role_id' => 9,
     ),
     1111 => 
     array (
       'orden' => 0,
       'permission_id' => 328,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1112 => 
     array (
       'orden' => 0,
       'permission_id' => 328,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1113 => 
     array (
       'orden' => 0,
-      'permission_id' => 329,
-      'role_id' => 1,
+      'permission_id' => 328,
+      'role_id' => 9,
     ),
     1114 => 
     array (
       'orden' => 0,
-      'permission_id' => 329,
-      'role_id' => 9,
+      'permission_id' => 328,
+      'role_id' => 17,
     ),
     1115 => 
     array (
       'orden' => 0,
       'permission_id' => 329,
-      'role_id' => 12,
+      'role_id' => 1,
     ),
     1116 => 
     array (
       'orden' => 0,
-      'permission_id' => 330,
-      'role_id' => 1,
+      'permission_id' => 329,
+      'role_id' => 9,
     ),
     1117 => 
     array (
       'orden' => 0,
-      'permission_id' => 330,
-      'role_id' => 9,
+      'permission_id' => 329,
+      'role_id' => 12,
     ),
     1118 => 
     array (
       'orden' => 0,
       'permission_id' => 330,
-      'role_id' => 12,
+      'role_id' => 1,
     ),
     1119 => 
     array (
       'orden' => 0,
-      'permission_id' => 331,
-      'role_id' => 1,
+      'permission_id' => 330,
+      'role_id' => 9,
     ),
     1120 => 
     array (
       'orden' => 0,
-      'permission_id' => 331,
-      'role_id' => 17,
+      'permission_id' => 330,
+      'role_id' => 12,
     ),
     1121 => 
     array (
       'orden' => 0,
-      'permission_id' => 332,
+      'permission_id' => 331,
       'role_id' => 1,
     ),
     1122 => 
     array (
       'orden' => 0,
-      'permission_id' => 332,
-      'role_id' => 9,
+      'permission_id' => 331,
+      'role_id' => 17,
     ),
     1123 => 
     array (
       'orden' => 0,
       'permission_id' => 332,
-      'role_id' => 12,
+      'role_id' => 1,
     ),
     1124 => 
     array (
       'orden' => 0,
-      'permission_id' => 333,
-      'role_id' => 1,
+      'permission_id' => 332,
+      'role_id' => 9,
     ),
     1125 => 
     array (
       'orden' => 0,
-      'permission_id' => 333,
-      'role_id' => 9,
+      'permission_id' => 332,
+      'role_id' => 12,
     ),
     1126 => 
     array (
       'orden' => 0,
       'permission_id' => 333,
-      'role_id' => 12,
+      'role_id' => 1,
     ),
     1127 => 
     array (
       'orden' => 0,
-      'permission_id' => 334,
-      'role_id' => 1,
+      'permission_id' => 333,
+      'role_id' => 9,
     ),
     1128 => 
     array (
       'orden' => 0,
-      'permission_id' => 334,
-      'role_id' => 2,
+      'permission_id' => 333,
+      'role_id' => 12,
     ),
     1129 => 
     array (
       'orden' => 0,
       'permission_id' => 334,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1130 => 
     array (
       'orden' => 0,
       'permission_id' => 334,
-      'role_id' => 12,
+      'role_id' => 2,
     ),
     1131 => 
     array (
       'orden' => 0,
       'permission_id' => 334,
-      'role_id' => 13,
+      'role_id' => 9,
     ),
     1132 => 
     array (
       'orden' => 0,
-      'permission_id' => 335,
-      'role_id' => 1,
+      'permission_id' => 334,
+      'role_id' => 12,
     ),
     1133 => 
     array (
       'orden' => 0,
-      'permission_id' => 335,
-      'role_id' => 2,
+      'permission_id' => 334,
+      'role_id' => 13,
     ),
     1134 => 
     array (
       'orden' => 0,
       'permission_id' => 335,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1135 => 
     array (
       'orden' => 0,
       'permission_id' => 335,
-      'role_id' => 12,
+      'role_id' => 2,
     ),
     1136 => 
     array (
       'orden' => 0,
       'permission_id' => 335,
-      'role_id' => 13,
+      'role_id' => 9,
     ),
     1137 => 
     array (
       'orden' => 0,
-      'permission_id' => 336,
-      'role_id' => 1,
+      'permission_id' => 335,
+      'role_id' => 12,
     ),
     1138 => 
     array (
       'orden' => 0,
-      'permission_id' => 336,
-      'role_id' => 9,
+      'permission_id' => 335,
+      'role_id' => 13,
     ),
     1139 => 
     array (
       'orden' => 0,
       'permission_id' => 336,
-      'role_id' => 12,
+      'role_id' => 1,
     ),
     1140 => 
     array (
       'orden' => 0,
-      'permission_id' => 337,
-      'role_id' => 1,
+      'permission_id' => 336,
+      'role_id' => 9,
     ),
     1141 => 
     array (
       'orden' => 0,
-      'permission_id' => 337,
-      'role_id' => 9,
+      'permission_id' => 336,
+      'role_id' => 12,
     ),
     1142 => 
     array (
       'orden' => 0,
       'permission_id' => 337,
-      'role_id' => 12,
+      'role_id' => 1,
     ),
     1143 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 337,
+      'role_id' => 9,
+    ),
+    1144 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 337,
+      'role_id' => 12,
+    ),
+    1145 => 
     array (
       'orden' => 0,
       'permission_id' => 338,
       'role_id' => 1,
     ),
-    1144 => 
+    1146 => 
     array (
       'orden' => 0,
       'permission_id' => 339,
       'role_id' => 1,
     ),
-    1145 => 
+    1147 => 
     array (
       'orden' => 0,
       'permission_id' => 339,
       'role_id' => 9,
     ),
-    1146 => 
+    1148 => 
     array (
       'orden' => 0,
       'permission_id' => 339,
       'role_id' => 12,
-    ),
-    1147 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 340,
-      'role_id' => 1,
-    ),
-    1148 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 340,
-      'role_id' => 3,
     ),
     1149 => 
     array (
       'orden' => 0,
       'permission_id' => 340,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1150 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 340,
+      'role_id' => 3,
+    ),
+    1151 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 340,
+      'role_id' => 9,
+    ),
+    1152 => 
     array (
       'orden' => 0,
       'permission_id' => 341,
       'role_id' => 1,
     ),
-    1151 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 342,
-      'role_id' => 1,
-    ),
-    1152 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 342,
-      'role_id' => 3,
-    ),
     1153 => 
     array (
       'orden' => 0,
       'permission_id' => 342,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1154 => 
     array (
       'orden' => 0,
       'permission_id' => 342,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1155 => 
     array (
       'orden' => 0,
-      'permission_id' => 343,
-      'role_id' => 1,
+      'permission_id' => 342,
+      'role_id' => 9,
     ),
     1156 => 
     array (
       'orden' => 0,
-      'permission_id' => 343,
-      'role_id' => 3,
+      'permission_id' => 342,
+      'role_id' => 17,
     ),
     1157 => 
     array (
       'orden' => 0,
       'permission_id' => 343,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1158 => 
     array (
       'orden' => 0,
-      'permission_id' => 344,
-      'role_id' => 1,
+      'permission_id' => 343,
+      'role_id' => 3,
     ),
     1159 => 
     array (
       'orden' => 0,
-      'permission_id' => 344,
-      'role_id' => 3,
+      'permission_id' => 343,
+      'role_id' => 17,
     ),
     1160 => 
     array (
       'orden' => 0,
       'permission_id' => 344,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1161 => 
     array (
       'orden' => 0,
       'permission_id' => 344,
-      'role_id' => 17,
+      'role_id' => 3,
     ),
     1162 => 
     array (
       'orden' => 0,
-      'permission_id' => 345,
-      'role_id' => 1,
+      'permission_id' => 344,
+      'role_id' => 9,
     ),
     1163 => 
     array (
       'orden' => 0,
-      'permission_id' => 345,
-      'role_id' => 6,
+      'permission_id' => 344,
+      'role_id' => 17,
     ),
     1164 => 
     array (
       'orden' => 0,
       'permission_id' => 345,
-      'role_id' => 9,
+      'role_id' => 1,
     ),
     1165 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 345,
+      'role_id' => 6,
+    ),
+    1166 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 345,
+      'role_id' => 9,
+    ),
+    1167 => 
     array (
       'orden' => 0,
       'permission_id' => 346,
       'role_id' => 1,
     ),
-    1166 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 347,
-      'role_id' => 1,
-    ),
-    1167 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 347,
-      'role_id' => 3,
-    ),
     1168 => 
     array (
       'orden' => 0,
-      'permission_id' => 347,
-      'role_id' => 9,
+      'permission_id' => 346,
+      'role_id' => 3,
     ),
     1169 => 
     array (
       'orden' => 0,
       'permission_id' => 347,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1170 => 
     array (
       'orden' => 0,
-      'permission_id' => 348,
-      'role_id' => 1,
+      'permission_id' => 347,
+      'role_id' => 3,
     ),
     1171 => 
     array (
       'orden' => 0,
-      'permission_id' => 348,
-      'role_id' => 3,
+      'permission_id' => 347,
+      'role_id' => 9,
     ),
     1172 => 
     array (
       'orden' => 0,
-      'permission_id' => 348,
-      'role_id' => 9,
+      'permission_id' => 347,
+      'role_id' => 17,
     ),
     1173 => 
     array (
       'orden' => 0,
       'permission_id' => 348,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1174 => 
     array (
       'orden' => 0,
+      'permission_id' => 348,
+      'role_id' => 3,
+    ),
+    1175 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 348,
+      'role_id' => 9,
+    ),
+    1176 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 348,
+      'role_id' => 17,
+    ),
+    1177 => 
+    array (
+      'orden' => 0,
       'permission_id' => 349,
       'role_id' => 1,
     ),
-    1175 => 
+    1178 => 
     array (
       'orden' => 0,
       'permission_id' => 349,
       'role_id' => 17,
     ),
-    1176 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 350,
-      'role_id' => 1,
-    ),
-    1177 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 350,
-      'role_id' => 9,
-    ),
-    1178 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 350,
-      'role_id' => 12,
-    ),
     1179 => 
     array (
       'orden' => 0,
-      'permission_id' => 351,
+      'permission_id' => 350,
       'role_id' => 1,
     ),
     1180 => 
     array (
       'orden' => 0,
-      'permission_id' => 351,
-      'role_id' => 3,
+      'permission_id' => 350,
+      'role_id' => 9,
     ),
     1181 => 
     array (
       'orden' => 0,
-      'permission_id' => 351,
-      'role_id' => 17,
+      'permission_id' => 350,
+      'role_id' => 12,
     ),
     1182 => 
     array (
       'orden' => 0,
-      'permission_id' => 352,
+      'permission_id' => 351,
       'role_id' => 1,
     ),
     1183 => 
     array (
       'orden' => 0,
-      'permission_id' => 352,
+      'permission_id' => 351,
       'role_id' => 3,
     ),
     1184 => 
     array (
       'orden' => 0,
-      'permission_id' => 352,
-      'role_id' => 18,
+      'permission_id' => 351,
+      'role_id' => 17,
     ),
     1185 => 
     array (
       'orden' => 0,
       'permission_id' => 352,
-      'role_id' => 19,
+      'role_id' => 1,
     ),
     1186 => 
     array (
       'orden' => 0,
-      'permission_id' => 353,
-      'role_id' => 1,
+      'permission_id' => 352,
+      'role_id' => 3,
     ),
     1187 => 
     array (
       'orden' => 0,
-      'permission_id' => 353,
-      'role_id' => 3,
+      'permission_id' => 352,
+      'role_id' => 18,
     ),
     1188 => 
     array (
       'orden' => 0,
-      'permission_id' => 354,
-      'role_id' => 1,
+      'permission_id' => 352,
+      'role_id' => 19,
     ),
     1189 => 
     array (
       'orden' => 0,
-      'permission_id' => 354,
-      'role_id' => 3,
+      'permission_id' => 353,
+      'role_id' => 1,
     ),
     1190 => 
     array (
       'orden' => 0,
-      'permission_id' => 354,
-      'role_id' => 18,
+      'permission_id' => 353,
+      'role_id' => 3,
     ),
     1191 => 
     array (
       'orden' => 0,
-      'permission_id' => 355,
+      'permission_id' => 354,
       'role_id' => 1,
     ),
     1192 => 
     array (
       'orden' => 0,
-      'permission_id' => 355,
+      'permission_id' => 354,
       'role_id' => 3,
     ),
     1193 => 
     array (
       'orden' => 0,
-      'permission_id' => 356,
-      'role_id' => 1,
+      'permission_id' => 354,
+      'role_id' => 18,
     ),
     1194 => 
     array (
       'orden' => 0,
-      'permission_id' => 356,
-      'role_id' => 3,
+      'permission_id' => 355,
+      'role_id' => 1,
     ),
     1195 => 
     array (
       'orden' => 0,
-      'permission_id' => 356,
-      'role_id' => 18,
+      'permission_id' => 355,
+      'role_id' => 3,
     ),
     1196 => 
     array (
       'orden' => 0,
       'permission_id' => 356,
-      'role_id' => 19,
+      'role_id' => 1,
     ),
     1197 => 
     array (
       'orden' => 0,
-      'permission_id' => 357,
-      'role_id' => 1,
+      'permission_id' => 356,
+      'role_id' => 3,
     ),
     1198 => 
     array (
       'orden' => 0,
-      'permission_id' => 357,
-      'role_id' => 3,
+      'permission_id' => 356,
+      'role_id' => 18,
     ),
     1199 => 
     array (
       'orden' => 0,
-      'permission_id' => 358,
-      'role_id' => 1,
+      'permission_id' => 356,
+      'role_id' => 19,
     ),
     1200 => 
     array (
       'orden' => 0,
-      'permission_id' => 358,
-      'role_id' => 3,
+      'permission_id' => 357,
+      'role_id' => 1,
     ),
     1201 => 
     array (
       'orden' => 0,
-      'permission_id' => 359,
-      'role_id' => 1,
+      'permission_id' => 357,
+      'role_id' => 3,
     ),
     1202 => 
     array (
       'orden' => 0,
-      'permission_id' => 359,
-      'role_id' => 3,
+      'permission_id' => 358,
+      'role_id' => 1,
     ),
     1203 => 
     array (
       'orden' => 0,
-      'permission_id' => 359,
-      'role_id' => 18,
+      'permission_id' => 358,
+      'role_id' => 3,
     ),
     1204 => 
     array (
       'orden' => 0,
-      'permission_id' => 360,
+      'permission_id' => 359,
       'role_id' => 1,
     ),
     1205 => 
     array (
       'orden' => 0,
-      'permission_id' => 360,
+      'permission_id' => 359,
       'role_id' => 3,
     ),
     1206 => 
     array (
       'orden' => 0,
-      'permission_id' => 360,
+      'permission_id' => 359,
       'role_id' => 18,
     ),
     1207 => 
     array (
       'orden' => 0,
-      'permission_id' => 361,
+      'permission_id' => 360,
       'role_id' => 1,
     ),
     1208 => 
     array (
       'orden' => 0,
-      'permission_id' => 361,
+      'permission_id' => 360,
       'role_id' => 3,
     ),
     1209 => 
     array (
       'orden' => 0,
-      'permission_id' => 362,
-      'role_id' => 1,
+      'permission_id' => 360,
+      'role_id' => 18,
     ),
     1210 => 
     array (
       'orden' => 0,
-      'permission_id' => 362,
-      'role_id' => 3,
+      'permission_id' => 361,
+      'role_id' => 1,
     ),
     1211 => 
     array (
       'orden' => 0,
-      'permission_id' => 363,
-      'role_id' => 1,
+      'permission_id' => 361,
+      'role_id' => 3,
     ),
     1212 => 
     array (
       'orden' => 0,
-      'permission_id' => 363,
-      'role_id' => 3,
+      'permission_id' => 362,
+      'role_id' => 1,
     ),
     1213 => 
     array (
       'orden' => 0,
-      'permission_id' => 363,
-      'role_id' => 18,
+      'permission_id' => 362,
+      'role_id' => 3,
     ),
     1214 => 
     array (
       'orden' => 0,
-      'permission_id' => 364,
+      'permission_id' => 363,
       'role_id' => 1,
     ),
     1215 => 
     array (
       'orden' => 0,
-      'permission_id' => 364,
+      'permission_id' => 363,
       'role_id' => 3,
     ),
     1216 => 
     array (
       'orden' => 0,
-      'permission_id' => 364,
-      'role_id' => 19,
+      'permission_id' => 363,
+      'role_id' => 18,
     ),
     1217 => 
     array (
       'orden' => 0,
-      'permission_id' => 365,
+      'permission_id' => 364,
       'role_id' => 1,
     ),
     1218 => 
     array (
       'orden' => 0,
-      'permission_id' => 365,
+      'permission_id' => 364,
       'role_id' => 3,
     ),
     1219 => 
     array (
       'orden' => 0,
-      'permission_id' => 366,
-      'role_id' => 1,
+      'permission_id' => 364,
+      'role_id' => 19,
     ),
     1220 => 
     array (
       'orden' => 0,
-      'permission_id' => 366,
-      'role_id' => 3,
+      'permission_id' => 365,
+      'role_id' => 1,
     ),
     1221 => 
     array (
       'orden' => 0,
-      'permission_id' => 366,
-      'role_id' => 18,
+      'permission_id' => 365,
+      'role_id' => 3,
     ),
     1222 => 
     array (
       'orden' => 0,
-      'permission_id' => 367,
+      'permission_id' => 366,
       'role_id' => 1,
     ),
     1223 => 
     array (
       'orden' => 0,
-      'permission_id' => 367,
+      'permission_id' => 366,
       'role_id' => 3,
     ),
     1224 => 
     array (
       'orden' => 0,
-      'permission_id' => 368,
-      'role_id' => 1,
+      'permission_id' => 366,
+      'role_id' => 18,
     ),
     1225 => 
     array (
       'orden' => 0,
-      'permission_id' => 368,
-      'role_id' => 3,
+      'permission_id' => 367,
+      'role_id' => 1,
     ),
     1226 => 
     array (
       'orden' => 0,
-      'permission_id' => 369,
-      'role_id' => 1,
+      'permission_id' => 367,
+      'role_id' => 3,
     ),
     1227 => 
     array (
       'orden' => 0,
-      'permission_id' => 369,
-      'role_id' => 3,
+      'permission_id' => 368,
+      'role_id' => 1,
     ),
     1228 => 
     array (
       'orden' => 0,
-      'permission_id' => 369,
-      'role_id' => 18,
+      'permission_id' => 368,
+      'role_id' => 3,
     ),
     1229 => 
     array (
       'orden' => 0,
-      'permission_id' => 370,
+      'permission_id' => 369,
       'role_id' => 1,
     ),
     1230 => 
     array (
       'orden' => 0,
-      'permission_id' => 370,
+      'permission_id' => 369,
       'role_id' => 3,
     ),
     1231 => 
     array (
       'orden' => 0,
-      'permission_id' => 370,
+      'permission_id' => 369,
       'role_id' => 18,
     ),
     1232 => 
     array (
       'orden' => 0,
-      'permission_id' => 371,
+      'permission_id' => 370,
       'role_id' => 1,
     ),
     1233 => 
     array (
       'orden' => 0,
-      'permission_id' => 371,
+      'permission_id' => 370,
       'role_id' => 3,
     ),
     1234 => 
     array (
       'orden' => 0,
-      'permission_id' => 372,
-      'role_id' => 1,
+      'permission_id' => 370,
+      'role_id' => 18,
     ),
     1235 => 
     array (
       'orden' => 0,
-      'permission_id' => 372,
-      'role_id' => 3,
+      'permission_id' => 371,
+      'role_id' => 1,
     ),
     1236 => 
     array (
       'orden' => 0,
-      'permission_id' => 373,
-      'role_id' => 1,
+      'permission_id' => 371,
+      'role_id' => 3,
     ),
     1237 => 
     array (
       'orden' => 0,
-      'permission_id' => 373,
-      'role_id' => 3,
+      'permission_id' => 372,
+      'role_id' => 1,
     ),
     1238 => 
     array (
       'orden' => 0,
-      'permission_id' => 374,
-      'role_id' => 1,
+      'permission_id' => 372,
+      'role_id' => 3,
     ),
     1239 => 
     array (
       'orden' => 0,
-      'permission_id' => 374,
-      'role_id' => 3,
+      'permission_id' => 373,
+      'role_id' => 1,
     ),
     1240 => 
     array (
       'orden' => 0,
-      'permission_id' => 375,
-      'role_id' => 1,
+      'permission_id' => 373,
+      'role_id' => 3,
     ),
     1241 => 
     array (
       'orden' => 0,
+      'permission_id' => 374,
+      'role_id' => 1,
+    ),
+    1242 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 374,
+      'role_id' => 3,
+    ),
+    1243 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 375,
+      'role_id' => 1,
+    ),
+    1244 => 
+    array (
+      'orden' => 0,
       'permission_id' => 375,
       'role_id' => 3,
     ),
-    1242 => 
+    1245 => 
     array (
       'orden' => 0,
       'permission_id' => 376,
       'role_id' => 1,
     ),
-    1243 => 
+    1246 => 
     array (
       'orden' => 0,
       'permission_id' => 376,
       'role_id' => 3,
     ),
-    1244 => 
+    1247 => 
     array (
       'orden' => 0,
       'permission_id' => 377,
       'role_id' => 1,
     ),
-    1245 => 
+    1248 => 
     array (
       'orden' => 0,
       'permission_id' => 377,
       'role_id' => 9,
     ),
-    1246 => 
+    1249 => 
     array (
       'orden' => 0,
       'permission_id' => 378,
       'role_id' => 15,
     ),
-    1247 => 
+    1250 => 
     array (
       'orden' => 0,
       'permission_id' => 379,
       'role_id' => 15,
     ),
-    1248 => 
+    1251 => 
     array (
       'orden' => 0,
       'permission_id' => 379,
       'role_id' => 17,
     ),
-    1249 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 380,
-      'role_id' => 1,
-    ),
-    1250 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 380,
-      'role_id' => 17,
-    ),
-    1251 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 381,
-      'role_id' => 1,
-    ),
     1252 => 
     array (
       'orden' => 0,
-      'permission_id' => 381,
-      'role_id' => 3,
+      'permission_id' => 380,
+      'role_id' => 1,
     ),
     1253 => 
     array (
       'orden' => 0,
-      'permission_id' => 381,
+      'permission_id' => 380,
       'role_id' => 17,
     ),
     1254 => 
     array (
       'orden' => 0,
-      'permission_id' => 382,
+      'permission_id' => 381,
       'role_id' => 1,
     ),
     1255 => 
     array (
       'orden' => 0,
-      'permission_id' => 382,
+      'permission_id' => 381,
       'role_id' => 3,
     ),
     1256 => 
     array (
       'orden' => 0,
-      'permission_id' => 382,
+      'permission_id' => 381,
       'role_id' => 17,
     ),
     1257 => 
     array (
       'orden' => 0,
-      'permission_id' => 383,
+      'permission_id' => 382,
       'role_id' => 1,
     ),
     1258 => 
     array (
       'orden' => 0,
-      'permission_id' => 383,
+      'permission_id' => 382,
       'role_id' => 3,
     ),
     1259 => 
     array (
       'orden' => 0,
-      'permission_id' => 383,
-      'role_id' => 9,
+      'permission_id' => 382,
+      'role_id' => 17,
     ),
     1260 => 
     array (
       'orden' => 0,
       'permission_id' => 383,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1261 => 
     array (
       'orden' => 0,
-      'permission_id' => 384,
-      'role_id' => 1,
+      'permission_id' => 383,
+      'role_id' => 3,
     ),
     1262 => 
     array (
       'orden' => 0,
-      'permission_id' => 384,
-      'role_id' => 3,
+      'permission_id' => 383,
+      'role_id' => 9,
     ),
     1263 => 
     array (
       'orden' => 0,
-      'permission_id' => 384,
-      'role_id' => 9,
+      'permission_id' => 383,
+      'role_id' => 17,
     ),
     1264 => 
     array (
       'orden' => 0,
       'permission_id' => 384,
-      'role_id' => 17,
+      'role_id' => 1,
     ),
     1265 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 384,
+      'role_id' => 3,
+    ),
+    1266 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 384,
+      'role_id' => 9,
+    ),
+    1267 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 384,
+      'role_id' => 17,
+    ),
+    1268 => 
     array (
       'orden' => 0,
       'permission_id' => 385,
       'role_id' => 17,
     ),
-    1266 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 387,
-      'role_id' => 1,
-    ),
-    1267 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 387,
-      'role_id' => 9,
-    ),
-    1268 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 387,
-      'role_id' => 12,
-    ),
     1269 => 
     array (
       'orden' => 0,
-      'permission_id' => 388,
+      'permission_id' => 387,
       'role_id' => 1,
     ),
     1270 => 
     array (
       'orden' => 0,
-      'permission_id' => 388,
-      'role_id' => 3,
+      'permission_id' => 387,
+      'role_id' => 9,
     ),
     1271 => 
     array (
       'orden' => 0,
-      'permission_id' => 388,
-      'role_id' => 17,
+      'permission_id' => 387,
+      'role_id' => 12,
     ),
     1272 => 
     array (
       'orden' => 0,
-      'permission_id' => 389,
+      'permission_id' => 388,
       'role_id' => 1,
     ),
     1273 => 
     array (
       'orden' => 0,
-      'permission_id' => 389,
+      'permission_id' => 388,
       'role_id' => 3,
     ),
     1274 => 
     array (
       'orden' => 0,
-      'permission_id' => 389,
-      'role_id' => 17,
+      'permission_id' => 388,
+      'role_id' => 9,
     ),
     1275 => 
     array (
       'orden' => 0,
-      'permission_id' => 391,
-      'role_id' => 1,
+      'permission_id' => 388,
+      'role_id' => 17,
     ),
     1276 => 
     array (
       'orden' => 0,
-      'permission_id' => 391,
-      'role_id' => 3,
+      'permission_id' => 389,
+      'role_id' => 1,
     ),
     1277 => 
     array (
       'orden' => 0,
-      'permission_id' => 392,
-      'role_id' => 1,
+      'permission_id' => 389,
+      'role_id' => 3,
     ),
     1278 => 
     array (
       'orden' => 0,
-      'permission_id' => 392,
-      'role_id' => 3,
+      'permission_id' => 389,
+      'role_id' => 9,
     ),
     1279 => 
     array (
       'orden' => 0,
-      'permission_id' => 393,
-      'role_id' => 1,
+      'permission_id' => 389,
+      'role_id' => 17,
     ),
     1280 => 
     array (
       'orden' => 0,
-      'permission_id' => 393,
-      'role_id' => 9,
+      'permission_id' => 391,
+      'role_id' => 1,
     ),
     1281 => 
     array (
       'orden' => 0,
-      'permission_id' => 394,
-      'role_id' => 1,
+      'permission_id' => 391,
+      'role_id' => 3,
     ),
     1282 => 
     array (
       'orden' => 0,
-      'permission_id' => 394,
-      'role_id' => 9,
+      'permission_id' => 392,
+      'role_id' => 1,
     ),
     1283 => 
     array (
       'orden' => 0,
-      'permission_id' => 395,
-      'role_id' => 1,
+      'permission_id' => 392,
+      'role_id' => 3,
     ),
     1284 => 
     array (
       'orden' => 0,
-      'permission_id' => 395,
-      'role_id' => 3,
+      'permission_id' => 393,
+      'role_id' => 1,
     ),
     1285 => 
     array (
       'orden' => 0,
-      'permission_id' => 395,
-      'role_id' => 17,
+      'permission_id' => 393,
+      'role_id' => 9,
     ),
     1286 => 
     array (
       'orden' => 0,
-      'permission_id' => 396,
+      'permission_id' => 394,
       'role_id' => 1,
     ),
     1287 => 
     array (
       'orden' => 0,
-      'permission_id' => 396,
-      'role_id' => 3,
+      'permission_id' => 394,
+      'role_id' => 9,
     ),
     1288 => 
     array (
       'orden' => 0,
-      'permission_id' => 396,
-      'role_id' => 17,
+      'permission_id' => 395,
+      'role_id' => 1,
     ),
     1289 => 
     array (
       'orden' => 0,
-      'permission_id' => 396,
-      'role_id' => 20,
+      'permission_id' => 395,
+      'role_id' => 3,
     ),
     1290 => 
     array (
       'orden' => 0,
-      'permission_id' => 397,
-      'role_id' => 1,
+      'permission_id' => 395,
+      'role_id' => 17,
     ),
     1291 => 
     array (
       'orden' => 0,
-      'permission_id' => 397,
-      'role_id' => 3,
+      'permission_id' => 396,
+      'role_id' => 1,
     ),
     1292 => 
     array (
       'orden' => 0,
-      'permission_id' => 397,
-      'role_id' => 17,
+      'permission_id' => 396,
+      'role_id' => 3,
     ),
     1293 => 
     array (
       'orden' => 0,
-      'permission_id' => 397,
-      'role_id' => 20,
+      'permission_id' => 396,
+      'role_id' => 17,
     ),
     1294 => 
     array (
       'orden' => 0,
-      'permission_id' => 398,
-      'role_id' => 1,
+      'permission_id' => 396,
+      'role_id' => 20,
     ),
     1295 => 
     array (
       'orden' => 0,
-      'permission_id' => 398,
-      'role_id' => 3,
+      'permission_id' => 397,
+      'role_id' => 1,
     ),
     1296 => 
     array (
       'orden' => 0,
-      'permission_id' => 398,
-      'role_id' => 17,
+      'permission_id' => 397,
+      'role_id' => 3,
     ),
     1297 => 
     array (
       'orden' => 0,
-      'permission_id' => 399,
-      'role_id' => 1,
+      'permission_id' => 397,
+      'role_id' => 17,
     ),
     1298 => 
     array (
       'orden' => 0,
-      'permission_id' => 399,
-      'role_id' => 3,
+      'permission_id' => 397,
+      'role_id' => 20,
     ),
     1299 => 
     array (
       'orden' => 0,
-      'permission_id' => 399,
-      'role_id' => 17,
+      'permission_id' => 398,
+      'role_id' => 1,
     ),
     1300 => 
     array (
       'orden' => 0,
-      'permission_id' => 400,
-      'role_id' => 1,
+      'permission_id' => 398,
+      'role_id' => 3,
     ),
     1301 => 
     array (
       'orden' => 0,
-      'permission_id' => 400,
-      'role_id' => 3,
+      'permission_id' => 398,
+      'role_id' => 17,
     ),
     1302 => 
     array (
       'orden' => 0,
-      'permission_id' => 400,
-      'role_id' => 17,
+      'permission_id' => 399,
+      'role_id' => 1,
     ),
     1303 => 
     array (
       'orden' => 0,
-      'permission_id' => 401,
-      'role_id' => 1,
+      'permission_id' => 399,
+      'role_id' => 3,
     ),
     1304 => 
     array (
       'orden' => 0,
-      'permission_id' => 401,
-      'role_id' => 3,
+      'permission_id' => 399,
+      'role_id' => 17,
     ),
     1305 => 
     array (
       'orden' => 0,
-      'permission_id' => 401,
-      'role_id' => 17,
+      'permission_id' => 400,
+      'role_id' => 1,
     ),
     1306 => 
     array (
       'orden' => 0,
-      'permission_id' => 401,
-      'role_id' => 20,
+      'permission_id' => 400,
+      'role_id' => 3,
     ),
     1307 => 
     array (
       'orden' => 0,
-      'permission_id' => 402,
-      'role_id' => 1,
+      'permission_id' => 400,
+      'role_id' => 17,
     ),
     1308 => 
     array (
       'orden' => 0,
-      'permission_id' => 402,
-      'role_id' => 3,
+      'permission_id' => 401,
+      'role_id' => 1,
     ),
     1309 => 
     array (
       'orden' => 0,
-      'permission_id' => 402,
-      'role_id' => 17,
+      'permission_id' => 401,
+      'role_id' => 3,
     ),
     1310 => 
     array (
       'orden' => 0,
-      'permission_id' => 402,
-      'role_id' => 20,
+      'permission_id' => 401,
+      'role_id' => 17,
     ),
     1311 => 
     array (
       'orden' => 0,
-      'permission_id' => 403,
-      'role_id' => 1,
+      'permission_id' => 401,
+      'role_id' => 20,
     ),
     1312 => 
     array (
       'orden' => 0,
-      'permission_id' => 403,
-      'role_id' => 3,
+      'permission_id' => 402,
+      'role_id' => 1,
     ),
     1313 => 
     array (
       'orden' => 0,
-      'permission_id' => 403,
-      'role_id' => 17,
+      'permission_id' => 402,
+      'role_id' => 3,
     ),
     1314 => 
     array (
       'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 17,
+    ),
+    1315 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 402,
+      'role_id' => 20,
+    ),
+    1316 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 1,
+    ),
+    1317 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 3,
+    ),
+    1318 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 403,
+      'role_id' => 17,
+    ),
+    1319 => 
+    array (
+      'orden' => 0,
       'permission_id' => 403,
       'role_id' => 20,
     ),
-    1315 => 
+    1320 => 
     array (
       'orden' => 0,
       'permission_id' => 404,
       'role_id' => 1,
     ),
-    1316 => 
+    1321 => 
     array (
       'orden' => 0,
       'permission_id' => 404,
       'role_id' => 3,
     ),
-    1317 => 
+    1322 => 
     array (
       'orden' => 0,
       'permission_id' => 404,
       'role_id' => 17,
     ),
-    1318 => 
+    1323 => 
     array (
       'orden' => 0,
       'permission_id' => 404,
       'role_id' => 20,
     ),
-    1319 => 
+    1324 => 
     array (
       'orden' => 0,
       'permission_id' => 405,
       'role_id' => 1,
     ),
-    1320 => 
+    1325 => 
     array (
       'orden' => 0,
       'permission_id' => 405,
       'role_id' => 3,
     ),
-    1321 => 
+    1326 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 405,
+      'role_id' => 9,
+    ),
+    1327 => 
     array (
       'orden' => 0,
       'permission_id' => 406,
       'role_id' => 1,
     ),
-    1322 => 
+    1328 => 
     array (
       'orden' => 0,
       'permission_id' => 406,
       'role_id' => 3,
     ),
-    1323 => 
+    1329 => 
     array (
       'orden' => 0,
       'permission_id' => 406,
       'role_id' => 9,
     ),
-    1324 => 
+    1330 => 
     array (
       'orden' => 0,
       'permission_id' => 406,
       'role_id' => 11,
     ),
-    1325 => 
+    1331 => 
     array (
       'orden' => 0,
       'permission_id' => 406,
       'role_id' => 17,
     ),
-    1326 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 407,
-      'role_id' => 1,
-    ),
-    1327 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 407,
-      'role_id' => 3,
-    ),
-    1328 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 407,
-      'role_id' => 7,
-    ),
-    1329 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 408,
-      'role_id' => 1,
-    ),
-    1330 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 408,
-      'role_id' => 3,
-    ),
-    1331 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 408,
-      'role_id' => 14,
-    ),
     1332 => 
     array (
       'orden' => 0,
-      'permission_id' => 409,
+      'permission_id' => 407,
       'role_id' => 1,
     ),
     1333 => 
     array (
       'orden' => 0,
-      'permission_id' => 409,
+      'permission_id' => 407,
       'role_id' => 3,
     ),
     1334 => 
     array (
       'orden' => 0,
-      'permission_id' => 409,
-      'role_id' => 14,
+      'permission_id' => 407,
+      'role_id' => 7,
     ),
     1335 => 
     array (
       'orden' => 0,
-      'permission_id' => 410,
+      'permission_id' => 408,
       'role_id' => 1,
     ),
     1336 => 
     array (
       'orden' => 0,
-      'permission_id' => 410,
+      'permission_id' => 408,
       'role_id' => 3,
     ),
     1337 => 
     array (
       'orden' => 0,
-      'permission_id' => 410,
+      'permission_id' => 408,
       'role_id' => 14,
     ),
     1338 => 
     array (
       'orden' => 0,
-      'permission_id' => 411,
+      'permission_id' => 409,
       'role_id' => 1,
     ),
     1339 => 
     array (
       'orden' => 0,
-      'permission_id' => 411,
+      'permission_id' => 409,
       'role_id' => 3,
     ),
     1340 => 
     array (
       'orden' => 0,
-      'permission_id' => 411,
+      'permission_id' => 409,
       'role_id' => 14,
     ),
     1341 => 
     array (
       'orden' => 0,
-      'permission_id' => 412,
+      'permission_id' => 410,
       'role_id' => 1,
     ),
     1342 => 
     array (
       'orden' => 0,
-      'permission_id' => 412,
+      'permission_id' => 410,
       'role_id' => 3,
     ),
     1343 => 
     array (
       'orden' => 0,
-      'permission_id' => 412,
-      'role_id' => 9,
+      'permission_id' => 410,
+      'role_id' => 14,
     ),
     1344 => 
     array (
       'orden' => 0,
-      'permission_id' => 412,
-      'role_id' => 17,
+      'permission_id' => 411,
+      'role_id' => 1,
     ),
     1345 => 
     array (
       'orden' => 0,
-      'permission_id' => 413,
-      'role_id' => 1,
+      'permission_id' => 411,
+      'role_id' => 3,
     ),
     1346 => 
     array (
       'orden' => 0,
-      'permission_id' => 413,
-      'role_id' => 3,
+      'permission_id' => 411,
+      'role_id' => 14,
     ),
     1347 => 
     array (
       'orden' => 0,
-      'permission_id' => 413,
-      'role_id' => 9,
+      'permission_id' => 412,
+      'role_id' => 1,
     ),
     1348 => 
     array (
       'orden' => 0,
-      'permission_id' => 413,
-      'role_id' => 17,
+      'permission_id' => 412,
+      'role_id' => 3,
     ),
     1349 => 
     array (
       'orden' => 0,
-      'permission_id' => 414,
-      'role_id' => 1,
+      'permission_id' => 412,
+      'role_id' => 9,
     ),
     1350 => 
     array (
       'orden' => 0,
-      'permission_id' => 414,
-      'role_id' => 3,
+      'permission_id' => 412,
+      'role_id' => 17,
     ),
     1351 => 
     array (
       'orden' => 0,
-      'permission_id' => 414,
-      'role_id' => 9,
+      'permission_id' => 413,
+      'role_id' => 1,
     ),
     1352 => 
     array (
       'orden' => 0,
+      'permission_id' => 413,
+      'role_id' => 3,
+    ),
+    1353 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 413,
+      'role_id' => 9,
+    ),
+    1354 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 413,
+      'role_id' => 17,
+    ),
+    1355 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 414,
+      'role_id' => 1,
+    ),
+    1356 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 414,
+      'role_id' => 3,
+    ),
+    1357 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 414,
+      'role_id' => 9,
+    ),
+    1358 => 
+    array (
+      'orden' => 0,
       'permission_id' => 414,
       'role_id' => 17,
     ),
-    1353 => 
+    1359 => 
     array (
       'orden' => 0,
       'permission_id' => 415,
       'role_id' => 1,
     ),
-    1354 => 
+    1360 => 
     array (
       'orden' => 0,
       'permission_id' => 415,
       'role_id' => 3,
     ),
-    1355 => 
+    1361 => 
     array (
       'orden' => 0,
       'permission_id' => 415,
       'role_id' => 9,
     ),
-    1356 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 415,
-      'role_id' => 17,
-    ),
-    1357 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 416,
-      'role_id' => 1,
-    ),
-    1358 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 416,
-      'role_id' => 3,
-    ),
-    1359 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 416,
-      'role_id' => 17,
-    ),
-    1360 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 417,
-      'role_id' => 1,
-    ),
-    1361 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 417,
-      'role_id' => 3,
-    ),
     1362 => 
     array (
       'orden' => 0,
-      'permission_id' => 417,
+      'permission_id' => 415,
       'role_id' => 17,
     ),
     1363 => 
     array (
       'orden' => 0,
-      'permission_id' => 418,
+      'permission_id' => 416,
       'role_id' => 1,
     ),
     1364 => 
     array (
       'orden' => 0,
-      'permission_id' => 418,
+      'permission_id' => 416,
       'role_id' => 3,
     ),
     1365 => 
     array (
       'orden' => 0,
-      'permission_id' => 418,
+      'permission_id' => 416,
       'role_id' => 17,
     ),
     1366 => 
     array (
       'orden' => 0,
-      'permission_id' => 419,
+      'permission_id' => 417,
       'role_id' => 1,
     ),
     1367 => 
     array (
       'orden' => 0,
-      'permission_id' => 419,
+      'permission_id' => 417,
       'role_id' => 3,
     ),
     1368 => 
     array (
       'orden' => 0,
-      'permission_id' => 419,
+      'permission_id' => 417,
       'role_id' => 17,
     ),
     1369 => 
     array (
       'orden' => 0,
-      'permission_id' => 420,
+      'permission_id' => 418,
       'role_id' => 1,
     ),
     1370 => 
     array (
       'orden' => 0,
-      'permission_id' => 420,
+      'permission_id' => 418,
       'role_id' => 3,
     ),
     1371 => 
     array (
       'orden' => 0,
+      'permission_id' => 418,
+      'role_id' => 17,
+    ),
+    1372 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 419,
+      'role_id' => 1,
+    ),
+    1373 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 419,
+      'role_id' => 3,
+    ),
+    1374 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 419,
+      'role_id' => 17,
+    ),
+    1375 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 420,
+      'role_id' => 1,
+    ),
+    1376 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 420,
+      'role_id' => 3,
+    ),
+    1377 => 
+    array (
+      'orden' => 0,
       'permission_id' => 420,
       'role_id' => 17,
+    ),
+    1378 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 1,
+    ),
+    1379 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 2,
+    ),
+    1380 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 9,
+    ),
+    1381 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 12,
+    ),
+    1382 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 421,
+      'role_id' => 13,
+    ),
+    1383 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 1,
+    ),
+    1384 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 2,
+    ),
+    1385 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 9,
+    ),
+    1386 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 12,
+    ),
+    1387 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 422,
+      'role_id' => 13,
+    ),
+    1388 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 1,
+    ),
+    1389 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 2,
+    ),
+    1390 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 3,
+    ),
+    1391 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 9,
+    ),
+    1392 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 12,
+    ),
+    1393 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 423,
+      'role_id' => 13,
+    ),
+    1394 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 1,
+    ),
+    1395 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 2,
+    ),
+    1396 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 3,
+    ),
+    1397 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 9,
+    ),
+    1398 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 424,
+      'role_id' => 13,
+    ),
+    1399 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 1,
+    ),
+    1400 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 2,
+    ),
+    1401 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 3,
+    ),
+    1402 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 9,
+    ),
+    1403 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 12,
+    ),
+    1404 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 425,
+      'role_id' => 13,
+    ),
+    1405 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 1,
+    ),
+    1406 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 2,
+    ),
+    1407 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 3,
+    ),
+    1408 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 9,
+    ),
+    1409 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 12,
+    ),
+    1410 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 426,
+      'role_id' => 13,
+    ),
+    1411 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 428,
+      'role_id' => 1,
+    ),
+    1412 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 428,
+      'role_id' => 3,
+    ),
+    1413 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 428,
+      'role_id' => 17,
+    ),
+    1414 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 429,
+      'role_id' => 1,
+    ),
+    1415 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 429,
+      'role_id' => 17,
+    ),
+    1416 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 1,
+    ),
+    1417 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 2,
+    ),
+    1418 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 3,
+    ),
+    1419 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 9,
+    ),
+    1420 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 12,
+    ),
+    1421 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 430,
+      'role_id' => 13,
+    ),
+    1422 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 431,
+      'role_id' => 1,
+    ),
+    1423 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 431,
+      'role_id' => 9,
+    ),
+    1424 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 431,
+      'role_id' => 12,
+    ),
+    1425 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 432,
+      'role_id' => 1,
+    ),
+    1426 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 432,
+      'role_id' => 3,
+    ),
+    1427 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 432,
+      'role_id' => 9,
+    ),
+    1428 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 432,
+      'role_id' => 17,
+    ),
+    1429 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 433,
+      'role_id' => 1,
+    ),
+    1430 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 434,
+      'role_id' => 1,
+    ),
+    1431 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 434,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -17465,7 +18035,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'descripcion' => 'Tipo recaudo',
       'tipo' => 'select',
       'name' => 'teso_tipo_motivo',
-      'opciones' => '{"":"","Anticipo":"Anticipo","Otros recaudos":"Otros recaudos"}',
+      'opciones' => '{"":"","Anticipo":"Anticipo","Otros recaudos":"Otros recaudos","Prestamo financiero":"Prestamo financiero (CxP)"}',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
@@ -17473,7 +18043,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2018-10-24 16:31:13',
-      'updated_at' => '2019-11-21 23:28:56',
+      'updated_at' => '2020-08-27 10:57:54',
     ),
     196 => 
     array (
@@ -18217,7 +18787,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'descripcion' => 'Tipo transacción',
       'tipo' => 'select',
       'name' => 'teso_tipo_motivo',
-      'opciones' => '{"Otros pagos":"Otros pagos","Anticipo proveedor":"Anticipo proveedor","Pago anticipado":"Pago anticipado (Cartera CxC)","Prestamo financiero":"Prestamo financiero (CxP)"}',
+      'opciones' => '{"Otros pagos":"Otros pagos","Anticipo proveedor":"Anticipo proveedor","Pago anticipado":"Pago anticipado (Cartera CxC)"}',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
@@ -18225,7 +18795,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2018-11-29 03:11:14',
-      'updated_at' => '2020-05-11 05:42:34',
+      'updated_at' => '2020-08-27 10:57:21',
     ),
     243 => 
     array (
@@ -25873,7 +26443,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'descripcion' => 'Agrupar por',
       'tipo' => 'select',
       'name' => 'agrupar_por',
-      'opciones' => '{"cliente_id":"Clientes","inv_producto_id":"Productos","tasa_impuesto":"Tasa de impuesto","clase_cliente_id":"Clase de clientes","core_tipo_transaccion_id":"Tipo de transacción"}',
+      'opciones' => '{"cliente_id":"Clientes","inv_producto_id":"Productos","tasa_impuesto":"Tasa de impuesto","clase_cliente_id":"Clase de clientes","core_tipo_transaccion_id":"Tipo de transacción","forma_pago":"Forma de pago"}',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
@@ -25881,7 +26451,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2020-04-02 10:35:48',
-      'updated_at' => '2020-04-02 10:41:37',
+      'updated_at' => '2020-09-19 04:59:38',
     ),
     718 => 
     array (
@@ -26598,6 +27168,102 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-07-28 12:31:46',
       'updated_at' => '2020-07-28 12:31:54',
     ),
+    762 => 
+    array (
+      'id' => 768,
+      'descripcion' => 'Mostrar Items sin movimiento',
+      'tipo' => 'select',
+      'name' => 'mostrar_items_sin_movimiento',
+      'opciones' => '{"0":"No","1":"Si"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-08-04 10:41:01',
+      'updated_at' => '2020-08-04 10:41:34',
+    ),
+    763 => 
+    array (
+      'id' => 769,
+      'descripcion' => 'Fecha de cumpleaños',
+      'tipo' => 'fecha',
+      'name' => 'direccion2',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-08-09 08:25:29',
+      'updated_at' => '2020-08-09 08:26:04',
+    ),
+    764 => 
+    array (
+      'id' => 770,
+      'descripcion' => 'Estado',
+      'tipo' => 'hidden',
+      'name' => 'estado',
+      'opciones' => ' ',
+      'value' => 'Activo',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-08-12 13:38:38',
+      'updated_at' => '2020-08-12 13:52:20',
+    ),
+    765 => 
+    array (
+      'id' => 771,
+      'descripcion' => 'Medio de pago',
+      'tipo' => 'select',
+      'name' => 'teso_medio_recaudo_id',
+      'opciones' => 'table_teso_medios_recaudo',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-09-18 08:01:55',
+      'updated_at' => '2020-09-18 08:02:02',
+    ),
+    766 => 
+    array (
+      'id' => 772,
+      'descripcion' => 'Agrupar por medio de pago',
+      'tipo' => 'select',
+      'name' => 'agrupar_por_medio_pago',
+      'opciones' => '{"0":"No","1":"Si"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-09-18 08:29:14',
+      'updated_at' => '2020-09-18 08:42:57',
+    ),
+    767 => 
+    array (
+      'id' => 773,
+      'descripcion' => 'Clase de cliente',
+      'tipo' => 'select',
+      'name' => 'clase_cliente_id',
+      'opciones' => 'model_App\\Ventas\\ClaseCliente',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-09-19 05:09:29',
+      'updated_at' => '2020-09-19 05:09:35',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -27074,7 +27740,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
       'url_ver' => 'web/id_fila',
-      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=22","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=22","color_bootstrap":"default","faicon":"clone","size":"xs"},"1":{"tag_html":"a","title":"Ficha Tecnica","url":"ficha_tecnica/id_fila?id=8&id_modelo=22","color_bootstrap":"info","faicon":"file-text","size":"xs"}}',
       'url_estado' => '',
       'url_eliminar' => 'inventarios/eliminar_producto/id_fila',
       'controller_complementario' => '',
@@ -27083,7 +27749,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => 'inventarios/',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2018-09-06 09:48:36',
-      'updated_at' => '2020-01-20 10:41:39',
+      'updated_at' => '2020-07-31 10:59:55',
     ),
     22 => 
     array (
@@ -27206,7 +27872,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_edit' => 'matriculas/estudiantes/id_fila/edit',
       'url_print' => '',
       'url_ver' => 'matriculas/estudiantes/show/id_fila',
-      'enlaces' => '{"0":{"tag_html":"a","title":"Cambiar contraseña","url":"core/usuario/cambiarpasswd/user_id?id=1&id_modelo=29&estudiante_id=id_fila&ruta=web","color_bootstrap":"warning","faicon":"key","size":"xs"}}',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Cambiar contraseña","url":"core/usuario/cambiarpasswd/user_id?id=1&id_modelo=29&estudiante_id=id_fila&ruta=web","color_bootstrap":"warning","faicon":"key","size":"xs"},"1":{"tag_html":"a","title":"Gestionar Responsables","url":"matriculas/estudiantes/gestionresponsables/estudiante_id?id=1&id_modelo=29&estudiante_id=id_fila","color_bootstrap":"success","faicon":"arrow-right","size":"xs"}}',
       'url_estado' => '',
       'url_eliminar' => '',
       'controller_complementario' => '',
@@ -27215,7 +27881,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => 'fotos_terceros/',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2018-09-11 14:54:21',
-      'updated_at' => '2020-01-27 13:35:44',
+      'updated_at' => '2020-08-30 05:08:56',
     ),
     28 => 
     array (
@@ -27405,7 +28071,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_print' => '',
       'url_ver' => 'actividades_escolares/ver_actividad/id_fila',
       'enlaces' => '',
-      'url_estado' => 'a_i/id_fila',
+      'url_estado' => '',
       'url_eliminar' => '',
       'controller_complementario' => '',
       'url_form_create' => 'actividades_escolares',
@@ -27413,7 +28079,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => 'calificaciones/actividades_escolares/',
       'ruta_storage_archivo_adjunto' => 'calificaciones/actividades_escolares/',
       'created_at' => '2018-10-16 10:35:21',
-      'updated_at' => '2020-05-18 13:28:21',
+      'updated_at' => '2020-08-12 13:25:45',
     ),
     37 => 
     array (
@@ -27688,7 +28354,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'modelo_relacionado' => '',
       'url_crear' => 'doc_cruce/create',
       'url_edit' => '',
-      'url_print' => 'doc_cruce_print/id_fila',
+      'url_print' => '',
       'url_ver' => 'doc_cruce/id_fila',
       'enlaces' => '',
       'url_estado' => '',
@@ -27699,7 +28365,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2018-11-19 15:31:59',
-      'updated_at' => '2019-12-02 04:00:52',
+      'updated_at' => '2020-08-17 17:58:39',
     ),
     50 => 
     array (
@@ -29952,7 +30618,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'modelo' => 'compras_doc_equivalente',
       'name_space' => 'App\\Compras\\DocumentoEquivalente',
       'modelo_relacionado' => '',
-      'url_crear' => 'compras/create',
+      'url_crear' => '',
       'url_edit' => '',
       'url_print' => '',
       'url_ver' => 'compras/id_fila',
@@ -29961,11 +30627,11 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_eliminar' => '',
       'controller_complementario' => '',
       'url_form_create' => 'compras',
-      'home_miga_pan' => 'compras, Compras',
+      'home_miga_pan' => '',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2019-10-29 02:09:13',
-      'updated_at' => '2019-10-29 05:49:34',
+      'updated_at' => '2020-08-18 05:41:26',
     ),
     153 => 
     array (
@@ -30174,7 +30840,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'modelo_relacionado' => '',
       'url_crear' => 'doc_cruce_cxp/create',
       'url_edit' => '',
-      'url_print' => 'doc_cruce_cxp_print/id_fila',
+      'url_print' => '',
       'url_ver' => 'doc_cruce_cxp/id_fila',
       'enlaces' => '',
       'url_estado' => '',
@@ -30185,7 +30851,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2019-11-27 00:31:59',
-      'updated_at' => '2019-11-27 00:31:59',
+      'updated_at' => '2020-08-17 18:16:10',
     ),
     163 => 
     array (
@@ -30594,7 +31260,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'url_edit' => 'web/id_fila/edit',
       'url_print' => '',
       'url_ver' => 'web/id_fila',
-      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=189","color_bootstrap":"default","faicon":"clone","size":"xs"}}',
+      'enlaces' => '{"0":{"tag_html":"a","title":"Duplicar","url":"duplicar/id_fila?id=8&id_modelo=189","color_bootstrap":"default","faicon":"clone","size":"xs"},"1":{"tag_html":"a","title":"Ficha Tecnica","url":"ficha_tecnica/id_fila?id=8&id_modelo=22","color_bootstrap":"info","faicon":"file-text","size":"xs"}}',
       'url_estado' => '',
       'url_eliminar' => 'inventarios/eliminar_producto/id_fila',
       'controller_complementario' => '',
@@ -30603,7 +31269,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_imagen' => 'inventarios/',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-02-17 09:48:36',
-      'updated_at' => '2020-02-20 10:24:17',
+      'updated_at' => '2020-07-31 10:59:29',
     ),
     182 => 
     array (
@@ -31506,6 +32172,50 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-07-06 09:13:22',
       'updated_at' => '2020-07-08 12:28:07',
+    ),
+    223 => 
+    array (
+      'id' => 233,
+      'descripcion' => 'Documentos soporte en adquisiciones efectuadas a SNOAEF',
+      'modelo' => 'compras_documentos_soporte',
+      'name_space' => 'App\\Compras\\DocumentoSoporteAdquisiciones',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-08-17 19:04:49',
+      'updated_at' => '2020-08-17 19:04:49',
+    ),
+    224 => 
+    array (
+      'id' => 234,
+      'descripcion' => 'Facturas de estudiantes',
+      'modelo' => 'facturas_estudiantes',
+      'name_space' => 'App\\Matriculas\\FacturaEstudiante',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-09-01 05:24:14',
+      'updated_at' => '2020-09-01 05:24:14',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -32485,10601 +33195,10804 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     139 => 
     array (
-      'id' => 144,
-      'orden' => 14,
-      'core_modelo_id' => 38,
-      'core_campo_id' => 22,
-    ),
-    140 => 
-    array (
       'id' => 145,
       'orden' => 11,
       'core_modelo_id' => 39,
       'core_campo_id' => 22,
     ),
-    141 => 
+    140 => 
     array (
       'id' => 146,
       'orden' => 22,
       'core_modelo_id' => 41,
       'core_campo_id' => 22,
     ),
-    142 => 
+    141 => 
     array (
       'id' => 147,
       'orden' => 4,
       'core_modelo_id' => 42,
       'core_campo_id' => 22,
     ),
-    143 => 
+    142 => 
     array (
       'id' => 148,
       'orden' => 4,
       'core_modelo_id' => 45,
       'core_campo_id' => 22,
     ),
-    144 => 
+    143 => 
     array (
       'id' => 149,
       'orden' => 10,
       'core_modelo_id' => 49,
       'core_campo_id' => 22,
     ),
-    145 => 
+    144 => 
     array (
       'id' => 150,
       'orden' => 6,
       'core_modelo_id' => 50,
       'core_campo_id' => 22,
     ),
-    146 => 
+    145 => 
     array (
       'id' => 151,
       'orden' => 10,
       'core_modelo_id' => 55,
       'core_campo_id' => 22,
     ),
-    147 => 
+    146 => 
     array (
       'id' => 152,
       'orden' => 8,
       'core_modelo_id' => 60,
       'core_campo_id' => 22,
     ),
-    148 => 
+    147 => 
     array (
       'id' => 153,
       'orden' => 6,
       'core_modelo_id' => 65,
       'core_campo_id' => 22,
     ),
-    149 => 
+    148 => 
     array (
       'id' => 154,
       'orden' => 7,
       'core_modelo_id' => 67,
       'core_campo_id' => 22,
     ),
-    150 => 
+    149 => 
     array (
       'id' => 155,
       'orden' => 4,
       'core_modelo_id' => 68,
       'core_campo_id' => 22,
     ),
-    151 => 
+    150 => 
     array (
       'id' => 157,
       'orden' => 6,
       'core_modelo_id' => 71,
       'core_campo_id' => 22,
     ),
-    152 => 
+    151 => 
     array (
       'id' => 158,
       'orden' => 6,
       'core_modelo_id' => 75,
       'core_campo_id' => 22,
     ),
-    153 => 
+    152 => 
     array (
       'id' => 159,
       'orden' => 7,
       'core_modelo_id' => 76,
       'core_campo_id' => 22,
     ),
-    154 => 
+    153 => 
     array (
       'id' => 161,
       'orden' => 8,
       'core_modelo_id' => 81,
       'core_campo_id' => 22,
     ),
-    155 => 
+    154 => 
     array (
       'id' => 162,
       'orden' => 20,
       'core_modelo_id' => 83,
       'core_campo_id' => 22,
     ),
-    156 => 
+    155 => 
     array (
       'id' => 163,
       'orden' => 10,
       'core_modelo_id' => 84,
       'core_campo_id' => 22,
     ),
-    157 => 
+    156 => 
     array (
       'id' => 164,
       'orden' => 8,
       'core_modelo_id' => 87,
       'core_campo_id' => 22,
     ),
-    158 => 
+    157 => 
     array (
       'id' => 165,
       'orden' => 9,
       'core_modelo_id' => 88,
       'core_campo_id' => 22,
     ),
-    159 => 
+    158 => 
     array (
       'id' => 166,
       'orden' => 10,
       'core_modelo_id' => 90,
       'core_campo_id' => 22,
     ),
-    160 => 
+    159 => 
     array (
       'id' => 167,
       'orden' => 3,
       'core_modelo_id' => 92,
       'core_campo_id' => 22,
     ),
-    161 => 
+    160 => 
     array (
       'id' => 168,
       'orden' => 13,
       'core_modelo_id' => 93,
       'core_campo_id' => 22,
     ),
-    162 => 
+    161 => 
     array (
       'id' => 169,
       'orden' => 3,
       'core_modelo_id' => 94,
       'core_campo_id' => 22,
     ),
-    163 => 
+    162 => 
     array (
       'id' => 170,
       'orden' => 20,
       'core_modelo_id' => 95,
       'core_campo_id' => 22,
     ),
-    164 => 
+    163 => 
     array (
       'id' => 171,
       'orden' => 4,
       'core_modelo_id' => 98,
       'core_campo_id' => 22,
     ),
-    165 => 
+    164 => 
     array (
       'id' => 172,
       'orden' => 3,
       'core_modelo_id' => 99,
       'core_campo_id' => 22,
     ),
-    166 => 
+    165 => 
     array (
       'id' => 173,
       'orden' => 5,
       'core_modelo_id' => 102,
       'core_campo_id' => 22,
     ),
-    167 => 
+    166 => 
     array (
       'id' => 174,
       'orden' => 2,
       'core_modelo_id' => 106,
       'core_campo_id' => 22,
     ),
-    168 => 
+    167 => 
     array (
       'id' => 175,
       'orden' => 2,
       'core_modelo_id' => 107,
       'core_campo_id' => 22,
     ),
-    169 => 
+    168 => 
     array (
       'id' => 176,
       'orden' => 2,
       'core_modelo_id' => 108,
       'core_campo_id' => 22,
     ),
-    170 => 
+    169 => 
     array (
       'id' => 177,
       'orden' => 24,
       'core_modelo_id' => 109,
       'core_campo_id' => 22,
     ),
-    171 => 
+    170 => 
     array (
       'id' => 178,
       'orden' => 14,
       'core_modelo_id' => 114,
       'core_campo_id' => 22,
     ),
-    172 => 
+    171 => 
     array (
       'id' => 180,
       'orden' => 6,
       'core_modelo_id' => 118,
       'core_campo_id' => 22,
     ),
-    173 => 
+    172 => 
     array (
       'id' => 181,
       'orden' => 4,
       'core_modelo_id' => 119,
       'core_campo_id' => 22,
     ),
-    174 => 
+    173 => 
     array (
       'id' => 182,
       'orden' => 10,
       'core_modelo_id' => 120,
       'core_campo_id' => 22,
     ),
-    175 => 
+    174 => 
     array (
       'id' => 183,
       'orden' => 6,
       'core_modelo_id' => 121,
       'core_campo_id' => 22,
     ),
-    176 => 
+    175 => 
     array (
       'id' => 184,
       'orden' => 7,
       'core_modelo_id' => 122,
       'core_campo_id' => 22,
     ),
-    177 => 
+    176 => 
     array (
       'id' => 185,
       'orden' => 16,
       'core_modelo_id' => 123,
       'core_campo_id' => 22,
     ),
-    178 => 
+    177 => 
     array (
       'id' => 186,
       'orden' => 8,
       'core_modelo_id' => 124,
       'core_campo_id' => 22,
     ),
-    179 => 
+    178 => 
     array (
       'id' => 187,
       'orden' => 4,
       'core_modelo_id' => 126,
       'core_campo_id' => 22,
     ),
-    180 => 
+    179 => 
     array (
       'id' => 188,
       'orden' => 6,
       'core_modelo_id' => 128,
       'core_campo_id' => 22,
     ),
-    181 => 
+    180 => 
     array (
       'id' => 189,
       'orden' => 4,
       'core_modelo_id' => 130,
       'core_campo_id' => 22,
     ),
-    182 => 
+    181 => 
     array (
       'id' => 190,
       'orden' => 6,
       'core_modelo_id' => 132,
       'core_campo_id' => 22,
     ),
-    183 => 
+    182 => 
     array (
       'id' => 191,
       'orden' => 6,
       'core_modelo_id' => 133,
       'core_campo_id' => 22,
     ),
-    184 => 
+    183 => 
     array (
       'id' => 192,
       'orden' => 40,
       'core_modelo_id' => 134,
       'core_campo_id' => 22,
     ),
-    185 => 
+    184 => 
     array (
       'id' => 193,
       'orden' => 6,
       'core_modelo_id' => 135,
       'core_campo_id' => 22,
     ),
-    186 => 
+    185 => 
     array (
       'id' => 194,
       'orden' => 6,
       'core_modelo_id' => 136,
       'core_campo_id' => 22,
     ),
-    187 => 
+    186 => 
     array (
       'id' => 195,
       'orden' => 10,
       'core_modelo_id' => 137,
       'core_campo_id' => 22,
     ),
-    188 => 
+    187 => 
     array (
       'id' => 196,
-      'orden' => 50,
+      'orden' => 56,
       'core_modelo_id' => 138,
       'core_campo_id' => 22,
     ),
-    189 => 
+    188 => 
     array (
       'id' => 197,
       'orden' => 14,
       'core_modelo_id' => 140,
       'core_campo_id' => 22,
     ),
-    190 => 
+    189 => 
     array (
       'id' => 198,
       'orden' => 10,
       'core_modelo_id' => 143,
       'core_campo_id' => 22,
     ),
-    191 => 
+    190 => 
     array (
       'id' => 199,
       'orden' => 6,
       'core_modelo_id' => 145,
       'core_campo_id' => 22,
     ),
-    192 => 
+    191 => 
     array (
       'id' => 200,
       'orden' => 30,
       'core_modelo_id' => 146,
       'core_campo_id' => 22,
     ),
-    193 => 
+    192 => 
     array (
       'id' => 201,
       'orden' => 1,
       'core_modelo_id' => 4,
       'core_campo_id' => 24,
     ),
-    194 => 
+    193 => 
     array (
       'id' => 202,
       'orden' => 4,
       'core_modelo_id' => 4,
       'core_campo_id' => 25,
     ),
-    195 => 
+    194 => 
     array (
       'id' => 203,
       'orden' => 5,
       'core_modelo_id' => 4,
       'core_campo_id' => 26,
     ),
-    196 => 
+    195 => 
     array (
       'id' => 204,
       'orden' => 6,
       'core_modelo_id' => 4,
       'core_campo_id' => 27,
     ),
-    197 => 
+    196 => 
     array (
       'id' => 205,
       'orden' => 7,
       'core_modelo_id' => 4,
       'core_campo_id' => 28,
     ),
-    198 => 
+    197 => 
     array (
       'id' => 206,
       'orden' => 2,
       'core_modelo_id' => 20,
       'core_campo_id' => 28,
     ),
-    199 => 
+    198 => 
     array (
       'id' => 207,
       'orden' => 3,
       'core_modelo_id' => 30,
       'core_campo_id' => 28,
     ),
-    200 => 
+    199 => 
     array (
       'id' => 208,
       'orden' => 8,
       'core_modelo_id' => 4,
       'core_campo_id' => 29,
     ),
-    201 => 
+    200 => 
     array (
       'id' => 209,
       'orden' => 9,
       'core_modelo_id' => 4,
       'core_campo_id' => 30,
     ),
-    202 => 
+    201 => 
     array (
       'id' => 210,
       'orden' => 3,
       'core_modelo_id' => 34,
       'core_campo_id' => 31,
     ),
-    203 => 
+    202 => 
     array (
       'id' => 211,
       'orden' => 0,
       'core_modelo_id' => 3,
       'core_campo_id' => 32,
     ),
-    204 => 
+    203 => 
     array (
       'id' => 212,
       'orden' => 0,
       'core_modelo_id' => 3,
       'core_campo_id' => 33,
     ),
-    205 => 
+    204 => 
     array (
       'id' => 213,
       'orden' => 0,
       'core_modelo_id' => 3,
       'core_campo_id' => 34,
     ),
-    206 => 
+    205 => 
     array (
       'id' => 214,
       'orden' => 0,
       'core_modelo_id' => 3,
       'core_campo_id' => 35,
     ),
-    207 => 
+    206 => 
     array (
       'id' => 215,
       'orden' => 0,
       'core_modelo_id' => 3,
       'core_campo_id' => 36,
     ),
-    208 => 
+    207 => 
     array (
       'id' => 216,
       'orden' => 5,
       'core_modelo_id' => 6,
       'core_campo_id' => 37,
     ),
-    209 => 
+    208 => 
     array (
       'id' => 217,
       'orden' => 5,
       'core_modelo_id' => 7,
       'core_campo_id' => 37,
     ),
-    210 => 
+    209 => 
     array (
       'id' => 218,
       'orden' => 5,
       'core_modelo_id' => 41,
       'core_campo_id' => 37,
     ),
-    211 => 
+    210 => 
     array (
       'id' => 219,
       'orden' => 6,
       'core_modelo_id' => 93,
       'core_campo_id' => 37,
     ),
-    212 => 
+    211 => 
     array (
       'id' => 220,
       'orden' => 5,
       'core_modelo_id' => 95,
       'core_campo_id' => 37,
     ),
-    213 => 
+    212 => 
     array (
       'id' => 221,
       'orden' => 8,
       'core_modelo_id' => 2,
       'core_campo_id' => 38,
     ),
-    214 => 
+    213 => 
     array (
       'id' => 222,
       'orden' => 1,
       'core_modelo_id' => 8,
       'core_campo_id' => 39,
     ),
-    215 => 
+    214 => 
     array (
       'id' => 223,
       'orden' => 4,
       'core_modelo_id' => 25,
       'core_campo_id' => 39,
     ),
-    216 => 
+    215 => 
     array (
       'id' => 225,
       'orden' => 4,
       'core_modelo_id' => 51,
       'core_campo_id' => 39,
     ),
-    217 => 
+    216 => 
     array (
       'id' => 226,
       'orden' => 4,
       'core_modelo_id' => 52,
       'core_campo_id' => 39,
     ),
-    218 => 
+    217 => 
     array (
       'id' => 228,
       'orden' => 3,
       'core_modelo_id' => 59,
       'core_campo_id' => 39,
     ),
-    219 => 
+    218 => 
     array (
       'id' => 232,
       'orden' => 2,
       'core_modelo_id' => 8,
       'core_campo_id' => 40,
     ),
-    220 => 
+    219 => 
     array (
       'id' => 233,
       'orden' => 1,
       'core_modelo_id' => 6,
       'core_campo_id' => 41,
     ),
-    221 => 
+    220 => 
     array (
       'id' => 234,
       'orden' => 1,
       'core_modelo_id' => 7,
       'core_campo_id' => 41,
     ),
-    222 => 
+    221 => 
     array (
       'id' => 235,
       'orden' => 1,
       'core_modelo_id' => 41,
       'core_campo_id' => 41,
     ),
-    223 => 
+    222 => 
     array (
       'id' => 236,
       'orden' => 1,
       'core_modelo_id' => 138,
       'core_campo_id' => 41,
     ),
-    224 => 
+    223 => 
     array (
       'id' => 237,
       'orden' => 1,
       'core_modelo_id' => 146,
       'core_campo_id' => 41,
     ),
-    225 => 
+    224 => 
     array (
       'id' => 238,
       'orden' => 2,
       'core_modelo_id' => 6,
       'core_campo_id' => 42,
     ),
-    226 => 
+    225 => 
     array (
       'id' => 239,
       'orden' => 2,
       'core_modelo_id' => 7,
       'core_campo_id' => 42,
     ),
-    227 => 
+    226 => 
     array (
       'id' => 240,
       'orden' => 2,
       'core_modelo_id' => 41,
       'core_campo_id' => 42,
     ),
-    228 => 
+    227 => 
     array (
       'id' => 241,
       'orden' => 14,
       'core_modelo_id' => 138,
       'core_campo_id' => 42,
     ),
-    229 => 
+    228 => 
     array (
       'id' => 242,
       'orden' => 14,
       'core_modelo_id' => 146,
       'core_campo_id' => 42,
     ),
-    230 => 
+    229 => 
     array (
       'id' => 243,
       'orden' => 3,
       'core_modelo_id' => 6,
       'core_campo_id' => 43,
     ),
-    231 => 
+    230 => 
     array (
       'id' => 244,
       'orden' => 3,
       'core_modelo_id' => 7,
       'core_campo_id' => 43,
     ),
-    232 => 
+    231 => 
     array (
       'id' => 245,
       'orden' => 3,
       'core_modelo_id' => 41,
       'core_campo_id' => 43,
     ),
-    233 => 
+    232 => 
     array (
       'id' => 246,
       'orden' => 4,
       'core_modelo_id' => 93,
       'core_campo_id' => 43,
     ),
-    234 => 
+    233 => 
     array (
       'id' => 247,
       'orden' => 3,
       'core_modelo_id' => 95,
       'core_campo_id' => 43,
     ),
-    235 => 
+    234 => 
     array (
       'id' => 248,
       'orden' => 7,
       'core_modelo_id' => 146,
       'core_campo_id' => 43,
     ),
-    236 => 
+    235 => 
     array (
       'id' => 249,
       'orden' => 6,
       'core_modelo_id' => 6,
       'core_campo_id' => 44,
     ),
-    237 => 
+    236 => 
     array (
       'id' => 250,
       'orden' => 6,
       'core_modelo_id' => 7,
       'core_campo_id' => 44,
     ),
-    238 => 
+    237 => 
     array (
       'id' => 251,
       'orden' => 6,
       'core_modelo_id' => 41,
       'core_campo_id' => 44,
     ),
-    239 => 
+    238 => 
     array (
       'id' => 252,
       'orden' => 7,
       'core_modelo_id' => 93,
       'core_campo_id' => 44,
     ),
-    240 => 
+    239 => 
     array (
       'id' => 253,
       'orden' => 6,
       'core_modelo_id' => 95,
       'core_campo_id' => 44,
     ),
-    241 => 
+    240 => 
     array (
       'id' => 254,
       'orden' => 8,
       'core_modelo_id' => 6,
       'core_campo_id' => 45,
     ),
-    242 => 
+    241 => 
     array (
       'id' => 255,
       'orden' => 8,
       'core_modelo_id' => 7,
       'core_campo_id' => 45,
     ),
-    243 => 
+    242 => 
     array (
       'id' => 256,
       'orden' => 8,
       'core_modelo_id' => 41,
       'core_campo_id' => 45,
     ),
-    244 => 
+    243 => 
     array (
       'id' => 257,
       'orden' => 2,
       'core_modelo_id' => 66,
       'core_campo_id' => 45,
     ),
-    245 => 
+    244 => 
     array (
       'id' => 258,
       'orden' => 2,
       'core_modelo_id' => 93,
       'core_campo_id' => 45,
     ),
-    246 => 
+    245 => 
     array (
       'id' => 259,
       'orden' => 1,
       'core_modelo_id' => 95,
       'core_campo_id' => 45,
     ),
-    247 => 
+    246 => 
     array (
       'id' => 260,
       'orden' => 2,
       'core_modelo_id' => 134,
       'core_campo_id' => 45,
     ),
-    248 => 
+    247 => 
     array (
       'id' => 261,
       'orden' => 2,
       'core_modelo_id' => 138,
       'core_campo_id' => 45,
     ),
-    249 => 
+    248 => 
     array (
       'id' => 262,
       'orden' => 2,
       'core_modelo_id' => 146,
       'core_campo_id' => 45,
     ),
-    250 => 
+    249 => 
     array (
       'id' => 263,
       'orden' => 9,
       'core_modelo_id' => 6,
       'core_campo_id' => 46,
     ),
-    251 => 
+    250 => 
     array (
       'id' => 264,
       'orden' => 9,
       'core_modelo_id' => 7,
       'core_campo_id' => 46,
     ),
-    252 => 
+    251 => 
     array (
       'id' => 265,
       'orden' => 9,
       'core_modelo_id' => 41,
       'core_campo_id' => 46,
     ),
-    253 => 
+    252 => 
     array (
       'id' => 266,
       'orden' => 3,
       'core_modelo_id' => 66,
       'core_campo_id' => 46,
     ),
-    254 => 
+    253 => 
     array (
       'id' => 267,
       'orden' => 3,
       'core_modelo_id' => 93,
       'core_campo_id' => 46,
     ),
-    255 => 
+    254 => 
     array (
       'id' => 268,
       'orden' => 2,
       'core_modelo_id' => 95,
       'core_campo_id' => 46,
     ),
-    256 => 
+    255 => 
     array (
       'id' => 269,
       'orden' => 4,
       'core_modelo_id' => 134,
       'core_campo_id' => 46,
     ),
-    257 => 
+    256 => 
     array (
       'id' => 270,
       'orden' => 4,
       'core_modelo_id' => 138,
       'core_campo_id' => 46,
     ),
-    258 => 
+    257 => 
     array (
       'id' => 271,
       'orden' => 4,
       'core_modelo_id' => 146,
       'core_campo_id' => 46,
     ),
-    259 => 
+    258 => 
     array (
       'id' => 272,
       'orden' => 10,
       'core_modelo_id' => 6,
       'core_campo_id' => 47,
     ),
-    260 => 
+    259 => 
     array (
       'id' => 273,
       'orden' => 10,
       'core_modelo_id' => 7,
       'core_campo_id' => 47,
     ),
-    261 => 
+    260 => 
     array (
       'id' => 274,
       'orden' => 10,
       'core_modelo_id' => 41,
       'core_campo_id' => 47,
     ),
-    262 => 
+    261 => 
     array (
       'id' => 275,
       'orden' => 11,
       'core_modelo_id' => 6,
       'core_campo_id' => 48,
     ),
-    263 => 
+    262 => 
     array (
       'id' => 276,
       'orden' => 11,
       'core_modelo_id' => 41,
       'core_campo_id' => 48,
     ),
-    264 => 
+    263 => 
     array (
       'id' => 277,
       'orden' => 13,
       'core_modelo_id' => 6,
       'core_campo_id' => 50,
     ),
-    265 => 
+    264 => 
     array (
       'id' => 278,
       'orden' => 13,
       'core_modelo_id' => 7,
       'core_campo_id' => 50,
     ),
-    266 => 
+    265 => 
     array (
       'id' => 279,
       'orden' => 18,
       'core_modelo_id' => 29,
       'core_campo_id' => 50,
     ),
-    267 => 
+    266 => 
     array (
       'id' => 280,
       'orden' => 13,
       'core_modelo_id' => 41,
       'core_campo_id' => 50,
     ),
-    268 => 
+    267 => 
     array (
       'id' => 281,
       'orden' => 9,
       'core_modelo_id' => 66,
       'core_campo_id' => 50,
     ),
-    269 => 
+    268 => 
     array (
       'id' => 282,
       'orden' => 8,
       'core_modelo_id' => 93,
       'core_campo_id' => 50,
     ),
-    270 => 
+    269 => 
     array (
       'id' => 283,
       'orden' => 7,
       'core_modelo_id' => 95,
       'core_campo_id' => 50,
     ),
-    271 => 
+    270 => 
     array (
       'id' => 284,
       'orden' => 10,
       'core_modelo_id' => 134,
       'core_campo_id' => 50,
     ),
-    272 => 
+    271 => 
     array (
       'id' => 285,
       'orden' => 16,
       'core_modelo_id' => 138,
       'core_campo_id' => 50,
     ),
-    273 => 
+    272 => 
     array (
       'id' => 286,
       'orden' => 16,
       'core_modelo_id' => 146,
       'core_campo_id' => 50,
     ),
-    274 => 
+    273 => 
     array (
       'id' => 287,
       'orden' => 14,
       'core_modelo_id' => 6,
       'core_campo_id' => 51,
     ),
-    275 => 
+    274 => 
     array (
       'id' => 288,
       'orden' => 14,
       'core_modelo_id' => 7,
       'core_campo_id' => 51,
     ),
-    276 => 
+    275 => 
     array (
       'id' => 289,
       'orden' => 14,
       'core_modelo_id' => 41,
       'core_campo_id' => 51,
     ),
-    277 => 
+    276 => 
     array (
       'id' => 290,
       'orden' => 15,
       'core_modelo_id' => 6,
       'core_campo_id' => 52,
     ),
-    278 => 
+    277 => 
     array (
       'id' => 291,
       'orden' => 15,
       'core_modelo_id' => 7,
       'core_campo_id' => 52,
     ),
-    279 => 
+    278 => 
     array (
       'id' => 292,
       'orden' => 20,
       'core_modelo_id' => 29,
       'core_campo_id' => 52,
     ),
-    280 => 
+    279 => 
     array (
       'id' => 293,
       'orden' => 15,
       'core_modelo_id' => 41,
       'core_campo_id' => 52,
     ),
-    281 => 
+    280 => 
     array (
       'id' => 294,
       'orden' => 16,
       'core_modelo_id' => 6,
       'core_campo_id' => 53,
     ),
-    282 => 
+    281 => 
     array (
       'id' => 295,
       'orden' => 16,
       'core_modelo_id' => 7,
       'core_campo_id' => 53,
     ),
-    283 => 
+    282 => 
     array (
       'id' => 296,
       'orden' => 16,
       'core_modelo_id' => 41,
       'core_campo_id' => 53,
     ),
-    284 => 
+    283 => 
     array (
       'id' => 297,
       'orden' => 14,
       'core_modelo_id' => 134,
       'core_campo_id' => 53,
     ),
-    285 => 
+    284 => 
     array (
       'id' => 298,
       'orden' => 24,
       'core_modelo_id' => 138,
       'core_campo_id' => 53,
     ),
-    286 => 
+    285 => 
     array (
       'id' => 299,
       'orden' => 22,
       'core_modelo_id' => 146,
       'core_campo_id' => 53,
     ),
-    287 => 
+    286 => 
     array (
       'id' => 300,
       'orden' => 17,
       'core_modelo_id' => 6,
       'core_campo_id' => 54,
     ),
-    288 => 
+    287 => 
     array (
       'id' => 301,
       'orden' => 17,
       'core_modelo_id' => 7,
       'core_campo_id' => 54,
     ),
-    289 => 
+    288 => 
     array (
       'id' => 302,
       'orden' => 17,
       'core_modelo_id' => 41,
       'core_campo_id' => 54,
     ),
-    290 => 
+    289 => 
     array (
       'id' => 303,
       'orden' => 18,
       'core_modelo_id' => 6,
       'core_campo_id' => 55,
     ),
-    291 => 
+    290 => 
     array (
       'id' => 304,
       'orden' => 18,
       'core_modelo_id' => 7,
       'core_campo_id' => 55,
     ),
-    292 => 
+    291 => 
     array (
       'id' => 305,
       'orden' => 11,
       'core_modelo_id' => 29,
       'core_campo_id' => 55,
     ),
-    293 => 
+    292 => 
     array (
       'id' => 306,
       'orden' => 18,
       'core_modelo_id' => 41,
       'core_campo_id' => 55,
     ),
-    294 => 
+    293 => 
     array (
       'id' => 307,
       'orden' => 9,
       'core_modelo_id' => 93,
       'core_campo_id' => 55,
     ),
-    295 => 
+    294 => 
     array (
       'id' => 308,
       'orden' => 8,
       'core_modelo_id' => 95,
       'core_campo_id' => 55,
     ),
-    296 => 
+    295 => 
     array (
       'id' => 309,
       'orden' => 12,
       'core_modelo_id' => 134,
       'core_campo_id' => 55,
     ),
-    297 => 
+    296 => 
     array (
       'id' => 310,
       'orden' => 20,
       'core_modelo_id' => 138,
       'core_campo_id' => 55,
     ),
-    298 => 
+    297 => 
     array (
       'id' => 311,
       'orden' => 18,
       'core_modelo_id' => 146,
       'core_campo_id' => 55,
     ),
-    299 => 
+    298 => 
     array (
       'id' => 312,
       'orden' => 19,
       'core_modelo_id' => 6,
       'core_campo_id' => 56,
     ),
-    300 => 
+    299 => 
     array (
       'id' => 313,
       'orden' => 19,
       'core_modelo_id' => 7,
       'core_campo_id' => 56,
     ),
-    301 => 
+    300 => 
     array (
       'id' => 314,
       'orden' => 19,
       'core_modelo_id' => 41,
       'core_campo_id' => 56,
     ),
-    302 => 
+    301 => 
     array (
       'id' => 315,
       'orden' => 21,
       'core_modelo_id' => 6,
       'core_campo_id' => 57,
     ),
-    303 => 
+    302 => 
     array (
       'id' => 316,
       'orden' => 21,
       'core_modelo_id' => 7,
       'core_campo_id' => 57,
     ),
-    304 => 
+    303 => 
     array (
       'id' => 317,
       'orden' => 21,
       'core_modelo_id' => 41,
       'core_campo_id' => 57,
     ),
-    305 => 
+    304 => 
     array (
       'id' => 318,
       'orden' => 4,
       'core_modelo_id' => 6,
       'core_campo_id' => 58,
     ),
-    306 => 
+    305 => 
     array (
       'id' => 319,
       'orden' => 4,
       'core_modelo_id' => 7,
       'core_campo_id' => 58,
     ),
-    307 => 
+    306 => 
     array (
       'id' => 320,
       'orden' => 4,
       'core_modelo_id' => 41,
       'core_campo_id' => 58,
     ),
-    308 => 
+    307 => 
     array (
       'id' => 321,
       'orden' => 5,
       'core_modelo_id' => 66,
       'core_campo_id' => 58,
     ),
-    309 => 
+    308 => 
     array (
       'id' => 322,
       'orden' => 5,
       'core_modelo_id' => 93,
       'core_campo_id' => 58,
     ),
-    310 => 
+    309 => 
     array (
       'id' => 323,
       'orden' => 4,
       'core_modelo_id' => 95,
       'core_campo_id' => 58,
     ),
-    311 => 
+    310 => 
     array (
       'id' => 324,
       'orden' => 6,
       'core_modelo_id' => 134,
       'core_campo_id' => 58,
     ),
-    312 => 
+    311 => 
     array (
       'id' => 325,
-      'orden' => 18,
+      'orden' => 9,
       'core_modelo_id' => 138,
       'core_campo_id' => 58,
     ),
-    313 => 
+    312 => 
     array (
       'id' => 326,
       'orden' => 8,
       'core_modelo_id' => 146,
       'core_campo_id' => 58,
     ),
-    314 => 
+    313 => 
     array (
       'id' => 327,
       'orden' => 4,
       'core_modelo_id' => 12,
       'core_campo_id' => 61,
     ),
-    315 => 
+    314 => 
     array (
       'id' => 328,
       'orden' => 1,
       'core_modelo_id' => 64,
       'core_campo_id' => 61,
     ),
-    316 => 
+    315 => 
     array (
       'id' => 329,
       'orden' => 4,
       'core_modelo_id' => 120,
       'core_campo_id' => 61,
     ),
-    317 => 
+    316 => 
     array (
       'id' => 330,
       'orden' => 6,
       'core_modelo_id' => 12,
       'core_campo_id' => 62,
     ),
-    318 => 
+    317 => 
     array (
       'id' => 331,
       'orden' => 4,
       'core_modelo_id' => 55,
       'core_campo_id' => 62,
     ),
-    319 => 
+    318 => 
     array (
       'id' => 332,
       'orden' => 3,
       'core_modelo_id' => 65,
       'core_campo_id' => 62,
     ),
-    320 => 
+    319 => 
     array (
       'id' => 333,
       'orden' => 8,
       'core_modelo_id' => 12,
       'core_campo_id' => 63,
     ),
-    321 => 
+    320 => 
     array (
       'id' => 334,
       'orden' => 5,
       'core_modelo_id' => 55,
       'core_campo_id' => 63,
     ),
-    322 => 
+    321 => 
     array (
       'id' => 335,
       'orden' => 4,
       'core_modelo_id' => 65,
       'core_campo_id' => 63,
     ),
-    323 => 
+    322 => 
     array (
       'id' => 336,
       'orden' => 12,
       'core_modelo_id' => 12,
       'core_campo_id' => 64,
     ),
-    324 => 
+    323 => 
     array (
       'id' => 337,
       'orden' => 5,
       'core_modelo_id' => 65,
       'core_campo_id' => 64,
     ),
-    325 => 
+    324 => 
     array (
       'id' => 338,
       'orden' => 1,
       'core_modelo_id' => 13,
       'core_campo_id' => 65,
     ),
-    326 => 
+    325 => 
     array (
       'id' => 339,
       'orden' => 2,
       'core_modelo_id' => 13,
       'core_campo_id' => 66,
     ),
-    327 => 
+    326 => 
     array (
       'id' => 340,
       'orden' => 3,
       'core_modelo_id' => 13,
       'core_campo_id' => 67,
     ),
-    328 => 
+    327 => 
     array (
       'id' => 341,
       'orden' => 4,
       'core_modelo_id' => 13,
       'core_campo_id' => 68,
     ),
-    329 => 
+    328 => 
     array (
       'id' => 342,
       'orden' => 5,
       'core_modelo_id' => 13,
       'core_campo_id' => 69,
     ),
-    330 => 
+    329 => 
     array (
       'id' => 343,
       'orden' => 1,
       'core_modelo_id' => 14,
       'core_campo_id' => 70,
     ),
-    331 => 
+    330 => 
     array (
       'id' => 344,
       'orden' => 1,
       'core_modelo_id' => 17,
       'core_campo_id' => 71,
     ),
-    332 => 
+    331 => 
     array (
       'id' => 345,
       'orden' => 1,
       'core_modelo_id' => 18,
       'core_campo_id' => 71,
     ),
-    333 => 
+    332 => 
     array (
       'id' => 346,
       'orden' => 2,
       'core_modelo_id' => 17,
       'core_campo_id' => 72,
     ),
-    334 => 
+    333 => 
     array (
       'id' => 347,
       'orden' => 3,
       'core_modelo_id' => 17,
       'core_campo_id' => 73,
     ),
-    335 => 
+    334 => 
     array (
       'id' => 348,
       'orden' => 2,
       'core_modelo_id' => 18,
       'core_campo_id' => 73,
     ),
-    336 => 
+    335 => 
     array (
       'id' => 349,
       'orden' => 4,
       'core_modelo_id' => 17,
       'core_campo_id' => 74,
     ),
-    337 => 
+    336 => 
     array (
       'id' => 350,
       'orden' => 3,
       'core_modelo_id' => 18,
       'core_campo_id' => 75,
     ),
-    338 => 
+    337 => 
     array (
       'id' => 351,
       'orden' => 3,
       'core_modelo_id' => 20,
       'core_campo_id' => 76,
     ),
-    339 => 
+    338 => 
     array (
       'id' => 352,
       'orden' => 4,
       'core_modelo_id' => 30,
       'core_campo_id' => 76,
     ),
-    340 => 
+    339 => 
     array (
       'id' => 353,
       'orden' => 4,
       'core_modelo_id' => 20,
       'core_campo_id' => 77,
     ),
-    341 => 
+    340 => 
     array (
       'id' => 354,
       'orden' => 5,
       'core_modelo_id' => 30,
       'core_campo_id' => 77,
     ),
-    342 => 
+    341 => 
     array (
       'id' => 355,
       'orden' => 6,
       'core_modelo_id' => 20,
       'core_campo_id' => 78,
     ),
-    343 => 
+    342 => 
     array (
       'id' => 356,
       'orden' => 7,
       'core_modelo_id' => 30,
       'core_campo_id' => 78,
     ),
-    344 => 
+    343 => 
     array (
       'id' => 357,
       'orden' => 8,
       'core_modelo_id' => 22,
       'core_campo_id' => 79,
     ),
-    345 => 
+    344 => 
     array (
       'id' => 358,
       'orden' => 8,
       'core_modelo_id' => 24,
       'core_campo_id' => 82,
     ),
-    346 => 
+    345 => 
     array (
       'id' => 359,
       'orden' => 6,
       'core_modelo_id' => 24,
       'core_campo_id' => 83,
     ),
-    347 => 
+    346 => 
     array (
       'id' => 360,
       'orden' => 10,
       'core_modelo_id' => 22,
       'core_campo_id' => 84,
     ),
-    348 => 
+    347 => 
     array (
       'id' => 361,
       'orden' => 14,
       'core_modelo_id' => 22,
       'core_campo_id' => 85,
     ),
-    349 => 
+    348 => 
     array (
       'id' => 362,
       'orden' => 16,
       'core_modelo_id' => 22,
       'core_campo_id' => 86,
     ),
-    350 => 
+    349 => 
     array (
       'id' => 363,
       'orden' => 2,
       'core_modelo_id' => 42,
       'core_campo_id' => 86,
     ),
-    351 => 
+    350 => 
     array (
       'id' => 364,
       'orden' => 99,
       'core_modelo_id' => 25,
       'core_campo_id' => 87,
     ),
-    352 => 
+    351 => 
     array (
       'id' => 365,
       'orden' => 99,
       'core_modelo_id' => 43,
       'core_campo_id' => 87,
     ),
-    353 => 
+    352 => 
     array (
       'id' => 366,
       'orden' => 99,
       'core_modelo_id' => 46,
       'core_campo_id' => 87,
     ),
-    354 => 
+    353 => 
     array (
       'id' => 367,
       'orden' => 99,
       'core_modelo_id' => 47,
       'core_campo_id' => 87,
     ),
-    355 => 
+    354 => 
     array (
       'id' => 368,
       'orden' => 99,
       'core_modelo_id' => 51,
       'core_campo_id' => 87,
     ),
-    356 => 
+    355 => 
     array (
       'id' => 369,
       'orden' => 99,
       'core_modelo_id' => 52,
       'core_campo_id' => 87,
     ),
-    357 => 
+    356 => 
     array (
       'id' => 370,
       'orden' => 99,
       'core_modelo_id' => 54,
       'core_campo_id' => 87,
     ),
-    358 => 
+    357 => 
     array (
       'id' => 371,
       'orden' => 99,
       'core_modelo_id' => 59,
       'core_campo_id' => 87,
     ),
-    359 => 
+    358 => 
     array (
       'id' => 372,
       'orden' => 99,
       'core_modelo_id' => 90,
       'core_campo_id' => 87,
     ),
-    360 => 
+    359 => 
     array (
       'id' => 373,
       'orden' => 99,
       'core_modelo_id' => 139,
       'core_campo_id' => 87,
     ),
-    361 => 
+    360 => 
     array (
       'id' => 374,
       'orden' => 2,
       'core_modelo_id' => 25,
       'core_campo_id' => 88,
     ),
-    362 => 
+    361 => 
     array (
       'id' => 375,
       'orden' => 1,
       'core_modelo_id' => 43,
       'core_campo_id' => 88,
     ),
-    363 => 
+    362 => 
     array (
       'id' => 376,
       'orden' => 2,
       'core_modelo_id' => 46,
       'core_campo_id' => 88,
     ),
-    364 => 
+    363 => 
     array (
       'id' => 377,
       'orden' => 1,
       'core_modelo_id' => 47,
       'core_campo_id' => 88,
     ),
-    365 => 
+    364 => 
     array (
       'id' => 378,
       'orden' => 2,
       'core_modelo_id' => 51,
       'core_campo_id' => 88,
     ),
-    366 => 
+    365 => 
     array (
       'id' => 379,
       'orden' => 2,
       'core_modelo_id' => 52,
       'core_campo_id' => 88,
     ),
-    367 => 
+    366 => 
     array (
       'id' => 380,
       'orden' => 2,
       'core_modelo_id' => 54,
       'core_campo_id' => 88,
     ),
-    368 => 
+    367 => 
     array (
       'id' => 381,
       'orden' => 1,
       'core_modelo_id' => 59,
       'core_campo_id' => 88,
     ),
-    369 => 
+    368 => 
     array (
       'id' => 382,
       'orden' => 2,
       'core_modelo_id' => 90,
       'core_campo_id' => 88,
     ),
-    370 => 
+    369 => 
     array (
       'id' => 383,
       'orden' => 3,
       'core_modelo_id' => 139,
       'core_campo_id' => 88,
     ),
-    371 => 
+    370 => 
     array (
       'id' => 384,
       'orden' => 2,
       'core_modelo_id' => 20,
       'core_campo_id' => 89,
     ),
-    372 => 
+    371 => 
     array (
       'id' => 385,
       'orden' => 2,
       'core_modelo_id' => 30,
       'core_campo_id' => 89,
     ),
-    373 => 
+    372 => 
     array (
       'id' => 386,
       'orden' => 11,
       'core_modelo_id' => 25,
       'core_campo_id' => 90,
     ),
-    374 => 
+    373 => 
     array (
       'id' => 387,
       'orden' => 13,
       'core_modelo_id' => 139,
       'core_campo_id' => 90,
     ),
-    375 => 
+    374 => 
     array (
       'id' => 388,
       'orden' => 10,
       'core_modelo_id' => 25,
       'core_campo_id' => 92,
     ),
-    376 => 
+    375 => 
     array (
       'id' => 389,
       'orden' => 5,
       'core_modelo_id' => 43,
       'core_campo_id' => 92,
     ),
-    377 => 
+    376 => 
     array (
       'id' => 390,
       'orden' => 5,
       'core_modelo_id' => 46,
       'core_campo_id' => 92,
     ),
-    378 => 
+    377 => 
     array (
       'id' => 391,
       'orden' => 4,
       'core_modelo_id' => 47,
       'core_campo_id' => 92,
     ),
-    379 => 
+    378 => 
     array (
       'id' => 392,
       'orden' => 5,
       'core_modelo_id' => 51,
       'core_campo_id' => 92,
     ),
-    380 => 
+    379 => 
     array (
       'id' => 393,
       'orden' => 6,
       'core_modelo_id' => 52,
       'core_campo_id' => 92,
     ),
-    381 => 
+    380 => 
     array (
       'id' => 394,
       'orden' => 9,
       'core_modelo_id' => 54,
       'core_campo_id' => 92,
     ),
-    382 => 
+    381 => 
     array (
       'id' => 395,
       'orden' => 3,
       'core_modelo_id' => 25,
       'core_campo_id' => 93,
     ),
-    383 => 
+    382 => 
     array (
       'id' => 396,
       'orden' => 2,
       'core_modelo_id' => 43,
       'core_campo_id' => 93,
     ),
-    384 => 
+    383 => 
     array (
       'id' => 397,
       'orden' => 3,
       'core_modelo_id' => 46,
       'core_campo_id' => 93,
     ),
-    385 => 
+    384 => 
     array (
       'id' => 398,
       'orden' => 2,
       'core_modelo_id' => 47,
       'core_campo_id' => 93,
     ),
-    386 => 
+    385 => 
     array (
       'id' => 399,
       'orden' => 3,
       'core_modelo_id' => 51,
       'core_campo_id' => 93,
     ),
-    387 => 
+    386 => 
     array (
       'id' => 400,
       'orden' => 3,
       'core_modelo_id' => 52,
       'core_campo_id' => 93,
     ),
-    388 => 
+    387 => 
     array (
       'id' => 401,
       'orden' => 3,
       'core_modelo_id' => 54,
       'core_campo_id' => 93,
     ),
-    389 => 
+    388 => 
     array (
       'id' => 402,
       'orden' => 2,
       'core_modelo_id' => 59,
       'core_campo_id' => 93,
     ),
-    390 => 
+    389 => 
     array (
       'id' => 403,
       'orden' => 1,
       'core_modelo_id' => 66,
       'core_campo_id' => 93,
     ),
-    391 => 
+    390 => 
     array (
       'id' => 404,
       'orden' => 4,
       'core_modelo_id' => 90,
       'core_campo_id' => 93,
     ),
-    392 => 
+    391 => 
     array (
       'id' => 405,
       'orden' => 3,
       'core_modelo_id' => 96,
       'core_campo_id' => 93,
     ),
-    393 => 
+    392 => 
     array (
       'id' => 406,
       'orden' => 4,
       'core_modelo_id' => 139,
       'core_campo_id' => 93,
     ),
-    394 => 
+    393 => 
     array (
       'id' => 407,
       'orden' => 99,
       'core_modelo_id' => 17,
       'core_campo_id' => 94,
     ),
-    395 => 
+    394 => 
     array (
       'id' => 408,
       'orden' => 99,
       'core_modelo_id' => 25,
       'core_campo_id' => 94,
     ),
-    396 => 
+    395 => 
     array (
       'id' => 409,
       'orden' => 99,
       'core_modelo_id' => 31,
       'core_campo_id' => 94,
     ),
-    397 => 
+    396 => 
     array (
       'id' => 410,
       'orden' => 99,
       'core_modelo_id' => 43,
       'core_campo_id' => 94,
     ),
-    398 => 
+    397 => 
     array (
       'id' => 411,
       'orden' => 99,
       'core_modelo_id' => 46,
       'core_campo_id' => 94,
     ),
-    399 => 
+    398 => 
     array (
       'id' => 412,
       'orden' => 99,
       'core_modelo_id' => 47,
       'core_campo_id' => 94,
     ),
-    400 => 
+    399 => 
     array (
       'id' => 413,
       'orden' => 99,
       'core_modelo_id' => 48,
       'core_campo_id' => 94,
     ),
-    401 => 
+    400 => 
     array (
       'id' => 414,
       'orden' => 99,
       'core_modelo_id' => 49,
       'core_campo_id' => 94,
     ),
-    402 => 
+    401 => 
     array (
       'id' => 415,
       'orden' => 99,
       'core_modelo_id' => 51,
       'core_campo_id' => 94,
     ),
-    403 => 
+    402 => 
     array (
       'id' => 416,
       'orden' => 99,
       'core_modelo_id' => 52,
       'core_campo_id' => 94,
     ),
-    404 => 
+    403 => 
     array (
       'id' => 417,
       'orden' => 99,
       'core_modelo_id' => 54,
       'core_campo_id' => 94,
     ),
-    405 => 
+    404 => 
     array (
       'id' => 418,
       'orden' => 99,
       'core_modelo_id' => 56,
       'core_campo_id' => 94,
     ),
-    406 => 
+    405 => 
     array (
       'id' => 419,
       'orden' => 99,
       'core_modelo_id' => 59,
       'core_campo_id' => 94,
     ),
-    407 => 
+    406 => 
     array (
       'id' => 420,
       'orden' => 99,
       'core_modelo_id' => 63,
       'core_campo_id' => 94,
     ),
-    408 => 
+    407 => 
     array (
       'id' => 421,
       'orden' => 99,
       'core_modelo_id' => 64,
       'core_campo_id' => 94,
     ),
-    409 => 
+    408 => 
     array (
       'id' => 422,
       'orden' => 99,
       'core_modelo_id' => 66,
       'core_campo_id' => 94,
     ),
-    410 => 
+    409 => 
     array (
       'id' => 423,
       'orden' => 99,
       'core_modelo_id' => 76,
       'core_campo_id' => 94,
     ),
-    411 => 
+    410 => 
     array (
       'id' => 425,
       'orden' => 99,
       'core_modelo_id' => 90,
       'core_campo_id' => 94,
     ),
-    412 => 
+    411 => 
     array (
       'id' => 426,
       'orden' => 99,
       'core_modelo_id' => 95,
       'core_campo_id' => 94,
     ),
-    413 => 
+    412 => 
     array (
       'id' => 427,
       'orden' => 99,
       'core_modelo_id' => 17,
       'core_campo_id' => 95,
     ),
-    414 => 
+    413 => 
     array (
       'id' => 428,
       'orden' => 99,
       'core_modelo_id' => 25,
       'core_campo_id' => 95,
     ),
-    415 => 
+    414 => 
     array (
       'id' => 429,
       'orden' => 99,
       'core_modelo_id' => 31,
       'core_campo_id' => 95,
     ),
-    416 => 
+    415 => 
     array (
       'id' => 430,
       'orden' => 99,
       'core_modelo_id' => 43,
       'core_campo_id' => 95,
     ),
-    417 => 
+    416 => 
     array (
       'id' => 431,
       'orden' => 99,
       'core_modelo_id' => 46,
       'core_campo_id' => 95,
     ),
-    418 => 
+    417 => 
     array (
       'id' => 432,
       'orden' => 99,
       'core_modelo_id' => 47,
       'core_campo_id' => 95,
     ),
-    419 => 
+    418 => 
     array (
       'id' => 433,
       'orden' => 99,
       'core_modelo_id' => 48,
       'core_campo_id' => 95,
     ),
-    420 => 
+    419 => 
     array (
       'id' => 434,
       'orden' => 99,
       'core_modelo_id' => 49,
       'core_campo_id' => 95,
     ),
-    421 => 
+    420 => 
     array (
       'id' => 435,
       'orden' => 99,
       'core_modelo_id' => 51,
       'core_campo_id' => 95,
     ),
-    422 => 
+    421 => 
     array (
       'id' => 436,
       'orden' => 99,
       'core_modelo_id' => 52,
       'core_campo_id' => 95,
     ),
-    423 => 
+    422 => 
     array (
       'id' => 437,
       'orden' => 99,
       'core_modelo_id' => 54,
       'core_campo_id' => 95,
     ),
-    424 => 
+    423 => 
     array (
       'id' => 438,
       'orden' => 99,
       'core_modelo_id' => 56,
       'core_campo_id' => 95,
     ),
-    425 => 
+    424 => 
     array (
       'id' => 439,
       'orden' => 99,
       'core_modelo_id' => 59,
       'core_campo_id' => 95,
     ),
-    426 => 
+    425 => 
     array (
       'id' => 440,
       'orden' => 99,
       'core_modelo_id' => 63,
       'core_campo_id' => 95,
     ),
-    427 => 
+    426 => 
     array (
       'id' => 441,
       'orden' => 99,
       'core_modelo_id' => 64,
       'core_campo_id' => 95,
     ),
-    428 => 
+    427 => 
     array (
       'id' => 442,
       'orden' => 99,
       'core_modelo_id' => 66,
       'core_campo_id' => 95,
     ),
-    429 => 
+    428 => 
     array (
       'id' => 443,
       'orden' => 99,
       'core_modelo_id' => 76,
       'core_campo_id' => 95,
     ),
-    430 => 
+    429 => 
     array (
       'id' => 445,
       'orden' => 99,
       'core_modelo_id' => 90,
       'core_campo_id' => 95,
     ),
-    431 => 
+    430 => 
     array (
       'id' => 446,
       'orden' => 99,
       'core_modelo_id' => 95,
       'core_campo_id' => 95,
     ),
-    432 => 
+    431 => 
     array (
       'id' => 447,
       'orden' => 1,
       'core_modelo_id' => 27,
       'core_campo_id' => 96,
     ),
-    433 => 
+    432 => 
     array (
       'id' => 449,
       'orden' => 4,
       'core_modelo_id' => 29,
       'core_campo_id' => 97,
     ),
-    434 => 
+    433 => 
     array (
       'id' => 450,
       'orden' => 16,
       'core_modelo_id' => 38,
       'core_campo_id' => 97,
     ),
-    435 => 
+    434 => 
     array (
       'id' => 451,
       'orden' => 1,
       'core_modelo_id' => 93,
       'core_campo_id' => 97,
     ),
-    436 => 
+    435 => 
     array (
       'id' => 452,
       'orden' => 2,
       'core_modelo_id' => 110,
       'core_campo_id' => 97,
     ),
-    437 => 
+    436 => 
     array (
       'id' => 453,
       'orden' => 7,
       'core_modelo_id' => 43,
       'core_campo_id' => 98,
     ),
-    438 => 
+    437 => 
     array (
       'id' => 454,
       'orden' => 99,
       'core_modelo_id' => 46,
       'core_campo_id' => 98,
     ),
-    439 => 
+    438 => 
     array (
       'id' => 455,
       'orden' => 99,
       'core_modelo_id' => 47,
       'core_campo_id' => 98,
     ),
-    440 => 
+    439 => 
     array (
       'id' => 456,
       'orden' => 99,
       'core_modelo_id' => 51,
       'core_campo_id' => 98,
     ),
-    441 => 
+    440 => 
     array (
       'id' => 457,
       'orden' => 99,
       'core_modelo_id' => 52,
       'core_campo_id' => 98,
     ),
-    442 => 
+    441 => 
     array (
       'id' => 458,
       'orden' => 99,
       'core_modelo_id' => 54,
       'core_campo_id' => 98,
     ),
-    443 => 
+    442 => 
     array (
       'id' => 459,
       'orden' => 99,
       'core_modelo_id' => 56,
       'core_campo_id' => 98,
     ),
-    444 => 
+    443 => 
     array (
       'id' => 460,
       'orden' => 99,
       'core_modelo_id' => 59,
       'core_campo_id' => 98,
     ),
-    445 => 
+    444 => 
     array (
       'id' => 461,
       'orden' => 99,
       'core_modelo_id' => 25,
       'core_campo_id' => 99,
     ),
-    446 => 
+    445 => 
     array (
       'id' => 462,
       'orden' => 99,
       'core_modelo_id' => 25,
       'core_campo_id' => 100,
     ),
-    447 => 
+    446 => 
     array (
       'id' => 463,
       'orden' => 99,
       'core_modelo_id' => 43,
       'core_campo_id' => 100,
     ),
-    448 => 
+    447 => 
     array (
       'id' => 464,
       'orden' => 99,
       'core_modelo_id' => 46,
       'core_campo_id' => 100,
     ),
-    449 => 
+    448 => 
     array (
       'id' => 465,
       'orden' => 99,
       'core_modelo_id' => 47,
       'core_campo_id' => 100,
     ),
-    450 => 
+    449 => 
     array (
       'id' => 466,
       'orden' => 99,
       'core_modelo_id' => 51,
       'core_campo_id' => 100,
     ),
-    451 => 
+    450 => 
     array (
       'id' => 467,
       'orden' => 99,
       'core_modelo_id' => 52,
       'core_campo_id' => 100,
     ),
-    452 => 
+    451 => 
     array (
       'id' => 468,
       'orden' => 99,
       'core_modelo_id' => 54,
       'core_campo_id' => 100,
     ),
-    453 => 
+    452 => 
     array (
       'id' => 469,
       'orden' => 99,
       'core_modelo_id' => 59,
       'core_campo_id' => 100,
     ),
-    454 => 
+    453 => 
     array (
       'id' => 470,
       'orden' => 3,
       'core_modelo_id' => 90,
       'core_campo_id' => 100,
     ),
-    455 => 
+    454 => 
     array (
       'id' => 471,
       'orden' => 99,
       'core_modelo_id' => 139,
       'core_campo_id' => 100,
     ),
-    456 => 
+    455 => 
     array (
       'id' => 472,
       'orden' => 99,
       'core_modelo_id' => 25,
       'core_campo_id' => 101,
     ),
-    457 => 
+    456 => 
     array (
       'id' => 476,
       'orden' => 16,
       'core_modelo_id' => 29,
       'core_campo_id' => 105,
     ),
-    458 => 
+    457 => 
     array (
       'id' => 477,
       'orden' => 8,
       'core_modelo_id' => 66,
       'core_campo_id' => 105,
     ),
-    459 => 
+    458 => 
     array (
       'id' => 478,
       'orden' => 11,
       'core_modelo_id' => 95,
       'core_campo_id' => 105,
     ),
-    460 => 
+    459 => 
     array (
       'id' => 479,
       'orden' => 12,
       'core_modelo_id' => 29,
       'core_campo_id' => 106,
     ),
-    461 => 
+    460 => 
     array (
       'id' => 480,
       'orden' => 11,
       'core_modelo_id' => 66,
       'core_campo_id' => 106,
     ),
-    462 => 
+    461 => 
     array (
       'id' => 481,
       'orden' => 10,
       'core_modelo_id' => 95,
       'core_campo_id' => 106,
     ),
-    463 => 
+    462 => 
     array (
       'id' => 482,
       'orden' => 13,
       'core_modelo_id' => 29,
       'core_campo_id' => 107,
     ),
-    464 => 
+    463 => 
     array (
       'id' => 483,
       'orden' => 11,
       'core_modelo_id' => 66,
       'core_campo_id' => 107,
     ),
-    465 => 
+    464 => 
     array (
       'id' => 484,
       'orden' => 14,
       'core_modelo_id' => 29,
       'core_campo_id' => 108,
     ),
-    466 => 
+    465 => 
     array (
       'id' => 485,
       'orden' => 15,
       'core_modelo_id' => 29,
       'core_campo_id' => 109,
     ),
-    467 => 
+    466 => 
     array (
       'id' => 486,
       'orden' => 16,
       'core_modelo_id' => 29,
       'core_campo_id' => 110,
     ),
-    468 => 
+    467 => 
     array (
       'id' => 487,
       'orden' => 17,
       'core_modelo_id' => 29,
       'core_campo_id' => 111,
     ),
-    469 => 
+    468 => 
     array (
       'id' => 488,
       'orden' => 18,
       'core_modelo_id' => 29,
       'core_campo_id' => 112,
     ),
-    470 => 
+    469 => 
     array (
       'id' => 489,
       'orden' => 19,
       'core_modelo_id' => 29,
       'core_campo_id' => 113,
     ),
-    471 => 
+    470 => 
     array (
       'id' => 490,
       'orden' => 20,
       'core_modelo_id' => 29,
       'core_campo_id' => 114,
     ),
-    472 => 
+    471 => 
     array (
       'id' => 491,
       'orden' => 21,
       'core_modelo_id' => 29,
       'core_campo_id' => 115,
     ),
-    473 => 
+    472 => 
     array (
       'id' => 492,
       'orden' => 10,
       'core_modelo_id' => 4,
       'core_campo_id' => 116,
     ),
-    474 => 
+    473 => 
     array (
       'id' => 493,
       'orden' => 99,
       'core_modelo_id' => 1,
       'core_campo_id' => 117,
     ),
-    475 => 
+    474 => 
     array (
       'id' => 494,
       'orden' => 99,
       'core_modelo_id' => 11,
       'core_campo_id' => 117,
     ),
-    476 => 
+    475 => 
     array (
       'id' => 495,
       'orden' => 99,
       'core_modelo_id' => 29,
       'core_campo_id' => 117,
     ),
-    477 => 
+    476 => 
     array (
       'id' => 496,
       'orden' => 99,
       'core_modelo_id' => 67,
       'core_campo_id' => 117,
     ),
-    478 => 
+    477 => 
     array (
       'id' => 497,
       'orden' => 99,
       'core_modelo_id' => 68,
       'core_campo_id' => 117,
     ),
-    479 => 
+    478 => 
     array (
       'id' => 498,
       'orden' => 14,
       'core_modelo_id' => 70,
       'core_campo_id' => 117,
     ),
-    480 => 
+    479 => 
     array (
       'id' => 499,
       'orden' => 2,
       'core_modelo_id' => 7,
       'core_campo_id' => 118,
     ),
-    481 => 
+    480 => 
     array (
       'id' => 500,
       'orden' => 6,
       'core_modelo_id' => 22,
       'core_campo_id' => 119,
     ),
-    482 => 
+    481 => 
     array (
       'id' => 501,
       'orden' => 20,
       'core_modelo_id' => 22,
       'core_campo_id' => 120,
     ),
-    483 => 
+    482 => 
     array (
       'id' => 502,
       'orden' => 20,
       'core_modelo_id' => 22,
       'core_campo_id' => 121,
     ),
-    484 => 
+    483 => 
     array (
       'id' => 503,
       'orden' => 12,
       'core_modelo_id' => 25,
       'core_campo_id' => 122,
     ),
-    485 => 
+    484 => 
     array (
       'id' => 505,
       'orden' => 6,
       'core_modelo_id' => 19,
       'core_campo_id' => 123,
     ),
-    486 => 
+    485 => 
     array (
       'id' => 506,
       'orden' => 0,
       'core_modelo_id' => 53,
       'core_campo_id' => 123,
     ),
-    487 => 
+    486 => 
     array (
       'id' => 507,
       'orden' => 2,
       'core_modelo_id' => 69,
       'core_campo_id' => 123,
     ),
-    488 => 
+    487 => 
     array (
       'id' => 508,
       'orden' => 8,
       'core_modelo_id' => 76,
       'core_campo_id' => 123,
     ),
-    489 => 
+    488 => 
     array (
       'id' => 510,
       'orden' => 2,
       'core_modelo_id' => 31,
       'core_campo_id' => 125,
     ),
-    490 => 
+    489 => 
     array (
       'id' => 511,
       'orden' => 2,
       'core_modelo_id' => 35,
       'core_campo_id' => 125,
     ),
-    491 => 
+    490 => 
     array (
       'id' => 512,
       'orden' => 3,
       'core_modelo_id' => 87,
       'core_campo_id' => 125,
     ),
-    492 => 
+    491 => 
     array (
       'id' => 513,
       'orden' => 3,
       'core_modelo_id' => 88,
       'core_campo_id' => 125,
     ),
-    493 => 
+    492 => 
     array (
       'id' => 514,
       'orden' => 6,
       'core_modelo_id' => 120,
       'core_campo_id' => 125,
     ),
-    494 => 
+    493 => 
     array (
       'id' => 515,
       'orden' => 3,
       'core_modelo_id' => 31,
       'core_campo_id' => 126,
     ),
-    495 => 
+    494 => 
     array (
       'id' => 516,
       'orden' => 4,
       'core_modelo_id' => 31,
       'core_campo_id' => 127,
     ),
-    496 => 
+    495 => 
     array (
       'id' => 517,
       'orden' => 5,
       'core_modelo_id' => 31,
       'core_campo_id' => 128,
     ),
-    497 => 
+    496 => 
     array (
       'id' => 518,
       'orden' => 6,
       'core_modelo_id' => 31,
       'core_campo_id' => 129,
     ),
-    498 => 
+    497 => 
     array (
       'id' => 519,
       'orden' => 7,
       'core_modelo_id' => 3,
       'core_campo_id' => 130,
     ),
-    499 => 
+    498 => 
     array (
       'id' => 520,
       'orden' => 8,
       'core_modelo_id' => 3,
       'core_campo_id' => 131,
     ),
-    500 => 
+    499 => 
     array (
       'id' => 521,
       'orden' => 7,
       'core_modelo_id' => 3,
       'core_campo_id' => 132,
     ),
-    501 => 
+    500 => 
     array (
       'id' => 522,
       'orden' => 9,
       'core_modelo_id' => 3,
       'core_campo_id' => 133,
     ),
-    502 => 
+    501 => 
     array (
       'id' => 523,
       'orden' => 10,
       'core_modelo_id' => 3,
       'core_campo_id' => 134,
     ),
-    503 => 
+    502 => 
     array (
       'id' => 524,
       'orden' => 11,
       'core_modelo_id' => 3,
       'core_campo_id' => 135,
     ),
-    504 => 
+    503 => 
     array (
       'id' => 525,
       'orden' => 1,
       'core_modelo_id' => 9,
       'core_campo_id' => 136,
     ),
-    505 => 
+    504 => 
     array (
       'id' => 526,
       'orden' => 1,
       'core_modelo_id' => 32,
       'core_campo_id' => 136,
     ),
-    506 => 
+    505 => 
     array (
       'id' => 527,
       'orden' => 1,
       'core_modelo_id' => 33,
       'core_campo_id' => 137,
     ),
-    507 => 
+    506 => 
     array (
       'id' => 528,
       'orden' => 2,
       'core_modelo_id' => 33,
       'core_campo_id' => 138,
     ),
-    508 => 
+    507 => 
     array (
       'id' => 529,
       'orden' => 3,
       'core_modelo_id' => 33,
       'core_campo_id' => 139,
     ),
-    509 => 
+    508 => 
     array (
       'id' => 530,
       'orden' => 0,
       'core_modelo_id' => 6,
       'core_campo_id' => 140,
     ),
-    510 => 
+    509 => 
     array (
       'id' => 531,
       'orden' => 0,
       'core_modelo_id' => 7,
       'core_campo_id' => 140,
     ),
-    511 => 
+    510 => 
     array (
       'id' => 532,
       'orden' => 4,
       'core_modelo_id' => 8,
       'core_campo_id' => 140,
     ),
-    512 => 
+    511 => 
     array (
       'id' => 533,
       'orden' => 2,
       'core_modelo_id' => 29,
       'core_campo_id' => 140,
     ),
-    513 => 
+    512 => 
     array (
       'id' => 534,
       'orden' => 0,
       'core_modelo_id' => 41,
       'core_campo_id' => 140,
     ),
-    514 => 
+    513 => 
     array (
       'id' => 535,
       'orden' => 0,
       'core_modelo_id' => 53,
       'core_campo_id' => 140,
     ),
-    515 => 
+    514 => 
     array (
       'id' => 536,
       'orden' => 0,
       'core_modelo_id' => 55,
       'core_campo_id' => 140,
     ),
-    516 => 
+    515 => 
     array (
       'id' => 537,
       'orden' => 1,
       'core_modelo_id' => 69,
       'core_campo_id' => 140,
     ),
-    517 => 
+    516 => 
     array (
       'id' => 538,
       'orden' => 4,
       'core_modelo_id' => 76,
       'core_campo_id' => 140,
     ),
-    518 => 
+    517 => 
     array (
       'id' => 539,
       'orden' => 1,
       'core_modelo_id' => 93,
       'core_campo_id' => 140,
     ),
-    519 => 
+    518 => 
     array (
       'id' => 540,
       'orden' => 0,
       'core_modelo_id' => 95,
       'core_campo_id' => 140,
     ),
-    520 => 
+    519 => 
     array (
       'id' => 541,
       'orden' => 13,
       'core_modelo_id' => 3,
       'core_campo_id' => 141,
     ),
-    521 => 
+    520 => 
     array (
       'id' => 542,
       'orden' => 3,
       'core_modelo_id' => 16,
       'core_campo_id' => 142,
     ),
-    522 => 
+    521 => 
     array (
       'id' => 543,
       'orden' => 4,
       'core_modelo_id' => 16,
       'core_campo_id' => 143,
     ),
-    523 => 
+    522 => 
     array (
       'id' => 544,
       'orden' => 5,
       'core_modelo_id' => 16,
       'core_campo_id' => 144,
     ),
-    524 => 
+    523 => 
     array (
       'id' => 545,
       'orden' => 6,
       'core_modelo_id' => 16,
       'core_campo_id' => 145,
     ),
-    525 => 
+    524 => 
     array (
       'id' => 546,
       'orden' => 7,
       'core_modelo_id' => 16,
       'core_campo_id' => 146,
     ),
-    526 => 
+    525 => 
     array (
       'id' => 547,
       'orden' => 8,
       'core_modelo_id' => 16,
       'core_campo_id' => 147,
     ),
-    527 => 
+    526 => 
     array (
       'id' => 548,
       'orden' => 9,
       'core_modelo_id' => 16,
       'core_campo_id' => 148,
     ),
-    528 => 
+    527 => 
     array (
       'id' => 549,
       'orden' => 10,
       'core_modelo_id' => 16,
       'core_campo_id' => 149,
     ),
-    529 => 
+    528 => 
     array (
       'id' => 550,
       'orden' => 11,
       'core_modelo_id' => 16,
       'core_campo_id' => 150,
     ),
-    530 => 
+    529 => 
     array (
       'id' => 551,
       'orden' => 4,
       'core_modelo_id' => 34,
       'core_campo_id' => 151,
     ),
-    531 => 
+    530 => 
     array (
       'id' => 552,
       'orden' => 5,
       'core_modelo_id' => 34,
       'core_campo_id' => 152,
     ),
-    532 => 
+    531 => 
     array (
       'id' => 553,
       'orden' => 6,
       'core_modelo_id' => 34,
       'core_campo_id' => 153,
     ),
-    533 => 
+    532 => 
     array (
       'id' => 555,
       'orden' => 7,
       'core_modelo_id' => 34,
       'core_campo_id' => 154,
     ),
-    534 => 
+    533 => 
     array (
       'id' => 556,
       'orden' => 8,
       'core_modelo_id' => 34,
       'core_campo_id' => 155,
     ),
-    535 => 
+    534 => 
     array (
       'id' => 557,
       'orden' => 2,
       'core_modelo_id' => 34,
       'core_campo_id' => 156,
     ),
-    536 => 
+    535 => 
     array (
       'id' => 558,
       'orden' => 12,
       'core_modelo_id' => 123,
       'core_campo_id' => 156,
     ),
-    537 => 
+    536 => 
     array (
       'id' => 559,
       'orden' => 9,
       'core_modelo_id' => 34,
       'core_campo_id' => 157,
     ),
-    538 => 
+    537 => 
     array (
       'id' => 560,
       'orden' => 10,
       'core_modelo_id' => 34,
       'core_campo_id' => 158,
     ),
-    539 => 
+    538 => 
     array (
       'id' => 561,
       'orden' => 12,
       'core_modelo_id' => 16,
       'core_campo_id' => 159,
     ),
-    540 => 
+    539 => 
     array (
       'id' => 562,
       'orden' => 9,
       'core_modelo_id' => 30,
       'core_campo_id' => 160,
     ),
-    541 => 
+    540 => 
     array (
       'id' => 564,
       'orden' => 4,
       'core_modelo_id' => 35,
       'core_campo_id' => 162,
     ),
-    542 => 
+    541 => 
     array (
       'id' => 565,
       'orden' => 8,
       'core_modelo_id' => 120,
       'core_campo_id' => 162,
     ),
-    543 => 
+    542 => 
     array (
       'id' => 566,
       'orden' => 3,
       'core_modelo_id' => 35,
       'core_campo_id' => 163,
     ),
-    544 => 
+    543 => 
     array (
       'id' => 567,
       'orden' => 5,
       'core_modelo_id' => 35,
       'core_campo_id' => 164,
     ),
-    545 => 
+    544 => 
     array (
       'id' => 568,
       'orden' => 6,
       'core_modelo_id' => 35,
       'core_campo_id' => 165,
     ),
-    546 => 
+    545 => 
     array (
       'id' => 569,
       'orden' => 7,
       'core_modelo_id' => 35,
       'core_campo_id' => 166,
     ),
-    547 => 
+    546 => 
     array (
       'id' => 570,
       'orden' => 0,
       'core_modelo_id' => 36,
       'core_campo_id' => 167,
     ),
-    548 => 
+    547 => 
     array (
       'id' => 571,
       'orden' => 4,
       'core_modelo_id' => 36,
       'core_campo_id' => 168,
     ),
-    549 => 
+    548 => 
     array (
       'id' => 572,
       'orden' => 1,
       'core_modelo_id' => 36,
       'core_campo_id' => 169,
     ),
-    550 => 
+    549 => 
     array (
       'id' => 574,
       'orden' => 5,
       'core_modelo_id' => 71,
       'core_campo_id' => 169,
     ),
-    551 => 
+    550 => 
     array (
       'id' => 575,
       'orden' => 5,
       'core_modelo_id' => 75,
       'core_campo_id' => 169,
     ),
-    552 => 
+    551 => 
     array (
       'id' => 576,
       'orden' => 2,
       'core_modelo_id' => 38,
       'core_campo_id' => 170,
     ),
-    553 => 
+    552 => 
     array (
       'id' => 577,
       'orden' => 20,
       'core_modelo_id' => 38,
       'core_campo_id' => 171,
     ),
-    554 => 
+    553 => 
     array (
       'id' => 578,
       'orden' => 3,
       'core_modelo_id' => 38,
       'core_campo_id' => 172,
     ),
-    555 => 
+    554 => 
     array (
       'id' => 579,
       'orden' => 4,
       'core_modelo_id' => 38,
       'core_campo_id' => 173,
     ),
-    556 => 
+    555 => 
     array (
       'id' => 580,
       'orden' => 5,
       'core_modelo_id' => 38,
       'core_campo_id' => 174,
     ),
-    557 => 
+    556 => 
     array (
       'id' => 581,
       'orden' => 7,
       'core_modelo_id' => 38,
       'core_campo_id' => 175,
     ),
-    558 => 
+    557 => 
     array (
       'id' => 582,
       'orden' => 8,
       'core_modelo_id' => 38,
       'core_campo_id' => 176,
     ),
-    559 => 
+    558 => 
     array (
       'id' => 583,
       'orden' => 11,
       'core_modelo_id' => 38,
       'core_campo_id' => 177,
     ),
-    560 => 
+    559 => 
     array (
       'id' => 584,
       'orden' => 0,
       'core_modelo_id' => 70,
       'core_campo_id' => 177,
     ),
-    561 => 
+    560 => 
     array (
       'id' => 585,
       'orden' => 2,
       'core_modelo_id' => 71,
       'core_campo_id' => 177,
     ),
-    562 => 
+    561 => 
     array (
       'id' => 586,
       'orden' => 2,
       'core_modelo_id' => 75,
       'core_campo_id' => 177,
     ),
-    563 => 
+    562 => 
     array (
       'id' => 587,
       'orden' => 3,
       'core_modelo_id' => 39,
       'core_campo_id' => 183,
     ),
-    564 => 
+    563 => 
     array (
       'id' => 588,
       'orden' => 4,
       'core_modelo_id' => 39,
       'core_campo_id' => 184,
     ),
-    565 => 
+    564 => 
     array (
       'id' => 589,
       'orden' => 8,
       'core_modelo_id' => 39,
       'core_campo_id' => 185,
     ),
-    566 => 
+    565 => 
     array (
       'id' => 590,
       'orden' => 7,
       'core_modelo_id' => 39,
       'core_campo_id' => 186,
     ),
-    567 => 
+    566 => 
     array (
       'id' => 591,
       'orden' => 9,
       'core_modelo_id' => 39,
       'core_campo_id' => 187,
     ),
-    568 => 
+    567 => 
     array (
       'id' => 592,
       'orden' => 10,
       'core_modelo_id' => 39,
       'core_campo_id' => 188,
     ),
-    569 => 
+    568 => 
     array (
       'id' => 593,
       'orden' => 5,
       'core_modelo_id' => 39,
       'core_campo_id' => 189,
     ),
-    570 => 
+    569 => 
     array (
       'id' => 594,
       'orden' => 1,
       'core_modelo_id' => 25,
       'core_campo_id' => 192,
     ),
-    571 => 
+    570 => 
     array (
       'id' => 595,
       'orden' => 1,
       'core_modelo_id' => 60,
       'core_campo_id' => 192,
     ),
-    572 => 
+    571 => 
     array (
       'id' => 596,
       'orden' => 3,
       'core_modelo_id' => 43,
       'core_campo_id' => 194,
     ),
-    573 => 
+    572 => 
     array (
       'id' => 597,
       'orden' => 3,
       'core_modelo_id' => 51,
       'core_campo_id' => 194,
     ),
-    574 => 
+    573 => 
     array (
       'id' => 598,
       'orden' => 12,
       'core_modelo_id' => 139,
       'core_campo_id' => 194,
     ),
-    575 => 
+    574 => 
     array (
       'id' => 599,
       'orden' => 99,
       'core_modelo_id' => 5,
       'core_campo_id' => 195,
     ),
-    576 => 
+    575 => 
     array (
       'id' => 600,
       'orden' => 3,
       'core_modelo_id' => 69,
       'core_campo_id' => 195,
     ),
-    577 => 
+    576 => 
     array (
       'id' => 601,
       'orden' => 4,
       'core_modelo_id' => 33,
       'core_campo_id' => 196,
     ),
-    578 => 
+    577 => 
     array (
       'id' => 602,
       'orden' => 3,
       'core_modelo_id' => 44,
       'core_campo_id' => 196,
     ),
-    579 => 
+    578 => 
     array (
       'id' => 603,
       'orden' => 2,
       'core_modelo_id' => 44,
       'core_campo_id' => 197,
     ),
-    580 => 
+    579 => 
     array (
       'id' => 604,
       'orden' => 4,
       'core_modelo_id' => 44,
       'core_campo_id' => 198,
     ),
-    581 => 
+    580 => 
     array (
       'id' => 605,
       'orden' => 3,
       'core_modelo_id' => 45,
       'core_campo_id' => 199,
     ),
-    582 => 
+    581 => 
     array (
       'id' => 606,
       'orden' => 5,
       'core_modelo_id' => 46,
       'core_campo_id' => 200,
     ),
-    583 => 
+    582 => 
     array (
       'id' => 607,
       'orden' => 0,
       'core_modelo_id' => 7,
       'core_campo_id' => 201,
     ),
-    584 => 
+    583 => 
     array (
       'id' => 608,
       'orden' => 0,
       'core_modelo_id' => 21,
       'core_campo_id' => 201,
     ),
-    585 => 
+    584 => 
     array (
       'id' => 609,
       'orden' => 0,
       'core_modelo_id' => 22,
       'core_campo_id' => 201,
     ),
-    586 => 
+    585 => 
     array (
       'id' => 610,
       'orden' => 0,
       'core_modelo_id' => 24,
       'core_campo_id' => 201,
     ),
-    587 => 
+    586 => 
     array (
       'id' => 611,
       'orden' => 0,
       'core_modelo_id' => 33,
       'core_campo_id' => 201,
     ),
-    588 => 
+    587 => 
     array (
       'id' => 612,
       'orden' => 0,
       'core_modelo_id' => 43,
       'core_campo_id' => 201,
     ),
-    589 => 
+    588 => 
     array (
       'id' => 613,
       'orden' => 1,
       'core_modelo_id' => 45,
       'core_campo_id' => 201,
     ),
-    590 => 
+    589 => 
     array (
       'id' => 614,
       'orden' => 1,
       'core_modelo_id' => 46,
       'core_campo_id' => 201,
     ),
-    591 => 
+    590 => 
     array (
       'id' => 615,
       'orden' => 0,
       'core_modelo_id' => 47,
       'core_campo_id' => 201,
     ),
-    592 => 
+    591 => 
     array (
       'id' => 616,
       'orden' => 0,
       'core_modelo_id' => 48,
       'core_campo_id' => 201,
     ),
-    593 => 
+    592 => 
     array (
       'id' => 617,
       'orden' => 0,
       'core_modelo_id' => 49,
       'core_campo_id' => 201,
     ),
-    594 => 
+    593 => 
     array (
       'id' => 618,
       'orden' => 0,
       'core_modelo_id' => 50,
       'core_campo_id' => 201,
     ),
-    595 => 
+    594 => 
     array (
       'id' => 619,
       'orden' => 1,
       'core_modelo_id' => 51,
       'core_campo_id' => 201,
     ),
-    596 => 
+    595 => 
     array (
       'id' => 620,
       'orden' => 1,
       'core_modelo_id' => 52,
       'core_campo_id' => 201,
     ),
-    597 => 
+    596 => 
     array (
       'id' => 621,
       'orden' => 1,
       'core_modelo_id' => 54,
       'core_campo_id' => 201,
     ),
-    598 => 
+    597 => 
     array (
       'id' => 622,
       'orden' => 1,
       'core_modelo_id' => 55,
       'core_campo_id' => 201,
     ),
-    599 => 
+    598 => 
     array (
       'id' => 623,
       'orden' => 1,
       'core_modelo_id' => 56,
       'core_campo_id' => 201,
     ),
-    600 => 
+    599 => 
     array (
       'id' => 624,
       'orden' => 0,
       'core_modelo_id' => 59,
       'core_campo_id' => 201,
     ),
-    601 => 
+    600 => 
     array (
       'id' => 625,
       'orden' => 1,
       'core_modelo_id' => 65,
       'core_campo_id' => 201,
     ),
-    602 => 
+    601 => 
     array (
       'id' => 626,
       'orden' => 2,
       'core_modelo_id' => 139,
       'core_campo_id' => 201,
     ),
-    603 => 
+    602 => 
     array (
       'id' => 627,
       'orden' => 99,
       'core_modelo_id' => 46,
       'core_campo_id' => 202,
     ),
-    604 => 
+    603 => 
     array (
       'id' => 629,
       'orden' => 99,
       'core_modelo_id' => 52,
       'core_campo_id' => 203,
     ),
-    605 => 
+    604 => 
     array (
       'id' => 630,
       'orden' => 99,
       'core_modelo_id' => 59,
       'core_campo_id' => 203,
     ),
-    606 => 
+    605 => 
     array (
       'id' => 631,
       'orden' => 6,
       'core_modelo_id' => 43,
       'core_campo_id' => 204,
     ),
-    607 => 
+    606 => 
     array (
       'id' => 632,
       'orden' => 2,
       'core_modelo_id' => 64,
       'core_campo_id' => 204,
     ),
-    608 => 
+    607 => 
     array (
       'id' => 633,
       'orden' => 2,
       'core_modelo_id' => 39,
       'core_campo_id' => 205,
     ),
-    609 => 
+    608 => 
     array (
       'id' => 634,
       'orden' => 1,
       'core_modelo_id' => 39,
       'core_campo_id' => 206,
     ),
-    610 => 
+    609 => 
     array (
       'id' => 635,
       'orden' => 2,
       'core_modelo_id' => 48,
       'core_campo_id' => 208,
     ),
-    611 => 
+    610 => 
     array (
       'id' => 636,
       'orden' => 4,
       'core_modelo_id' => 48,
       'core_campo_id' => 209,
     ),
-    612 => 
+    611 => 
     array (
       'id' => 637,
       'orden' => 1,
       'core_modelo_id' => 48,
       'core_campo_id' => 210,
     ),
-    613 => 
+    612 => 
     array (
       'id' => 638,
       'orden' => 2,
       'core_modelo_id' => 49,
       'core_campo_id' => 210,
     ),
-    614 => 
+    613 => 
     array (
       'id' => 639,
       'orden' => 5,
       'core_modelo_id' => 33,
       'core_campo_id' => 211,
     ),
-    615 => 
+    614 => 
     array (
       'id' => 640,
       'orden' => 3,
       'core_modelo_id' => 45,
       'core_campo_id' => 211,
     ),
-    616 => 
+    615 => 
     array (
       'id' => 641,
       'orden' => 2,
       'core_modelo_id' => 113,
       'core_campo_id' => 215,
     ),
-    617 => 
+    616 => 
     array (
       'id' => 642,
       'orden' => 4,
       'core_modelo_id' => 129,
       'core_campo_id' => 215,
     ),
-    618 => 
+    617 => 
     array (
       'id' => 643,
       'orden' => 4,
       'core_modelo_id' => 131,
       'core_campo_id' => 215,
     ),
-    619 => 
+    618 => 
     array (
       'id' => 644,
       'orden' => 10,
       'core_modelo_id' => 3,
       'core_campo_id' => 221,
     ),
-    620 => 
+    619 => 
     array (
       'id' => 645,
       'orden' => 99,
       'core_modelo_id' => 47,
       'core_campo_id' => 222,
     ),
-    621 => 
+    620 => 
     array (
       'id' => 646,
       'orden' => 0,
       'core_modelo_id' => 30,
       'core_campo_id' => 223,
     ),
-    622 => 
+    621 => 
     array (
       'id' => 647,
       'orden' => 3,
       'core_modelo_id' => 49,
       'core_campo_id' => 224,
     ),
-    623 => 
+    622 => 
     array (
       'id' => 648,
       'orden' => 99,
       'core_modelo_id' => 47,
       'core_campo_id' => 225,
     ),
-    624 => 
+    623 => 
     array (
       'id' => 649,
       'orden' => 99,
       'core_modelo_id' => 51,
       'core_campo_id' => 225,
     ),
-    625 => 
+    624 => 
     array (
       'id' => 650,
       'orden' => 99,
       'core_modelo_id' => 54,
       'core_campo_id' => 225,
     ),
-    626 => 
+    625 => 
     array (
       'id' => 654,
       'orden' => 3,
       'core_modelo_id' => 50,
       'core_campo_id' => 229,
     ),
-    627 => 
+    626 => 
     array (
       'id' => 655,
       'orden' => 4,
       'core_modelo_id' => 50,
       'core_campo_id' => 230,
     ),
-    628 => 
+    627 => 
     array (
       'id' => 656,
       'orden' => 5,
       'core_modelo_id' => 50,
       'core_campo_id' => 231,
     ),
-    629 => 
+    628 => 
     array (
       'id' => 657,
       'orden' => 3,
       'core_modelo_id' => 42,
       'core_campo_id' => 232,
     ),
-    630 => 
+    629 => 
     array (
       'id' => 658,
       'orden' => 6,
       'core_modelo_id' => 39,
       'core_campo_id' => 233,
     ),
-    631 => 
+    630 => 
     array (
       'id' => 659,
       'orden' => 3,
       'core_modelo_id' => 53,
       'core_campo_id' => 234,
     ),
-    632 => 
+    631 => 
     array (
       'id' => 660,
       'orden' => 5,
       'core_modelo_id' => 69,
       'core_campo_id' => 234,
     ),
-    633 => 
+    632 => 
     array (
       'id' => 661,
       'orden' => 4,
       'core_modelo_id' => 53,
       'core_campo_id' => 235,
     ),
-    634 => 
+    633 => 
     array (
       'id' => 662,
       'orden' => 6,
       'core_modelo_id' => 69,
       'core_campo_id' => 235,
     ),
-    635 => 
+    634 => 
     array (
       'id' => 663,
       'orden' => 5,
       'core_modelo_id' => 53,
       'core_campo_id' => 236,
     ),
-    636 => 
+    635 => 
     array (
       'id' => 664,
       'orden' => 7,
       'core_modelo_id' => 69,
       'core_campo_id' => 236,
     ),
-    637 => 
+    636 => 
     array (
       'id' => 665,
       'orden' => 6,
       'core_modelo_id' => 53,
       'core_campo_id' => 237,
     ),
-    638 => 
+    637 => 
     array (
       'id' => 666,
       'orden' => 8,
       'core_modelo_id' => 69,
       'core_campo_id' => 237,
     ),
-    639 => 
+    638 => 
     array (
       'id' => 667,
       'orden' => 7,
       'core_modelo_id' => 53,
       'core_campo_id' => 238,
     ),
-    640 => 
+    639 => 
     array (
       'id' => 668,
       'orden' => 9,
       'core_modelo_id' => 69,
       'core_campo_id' => 238,
     ),
-    641 => 
+    640 => 
     array (
       'id' => 669,
       'orden' => 8,
       'core_modelo_id' => 53,
       'core_campo_id' => 239,
     ),
-    642 => 
+    641 => 
     array (
       'id' => 670,
       'orden' => 10,
       'core_modelo_id' => 69,
       'core_campo_id' => 239,
     ),
-    643 => 
+    642 => 
     array (
       'id' => 671,
       'orden' => 9,
       'core_modelo_id' => 53,
       'core_campo_id' => 240,
     ),
-    644 => 
+    643 => 
     array (
       'id' => 672,
       'orden' => 11,
       'core_modelo_id' => 69,
       'core_campo_id' => 240,
     ),
-    645 => 
+    644 => 
     array (
       'id' => 673,
       'orden' => 10,
       'core_modelo_id' => 53,
       'core_campo_id' => 241,
     ),
-    646 => 
+    645 => 
     array (
       'id' => 674,
       'orden' => 12,
       'core_modelo_id' => 69,
       'core_campo_id' => 241,
     ),
-    647 => 
+    646 => 
     array (
       'id' => 675,
       'orden' => 0,
       'core_modelo_id' => 37,
       'core_campo_id' => 242,
     ),
-    648 => 
+    647 => 
     array (
       'id' => 676,
       'orden' => 1,
       'core_modelo_id' => 53,
       'core_campo_id' => 243,
     ),
-    649 => 
+    648 => 
     array (
       'id' => 677,
       'orden' => 10,
       'core_modelo_id' => 29,
       'core_campo_id' => 244,
     ),
-    650 => 
+    649 => 
     array (
       'id' => 678,
       'orden' => 6,
       'core_modelo_id' => 66,
       'core_campo_id' => 244,
     ),
-    651 => 
+    650 => 
     array (
       'id' => 679,
       'orden' => 7,
       'core_modelo_id' => 134,
       'core_campo_id' => 244,
     ),
-    652 => 
+    651 => 
     array (
       'id' => 682,
       'orden' => 10,
       'core_modelo_id' => 29,
       'core_campo_id' => 245,
     ),
-    653 => 
+    652 => 
     array (
       'id' => 683,
       'orden' => 8,
       'core_modelo_id' => 134,
       'core_campo_id' => 245,
     ),
-    654 => 
+    653 => 
     array (
       'id' => 686,
       'orden' => 5,
       'core_modelo_id' => 54,
       'core_campo_id' => 247,
     ),
-    655 => 
+    654 => 
     array (
       'id' => 687,
       'orden' => 11,
       'core_modelo_id' => 54,
       'core_campo_id' => 248,
     ),
-    656 => 
+    655 => 
     array (
       'id' => 688,
       'orden' => 12,
       'core_modelo_id' => 54,
       'core_campo_id' => 249,
     ),
-    657 => 
+    656 => 
     array (
       'id' => 689,
       'orden' => 14,
       'core_modelo_id' => 54,
       'core_campo_id' => 250,
     ),
-    658 => 
+    657 => 
     array (
       'id' => 690,
       'orden' => 15,
       'core_modelo_id' => 54,
       'core_campo_id' => 251,
     ),
-    659 => 
+    658 => 
     array (
       'id' => 691,
       'orden' => 6,
       'core_modelo_id' => 55,
       'core_campo_id' => 252,
     ),
-    660 => 
+    659 => 
     array (
       'id' => 692,
       'orden' => 7,
       'core_modelo_id' => 55,
       'core_campo_id' => 253,
     ),
-    661 => 
+    660 => 
     array (
       'id' => 693,
       'orden' => 8,
       'core_modelo_id' => 55,
       'core_campo_id' => 254,
     ),
-    662 => 
+    661 => 
     array (
       'id' => 694,
       'orden' => 9,
       'core_modelo_id' => 55,
       'core_campo_id' => 255,
     ),
-    663 => 
+    662 => 
     array (
       'id' => 695,
       'orden' => 2,
       'core_modelo_id' => 55,
       'core_campo_id' => 256,
     ),
-    664 => 
+    663 => 
     array (
       'id' => 696,
       'orden' => 2,
       'core_modelo_id' => 37,
       'core_campo_id' => 257,
     ),
-    665 => 
+    664 => 
     array (
       'id' => 697,
       'orden' => 3,
       'core_modelo_id' => 55,
       'core_campo_id' => 257,
     ),
-    666 => 
+    665 => 
     array (
       'id' => 698,
       'orden' => 3,
       'core_modelo_id' => 56,
       'core_campo_id' => 257,
     ),
-    667 => 
+    666 => 
     array (
       'id' => 699,
       'orden' => 7,
       'core_modelo_id' => 87,
       'core_campo_id' => 257,
     ),
-    668 => 
+    667 => 
     array (
       'id' => 700,
       'orden' => 8,
       'core_modelo_id' => 88,
       'core_campo_id' => 257,
     ),
-    669 => 
+    668 => 
     array (
       'id' => 701,
       'orden' => 2,
       'core_modelo_id' => 97,
       'core_campo_id' => 257,
     ),
-    670 => 
+    669 => 
     array (
       'id' => 702,
       'orden' => 2,
       'core_modelo_id' => 99,
       'core_campo_id' => 257,
     ),
-    671 => 
+    670 => 
     array (
       'id' => 704,
       'orden' => 4,
       'core_modelo_id' => 123,
       'core_campo_id' => 257,
     ),
-    672 => 
+    671 => 
     array (
       'id' => 705,
       'orden' => 4,
       'core_modelo_id' => 124,
       'core_campo_id' => 257,
     ),
-    673 => 
+    672 => 
     array (
       'id' => 706,
       'orden' => 2,
       'core_modelo_id' => 56,
       'core_campo_id' => 258,
     ),
-    674 => 
+    673 => 
     array (
       'id' => 707,
       'orden' => 5,
       'core_modelo_id' => 56,
       'core_campo_id' => 259,
     ),
-    675 => 
+    674 => 
     array (
       'id' => 708,
       'orden' => 4,
       'core_modelo_id' => 56,
       'core_campo_id' => 261,
     ),
-    676 => 
+    675 => 
     array (
       'id' => 709,
       'orden' => 8,
       'core_modelo_id' => 26,
       'core_campo_id' => 262,
     ),
-    677 => 
+    676 => 
     array (
       'id' => 710,
       'orden' => 12,
       'core_modelo_id' => 26,
       'core_campo_id' => 263,
     ),
-    678 => 
+    677 => 
     array (
       'id' => 711,
       'orden' => 10,
       'core_modelo_id' => 26,
       'core_campo_id' => 264,
     ),
-    679 => 
+    678 => 
     array (
       'id' => 712,
       'orden' => 4,
       'core_modelo_id' => 59,
       'core_campo_id' => 265,
     ),
-    680 => 
+    679 => 
     array (
       'id' => 713,
       'orden' => 5,
       'core_modelo_id' => 59,
       'core_campo_id' => 266,
     ),
-    681 => 
+    680 => 
     array (
       'id' => 714,
       'orden' => 3,
       'core_modelo_id' => 60,
       'core_campo_id' => 267,
     ),
-    682 => 
+    681 => 
     array (
       'id' => 715,
       'orden' => 6,
       'core_modelo_id' => 61,
       'core_campo_id' => 268,
     ),
-    683 => 
+    682 => 
     array (
       'id' => 716,
       'orden' => 3,
       'core_modelo_id' => 64,
       'core_campo_id' => 270,
     ),
-    684 => 
+    683 => 
     array (
       'id' => 717,
       'orden' => 1,
       'core_modelo_id' => 63,
       'core_campo_id' => 271,
     ),
-    685 => 
+    684 => 
     array (
       'id' => 718,
       'orden' => 2,
       'core_modelo_id' => 63,
       'core_campo_id' => 272,
     ),
-    686 => 
+    685 => 
     array (
       'id' => 719,
       'orden' => 3,
       'core_modelo_id' => 63,
       'core_campo_id' => 273,
     ),
-    687 => 
+    686 => 
     array (
       'id' => 720,
       'orden' => 4,
       'core_modelo_id' => 66,
       'core_campo_id' => 274,
     ),
-    688 => 
+    687 => 
     array (
       'id' => 721,
       'orden' => 5,
       'core_modelo_id' => 134,
       'core_campo_id' => 274,
     ),
-    689 => 
+    688 => 
     array (
       'id' => 723,
       'orden' => 7,
       'core_modelo_id' => 66,
       'core_campo_id' => 277,
     ),
-    690 => 
+    689 => 
     array (
       'id' => 724,
       'orden' => 10,
       'core_modelo_id' => 66,
       'core_campo_id' => 279,
     ),
-    691 => 
+    690 => 
     array (
       'id' => 725,
       'orden' => 13,
       'core_modelo_id' => 66,
       'core_campo_id' => 280,
     ),
-    692 => 
+    691 => 
     array (
       'id' => 726,
       'orden' => 2,
       'core_modelo_id' => 67,
       'core_campo_id' => 281,
     ),
-    693 => 
+    692 => 
     array (
       'id' => 727,
       'orden' => 3,
       'core_modelo_id' => 67,
       'core_campo_id' => 282,
     ),
-    694 => 
+    693 => 
     array (
       'id' => 728,
       'orden' => 4,
       'core_modelo_id' => 67,
       'core_campo_id' => 283,
     ),
-    695 => 
+    694 => 
     array (
       'id' => 729,
       'orden' => 6,
       'core_modelo_id' => 67,
       'core_campo_id' => 284,
     ),
-    696 => 
+    695 => 
     array (
       'id' => 730,
       'orden' => 12,
       'core_modelo_id' => 66,
       'core_campo_id' => 285,
     ),
-    697 => 
+    696 => 
     array (
       'id' => 731,
       'orden' => 2,
       'core_modelo_id' => 62,
       'core_campo_id' => 286,
     ),
-    698 => 
+    697 => 
     array (
       'id' => 733,
       'orden' => 4,
       'core_modelo_id' => 62,
       'core_campo_id' => 288,
     ),
-    699 => 
+    698 => 
     array (
       'id' => 734,
       'orden' => 2,
       'core_modelo_id' => 1,
       'core_campo_id' => 289,
     ),
-    700 => 
+    699 => 
     array (
       'id' => 735,
       'orden' => 8,
       'core_modelo_id' => 66,
       'core_campo_id' => 289,
     ),
-    701 => 
+    700 => 
     array (
       'id' => 736,
       'orden' => 1,
       'core_modelo_id' => 19,
       'core_campo_id' => 290,
     ),
-    702 => 
+    701 => 
     array (
       'id' => 737,
       'orden' => 3,
       'core_modelo_id' => 19,
       'core_campo_id' => 291,
     ),
-    703 => 
+    702 => 
     array (
       'id' => 738,
       'orden' => 4,
       'core_modelo_id' => 19,
       'core_campo_id' => 292,
     ),
-    704 => 
+    703 => 
     array (
       'id' => 740,
       'orden' => 7,
       'core_modelo_id' => 19,
       'core_campo_id' => 294,
     ),
-    705 => 
+    704 => 
     array (
       'id' => 741,
       'orden' => 13,
       'core_modelo_id' => 66,
       'core_campo_id' => 294,
     ),
-    706 => 
+    705 => 
     array (
       'id' => 742,
       'orden' => 8,
       'core_modelo_id' => 19,
       'core_campo_id' => 295,
     ),
-    707 => 
+    706 => 
     array (
       'id' => 743,
       'orden' => 9,
       'core_modelo_id' => 19,
       'core_campo_id' => 296,
     ),
-    708 => 
+    707 => 
     array (
       'id' => 744,
       'orden' => 10,
       'core_modelo_id' => 19,
       'core_campo_id' => 297,
     ),
-    709 => 
+    708 => 
     array (
       'id' => 745,
       'orden' => 15,
       'core_modelo_id' => 29,
       'core_campo_id' => 298,
     ),
-    710 => 
+    709 => 
     array (
       'id' => 746,
       'orden' => 19,
       'core_modelo_id' => 29,
       'core_campo_id' => 299,
     ),
-    711 => 
+    710 => 
     array (
       'id' => 747,
       'orden' => 22,
       'core_modelo_id' => 29,
       'core_campo_id' => 300,
     ),
-    712 => 
+    711 => 
     array (
       'id' => 749,
       'orden' => 23,
       'core_modelo_id' => 29,
       'core_campo_id' => 301,
     ),
-    713 => 
+    712 => 
     array (
       'id' => 750,
       'orden' => 24,
       'core_modelo_id' => 29,
       'core_campo_id' => 302,
     ),
-    714 => 
+    713 => 
     array (
       'id' => 751,
       'orden' => 25,
       'core_modelo_id' => 29,
       'core_campo_id' => 303,
     ),
-    715 => 
+    714 => 
     array (
       'id' => 752,
       'orden' => 3,
       'core_modelo_id' => 68,
       'core_campo_id' => 304,
     ),
-    716 => 
+    715 => 
     array (
       'id' => 753,
       'orden' => 13,
       'core_modelo_id' => 66,
       'core_campo_id' => 305,
     ),
-    717 => 
+    716 => 
     array (
       'id' => 754,
       'orden' => 1,
       'core_modelo_id' => 31,
       'core_campo_id' => 306,
     ),
-    718 => 
+    717 => 
     array (
       'id' => 755,
       'orden' => 2,
       'core_modelo_id' => 11,
       'core_campo_id' => 307,
     ),
-    719 => 
+    718 => 
     array (
       'id' => 757,
       'orden' => 10,
       'core_modelo_id' => 3,
       'core_campo_id' => 309,
     ),
-    720 => 
+    719 => 
     array (
       'id' => 758,
       'orden' => 12,
       'core_modelo_id' => 38,
       'core_campo_id' => 311,
     ),
-    721 => 
+    720 => 
     array (
       'id' => 759,
       'orden' => 1,
       'core_modelo_id' => 70,
       'core_campo_id' => 311,
     ),
-    722 => 
+    721 => 
     array (
       'id' => 760,
       'orden' => 3,
       'core_modelo_id' => 71,
       'core_campo_id' => 311,
     ),
-    723 => 
+    722 => 
     array (
       'id' => 761,
       'orden' => 3,
       'core_modelo_id' => 75,
       'core_campo_id' => 311,
     ),
-    724 => 
+    723 => 
     array (
       'id' => 763,
       'orden' => 2,
       'core_modelo_id' => 70,
       'core_campo_id' => 312,
     ),
-    725 => 
+    724 => 
     array (
       'id' => 764,
       'orden' => 4,
       'core_modelo_id' => 71,
       'core_campo_id' => 312,
     ),
-    726 => 
+    725 => 
     array (
       'id' => 765,
       'orden' => 4,
       'core_modelo_id' => 75,
       'core_campo_id' => 312,
     ),
-    727 => 
+    726 => 
     array (
       'id' => 767,
       'orden' => 99,
       'core_modelo_id' => 71,
       'core_campo_id' => 314,
     ),
-    728 => 
+    727 => 
     array (
       'id' => 768,
       'orden' => 99,
       'core_modelo_id' => 75,
       'core_campo_id' => 314,
     ),
-    729 => 
+    728 => 
     array (
       'id' => 769,
       'orden' => 99,
       'core_modelo_id' => 119,
       'core_campo_id' => 314,
     ),
-    730 => 
+    729 => 
     array (
       'id' => 770,
       'orden' => 99,
       'core_modelo_id' => 121,
       'core_campo_id' => 314,
     ),
-    731 => 
+    730 => 
     array (
       'id' => 771,
       'orden' => 99,
       'core_modelo_id' => 122,
       'core_campo_id' => 314,
     ),
-    732 => 
+    731 => 
     array (
       'id' => 772,
       'orden' => 1,
       'core_modelo_id' => 76,
       'core_campo_id' => 316,
     ),
-    733 => 
+    732 => 
     array (
       'id' => 773,
       'orden' => 2,
       'core_modelo_id' => 76,
       'core_campo_id' => 317,
     ),
-    734 => 
+    733 => 
     array (
       'id' => 774,
       'orden' => 3,
       'core_modelo_id' => 76,
       'core_campo_id' => 318,
     ),
-    735 => 
+    734 => 
     array (
       'id' => 775,
       'orden' => 99,
       'core_modelo_id' => 76,
       'core_campo_id' => 319,
     ),
-    736 => 
+    735 => 
     array (
       'id' => 776,
       'orden' => 5,
       'core_modelo_id' => 76,
       'core_campo_id' => 320,
     ),
-    737 => 
+    736 => 
     array (
       'id' => 777,
       'orden' => 9,
       'core_modelo_id' => 81,
       'core_campo_id' => 342,
     ),
-    738 => 
+    737 => 
     array (
       'id' => 778,
       'orden' => 12,
       'core_modelo_id' => 81,
       'core_campo_id' => 343,
     ),
-    739 => 
+    738 => 
     array (
       'id' => 782,
       'orden' => 9,
       'core_modelo_id' => 76,
       'core_campo_id' => 353,
     ),
-    740 => 
+    739 => 
     array (
       'id' => 784,
       'orden' => 7,
       'core_modelo_id' => 76,
       'core_campo_id' => 355,
     ),
-    741 => 
+    740 => 
     array (
       'id' => 786,
       'orden' => 8,
       'core_modelo_id' => 123,
       'core_campo_id' => 355,
     ),
-    742 => 
+    741 => 
     array (
       'id' => 788,
       'orden' => 3,
       'core_modelo_id' => 83,
       'core_campo_id' => 357,
     ),
-    743 => 
+    742 => 
     array (
       'id' => 790,
       'orden' => 5,
       'core_modelo_id' => 83,
       'core_campo_id' => 359,
     ),
-    744 => 
+    743 => 
     array (
       'id' => 791,
       'orden' => 7,
       'core_modelo_id' => 83,
       'core_campo_id' => 360,
     ),
-    745 => 
+    744 => 
     array (
       'id' => 792,
       'orden' => 8,
       'core_modelo_id' => 83,
       'core_campo_id' => 361,
     ),
-    746 => 
+    745 => 
     array (
       'id' => 793,
       'orden' => 8,
       'core_modelo_id' => 83,
       'core_campo_id' => 362,
     ),
-    747 => 
+    746 => 
     array (
       'id' => 794,
       'orden' => 9,
       'core_modelo_id' => 83,
       'core_campo_id' => 363,
     ),
-    748 => 
+    747 => 
     array (
       'id' => 795,
       'orden' => 12,
       'core_modelo_id' => 83,
       'core_campo_id' => 364,
     ),
-    749 => 
+    748 => 
     array (
       'id' => 796,
       'orden' => 1,
       'core_modelo_id' => 84,
       'core_campo_id' => 365,
     ),
-    750 => 
+    749 => 
     array (
       'id' => 798,
       'orden' => 2,
       'core_modelo_id' => 88,
       'core_campo_id' => 368,
     ),
-    751 => 
+    750 => 
     array (
       'id' => 799,
       'orden' => 4,
       'core_modelo_id' => 87,
       'core_campo_id' => 369,
     ),
-    752 => 
+    751 => 
     array (
       'id' => 800,
       'orden' => 6,
       'core_modelo_id' => 88,
       'core_campo_id' => 369,
     ),
-    753 => 
+    752 => 
     array (
       'id' => 801,
       'orden' => 5,
       'core_modelo_id' => 87,
       'core_campo_id' => 370,
     ),
-    754 => 
+    753 => 
     array (
       'id' => 802,
       'orden' => 6,
       'core_modelo_id' => 84,
       'core_campo_id' => 371,
     ),
-    755 => 
+    754 => 
     array (
       'id' => 803,
       'orden' => 6,
       'core_modelo_id' => 87,
       'core_campo_id' => 372,
     ),
-    756 => 
+    755 => 
     array (
       'id' => 804,
       'orden' => 7,
       'core_modelo_id' => 88,
       'core_campo_id' => 372,
     ),
-    757 => 
+    756 => 
     array (
       'id' => 805,
       'orden' => 4,
       'core_modelo_id' => 88,
       'core_campo_id' => 373,
     ),
-    758 => 
+    757 => 
     array (
       'id' => 806,
       'orden' => 5,
       'core_modelo_id' => 88,
       'core_campo_id' => 374,
     ),
-    759 => 
+    758 => 
     array (
       'id' => 807,
       'orden' => 3,
       'core_modelo_id' => 84,
       'core_campo_id' => 379,
     ),
-    760 => 
+    759 => 
     array (
       'id' => 808,
       'orden' => 1,
       'core_modelo_id' => 91,
       'core_campo_id' => 381,
     ),
-    761 => 
+    760 => 
     array (
       'id' => 809,
       'orden' => 2,
       'core_modelo_id' => 91,
       'core_campo_id' => 384,
     ),
-    762 => 
+    761 => 
     array (
       'id' => 810,
       'orden' => 3,
       'core_modelo_id' => 91,
       'core_campo_id' => 385,
     ),
-    763 => 
+    762 => 
     array (
       'id' => 811,
       'orden' => 0,
       'core_modelo_id' => 8,
       'core_campo_id' => 386,
     ),
-    764 => 
+    763 => 
     array (
       'id' => 812,
       'orden' => 99,
       'core_modelo_id' => 90,
       'core_campo_id' => 386,
     ),
-    765 => 
+    764 => 
     array (
       'id' => 813,
       'orden' => 4,
       'core_modelo_id' => 11,
       'core_campo_id' => 387,
     ),
-    766 => 
+    765 => 
     array (
       'id' => 814,
       'orden' => 8,
       'core_modelo_id' => 84,
       'core_campo_id' => 387,
     ),
-    767 => 
+    766 => 
     array (
       'id' => 815,
       'orden' => 2,
       'core_modelo_id' => 98,
       'core_campo_id' => 387,
     ),
-    768 => 
+    767 => 
     array (
       'id' => 816,
       'orden' => 3,
       'core_modelo_id' => 122,
       'core_campo_id' => 387,
     ),
-    769 => 
+    768 => 
     array (
       'id' => 817,
       'orden' => 2,
       'core_modelo_id' => 92,
       'core_campo_id' => 388,
     ),
-    770 => 
+    769 => 
     array (
       'id' => 818,
       'orden' => 11,
       'core_modelo_id' => 93,
       'core_campo_id' => 389,
     ),
-    771 => 
+    770 => 
     array (
       'id' => 819,
       'orden' => 12,
       'core_modelo_id' => 93,
       'core_campo_id' => 390,
     ),
-    772 => 
+    771 => 
     array (
       'id' => 820,
       'orden' => 99,
       'core_modelo_id' => 95,
       'core_campo_id' => 391,
     ),
-    773 => 
+    772 => 
     array (
       'id' => 821,
       'orden' => 12,
       'core_modelo_id' => 95,
       'core_campo_id' => 392,
     ),
-    774 => 
+    773 => 
     array (
       'id' => 822,
       'orden' => 13,
       'core_modelo_id' => 95,
       'core_campo_id' => 393,
     ),
-    775 => 
+    774 => 
     array (
       'id' => 824,
       'orden' => 14,
       'core_modelo_id' => 95,
       'core_campo_id' => 395,
     ),
-    776 => 
+    775 => 
     array (
       'id' => 825,
       'orden' => 99,
       'core_modelo_id' => 96,
       'core_campo_id' => 396,
     ),
-    777 => 
+    776 => 
     array (
       'id' => 826,
       'orden' => 99,
       'core_modelo_id' => 100,
       'core_campo_id' => 396,
     ),
-    778 => 
+    777 => 
     array (
       'id' => 827,
       'orden' => 99,
       'core_modelo_id' => 101,
       'core_campo_id' => 396,
     ),
-    779 => 
+    778 => 
     array (
       'id' => 828,
       'orden' => 2,
       'core_modelo_id' => 96,
       'core_campo_id' => 397,
     ),
-    780 => 
+    779 => 
     array (
       'id' => 829,
       'orden' => 99,
       'core_modelo_id' => 96,
       'core_campo_id' => 399,
     ),
-    781 => 
+    780 => 
     array (
       'id' => 830,
       'orden' => 5,
       'core_modelo_id' => 96,
       'core_campo_id' => 400,
     ),
-    782 => 
+    781 => 
     array (
       'id' => 831,
       'orden' => 6,
       'core_modelo_id' => 96,
       'core_campo_id' => 401,
     ),
-    783 => 
+    782 => 
     array (
       'id' => 832,
       'orden' => 7,
       'core_modelo_id' => 96,
       'core_campo_id' => 402,
     ),
-    784 => 
+    783 => 
     array (
       'id' => 833,
       'orden' => 1,
       'core_modelo_id' => 111,
       'core_campo_id' => 404,
     ),
-    785 => 
+    784 => 
     array (
       'id' => 834,
       'orden' => 3,
       'core_modelo_id' => 97,
       'core_campo_id' => 406,
     ),
-    786 => 
+    785 => 
     array (
       'id' => 835,
       'orden' => 4,
       'core_modelo_id' => 101,
       'core_campo_id' => 408,
     ),
-    787 => 
+    786 => 
     array (
       'id' => 836,
       'orden' => 12,
       'core_modelo_id' => 101,
       'core_campo_id' => 411,
     ),
-    788 => 
+    787 => 
     array (
       'id' => 837,
       'orden' => 1,
       'core_modelo_id' => 102,
       'core_campo_id' => 412,
     ),
-    789 => 
+    788 => 
     array (
       'id' => 838,
       'orden' => 99,
       'core_modelo_id' => 110,
       'core_campo_id' => 412,
     ),
-    790 => 
+    789 => 
     array (
       'id' => 839,
       'orden' => 99,
       'core_modelo_id' => 111,
       'core_campo_id' => 412,
     ),
-    791 => 
+    790 => 
     array (
       'id' => 840,
       'orden' => 99,
       'core_modelo_id' => 115,
       'core_campo_id' => 412,
     ),
-    792 => 
+    791 => 
     array (
       'id' => 841,
       'orden' => 2,
       'core_modelo_id' => 102,
       'core_campo_id' => 413,
     ),
-    793 => 
+    792 => 
     array (
       'id' => 842,
       'orden' => 99,
       'core_modelo_id' => 110,
       'core_campo_id' => 413,
     ),
-    794 => 
+    793 => 
     array (
       'id' => 843,
       'orden' => 99,
       'core_modelo_id' => 111,
       'core_campo_id' => 413,
     ),
-    795 => 
+    794 => 
     array (
       'id' => 844,
       'orden' => 99,
       'core_modelo_id' => 115,
       'core_campo_id' => 413,
     ),
-    796 => 
+    795 => 
     array (
       'id' => 845,
       'orden' => 3,
       'core_modelo_id' => 102,
       'core_campo_id' => 414,
     ),
-    797 => 
+    796 => 
     array (
       'id' => 846,
       'orden' => 1,
       'core_modelo_id' => 104,
       'core_campo_id' => 415,
     ),
-    798 => 
+    797 => 
     array (
       'id' => 847,
       'orden' => 1,
       'core_modelo_id' => 105,
       'core_campo_id' => 415,
     ),
-    799 => 
+    798 => 
     array (
       'id' => 848,
       'orden' => 2,
       'core_modelo_id' => 105,
       'core_campo_id' => 416,
     ),
-    800 => 
+    799 => 
     array (
       'id' => 849,
       'orden' => 2,
       'core_modelo_id' => 104,
       'core_campo_id' => 417,
     ),
-    801 => 
+    800 => 
     array (
       'id' => 850,
       'orden' => 3,
       'core_modelo_id' => 104,
       'core_campo_id' => 418,
     ),
-    802 => 
+    801 => 
     array (
       'id' => 851,
       'orden' => 99,
       'core_modelo_id' => 100,
       'core_campo_id' => 419,
     ),
-    803 => 
+    802 => 
     array (
       'id' => 852,
       'orden' => 99,
       'core_modelo_id' => 101,
       'core_campo_id' => 419,
     ),
-    804 => 
+    803 => 
     array (
       'id' => 853,
       'orden' => 99,
       'core_modelo_id' => 100,
       'core_campo_id' => 420,
     ),
-    805 => 
+    804 => 
     array (
       'id' => 854,
       'orden' => 8,
       'core_modelo_id' => 96,
       'core_campo_id' => 421,
     ),
-    806 => 
+    805 => 
     array (
       'id' => 855,
       'orden' => 5,
       'core_modelo_id' => 101,
       'core_campo_id' => 422,
     ),
-    807 => 
+    806 => 
     array (
       'id' => 856,
       'orden' => 6,
       'core_modelo_id' => 101,
       'core_campo_id' => 423,
     ),
-    808 => 
+    807 => 
     array (
       'id' => 857,
       'orden' => 10,
       'core_modelo_id' => 101,
       'core_campo_id' => 424,
     ),
-    809 => 
+    808 => 
     array (
       'id' => 858,
       'orden' => 2,
       'core_modelo_id' => 109,
       'core_campo_id' => 425,
     ),
-    810 => 
+    809 => 
     array (
       'id' => 859,
       'orden' => 6,
       'core_modelo_id' => 109,
       'core_campo_id' => 426,
     ),
-    811 => 
+    810 => 
     array (
       'id' => 861,
       'orden' => 22,
       'core_modelo_id' => 109,
       'core_campo_id' => 428,
     ),
-    812 => 
+    811 => 
     array (
       'id' => 862,
       'orden' => 6,
       'core_modelo_id' => 110,
       'core_campo_id' => 429,
     ),
-    813 => 
+    812 => 
     array (
       'id' => 863,
       'orden' => 5,
       'core_modelo_id' => 110,
       'core_campo_id' => 430,
     ),
-    814 => 
+    813 => 
     array (
       'id' => 864,
       'orden' => 3,
       'core_modelo_id' => 110,
       'core_campo_id' => 431,
     ),
-    815 => 
+    814 => 
     array (
       'id' => 865,
       'orden' => 99,
       'core_modelo_id' => 110,
       'core_campo_id' => 432,
     ),
-    816 => 
+    815 => 
     array (
       'id' => 866,
       'orden' => 99,
       'core_modelo_id' => 111,
       'core_campo_id' => 432,
     ),
-    817 => 
+    816 => 
     array (
       'id' => 867,
       'orden' => 99,
       'core_modelo_id' => 115,
       'core_campo_id' => 432,
     ),
-    818 => 
+    817 => 
     array (
       'id' => 868,
       'orden' => 2,
       'core_modelo_id' => 111,
       'core_campo_id' => 433,
     ),
-    819 => 
+    818 => 
     array (
       'id' => 869,
       'orden' => 4,
       'core_modelo_id' => 111,
       'core_campo_id' => 434,
     ),
-    820 => 
+    819 => 
     array (
       'id' => 870,
       'orden' => 6,
       'core_modelo_id' => 111,
       'core_campo_id' => 435,
     ),
-    821 => 
+    820 => 
     array (
       'id' => 871,
       'orden' => 8,
       'core_modelo_id' => 111,
       'core_campo_id' => 436,
     ),
-    822 => 
+    821 => 
     array (
       'id' => 872,
       'orden' => 6,
       'core_modelo_id' => 110,
       'core_campo_id' => 437,
     ),
-    823 => 
+    822 => 
     array (
       'id' => 873,
       'orden' => 6,
       'core_modelo_id' => 110,
       'core_campo_id' => 438,
     ),
-    824 => 
+    823 => 
     array (
       'id' => 874,
       'orden' => 8,
       'core_modelo_id' => 110,
       'core_campo_id' => 439,
     ),
-    825 => 
+    824 => 
     array (
       'id' => 875,
       'orden' => 10,
       'core_modelo_id' => 110,
       'core_campo_id' => 440,
     ),
-    826 => 
+    825 => 
     array (
       'id' => 876,
       'orden' => 14,
       'core_modelo_id' => 110,
       'core_campo_id' => 441,
     ),
-    827 => 
+    826 => 
     array (
       'id' => 880,
       'orden' => 27,
       'core_modelo_id' => 110,
       'core_campo_id' => 447,
     ),
-    828 => 
+    827 => 
     array (
       'id' => 881,
       'orden' => 1,
       'core_modelo_id' => 113,
       'core_campo_id' => 448,
     ),
-    829 => 
+    828 => 
     array (
       'id' => 882,
       'orden' => 32,
       'core_modelo_id' => 138,
       'core_campo_id' => 448,
     ),
-    830 => 
+    829 => 
     array (
       'id' => 883,
       'orden' => 25,
       'core_modelo_id' => 146,
       'core_campo_id' => 448,
     ),
-    831 => 
+    830 => 
     array (
       'id' => 884,
       'orden' => 3,
       'core_modelo_id' => 113,
       'core_campo_id' => 449,
     ),
-    832 => 
+    831 => 
     array (
       'id' => 885,
       'orden' => 4,
       'core_modelo_id' => 114,
       'core_campo_id' => 459,
     ),
-    833 => 
+    832 => 
     array (
       'id' => 886,
       'orden' => 10,
       'core_modelo_id' => 114,
       'core_campo_id' => 461,
     ),
-    834 => 
+    833 => 
     array (
       'id' => 887,
       'orden' => 2,
       'core_modelo_id' => 115,
       'core_campo_id' => 464,
     ),
-    835 => 
+    834 => 
     array (
       'id' => 888,
       'orden' => 4,
       'core_modelo_id' => 115,
       'core_campo_id' => 465,
     ),
-    836 => 
+    835 => 
     array (
       'id' => 889,
       'orden' => 6,
       'core_modelo_id' => 115,
       'core_campo_id' => 466,
     ),
-    837 => 
+    836 => 
     array (
       'id' => 890,
       'orden' => 10,
       'core_modelo_id' => 109,
       'core_campo_id' => 469,
     ),
-    838 => 
+    837 => 
     array (
       'id' => 893,
       'orden' => 16,
       'core_modelo_id' => 114,
       'core_campo_id' => 472,
     ),
-    839 => 
+    838 => 
     array (
       'id' => 894,
       'orden' => 5,
       'core_modelo_id' => 118,
       'core_campo_id' => 475,
     ),
-    840 => 
+    839 => 
     array (
       'id' => 895,
       'orden' => 3,
       'core_modelo_id' => 36,
       'core_campo_id' => 478,
     ),
-    841 => 
+    840 => 
     array (
       'id' => 896,
       'orden' => 4,
       'core_modelo_id' => 37,
       'core_campo_id' => 479,
     ),
-    842 => 
+    841 => 
     array (
       'id' => 897,
       'orden' => 4,
       'core_modelo_id' => 121,
       'core_campo_id' => 480,
     ),
-    843 => 
+    842 => 
     array (
       'id' => 898,
       'orden' => 5,
       'core_modelo_id' => 122,
       'core_campo_id' => 481,
     ),
-    844 => 
+    843 => 
     array (
       'id' => 900,
       'orden' => 6,
       'core_modelo_id' => 123,
       'core_campo_id' => 484,
     ),
-    845 => 
+    844 => 
     array (
       'id' => 901,
       'orden' => 99,
       'core_modelo_id' => 123,
       'core_campo_id' => 486,
     ),
-    846 => 
+    845 => 
     array (
       'id' => 902,
       'orden' => 99,
       'core_modelo_id' => 123,
       'core_campo_id' => 487,
     ),
-    847 => 
+    846 => 
     array (
       'id' => 903,
       'orden' => 6,
       'core_modelo_id' => 124,
       'core_campo_id' => 488,
     ),
-    848 => 
+    847 => 
     array (
       'id' => 904,
       'orden' => 6,
       'core_modelo_id' => 49,
       'core_campo_id' => 494,
     ),
-    849 => 
+    848 => 
     array (
       'id' => 905,
       'orden' => 38,
       'core_modelo_id' => 138,
       'core_campo_id' => 495,
     ),
-    850 => 
+    849 => 
     array (
       'id' => 906,
       'orden' => 26,
       'core_modelo_id' => 138,
       'core_campo_id' => 496,
     ),
-    851 => 
+    850 => 
     array (
       'id' => 907,
       'orden' => 28,
       'core_modelo_id' => 138,
       'core_campo_id' => 497,
     ),
-    852 => 
+    851 => 
     array (
       'id' => 908,
       'orden' => 40,
       'core_modelo_id' => 138,
       'core_campo_id' => 498,
     ),
-    853 => 
+    852 => 
     array (
       'id' => 909,
       'orden' => 27,
       'core_modelo_id' => 146,
       'core_campo_id' => 498,
     ),
-    854 => 
+    853 => 
     array (
       'id' => 910,
       'orden' => 42,
       'core_modelo_id' => 138,
       'core_campo_id' => 499,
     ),
-    855 => 
+    854 => 
     array (
       'id' => 911,
       'orden' => 44,
       'core_modelo_id' => 138,
       'core_campo_id' => 500,
     ),
-    856 => 
+    855 => 
     array (
       'id' => 912,
       'orden' => 46,
       'core_modelo_id' => 138,
       'core_campo_id' => 501,
     ),
-    857 => 
+    856 => 
     array (
       'id' => 913,
       'orden' => 48,
       'core_modelo_id' => 138,
       'core_campo_id' => 502,
     ),
-    858 => 
+    857 => 
     array (
       'id' => 914,
       'orden' => 4,
       'core_modelo_id' => 137,
       'core_campo_id' => 503,
     ),
-    859 => 
+    858 => 
     array (
       'id' => 915,
       'orden' => 6,
       'core_modelo_id' => 137,
       'core_campo_id' => 504,
     ),
-    860 => 
+    859 => 
     array (
       'id' => 916,
       'orden' => 6,
       'core_modelo_id' => 143,
       'core_campo_id' => 504,
     ),
-    861 => 
+    860 => 
     array (
       'id' => 917,
       'orden' => 4,
       'core_modelo_id' => 132,
       'core_campo_id' => 505,
     ),
-    862 => 
+    861 => 
     array (
       'id' => 918,
       'orden' => 8,
       'core_modelo_id' => 137,
       'core_campo_id' => 505,
     ),
-    863 => 
+    862 => 
     array (
       'id' => 919,
       'orden' => 8,
       'core_modelo_id' => 143,
       'core_campo_id' => 505,
     ),
-    864 => 
+    863 => 
     array (
       'id' => 920,
       'orden' => 4,
       'core_modelo_id' => 136,
       'core_campo_id' => 506,
     ),
-    865 => 
+    864 => 
     array (
       'id' => 921,
       'orden' => 4,
       'core_modelo_id' => 145,
       'core_campo_id' => 506,
     ),
-    866 => 
+    865 => 
     array (
       'id' => 922,
       'orden' => 4,
       'core_modelo_id' => 135,
       'core_campo_id' => 507,
     ),
-    867 => 
+    866 => 
     array (
       'id' => 923,
       'orden' => 20,
       'core_modelo_id' => 134,
       'core_campo_id' => 508,
     ),
-    868 => 
+    867 => 
     array (
       'id' => 924,
       'orden' => 22,
       'core_modelo_id' => 134,
       'core_campo_id' => 509,
     ),
-    869 => 
+    868 => 
     array (
       'id' => 925,
       'orden' => 4,
       'core_modelo_id' => 133,
       'core_campo_id' => 510,
     ),
-    870 => 
+    869 => 
     array (
       'id' => 926,
       'orden' => 2,
       'core_modelo_id' => 131,
       'core_campo_id' => 511,
     ),
-    871 => 
+    870 => 
     array (
       'id' => 927,
       'orden' => 36,
       'core_modelo_id' => 138,
       'core_campo_id' => 511,
     ),
-    872 => 
+    871 => 
     array (
       'id' => 928,
       'orden' => 6,
       'core_modelo_id' => 129,
       'core_campo_id' => 512,
     ),
-    873 => 
+    872 => 
     array (
       'id' => 929,
       'orden' => 6,
       'core_modelo_id' => 131,
       'core_campo_id' => 512,
     ),
-    874 => 
+    873 => 
     array (
       'id' => 930,
       'orden' => 8,
       'core_modelo_id' => 131,
       'core_campo_id' => 513,
     ),
-    875 => 
+    874 => 
     array (
       'id' => 931,
       'orden' => 10,
       'core_modelo_id' => 131,
       'core_campo_id' => 514,
     ),
-    876 => 
+    875 => 
     array (
       'id' => 932,
       'orden' => 2,
       'core_modelo_id' => 129,
       'core_campo_id' => 515,
     ),
-    877 => 
+    876 => 
     array (
       'id' => 933,
       'orden' => 34,
       'core_modelo_id' => 138,
       'core_campo_id' => 515,
     ),
-    878 => 
+    877 => 
     array (
       'id' => 934,
       'orden' => 8,
       'core_modelo_id' => 129,
       'core_campo_id' => 516,
     ),
-    879 => 
+    878 => 
     array (
       'id' => 935,
       'orden' => 4,
       'core_modelo_id' => 128,
       'core_campo_id' => 517,
     ),
-    880 => 
+    879 => 
     array (
       'id' => 936,
       'orden' => 2,
       'core_modelo_id' => 127,
       'core_campo_id' => 518,
     ),
-    881 => 
+    880 => 
     array (
       'id' => 937,
       'orden' => 4,
       'core_modelo_id' => 127,
       'core_campo_id' => 519,
     ),
-    882 => 
+    881 => 
     array (
       'id' => 938,
       'orden' => 6,
       'core_modelo_id' => 127,
       'core_campo_id' => 520,
     ),
-    883 => 
+    882 => 
     array (
       'id' => 939,
       'orden' => 30,
       'core_modelo_id' => 138,
       'core_campo_id' => 521,
     ),
-    884 => 
+    883 => 
     array (
       'id' => 940,
       'orden' => 8,
       'core_modelo_id' => 139,
       'core_campo_id' => 521,
     ),
-    885 => 
+    884 => 
     array (
       'id' => 941,
       'orden' => 6,
       'core_modelo_id' => 139,
       'core_campo_id' => 522,
     ),
-    886 => 
+    885 => 
     array (
       'id' => 942,
       'orden' => 10,
       'core_modelo_id' => 139,
       'core_campo_id' => 523,
     ),
-    887 => 
+    886 => 
     array (
       'id' => 943,
       'orden' => 14,
       'core_modelo_id' => 139,
       'core_campo_id' => 524,
     ),
-    888 => 
+    887 => 
     array (
       'id' => 944,
       'orden' => 4,
       'core_modelo_id' => 140,
       'core_campo_id' => 525,
     ),
-    889 => 
+    888 => 
     array (
       'id' => 945,
       'orden' => 6,
       'core_modelo_id' => 140,
       'core_campo_id' => 526,
     ),
-    890 => 
+    889 => 
     array (
       'id' => 946,
       'orden' => 8,
       'core_modelo_id' => 140,
       'core_campo_id' => 527,
     ),
-    891 => 
+    890 => 
     array (
       'id' => 947,
       'orden' => 10,
       'core_modelo_id' => 140,
       'core_campo_id' => 528,
     ),
-    892 => 
+    891 => 
     array (
       'id' => 948,
       'orden' => 12,
       'core_modelo_id' => 140,
       'core_campo_id' => 529,
     ),
-    893 => 
+    892 => 
     array (
       'id' => 949,
       'orden' => 12,
       'core_modelo_id' => 22,
       'core_campo_id' => 530,
     ),
-    894 => 
+    893 => 
     array (
       'id' => 951,
       'orden' => 4,
       'core_modelo_id' => 81,
       'core_campo_id' => 532,
     ),
-    895 => 
+    894 => 
     array (
       'id' => 952,
       'orden' => 24,
       'core_modelo_id' => 146,
       'core_campo_id' => 534,
     ),
-    896 => 
+    895 => 
     array (
       'id' => 953,
       'orden' => 4,
       'core_modelo_id' => 143,
       'core_campo_id' => 535,
     ),
-    897 => 
+    896 => 
     array (
       'id' => 954,
       'orden' => 28,
       'core_modelo_id' => 146,
       'core_campo_id' => 537,
     ),
-    898 => 
+    897 => 
     array (
       'id' => 1006,
       'orden' => 20,
       'core_modelo_id' => 142,
       'core_campo_id' => 18,
     ),
-    899 => 
+    898 => 
     array (
       'id' => 1007,
       'orden' => 30,
       'core_modelo_id' => 142,
       'core_campo_id' => 22,
     ),
-    900 => 
+    899 => 
     array (
       'id' => 1008,
       'orden' => 1,
       'core_modelo_id' => 142,
       'core_campo_id' => 41,
     ),
-    901 => 
+    900 => 
     array (
       'id' => 1009,
       'orden' => 14,
       'core_modelo_id' => 142,
       'core_campo_id' => 42,
     ),
-    902 => 
+    901 => 
     array (
       'id' => 1010,
       'orden' => 6,
       'core_modelo_id' => 142,
       'core_campo_id' => 43,
     ),
-    903 => 
+    902 => 
     array (
       'id' => 1011,
       'orden' => 2,
       'core_modelo_id' => 142,
       'core_campo_id' => 45,
     ),
-    904 => 
+    903 => 
     array (
       'id' => 1012,
       'orden' => 4,
       'core_modelo_id' => 142,
       'core_campo_id' => 46,
     ),
-    905 => 
+    904 => 
     array (
       'id' => 1013,
       'orden' => 16,
       'core_modelo_id' => 142,
       'core_campo_id' => 50,
     ),
-    906 => 
+    905 => 
     array (
       'id' => 1014,
       'orden' => 22,
       'core_modelo_id' => 142,
       'core_campo_id' => 53,
     ),
-    907 => 
+    906 => 
     array (
       'id' => 1015,
       'orden' => 18,
       'core_modelo_id' => 142,
       'core_campo_id' => 55,
     ),
-    908 => 
+    907 => 
     array (
       'id' => 1016,
       'orden' => 8,
       'core_modelo_id' => 142,
       'core_campo_id' => 58,
     ),
-    909 => 
+    908 => 
     array (
       'id' => 1017,
       'orden' => 10,
       'core_modelo_id' => 142,
       'core_campo_id' => 244,
     ),
-    910 => 
+    909 => 
     array (
       'id' => 1018,
       'orden' => 12,
       'core_modelo_id' => 142,
       'core_campo_id' => 245,
     ),
-    911 => 
+    910 => 
     array (
       'id' => 1023,
       'orden' => 16,
       'core_modelo_id' => 147,
       'core_campo_id' => 8,
     ),
-    912 => 
+    911 => 
     array (
       'id' => 1024,
       'orden' => 99,
       'core_modelo_id' => 147,
       'core_campo_id' => 87,
     ),
-    913 => 
+    912 => 
     array (
       'id' => 1025,
       'orden' => 3,
       'core_modelo_id' => 147,
       'core_campo_id' => 88,
     ),
-    914 => 
+    913 => 
     array (
       'id' => 1026,
       'orden' => 13,
       'core_modelo_id' => 147,
       'core_campo_id' => 90,
     ),
-    915 => 
+    914 => 
     array (
       'id' => 1027,
       'orden' => 4,
       'core_modelo_id' => 147,
       'core_campo_id' => 93,
     ),
-    916 => 
+    915 => 
     array (
       'id' => 1028,
       'orden' => 99,
       'core_modelo_id' => 147,
       'core_campo_id' => 100,
     ),
-    917 => 
+    916 => 
     array (
       'id' => 1029,
       'orden' => 12,
       'core_modelo_id' => 147,
       'core_campo_id' => 194,
     ),
-    918 => 
+    917 => 
     array (
       'id' => 1030,
       'orden' => 2,
       'core_modelo_id' => 147,
       'core_campo_id' => 201,
     ),
-    919 => 
+    918 => 
     array (
       'id' => 1033,
       'orden' => 10,
       'core_modelo_id' => 147,
       'core_campo_id' => 523,
     ),
-    920 => 
+    919 => 
     array (
       'id' => 1035,
       'orden' => 6,
       'core_modelo_id' => 147,
       'core_campo_id' => 538,
     ),
-    921 => 
+    920 => 
     array (
       'id' => 1036,
       'orden' => 18,
       'core_modelo_id' => 147,
       'core_campo_id' => 539,
     ),
-    922 => 
+    921 => 
     array (
       'id' => 1037,
       'orden' => 20,
       'core_modelo_id' => 147,
       'core_campo_id' => 540,
     ),
-    923 => 
+    922 => 
     array (
       'id' => 1038,
       'orden' => 99,
       'core_modelo_id' => 147,
       'core_campo_id' => 98,
     ),
-    924 => 
+    923 => 
     array (
       'id' => 1039,
       'orden' => 99,
       'core_modelo_id' => 147,
       'core_campo_id' => 94,
     ),
-    925 => 
+    924 => 
     array (
       'id' => 1040,
       'orden' => 99,
       'core_modelo_id' => 147,
       'core_campo_id' => 95,
     ),
-    926 => 
+    925 => 
     array (
       'id' => 1041,
       'orden' => 2,
       'core_modelo_id' => 24,
       'core_campo_id' => 140,
     ),
-    927 => 
+    926 => 
     array (
       'id' => 1042,
       'orden' => 2,
       'core_modelo_id' => 22,
       'core_campo_id' => 140,
     ),
-    928 => 
+    927 => 
     array (
       'id' => 1044,
       'orden' => 4,
       'core_modelo_id' => 28,
       'core_campo_id' => 193,
     ),
-    929 => 
+    928 => 
     array (
       'id' => 1045,
       'orden' => 6,
       'core_modelo_id' => 28,
       'core_campo_id' => 2,
     ),
-    930 => 
+    929 => 
     array (
       'id' => 1047,
       'orden' => 8,
       'core_modelo_id' => 28,
       'core_campo_id' => 542,
     ),
-    931 => 
+    930 => 
     array (
       'id' => 1048,
       'orden' => 10,
       'core_modelo_id' => 28,
       'core_campo_id' => 541,
     ),
-    932 => 
+    931 => 
     array (
       'id' => 1049,
       'orden' => 12,
       'core_modelo_id' => 28,
       'core_campo_id' => 22,
     ),
-    933 => 
+    932 => 
     array (
       'id' => 1050,
       'orden' => 11,
       'core_modelo_id' => 24,
       'core_campo_id' => 543,
     ),
-    934 => 
+    933 => 
     array (
       'id' => 1051,
       'orden' => 4,
       'core_modelo_id' => 61,
       'core_campo_id' => 201,
     ),
-    935 => 
+    934 => 
     array (
       'id' => 1057,
       'orden' => 10,
       'core_modelo_id' => 149,
       'core_campo_id' => 539,
     ),
-    936 => 
+    935 => 
     array (
       'id' => 1058,
       'orden' => 12,
       'core_modelo_id' => 149,
       'core_campo_id' => 540,
     ),
-    937 => 
+    936 => 
     array (
       'id' => 1059,
       'orden' => 14,
       'core_modelo_id' => 149,
       'core_campo_id' => 93,
     ),
-    938 => 
+    937 => 
     array (
       'id' => 1060,
       'orden' => 16,
       'core_modelo_id' => 149,
       'core_campo_id' => 194,
     ),
-    939 => 
+    938 => 
     array (
       'id' => 1061,
       'orden' => 99,
       'core_modelo_id' => 149,
       'core_campo_id' => 94,
     ),
-    940 => 
+    939 => 
     array (
       'id' => 1062,
       'orden' => 99,
       'core_modelo_id' => 149,
       'core_campo_id' => 95,
     ),
-    941 => 
+    940 => 
     array (
       'id' => 1063,
       'orden' => 18,
       'core_modelo_id' => 149,
       'core_campo_id' => 544,
     ),
-    942 => 
+    941 => 
     array (
       'id' => 1064,
       'orden' => 20,
       'core_modelo_id' => 149,
       'core_campo_id' => 545,
     ),
-    943 => 
+    942 => 
     array (
       'id' => 1065,
       'orden' => 24,
       'core_modelo_id' => 149,
       'core_campo_id' => 546,
     ),
-    944 => 
+    943 => 
     array (
       'id' => 1066,
       'orden' => 0,
       'core_modelo_id' => 149,
       'core_campo_id' => 201,
     ),
-    945 => 
+    944 => 
     array (
       'id' => 1070,
       'orden' => 10,
       'core_modelo_id' => 150,
       'core_campo_id' => 8,
     ),
-    946 => 
+    945 => 
     array (
       'id' => 1072,
       'orden' => 99,
       'core_modelo_id' => 150,
       'core_campo_id' => 87,
     ),
-    947 => 
+    946 => 
     array (
       'id' => 1073,
       'orden' => 2,
       'core_modelo_id' => 150,
       'core_campo_id' => 88,
     ),
-    948 => 
+    947 => 
     array (
       'id' => 1074,
       'orden' => 9,
       'core_modelo_id' => 150,
       'core_campo_id' => 92,
     ),
-    949 => 
+    948 => 
     array (
       'id' => 1075,
       'orden' => 3,
       'core_modelo_id' => 150,
       'core_campo_id' => 93,
     ),
-    950 => 
+    949 => 
     array (
       'id' => 1076,
       'orden' => 99,
       'core_modelo_id' => 150,
       'core_campo_id' => 94,
     ),
-    951 => 
+    950 => 
     array (
       'id' => 1077,
       'orden' => 99,
       'core_modelo_id' => 150,
       'core_campo_id' => 95,
     ),
-    952 => 
+    951 => 
     array (
       'id' => 1078,
       'orden' => 99,
       'core_modelo_id' => 150,
       'core_campo_id' => 98,
     ),
-    953 => 
+    952 => 
     array (
       'id' => 1079,
       'orden' => 99,
       'core_modelo_id' => 150,
       'core_campo_id' => 100,
     ),
-    954 => 
+    953 => 
     array (
       'id' => 1080,
       'orden' => 1,
       'core_modelo_id' => 150,
       'core_campo_id' => 201,
     ),
-    955 => 
+    954 => 
     array (
       'id' => 1083,
       'orden' => 11,
       'core_modelo_id' => 150,
       'core_campo_id' => 248,
     ),
-    956 => 
+    955 => 
     array (
       'id' => 1084,
       'orden' => 12,
       'core_modelo_id' => 150,
       'core_campo_id' => 249,
     ),
-    957 => 
+    956 => 
     array (
       'id' => 1085,
       'orden' => 14,
       'core_modelo_id' => 150,
       'core_campo_id' => 250,
     ),
-    958 => 
+    957 => 
     array (
       'id' => 1087,
       'orden' => 4,
       'core_modelo_id' => 150,
       'core_campo_id' => 538,
     ),
-    959 => 
+    958 => 
     array (
       'id' => 1088,
       'orden' => 99,
       'core_modelo_id' => 150,
       'core_campo_id' => 334,
     ),
-    960 => 
+    959 => 
     array (
       'id' => 1089,
       'orden' => 13,
       'core_modelo_id' => 24,
       'core_campo_id' => 549,
     ),
-    961 => 
+    960 => 
     array (
       'id' => 1090,
       'orden' => 24,
       'core_modelo_id' => 22,
       'core_campo_id' => 550,
     ),
-    962 => 
+    961 => 
     array (
       'id' => 1091,
       'orden' => 14,
       'core_modelo_id' => 24,
       'core_campo_id' => 550,
     ),
-    963 => 
+    962 => 
     array (
       'id' => 1092,
       'orden' => 10,
       'core_modelo_id' => 146,
       'core_campo_id' => 37,
     ),
-    964 => 
+    963 => 
     array (
       'id' => 1093,
       'orden' => 12,
       'core_modelo_id' => 146,
       'core_campo_id' => 44,
     ),
-    965 => 
+    964 => 
     array (
       'id' => 1094,
-      'orden' => 12,
+      'orden' => 8,
       'core_modelo_id' => 138,
       'core_campo_id' => 43,
     ),
-    966 => 
+    965 => 
     array (
       'id' => 1095,
-      'orden' => 8,
+      'orden' => 10,
       'core_modelo_id' => 138,
       'core_campo_id' => 37,
     ),
-    967 => 
+    966 => 
     array (
       'id' => 1096,
-      'orden' => 10,
+      'orden' => 11,
       'core_modelo_id' => 138,
       'core_campo_id' => 44,
     ),
-    968 => 
+    967 => 
     array (
       'id' => 1097,
       'orden' => 99,
       'core_modelo_id' => 138,
       'core_campo_id' => 386,
     ),
-    969 => 
+    968 => 
     array (
       'id' => 1098,
       'orden' => 99,
       'core_modelo_id' => 146,
       'core_campo_id' => 386,
     ),
-    970 => 
+    969 => 
     array (
       'id' => 1099,
       'orden' => 99,
       'core_modelo_id' => 146,
       'core_campo_id' => 94,
     ),
-    971 => 
+    970 => 
     array (
       'id' => 1100,
       'orden' => 99,
       'core_modelo_id' => 146,
       'core_campo_id' => 95,
     ),
-    972 => 
+    971 => 
     array (
       'id' => 1101,
       'orden' => 99,
       'core_modelo_id' => 138,
       'core_campo_id' => 94,
     ),
-    973 => 
+    972 => 
     array (
       'id' => 1102,
       'orden' => 99,
       'core_modelo_id' => 138,
       'core_campo_id' => 95,
     ),
-    974 => 
+    973 => 
     array (
       'id' => 1103,
       'orden' => 22,
       'core_modelo_id' => 149,
       'core_campo_id' => 551,
     ),
-    975 => 
+    974 => 
     array (
       'id' => 1105,
       'orden' => 99,
       'core_modelo_id' => 149,
       'core_campo_id' => 98,
     ),
-    976 => 
+    975 => 
     array (
       'id' => 1106,
       'orden' => 99,
       'core_modelo_id' => 150,
       'core_campo_id' => 547,
     ),
-    977 => 
+    976 => 
     array (
       'id' => 1107,
       'orden' => 99,
       'core_modelo_id' => 150,
       'core_campo_id' => 548,
     ),
-    978 => 
+    977 => 
     array (
       'id' => 1108,
       'orden' => 99,
       'core_modelo_id' => 28,
       'core_campo_id' => 386,
     ),
-    979 => 
+    978 => 
     array (
       'id' => 1109,
       'orden' => 9,
       'core_modelo_id' => 151,
       'core_campo_id' => 8,
     ),
-    980 => 
+    979 => 
     array (
       'id' => 1110,
       'orden' => 4,
       'core_modelo_id' => 151,
       'core_campo_id' => 39,
     ),
-    981 => 
+    980 => 
     array (
       'id' => 1111,
       'orden' => 99,
       'core_modelo_id' => 151,
       'core_campo_id' => 87,
     ),
-    982 => 
+    981 => 
     array (
       'id' => 1112,
       'orden' => 2,
       'core_modelo_id' => 151,
       'core_campo_id' => 88,
     ),
-    983 => 
+    982 => 
     array (
       'id' => 1113,
       'orden' => 11,
       'core_modelo_id' => 151,
       'core_campo_id' => 90,
     ),
-    984 => 
+    983 => 
     array (
       'id' => 1115,
       'orden' => 3,
       'core_modelo_id' => 151,
       'core_campo_id' => 93,
     ),
-    985 => 
+    984 => 
     array (
       'id' => 1116,
       'orden' => 99,
       'core_modelo_id' => 151,
       'core_campo_id' => 94,
     ),
-    986 => 
+    985 => 
     array (
       'id' => 1117,
       'orden' => 99,
       'core_modelo_id' => 151,
       'core_campo_id' => 95,
     ),
-    987 => 
+    986 => 
     array (
       'id' => 1118,
       'orden' => 99,
       'core_modelo_id' => 151,
       'core_campo_id' => 99,
     ),
-    988 => 
+    987 => 
     array (
       'id' => 1119,
       'orden' => 99,
       'core_modelo_id' => 151,
       'core_campo_id' => 100,
     ),
-    989 => 
+    988 => 
     array (
       'id' => 1120,
       'orden' => 99,
       'core_modelo_id' => 151,
       'core_campo_id' => 101,
     ),
-    990 => 
+    989 => 
     array (
       'id' => 1122,
       'orden' => 1,
       'core_modelo_id' => 151,
       'core_campo_id' => 192,
     ),
-    991 => 
+    990 => 
     array (
       'id' => 1123,
       'orden' => 99,
       'core_modelo_id' => 151,
       'core_campo_id' => 98,
     ),
-    992 => 
+    991 => 
     array (
       'id' => 1124,
       'orden' => 0,
       'core_modelo_id' => 152,
       'core_campo_id' => 192,
     ),
-    993 => 
+    992 => 
     array (
       'id' => 1125,
       'orden' => 2,
       'core_modelo_id' => 152,
       'core_campo_id' => 553,
     ),
-    994 => 
+    993 => 
     array (
       'id' => 1126,
       'orden' => 4,
       'core_modelo_id' => 152,
       'core_campo_id' => 554,
     ),
-    995 => 
+    994 => 
     array (
       'id' => 1127,
       'orden' => 6,
       'core_modelo_id' => 152,
       'core_campo_id' => 555,
     ),
-    996 => 
+    995 => 
     array (
       'id' => 1128,
       'orden' => 8,
       'core_modelo_id' => 152,
       'core_campo_id' => 556,
     ),
-    997 => 
+    996 => 
     array (
       'id' => 1129,
       'orden' => 10,
       'core_modelo_id' => 152,
       'core_campo_id' => 557,
     ),
-    998 => 
+    997 => 
     array (
       'id' => 1130,
       'orden' => 12,
       'core_modelo_id' => 152,
       'core_campo_id' => 558,
     ),
-    999 => 
+    998 => 
     array (
       'id' => 1131,
       'orden' => 16,
       'core_modelo_id' => 152,
       'core_campo_id' => 559,
     ),
-    1000 => 
+    999 => 
     array (
       'id' => 1132,
       'orden' => 18,
       'core_modelo_id' => 152,
       'core_campo_id' => 96,
     ),
-    1001 => 
+    1000 => 
     array (
       'id' => 1133,
       'orden' => 20,
       'core_modelo_id' => 152,
       'core_campo_id' => 560,
     ),
-    1002 => 
+    1001 => 
     array (
       'id' => 1134,
       'orden' => 22,
       'core_modelo_id' => 152,
       'core_campo_id' => 22,
     ),
-    1003 => 
+    1002 => 
     array (
       'id' => 1135,
       'orden' => 5,
       'core_modelo_id' => 146,
       'core_campo_id' => 47,
     ),
-    1004 => 
+    1003 => 
     array (
       'id' => 1136,
       'orden' => 19,
       'core_modelo_id' => 146,
       'core_campo_id' => 56,
     ),
-    1005 => 
+    1004 => 
     array (
       'id' => 1138,
       'orden' => 2,
       'core_modelo_id' => 80,
       'core_campo_id' => 201,
     ),
-    1006 => 
+    1005 => 
     array (
       'id' => 1139,
       'orden' => 4,
       'core_modelo_id' => 80,
       'core_campo_id' => 339,
     ),
-    1007 => 
+    1006 => 
     array (
       'id' => 1140,
       'orden' => 6,
       'core_modelo_id' => 80,
       'core_campo_id' => 337,
     ),
-    1008 => 
+    1007 => 
     array (
       'id' => 1141,
       'orden' => 99,
       'core_modelo_id' => 149,
       'core_campo_id' => 87,
     ),
-    1009 => 
+    1008 => 
     array (
       'id' => 1142,
       'orden' => 1,
       'core_modelo_id' => 149,
       'core_campo_id' => 88,
     ),
-    1010 => 
+    1009 => 
     array (
       'id' => 1143,
       'orden' => 99,
       'core_modelo_id' => 149,
       'core_campo_id' => 100,
     ),
-    1011 => 
+    1010 => 
     array (
       'id' => 1144,
       'orden' => 99,
       'core_modelo_id' => 28,
       'core_campo_id' => 94,
     ),
-    1012 => 
+    1011 => 
     array (
       'id' => 1145,
       'orden' => 99,
       'core_modelo_id' => 28,
       'core_campo_id' => 95,
     ),
-    1013 => 
+    1012 => 
     array (
       'id' => 1146,
       'orden' => 10,
       'core_modelo_id' => 153,
       'core_campo_id' => 8,
     ),
-    1014 => 
+    1013 => 
     array (
       'id' => 1147,
       'orden' => 99,
       'core_modelo_id' => 153,
       'core_campo_id' => 87,
     ),
-    1015 => 
+    1014 => 
     array (
       'id' => 1148,
       'orden' => 2,
       'core_modelo_id' => 153,
       'core_campo_id' => 88,
     ),
-    1016 => 
+    1015 => 
     array (
       'id' => 1149,
       'orden' => 9,
       'core_modelo_id' => 153,
       'core_campo_id' => 92,
     ),
-    1017 => 
+    1016 => 
     array (
       'id' => 1150,
       'orden' => 3,
       'core_modelo_id' => 153,
       'core_campo_id' => 93,
     ),
-    1018 => 
+    1017 => 
     array (
       'id' => 1151,
       'orden' => 99,
       'core_modelo_id' => 153,
       'core_campo_id' => 94,
     ),
-    1019 => 
+    1018 => 
     array (
       'id' => 1152,
       'orden' => 99,
       'core_modelo_id' => 153,
       'core_campo_id' => 95,
     ),
-    1020 => 
+    1019 => 
     array (
       'id' => 1153,
       'orden' => 99,
       'core_modelo_id' => 153,
       'core_campo_id' => 98,
     ),
-    1021 => 
+    1020 => 
     array (
       'id' => 1154,
       'orden' => 99,
       'core_modelo_id' => 153,
       'core_campo_id' => 100,
     ),
-    1022 => 
+    1021 => 
     array (
       'id' => 1155,
       'orden' => 1,
       'core_modelo_id' => 153,
       'core_campo_id' => 201,
     ),
-    1023 => 
+    1022 => 
     array (
       'id' => 1156,
       'orden' => 11,
       'core_modelo_id' => 153,
       'core_campo_id' => 248,
     ),
-    1024 => 
+    1023 => 
     array (
       'id' => 1157,
       'orden' => 12,
       'core_modelo_id' => 153,
       'core_campo_id' => 249,
     ),
-    1025 => 
+    1024 => 
     array (
       'id' => 1158,
       'orden' => 14,
       'core_modelo_id' => 153,
       'core_campo_id' => 250,
     ),
-    1026 => 
+    1025 => 
     array (
       'id' => 1159,
       'orden' => 99,
       'core_modelo_id' => 153,
       'core_campo_id' => 334,
     ),
-    1027 => 
+    1026 => 
     array (
       'id' => 1162,
       'orden' => 99,
       'core_modelo_id' => 153,
       'core_campo_id' => 548,
     ),
-    1028 => 
+    1027 => 
     array (
       'id' => 1163,
       'orden' => 4,
       'core_modelo_id' => 153,
       'core_campo_id' => 522,
     ),
-    1029 => 
+    1028 => 
     array (
       'id' => 1164,
       'orden' => 99,
       'core_modelo_id' => 153,
       'core_campo_id' => 562,
     ),
-    1030 => 
+    1029 => 
     array (
       'id' => 1165,
       'orden' => 99,
       'core_modelo_id' => 22,
       'core_campo_id' => 94,
     ),
-    1031 => 
+    1030 => 
     array (
       'id' => 1166,
       'orden' => 99,
       'core_modelo_id' => 22,
       'core_campo_id' => 95,
     ),
-    1032 => 
+    1031 => 
     array (
       'id' => 1167,
       'orden' => 1,
       'core_modelo_id' => 154,
       'core_campo_id' => 386,
     ),
-    1033 => 
+    1032 => 
     array (
       'id' => 1168,
       'orden' => 99,
       'core_modelo_id' => 154,
       'core_campo_id' => 336,
     ),
-    1034 => 
+    1033 => 
     array (
       'id' => 1169,
       'orden' => 2,
       'core_modelo_id' => 154,
       'core_campo_id' => 39,
     ),
-    1035 => 
+    1034 => 
     array (
       'id' => 1170,
       'orden' => 3,
       'core_modelo_id' => 154,
       'core_campo_id' => 193,
     ),
-    1036 => 
+    1035 => 
     array (
       'id' => 1171,
       'orden' => 6,
       'core_modelo_id' => 154,
       'core_campo_id' => 88,
     ),
-    1037 => 
+    1036 => 
     array (
       'id' => 1172,
       'orden' => 8,
       'core_modelo_id' => 154,
       'core_campo_id' => 283,
     ),
-    1038 => 
+    1037 => 
     array (
       'id' => 1173,
       'orden' => 10,
       'core_modelo_id' => 154,
       'core_campo_id' => 93,
     ),
-    1039 => 
+    1038 => 
     array (
       'id' => 1174,
       'orden' => 12,
       'core_modelo_id' => 154,
       'core_campo_id' => 448,
     ),
-    1040 => 
+    1039 => 
     array (
       'id' => 1175,
       'orden' => 14,
       'core_modelo_id' => 154,
       'core_campo_id' => 215,
     ),
-    1041 => 
+    1040 => 
     array (
       'id' => 1176,
       'orden' => 17,
       'core_modelo_id' => 154,
       'core_campo_id' => 216,
     ),
-    1042 => 
+    1041 => 
     array (
       'id' => 1177,
       'orden' => 11,
       'core_modelo_id' => 154,
       'core_campo_id' => 565,
     ),
-    1043 => 
+    1042 => 
     array (
       'id' => 1178,
       'orden' => 15,
       'core_modelo_id' => 154,
       'core_campo_id' => 563,
     ),
-    1044 => 
+    1043 => 
     array (
       'id' => 1179,
       'orden' => 19,
       'core_modelo_id' => 154,
       'core_campo_id' => 564,
     ),
-    1045 => 
-    array (
-      'id' => 1180,
-      'orden' => 16,
-      'core_modelo_id' => 24,
-      'core_campo_id' => 10,
-    ),
-    1046 => 
+    1044 => 
     array (
       'id' => 1181,
       'orden' => 16,
       'core_modelo_id' => 155,
       'core_campo_id' => 8,
     ),
-    1047 => 
+    1045 => 
     array (
       'id' => 1182,
       'orden' => 99,
       'core_modelo_id' => 155,
       'core_campo_id' => 87,
     ),
-    1048 => 
+    1046 => 
     array (
       'id' => 1183,
       'orden' => 3,
       'core_modelo_id' => 155,
       'core_campo_id' => 88,
     ),
-    1049 => 
+    1047 => 
     array (
       'id' => 1184,
       'orden' => 13,
       'core_modelo_id' => 155,
       'core_campo_id' => 90,
     ),
-    1050 => 
+    1048 => 
     array (
       'id' => 1185,
       'orden' => 4,
       'core_modelo_id' => 155,
       'core_campo_id' => 93,
     ),
-    1051 => 
+    1049 => 
     array (
       'id' => 1186,
       'orden' => 99,
       'core_modelo_id' => 155,
       'core_campo_id' => 100,
     ),
-    1052 => 
+    1050 => 
     array (
       'id' => 1187,
       'orden' => 12,
       'core_modelo_id' => 155,
       'core_campo_id' => 194,
     ),
-    1053 => 
+    1051 => 
     array (
       'id' => 1188,
       'orden' => 2,
       'core_modelo_id' => 155,
       'core_campo_id' => 201,
     ),
-    1054 => 
+    1052 => 
     array (
       'id' => 1189,
       'orden' => 8,
       'core_modelo_id' => 155,
       'core_campo_id' => 521,
     ),
-    1055 => 
+    1053 => 
     array (
       'id' => 1190,
       'orden' => 6,
       'core_modelo_id' => 155,
       'core_campo_id' => 522,
     ),
-    1056 => 
+    1054 => 
     array (
       'id' => 1191,
       'orden' => 10,
       'core_modelo_id' => 155,
       'core_campo_id' => 523,
     ),
-    1057 => 
+    1055 => 
     array (
       'id' => 1192,
       'orden' => 14,
       'core_modelo_id' => 155,
       'core_campo_id' => 524,
     ),
-    1058 => 
+    1056 => 
     array (
       'id' => 1193,
       'orden' => 4,
       'core_modelo_id' => 26,
       'core_campo_id' => 566,
     ),
-    1059 => 
+    1057 => 
     array (
       'id' => 1196,
       'orden' => 30,
       'core_modelo_id' => 156,
       'core_campo_id' => 22,
     ),
-    1060 => 
+    1058 => 
     array (
       'id' => 1210,
       'orden' => 99,
       'core_modelo_id' => 156,
       'core_campo_id' => 94,
     ),
-    1061 => 
+    1059 => 
     array (
       'id' => 1211,
       'orden' => 99,
       'core_modelo_id' => 156,
       'core_campo_id' => 95,
     ),
-    1062 => 
+    1060 => 
     array (
       'id' => 1212,
       'orden' => 99,
       'core_modelo_id' => 156,
       'core_campo_id' => 386,
     ),
-    1063 => 
+    1061 => 
     array (
       'id' => 1213,
       'orden' => 25,
       'core_modelo_id' => 156,
       'core_campo_id' => 448,
     ),
-    1064 => 
+    1062 => 
     array (
       'id' => 1214,
       'orden' => 27,
       'core_modelo_id' => 156,
       'core_campo_id' => 498,
     ),
-    1065 => 
+    1063 => 
     array (
       'id' => 1215,
       'orden' => 24,
       'core_modelo_id' => 156,
       'core_campo_id' => 534,
     ),
-    1066 => 
+    1064 => 
     array (
       'id' => 1216,
       'orden' => 28,
       'core_modelo_id' => 156,
       'core_campo_id' => 537,
     ),
-    1067 => 
+    1065 => 
     array (
       'id' => 1218,
       'orden' => 6,
       'core_modelo_id' => 138,
       'core_campo_id' => 47,
     ),
-    1068 => 
+    1066 => 
     array (
       'id' => 1220,
       'orden' => 44,
       'core_modelo_id' => 157,
       'core_campo_id' => 22,
     ),
-    1069 => 
+    1067 => 
     array (
       'id' => 1233,
       'orden' => 99,
       'core_modelo_id' => 157,
       'core_campo_id' => 94,
     ),
-    1070 => 
+    1068 => 
     array (
       'id' => 1234,
       'orden' => 99,
       'core_modelo_id' => 157,
       'core_campo_id' => 95,
     ),
-    1071 => 
+    1069 => 
     array (
       'id' => 1235,
       'orden' => 99,
       'core_modelo_id' => 157,
       'core_campo_id' => 386,
     ),
-    1072 => 
+    1070 => 
     array (
       'id' => 1236,
       'orden' => 27,
       'core_modelo_id' => 157,
       'core_campo_id' => 448,
     ),
-    1073 => 
+    1071 => 
     array (
       'id' => 1237,
       'orden' => 32,
       'core_modelo_id' => 157,
       'core_campo_id' => 495,
     ),
-    1074 => 
+    1072 => 
     array (
       'id' => 1238,
       'orden' => 20,
       'core_modelo_id' => 157,
       'core_campo_id' => 496,
     ),
-    1075 => 
+    1073 => 
     array (
       'id' => 1239,
       'orden' => 22,
       'core_modelo_id' => 157,
       'core_campo_id' => 497,
     ),
-    1076 => 
+    1074 => 
     array (
       'id' => 1240,
       'orden' => 34,
       'core_modelo_id' => 157,
       'core_campo_id' => 498,
     ),
-    1077 => 
+    1075 => 
     array (
       'id' => 1241,
       'orden' => 36,
       'core_modelo_id' => 157,
       'core_campo_id' => 499,
     ),
-    1078 => 
+    1076 => 
     array (
       'id' => 1242,
       'orden' => 38,
       'core_modelo_id' => 157,
       'core_campo_id' => 500,
     ),
-    1079 => 
+    1077 => 
     array (
       'id' => 1243,
       'orden' => 40,
       'core_modelo_id' => 157,
       'core_campo_id' => 501,
     ),
-    1080 => 
+    1078 => 
     array (
       'id' => 1246,
       'orden' => 29,
       'core_modelo_id' => 157,
       'core_campo_id' => 521,
     ),
-    1081 => 
+    1079 => 
     array (
       'id' => 1247,
       'orden' => 30,
       'core_modelo_id' => 157,
       'core_campo_id' => 515,
     ),
-    1082 => 
+    1080 => 
     array (
       'id' => 1248,
       'orden' => 31,
       'core_modelo_id' => 157,
       'core_campo_id' => 511,
     ),
-    1083 => 
+    1081 => 
     array (
       'id' => 1249,
       'orden' => 42,
       'core_modelo_id' => 157,
       'core_campo_id' => 502,
     ),
-    1084 => 
+    1082 => 
     array (
       'id' => 1250,
       'orden' => 1,
       'core_modelo_id' => 158,
       'core_campo_id' => 201,
     ),
-    1085 => 
+    1083 => 
     array (
       'id' => 1253,
       'orden' => 6,
       'core_modelo_id' => 158,
       'core_campo_id' => 93,
     ),
-    1086 => 
+    1084 => 
     array (
       'id' => 1258,
       'orden' => 8,
       'core_modelo_id' => 158,
       'core_campo_id' => 579,
     ),
-    1087 => 
+    1085 => 
     array (
       'id' => 1259,
       'orden' => 10,
       'core_modelo_id' => 158,
       'core_campo_id' => 580,
     ),
-    1088 => 
+    1086 => 
     array (
       'id' => 1275,
       'orden' => 16,
       'core_modelo_id' => 159,
       'core_campo_id' => 8,
     ),
-    1089 => 
+    1087 => 
     array (
       'id' => 1276,
       'orden' => 99,
       'core_modelo_id' => 159,
       'core_campo_id' => 87,
     ),
-    1090 => 
+    1088 => 
     array (
       'id' => 1277,
       'orden' => 3,
       'core_modelo_id' => 159,
       'core_campo_id' => 88,
     ),
-    1091 => 
+    1089 => 
     array (
       'id' => 1278,
       'orden' => 13,
       'core_modelo_id' => 159,
       'core_campo_id' => 90,
     ),
-    1092 => 
+    1090 => 
     array (
       'id' => 1279,
       'orden' => 4,
       'core_modelo_id' => 159,
       'core_campo_id' => 93,
     ),
-    1093 => 
+    1091 => 
     array (
       'id' => 1280,
       'orden' => 99,
       'core_modelo_id' => 159,
       'core_campo_id' => 94,
     ),
-    1094 => 
+    1092 => 
     array (
       'id' => 1281,
       'orden' => 99,
       'core_modelo_id' => 159,
       'core_campo_id' => 95,
     ),
-    1095 => 
+    1093 => 
     array (
       'id' => 1282,
       'orden' => 99,
       'core_modelo_id' => 159,
       'core_campo_id' => 98,
     ),
-    1096 => 
+    1094 => 
     array (
       'id' => 1283,
       'orden' => 99,
       'core_modelo_id' => 159,
       'core_campo_id' => 100,
     ),
-    1097 => 
+    1095 => 
     array (
       'id' => 1284,
       'orden' => 12,
       'core_modelo_id' => 159,
       'core_campo_id' => 194,
     ),
-    1098 => 
+    1096 => 
     array (
       'id' => 1285,
       'orden' => 2,
       'core_modelo_id' => 159,
       'core_campo_id' => 201,
     ),
-    1099 => 
+    1097 => 
     array (
       'id' => 1286,
       'orden' => 10,
       'core_modelo_id' => 159,
       'core_campo_id' => 523,
     ),
-    1100 => 
+    1098 => 
     array (
       'id' => 1287,
       'orden' => 6,
       'core_modelo_id' => 159,
       'core_campo_id' => 538,
     ),
-    1101 => 
+    1099 => 
     array (
       'id' => 1288,
       'orden' => 18,
       'core_modelo_id' => 159,
       'core_campo_id' => 539,
     ),
-    1102 => 
+    1100 => 
     array (
       'id' => 1289,
       'orden' => 20,
       'core_modelo_id' => 159,
       'core_campo_id' => 540,
     ),
-    1103 => 
+    1101 => 
     array (
       'id' => 1290,
       'orden' => 16,
       'core_modelo_id' => 160,
       'core_campo_id' => 8,
     ),
-    1104 => 
+    1102 => 
     array (
       'id' => 1291,
       'orden' => 99,
       'core_modelo_id' => 160,
       'core_campo_id' => 87,
     ),
-    1105 => 
+    1103 => 
     array (
       'id' => 1292,
       'orden' => 3,
       'core_modelo_id' => 160,
       'core_campo_id' => 88,
     ),
-    1106 => 
+    1104 => 
     array (
       'id' => 1293,
       'orden' => 13,
       'core_modelo_id' => 160,
       'core_campo_id' => 90,
     ),
-    1107 => 
+    1105 => 
     array (
       'id' => 1294,
       'orden' => 4,
       'core_modelo_id' => 160,
       'core_campo_id' => 93,
     ),
-    1108 => 
+    1106 => 
     array (
       'id' => 1295,
       'orden' => 99,
       'core_modelo_id' => 160,
       'core_campo_id' => 94,
     ),
-    1109 => 
+    1107 => 
     array (
       'id' => 1296,
       'orden' => 99,
       'core_modelo_id' => 160,
       'core_campo_id' => 95,
     ),
-    1110 => 
+    1108 => 
     array (
       'id' => 1297,
       'orden' => 99,
       'core_modelo_id' => 160,
       'core_campo_id' => 98,
     ),
-    1111 => 
+    1109 => 
     array (
       'id' => 1298,
       'orden' => 99,
       'core_modelo_id' => 160,
       'core_campo_id' => 100,
     ),
-    1112 => 
+    1110 => 
     array (
       'id' => 1299,
       'orden' => 12,
       'core_modelo_id' => 160,
       'core_campo_id' => 194,
     ),
-    1113 => 
+    1111 => 
     array (
       'id' => 1300,
       'orden' => 2,
       'core_modelo_id' => 160,
       'core_campo_id' => 201,
     ),
-    1114 => 
+    1112 => 
     array (
       'id' => 1301,
       'orden' => 10,
       'core_modelo_id' => 160,
       'core_campo_id' => 523,
     ),
-    1115 => 
+    1113 => 
     array (
       'id' => 1302,
       'orden' => 6,
       'core_modelo_id' => 160,
       'core_campo_id' => 538,
     ),
-    1116 => 
+    1114 => 
     array (
       'id' => 1303,
       'orden' => 18,
       'core_modelo_id' => 160,
       'core_campo_id' => 539,
     ),
-    1117 => 
+    1115 => 
     array (
       'id' => 1304,
       'orden' => 20,
       'core_modelo_id' => 160,
       'core_campo_id' => 540,
     ),
-    1118 => 
+    1116 => 
     array (
       'id' => 1305,
       'orden' => 8,
       'core_modelo_id' => 161,
       'core_campo_id' => 583,
     ),
-    1119 => 
+    1117 => 
     array (
       'id' => 1306,
       'orden' => 9,
       'core_modelo_id' => 164,
       'core_campo_id' => 8,
     ),
-    1120 => 
+    1118 => 
     array (
       'id' => 1307,
       'orden' => 4,
       'core_modelo_id' => 164,
       'core_campo_id' => 39,
     ),
-    1121 => 
+    1119 => 
     array (
       'id' => 1308,
       'orden' => 99,
       'core_modelo_id' => 164,
       'core_campo_id' => 87,
     ),
-    1122 => 
+    1120 => 
     array (
       'id' => 1309,
       'orden' => 2,
       'core_modelo_id' => 164,
       'core_campo_id' => 88,
     ),
-    1123 => 
+    1121 => 
     array (
       'id' => 1310,
       'orden' => 11,
       'core_modelo_id' => 164,
       'core_campo_id' => 90,
     ),
-    1124 => 
+    1122 => 
     array (
       'id' => 1311,
       'orden' => 10,
       'core_modelo_id' => 164,
       'core_campo_id' => 92,
     ),
-    1125 => 
+    1123 => 
     array (
       'id' => 1312,
       'orden' => 3,
       'core_modelo_id' => 164,
       'core_campo_id' => 93,
     ),
-    1126 => 
+    1124 => 
     array (
       'id' => 1313,
       'orden' => 99,
       'core_modelo_id' => 164,
       'core_campo_id' => 94,
     ),
-    1127 => 
+    1125 => 
     array (
       'id' => 1314,
       'orden' => 99,
       'core_modelo_id' => 164,
       'core_campo_id' => 95,
     ),
-    1128 => 
+    1126 => 
     array (
       'id' => 1315,
       'orden' => 99,
       'core_modelo_id' => 164,
       'core_campo_id' => 99,
     ),
-    1129 => 
+    1127 => 
     array (
       'id' => 1316,
       'orden' => 99,
       'core_modelo_id' => 164,
       'core_campo_id' => 100,
     ),
-    1130 => 
+    1128 => 
     array (
       'id' => 1317,
       'orden' => 99,
       'core_modelo_id' => 164,
       'core_campo_id' => 101,
     ),
-    1131 => 
+    1129 => 
     array (
       'id' => 1319,
       'orden' => 1,
       'core_modelo_id' => 164,
       'core_campo_id' => 192,
     ),
-    1132 => 
+    1130 => 
     array (
       'id' => 1320,
       'orden' => 9,
       'core_modelo_id' => 165,
       'core_campo_id' => 8,
     ),
-    1133 => 
+    1131 => 
     array (
       'id' => 1321,
       'orden' => 4,
       'core_modelo_id' => 165,
       'core_campo_id' => 39,
     ),
-    1134 => 
+    1132 => 
     array (
       'id' => 1322,
       'orden' => 99,
       'core_modelo_id' => 165,
       'core_campo_id' => 87,
     ),
-    1135 => 
+    1133 => 
     array (
       'id' => 1323,
       'orden' => 2,
       'core_modelo_id' => 165,
       'core_campo_id' => 88,
     ),
-    1136 => 
+    1134 => 
     array (
       'id' => 1324,
       'orden' => 11,
       'core_modelo_id' => 165,
       'core_campo_id' => 90,
     ),
-    1137 => 
+    1135 => 
     array (
       'id' => 1325,
       'orden' => 10,
       'core_modelo_id' => 165,
       'core_campo_id' => 92,
     ),
-    1138 => 
+    1136 => 
     array (
       'id' => 1326,
       'orden' => 3,
       'core_modelo_id' => 165,
       'core_campo_id' => 93,
     ),
-    1139 => 
+    1137 => 
     array (
       'id' => 1327,
       'orden' => 99,
       'core_modelo_id' => 165,
       'core_campo_id' => 94,
     ),
-    1140 => 
+    1138 => 
     array (
       'id' => 1328,
       'orden' => 99,
       'core_modelo_id' => 165,
       'core_campo_id' => 95,
     ),
-    1141 => 
+    1139 => 
     array (
       'id' => 1329,
       'orden' => 99,
       'core_modelo_id' => 165,
       'core_campo_id' => 99,
     ),
-    1142 => 
+    1140 => 
     array (
       'id' => 1330,
       'orden' => 99,
       'core_modelo_id' => 165,
       'core_campo_id' => 100,
     ),
-    1143 => 
+    1141 => 
     array (
       'id' => 1331,
       'orden' => 99,
       'core_modelo_id' => 165,
       'core_campo_id' => 101,
     ),
-    1144 => 
+    1142 => 
     array (
       'id' => 1333,
       'orden' => 1,
       'core_modelo_id' => 165,
       'core_campo_id' => 192,
     ),
-    1145 => 
+    1143 => 
     array (
       'id' => 1334,
       'orden' => 12,
       'core_modelo_id' => 165,
       'core_campo_id' => 584,
     ),
-    1146 => 
+    1144 => 
     array (
       'id' => 1335,
       'orden' => 12,
       'core_modelo_id' => 164,
       'core_campo_id' => 584,
     ),
-    1147 => 
+    1145 => 
     array (
       'id' => 1336,
       'orden' => 2,
       'core_modelo_id' => 86,
       'core_campo_id' => 2,
     ),
-    1148 => 
+    1146 => 
     array (
       'id' => 1337,
       'orden' => 4,
       'core_modelo_id' => 86,
       'core_campo_id' => 22,
     ),
-    1149 => 
+    1147 => 
     array (
       'id' => 1338,
       'orden' => 2,
       'core_modelo_id' => 89,
       'core_campo_id' => 39,
     ),
-    1150 => 
+    1148 => 
     array (
       'id' => 1339,
       'orden' => 4,
       'core_modelo_id' => 89,
       'core_campo_id' => 2,
     ),
-    1151 => 
+    1149 => 
     array (
       'id' => 1340,
       'orden' => 6,
       'core_modelo_id' => 89,
       'core_campo_id' => 375,
     ),
-    1152 => 
+    1150 => 
     array (
       'id' => 1341,
       'orden' => 8,
       'core_modelo_id' => 89,
       'core_campo_id' => 376,
     ),
-    1153 => 
+    1151 => 
     array (
       'id' => 1342,
       'orden' => 10,
       'core_modelo_id' => 89,
       'core_campo_id' => 22,
     ),
-    1154 => 
+    1152 => 
     array (
       'id' => 1343,
       'orden' => 16,
       'core_modelo_id' => 166,
       'core_campo_id' => 8,
     ),
-    1155 => 
+    1153 => 
     array (
       'id' => 1344,
       'orden' => 99,
       'core_modelo_id' => 166,
       'core_campo_id' => 87,
     ),
-    1156 => 
+    1154 => 
     array (
       'id' => 1345,
       'orden' => 3,
       'core_modelo_id' => 166,
       'core_campo_id' => 88,
     ),
-    1157 => 
+    1155 => 
     array (
       'id' => 1347,
       'orden' => 4,
       'core_modelo_id' => 166,
       'core_campo_id' => 93,
     ),
-    1158 => 
+    1156 => 
     array (
       'id' => 1348,
       'orden' => 99,
       'core_modelo_id' => 166,
       'core_campo_id' => 94,
     ),
-    1159 => 
+    1157 => 
     array (
       'id' => 1349,
       'orden' => 99,
       'core_modelo_id' => 166,
       'core_campo_id' => 95,
     ),
-    1160 => 
+    1158 => 
     array (
       'id' => 1350,
       'orden' => 99,
       'core_modelo_id' => 166,
       'core_campo_id' => 98,
     ),
-    1161 => 
+    1159 => 
     array (
       'id' => 1351,
       'orden' => 99,
       'core_modelo_id' => 166,
       'core_campo_id' => 100,
     ),
-    1162 => 
+    1160 => 
     array (
       'id' => 1353,
       'orden' => 2,
       'core_modelo_id' => 166,
       'core_campo_id' => 201,
     ),
-    1163 => 
+    1161 => 
     array (
       'id' => 1358,
       'orden' => 2,
       'core_modelo_id' => 161,
       'core_campo_id' => 448,
     ),
-    1164 => 
+    1162 => 
     array (
       'id' => 1359,
       'orden' => 4,
       'core_modelo_id' => 161,
       'core_campo_id' => 215,
     ),
-    1165 => 
+    1163 => 
     array (
       'id' => 1362,
       'orden' => 10,
       'core_modelo_id' => 156,
       'core_campo_id' => 587,
     ),
-    1166 => 
+    1164 => 
     array (
       'id' => 1363,
       'orden' => 10,
       'core_modelo_id' => 157,
       'core_campo_id' => 586,
     ),
-    1167 => 
+    1165 => 
     array (
       'id' => 1364,
       'orden' => 5,
       'core_modelo_id' => 170,
       'core_campo_id' => 8,
     ),
-    1168 => 
+    1166 => 
     array (
       'id' => 1365,
       'orden' => 4,
       'core_modelo_id' => 170,
       'core_campo_id' => 39,
     ),
-    1169 => 
+    1167 => 
     array (
       'id' => 1366,
       'orden' => 99,
       'core_modelo_id' => 170,
       'core_campo_id' => 87,
     ),
-    1170 => 
+    1168 => 
     array (
       'id' => 1367,
       'orden' => 2,
       'core_modelo_id' => 170,
       'core_campo_id' => 88,
     ),
-    1171 => 
+    1169 => 
     array (
       'id' => 1368,
       'orden' => 6,
       'core_modelo_id' => 170,
       'core_campo_id' => 92,
     ),
-    1172 => 
+    1170 => 
     array (
       'id' => 1369,
       'orden' => 3,
       'core_modelo_id' => 170,
       'core_campo_id' => 93,
     ),
-    1173 => 
+    1171 => 
     array (
       'id' => 1370,
       'orden' => 99,
       'core_modelo_id' => 170,
       'core_campo_id' => 94,
     ),
-    1174 => 
+    1172 => 
     array (
       'id' => 1371,
       'orden' => 99,
       'core_modelo_id' => 170,
       'core_campo_id' => 95,
     ),
-    1175 => 
+    1173 => 
     array (
       'id' => 1372,
       'orden' => 99,
       'core_modelo_id' => 170,
       'core_campo_id' => 98,
     ),
-    1176 => 
+    1174 => 
     array (
       'id' => 1373,
       'orden' => 99,
       'core_modelo_id' => 170,
       'core_campo_id' => 100,
     ),
-    1177 => 
+    1175 => 
     array (
       'id' => 1374,
       'orden' => 1,
       'core_modelo_id' => 170,
       'core_campo_id' => 201,
     ),
-    1178 => 
+    1176 => 
     array (
       'id' => 1375,
       'orden' => 99,
       'core_modelo_id' => 170,
       'core_campo_id' => 203,
     ),
-    1179 => 
+    1177 => 
     array (
       'id' => 1376,
       'orden' => 26,
       'core_modelo_id' => 149,
       'core_campo_id' => 584,
     ),
-    1180 => 
+    1178 => 
     array (
       'id' => 1377,
       'orden' => 9,
       'core_modelo_id' => 171,
       'core_campo_id' => 8,
     ),
-    1181 => 
+    1179 => 
     array (
       'id' => 1378,
       'orden' => 4,
       'core_modelo_id' => 171,
       'core_campo_id' => 39,
     ),
-    1182 => 
+    1180 => 
     array (
       'id' => 1379,
       'orden' => 99,
       'core_modelo_id' => 171,
       'core_campo_id' => 87,
     ),
-    1183 => 
+    1181 => 
     array (
       'id' => 1380,
       'orden' => 2,
       'core_modelo_id' => 171,
       'core_campo_id' => 88,
     ),
-    1184 => 
+    1182 => 
     array (
       'id' => 1381,
       'orden' => 11,
       'core_modelo_id' => 171,
       'core_campo_id' => 90,
     ),
-    1185 => 
+    1183 => 
     array (
       'id' => 1382,
       'orden' => 10,
       'core_modelo_id' => 171,
       'core_campo_id' => 92,
     ),
-    1186 => 
+    1184 => 
     array (
       'id' => 1383,
       'orden' => 3,
       'core_modelo_id' => 171,
       'core_campo_id' => 93,
     ),
-    1187 => 
+    1185 => 
     array (
       'id' => 1384,
       'orden' => 99,
       'core_modelo_id' => 171,
       'core_campo_id' => 94,
     ),
-    1188 => 
+    1186 => 
     array (
       'id' => 1385,
       'orden' => 99,
       'core_modelo_id' => 171,
       'core_campo_id' => 95,
     ),
-    1189 => 
+    1187 => 
     array (
       'id' => 1386,
       'orden' => 99,
       'core_modelo_id' => 171,
       'core_campo_id' => 99,
     ),
-    1190 => 
+    1188 => 
     array (
       'id' => 1387,
       'orden' => 99,
       'core_modelo_id' => 171,
       'core_campo_id' => 100,
     ),
-    1191 => 
+    1189 => 
     array (
       'id' => 1388,
       'orden' => 99,
       'core_modelo_id' => 171,
       'core_campo_id' => 101,
     ),
-    1192 => 
+    1190 => 
     array (
       'id' => 1390,
       'orden' => 1,
       'core_modelo_id' => 171,
       'core_campo_id' => 192,
     ),
-    1193 => 
+    1191 => 
     array (
       'id' => 1400,
       'orden' => 16,
       'core_modelo_id' => 172,
       'core_campo_id' => 8,
     ),
-    1194 => 
+    1192 => 
     array (
       'id' => 1401,
       'orden' => 99,
       'core_modelo_id' => 172,
       'core_campo_id' => 87,
     ),
-    1195 => 
+    1193 => 
     array (
       'id' => 1402,
       'orden' => 3,
       'core_modelo_id' => 172,
       'core_campo_id' => 88,
     ),
-    1196 => 
+    1194 => 
     array (
       'id' => 1403,
       'orden' => 13,
       'core_modelo_id' => 172,
       'core_campo_id' => 90,
     ),
-    1197 => 
+    1195 => 
     array (
       'id' => 1404,
       'orden' => 4,
       'core_modelo_id' => 172,
       'core_campo_id' => 93,
     ),
-    1198 => 
+    1196 => 
     array (
       'id' => 1405,
       'orden' => 99,
       'core_modelo_id' => 172,
       'core_campo_id' => 94,
     ),
-    1199 => 
+    1197 => 
     array (
       'id' => 1406,
       'orden' => 99,
       'core_modelo_id' => 172,
       'core_campo_id' => 95,
     ),
-    1200 => 
+    1198 => 
     array (
       'id' => 1407,
       'orden' => 99,
       'core_modelo_id' => 172,
       'core_campo_id' => 98,
     ),
-    1201 => 
+    1199 => 
     array (
       'id' => 1408,
       'orden' => 99,
       'core_modelo_id' => 172,
       'core_campo_id' => 100,
     ),
-    1202 => 
+    1200 => 
     array (
       'id' => 1409,
       'orden' => 12,
       'core_modelo_id' => 172,
       'core_campo_id' => 194,
     ),
-    1203 => 
+    1201 => 
     array (
       'id' => 1410,
       'orden' => 2,
       'core_modelo_id' => 172,
       'core_campo_id' => 201,
     ),
-    1204 => 
+    1202 => 
     array (
       'id' => 1411,
       'orden' => 10,
       'core_modelo_id' => 172,
       'core_campo_id' => 523,
     ),
-    1205 => 
+    1203 => 
     array (
       'id' => 1412,
       'orden' => 6,
       'core_modelo_id' => 172,
       'core_campo_id' => 538,
     ),
-    1206 => 
+    1204 => 
     array (
       'id' => 1413,
       'orden' => 18,
       'core_modelo_id' => 172,
       'core_campo_id' => 539,
     ),
-    1207 => 
+    1205 => 
     array (
       'id' => 1414,
       'orden' => 20,
       'core_modelo_id' => 172,
       'core_campo_id' => 540,
     ),
-    1208 => 
+    1206 => 
     array (
       'id' => 1415,
       'orden' => 16,
       'core_modelo_id' => 167,
       'core_campo_id' => 8,
     ),
-    1209 => 
+    1207 => 
     array (
       'id' => 1416,
       'orden' => 99,
       'core_modelo_id' => 167,
       'core_campo_id' => 87,
     ),
-    1210 => 
+    1208 => 
     array (
       'id' => 1417,
       'orden' => 3,
       'core_modelo_id' => 167,
       'core_campo_id' => 88,
     ),
-    1211 => 
+    1209 => 
     array (
       'id' => 1418,
       'orden' => 4,
       'core_modelo_id' => 167,
       'core_campo_id' => 93,
     ),
-    1212 => 
+    1210 => 
     array (
       'id' => 1419,
       'orden' => 99,
       'core_modelo_id' => 167,
       'core_campo_id' => 94,
     ),
-    1213 => 
+    1211 => 
     array (
       'id' => 1420,
       'orden' => 99,
       'core_modelo_id' => 167,
       'core_campo_id' => 95,
     ),
-    1214 => 
+    1212 => 
     array (
       'id' => 1421,
       'orden' => 99,
       'core_modelo_id' => 167,
       'core_campo_id' => 98,
     ),
-    1215 => 
+    1213 => 
     array (
       'id' => 1422,
       'orden' => 99,
       'core_modelo_id' => 167,
       'core_campo_id' => 100,
     ),
-    1216 => 
+    1214 => 
     array (
       'id' => 1423,
       'orden' => 2,
       'core_modelo_id' => 167,
       'core_campo_id' => 201,
     ),
-    1217 => 
+    1215 => 
     array (
       'id' => 1424,
       'orden' => 16,
       'core_modelo_id' => 173,
       'core_campo_id' => 8,
     ),
-    1218 => 
+    1216 => 
     array (
       'id' => 1425,
       'orden' => 99,
       'core_modelo_id' => 173,
       'core_campo_id' => 87,
     ),
-    1219 => 
+    1217 => 
     array (
       'id' => 1426,
       'orden' => 3,
       'core_modelo_id' => 173,
       'core_campo_id' => 88,
     ),
-    1220 => 
+    1218 => 
     array (
       'id' => 1427,
       'orden' => 13,
       'core_modelo_id' => 173,
       'core_campo_id' => 90,
     ),
-    1221 => 
+    1219 => 
     array (
       'id' => 1428,
       'orden' => 4,
       'core_modelo_id' => 173,
       'core_campo_id' => 93,
     ),
-    1222 => 
+    1220 => 
     array (
       'id' => 1429,
       'orden' => 99,
       'core_modelo_id' => 173,
       'core_campo_id' => 100,
     ),
-    1223 => 
+    1221 => 
     array (
       'id' => 1430,
       'orden' => 12,
       'core_modelo_id' => 173,
       'core_campo_id' => 194,
     ),
-    1224 => 
+    1222 => 
     array (
       'id' => 1431,
       'orden' => 2,
       'core_modelo_id' => 173,
       'core_campo_id' => 201,
     ),
-    1225 => 
+    1223 => 
     array (
       'id' => 1432,
       'orden' => 8,
       'core_modelo_id' => 173,
       'core_campo_id' => 521,
     ),
-    1226 => 
+    1224 => 
     array (
       'id' => 1433,
       'orden' => 6,
       'core_modelo_id' => 173,
       'core_campo_id' => 522,
     ),
-    1227 => 
+    1225 => 
     array (
       'id' => 1434,
       'orden' => 10,
       'core_modelo_id' => 173,
       'core_campo_id' => 523,
     ),
-    1228 => 
+    1226 => 
     array (
       'id' => 1435,
       'orden' => 14,
       'core_modelo_id' => 173,
       'core_campo_id' => 524,
     ),
-    1229 => 
+    1227 => 
     array (
       'id' => 1436,
       'orden' => 9,
       'core_modelo_id' => 174,
       'core_campo_id' => 8,
     ),
-    1230 => 
+    1228 => 
     array (
       'id' => 1437,
       'orden' => 4,
       'core_modelo_id' => 174,
       'core_campo_id' => 39,
     ),
-    1231 => 
+    1229 => 
     array (
       'id' => 1438,
       'orden' => 99,
       'core_modelo_id' => 174,
       'core_campo_id' => 87,
     ),
-    1232 => 
+    1230 => 
     array (
       'id' => 1439,
       'orden' => 2,
       'core_modelo_id' => 174,
       'core_campo_id' => 88,
     ),
-    1233 => 
+    1231 => 
     array (
       'id' => 1440,
       'orden' => 11,
       'core_modelo_id' => 174,
       'core_campo_id' => 90,
     ),
-    1234 => 
+    1232 => 
     array (
       'id' => 1441,
       'orden' => 10,
       'core_modelo_id' => 174,
       'core_campo_id' => 92,
     ),
-    1235 => 
+    1233 => 
     array (
       'id' => 1442,
       'orden' => 3,
       'core_modelo_id' => 174,
       'core_campo_id' => 93,
     ),
-    1236 => 
+    1234 => 
     array (
       'id' => 1443,
       'orden' => 99,
       'core_modelo_id' => 174,
       'core_campo_id' => 94,
     ),
-    1237 => 
+    1235 => 
     array (
       'id' => 1444,
       'orden' => 99,
       'core_modelo_id' => 174,
       'core_campo_id' => 95,
     ),
-    1238 => 
+    1236 => 
     array (
       'id' => 1445,
       'orden' => 99,
       'core_modelo_id' => 174,
       'core_campo_id' => 99,
     ),
-    1239 => 
+    1237 => 
     array (
       'id' => 1446,
       'orden' => 99,
       'core_modelo_id' => 174,
       'core_campo_id' => 100,
     ),
-    1240 => 
+    1238 => 
     array (
       'id' => 1447,
       'orden' => 99,
       'core_modelo_id' => 174,
       'core_campo_id' => 101,
     ),
-    1241 => 
+    1239 => 
     array (
       'id' => 1449,
       'orden' => 1,
       'core_modelo_id' => 174,
       'core_campo_id' => 192,
     ),
-    1242 => 
+    1240 => 
     array (
       'id' => 1450,
       'orden' => 12,
       'core_modelo_id' => 171,
       'core_campo_id' => 584,
     ),
-    1243 => 
+    1241 => 
     array (
       'id' => 1451,
       'orden' => 12,
       'core_modelo_id' => 174,
       'core_campo_id' => 584,
     ),
-    1244 => 
+    1242 => 
     array (
       'id' => 1452,
       'orden' => 16,
       'core_modelo_id' => 175,
       'core_campo_id' => 8,
     ),
-    1245 => 
+    1243 => 
     array (
       'id' => 1453,
       'orden' => 99,
       'core_modelo_id' => 175,
       'core_campo_id' => 87,
     ),
-    1246 => 
+    1244 => 
     array (
       'id' => 1454,
       'orden' => 3,
       'core_modelo_id' => 175,
       'core_campo_id' => 88,
     ),
-    1247 => 
+    1245 => 
     array (
       'id' => 1456,
       'orden' => 4,
       'core_modelo_id' => 175,
       'core_campo_id' => 93,
     ),
-    1248 => 
+    1246 => 
     array (
       'id' => 1457,
       'orden' => 99,
       'core_modelo_id' => 175,
       'core_campo_id' => 100,
     ),
-    1249 => 
+    1247 => 
     array (
       'id' => 1459,
       'orden' => 2,
       'core_modelo_id' => 175,
       'core_campo_id' => 201,
     ),
-    1250 => 
+    1248 => 
     array (
       'id' => 1461,
       'orden' => 6,
       'core_modelo_id' => 175,
       'core_campo_id' => 522,
     ),
-    1251 => 
+    1249 => 
     array (
       'id' => 1464,
       'orden' => 99,
       'core_modelo_id' => 158,
       'core_campo_id' => 95,
     ),
-    1252 => 
+    1250 => 
     array (
       'id' => 1465,
       'orden' => 99,
       'core_modelo_id' => 158,
       'core_campo_id' => 94,
     ),
-    1253 => 
+    1251 => 
     array (
       'id' => 1466,
       'orden' => 3,
       'core_modelo_id' => 87,
       'core_campo_id' => 589,
     ),
-    1254 => 
+    1252 => 
     array (
       'id' => 1467,
       'orden' => 3,
       'core_modelo_id' => 88,
       'core_campo_id' => 589,
     ),
-    1255 => 
+    1253 => 
     array (
       'id' => 1468,
       'orden' => 8,
       'core_modelo_id' => 90,
       'core_campo_id' => 590,
     ),
-    1256 => 
+    1254 => 
     array (
       'id' => 1470,
       'orden' => 6,
       'core_modelo_id' => 85,
       'core_campo_id' => 22,
     ),
-    1257 => 
+    1255 => 
     array (
       'id' => 1471,
       'orden' => 16,
       'core_modelo_id' => 177,
       'core_campo_id' => 8,
     ),
-    1258 => 
+    1256 => 
     array (
       'id' => 1472,
       'orden' => 99,
       'core_modelo_id' => 177,
       'core_campo_id' => 87,
     ),
-    1259 => 
+    1257 => 
     array (
       'id' => 1473,
       'orden' => 3,
       'core_modelo_id' => 177,
       'core_campo_id' => 88,
     ),
-    1260 => 
+    1258 => 
     array (
       'id' => 1474,
       'orden' => 13,
       'core_modelo_id' => 177,
       'core_campo_id' => 90,
     ),
-    1261 => 
+    1259 => 
     array (
       'id' => 1475,
       'orden' => 4,
       'core_modelo_id' => 177,
       'core_campo_id' => 93,
     ),
-    1262 => 
+    1260 => 
     array (
       'id' => 1476,
       'orden' => 99,
       'core_modelo_id' => 177,
       'core_campo_id' => 94,
     ),
-    1263 => 
+    1261 => 
     array (
       'id' => 1477,
       'orden' => 99,
       'core_modelo_id' => 177,
       'core_campo_id' => 95,
     ),
-    1264 => 
+    1262 => 
     array (
       'id' => 1478,
       'orden' => 99,
       'core_modelo_id' => 177,
       'core_campo_id' => 98,
     ),
-    1265 => 
+    1263 => 
     array (
       'id' => 1479,
       'orden' => 99,
       'core_modelo_id' => 177,
       'core_campo_id' => 100,
     ),
-    1266 => 
+    1264 => 
     array (
       'id' => 1480,
       'orden' => 12,
       'core_modelo_id' => 177,
       'core_campo_id' => 194,
     ),
-    1267 => 
+    1265 => 
     array (
       'id' => 1481,
       'orden' => 2,
       'core_modelo_id' => 177,
       'core_campo_id' => 201,
     ),
-    1268 => 
+    1266 => 
     array (
       'id' => 1482,
       'orden' => 10,
       'core_modelo_id' => 177,
       'core_campo_id' => 523,
     ),
-    1269 => 
+    1267 => 
     array (
       'id' => 1483,
       'orden' => 6,
       'core_modelo_id' => 177,
       'core_campo_id' => 538,
     ),
-    1270 => 
+    1268 => 
     array (
       'id' => 1486,
       'orden' => 4,
       'core_modelo_id' => 178,
       'core_campo_id' => 7,
     ),
-    1271 => 
+    1269 => 
     array (
       'id' => 1487,
       'orden' => 2,
       'core_modelo_id' => 178,
       'core_campo_id' => 591,
     ),
-    1272 => 
+    1270 => 
     array (
       'id' => 1488,
       'orden' => 6,
       'core_modelo_id' => 178,
       'core_campo_id' => 18,
     ),
-    1273 => 
+    1271 => 
     array (
       'id' => 1489,
       'orden' => 8,
       'core_modelo_id' => 178,
       'core_campo_id' => 19,
     ),
-    1274 => 
+    1272 => 
     array (
       'id' => 1490,
       'orden' => 10,
       'core_modelo_id' => 178,
       'core_campo_id' => 20,
     ),
-    1275 => 
+    1273 => 
     array (
       'id' => 1491,
       'orden' => 3,
       'core_modelo_id' => 179,
       'core_campo_id' => 2,
     ),
-    1276 => 
+    1274 => 
     array (
       'id' => 1492,
       'orden' => 1,
       'core_modelo_id' => 179,
       'core_campo_id' => 17,
     ),
-    1277 => 
+    1275 => 
     array (
       'id' => 1493,
       'orden' => 6,
       'core_modelo_id' => 179,
       'core_campo_id' => 22,
     ),
-    1278 => 
+    1276 => 
     array (
       'id' => 1495,
       'orden' => 4,
       'core_modelo_id' => 179,
       'core_campo_id' => 62,
     ),
-    1279 => 
+    1277 => 
     array (
       'id' => 1496,
       'orden' => 5,
       'core_modelo_id' => 179,
       'core_campo_id' => 63,
     ),
-    1280 => 
+    1278 => 
     array (
       'id' => 1497,
       'orden' => 7,
       'core_modelo_id' => 179,
       'core_campo_id' => 64,
     ),
-    1281 => 
+    1279 => 
     array (
       'id' => 1498,
       'orden' => 0,
       'core_modelo_id' => 13,
       'core_campo_id' => 592,
     ),
-    1282 => 
+    1280 => 
     array (
       'id' => 1502,
       'orden' => 8,
       'core_modelo_id' => 70,
       'core_campo_id' => 22,
     ),
-    1283 => 
+    1281 => 
     array (
       'id' => 1503,
       'orden' => 4,
       'core_modelo_id' => 70,
       'core_campo_id' => 595,
     ),
-    1284 => 
+    1282 => 
     array (
       'id' => 1504,
       'orden' => 10,
       'core_modelo_id' => 70,
       'core_campo_id' => 313,
     ),
-    1285 => 
+    1283 => 
     array (
       'id' => 1506,
       'orden' => 6,
       'core_modelo_id' => 70,
       'core_campo_id' => 169,
     ),
-    1286 => 
+    1284 => 
     array (
       'id' => 1507,
       'orden' => 10,
       'core_modelo_id' => 66,
       'core_campo_id' => 53,
     ),
-    1287 => 
+    1285 => 
     array (
       'id' => 1509,
       'orden' => 6,
       'core_modelo_id' => 29,
       'core_campo_id' => 58,
     ),
-    1288 => 
+    1286 => 
     array (
       'id' => 1510,
       'orden' => 5,
       'core_modelo_id' => 29,
       'core_campo_id' => 274,
     ),
-    1289 => 
+    1287 => 
     array (
       'id' => 1511,
       'orden' => 12,
       'core_modelo_id' => 29,
       'core_campo_id' => 45,
     ),
-    1290 => 
+    1288 => 
     array (
       'id' => 1512,
       'orden' => 12,
       'core_modelo_id' => 29,
       'core_campo_id' => 46,
     ),
-    1291 => 
+    1289 => 
     array (
       'id' => 1513,
       'orden' => 34,
       'core_modelo_id' => 29,
       'core_campo_id' => 18,
     ),
-    1292 => 
+    1290 => 
     array (
       'id' => 1514,
       'orden' => 2,
       'core_modelo_id' => 116,
       'core_campo_id' => 463,
     ),
-    1293 => 
+    1291 => 
     array (
       'id' => 1515,
       'orden' => 4,
       'core_modelo_id' => 116,
       'core_campo_id' => 93,
     ),
-    1294 => 
+    1292 => 
     array (
       'id' => 1516,
       'orden' => 6,
       'core_modelo_id' => 116,
       'core_campo_id' => 177,
     ),
-    1295 => 
+    1293 => 
     array (
       'id' => 1519,
       'orden' => 8,
       'core_modelo_id' => 116,
       'core_campo_id' => 311,
     ),
-    1296 => 
+    1294 => 
     array (
       'id' => 1520,
       'orden' => 10,
       'core_modelo_id' => 116,
       'core_campo_id' => 312,
     ),
-    1297 => 
+    1295 => 
     array (
       'id' => 1523,
       'orden' => 12,
       'core_modelo_id' => 116,
       'core_campo_id' => 204,
     ),
-    1298 => 
+    1296 => 
     array (
       'id' => 1526,
       'orden' => 2,
       'core_modelo_id' => 181,
       'core_campo_id' => 311,
     ),
-    1299 => 
+    1297 => 
     array (
       'id' => 1527,
       'orden' => 4,
       'core_modelo_id' => 181,
       'core_campo_id' => 596,
     ),
-    1300 => 
+    1298 => 
     array (
       'id' => 1528,
       'orden' => 6,
       'core_modelo_id' => 181,
       'core_campo_id' => 93,
     ),
-    1301 => 
+    1299 => 
     array (
       'id' => 1529,
       'orden' => 8,
       'core_modelo_id' => 181,
       'core_campo_id' => 597,
     ),
-    1302 => 
+    1300 => 
     array (
       'id' => 1531,
       'orden' => 10,
       'core_modelo_id' => 181,
       'core_campo_id' => 598,
     ),
-    1303 => 
+    1301 => 
     array (
       'id' => 1532,
       'orden' => 5,
       'core_modelo_id' => 19,
       'core_campo_id' => 592,
     ),
-    1304 => 
+    1302 => 
     array (
       'id' => 1533,
       'orden' => 13,
       'core_modelo_id' => 38,
       'core_campo_id' => 600,
     ),
-    1305 => 
+    1303 => 
     array (
       'id' => 1534,
       'orden' => 12,
       'core_modelo_id' => 1,
       'core_campo_id' => 601,
     ),
-    1306 => 
+    1304 => 
     array (
       'id' => 1535,
       'orden' => 0,
       'core_modelo_id' => 5,
       'core_campo_id' => 124,
     ),
-    1307 => 
+    1305 => 
     array (
       'id' => 1537,
       'orden' => 2,
       'core_modelo_id' => 182,
       'core_campo_id' => 592,
     ),
-    1308 => 
+    1306 => 
     array (
       'id' => 1538,
       'orden' => 4,
       'core_modelo_id' => 182,
       'core_campo_id' => 2,
     ),
-    1309 => 
+    1307 => 
     array (
       'id' => 1539,
       'orden' => 6,
       'core_modelo_id' => 182,
       'core_campo_id' => 257,
     ),
-    1310 => 
+    1308 => 
     array (
       'id' => 1540,
       'orden' => 8,
       'core_modelo_id' => 182,
       'core_campo_id' => 22,
     ),
-    1311 => 
+    1309 => 
     array (
       'id' => 1541,
       'orden' => 2,
       'core_modelo_id' => 183,
       'core_campo_id' => 602,
     ),
-    1312 => 
+    1310 => 
     array (
       'id' => 1542,
       'orden' => 4,
       'core_modelo_id' => 183,
       'core_campo_id' => 2,
     ),
-    1313 => 
+    1311 => 
     array (
       'id' => 1543,
       'orden' => 6,
       'core_modelo_id' => 183,
       'core_campo_id' => 10,
     ),
-    1314 => 
+    1312 => 
     array (
       'id' => 1544,
       'orden' => 8,
       'core_modelo_id' => 183,
       'core_campo_id' => 22,
     ),
-    1315 => 
+    1313 => 
     array (
       'id' => 1546,
       'orden' => 2,
       'core_modelo_id' => 184,
       'core_campo_id' => 93,
     ),
-    1316 => 
+    1314 => 
     array (
       'id' => 1547,
       'orden' => 6,
       'core_modelo_id' => 184,
       'core_campo_id' => 603,
     ),
-    1317 => 
+    1315 => 
     array (
       'id' => 1548,
       'orden' => 8,
       'core_modelo_id' => 184,
       'core_campo_id' => 177,
     ),
-    1318 => 
+    1316 => 
     array (
       'id' => 1550,
       'orden' => 10,
       'core_modelo_id' => 184,
       'core_campo_id' => 311,
     ),
-    1319 => 
+    1317 => 
     array (
       'id' => 1551,
       'orden' => 12,
       'core_modelo_id' => 184,
       'core_campo_id' => 312,
     ),
-    1320 => 
+    1318 => 
     array (
       'id' => 1553,
       'orden' => 14,
       'core_modelo_id' => 184,
       'core_campo_id' => 22,
     ),
-    1321 => 
+    1319 => 
     array (
       'id' => 1554,
       'orden' => 12,
       'core_modelo_id' => 109,
       'core_campo_id' => 607,
     ),
-    1322 => 
+    1320 => 
     array (
       'id' => 1556,
       'orden' => 3,
       'core_modelo_id' => 81,
       'core_campo_id' => 608,
     ),
-    1323 => 
+    1321 => 
     array (
       'id' => 1557,
       'orden' => 14,
       'core_modelo_id' => 109,
       'core_campo_id' => 609,
     ),
-    1324 => 
+    1322 => 
     array (
       'id' => 1558,
       'orden' => 2,
       'core_modelo_id' => 76,
       'core_campo_id' => 354,
     ),
-    1325 => 
+    1323 => 
     array (
       'id' => 1561,
       'orden' => 18,
       'core_modelo_id' => 109,
       'core_campo_id' => 354,
     ),
-    1326 => 
+    1324 => 
     array (
       'id' => 1562,
       'orden' => 99,
       'core_modelo_id' => 109,
       'core_campo_id' => 610,
     ),
-    1327 => 
+    1325 => 
     array (
       'id' => 1563,
       'orden' => 99,
       'core_modelo_id' => 109,
       'core_campo_id' => 611,
     ),
-    1328 => 
+    1326 => 
     array (
       'id' => 1564,
       'orden' => 16,
       'core_modelo_id' => 109,
       'core_campo_id' => 470,
     ),
-    1329 => 
+    1327 => 
     array (
       'id' => 1565,
       'orden' => 2,
       'core_modelo_id' => 12,
       'core_campo_id' => 293,
     ),
-    1330 => 
+    1328 => 
     array (
       'id' => 1566,
       'orden' => 11,
       'core_modelo_id' => 12,
       'core_campo_id' => 612,
     ),
-    1331 => 
+    1329 => 
     array (
       'id' => 1568,
       'orden' => 2,
       'core_modelo_id' => 186,
       'core_campo_id' => 2,
     ),
-    1332 => 
+    1330 => 
     array (
       'id' => 1569,
       'orden' => 4,
       'core_modelo_id' => 186,
       'core_campo_id' => 620,
     ),
-    1333 => 
+    1331 => 
     array (
       'id' => 1570,
       'orden' => 6,
       'core_modelo_id' => 186,
       'core_campo_id' => 22,
     ),
-    1334 => 
+    1332 => 
     array (
       'id' => 1571,
       'orden' => 0,
       'core_modelo_id' => 186,
       'core_campo_id' => 201,
     ),
-    1335 => 
+    1333 => 
     array (
       'id' => 1572,
       'orden' => 9,
       'core_modelo_id' => 84,
       'core_campo_id' => 621,
     ),
-    1336 => 
+    1334 => 
     array (
       'id' => 1573,
       'orden' => 4,
       'core_modelo_id' => 188,
       'core_campo_id' => 2,
     ),
-    1337 => 
+    1335 => 
     array (
       'id' => 1574,
       'orden' => 30,
       'core_modelo_id' => 188,
       'core_campo_id' => 22,
     ),
-    1338 => 
+    1336 => 
     array (
       'id' => 1576,
       'orden' => 6,
       'core_modelo_id' => 188,
       'core_campo_id' => 84,
     ),
-    1339 => 
+    1337 => 
     array (
       'id' => 1579,
       'orden' => 99,
       'core_modelo_id' => 188,
       'core_campo_id' => 94,
     ),
-    1340 => 
+    1338 => 
     array (
       'id' => 1580,
       'orden' => 99,
       'core_modelo_id' => 188,
       'core_campo_id' => 95,
     ),
-    1341 => 
+    1339 => 
     array (
       'id' => 1581,
       'orden' => 99,
       'core_modelo_id' => 188,
       'core_campo_id' => 119,
     ),
-    1342 => 
+    1340 => 
     array (
       'id' => 1583,
       'orden' => 12,
       'core_modelo_id' => 188,
       'core_campo_id' => 121,
     ),
-    1343 => 
+    1341 => 
     array (
       'id' => 1584,
       'orden' => 99,
       'core_modelo_id' => 188,
       'core_campo_id' => 140,
     ),
-    1344 => 
+    1342 => 
     array (
       'id' => 1585,
       'orden' => 99,
       'core_modelo_id' => 188,
       'core_campo_id' => 201,
     ),
-    1345 => 
+    1343 => 
     array (
       'id' => 1588,
       'orden' => 8,
       'core_modelo_id' => 188,
       'core_campo_id' => 624,
     ),
-    1346 => 
+    1344 => 
     array (
       'id' => 1590,
       'orden' => 99,
       'core_modelo_id' => 188,
       'core_campo_id' => 626,
     ),
-    1347 => 
+    1345 => 
     array (
       'id' => 1591,
       'orden' => 14,
       'core_modelo_id' => 188,
       'core_campo_id' => 627,
     ),
-    1348 => 
+    1346 => 
     array (
       'id' => 1592,
       'orden' => 99,
       'core_modelo_id' => 188,
       'core_campo_id' => 625,
     ),
-    1349 => 
+    1347 => 
     array (
       'id' => 1593,
       'orden' => 10,
       'core_modelo_id' => 188,
       'core_campo_id' => 628,
     ),
-    1350 => 
+    1348 => 
     array (
       'id' => 1594,
       'orden' => 4,
       'core_modelo_id' => 189,
       'core_campo_id' => 2,
     ),
-    1351 => 
+    1349 => 
     array (
       'id' => 1595,
       'orden' => 30,
       'core_modelo_id' => 189,
       'core_campo_id' => 22,
     ),
-    1352 => 
+    1350 => 
     array (
       'id' => 1596,
       'orden' => 6,
       'core_modelo_id' => 189,
       'core_campo_id' => 84,
     ),
-    1353 => 
+    1351 => 
     array (
       'id' => 1597,
       'orden' => 99,
       'core_modelo_id' => 189,
       'core_campo_id' => 94,
     ),
-    1354 => 
+    1352 => 
     array (
       'id' => 1598,
       'orden' => 99,
       'core_modelo_id' => 189,
       'core_campo_id' => 95,
     ),
-    1355 => 
+    1353 => 
     array (
       'id' => 1599,
       'orden' => 99,
       'core_modelo_id' => 189,
       'core_campo_id' => 119,
     ),
-    1356 => 
+    1354 => 
     array (
       'id' => 1601,
       'orden' => 99,
       'core_modelo_id' => 189,
       'core_campo_id' => 140,
     ),
-    1357 => 
+    1355 => 
     array (
       'id' => 1602,
       'orden' => 99,
       'core_modelo_id' => 189,
       'core_campo_id' => 201,
     ),
-    1358 => 
+    1356 => 
     array (
       'id' => 1605,
       'orden' => 99,
       'core_modelo_id' => 189,
       'core_campo_id' => 626,
     ),
-    1359 => 
+    1357 => 
     array (
       'id' => 1608,
       'orden' => 12,
       'core_modelo_id' => 189,
       'core_campo_id' => 120,
     ),
-    1360 => 
+    1358 => 
     array (
       'id' => 1609,
       'orden' => 8,
       'core_modelo_id' => 189,
       'core_campo_id' => 631,
     ),
-    1361 => 
+    1359 => 
     array (
       'id' => 1611,
       'orden' => 22,
       'core_modelo_id' => 189,
       'core_campo_id' => 530,
     ),
-    1362 => 
+    1360 => 
     array (
       'id' => 1612,
       'orden' => 25,
       'core_modelo_id' => 189,
       'core_campo_id' => 550,
     ),
-    1363 => 
+    1361 => 
     array (
       'id' => 1613,
       'orden' => 19,
       'core_modelo_id' => 189,
       'core_campo_id' => 85,
     ),
-    1364 => 
+    1362 => 
     array (
       'id' => 1614,
       'orden' => 22,
       'core_modelo_id' => 189,
       'core_campo_id' => 86,
     ),
-    1365 => 
+    1363 => 
     array (
       'id' => 1615,
       'orden' => 18,
       'core_modelo_id' => 177,
       'core_campo_id' => 634,
     ),
-    1366 => 
+    1364 => 
     array (
       'id' => 1616,
       'orden' => 99,
       'core_modelo_id' => 187,
       'core_campo_id' => 100,
     ),
-    1367 => 
+    1365 => 
     array (
       'id' => 1617,
       'orden' => 99,
       'core_modelo_id' => 187,
       'core_campo_id' => 98,
     ),
-    1368 => 
+    1366 => 
     array (
       'id' => 1618,
       'orden' => 99,
       'core_modelo_id' => 187,
       'core_campo_id' => 95,
     ),
-    1369 => 
+    1367 => 
     array (
       'id' => 1619,
       'orden' => 99,
       'core_modelo_id' => 187,
       'core_campo_id' => 94,
     ),
-    1370 => 
+    1368 => 
     array (
       'id' => 1620,
       'orden' => 2,
       'core_modelo_id' => 187,
       'core_campo_id' => 201,
     ),
-    1371 => 
+    1369 => 
     array (
       'id' => 1621,
       'orden' => 4,
       'core_modelo_id' => 187,
       'core_campo_id' => 88,
     ),
-    1372 => 
+    1370 => 
     array (
       'id' => 1622,
       'orden' => 6,
       'core_modelo_id' => 187,
       'core_campo_id' => 93,
     ),
-    1373 => 
+    1371 => 
     array (
       'id' => 1623,
       'orden' => 8,
       'core_modelo_id' => 187,
       'core_campo_id' => 39,
     ),
-    1374 => 
+    1372 => 
     array (
       'id' => 1624,
       'orden' => 10,
       'core_modelo_id' => 187,
       'core_campo_id' => 92,
     ),
-    1375 => 
+    1373 => 
     array (
       'id' => 1625,
       'orden' => 99,
       'core_modelo_id' => 187,
       'core_campo_id' => 87,
     ),
-    1376 => 
+    1374 => 
     array (
       'id' => 1626,
       'orden' => 12,
       'core_modelo_id' => 187,
       'core_campo_id' => 8,
     ),
-    1377 => 
-    array (
-      'id' => 1627,
-      'orden' => 18,
-      'core_modelo_id' => 175,
-      'core_campo_id' => 176,
-    ),
-    1378 => 
+    1375 => 
     array (
       'id' => 1629,
       'orden' => 2,
       'core_modelo_id' => 192,
       'core_campo_id' => 72,
     ),
-    1379 => 
+    1376 => 
     array (
       'id' => 1631,
       'orden' => 4,
       'core_modelo_id' => 192,
       'core_campo_id' => 311,
     ),
-    1380 => 
+    1377 => 
     array (
       'id' => 1633,
       'orden' => 6,
       'core_modelo_id' => 192,
       'core_campo_id' => 643,
     ),
-    1381 => 
+    1378 => 
     array (
       'id' => 1634,
       'orden' => 6,
       'core_modelo_id' => 90,
       'core_campo_id' => 649,
     ),
-    1382 => 
+    1379 => 
     array (
       'id' => 1635,
       'orden' => 10,
       'core_modelo_id' => 83,
       'core_campo_id' => 647,
     ),
-    1383 => 
+    1380 => 
     array (
       'id' => 1636,
       'orden' => 14,
       'core_modelo_id' => 83,
       'core_campo_id' => 648,
     ),
-    1384 => 
+    1381 => 
     array (
       'id' => 1637,
       'orden' => 16,
       'core_modelo_id' => 83,
       'core_campo_id' => 646,
     ),
-    1385 => 
+    1382 => 
     array (
       'id' => 1638,
       'orden' => 6,
       'core_modelo_id' => 83,
       'core_campo_id' => 644,
     ),
-    1386 => 
+    1383 => 
     array (
       'id' => 1639,
       'orden' => 2,
       'core_modelo_id' => 83,
       'core_campo_id' => 356,
     ),
-    1387 => 
+    1384 => 
     array (
       'id' => 1640,
       'orden' => 0,
       'core_modelo_id' => 83,
       'core_campo_id' => 650,
     ),
-    1388 => 
+    1385 => 
     array (
       'id' => 1642,
       'orden' => 2,
       'core_modelo_id' => 213,
       'core_campo_id' => 667,
     ),
-    1389 => 
+    1386 => 
     array (
       'id' => 1643,
       'orden' => 4,
       'core_modelo_id' => 213,
       'core_campo_id' => 665,
     ),
-    1390 => 
+    1387 => 
     array (
       'id' => 1644,
       'orden' => 4,
       'core_modelo_id' => 213,
       'core_campo_id' => 666,
     ),
-    1391 => 
+    1388 => 
     array (
       'id' => 1645,
       'orden' => 2,
       'core_modelo_id' => 212,
       'core_campo_id' => 679,
     ),
-    1392 => 
+    1389 => 
     array (
       'id' => 1646,
       'orden' => 4,
       'core_modelo_id' => 212,
       'core_campo_id' => 316,
     ),
-    1393 => 
+    1390 => 
     array (
       'id' => 1647,
       'orden' => 6,
       'core_modelo_id' => 212,
       'core_campo_id' => 666,
     ),
-    1394 => 
+    1391 => 
     array (
       'id' => 1648,
       'orden' => 2,
       'core_modelo_id' => 211,
       'core_campo_id' => 673,
     ),
-    1395 => 
+    1392 => 
     array (
       'id' => 1649,
       'orden' => 4,
       'core_modelo_id' => 211,
       'core_campo_id' => 674,
     ),
-    1396 => 
+    1393 => 
     array (
       'id' => 1650,
       'orden' => 2,
       'core_modelo_id' => 210,
       'core_campo_id' => 675,
     ),
-    1397 => 
+    1394 => 
     array (
       'id' => 1651,
       'orden' => 4,
       'core_modelo_id' => 210,
       'core_campo_id' => 676,
     ),
-    1398 => 
+    1395 => 
     array (
       'id' => 1652,
       'orden' => 6,
       'core_modelo_id' => 210,
       'core_campo_id' => 677,
     ),
-    1399 => 
+    1396 => 
     array (
       'id' => 1653,
       'orden' => 8,
       'core_modelo_id' => 210,
       'core_campo_id' => 678,
     ),
-    1400 => 
+    1397 => 
     array (
       'id' => 1654,
       'orden' => 10,
       'core_modelo_id' => 210,
       'core_campo_id' => 679,
     ),
-    1401 => 
+    1398 => 
     array (
       'id' => 1655,
       'orden' => 2,
       'core_modelo_id' => 209,
       'core_campo_id' => 680,
     ),
-    1402 => 
+    1399 => 
     array (
       'id' => 1656,
       'orden' => 4,
       'core_modelo_id' => 209,
       'core_campo_id' => 681,
     ),
-    1403 => 
+    1400 => 
     array (
       'id' => 1657,
       'orden' => 6,
       'core_modelo_id' => 209,
       'core_campo_id' => 682,
     ),
-    1404 => 
+    1401 => 
     array (
       'id' => 1658,
       'orden' => 2,
       'core_modelo_id' => 208,
       'core_campo_id' => 683,
     ),
-    1405 => 
+    1402 => 
     array (
       'id' => 1659,
       'orden' => 4,
       'core_modelo_id' => 208,
       'core_campo_id' => 684,
     ),
-    1406 => 
+    1403 => 
     array (
       'id' => 1660,
       'orden' => 6,
       'core_modelo_id' => 208,
       'core_campo_id' => 685,
     ),
-    1407 => 
+    1404 => 
     array (
       'id' => 1661,
       'orden' => 2,
       'core_modelo_id' => 207,
       'core_campo_id' => 683,
     ),
-    1408 => 
+    1405 => 
     array (
       'id' => 1662,
       'orden' => 4,
       'core_modelo_id' => 207,
       'core_campo_id' => 684,
     ),
-    1409 => 
+    1406 => 
     array (
       'id' => 1663,
       'orden' => 6,
       'core_modelo_id' => 207,
       'core_campo_id' => 280,
     ),
-    1410 => 
+    1407 => 
     array (
       'id' => 1664,
       'orden' => 2,
       'core_modelo_id' => 206,
       'core_campo_id' => 688,
     ),
-    1411 => 
+    1408 => 
     array (
       'id' => 1665,
       'orden' => 4,
       'core_modelo_id' => 206,
       'core_campo_id' => 93,
     ),
-    1412 => 
+    1409 => 
     array (
       'id' => 1666,
       'orden' => 6,
       'core_modelo_id' => 206,
       'core_campo_id' => 686,
     ),
-    1413 => 
+    1410 => 
     array (
       'id' => 1667,
       'orden' => 8,
       'core_modelo_id' => 206,
       'core_campo_id' => 687,
     ),
-    1414 => 
+    1411 => 
     array (
       'id' => 1668,
       'orden' => 2,
       'core_modelo_id' => 205,
       'core_campo_id' => 675,
     ),
-    1415 => 
+    1412 => 
     array (
       'id' => 1669,
       'orden' => 4,
       'core_modelo_id' => 205,
       'core_campo_id' => 697,
     ),
-    1416 => 
+    1413 => 
     array (
       'id' => 1670,
       'orden' => 6,
       'core_modelo_id' => 205,
       'core_campo_id' => 698,
     ),
-    1417 => 
+    1414 => 
     array (
       'id' => 1671,
       'orden' => 2,
       'core_modelo_id' => 204,
       'core_campo_id' => 718,
     ),
-    1418 => 
+    1415 => 
     array (
       'id' => 1672,
       'orden' => 4,
       'core_modelo_id' => 204,
       'core_campo_id' => 719,
     ),
-    1419 => 
+    1416 => 
     array (
       'id' => 1673,
       'orden' => 6,
       'core_modelo_id' => 204,
       'core_campo_id' => 720,
     ),
-    1420 => 
+    1417 => 
     array (
       'id' => 1674,
       'orden' => 2,
       'core_modelo_id' => 203,
       'core_campo_id' => 721,
     ),
-    1421 => 
+    1418 => 
     array (
       'id' => 1675,
       'orden' => 2,
       'core_modelo_id' => 202,
       'core_campo_id' => 662,
     ),
-    1422 => 
+    1419 => 
     array (
       'id' => 1676,
       'orden' => 4,
       'core_modelo_id' => 202,
       'core_campo_id' => 651,
     ),
-    1423 => 
+    1420 => 
     array (
       'id' => 1677,
       'orden' => 6,
       'core_modelo_id' => 202,
       'core_campo_id' => 652,
     ),
-    1424 => 
+    1421 => 
     array (
       'id' => 1678,
       'orden' => 8,
       'core_modelo_id' => 202,
       'core_campo_id' => 653,
     ),
-    1425 => 
+    1422 => 
     array (
       'id' => 1679,
       'orden' => 10,
       'core_modelo_id' => 202,
       'core_campo_id' => 654,
     ),
-    1426 => 
+    1423 => 
     array (
       'id' => 1681,
       'orden' => 12,
       'core_modelo_id' => 202,
       'core_campo_id' => 655,
     ),
-    1427 => 
+    1424 => 
     array (
       'id' => 1682,
       'orden' => 14,
       'core_modelo_id' => 202,
       'core_campo_id' => 656,
     ),
-    1428 => 
+    1425 => 
     array (
       'id' => 1683,
       'orden' => 16,
       'core_modelo_id' => 202,
       'core_campo_id' => 657,
     ),
-    1429 => 
+    1426 => 
     array (
       'id' => 1684,
       'orden' => 18,
       'core_modelo_id' => 202,
       'core_campo_id' => 658,
     ),
-    1430 => 
+    1427 => 
     array (
       'id' => 1685,
       'orden' => 20,
       'core_modelo_id' => 202,
       'core_campo_id' => 659,
     ),
-    1431 => 
+    1428 => 
     array (
       'id' => 1686,
       'orden' => 22,
       'core_modelo_id' => 202,
       'core_campo_id' => 660,
     ),
-    1432 => 
+    1429 => 
     array (
       'id' => 1687,
       'orden' => 24,
       'core_modelo_id' => 202,
       'core_campo_id' => 661,
     ),
-    1433 => 
+    1430 => 
     array (
       'id' => 1689,
       'orden' => 4,
       'core_modelo_id' => 201,
       'core_campo_id' => 663,
     ),
-    1434 => 
+    1431 => 
     array (
       'id' => 1690,
       'orden' => 2,
       'core_modelo_id' => 200,
       'core_campo_id' => 316,
     ),
-    1435 => 
+    1432 => 
     array (
       'id' => 1691,
       'orden' => 4,
       'core_modelo_id' => 200,
       'core_campo_id' => 236,
     ),
-    1436 => 
+    1433 => 
     array (
       'id' => 1692,
       'orden' => 6,
       'core_modelo_id' => 200,
       'core_campo_id' => 668,
     ),
-    1437 => 
+    1434 => 
     array (
       'id' => 1693,
       'orden' => 8,
       'core_modelo_id' => 200,
       'core_campo_id' => 669,
     ),
-    1438 => 
+    1435 => 
     array (
       'id' => 1694,
       'orden' => 10,
       'core_modelo_id' => 200,
       'core_campo_id' => 670,
     ),
-    1439 => 
+    1436 => 
     array (
       'id' => 1695,
       'orden' => 12,
       'core_modelo_id' => 200,
       'core_campo_id' => 671,
     ),
-    1440 => 
+    1437 => 
     array (
       'id' => 1696,
       'orden' => 14,
       'core_modelo_id' => 200,
       'core_campo_id' => 672,
     ),
-    1441 => 
+    1438 => 
     array (
       'id' => 1698,
       'orden' => 2,
       'core_modelo_id' => 199,
       'core_campo_id' => 695,
     ),
-    1442 => 
+    1439 => 
     array (
       'id' => 1699,
       'orden' => 4,
       'core_modelo_id' => 199,
       'core_campo_id' => 689,
     ),
-    1443 => 
+    1440 => 
     array (
       'id' => 1700,
       'orden' => 6,
       'core_modelo_id' => 199,
       'core_campo_id' => 690,
     ),
-    1444 => 
+    1441 => 
     array (
       'id' => 1701,
       'orden' => 8,
       'core_modelo_id' => 199,
       'core_campo_id' => 691,
     ),
-    1445 => 
+    1442 => 
     array (
       'id' => 1702,
       'orden' => 10,
       'core_modelo_id' => 199,
       'core_campo_id' => 692,
     ),
-    1446 => 
+    1443 => 
     array (
       'id' => 1703,
       'orden' => 12,
       'core_modelo_id' => 199,
       'core_campo_id' => 693,
     ),
-    1447 => 
+    1444 => 
     array (
       'id' => 1704,
       'orden' => 14,
       'core_modelo_id' => 199,
       'core_campo_id' => 694,
     ),
-    1448 => 
+    1445 => 
     array (
       'id' => 1705,
       'orden' => 2,
       'core_modelo_id' => 198,
       'core_campo_id' => 673,
     ),
-    1449 => 
+    1446 => 
     array (
       'id' => 1706,
       'orden' => 4,
       'core_modelo_id' => 198,
       'core_campo_id' => 696,
     ),
-    1450 => 
+    1447 => 
     array (
       'id' => 1707,
       'orden' => 6,
       'core_modelo_id' => 198,
       'core_campo_id' => 690,
     ),
-    1451 => 
+    1448 => 
     array (
       'id' => 1708,
       'orden' => 8,
       'core_modelo_id' => 198,
       'core_campo_id' => 691,
     ),
-    1452 => 
+    1449 => 
     array (
       'id' => 1709,
       'orden' => 10,
       'core_modelo_id' => 198,
       'core_campo_id' => 692,
     ),
-    1453 => 
+    1450 => 
     array (
       'id' => 1710,
       'orden' => 12,
       'core_modelo_id' => 198,
       'core_campo_id' => 693,
     ),
-    1454 => 
+    1451 => 
     array (
       'id' => 1711,
       'orden' => 14,
       'core_modelo_id' => 198,
       'core_campo_id' => 694,
     ),
-    1455 => 
+    1452 => 
     array (
       'id' => 1712,
       'orden' => 2,
       'core_modelo_id' => 197,
       'core_campo_id' => 3,
     ),
-    1456 => 
+    1453 => 
     array (
       'id' => 1713,
       'orden' => 4,
       'core_modelo_id' => 197,
       'core_campo_id' => 700,
     ),
-    1457 => 
+    1454 => 
     array (
       'id' => 1714,
       'orden' => 6,
       'core_modelo_id' => 197,
       'core_campo_id' => 93,
     ),
-    1458 => 
+    1455 => 
     array (
       'id' => 1715,
       'orden' => 8,
       'core_modelo_id' => 197,
       'core_campo_id' => 701,
     ),
-    1459 => 
+    1456 => 
     array (
       'id' => 1716,
       'orden' => 10,
       'core_modelo_id' => 197,
       'core_campo_id' => 702,
     ),
-    1460 => 
+    1457 => 
     array (
       'id' => 1717,
       'orden' => 12,
       'core_modelo_id' => 197,
       'core_campo_id' => 703,
     ),
-    1461 => 
+    1458 => 
     array (
       'id' => 1718,
       'orden' => 14,
       'core_modelo_id' => 197,
       'core_campo_id' => 704,
     ),
-    1462 => 
+    1459 => 
     array (
       'id' => 1719,
       'orden' => 16,
       'core_modelo_id' => 197,
       'core_campo_id' => 125,
     ),
-    1463 => 
+    1460 => 
     array (
       'id' => 1720,
       'orden' => 18,
       'core_modelo_id' => 197,
       'core_campo_id' => 705,
     ),
-    1464 => 
+    1461 => 
     array (
       'id' => 1721,
       'orden' => 20,
       'core_modelo_id' => 197,
       'core_campo_id' => 706,
     ),
-    1465 => 
+    1462 => 
     array (
       'id' => 1722,
       'orden' => 22,
       'core_modelo_id' => 197,
       'core_campo_id' => 707,
     ),
-    1466 => 
+    1463 => 
     array (
       'id' => 1723,
       'orden' => 24,
       'core_modelo_id' => 197,
       'core_campo_id' => 708,
     ),
-    1467 => 
+    1464 => 
     array (
       'id' => 1724,
       'orden' => 26,
       'core_modelo_id' => 197,
       'core_campo_id' => 709,
     ),
-    1468 => 
+    1465 => 
     array (
       'id' => 1725,
       'orden' => 28,
       'core_modelo_id' => 197,
       'core_campo_id' => 710,
     ),
-    1469 => 
+    1466 => 
     array (
       'id' => 1726,
       'orden' => 30,
       'core_modelo_id' => 197,
       'core_campo_id' => 711,
     ),
-    1470 => 
+    1467 => 
     array (
       'id' => 1727,
       'orden' => 32,
       'core_modelo_id' => 197,
       'core_campo_id' => 712,
     ),
-    1471 => 
+    1468 => 
     array (
       'id' => 1728,
       'orden' => 34,
       'core_modelo_id' => 197,
       'core_campo_id' => 713,
     ),
-    1472 => 
+    1469 => 
     array (
       'id' => 1730,
       'orden' => 36,
       'core_modelo_id' => 197,
       'core_campo_id' => 714,
     ),
-    1473 => 
+    1470 => 
     array (
       'id' => 1731,
       'orden' => 38,
       'core_modelo_id' => 197,
       'core_campo_id' => 715,
     ),
-    1474 => 
+    1471 => 
     array (
       'id' => 1732,
       'orden' => 40,
       'core_modelo_id' => 197,
       'core_campo_id' => 716,
     ),
-    1475 => 
+    1472 => 
     array (
       'id' => 1733,
       'orden' => 42,
       'core_modelo_id' => 197,
       'core_campo_id' => 717,
     ),
-    1476 => 
+    1473 => 
     array (
       'id' => 1734,
       'orden' => 44,
       'core_modelo_id' => 197,
       'core_campo_id' => 695,
     ),
-    1477 => 
+    1474 => 
     array (
       'id' => 1735,
       'orden' => 2,
       'core_modelo_id' => 196,
       'core_campo_id' => 664,
     ),
-    1478 => 
+    1475 => 
     array (
       'id' => 1736,
       'orden' => 4,
       'core_modelo_id' => 196,
       'core_campo_id' => 22,
     ),
-    1479 => 
+    1476 => 
     array (
       'id' => 1738,
       'orden' => 4,
       'core_modelo_id' => 195,
       'core_campo_id' => 22,
     ),
-    1480 => 
+    1477 => 
     array (
       'id' => 1739,
       'orden' => 16,
       'core_modelo_id' => 200,
       'core_campo_id' => 722,
     ),
-    1481 => 
+    1478 => 
     array (
       'id' => 1740,
       'orden' => 0,
       'core_modelo_id' => 215,
       'core_campo_id' => 39,
     ),
-    1482 => 
+    1479 => 
     array (
       'id' => 1741,
       'orden' => 2,
       'core_modelo_id' => 215,
       'core_campo_id' => 508,
     ),
-    1483 => 
+    1480 => 
     array (
       'id' => 1742,
       'orden' => 4,
       'core_modelo_id' => 215,
       'core_campo_id' => 509,
     ),
-    1484 => 
+    1481 => 
     array (
       'id' => 1743,
       'orden' => 6,
       'core_modelo_id' => 215,
       'core_campo_id' => 22,
     ),
-    1485 => 
+    1482 => 
     array (
       'id' => 1744,
       'orden' => 26,
       'core_modelo_id' => 134,
       'core_campo_id' => 161,
     ),
-    1486 => 
+    1483 => 
     array (
       'id' => 1745,
       'orden' => 24,
       'core_modelo_id' => 134,
       'core_campo_id' => 561,
     ),
-    1487 => 
+    1484 => 
     array (
       'id' => 1746,
       'orden' => 13,
       'core_modelo_id' => 216,
       'core_campo_id' => 18,
     ),
-    1488 => 
+    1485 => 
     array (
       'id' => 1747,
       'orden' => 44,
       'core_modelo_id' => 216,
       'core_campo_id' => 22,
     ),
-    1489 => 
+    1486 => 
     array (
       'id' => 1748,
       'orden' => 7,
       'core_modelo_id' => 216,
       'core_campo_id' => 37,
     ),
-    1490 => 
+    1487 => 
     array (
       'id' => 1749,
       'orden' => 1,
       'core_modelo_id' => 216,
       'core_campo_id' => 41,
     ),
-    1491 => 
+    1488 => 
     array (
       'id' => 1750,
       'orden' => 9,
       'core_modelo_id' => 216,
       'core_campo_id' => 42,
     ),
-    1492 => 
+    1489 => 
     array (
       'id' => 1751,
       'orden' => 5,
       'core_modelo_id' => 216,
       'core_campo_id' => 43,
     ),
-    1493 => 
+    1490 => 
     array (
       'id' => 1752,
       'orden' => 8,
       'core_modelo_id' => 216,
       'core_campo_id' => 44,
     ),
-    1494 => 
+    1491 => 
     array (
       'id' => 1753,
       'orden' => 2,
       'core_modelo_id' => 216,
       'core_campo_id' => 45,
     ),
-    1495 => 
+    1492 => 
     array (
       'id' => 1754,
       'orden' => 4,
       'core_modelo_id' => 216,
       'core_campo_id' => 46,
     ),
-    1496 => 
+    1493 => 
     array (
       'id' => 1755,
       'orden' => 5,
       'core_modelo_id' => 216,
       'core_campo_id' => 47,
     ),
-    1497 => 
+    1494 => 
     array (
       'id' => 1756,
       'orden' => 10,
       'core_modelo_id' => 216,
       'core_campo_id' => 50,
     ),
-    1498 => 
+    1495 => 
     array (
       'id' => 1757,
       'orden' => 14,
       'core_modelo_id' => 216,
       'core_campo_id' => 53,
     ),
-    1499 => 
+    1496 => 
     array (
       'id' => 1758,
       'orden' => 12,
       'core_modelo_id' => 216,
       'core_campo_id' => 55,
     ),
-    1500 => 
+    1497 => 
     array (
       'id' => 1759,
       'orden' => 6,
       'core_modelo_id' => 216,
       'core_campo_id' => 58,
     ),
-    1501 => 
+    1498 => 
     array (
       'id' => 1760,
       'orden' => 99,
       'core_modelo_id' => 216,
       'core_campo_id' => 94,
     ),
-    1502 => 
+    1499 => 
     array (
       'id' => 1761,
       'orden' => 99,
       'core_modelo_id' => 216,
       'core_campo_id' => 95,
     ),
-    1503 => 
+    1500 => 
     array (
       'id' => 1762,
       'orden' => 99,
       'core_modelo_id' => 216,
       'core_campo_id' => 386,
     ),
-    1504 => 
+    1501 => 
     array (
       'id' => 1763,
       'orden' => 27,
       'core_modelo_id' => 216,
       'core_campo_id' => 448,
     ),
-    1505 => 
+    1502 => 
     array (
       'id' => 1764,
       'orden' => 32,
       'core_modelo_id' => 216,
       'core_campo_id' => 495,
     ),
-    1506 => 
+    1503 => 
     array (
       'id' => 1765,
       'orden' => 20,
       'core_modelo_id' => 216,
       'core_campo_id' => 496,
     ),
-    1507 => 
+    1504 => 
     array (
       'id' => 1766,
       'orden' => 22,
       'core_modelo_id' => 216,
       'core_campo_id' => 497,
     ),
-    1508 => 
+    1505 => 
     array (
       'id' => 1767,
       'orden' => 34,
       'core_modelo_id' => 216,
       'core_campo_id' => 498,
     ),
-    1509 => 
+    1506 => 
     array (
       'id' => 1768,
       'orden' => 36,
       'core_modelo_id' => 216,
       'core_campo_id' => 499,
     ),
-    1510 => 
+    1507 => 
     array (
       'id' => 1769,
       'orden' => 38,
       'core_modelo_id' => 216,
       'core_campo_id' => 500,
     ),
-    1511 => 
+    1508 => 
     array (
       'id' => 1770,
       'orden' => 40,
       'core_modelo_id' => 216,
       'core_campo_id' => 501,
     ),
-    1512 => 
+    1509 => 
     array (
       'id' => 1771,
       'orden' => 5,
       'core_modelo_id' => 216,
       'core_campo_id' => 118,
     ),
-    1513 => 
+    1510 => 
     array (
       'id' => 1774,
       'orden' => 0,
       'core_modelo_id' => 138,
       'core_campo_id' => 140,
     ),
-    1514 => 
+    1511 => 
     array (
       'id' => 1775,
       'orden' => 0,
       'core_modelo_id' => 216,
       'core_campo_id' => 140,
     ),
-    1515 => 
+    1512 => 
     array (
       'id' => 1776,
       'orden' => 2,
       'core_modelo_id' => 117,
       'core_campo_id' => 726,
     ),
-    1516 => 
+    1513 => 
     array (
       'id' => 1778,
       'orden' => 7,
       'core_modelo_id' => 117,
       'core_campo_id' => 727,
     ),
-    1517 => 
+    1514 => 
     array (
       'id' => 1779,
       'orden' => 5,
       'core_modelo_id' => 117,
       'core_campo_id' => 169,
     ),
-    1518 => 
+    1515 => 
     array (
       'id' => 1780,
       'orden' => 2,
       'core_modelo_id' => 217,
       'core_campo_id' => 728,
     ),
-    1519 => 
+    1516 => 
     array (
       'id' => 1781,
       'orden' => 4,
       'core_modelo_id' => 217,
       'core_campo_id' => 729,
     ),
-    1520 => 
+    1517 => 
     array (
       'id' => 1782,
       'orden' => 6,
       'core_modelo_id' => 217,
       'core_campo_id' => 730,
     ),
-    1521 => 
+    1518 => 
     array (
       'id' => 1783,
       'orden' => 8,
       'core_modelo_id' => 217,
       'core_campo_id' => 731,
     ),
-    1522 => 
+    1519 => 
     array (
       'id' => 1784,
       'orden' => 8,
       'core_modelo_id' => 149,
       'core_campo_id' => 39,
     ),
-    1523 => 
+    1520 => 
     array (
       'id' => 1785,
       'orden' => 2,
       'core_modelo_id' => 218,
       'core_campo_id' => 726,
     ),
-    1524 => 
+    1521 => 
     array (
       'id' => 1786,
       'orden' => 4,
       'core_modelo_id' => 218,
       'core_campo_id' => 736,
     ),
-    1525 => 
+    1522 => 
     array (
       'id' => 1789,
       'orden' => 10,
       'core_modelo_id' => 218,
       'core_campo_id' => 18,
     ),
-    1526 => 
+    1523 => 
     array (
       'id' => 1790,
       'orden' => 16,
       'core_modelo_id' => 218,
       'core_campo_id' => 19,
     ),
-    1527 => 
+    1524 => 
     array (
       'id' => 1791,
       'orden' => 18,
       'core_modelo_id' => 218,
       'core_campo_id' => 20,
     ),
-    1528 => 
+    1525 => 
     array (
       'id' => 1792,
       'orden' => 20,
       'core_modelo_id' => 218,
       'core_campo_id' => 737,
     ),
-    1529 => 
+    1526 => 
     array (
       'id' => 1793,
       'orden' => 6,
       'core_modelo_id' => 218,
       'core_campo_id' => 103,
     ),
-    1530 => 
+    1527 => 
     array (
       'id' => 1794,
       'orden' => 8,
       'core_modelo_id' => 218,
       'core_campo_id' => 46,
     ),
-    1531 => 
+    1528 => 
     array (
       'id' => 1795,
       'orden' => 12,
       'core_modelo_id' => 218,
       'core_campo_id' => 236,
     ),
-    1532 => 
+    1529 => 
     array (
       'id' => 1796,
       'orden' => 14,
       'core_modelo_id' => 218,
       'core_campo_id' => 668,
     ),
-    1533 => 
+    1530 => 
     array (
       'id' => 1798,
       'orden' => 14,
       'core_modelo_id' => 219,
       'core_campo_id' => 22,
     ),
-    1534 => 
+    1531 => 
     array (
       'id' => 1799,
       'orden' => 2,
       'core_modelo_id' => 219,
       'core_campo_id' => 93,
     ),
-    1535 => 
+    1532 => 
     array (
       'id' => 1800,
       'orden' => 13,
       'core_modelo_id' => 219,
       'core_campo_id' => 174,
     ),
-    1536 => 
+    1533 => 
     array (
       'id' => 1801,
       'orden' => 8,
       'core_modelo_id' => 219,
       'core_campo_id' => 177,
     ),
-    1537 => 
+    1534 => 
     array (
       'id' => 1802,
       'orden' => 10,
       'core_modelo_id' => 219,
       'core_campo_id' => 311,
     ),
-    1538 => 
+    1535 => 
     array (
       'id' => 1803,
       'orden' => 12,
       'core_modelo_id' => 219,
       'core_campo_id' => 312,
     ),
-    1539 => 
+    1536 => 
     array (
       'id' => 1804,
       'orden' => 6,
       'core_modelo_id' => 219,
       'core_campo_id' => 603,
     ),
-    1540 => 
+    1537 => 
     array (
       'id' => 1805,
       'orden' => 3,
       'core_modelo_id' => 47,
       'core_campo_id' => 740,
     ),
-    1541 => 
+    1538 => 
     array (
       'id' => 1806,
       'orden' => 4,
       'core_modelo_id' => 54,
       'core_campo_id' => 740,
     ),
-    1542 => 
+    1539 => 
     array (
       'id' => 1807,
       'orden' => 4,
       'core_modelo_id' => 46,
       'core_campo_id' => 740,
     ),
-    1543 => 
+    1540 => 
     array (
       'id' => 1808,
       'orden' => 4,
       'core_modelo_id' => 110,
       'core_campo_id' => 123,
     ),
-    1544 => 
+    1541 => 
     array (
       'id' => 1809,
       'orden' => 12,
       'core_modelo_id' => 110,
       'core_campo_id' => 329,
     ),
-    1545 => 
+    1542 => 
     array (
       'id' => 1810,
       'orden' => 1,
       'core_modelo_id' => 110,
       'core_campo_id' => 442,
     ),
-    1546 => 
+    1543 => 
     array (
       'id' => 1811,
       'orden' => 11,
       'core_modelo_id' => 110,
       'core_campo_id' => 443,
     ),
-    1547 => 
+    1544 => 
     array (
       'id' => 1812,
       'orden' => 17,
       'core_modelo_id' => 110,
       'core_campo_id' => 444,
     ),
-    1548 => 
+    1545 => 
     array (
       'id' => 1813,
       'orden' => 18,
       'core_modelo_id' => 110,
       'core_campo_id' => 445,
     ),
-    1549 => 
+    1546 => 
     array (
       'id' => 1814,
       'orden' => 22,
       'core_modelo_id' => 110,
       'core_campo_id' => 446,
     ),
-    1550 => 
+    1547 => 
     array (
       'id' => 1815,
       'orden' => 23,
       'core_modelo_id' => 110,
       'core_campo_id' => 741,
     ),
-    1551 => 
+    1548 => 
     array (
       'id' => 1816,
       'orden' => 24,
       'core_modelo_id' => 110,
       'core_campo_id' => 742,
     ),
-    1552 => 
+    1549 => 
     array (
       'id' => 1817,
       'orden' => 16,
       'core_modelo_id' => 221,
       'core_campo_id' => 8,
     ),
-    1553 => 
+    1550 => 
     array (
       'id' => 1818,
       'orden' => 99,
       'core_modelo_id' => 221,
       'core_campo_id' => 87,
     ),
-    1554 => 
+    1551 => 
     array (
       'id' => 1819,
       'orden' => 3,
       'core_modelo_id' => 221,
       'core_campo_id' => 88,
     ),
-    1555 => 
+    1552 => 
     array (
       'id' => 1820,
       'orden' => 13,
       'core_modelo_id' => 221,
       'core_campo_id' => 90,
     ),
-    1556 => 
+    1553 => 
     array (
       'id' => 1821,
       'orden' => 4,
       'core_modelo_id' => 221,
       'core_campo_id' => 93,
     ),
-    1557 => 
+    1554 => 
     array (
       'id' => 1822,
       'orden' => 99,
       'core_modelo_id' => 221,
       'core_campo_id' => 100,
     ),
-    1558 => 
+    1555 => 
     array (
       'id' => 1823,
       'orden' => 12,
       'core_modelo_id' => 221,
       'core_campo_id' => 194,
     ),
-    1559 => 
+    1556 => 
     array (
       'id' => 1824,
       'orden' => 2,
       'core_modelo_id' => 221,
       'core_campo_id' => 201,
     ),
-    1560 => 
+    1557 => 
     array (
       'id' => 1825,
       'orden' => 8,
       'core_modelo_id' => 221,
       'core_campo_id' => 521,
     ),
-    1561 => 
+    1558 => 
     array (
       'id' => 1826,
       'orden' => 6,
       'core_modelo_id' => 221,
       'core_campo_id' => 522,
     ),
-    1562 => 
+    1559 => 
     array (
       'id' => 1827,
       'orden' => 10,
       'core_modelo_id' => 221,
       'core_campo_id' => 523,
     ),
-    1563 => 
+    1560 => 
     array (
       'id' => 1828,
       'orden' => 14,
       'core_modelo_id' => 221,
       'core_campo_id' => 524,
     ),
-    1564 => 
+    1561 => 
     array (
       'id' => 1829,
       'orden' => 2,
       'core_modelo_id' => 101,
       'core_campo_id' => 743,
     ),
-    1565 => 
+    1562 => 
     array (
       'id' => 1830,
       'orden' => 3,
       'core_modelo_id' => 101,
       'core_campo_id' => 744,
     ),
-    1566 => 
+    1563 => 
     array (
       'id' => 1831,
       'orden' => 8,
       'core_modelo_id' => 101,
       'core_campo_id' => 745,
     ),
-    1567 => 
+    1564 => 
     array (
       'id' => 1832,
       'orden' => 2,
       'core_modelo_id' => 201,
       'core_campo_id' => 746,
     ),
-    1568 => 
+    1565 => 
     array (
       'id' => 1833,
       'orden' => 2,
       'core_modelo_id' => 195,
       'core_campo_id' => 747,
     ),
-    1569 => 
+    1566 => 
     array (
       'id' => 1834,
       'orden' => 6,
       'core_modelo_id' => 195,
       'core_campo_id' => 748,
     ),
-    1570 => 
+    1567 => 
     array (
       'id' => 1835,
       'orden' => 6,
       'core_modelo_id' => 201,
       'core_campo_id' => 748,
     ),
-    1571 => 
+    1568 => 
     array (
       'id' => 1836,
       'orden' => 7,
       'core_modelo_id' => 138,
       'core_campo_id' => 118,
     ),
-    1572 => 
+    1569 => 
     array (
       'id' => 1837,
       'orden' => 14,
       'core_modelo_id' => 12,
       'core_campo_id' => 749,
     ),
-    1573 => 
+    1570 => 
     array (
       'id' => 1839,
       'orden' => 6,
       'core_modelo_id' => 146,
       'core_campo_id' => 118,
     ),
-    1574 => 
+    1571 => 
     array (
       'id' => 1840,
       'orden' => 2,
       'core_modelo_id' => 223,
       'core_campo_id' => 750,
     ),
-    1575 => 
+    1572 => 
     array (
       'id' => 1841,
       'orden' => 2,
       'core_modelo_id' => 224,
       'core_campo_id' => 750,
     ),
-    1576 => 
+    1573 => 
     array (
       'id' => 1842,
       'orden' => 99,
       'core_modelo_id' => 223,
       'core_campo_id' => 412,
     ),
-    1577 => 
+    1574 => 
     array (
       'id' => 1844,
       'orden' => 16,
       'core_modelo_id' => 95,
       'core_campo_id' => 751,
     ),
-    1578 => 
+    1575 => 
     array (
       'id' => 1845,
       'orden' => 0,
       'core_modelo_id' => 225,
       'core_campo_id' => 117,
     ),
-    1579 => 
+    1576 => 
     array (
       'id' => 1847,
       'orden' => 4,
       'core_modelo_id' => 225,
       'core_campo_id' => 311,
     ),
-    1580 => 
+    1577 => 
     array (
       'id' => 1848,
       'orden' => 6,
       'core_modelo_id' => 225,
       'core_campo_id' => 312,
     ),
-    1581 => 
+    1578 => 
     array (
       'id' => 1849,
       'orden' => 8,
       'core_modelo_id' => 225,
       'core_campo_id' => 169,
     ),
-    1582 => 
+    1579 => 
     array (
       'id' => 1850,
       'orden' => 10,
       'core_modelo_id' => 225,
       'core_campo_id' => 22,
     ),
-    1583 => 
+    1580 => 
     array (
       'id' => 1851,
       'orden' => 12,
       'core_modelo_id' => 225,
       'core_campo_id' => 313,
     ),
-    1584 => 
+    1581 => 
     array (
       'id' => 1852,
       'orden' => 2,
       'core_modelo_id' => 225,
       'core_campo_id' => 177,
     ),
-    1585 => 
+    1582 => 
     array (
       'id' => 1853,
       'orden' => 99,
       'core_modelo_id' => 37,
       'core_campo_id' => 752,
     ),
-    1586 => 
+    1583 => 
     array (
       'id' => 1854,
       'orden' => 99,
       'core_modelo_id' => 38,
       'core_campo_id' => 752,
     ),
-    1587 => 
+    1584 => 
     array (
       'id' => 1855,
       'orden' => 99,
       'core_modelo_id' => 36,
       'core_campo_id' => 752,
     ),
-    1588 => 
+    1585 => 
     array (
       'id' => 1856,
       'orden' => 2,
       'core_modelo_id' => 77,
       'core_campo_id' => 316,
     ),
-    1589 => 
+    1586 => 
     array (
       'id' => 1857,
       'orden' => 4,
       'core_modelo_id' => 77,
       'core_campo_id' => 169,
     ),
-    1590 => 
+    1587 => 
     array (
       'id' => 1858,
       'orden' => 2,
       'core_modelo_id' => 85,
       'core_campo_id' => 753,
     ),
-    1591 => 
+    1588 => 
     array (
       'id' => 1859,
       'orden' => 4,
       'core_modelo_id' => 85,
       'core_campo_id' => 257,
     ),
-    1592 => 
+    1589 => 
     array (
       'id' => 1860,
       'orden' => 7,
       'core_modelo_id' => 84,
       'core_campo_id' => 754,
     ),
-    1593 => 
+    1590 => 
     array (
       'id' => 1861,
       'orden' => 1,
       'core_modelo_id' => 87,
       'core_campo_id' => 585,
     ),
-    1594 => 
+    1591 => 
     array (
       'id' => 1862,
       'orden' => 2,
       'core_modelo_id' => 87,
       'core_campo_id' => 755,
     ),
-    1595 => 
+    1592 => 
     array (
       'id' => 1863,
       'orden' => 1,
       'core_modelo_id' => 88,
       'core_campo_id' => 585,
     ),
-    1596 => 
+    1593 => 
     array (
       'id' => 1865,
       'orden' => 2,
       'core_modelo_id' => 227,
       'core_campo_id' => 2,
     ),
-    1597 => 
+    1594 => 
     array (
       'id' => 1866,
       'orden' => 4,
       'core_modelo_id' => 227,
       'core_campo_id' => 759,
     ),
-    1598 => 
+    1595 => 
     array (
       'id' => 1867,
       'orden' => 6,
       'core_modelo_id' => 227,
       'core_campo_id' => 760,
     ),
-    1599 => 
+    1596 => 
     array (
       'id' => 1868,
       'orden' => 8,
       'core_modelo_id' => 227,
       'core_campo_id' => 761,
     ),
-    1600 => 
+    1597 => 
     array (
       'id' => 1869,
       'orden' => 10,
       'core_modelo_id' => 227,
       'core_campo_id' => 762,
     ),
-    1601 => 
+    1598 => 
     array (
       'id' => 1870,
       'orden' => 12,
       'core_modelo_id' => 227,
       'core_campo_id' => 763,
     ),
-    1602 => 
+    1599 => 
     array (
       'id' => 1872,
       'orden' => 99,
       'core_modelo_id' => 227,
       'core_campo_id' => 94,
     ),
-    1603 => 
+    1600 => 
     array (
       'id' => 1873,
       'orden' => 99,
       'core_modelo_id' => 227,
       'core_campo_id' => 95,
     ),
-    1604 => 
+    1601 => 
     array (
       'id' => 1875,
       'orden' => 2,
       'core_modelo_id' => 226,
       'core_campo_id' => 124,
     ),
-    1605 => 
+    1602 => 
     array (
       'id' => 1876,
       'orden' => 4,
       'core_modelo_id' => 226,
       'core_campo_id' => 7,
     ),
-    1606 => 
+    1603 => 
     array (
       'id' => 1877,
       'orden' => 6,
       'core_modelo_id' => 226,
       'core_campo_id' => 18,
     ),
-    1607 => 
+    1604 => 
     array (
       'id' => 1878,
       'orden' => 8,
       'core_modelo_id' => 226,
       'core_campo_id' => 19,
     ),
-    1608 => 
+    1605 => 
     array (
       'id' => 1879,
       'orden' => 10,
       'core_modelo_id' => 226,
       'core_campo_id' => 20,
     ),
-    1609 => 
+    1606 => 
     array (
       'id' => 1880,
       'orden' => 99,
       'core_modelo_id' => 226,
       'core_campo_id' => 195,
     ),
-    1610 => 
+    1607 => 
     array (
       'id' => 1881,
       'orden' => 99,
       'core_modelo_id' => 227,
       'core_campo_id' => 386,
     ),
-    1611 => 
+    1608 => 
     array (
       'id' => 1882,
       'orden' => 14,
       'core_modelo_id' => 227,
       'core_campo_id' => 257,
     ),
-    1612 => 
+    1609 => 
     array (
       'id' => 1883,
       'orden' => 99,
       'core_modelo_id' => 228,
       'core_campo_id' => 87,
     ),
-    1613 => 
+    1610 => 
     array (
       'id' => 1884,
       'orden' => 2,
       'core_modelo_id' => 228,
       'core_campo_id' => 88,
     ),
-    1614 => 
+    1611 => 
     array (
       'id' => 1885,
       'orden' => 99,
       'core_modelo_id' => 228,
       'core_campo_id' => 100,
     ),
-    1615 => 
+    1612 => 
     array (
       'id' => 1886,
       'orden' => 4,
       'core_modelo_id' => 228,
       'core_campo_id' => 93,
     ),
-    1616 => 
+    1613 => 
     array (
       'id' => 1887,
       'orden' => 0,
       'core_modelo_id' => 228,
       'core_campo_id' => 201,
     ),
-    1617 => 
+    1614 => 
     array (
       'id' => 1890,
       'orden' => 6,
       'core_modelo_id' => 228,
       'core_campo_id' => 758,
     ),
-    1618 => 
+    1615 => 
     array (
       'id' => 1891,
       'orden' => 8,
       'core_modelo_id' => 228,
       'core_campo_id' => 8,
     ),
-    1619 => 
+    1616 => 
     array (
       'id' => 1892,
       'orden' => 99,
       'core_modelo_id' => 228,
       'core_campo_id' => 94,
     ),
-    1620 => 
+    1617 => 
     array (
       'id' => 1893,
       'orden' => 99,
       'core_modelo_id' => 228,
       'core_campo_id' => 95,
     ),
-    1621 => 
+    1618 => 
     array (
       'id' => 1894,
       'orden' => 99,
       'core_modelo_id' => 229,
       'core_campo_id' => 87,
     ),
-    1622 => 
+    1619 => 
     array (
       'id' => 1895,
       'orden' => 99,
       'core_modelo_id' => 229,
       'core_campo_id' => 94,
     ),
-    1623 => 
+    1620 => 
     array (
       'id' => 1896,
       'orden' => 99,
       'core_modelo_id' => 229,
       'core_campo_id' => 95,
     ),
-    1624 => 
+    1621 => 
     array (
       'id' => 1897,
       'orden' => 99,
       'core_modelo_id' => 229,
       'core_campo_id' => 100,
     ),
-    1625 => 
+    1622 => 
     array (
       'id' => 1898,
       'orden' => 8,
       'core_modelo_id' => 229,
       'core_campo_id' => 8,
     ),
-    1626 => 
+    1623 => 
     array (
       'id' => 1899,
       'orden' => 6,
       'core_modelo_id' => 229,
       'core_campo_id' => 93,
     ),
-    1627 => 
+    1624 => 
     array (
       'id' => 1900,
       'orden' => 4,
       'core_modelo_id' => 229,
       'core_campo_id' => 88,
     ),
-    1628 => 
+    1625 => 
     array (
       'id' => 1901,
       'orden' => 2,
       'core_modelo_id' => 229,
       'core_campo_id' => 201,
     ),
-    1629 => 
+    1626 => 
     array (
       'id' => 1902,
       'orden' => 16,
       'core_modelo_id' => 230,
       'core_campo_id' => 8,
     ),
-    1630 => 
+    1627 => 
     array (
       'id' => 1903,
       'orden' => 99,
       'core_modelo_id' => 230,
       'core_campo_id' => 87,
     ),
-    1631 => 
+    1628 => 
     array (
       'id' => 1904,
       'orden' => 3,
       'core_modelo_id' => 230,
       'core_campo_id' => 88,
     ),
-    1632 => 
+    1629 => 
     array (
       'id' => 1905,
       'orden' => 13,
       'core_modelo_id' => 230,
       'core_campo_id' => 90,
     ),
-    1633 => 
+    1630 => 
     array (
       'id' => 1906,
       'orden' => 4,
       'core_modelo_id' => 230,
       'core_campo_id' => 93,
     ),
-    1634 => 
+    1631 => 
     array (
       'id' => 1907,
       'orden' => 99,
       'core_modelo_id' => 230,
       'core_campo_id' => 100,
     ),
-    1635 => 
+    1632 => 
     array (
       'id' => 1908,
       'orden' => 12,
       'core_modelo_id' => 230,
       'core_campo_id' => 194,
     ),
-    1636 => 
+    1633 => 
     array (
       'id' => 1909,
       'orden' => 2,
       'core_modelo_id' => 230,
       'core_campo_id' => 201,
     ),
-    1637 => 
+    1634 => 
     array (
       'id' => 1910,
       'orden' => 20,
       'core_modelo_id' => 230,
       'core_campo_id' => 521,
     ),
-    1638 => 
+    1635 => 
     array (
       'id' => 1911,
       'orden' => 18,
       'core_modelo_id' => 230,
       'core_campo_id' => 522,
     ),
-    1639 => 
+    1636 => 
     array (
       'id' => 1912,
       'orden' => 10,
       'core_modelo_id' => 230,
       'core_campo_id' => 523,
     ),
-    1640 => 
+    1637 => 
     array (
       'id' => 1914,
       'orden' => 99,
       'core_modelo_id' => 224,
       'core_campo_id' => 412,
     ),
-    1641 => 
+    1638 => 
     array (
       'id' => 1915,
       'orden' => 15,
       'core_modelo_id' => 95,
       'core_campo_id' => 764,
     ),
-    1642 => 
+    1639 => 
     array (
       'id' => 1916,
       'orden' => 1,
       'core_modelo_id' => 220,
       'core_campo_id' => 201,
     ),
-    1643 => 
+    1640 => 
     array (
       'id' => 1917,
       'orden' => 3,
       'core_modelo_id' => 220,
       'core_campo_id' => 97,
     ),
-    1644 => 
+    1641 => 
     array (
       'id' => 1918,
       'orden' => 5,
       'core_modelo_id' => 220,
       'core_campo_id' => 2,
     ),
-    1645 => 
+    1642 => 
     array (
       'id' => 1919,
       'orden' => 7,
       'core_modelo_id' => 220,
       'core_campo_id' => 79,
     ),
-    1646 => 
+    1643 => 
     array (
       'id' => 1920,
       'orden' => 9,
       'core_modelo_id' => 220,
       'core_campo_id' => 84,
     ),
-    1647 => 
+    1644 => 
     array (
       'id' => 1921,
       'orden' => 11,
       'core_modelo_id' => 220,
       'core_campo_id' => 530,
     ),
-    1648 => 
+    1645 => 
     array (
       'id' => 1922,
       'orden' => 13,
       'core_modelo_id' => 220,
       'core_campo_id' => 85,
     ),
-    1649 => 
+    1646 => 
     array (
       'id' => 1923,
       'orden' => 15,
       'core_modelo_id' => 220,
       'core_campo_id' => 86,
     ),
-    1650 => 
+    1647 => 
     array (
       'id' => 1924,
       'orden' => 17,
       'core_modelo_id' => 220,
       'core_campo_id' => 120,
     ),
-    1651 => 
+    1648 => 
     array (
       'id' => 1925,
       'orden' => 99,
       'core_modelo_id' => 220,
       'core_campo_id' => 765,
     ),
-    1652 => 
+    1649 => 
     array (
       'id' => 1926,
       'orden' => 17,
       'core_modelo_id' => 230,
       'core_campo_id' => 97,
+    ),
+    1650 => 
+    array (
+      'id' => 1927,
+      'orden' => 50,
+      'core_modelo_id' => 138,
+      'core_campo_id' => 769,
+    ),
+    1651 => 
+    array (
+      'id' => 1929,
+      'orden' => 99,
+      'core_modelo_id' => 38,
+      'core_campo_id' => 770,
+    ),
+    1652 => 
+    array (
+      'id' => 1930,
+      'orden' => 1,
+      'core_modelo_id' => 219,
+      'core_campo_id' => 2,
+    ),
+    1653 => 
+    array (
+      'id' => 1931,
+      'orden' => 21,
+      'core_modelo_id' => 146,
+      'core_campo_id' => 57,
+    ),
+    1654 => 
+    array (
+      'id' => 1932,
+      'orden' => 16,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 8,
+    ),
+    1655 => 
+    array (
+      'id' => 1933,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 87,
+    ),
+    1656 => 
+    array (
+      'id' => 1934,
+      'orden' => 3,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 88,
+    ),
+    1657 => 
+    array (
+      'id' => 1935,
+      'orden' => 13,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 90,
+    ),
+    1658 => 
+    array (
+      'id' => 1936,
+      'orden' => 4,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 93,
+    ),
+    1659 => 
+    array (
+      'id' => 1937,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 94,
+    ),
+    1660 => 
+    array (
+      'id' => 1938,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 95,
+    ),
+    1661 => 
+    array (
+      'id' => 1939,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 98,
+    ),
+    1662 => 
+    array (
+      'id' => 1940,
+      'orden' => 99,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 100,
+    ),
+    1663 => 
+    array (
+      'id' => 1941,
+      'orden' => 12,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 194,
+    ),
+    1664 => 
+    array (
+      'id' => 1942,
+      'orden' => 2,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 201,
+    ),
+    1665 => 
+    array (
+      'id' => 1943,
+      'orden' => 10,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 523,
+    ),
+    1666 => 
+    array (
+      'id' => 1944,
+      'orden' => 6,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 538,
+    ),
+    1667 => 
+    array (
+      'id' => 1945,
+      'orden' => 18,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 539,
+    ),
+    1668 => 
+    array (
+      'id' => 1946,
+      'orden' => 20,
+      'core_modelo_id' => 233,
+      'core_campo_id' => 540,
+    ),
+    1669 => 
+    array (
+      'id' => 1947,
+      'orden' => 25,
+      'core_modelo_id' => 220,
+      'core_campo_id' => 22,
+    ),
+    1670 => 
+    array (
+      'id' => 1948,
+      'orden' => 16,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 8,
+    ),
+    1671 => 
+    array (
+      'id' => 1949,
+      'orden' => 99,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 87,
+    ),
+    1672 => 
+    array (
+      'id' => 1950,
+      'orden' => 3,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 88,
+    ),
+    1673 => 
+    array (
+      'id' => 1951,
+      'orden' => 13,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 90,
+    ),
+    1674 => 
+    array (
+      'id' => 1952,
+      'orden' => 4,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 93,
+    ),
+    1675 => 
+    array (
+      'id' => 1953,
+      'orden' => 99,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 100,
+    ),
+    1676 => 
+    array (
+      'id' => 1954,
+      'orden' => 12,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 194,
+    ),
+    1677 => 
+    array (
+      'id' => 1955,
+      'orden' => 2,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 201,
+    ),
+    1678 => 
+    array (
+      'id' => 1956,
+      'orden' => 8,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 521,
+    ),
+    1679 => 
+    array (
+      'id' => 1957,
+      'orden' => 6,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 522,
+    ),
+    1680 => 
+    array (
+      'id' => 1958,
+      'orden' => 10,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 523,
+    ),
+    1681 => 
+    array (
+      'id' => 1959,
+      'orden' => 14,
+      'core_modelo_id' => 234,
+      'core_campo_id' => 524,
     ),
   ),
   'sys_reportes' => 
@@ -43404,6 +44317,36 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-07-28 12:29:15',
       'updated_at' => '2020-07-28 12:29:51',
     ),
+    32 => 
+    array (
+      'id' => 34,
+      'descripcion' => 'Resumen de actividades académicas',
+      'core_app_id' => 5,
+      'url_form_action' => 'sga_resumen_actividades_academicas',
+      'estado' => 'Activo',
+      'created_at' => '2020-07-30 13:12:17',
+      'updated_at' => '2020-07-30 13:12:56',
+    ),
+    33 => 
+    array (
+      'id' => 35,
+      'descripcion' => 'Balance de inventarios',
+      'core_app_id' => 8,
+      'url_form_action' => 'inv_balance_inventarios',
+      'estado' => 'Activo',
+      'created_at' => '2020-08-04 10:18:43',
+      'updated_at' => '2020-08-04 10:19:06',
+    ),
+    34 => 
+    array (
+      'id' => 36,
+      'descripcion' => 'Resumen de movimiento de Cajas/Bancos',
+      'core_app_id' => 3,
+      'url_form_action' => 'teso_resumen_movimiento_caja_bancos',
+      'estado' => 'Activo',
+      'created_at' => '2020-09-19 04:47:52',
+      'updated_at' => '2020-09-19 04:48:29',
+    ),
   ),
   'sys_reporte_tiene_campos' => 
   array (
@@ -43493,495 +44436,585 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     14 => 
     array (
+      'orden' => 8,
+      'core_reporte_id' => 36,
+      'core_campo_id' => 249,
+    ),
+    15 => 
+    array (
       'orden' => 7,
       'core_reporte_id' => 23,
       'core_campo_id' => 250,
     ),
-    15 => 
+    16 => 
+    array (
+      'orden' => 10,
+      'core_reporte_id' => 36,
+      'core_campo_id' => 250,
+    ),
+    17 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 20,
       'core_campo_id' => 287,
     ),
-    16 => 
+    18 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 7,
       'core_campo_id' => 293,
     ),
-    17 => 
+    19 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 9,
       'core_campo_id' => 293,
     ),
-    18 => 
+    20 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 10,
       'core_campo_id' => 293,
     ),
-    19 => 
+    21 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 16,
       'core_campo_id' => 293,
     ),
-    20 => 
+    22 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 17,
       'core_campo_id' => 293,
     ),
-    21 => 
+    23 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 18,
       'core_campo_id' => 293,
     ),
-    22 => 
+    24 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 32,
       'core_campo_id' => 293,
     ),
-    23 => 
+    25 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 32,
       'core_campo_id' => 312,
     ),
-    24 => 
-    array (
-      'orden' => 3,
-      'core_reporte_id' => 1,
-      'core_campo_id' => 473,
-    ),
-    25 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 2,
-      'core_campo_id' => 473,
-    ),
     26 => 
     array (
       'orden' => 3,
-      'core_reporte_id' => 5,
+      'core_reporte_id' => 1,
       'core_campo_id' => 473,
     ),
     27 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 6,
+      'core_reporte_id' => 2,
       'core_campo_id' => 473,
     ),
     28 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 5,
+      'core_campo_id' => 473,
+    ),
+    29 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 6,
+      'core_campo_id' => 473,
+    ),
+    30 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 13,
       'core_campo_id' => 473,
     ),
-    29 => 
+    31 => 
     array (
       'orden' => 1,
       'core_reporte_id' => 15,
       'core_campo_id' => 473,
     ),
-    30 => 
+    32 => 
     array (
       'orden' => 1,
       'core_reporte_id' => 23,
-      'core_campo_id' => 473,
-    ),
-    31 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 24,
-      'core_campo_id' => 473,
-    ),
-    32 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 26,
       'core_campo_id' => 473,
     ),
     33 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 27,
+      'core_reporte_id' => 24,
       'core_campo_id' => 473,
     ),
     34 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 30,
+      'core_reporte_id' => 26,
       'core_campo_id' => 473,
     ),
     35 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 31,
+      'core_reporte_id' => 27,
       'core_campo_id' => 473,
     ),
     36 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 33,
+      'core_reporte_id' => 30,
       'core_campo_id' => 473,
     ),
     37 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 31,
+      'core_campo_id' => 473,
+    ),
+    38 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 33,
+      'core_campo_id' => 473,
+    ),
+    39 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 473,
+    ),
+    40 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 36,
+      'core_campo_id' => 473,
+    ),
+    41 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 1,
       'core_campo_id' => 474,
     ),
-    38 => 
+    42 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 2,
       'core_campo_id' => 474,
     ),
-    39 => 
+    43 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 5,
       'core_campo_id' => 474,
     ),
-    40 => 
+    44 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 13,
       'core_campo_id' => 474,
     ),
-    41 => 
+    45 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 15,
       'core_campo_id' => 474,
     ),
-    42 => 
+    46 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 23,
       'core_campo_id' => 474,
     ),
-    43 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 24,
-      'core_campo_id' => 474,
-    ),
-    44 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 26,
-      'core_campo_id' => 474,
-    ),
-    45 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 27,
-      'core_campo_id' => 474,
-    ),
-    46 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 30,
-      'core_campo_id' => 474,
-    ),
     47 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 31,
+      'core_reporte_id' => 24,
       'core_campo_id' => 474,
     ),
     48 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 33,
+      'core_reporte_id' => 26,
       'core_campo_id' => 474,
     ),
     49 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 27,
+      'core_campo_id' => 474,
+    ),
+    50 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 30,
+      'core_campo_id' => 474,
+    ),
+    51 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 31,
+      'core_campo_id' => 474,
+    ),
+    52 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 33,
+      'core_campo_id' => 474,
+    ),
+    53 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 474,
+    ),
+    54 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 36,
+      'core_campo_id' => 474,
+    ),
+    55 => 
     array (
       'orden' => 9,
       'core_reporte_id' => 5,
       'core_campo_id' => 476,
     ),
-    50 => 
+    56 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 8,
       'core_campo_id' => 489,
     ),
-    51 => 
+    57 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 8,
       'core_campo_id' => 490,
     ),
-    52 => 
+    58 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 8,
       'core_campo_id' => 491,
     ),
-    53 => 
+    59 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 13,
       'core_campo_id' => 536,
     ),
-    54 => 
+    60 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 15,
       'core_campo_id' => 561,
     ),
-    55 => 
+    61 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 11,
       'core_campo_id' => 588,
     ),
-    56 => 
+    62 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 12,
       'core_campo_id' => 588,
     ),
-    57 => 
+    63 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 22,
       'core_campo_id' => 588,
     ),
-    58 => 
+    64 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 25,
       'core_campo_id' => 588,
     ),
-    59 => 
+    65 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 28,
       'core_campo_id' => 588,
     ),
-    60 => 
+    66 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 33,
       'core_campo_id' => 588,
     ),
-    61 => 
+    67 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 31,
       'core_campo_id' => 592,
     ),
-    62 => 
+    68 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 34,
+      'core_campo_id' => 592,
+    ),
+    69 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 7,
       'core_campo_id' => 599,
     ),
-    63 => 
+    70 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 17,
       'core_campo_id' => 599,
     ),
-    64 => 
+    71 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 32,
       'core_campo_id' => 599,
     ),
-    65 => 
+    72 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 34,
+      'core_campo_id' => 599,
+    ),
+    73 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 31,
       'core_campo_id' => 604,
     ),
-    66 => 
+    74 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 34,
+      'core_campo_id' => 604,
+    ),
+    75 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 17,
       'core_campo_id' => 613,
     ),
-    67 => 
+    76 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 17,
       'core_campo_id' => 614,
     ),
-    68 => 
+    77 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 18,
       'core_campo_id' => 614,
     ),
-    69 => 
+    78 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 17,
       'core_campo_id' => 615,
     ),
-    70 => 
+    79 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 18,
       'core_campo_id' => 615,
     ),
-    71 => 
+    80 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 17,
       'core_campo_id' => 616,
     ),
-    72 => 
+    81 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 18,
       'core_campo_id' => 616,
     ),
-    73 => 
+    82 => 
     array (
       'orden' => 14,
       'core_reporte_id' => 17,
       'core_campo_id' => 617,
     ),
-    74 => 
+    83 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 17,
       'core_campo_id' => 618,
     ),
-    75 => 
+    84 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 18,
       'core_campo_id' => 619,
     ),
-    76 => 
+    85 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 20,
       'core_campo_id' => 622,
     ),
-    77 => 
+    86 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 622,
     ),
-    78 => 
+    87 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 622,
+    ),
+    88 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 20,
       'core_campo_id' => 623,
     ),
-    79 => 
+    89 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 20,
       'core_campo_id' => 629,
     ),
-    80 => 
+    90 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 21,
       'core_campo_id' => 630,
     ),
-    81 => 
+    91 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 21,
       'core_campo_id' => 632,
     ),
-    82 => 
+    92 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 633,
     ),
-    83 => 
+    93 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 633,
+    ),
+    94 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 13,
       'core_campo_id' => 636,
     ),
-    84 => 
+    95 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 13,
       'core_campo_id' => 637,
     ),
-    85 => 
+    96 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 24,
       'core_campo_id' => 637,
     ),
-    86 => 
+    97 => 
     array (
       'orden' => 15,
       'core_reporte_id' => 13,
       'core_campo_id' => 638,
     ),
-    87 => 
+    98 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 13,
       'core_campo_id' => 639,
     ),
-    88 => 
+    99 => 
     array (
       'orden' => 17,
       'core_reporte_id' => 13,
       'core_campo_id' => 640,
     ),
-    89 => 
+    100 => 
     array (
       'orden' => 18,
       'core_reporte_id' => 13,
       'core_campo_id' => 641,
     ),
-    90 => 
+    101 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 24,
       'core_campo_id' => 723,
     ),
-    91 => 
+    102 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 24,
       'core_campo_id' => 724,
     ),
-    92 => 
+    103 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 24,
       'core_campo_id' => 725,
     ),
-    93 => 
+    104 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 29,
       'core_campo_id' => 739,
     ),
-    94 => 
+    105 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 30,
       'core_campo_id' => 766,
     ),
-    95 => 
+    106 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 33,
       'core_campo_id' => 767,
+    ),
+    107 => 
+    array (
+      'orden' => 10,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 768,
+    ),
+    108 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 36,
+      'core_campo_id' => 771,
+    ),
+    109 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 22,
+      'core_campo_id' => 773,
+    ),
+    110 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 28,
+      'core_campo_id' => 773,
     ),
   ),
   'sys_tipos_transacciones' => 
@@ -44643,6 +45676,34 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'estado' => 'Activo',
       'created_at' => '2020-07-07 08:36:01',
       'updated_at' => '2020-07-08 12:02:17',
+    ),
+    47 => 
+    array (
+      'id' => 48,
+      'core_app_id' => 9,
+      'core_modelo_id' => 233,
+      'descripcion' => 'Documentos soporte en adquisiciones efectuadas a SNOAEF',
+      'modelo_encabezados_documentos' => 'App\\Compras\\ComprasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Compras\\ComprasDocRegistro',
+      'modelo_movimientos' => 'App\\Compras\\ComprasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-08-17 18:57:30',
+      'updated_at' => '2020-08-17 19:05:04',
+    ),
+    48 => 
+    array (
+      'id' => 49,
+      'core_app_id' => 3,
+      'core_modelo_id' => 234,
+      'descripcion' => 'Factura de estudiantes',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-09-01 05:22:13',
+      'updated_at' => '2020-09-01 05:26:07',
     ),
   ),
 ) ;

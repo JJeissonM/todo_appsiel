@@ -74,7 +74,14 @@ class PeriodoLectivo extends Model
 
     public static function get_actual()
     {
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
+        $empresa_id = 1;
+        $user = Auth::user();
+        if ( !is_null($user) )
+        {
+            $empresa_id = Auth::user()->empresa_id;
+        }
+
+        $colegio = Colegio::where('empresa_id', $empresa_id)->get()->first();
 
         return PeriodoLectivo::where('id_colegio',$colegio->id)
                             ->where('estado','Activo')

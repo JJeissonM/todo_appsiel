@@ -138,9 +138,17 @@ Route::get('testimonial/destroy/{testimonial}', 'web\TestimonialController@destr
 Route::post('testimonial/modificar/pregunta/', 'web\TestimonialController@updated')->name('testimonial.modificar');
 Route::put('testimonial/testimonial/seccion/modificar/{seccion}', 'web\TestimonialController@modificar')->name('testimonial.updated');
 
+//LOGIN
+Route::post('login/store', 'web\LoginController@store')->name('login.store');
+Route::put('login/updated/{id}', 'web\LoginController@updated')->name('login.updated');
+
 //		CUSTOM HTML
 Route::resource('custom_html', 'web\CustomHtmlController');
 Route::resource('pqr_form', 'web\PqrFormController');
+
+//		GUIAS ACADEMICAS
+Route::get('pw_guias_planes_clases/{curso_id}/{asignatura_id}', 'web\GuiasAcademicasController@guias_planes_clases');
+Route::get('pw_get_select_asignaturas/{curso_id}/{periodo_lectivo_id?}', 'web\GuiasAcademicasController@get_select_asignaturas');
 
 
 Route::get('formulario_campana', 'web\CustomHtmlController@formulario_campana');

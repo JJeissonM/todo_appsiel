@@ -22,6 +22,26 @@ class Tercero extends Model
 
     public $encabezado_tabla = ['ID', 'Nombre/Razón Social', 'Identificación', 'Establecimiento', 'Dirección', 'Teléfono', 'Acción'];
 
+    public function ciudad()
+    {
+        return $this->belongsTo('App\Core\Ciudad', 'codigo_ciudad');
+    }
+
+    public function cuenta_anticipos()
+    {
+        return $this->belongsTo('App\Contabilidad\ContabCuenta', 'contab_anticipo_cta_id');
+    }
+
+    public function cuenta_cartera()
+    {
+        return $this->belongsTo('App\Contabilidad\ContabCuenta', 'contab_cartera_cta_id');
+    }
+
+    public function cuenta_cxp()
+    {
+        return $this->belongsTo('App\Contabilidad\ContabCuenta', 'contab_cxp_cta_id');
+    }
+
     public static function consultar_registros()
     {
         $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo2';
@@ -44,21 +64,6 @@ class Tercero extends Model
             ->get()[0];
 
         return $registro;
-    }
-
-    public function cuenta_anticipos()
-    {
-        return $this->belongsTo('App\Contabilidad\ContabCuenta', 'contab_anticipo_cta_id');
-    }
-
-    public function cuenta_cartera()
-    {
-        return $this->belongsTo('App\Contabilidad\ContabCuenta', 'contab_cartera_cta_id');
-    }
-
-    public function cuenta_cxp()
-    {
-        return $this->belongsTo('App\Contabilidad\ContabCuenta', 'contab_cxp_cta_id');
     }
 
     public static function crear_nuevo_tercero($modelo_controller, $request)
@@ -90,9 +95,10 @@ class Tercero extends Model
     public static function opciones_campo_select()
     {
         $opciones = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
-            ->select('core_terceros.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
-            ->orderBy('core_terceros.descripcion')
-            ->get();
+                            ->where('core_terceros.estado', 'Activo')
+                            ->select('core_terceros.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
+                            ->orderBy('core_terceros.descripcion')
+                            ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
@@ -292,8 +298,7 @@ class Tercero extends Model
                                 }
                         }';
         $tablas = json_decode($tablas_relacionadas);
-        foreach ($tablas as $una_tabla)
-        {
+        foreach ($tablas as $una_tabla) {
             $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
 
             if (!empty($registro)) {
@@ -317,5 +322,10 @@ class Tercero extends Model
     public function contratantes()
     {
         return $this->hasMany(Contratante::class);
+    }
+
+    public function responsableestudiantes()
+    {
+        return $this->hasMany(Responsableestudiante::class);
     }
 }

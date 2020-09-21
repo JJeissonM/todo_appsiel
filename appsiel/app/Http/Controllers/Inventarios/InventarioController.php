@@ -13,6 +13,7 @@ use Form;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Core\TransaccionController;
+use App\Http\Controllers\Contabilidad\ContabilidadController;
 
 
 // Objetos
@@ -159,8 +160,19 @@ class InventarioController extends TransaccionController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
+    {  
+        $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
+
+        $doc_encabezado_id = InventarioController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
+
+        return redirect('inventarios/' . $doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+    }
+
+
+
+    public function preparar_array_lineas_registros( $request_registros, $modo_ajuste )
     {
-        $lineas_registros = json_decode($request->movimiento);
+        $lineas_registros = json_decode( $request_registros );
 
         // Quitar primera línea
         array_shift($lineas_registros);
@@ -170,24 +182,24 @@ class InventarioController extends TransaccionController
         array_pop($lineas_registros);
 
         $cantidad = count($lineas_registros);
-        for ($i = 0; $i < $cantidad; $i++) {
+        for ($i = 0; $i < $cantidad; $i++)
+        {
 
             $lineas_registros[$i]->inv_motivo_id = explode("-", $lineas_registros[$i]->motivo)[0];
             $lineas_registros[$i]->costo_unitario = (float) substr($lineas_registros[$i]->costo_unitario, 1);
             $lineas_registros[$i]->cantidad = (float) substr($lineas_registros[$i]->cantidad, 0, strpos($lineas_registros[$i]->cantidad, " "));
             $lineas_registros[$i]->costo_total = (float) substr($lineas_registros[$i]->costo_total, 1);
 
-            if (!is_null($request->modo_ajuste)) {
-                if ($request->modo_ajuste == 'solo_cantidad') {
+            if (!is_null($modo_ajuste)) {
+                if ($modo_ajuste == 'solo_cantidad')
+                {
                     $lineas_registros[$i]->costo_unitario = 0;
                     $lineas_registros[$i]->costo_total = 0;
                 }
             }
         }
 
-        $doc_encabezado_id = InventarioController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
-
-        return redirect('inventarios/' . $doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        return $lineas_registros;
     }
 
 
@@ -337,7 +349,8 @@ class InventarioController extends TransaccionController
 
             // Si es una entrada, se calcula el costo promedio por bodega y producto
             //if ($request->core_tipo_transaccion_id==$tipo_entrada) {
-            if ($motivo->movimiento == 'entrada') {
+            if ($motivo->movimiento == 'entrada')
+            {
                 // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
                 $costo_prom = TransaccionController::calcular_costo_promedio($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_unitario, $request->fecha);
 
@@ -346,6 +359,65 @@ class InventarioController extends TransaccionController
             }
         }
     }
+
+
+
+
+    public static function crear_encabezado_remision_ventas( $datos )
+    {
+        // Llamar a los parámetros del archivo de configuración
+        $parametros = config('ventas');
+
+        $datos['core_tipo_transaccion_id'] = $parametros['rm_tipo_transaccion_id'];
+        $datos['core_tipo_doc_app_id'] = $parametros['rm_tipo_doc_app_id'];
+        $datos['estado'] = 'Facturada';
+        $datos['creado_por'] = Auth::user()->email;
+        $datos['consecutivo'] = TipoDocApp::get_consecutivo_actual( $datos['core_empresa_id'], $datos['core_tipo_doc_app_id'] ) + 1;
+
+        TipoDocApp::aumentar_consecutivo( $datos['core_empresa_id'], $datos['core_tipo_doc_app_id'] );
+
+        $doc_encabezado = InvDocEncabezado::create( $datos );
+
+        return $doc_encabezado;
+    }
+
+
+    /*
+        Nota los costos son llamados del costo promedio
+    */
+    public static function crear_registros_remision_ventas( $doc_encabezado, $lineas_registros )
+    {
+
+        $cantidad_registros = count($lineas_registros);
+
+        foreach( $lineas_registros AS $linea )
+        {
+            $costo_unitario = InvCostoPromProducto::get_costo_promedio($doc_encabezado->inv_bodega_id, $linea->inv_producto_id );
+            $cantidad = $linea->cantidad * -1; // Salida de inventarios
+            $costo_total = $cantidad * $costo_unitario;
+
+            $datos = $doc_encabezado->toArray();
+            $datos['inv_doc_encabezado_id'] = $doc_encabezado->id;
+            $datos['core_empresa_id'] = $doc_encabezado->core_empresa_id;
+            $datos['inv_bodega_id'] = $doc_encabezado->inv_bodega_id;
+            $datos['core_tercero_id'] = $doc_encabezado->core_tercero_id;
+
+            $linea_datos = [ 'inv_motivo_id' => $linea->vtas_motivo_id ] + // Warning: $linea tiene un campo especifico
+                            [ 'inv_producto_id' => $linea->inv_producto_id ] + 
+                            [ 'costo_unitario' => $costo_unitario ] +
+                            [ 'cantidad' => $cantidad ] +
+                            [ 'costo_total' => $costo_total ];
+
+            InvDocRegistro::create( $datos + $linea_datos );
+
+            if ( InvProducto::find( $linea->inv_producto_id )->tipo == 'producto')
+            {
+                InvMovimiento::create( $datos + $linea_datos );
+            }
+        }
+    }
+
+
 
     /**
      * Mostrar las EXISTENCIAS de una bodega ($id).
@@ -580,7 +652,9 @@ class InventarioController extends TransaccionController
                             ->where( $campo_busqueda, 'LIKE', $texto_busqueda)
                             ->select(
                                         'id',
-                                        'descripcion')
+                                        'descripcion',
+                                        'unidad_medida1',
+                                        'unidad_medida2')
                             ->get()
                             ->take(7);
 
@@ -610,7 +684,15 @@ class InventarioController extends TransaccionController
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
 
-            $html .=            '" > '.$linea->id.' '.$linea->descripcion.' </a>';
+
+            $descripcion_item = $linea->descripcion . ' (' . $linea->unidad_medida1 . ')';
+
+            if( $linea->unidad_medida2 != '' )
+            {
+                $descripcion_item = $linea->descripcion . ' (' . $linea->unidad_medida1 . ') - Talla: ' . $linea->unidad_medida2;
+            }
+
+            $html .=            '" > '.$linea->id.' '.$descripcion_item.' </a>';
 
             $num_item++;
         }
@@ -643,13 +725,12 @@ class InventarioController extends TransaccionController
 
         if (!empty($producto)) {
             // si no es una Entrada, se debe cambiar el costo unitario, por el costo promedio
-            if ($transaccion_id != 1) {
-                $costo_prom = InvCostoPromProducto::where('inv_bodega_id', '=', $bodega_id)
-                    ->where('inv_producto_id', '=', $producto['id'])
-                    ->value('costo_promedio');
-                if ($costo_prom > 0) {
-                    $producto = array_merge($producto, ['precio_compra' => $costo_prom]);
-                }
+            if ($transaccion_id != 1)
+            {
+                
+                $costo_prom = InvCostoPromProducto::get_costo_promedio( $bodega_id, $producto['id']);
+
+                $producto = array_merge( $producto, ['precio_compra' => $costo_prom] );
             }
 
             // Obtener existencia actual
@@ -664,22 +745,24 @@ class InventarioController extends TransaccionController
     // AL cambiar la selección de un producto en el formulario de ingreso_productos_2.blade.php
     public function post_ajax(Request $request)
     {
-        $producto = InvProducto::find($request->inv_producto_id)->toArray();
+        $producto = InvProducto::find($request->inv_producto_id);
 
-        $costo_prom = InvCostoPromProducto::where('inv_bodega_id', '=', $request->id_bodega)
-                                            ->where('inv_producto_id', '=', $request->inv_producto_id)
-                                            ->value('costo_promedio');
+        $producto->descripcion = $producto->descripcion . ' (' . $producto->unidad_medida1 . ')';
 
-        if ($costo_prom > 0)
+        if( $producto->unidad_medida2 != '' )
         {
-            $producto = array_merge($producto, ['precio_compra' => $costo_prom]);
+            $producto->descripcion .= ' - Talla: ' . $producto->unidad_medida2;
         }
+
+        $costo_prom = InvCostoPromProducto::get_costo_promedio( $request->id_bodega, $request->inv_producto_id);
+
+        $producto->precio_compra = $costo_prom;
 
         // Obtener existencia actual
         $existencia_actual = InvMovimiento::get_existencia_actual($request->inv_producto_id, $request->id_bodega, $request->fecha_aux);
 
-        $producto = array_merge($producto, ['existencia_actual' => $existencia_actual], ['tipo' => $producto['tipo']]);
-
+        $producto->existencia_actual = $existencia_actual;
+        //dd( $producto->toArray() );
         return $producto;
     }
 
@@ -828,9 +911,11 @@ class InventarioController extends TransaccionController
         $registros = InvDocRegistro::where('inv_doc_encabezado_id', $documento->id)->get();
 
         // Calcular costos promedios de cada producto del documento, cuando el motivo del movimiento es de entrada
-        foreach ($registros as $linea) {
+        foreach ($registros as $linea)
+        {
             $motivo = InvMotivo::find($linea->inv_motivo_id);
-            if ($motivo->movimiento == 'entrada') {
+            if ($motivo->movimiento == 'entrada')
+            {
                 // Se CALCULA el nuevo costo promedio del movimiento con el producto YA retirado
                 $costo_prom = TransaccionController::calcular_costo_promedio($linea->inv_bodega_id, $linea->inv_producto_id, $linea->costo_unitario, $documento->fecha);
 
@@ -840,6 +925,30 @@ class InventarioController extends TransaccionController
                 // Marcar cada registro del documento como Anulado
                 $linea->update(['estado' => 'Anulado', 'modificado_por' => Auth::user()->email]);
             }
+        }
+
+        // Para una remisión de ventas, se activa nuevamente el pedido de ventas, si se gene´ró con base en pedido
+        if( $documento->core_tipo_transaccion_id == 24 ) 
+        {
+            $pedido = VtasDocEncabezado::where( 'remision_doc_encabezado_id', $documento->id )->get()->first();
+            if( !is_null($pedido) )
+            {
+                $pedido->remision_doc_encabezado_id = 0;
+                $pedido->estado = "Pendiente";
+                $pedido->save();
+            }       
+        }
+
+        // Para una entrada de almacén, se activa nuevamente la orden de compras, si se generó con base en OC
+        if( $documento->core_tipo_transaccion_id == 35 ) 
+        {
+            $orden_compra = ComprasDocEncabezado::where( 'entrada_almacen_id', $documento->id )->get()->first();
+            if( !is_null($orden_compra) )
+            {
+                $orden_compra->entrada_almacen_id = 0;
+                $orden_compra->estado = "Pendiente";
+                $orden_compra->save();
+            }       
         }
 
         // Marcar documento como Anulado
@@ -1041,6 +1150,46 @@ class InventarioController extends TransaccionController
                             [ 'valor_credito' => ($valor_credito * -1) ] + 
                             [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
                         );
+    }
+
+
+
+    public static function contabilizar_documento_inventario( $documento_id, $detalle_operacion )
+    {
+        $documento = InvDocEncabezado::find( $documento_id );
+
+        // Obtener líneas de registros del documento
+        $registros_documento = InvDocRegistro::where( 'inv_doc_encabezado_id', $documento->id )->get();
+
+        foreach ($registros_documento as $linea)
+        {
+            $motivo = InvMotivo::find( $linea->inv_motivo_id );
+
+            // Si el movimiento es de ENTRADA de inventarios, se DEBITA la cta. de inventarios vs la cta. contrapartida
+            if ( $motivo->movimiento == 'entrada')
+            {
+                // Inventarios (DB)
+                $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea->inv_producto_id );
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, abs($linea->costo_total), 0);
+                
+                // Cta. Contrapartida (CR)
+                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, 0, abs($linea->costo_total) );
+            }
+
+            // Si el movimiento es de SALIDA de inventarios, se ACREDITA la cta. de inventarios vs la cta. contrapartida
+            if ( $motivo->movimiento == 'salida')
+            {
+                // Inventarios (CR)
+                $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea->inv_producto_id );
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, 0, abs($linea->costo_total));
+                
+                // Cta. Contrapartida (DB)
+                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
+                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, abs($linea->costo_total), 0 );
+            }
+                
+        }
     }
 
 }

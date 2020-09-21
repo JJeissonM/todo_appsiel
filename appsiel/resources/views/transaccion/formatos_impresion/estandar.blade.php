@@ -38,7 +38,7 @@
             <td style="border: solid 1px #ddd; margin-top: -40px;" width="70%">
                 @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir' ] )
             </td>
-            <td style="border: solid 1px #ddd; padding-top: -20px;">
+            <td style="border: solid 1px #ddd;">
 
                 <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado->documento_transaccion_descripcion }}</b>
                     <br/>
@@ -63,16 +63,21 @@
         </div>
     @endif
 
+    <?php 
+
+        $elaboro = $doc_encabezado->creado_po;
+    ?>
+
     @yield('encabezado_2')
 
     <div style="border: solid 1px #ddd;">
-        <b>@yield('lbl_tercero')</b> {{ $doc_encabezado->tercero_nombre_completo }}
+        <b>@yield('lbl_tercero')</b> {{ $doc_encabezado->tercero->descripcion }}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <b>NIT / CC:</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+        <b>NIT / CC:</b> {{ number_format( $doc_encabezado->tercero->numero_identificacion, 0, ',', '.') }}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <b>Dirección:</b> {{ $doc_encabezado->direccion1 }}
+        <b>Dirección:</b> {{ $doc_encabezado->tercero->direccion1 }}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <b>Teléfono:</b> {{ $doc_encabezado->telefono1 }}
+        <b>Teléfono:</b> {{ $doc_encabezado->tercero->telefono1 }}
 
         @yield('encabezado_datos_adicionales')
     </div>
@@ -82,6 +87,8 @@
     @yield('tabla_registros_2')
 
     @yield('tabla_registros_3')
+
+    @include('core.firmas')
 
     <table style="width: 100%;">
         <!-- <tr>

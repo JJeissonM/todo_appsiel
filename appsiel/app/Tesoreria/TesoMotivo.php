@@ -9,6 +9,11 @@ use Auth;
 
 class TesoMotivo extends Model
 {
+
+    /*
+        movimiento: (ENUM) { entrada | salida }
+        teso_tipo_motivo: (ENUM) { Recaudo cartera | Otros recaudos | Pago proveedores | Otros pagos | Anticipo | Anticipo proveedor | Traslado | Pago anticipado | Prestamo financiero }
+    */
     protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','descripcion','movimiento','estado','teso_tipo_motivo','contab_cuenta_id'];
 
     public $encabezado_tabla = ['ID','Descripción','Tipo de transacción','Movimiento','Cuenta contrapartida','Estado','Acción'];
@@ -34,6 +39,22 @@ class TesoMotivo extends Model
     public static function opciones_campo_select()
     {
         $opciones = TesoMotivo::where('teso_motivos.estado','Activo')
+                    ->select('teso_motivos.id','teso_motivos.descripcion')
+                    ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
+    public static function opciones_campo_select_tipo_transaccion( $teso_tipo_motivo )
+    {
+        $opciones = TesoMotivo::where('teso_motivos.estado','Activo')
+                    ->where('teso_tipo_motivo',$teso_tipo_motivo)
                     ->select('teso_motivos.id','teso_motivos.descripcion')
                     ->get();
 

@@ -71,6 +71,12 @@ class FactoryCompents
             case "Modal" :
                 $component =  new ModalComponent($this->widget);
                 break;
+            case "Guías académicas":
+                $component = new GuiasAcademicasComponent($this->widget);
+                break;
+            case "Login":
+                $component = new LoginComponent($this->widget);
+                break;
             default:
                 $component = false;
         }

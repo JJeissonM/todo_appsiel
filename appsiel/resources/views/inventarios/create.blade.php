@@ -119,7 +119,7 @@
 			var datos = form_producto.serialize();
 
 
-			// Enviar formulario de ingreso de productos vía POST
+			// Enviar formulario de ingreso de productos vía POST (InventarioController > post_ajax)
 			$.post(url,datos,function(respuesta){
 				
 				var mov = $('#motivo').val().split('-');
@@ -167,9 +167,8 @@
 			});
         }
 
-        
-
-		function reset_form_producto(){
+		function reset_form_producto()
+		{
 			$('#form_producto input[type="text"]').val('');
 			$('#form_producto input[type="text"]').attr('style','background-color:#ECECE5;');
 			$('#form_producto input[type="text"]').attr('disabled','disabled');
@@ -184,6 +183,12 @@
 
 		$(document).ready(function(){
 			$('#core_empresa_id').val(1);
+
+			if ( $('#hay_productos_aux').val() > 1 )
+			{
+				$('#btn_nuevo').show();
+			}
+			
 			
 			$('#fecha').focus();
 
@@ -250,72 +255,6 @@
 		       $('#btn_nuevo').focus();
 		    });
 
-			/**
-				* Al seleccionar un producto
-			
-			$('#inv_producto_id').on('change',function(){
-
-				reset_form_producto();
-				$('#spin').show();
-
-				// Si no se seleccionó un producto, salir
-				if ($('#inv_producto_id').val()==='') {
-					$('#spin').hide();
-					return false;
-				}
-
-				// Preparar datos de los controles para enviar formulario de ingreso de productos
-				var form_producto = $('#form_producto');
-				var url = form_producto.attr('action');
-				$('#id_bodega').val($('#inv_bodega_id').val());
-				var datos = form_producto.serialize();
-
-
-				// Enviar formulario de ingreso de productos vía POST
-				$.post(url,datos,function(respuesta){
-					
-					var mov = $('#motivo').val().split('-');
-					$('#spin').hide();
-					
-					// Se valida la existencia actual
-					$('#existencia_actual').val(respuesta.existencia_actual);
-					$('#saldo_original').val(respuesta.existencia_actual);
-
-					$('#tipo_producto').val(respuesta.tipo);
-
-					if ( respuesta.existencia_actual >= 0) {
-						$('#existencia_actual').attr('style','background-color:#97D897;');
-					}else{
-						
-						$('#existencia_actual').attr('style','background-color:#FF8C8C;');
-						
-						// Si el tipo de producto es "producto" y el movimiento NO es de entrada, no se permite seguir con existencia 0
-						if ( respuesta.tipo == 'producto' && mov[1] != 'entrada' )
-						{
-							$('#btn_agregar').hide(500);
-							return false;
-						}
-					}
-					
-					// Asignar datos a los controles
-					$('#costo_unitario').val(parseFloat(respuesta.precio_compra).toFixed(2));
-					$('#unidad_medida1').val(respuesta.unidad_medida1);
-					
-					// Si la TRANSACCIÓN es una Entrada Directa o Entrada por compras o el producto es tipo servicio, se puede modificar el costo unitario			
-					if ( $('#id_transaccion').val() == 1 || $('#id_transaccion').val() == 35 || respuesta.tipo == 'servicio' )
-					{
-						$('#costo_unitario').removeAttr('disabled');
-						$('#costo_unitario').attr('style','background-color:white;');
-						$('#costo_unitario').select();
-					}else{
-						// Se pasa a ingresar las cantidades
-						$('#cantidad').removeAttr('disabled');
-						$('#cantidad').attr('style','background-color:white;');
-						$('#cantidad').select();
-					}			
-				});
-			});
-			**/
 
 			/*
 			** Al dejar el control del costo unitario, se valida lo ingresado, se inactiva el control
@@ -755,7 +694,7 @@
 		            
 		    function validacion_saldo_movimientos_posteriores()
 		    {
-		        var url = '../inv_validacion_saldo_movimientos_posteriores/' + $('#inv_bodega_id').val() + '/' + $('#inv_producto_id').val() + '/' + $('#fecha').val() + '/' + $('#cantidad').val() + '/' + $('#existencia_actual').val() + '/' + $('#motivo').val().split('-')[1];
+		        var url = "{{ url('inv_validacion_saldo_movimientos_posteriores' ) }}" + '/' + $('#inv_bodega_id').val() + '/' + $('#inv_producto_id').val() + '/' + $('#fecha').val() + '/' + $('#cantidad').val() + '/' + $('#existencia_actual').val() + '/' + $('#motivo').val().split('-')[1];
 
 		        $.get( url )
 		            .done( function( data ) {

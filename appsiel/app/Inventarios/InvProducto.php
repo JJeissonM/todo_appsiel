@@ -22,9 +22,9 @@ class InvProducto extends Model
 {
     //protected $table = 'inv_productos'; 
 
-    protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por'];
+    protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por', 'detalle'];
 
-    public $encabezado_tabla = ['Código','Descripción','tasa_impuesto','detalle','UM-1', 'Grupo inventario','Precio compra','Precio venta','IVA','Tipo','Estado','Acción'];
+    public $encabezado_tabla = [ 'Código', 'Descripción', 'UM-1', 'Grupo inventario','Precio compra','Precio venta','IVA','Tipo','Estado','Acción'];
 
     public function fichas()
     {
@@ -44,36 +44,37 @@ class InvProducto extends Model
     }
 
 
-    public static function get_datos_basicos($grupo_inventario_id, $estado)
+    public static function get_datos_basicos( $grupo_inventario_id, $estado )
     {
-        if ( $grupo_inventario_id == '')
+
+        $array_wheres = [ 
+                            ['inv_productos.core_empresa_id' ,'=', Auth::user()->empresa_id],
+                            ['inv_productos.estado' ,'=', $estado ]
+                        ];
+
+        if ( $grupo_inventario_id != '')
         {
-          $grupo_inventario_id = '%'.$grupo_inventario_id.'%';
-          $operador1 = 'LIKE';
-        }else{
-          $operador1 = '=';
+          $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
         }
 
         $registros = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
-                    ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
-                    ->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
-                    ->where('inv_productos.inv_grupo_id', $operador1, $grupo_inventario_id)
-                    ->where('inv_productos.estado', $estado)
-                    ->select(
-                                'inv_productos.id',
-                                'inv_productos.descripcion',
-                                'inv_productos.unidad_medida1',
-                                'inv_grupos.descripcion AS grupo_descripcion',
-                                'inv_productos.precio_compra',
-                                'inv_productos.precio_venta',
-                                'contab_impuestos.tasa_impuesto',
-                                'inv_productos.tipo',
-                                'inv_productos.estado',
-                                'inv_productos.imagen',
-                                'inv_productos.mostrar_en_pagina_web',
-                                'inv_productos.codigo_barras')
-                    ->orderBy('inv_productos.id','ASC')
-                    ->get();
+                                ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
+                                ->where( $array_wheres )
+                                ->select(
+                                            'inv_productos.id',
+                                            'inv_productos.descripcion',
+                                            'inv_productos.unidad_medida1',
+                                            'inv_grupos.descripcion AS grupo_descripcion',
+                                            'inv_productos.precio_compra',
+                                            'inv_productos.precio_venta',
+                                            'contab_impuestos.tasa_impuesto',
+                                            'inv_productos.tipo',
+                                            'inv_productos.estado',
+                                            'inv_productos.imagen',
+                                            'inv_productos.mostrar_en_pagina_web',
+                                            'inv_productos.codigo_barras')
+                                ->orderBy('inv_productos.id','ASC')
+                                ->get();
 
         foreach ($registros as $item)
         {
