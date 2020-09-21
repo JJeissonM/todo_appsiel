@@ -1153,7 +1153,7 @@ class ContabReportesController extends Controller
         // Creación de gráfico de Torta
         Lava::PieChart('Riqueza', $stocksTable);
 
-        return (object)[ 'activos'=> $saldo_activos, 'pasivos'=> $saldo_pasivos, 'patrimonio' => ( $saldo_activos - $saldo_pasivos ) ];
+        return (object)[ 'activos'=> $saldo_activos, 'pasivos'=> $saldo_pasivos, 'patrimonio' => ( $saldo_activos + $saldo_pasivos ) ];
     }
 
     public static function grafica_flujo_efectivo_neto( $fecha_corte )
@@ -1173,7 +1173,7 @@ class ContabReportesController extends Controller
         // Creación de gráfico de Torta
         Lava::PieChart('FlujoNeto', $stocksTable);
 
-        return (object)[ 'ingresos'=> $saldo_ingresos, 'costos_y_gastos'=> ( $saldo_costos + $saldo_gastos ), 'resultado' => ( $saldo_ingresos - ( $saldo_costos + $saldo_gastos ) ) ];
+        return (object)[ 'ingresos'=> $saldo_ingresos, 'costos_y_gastos'=> ( $saldo_costos + $saldo_gastos ), 'resultado' => ( $saldo_ingresos + ( $saldo_costos + $saldo_gastos ) ) ];
     }
 
     public static function get_saldo_movimiento_por_clase_cuenta( $descripcion_clase_cuenta, $fecha_corte )
