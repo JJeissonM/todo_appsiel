@@ -1139,16 +1139,16 @@ class ContabReportesController extends Controller
 
     public static function grafica_riqueza_neta( $fecha_corte )
     {
-        $saldo_activos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'activos', $fecha_corte ) );
-        $saldo_pasivos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'pasivos', $fecha_corte ) );
+        $saldo_activos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'activos', $fecha_corte );
+        $saldo_pasivos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'pasivos', $fecha_corte );
 
         $stocksTable = Lava::DataTable();
         
         $stocksTable->addStringColumn('rubro')
                     ->addNumberColumn('valor');
         
-        $stocksTable->addRow( [ 'Activos', (float)$saldo_activos ] );
-        $stocksTable->addRow( [ 'Pasivos', (float)$saldo_pasivos ] );
+        $stocksTable->addRow( [ 'Activos', (float)abs( $saldo_activos ) ] );
+        $stocksTable->addRow( [ 'Pasivos', (float)abs( $saldo_pasivos ) ] );
 
         // Creación de gráfico de Torta
         Lava::PieChart('Riqueza', $stocksTable);
@@ -1158,17 +1158,17 @@ class ContabReportesController extends Controller
 
     public static function grafica_flujo_efectivo_neto( $fecha_corte )
     {
-        $saldo_ingresos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'ingresos', $fecha_corte ) );
-        $saldo_costos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'costos', $fecha_corte ) );
-        $saldo_gastos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'gastos', $fecha_corte ) );
+        $saldo_ingresos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'ingresos', $fecha_corte );
+        $saldo_costos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'costos', $fecha_corte );
+        $saldo_gastos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'gastos', $fecha_corte );
 
         $stocksTable = Lava::DataTable();
         
         $stocksTable->addStringColumn('rubro')
                     ->addNumberColumn('valor');
         
-        $stocksTable->addRow( [ 'Ingresos', (float)$saldo_ingresos ] );
-        $stocksTable->addRow( [ 'Costos y Gastos', (float)$saldo_costos + (float)$saldo_gastos ] );
+        $stocksTable->addRow( [ 'Ingresos', (float)abs( $saldo_ingresos ) ] );
+        $stocksTable->addRow( [ 'Costos y Gastos', (float)abs( $saldo_costos ) + (float)abs( $saldo_gastos ) ] );
 
         // Creación de gráfico de Torta
         Lava::PieChart('FlujoNeto', $stocksTable);

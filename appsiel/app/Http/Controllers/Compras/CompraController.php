@@ -881,16 +881,39 @@ class CompraController extends TransaccionController
                                 'valor_impuesto' => $valor_impuesto
                             ] );
 
-        // Contabilizar Cta. Por Pagar (CR)
-        $cxp_id = Proveedor::get_cuenta_por_pagar( $doc_encabezado->proveedor_id );
-        ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo',$doc_encabezado->consecutivo)
-                    ->where('contab_cuenta_id',$cxp_id)
-                    ->update( [ 
-                                'valor_credito' => $nuevo_total_encabezado * -1,
-                                'valor_saldo' => $nuevo_total_encabezado * -1
-                            ] );
+
+        // Contabilizar Cta. Por Pagar (CR) o Caja/Banco Si es cuenta por pagar
+        switch ( $doc_encabezado->forma_pago )
+        {
+            case 'contado':
+                $caja = TesoCaja::get()->first();
+                $cta_caja_id = $caja->contab_cuenta_id;
+                $mov_contab = ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                                            ->where('consecutivo',$doc_encabezado->consecutivo)
+                                            ->where('contab_cuenta_id',$cta_caja_id)
+                                            ->update( [ 
+                                                        'valor_credito' => $nuevo_total_encabezado * -1,
+                                                        'valor_saldo' => $nuevo_total_encabezado * -1
+                                                    ] )
+                break;
+            case 'credito':
+                $cxp_id = Proveedor::get_cuenta_por_pagar( $doc_encabezado->proveedor_id );
+                ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                            ->where('consecutivo',$doc_encabezado->consecutivo)
+                            ->where('contab_cuenta_id',$cxp_id)
+                            ->update( [ 
+                                        'valor_credito' => $nuevo_total_encabezado * -1,
+                                        'valor_saldo' => $nuevo_total_encabezado * -1
+                                    ] );
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+                
 
 
         // 5. Actualizar el registro del documento de inventario
