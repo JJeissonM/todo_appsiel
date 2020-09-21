@@ -895,7 +895,7 @@ class CompraController extends TransaccionController
                                             ->update( [ 
                                                         'valor_credito' => $nuevo_total_encabezado * -1,
                                                         'valor_saldo' => $nuevo_total_encabezado * -1
-                                                    ] )
+                                                    ] );
                 break;
             case 'credito':
                 $cxp_id = Proveedor::get_cuenta_por_pagar( $doc_encabezado->proveedor_id );
