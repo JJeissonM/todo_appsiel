@@ -819,6 +819,8 @@ class FacturaPosController extends TransaccionController
             {
                 foreach( $lineas_recaudos as $linea )
                 {
+                    $contab_cuenta_id = TesoCaja::find( 1 )->contab_cuenta_id;
+
                     $teso_caja_id = explode("-", $linea->teso_caja_id)[0];
                     if ($teso_caja_id != 0)
                     {
