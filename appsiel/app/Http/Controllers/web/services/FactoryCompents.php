@@ -68,6 +68,9 @@ class FactoryCompents
             case "Sticky":
                 $component = new StickyComponent($this->widget);
                 break;
+            case "Modal" :
+                $component =  new ModalComponent($this->widget);
+                break;
             default:
                 $component = false;
         }

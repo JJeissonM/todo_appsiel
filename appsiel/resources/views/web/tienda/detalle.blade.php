@@ -1,6 +1,7 @@
 @extends('web.templates.index')
 
 @section('style')
+
     <link rel="stylesheet" href="{{asset('assets/tienda/css/skeleton.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/normalize.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/custom.css')}}">
@@ -176,19 +177,14 @@
 
          // Comprueba que haya elementos en Local Storage
          function obtenerProductosLocalStorage() {
-
              let productosLS;
-
              // comprobamos si hay algo en localStorage
              if(localStorage.getItem('productos') === null) {
                  productosLS = [];
              } else {
                  productosLS = JSON.parse( localStorage.getItem('productos') );
              }
-
-
              return productosLS;
-
          }
 
     </script>
