@@ -63,7 +63,6 @@
                 <div style="text-align: center;">
                     <br/>
                     <b>{{ $empresa->descripcion }}</b><br/>
-                    <b>{{ $empresa->nombre1 }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }}</b><br/>
                     <b>NIT. {{ number_format($empresa->numero_identificacion, 0, ',', '.') }} - {{ $empresa->digito_verificacion }}</b><br/>
                     {{ $empresa->direccion1 }}, {{ $ciudad->descripcion }} <br/>
                     Teléfono(s): {{ $empresa->telefono1 }}<br/>
