@@ -83,7 +83,7 @@
 	
 	    <table class="banner">
             <tr>
-                <td rowspan="2" width="40%" style="text-align: right;">
+				<td rowspan="2" width="40%" style="text-align: center;">
 		            <img src="{{ $url.'?'.rand(1,1000) }}" style="max-width: 190px; max-height: 80px; display: inline; padding-top: -25px;" />
 		        </td>
         
