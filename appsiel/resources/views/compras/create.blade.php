@@ -130,6 +130,17 @@
 
 		var dias_plazo;
 
+		$.fn.actualizar_medio_recaudo = function(){
+    
+		    var texto_total_recaudos = this.html().substring(1);
+		    
+		    if( parseFloat( texto_total_recaudos ) == 0 )
+		    {
+		        return false;
+		    }
+
+		};
+
 		$(document).ready(function(){
 
 			// Variables de cada línea de ingresos de registros.

@@ -67,11 +67,53 @@ class ReporteController extends Controller
 
         $encabezados_documentos = FacturaPos::consultar_encabezados_documentos( $pdv_id, $fecha_desde, $fecha_hasta );
 
+        $encabezados_documentos2 = FacturaPos::where( 'pdv_id', $pdv_id)->where( 'estado', 'Pendiente')->whereBetween( 'fecha', [$fecha_desde, $fecha_hasta] )->get();
+
+        //$this->resumen_por_medios_recaudos( $encabezados_documentos2 );
+
         $tabla_encabezados_documentos = View::make( 'ventas_pos.tabla_encabezados_documentos', compact( 'encabezados_documentos', 'pdv' ) )->render();
         
         return $tabla_encabezados_documentos;
 
     }
+
+
+    public function resumen_por_medios_recaudos( $encabezados_documentos )
+    {
+        foreach ( $encabezados_documentos as $documento )
+        {
+            $array_totales = $this->get_total_por_medios_recaudos( $documento->lineas_registros_medios_recaudos );
+            dd( $array_totales[0] );
+        }
+
+        //$tabla_encabezados_documentos = View::make( 'ventas_pos.tabla_resumen_por_medios_recaudos', compact( 'encabezados_documentos', 'pdv' ) )->render();
+        
+        //return $tabla_encabezados_documentos;
+    }
+
+    public function get_total_por_medios_recaudos( $lineas_registros_medios_recaudos )
+    {
+        $array_totales = [];
+        $lineas_recaudos = json_decode( $lineas_registros_medios_recaudos );
+
+        if ( !is_null( $lineas_recaudos ) )
+        {
+            $i = 0;
+            foreach( $lineas_recaudos as $linea )
+            {
+                /*$array_totales[$i]['medio_recaudo'] = explode("-", $linea->teso_medio_recaudo_id)[1];
+                $array_totales[$i]['total'] = (float)substr($linea->valor, 1);
+                $i++;*/
+                $array_totales[] = collect( ['medio_recaudo' => explode("-", $linea->teso_medio_recaudo_id)[1], 'total' => (float)substr($linea->valor, 1) ] );
+            }
+        }
+
+        return $array_totales;
+
+    }
+
+
+
 
     public function teso_movimiento_caja_pdv( $fecha_desde, $fecha_hasta, $teso_caja_id )
     {

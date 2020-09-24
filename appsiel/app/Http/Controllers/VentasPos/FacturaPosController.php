@@ -203,13 +203,17 @@ class FacturaPosController extends TransaccionController
 
         $aux = array_pop( $lineas_registros_medios_recaudos ); // eliminar ultimo elemento del array
 
-        if( json_encode( $lineas_registros_medios_recaudos ) == "[]" )
+        $medios_recaudos = json_encode( $lineas_registros_medios_recaudos );
+
+        if( $medios_recaudos == "[]" )
         {
             $pdv = Pdv::find( $request_2->pdv_id );
 
             $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"'.$pdv->caja_default_id.'-'.$pdv->caja->descripcion.'","teso_cuenta_bancaria_id":"0-","valor":"$'. ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) .'"}]';
         }else{
-            $request_2['lineas_registros_medios_recaudos'] = json_encode( $lineas_registros_medios_recaudos ); // Se convierte a string JSON
+
+            $valor = json_decode( $medios_recaudos )[0]->valor;
+            $request_2['lineas_registros_medios_recaudos'] = str_replace($valor, "$" . ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) , $medios_recaudos);
         }
     }
 

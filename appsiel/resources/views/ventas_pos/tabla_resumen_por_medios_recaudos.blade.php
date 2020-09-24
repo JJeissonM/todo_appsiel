@@ -18,7 +18,7 @@
                     @for( $i=1; $i < $cantidad; $i++)
                         <td class="table-text">
                             @if( $i == 7 )
-                                {!! ( $fila['campo'.$i] ) !!}
+                                {!! formatear_medio_recaudo( $fila['campo'.$i] ) !!}
                             @else
                                 {!! $fila['campo'.$i] !!}
                             @endif                                    

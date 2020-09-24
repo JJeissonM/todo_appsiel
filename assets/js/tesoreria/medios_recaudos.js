@@ -15,11 +15,11 @@ $("#btn_nuevo").click(function(event){
 });
 
 // Al mostrar la ventana modal
-$("#recaudoModal,#myModal2").on('shown.bs.modal', function () {
+$("#recaudoModal").on('shown.bs.modal', function () {
     $('#teso_medio_recaudo_id').focus();
 });
 // Al OCULTAR la ventana modal
-$("#recaudoModal,#myModal2").on('hidden.bs.modal', function () {
+$("#recaudoModal").on('hidden.bs.modal', function () {
     $('#btn_continuar2').focus();
 });
 
