@@ -856,8 +856,8 @@ use App\Http\Controllers\Sistema\VistaController;
                 }
 
                 // Desactivar el click del botón
-                $( this ).off( event );
-                $( this ).attr( 'disabled', 'disabled' );
+                //$( this ).off( event );
+                //$( this ).attr( 'disabled', 'disabled' );
 
                 $('#linea_ingreso_default').remove();
                 $('#linea_ingreso_default_aux').remove();
@@ -882,12 +882,14 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 $.post(url, data, function (doc_encabezado_consecutivo) {
                     $('title').append(doc_encabezado_consecutivo);
+                    /*
                     $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
                     llenar_tabla_productos_facturados();
 
                     ventana_imprimir();
 
                     location.reload();
+                    */
                 });
 
             });
