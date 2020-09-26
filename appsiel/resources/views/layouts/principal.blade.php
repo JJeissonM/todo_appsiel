@@ -200,10 +200,10 @@
 
 		@if( app()->environment() != 'demo' || !in_array( Input::get('id'), $aplicaciones_inactivas_demo ) )
 
-		@yield('content')
+			@yield('content')
 
 		@else
-		@include('layouts.demo_pagina_bloqueo_aplicaciones')
+			@include('layouts.demo_pagina_bloqueo_aplicaciones')
 		@endif
 	</div>
 
