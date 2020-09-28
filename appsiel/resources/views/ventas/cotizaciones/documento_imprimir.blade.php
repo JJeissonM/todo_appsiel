@@ -58,6 +58,11 @@
     <table class="table table-bordered">
         <tr>
             <td style="border: solid 1px #ddd;">
+                <b>Dirección:</b> {{ $doc_encabezado->tercero->direccion1 }}, {{ $doc_encabezado->tercero->ciudad->descripcion }} - {{ $doc_encabezado->tercero->ciudad->departamento->descripcion }}
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <b>Teléfono:</b> {{ $doc_encabezado->tercero->telefono1 }}
+                    <br>
+
                 @if( $doc_encabezado->descripcion != '' )
                     <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
                     <br>

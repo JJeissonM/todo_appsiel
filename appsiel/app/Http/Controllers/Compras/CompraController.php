@@ -55,6 +55,7 @@ use App\CxP\CxpAbono;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
+use App\Tesoreria\RegistrosMediosPago;
 
 use App\Contabilidad\Impuesto;
 
@@ -92,6 +93,24 @@ class CompraController extends TransaccionController
     public function store(Request $request)
     {
         //$lineas_registros = json_decode($request->lineas_registros);
+
+        $registros_medio_pago = new RegistrosMediosPago;
+
+        $lineas_recaudos = $registros_medio_pago->formatear_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'] );
+
+        $datos = [];
+        foreach( $lineas_recaudos as $linea )
+        {
+            $datos['teso_motivo_id'] = explode("-", $linea->teso_motivo_id)[0];
+            $datos['teso_caja_id'] = explode("-", $linea->teso_caja_id)[0];
+            $datos['teso_cuenta_bancaria_id'] = explode("-", $linea->teso_cuenta_bancaria_id)[0];
+            $datos['valor_movimiento'] = (float)substr($linea->valor, 1);
+
+            dd( $datos );
+
+            //TesoMovimiento::create( $datos );
+        }
+
 
         // 1ro. Crear documento de ENTRADA de inventarios (REMISIÓN)
         // WARNING. HECHO MANUALMENTE
@@ -348,16 +367,30 @@ class CompraController extends TransaccionController
         
         if ( $forma_pago == 'contado')
         {
-            // WARNING: Esta cuenta en realidad la debe tomar de la caja por defecto asociada al usuario,
-            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            $caja = TesoCaja::get()->first();
-        
-            // Agregar el movimiento a tesorería
-            $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','salida')->get()->first()->id;
-            $datos['teso_caja_id'] = $caja->id;
-            $datos['teso_cuenta_bancaria_id'] = 0;
-            $datos['valor_movimiento'] = $total_documento * -1;// Motivo de salida, movimiento negativo
-            TesoMovimiento::create( $datos );
+
+            $lineas_recaudos = json_decode( $datos['lineas_registros_medios_recaudos'] );
+
+            if ( !is_null( $lineas_recaudos ) ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
+            {
+                foreach( $lineas_recaudos as $linea )
+                {
+                    $datos['teso_motivo_id'] = explode("-", $linea->teso_motivo_id)[0];
+                    $datos['teso_caja_id'] = explode("-", $linea->teso_caja_id)[0];
+                    $datos['teso_cuenta_bancaria_id'] = explode("-", $linea->teso_cuenta_bancaria_id)[0];
+                    $datos['valor_movimiento'] = (float)substr($linea->valor, 1);
+                    TesoMovimiento::create( $datos );
+                }
+            }else{
+                $caja = TesoCaja::get()->first();
+            
+                // Agregar el movimiento a tesorería
+                $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','salida')->get()->first()->id;
+                $datos['teso_caja_id'] = $caja->id;
+                $datos['teso_cuenta_bancaria_id'] = 0;
+                $datos['valor_movimiento'] = $total_documento * -1;// Motivo de salida, movimiento negativo
+                TesoMovimiento::create( $datos );
+            }
+
         }
     }
 

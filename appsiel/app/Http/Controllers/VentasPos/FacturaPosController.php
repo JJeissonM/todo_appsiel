@@ -212,7 +212,7 @@ class FacturaPosController extends TransaccionController
             $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"'.$pdv->caja_default_id.'-'.$pdv->caja->descripcion.'","teso_cuenta_bancaria_id":"0-","valor":"$'. ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) .'"}]';
         }else{
 
-            // CUANDO HAY VARIOS MEDIOS DE RECAUDOS... CUADRAR CON EL TOTAL DE LA FACTURA
+            // CUANDO HAY VARIOS MEDIOS DE RECAUDOS... ¿CÓMO CUADRAR CON EL TOTAL DE LA FACTURA?
 
 
             $valor = json_decode( $medios_recaudos )[0]->valor;

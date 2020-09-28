@@ -75,7 +75,7 @@
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <b>NIT / CC:</b> {{ number_format( $doc_encabezado->tercero->numero_identificacion, 0, ',', '.') }}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <b>Dirección:</b> {{ $doc_encabezado->tercero->direccion1 }}
+        <b>Dirección:</b> {{ $doc_encabezado->tercero->direccion1 }}, {{ $doc_encabezado->tercero->ciudad->descripcion }} - {{ $doc_encabezado->tercero->ciudad->departamento->descripcion }}
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <b>Teléfono:</b> {{ $doc_encabezado->tercero->telefono1 }}
 

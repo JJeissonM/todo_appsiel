@@ -168,7 +168,7 @@ class ArticleController extends Controller
     {
         $article = Article::find($id);
         if ($article) {
-            if ($article->imagen)
+            if ($article->imagen != '')
                 unlink($article->imagen);
             $flag =  $article->delete();
             if ($flag) {
