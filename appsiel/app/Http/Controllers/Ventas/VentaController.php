@@ -57,8 +57,10 @@ use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
 use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
+use App\Tesoreria\RegistrosMediosPago;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Impuesto;
@@ -77,7 +79,7 @@ class VentaController extends TransaccionController
 
         // Enviar valores predeterminados
         // WARNING!!!! Este motivo es de INVENTARIOS
-        $motivos = ['10-salida'=>'Ventas POS'];
+        $motivos = [ '10-salida' => 'Ventas POS' ];
 
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros( VtasTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
@@ -98,6 +100,10 @@ class VentaController extends TransaccionController
 
         $lineas_registros = json_decode($request->lineas_registros);
 
+        $registros_medio_pago = new RegistrosMediosPago;
+
+        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'] );
+
         // TRES TRANSACCIONES
 
         // 1ra. Crear documento de salida de inventarios (REMISIÓN)
@@ -110,6 +116,7 @@ class VentaController extends TransaccionController
 
         // 3ra. Crear Registro del documento de ventas
         $request['creado_por'] = Auth::user()->email;
+        $request['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
         VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
         $modelo = Modelo::find( $request->url_id_modelo );
@@ -252,14 +259,42 @@ class VentaController extends TransaccionController
         {
             if( is_null( $caja_banco_id ) )
             {
-                $caja = TesoCaja::get()->first();
+                if ( empty( $datos['registros_medio_pago'] ) )
+                {   
+                    // Por defecto
+                    $caja = TesoCaja::get()->first();
+                    $teso_caja_id = $caja->id;
+                    $teso_cuenta_bancaria_id = 0;
+                    $contab_cuenta_id = $caja->contab_cuenta_id;
+                }else{
+
+                    // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
+                    $contab_cuenta_id = TesoCaja::find( 1 )->contab_cuenta_id;
+
+                    $teso_caja_id = $datos['registros_medio_pago']['teso_caja_id'];
+                    if ($teso_caja_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
+                    }
+
+                    $teso_cuenta_bancaria_id = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
+                    if ($teso_cuenta_bancaria_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
+                    }
+
+                    $total_documento = $datos['registros_medio_pago']['valor_recaudo'];
+                    
+                }
             }else{
+                // $caja_banco_id se manda desde Ventas POS
                 $caja = TesoCaja::find( $caja_banco_id );
+                $teso_caja_id = $caja->id;
+                $teso_cuenta_bancaria_id = 0;
+                $contab_cuenta_id = $caja->contab_cuenta_id;
             }
             
-            $cta_caja_id = $caja->contab_cuenta_id;
-            
-            ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, $total_documento, 0, $caja->id, 0);
+            ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $total_documento, 0, $teso_caja_id, $teso_cuenta_bancaria_id);
         }
     }
 
@@ -300,19 +335,28 @@ class VentaController extends TransaccionController
             $datos['estado'] = 'Pendiente';
             DocumentosPendientes::create( $datos );
         }
-        
-        // Agregar el movimiento a tesorería
+
         if ( $forma_pago == 'contado')
         {
-            // WARNING: La caja la debe tomar de la caja por defecto asociada al usuario,
-            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            $caja = TesoCaja::get()->first();
-            // El motivo lo debe traer de unparámetro de la configuración
-            $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
-            $datos['teso_caja_id'] = $caja->id;
-            $datos['teso_cuenta_bancaria_id'] = 0;
-            $datos['valor_movimiento'] = $total_documento;
-            TesoMovimiento::create( $datos );
+            if ( empty( $datos['registros_medio_pago'] ) )
+            {
+                // WARNING: La caja la debe tomar de la caja por defecto asociada al usuario,
+                // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
+                $caja = TesoCaja::get()->first();
+                // El motivo lo debe traer de unparámetro de la configuración
+                $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
+                $datos['teso_caja_id'] = $caja->id;
+                $datos['teso_cuenta_bancaria_id'] = 0;
+                $datos['valor_movimiento'] = $total_documento;
+                TesoMovimiento::create( $datos );
+            }else{
+                // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
+                $datos['teso_motivo_id'] = $datos['registros_medio_pago']['teso_motivo_id'];
+                $datos['teso_caja_id'] = $datos['registros_medio_pago']['teso_caja_id'];
+                $datos['teso_cuenta_bancaria_id'] = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
+                $datos['valor_movimiento'] = $datos['registros_medio_pago']['valor_recaudo'];
+                TesoMovimiento::create( $datos );
+            }
         }
     }
 
@@ -336,6 +380,9 @@ class VentaController extends TransaccionController
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
+        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo )->first();
+        $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
+
         // Datos de los abonos aplicados a la factura
         $abonos = CxcAbono::get_abonos_documento( $doc_encabezado );
 
@@ -355,7 +402,7 @@ class VentaController extends TransaccionController
             $vista = Input::get('vista');
         }
 
-        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'encabezado_documento', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito') );
+        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'encabezado_documento', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito','medios_pago') );
     }
 
 
@@ -891,7 +938,11 @@ class VentaController extends TransaccionController
     {
         $linea_registro = VtasDocRegistro::find( $request->linea_factura_id );
         $doc_encabezado = VtasDocEncabezado::find( $linea_registro->vtas_doc_encabezado_id );
+        
+        // NO ACTUALIZA BIEN LA CONTABILIDAD DEL MOV DE TESORERIA,POR LOS MEDIOS DE RECAUDOS
+        return redirect( 'ventas/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','En estos momentos no se pueden editar registros. Consultar con el administrador.');
 
+        
         // Verificar si la factura tiene recaudos, si tiene no se pueden modificar sus registros
         $recaudos = CxcAbono::where('doc_cxc_transacc_id',$doc_encabezado->core_tipo_transaccion_id)->where('doc_cxc_tipo_doc_id',$doc_encabezado->core_tipo_doc_app_id)->where('doc_cxc_consecutivo',$doc_encabezado->consecutivo)->get()->toArray();
 

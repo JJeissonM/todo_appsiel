@@ -37,6 +37,11 @@ class ComprasDocRegistro extends Model
     // encabezado_tabla para la vista index
 	public $encabezado_tabla = ['Encabezado documento', 'Producto', 'Precio', 'Cantidad', 'Total', 'Base IVA', 'Tasa IVA', 'Total IVA', 'Cantidad recibida', 'Acción'];
 
+    public function item()
+    {
+        return $this->belongsTo( 'App\Inventarios\InvProducto','inv_producto_id');
+    }
+
 	public static function consultar_registros()
 	{
 	    $registros = ComprasDocRegistro::select('compras_doc_registros.compras_doc_encabezado_id AS campo1', 'compras_doc_registros.inv_producto_id AS campo2', 'compras_doc_registros.precio_unitario AS campo3', 'compras_doc_registros.cantidad AS campo4', 'compras_doc_registros.precio_total AS campo5', 'compras_doc_registros.base_impuesto AS campo6', 'compras_doc_registros.tasa_impuesto AS campo7', 'compras_doc_registros.valor_impuesto AS campo8', 'compras_doc_registros.cantidad_recibida AS campo9', 'compras_doc_registros.id AS campo10')
@@ -59,6 +64,7 @@ class ComprasDocRegistro extends Model
                                 'inv_productos.id AS producto_id',
                                 'inv_productos.descripcion AS producto_descripcion',
                                 'inv_productos.unidad_medida1',
+                                'inv_productos.unidad_medida2',
                                 'inv_productos.referencia',
                                 'compras_doc_registros.inv_motivo_id',
                                 'compras_doc_registros.inv_producto_id',
@@ -92,7 +98,9 @@ class ComprasDocRegistro extends Model
                                 'inv_productos.id AS producto_id',
                                 'inv_productos.descripcion AS producto_descripcion',
                                 'inv_productos.unidad_medida1',
+                                'inv_productos.unidad_medida2',
                                 'inv_productos.referencia',
+                                'compras_doc_registros.inv_producto_id',
                                 'inv_productos.codigo_barras',
                                 'compras_doc_registros.precio_unitario',
                                 'compras_doc_registros.cantidad',

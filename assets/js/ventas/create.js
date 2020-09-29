@@ -893,7 +893,13 @@ $(document).ready(function(){
 					alert('No ha ingresado productos.');
 					reset_linea_ingreso_default();
 					return false;		  			
-				}				
+				}
+
+				if( !comparar_total_factura_total_medios_recaudos()  )
+				{
+					alert('El total de recaudos no coincide con el total de la factura.');
+					return false;
+				}
 
 				// Desactivar el click del botón
 				$( this ).off( event );
@@ -904,6 +910,7 @@ $(document).ready(function(){
 				{
 					// Se transfoma la tabla a formato JSON a través de un plugin JQuery
 					var table = $('#ingreso_registros').tableToJSON();
+
 				}else{
 
 					var table = $('#tabla_registros_documento').tableToJSON();
@@ -911,6 +918,13 @@ $(document).ready(function(){
 
 				// Se asigna el objeto JSON a un campo oculto del formulario
 		 		$('#lineas_registros').val(JSON.stringify(table));
+
+				/*		Para Recaudos      */
+		 		// Se transfoma la tabla a formato JSON a través de un plugin JQuery
+				var tabla_recaudos = $('#ingreso_registros_medios_recaudo').tableToJSON();
+
+				// Se asigna el objeto JSON a un campo oculto del formulario
+		 		$('#lineas_registros_medios_recaudo').val( JSON.stringify(tabla_recaudos) );
 				
 			 	// No se puede enviar controles disabled
 				habilitar_campos_encabezado();
@@ -918,6 +932,26 @@ $(document).ready(function(){
 		 		// Enviar formulario
 				$('#form_create').submit();					
 			});
+
+
+
+			function comparar_total_factura_total_medios_recaudos()
+			{
+				var valor_total_recaudos = $('#total_valor_total').text();
+				
+				// Se reemplaza varias veces el "." por vacio, y luego la coma por punto
+				var total_factura = $('#total_factura').text().replace(".","").replace(".","").replace(".","").replace(".","").replace(",",".");
+
+				console.log( [ valor_total_recaudos, parseFloat( valor_total_recaudos.substring(1) ), total_factura, parseFloat( total_factura.substring(2) ) ] );
+
+				if( valor_total_recaudos !== '$0.00' && parseFloat( valor_total_recaudos.substring(1) ) !== parseFloat( total_factura.substring(2) )  )
+				{
+					return false;
+				}
+
+				return true;
+			}
+
 
 
 			function calcular_precio_total()
