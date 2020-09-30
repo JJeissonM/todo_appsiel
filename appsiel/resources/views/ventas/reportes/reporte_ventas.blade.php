@@ -39,7 +39,7 @@
                 <th> {{ $primer_encabezado }} </th>
                 <th> Cantidad total </th>
                 <th> Precio promedio </th>
-                <th> Venta total </th>
+                <th> Venta total <i class="fa fa-sort-amount-desc"></i></th>
             </tr>
         </thead>
         <tbody>
@@ -77,6 +77,47 @@
                     <td> ${{ number_format( $precio_promedio, 2, ',', '.') }} </td>
                     <td> ${{ number_format( $precio, 2, ',', '.') }} </td>
                 </tr>
+
+                @if($detalla_productos)
+                    <?php 
+                        $items = $coleccion_movimiento->groupBy('inv_producto_id');
+                    ?>
+                    <tr>
+                        <td colspan="4">
+                            <table class="table table-bordered">
+                                @foreach( $items AS $item )
+                                    <tr>
+                                        <td>
+                                            {{ $item->first()->producto }}
+                                        </td>
+                                        <?php 
+                                            $cantidad_item = $item->sum('cantidad');
+                                        ?>
+                                        <td>
+                                            {{ number_format( $cantidad_item, 2, ',', '.') }}
+                                        </td>
+                                        @php
+                                            if ( $iva_incluido )
+                                            {
+                                                $precio_item = $item->sum('precio_total');
+                                            }else{
+                                                $precio_item = $item->sum('base_impuesto_total');
+                                            }
+
+                                            $precio_promedio_item = 0; 
+                                            if( $cantidad_item != 0 )
+                                            { 
+                                                $precio_promedio_item = $precio_item / $cantidad_item; 
+                                            } 
+                                        @endphp
+                                        <td> ${{ number_format( $precio_promedio_item, 2, ',', '.') }} </td>
+                                        <td> ${{ number_format( $precio_item, 2, ',', '.') }} </td>
+                                    </tr>         
+                                @endforeach
+                            </table>
+                        </td>
+                    </tr>
+                @endif
 
              <?php
                 

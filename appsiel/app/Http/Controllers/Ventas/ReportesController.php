@@ -75,43 +75,6 @@ class ReportesController extends Controller
         return $tabla;
     }
 
-    /*
-    public static function grafica_ventas_diarias($fecha_inicial, $fecha_final)
-    {
-        $registros = VtasMovimiento::whereBetween('fecha', [$fecha_inicial, $fecha_final])
-                                    ->select(DB::raw('SUM(precio_total) as total_ventas'), 'fecha', 'tasa_impuesto')
-                                    ->groupBy('fecha')
-                                    ->orderBy('fecha')
-                                    ->get();
-
-        // Gráfica de rendimiento académico
-        $stocksTable1 = Lava::DataTable();
-
-        $stocksTable1->addStringColumn('Ventas')
-            ->addNumberColumn('Fecha');
-
-        $i = 0;
-        $tabla = [];
-        foreach ($registros as $linea)
-        {
-            $total_ventas = (float) $linea->total_ventas / (1 + (float)$linea->tasa_impuesto / 100 );
-            $stocksTable1->addRow([$linea->fecha, $total_ventas]);
-
-            $tabla[$i]['fecha'] = $linea->fecha;
-            $tabla[$i]['valor'] = $total_ventas;
-            $i++;
-        }
-
-        // Se almacena la gráfica en ventas_diarias, luego se llama en la vista [ como mágia :) ]
-        Lava::BarChart('ventas_diarias', $stocksTable1, [
-            'is3D' => True,
-            'orientation' => 'horizontal',
-        ]);
-
-        return $tabla;
-    }
-    */
-
     public function precio_venta_por_producto(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -135,10 +98,6 @@ class ReportesController extends Controller
 
         $movimiento = VtasMovimiento::get_precios_ventas($fecha_desde, $fecha_hasta, $inv_producto_id, $operador1, $cliente_id, $operador2);
 
-        //dd( $fecha_desde . ' * ' .  $fecha_hasta . ' * ' .  $inv_producto_id . ' * ' .  $operador1 . ' * ' .  $cliente_id . ' * ' .  $operador2 );
-
-        //dd( $movimiento );
-
         $vista = View::make('ventas.reportes.precio_venta', compact('movimiento'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
@@ -159,8 +118,6 @@ class ReportesController extends Controller
 
         $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
 
-        //dd($movimiento);
-
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio.';
         if ( !$iva_incluido )
@@ -168,7 +125,7 @@ class ReportesController extends Controller
             $mensaje = 'IVA <b>NO</b> incluido en precio.';
         }
 
-        $vista = View::make('ventas.reportes.reporte_ventas', compact('movimiento','agrupar_por','mensaje','iva_incluido'))->render();
+        $vista = View::make('ventas.reportes.reporte_ventas', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

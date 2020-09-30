@@ -44970,47 +44970,41 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     103 => 
     array (
-      'orden' => 10,
-      'core_reporte_id' => 24,
-      'core_campo_id' => 725,
-    ),
-    104 => 
-    array (
       'orden' => 2,
       'core_reporte_id' => 29,
       'core_campo_id' => 739,
     ),
-    105 => 
+    104 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 30,
       'core_campo_id' => 766,
     ),
-    106 => 
+    105 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 33,
       'core_campo_id' => 767,
     ),
-    107 => 
+    106 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 35,
       'core_campo_id' => 768,
     ),
-    108 => 
+    107 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 36,
       'core_campo_id' => 771,
     ),
-    109 => 
+    108 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 22,
       'core_campo_id' => 773,
     ),
-    110 => 
+    109 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 28,
