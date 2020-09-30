@@ -109,7 +109,7 @@ class VtasMovimiento extends Model
             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
             ->select(
                         'vtas_movimientos.inv_producto_id',
-                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'),
+                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
                         'core_terceros.descripcion AS cliente',
                         'vtas_movimientos.cliente_id',
                         'vtas_clases_clientes.descripcion AS clase_cliente',
