@@ -44,11 +44,17 @@
 				        		}else{
 				        			$productos[$i]['Costo'] = 0;	
 				        		}
+
+				        		$unidad_medida = $productos[$i]['unidad_medida1'];
+				        		if( $productos[$i]['unidad_medida2'] != '' )
+				        		{
+				        			$unidad_medida = $productos[$i]['unidad_medida1'] . ' - Talla: ' . $productos[$i]['unidad_medida2'];
+				        		}
 				        	?>
 					            <tr>
 					                <td>{{ $productos[$i]['id'] }}</td>
 					                <td>{{ $productos[$i]['descripcion'] }}</td>
-					                <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} {{ $productos[$i]['unidad_medida1'] }}</td>
+					                <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} {{ $unidad_medida }}</td>
 					                <td>{{ '$'.number_format($costo_unitario, 2, ',', '.') }}</td>
 					                <td>{{ '$'.number_format($productos[$i]['Costo'], 2, ',', '.') }}</td>
 					            </tr>
