@@ -138,17 +138,18 @@ class TrasladoEfectivosController extends TransaccionController
     // AJAX: enviar fila para el ingreso de registros al elaborar pago
     public function ajax_get_fila()
     {
-        $medios_recaudo = $this->get_medios_recaudo();
-        $cajas = $this->get_cajas();
-        $cuentas_bancarias = $this->get_cuentas_bancarias();
+        $medios_recaudo = TesoMedioRecaudo::opciones_campo_select();
+
+        $cajas = TesoCaja::opciones_campo_select();
+        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
         $motivos = TesoMotivo::where('teso_tipo_motivo', 'Traslado')->get()->pluck('descripcion', 'movimiento');
 
-        $btn_borrar = "<a type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='glyphicon glyphicon-trash'></i></a>";
-        $btn_confirmar = "<a type='button' class='btn btn-success btn-xs btn_confirmar'><i class='glyphicon glyphicon-ok'></i></a>";
+        $btn_borrar = "<button class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-trash'></i></button>";
+        $btn_confirmar = "<button class='btn btn-success btn-xs btn_confirmar'><i class='fa fa-check'></i></button>";
 
         $tr = '<tr id="linea_ingreso_default" class="linea_ingreso_default">
                     <td>
-                        ' . Form::select('teso_medio_recaudo_id', $medios_recaudo, null, ['id' => 'teso_medio_recaudo_id', 'class' => 'lista_desplegable', 'onchange' => 'cambio(event)']) . '
+                        ' . Form::select('teso_medio_recaudo_id', $medios_recaudo, null, ['id' => 'teso_medio_recaudo_id', 'class' => 'lista_desplegable' ] ) . '
                     </td>
                     <td>
                         ' . Form::select('motivo', $motivos, null, ['id' => 'teso_motivo_id', 'class' => 'lista_desplegable']) . '
@@ -160,46 +161,9 @@ class TrasladoEfectivosController extends TransaccionController
                         ' . Form::select('teso_cuenta_bancaria_id', $cuentas_bancarias, null, ['id' => 'teso_cuenta_bancaria_id', 'class' => 'lista_desplegable']) . '
                     </td>
                     <td> ' . Form::text('valor', null, ['id' => 'valor_total', 'class' => 'caja_texto']) . ' </td>
-                    <td>' . $btn_confirmar . $btn_borrar . '</td>
+                    <td> <div class="btn-group"> ' . $btn_confirmar . $btn_borrar . ' </div> </td>
                 </tr>';
         return $tr;
-    }
-
-    public static function get_medios_recaudo()
-    {
-
-        $registros = TesoMedioRecaudo::all();
-        $vec_m[''] = '';
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id . '-' . $fila->comportamiento] = $fila->descripcion;
-        }
-
-        return $vec_m;
-    }
-
-    public static function get_cajas()
-    {
-        $vec_m = [];
-        $registros = TesoCaja::where('core_empresa_id', Auth::user()->empresa_id)->get();
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id] = $fila->descripcion;
-        }
-
-        return $vec_m;
-    }
-
-    public static function get_cuentas_bancarias()
-    {
-        $vec_m = [];
-        $registros = TesoCuentaBancaria::leftJoin('teso_entidades_financieras', 'teso_entidades_financieras.id', '=', 'teso_cuentas_bancarias.entidad_financiera_id')
-            ->where('core_empresa_id', Auth::user()->empresa_id)
-            ->select('teso_cuentas_bancarias.id', 'teso_cuentas_bancarias.descripcion AS cta_bancaria', 'teso_entidades_financieras.descripcion AS entidad_financiera')
-            ->get();
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id] = $fila->entidad_financiera . ': ' . $fila->cta_bancaria;
-        }
-
-        return $vec_m;
     }
 
     public function anular_traslado($id)
@@ -212,38 +176,19 @@ class TrasladoEfectivosController extends TransaccionController
             'core_tipo_doc_app_id' => $documento->core_tipo_doc_app_id,
             'consecutivo' => $documento->consecutivo];
 
-        // >>> Validaciones inciales
-
-        // Está en un documento cruce de cartera?
-//        $cantidad = CxcAbono::where($array_wheres)
-//            ->where('doc_cruce_transacc_id','<>',0)
-//            ->count();
-//
-//        if($cantidad != 0)
-//        {
-//            return redirect( 'tesoreria/recaudos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Recaudo NO puede ser anulado. Está en documento cruce de cartera.');
-//        }
 
         // >>> Eliminación
 
         // 1ro. Borrar registros contables
         ContabMovimiento::where($array_wheres)->delete();
 
-//        // 2do. Si es un anticipo, se elimina el movimimeto de cartera
-//        if ( $documento->teso_tipo_motivo == 'Anticipo' )
-//        {
-//            $cxc_movimiento = CxcMovimiento::where($array_wheres)->delete();
-//        }
-
-        // FALTA CUANDO SE TRATA DE UNA CANCELACION DE CARTERA
-
-        // 3ro. Se elimina el movimiento de tesorería
+        // 2do. Se elimina el movimiento de tesorería
         TesoMovimiento::where($array_wheres)->delete();
 
-        // 5to. Se eliminan los registros del documento
+        // 3ro. Se eliminan los registros del documento
         TesoDocRegistro::where('teso_encabezado_id', $documento->id)->update(['estado' => 'Anulado']);
 
-        // 4to. Se elimina el documento de cruce
+        // 4to. Se marca commo anulado el documento
         $documento->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
 
         return redirect('tesoreria/traslado_efectivo/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'Documento de traslado de efectico fue anulado correctamente.');

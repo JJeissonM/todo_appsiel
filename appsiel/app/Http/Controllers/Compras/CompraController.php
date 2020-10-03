@@ -489,40 +489,6 @@ class CompraController extends TransaccionController
 
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');        
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
     
     // Parámetro enviados por GET
     public function consultar_proveedores()
@@ -834,7 +800,7 @@ class CompraController extends TransaccionController
         $doc_encabezado = ComprasDocEncabezado::find( $linea_registro->compras_doc_encabezado_id );
         
         // NO ACTUALIZA BIEN LA CONTABILIDAD DEL MOV DE TESORERIA,POR LOS MEDIOS DE RECAUDOS
-        return redirect( 'compras/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','En estos momentos no se pueden editar registros. Consultar con el administrador.');
+        //return redirect( 'compras/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','En estos momentos no se pueden editar registros. Consultar con el administrador.');
 
         // Verificar si la factura tiene abonos, si tiene no se pueden modificar sus registros
         $abonos = CxpAbono::where('doc_cxp_transacc_id',$doc_encabezado->core_tipo_transaccion_id)->where('doc_cxp_tipo_doc_id',$doc_encabezado->core_tipo_doc_app_id)->where('doc_cxp_consecutivo',$doc_encabezado->consecutivo)->get()->toArray();
@@ -843,6 +809,8 @@ class CompraController extends TransaccionController
         {
             return redirect( 'compras/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los registros de la Factura NO pueden ser modificados. Factura tiene Pagos de CXP aplicados (Tesorería).');
         }
+
+        $viejo_total_encabezado = $doc_encabezado->valor_total;
 
         $cantidad = $request->cantidad;
         $valor_total_descuento = $request->valor_total_descuento;
@@ -946,40 +914,15 @@ class CompraController extends TransaccionController
 
 
         // Contabilizar Cta. Por Pagar (CR) o Caja/Banco Si es cuenta por pagar
-        switch ( $doc_encabezado->forma_pago )
-        {
-            case 'contado':
-                $caja = TesoCaja::get()->first();
-                $cta_caja_id = $caja->contab_cuenta_id;
-                $mov_contab = ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                                            ->where('consecutivo',$doc_encabezado->consecutivo)
-                                            ->get();/*
-                                            ->where('contab_cuenta_id',$cta_caja_id)
-                                            ->update( [ 
-                                                        'valor_credito' => $nuevo_total_encabezado * -1,
-                                                        'valor_saldo' => $nuevo_total_encabezado * -1
-                                                    ] );*/
-                            dd($mov_contab);
-                break;
-            case 'credito':
-                $cxp_id = Proveedor::get_cuenta_por_pagar( $doc_encabezado->proveedor_id );
-                ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                            ->where('consecutivo',$doc_encabezado->consecutivo)
-                            ->where('contab_cuenta_id',$cxp_id)
-                            ->update( [ 
-                                        'valor_credito' => $nuevo_total_encabezado * -1,
-                                        'valor_saldo' => $nuevo_total_encabezado * -1
-                                    ] );
-                break;
-            
-            default:
-                # code...
-                break;
-        }
-                
-
+        ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                        ->where('consecutivo',$doc_encabezado->consecutivo)
+                        ->where( 'valor_debito', 0)
+                        ->where( 'valor_credito', $viejo_total_encabezado * -1 )
+                        ->update( [ 
+                                    'valor_credito' => $nuevo_total_encabezado * -1,
+                                    'valor_saldo' => $nuevo_total_encabezado * -1
+                                ] );
 
         // 5. Actualizar el registro del documento de inventario
         $inv_doc_encabezado = InvDocEncabezado::find( $doc_encabezado->entrada_almacen_id );

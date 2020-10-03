@@ -52,7 +52,7 @@ use App\Http\Controllers\Sistema\VistaController;
                     ['name' => 'teso_caja_id', 'display' => '', 'etiqueta' => 'Caja', 'width' => ''],
                     ['name' => 'teso_cuenta_bancaria_id', 'display' => '', 'etiqueta' => 'Cta. Bancaria', 'width' => ''],
                     ['name' => 'valor', 'display' => '', 'etiqueta' => 'Valor', 'width' => ''],
-                    ['name' => '', 'display' => '', 'etiqueta' => ' ', 'width' => '10px']
+                    ['name' => '', 'display' => '', 'etiqueta' => ' ', 'width' => '']
                 ],
                 'fila_body' => '',
                 'fila_foot' => '<tr id="foot">
@@ -71,8 +71,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 <div id="home" class="tab-pane fade in active">
                     @include('layouts.elementos.tabla_ingreso_lineas_registros')
-                    <a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none;"><i
-                                class="fa fa-btn fa-plus"></i> Agregar registro</a>
+                    <a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none; cursor: pointer;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
                 </div>
 
             </div>
@@ -88,7 +87,7 @@ use App\Http\Controllers\Sistema\VistaController;
     <script type="text/javascript">
         $(document).ready(function () {
 
-            $('#fecha').val(get_fecha_hoy());
+            $('#fecha').val( get_fecha_hoy() );
             $('#fecha').focus();
 
             /*
@@ -111,15 +110,43 @@ use App\Http\Controllers\Sistema\VistaController;
 
                     $('#ingreso_registros').find('tbody:first').append(datos);
 
-                    $('#teso_motivo_id').focus();
+                    $('#teso_medio_recaudo_id').focus();
 
                     $('#btn_nuevo').hide();
                 });
 
             }
 
+            $(document).on('change', '#teso_medio_recaudo_id', function () {
+                
+                var valor = $('#teso_medio_recaudo_id').val().split('-');
+                
+                if ( valor == '') {
+                    $('#teso_cuenta_bancaria_id').hide();
+                    $('#teso_caja_id').hide();
+                    deshabilitar_text($('#valor_total'));
+                    $(this).focus();
+                    return false;
+                }
 
-            $('#valor_total').keyup(function (event) {
+                if( valor[1] == 'Tarjeta bancaria')
+                {
+                    $('#teso_caja_id').val("");
+                    $('#teso_caja_id').hide();
+                    $('#teso_cuenta_bancaria_id').show();
+                } else {
+                    // Efectivo y Otros
+                    $('#teso_cuenta_bancaria_id').val("");
+                    $('#teso_cuenta_bancaria_id').hide();
+                    $('#teso_caja_id').show();
+                }
+
+                habilitar_text($('#valor_total'));
+
+            });
+
+
+            $(document).on('keyup','#valor_total',function (event) {
                 /**/
                 var ok;
                 if ($.isNumeric($(this).val())) {
@@ -133,10 +160,10 @@ use App\Http\Controllers\Sistema\VistaController;
 
                 var x = event.which || event.keyCode;
                 if (x === 13) {
-
-                    if (ok) {
-                        $('#btn_agregar').show();
-                        $('#btn_agregar').focus();
+                    console.log( ok );
+                    if (ok)
+                    {
+                        $('.btn_confirmar').focus();
                     }
 
                 }
@@ -148,9 +175,12 @@ use App\Http\Controllers\Sistema\VistaController;
                 LineaNum++;
                 var fila = $(this).closest("tr");
                 var ok = validar_linea();
+                console.log();
                 if (ok) {
                     $("#ingreso_registros").attr('class', 'table');
-                    var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='glyphicon glyphicon-trash'></i></button>";
+                    
+                    var btn_borrar = "<button class='btn btn-danger btn-xs btn_eliminar'><i class='glyphicon glyphicon-trash'></i></button>";
+
                     var medio = '<span style="color:white;">' + $('#teso_medio_recaudo_id').val() + '-</span>' + $("#teso_medio_recaudo_id option:selected").text();
                     var motivo = '<span style="color:white;">' + $('#teso_motivo_id').val() + '-</span>' + $("#teso_motivo_id option:selected").text();
                     var caja = '<span style="color:white;">' + $('#teso_caja_id').val() + '-</span>' + $("#teso_caja_id option:selected").text();
@@ -173,108 +203,69 @@ use App\Http\Controllers\Sistema\VistaController;
                     calcular_totales();
                     fila.remove();
                     nueva_linea_ingreso_datos();
+                }else{
+                    alert('Verifique los datos ingresados.');
+                    return false;
                 }
 
             });
 
             function validar_linea() {
                 var ok;
+                var valor_total = 0;
 
-                if ($('#teso_medio_recaudo_id').val() != '') {
-                    var motivo = '<span style="color:white;">' + $('#teso_motivo_id').val() + '-</span>' + $("#teso_motivo_id option:selected").text();
-                    var caja = '<span style="color:white;">' + $('#teso_caja_id').val() + '-</span>' + $("#teso_caja_id option:selected").text();
-                    var cuenta = '<span style="color:white;">' + $('#teso_cuenta_bancaria_id').val() + '-</span>' + $("#teso_cuenta_bancaria_id option:selected").text();
-                    if ($('#teso_motivo_id').val() == 'salida') {
-                        var valor = '-' + $('#valor_total').val();
-                    } else {
-                        var valor = $('#valor_total').val();
-                    }
-                    if (valor != '') {
-                        if ($.isNumeric(valor)) {
-                            ok = true;
-                        } else {
-                            $('#col_valor').attr('style', 'background-color:#FF8C8C;');
-                            $('#col_valor').focus();
-                            ok = false;
-                        }
+                if ( $('#teso_medio_recaudo_id').val() == '' )
+                {
+                    alert('Debe seleccionar un medio de recaudo.');
+                    $('#teso_medio_recaudo_id').focus();
+                    return false;
+                }
+
+                if ( $('#teso_motivo_id').val() == '' )
+                {
+                    alert('Debe seleccionar un motivo para la transacción.');
+                    $('#teso_motivo_id').focus();
+                    return false;
+                }
+
+                if ( $('#teso_caja_id').val() == '' && $('#teso_cuenta_bancaria_id').val() == '' )
+                {
+                    alert('Debe seleccionar una caja o una cuenta bancaria.');
+                    $('#teso_caja_id').focus();
+                    return false;
+                }
+
+                var motivo = '<span style="color:white;">' + $('#teso_motivo_id').val() + '-</span>' + $("#teso_motivo_id option:selected").text();
+                
+                var caja = '<span style="color:white;">' + $('#teso_caja_id').val() + '-</span>' + $("#teso_caja_id option:selected").text();
+                
+                var cuenta = '<span style="color:white;">' + $('#teso_cuenta_bancaria_id').val() + '-</span>' + $("#teso_cuenta_bancaria_id option:selected").text();
+
+                if ($('#teso_motivo_id').val() == 'salida')
+                {
+                    var valor_total = '-' + $('#valor_total').val();
+                } else {
+                    var valor_total = $('#valor_total').val();
+                }
+
+                if (valor_total != '')
+                {
+                    if ( $.isNumeric( valor_total ) )
+                    {
+                        ok = true;
                     } else {
                         $('#col_valor').attr('style', 'background-color:#FF8C8C;');
                         $('#col_valor').focus();
                         ok = false;
                     }
                 } else {
-                    alert('Debe seleccionar un medio de recaudo.');
-                    $('#teso_medio_recaudo_id').focus();
+                    $('#col_valor').attr('style', 'background-color:#FF8C8C;');
+                    $('#col_valor').focus();
                     ok = false;
                 }
+
                 return ok;
             }
-
-            /*
-            ** Al presionar el botón agregar (ingreso de medios de recaudo)
-            */
-            // $('#btn_agregar').click(function(event){
-            // 	event.preventDefault();
-            //
-            // 	var valor_total = $('#valor_total').val();
-            //
-            // 	if($.isNumeric(valor_total) && valor_total>0)
-            // 	{
-            //
-            // 		var medio_recaudo = $( "#teso_medio_recaudo_id" ).val().split('-');
-            // 		var texto_medio_recaudo = [ medio_recaudo[0], $( "#teso_medio_recaudo_id option:selected" ).text() ];
-            // 		console.log(medio_recaudo);
-            // 		if ( medio_recaudo[1] == 'Tarjeta bancaria')
-            // 		{
-            // 			var texto_caja = [0,''];
-            // 			var texto_cuenta_bancaria = [
-            // 				$('#teso_cuenta_bancaria_id').val(),
-            // 				$('#teso_cuenta_bancaria_id option:selected').text()
-            // 			];
-            // 		}else{
-            // 			var texto_cuenta_bancaria = [0,''];
-            // 			var texto_caja = [
-            // 				$('#teso_caja_id').val(),
-            // 				$('#teso_caja_id option:selected').text()
-            // 			];
-            // 		}
-            //
-            // 		var texto_motivo = [ $( "#teso_motivo_id" ).val(), $( "#teso_motivo_id option:selected" ).text() ];
-            //
-            //
-            // 		var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
-            //
-            //
-            // 		celda_valor_total = '<td class="valor_total">$'+valor_total+'</td>';
-            //
-            // 		$('#ingreso_registros').find('tbody:last').append('<tr>'+
-            // 				'<td><span style="color:white;">'+texto_medio_recaudo[0]+'-</span><span>'+texto_medio_recaudo[1]+'</span></td>'+
-            // 				'<td><span style="color:white;">'+texto_motivo[0]+'-</span><span>'+texto_motivo[1]+'</span></td>'+
-            // 				'<td><span style="color:white;">'+texto_caja[0]+'-</span><span>'+texto_caja[1]+'</span></td>'+
-            // 				'<td><span style="color:white;">'+texto_cuenta_bancaria[0]+'-</span><span>'+texto_cuenta_bancaria[1]+'</span></td>'+
-            // 				celda_valor_total+
-            // 				'<td>'+btn_borrar+'</td>'+
-            // 				'</tr>');
-            //
-            // 		// Se calculan los totales para la última fila
-            // 		calcular_totales();
-            // 		reset_form_registro();
-            //
-            // 		deshabilitar_campos_form_create();
-            // 		$('#btn_guardar').show();
-            //
-            // 	}else{
-            //
-            // 		$('#valor_total').attr('style','background-color:#FF8C8C;');
-            // 		$('#valor_total').focus();
-            //
-            // 		alert('Datos incorrectos o incompletos. Por favor verifique.');
-            //
-            // 		if ($('#total_valor_total').text()=='$0.00') {
-            // 			$('#btn_continuar2').hide();
-            // 		}
-            // 	}
-            // });
 
             /*
             ** Al eliminar una fila
@@ -286,9 +277,11 @@ use App\Http\Controllers\Sistema\VistaController;
                 var fila = $(this).closest("tr");
                 fila.remove();
                 calcular_totales();
+                $('#btn_nuevo').show();
                 if ($('#total_valor_total').text() == '$0.00') {
                     habilitar_campos_form_create();
                 }
+                
             });
 
 
@@ -378,29 +371,6 @@ use App\Http\Controllers\Sistema\VistaController;
                 $('#teso_tipo_motivo').removeAttr('disabled');
             }
         });
-
-        function cambio(event) {
-            var valor = $('#teso_medio_recaudo_id').val().split('-');
-            if (valor != '') {
-                if (valor[1] == 'Tarjeta bancaria') {
-                    $('#teso_caja_id').val("");
-                    $('#teso_caja_id').attr('disabled', 'true');
-                    $('#teso_cuenta_bancaria_id').removeAttr('disabled');
-                    $('#teso_cuenta_bancaria_id').parent().show();
-                } else {
-                    $('#teso_cuenta_bancaria_id').val("");
-                    $('#teso_cuenta_bancaria_id').attr('disabled', 'true');
-                    $('#teso_caja_id').removeAttr('disabled');
-                    $('#teso_caja_id').parent().show();
-                }
-                habilitar_text($('#valor_total'));
-            } else {
-                $('#teso_cuenta_bancaria_id').parent().hide();
-                $('#teso_caja_id').parent().hide();
-                deshabilitar_text($('#valor_total'));
-                $(this).focus();
-            }
-        }
 
         function calcular_totales() {
             var sum = 0.0;

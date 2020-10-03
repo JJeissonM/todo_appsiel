@@ -54,6 +54,10 @@ use App\Inventarios\InvMotivo;
 
 use App\Contabilidad\ContabMovimiento;
 
+use App\Tesoreria\TesoMedioRecaudo;
+use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
+
 class TransaccionController extends Controller
 {
     protected $doc_encabezado;
@@ -185,9 +189,9 @@ class TransaccionController extends Controller
                 break;
         }
         
-        $medios_recaudo = RecaudoController::get_medios_recaudo();
-        $cajas = RecaudoController::get_cajas();
-        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+        $medios_recaudo = TesoMedioRecaudo::opciones_campo_select();
+        $cajas = TesoCaja::opciones_campo_select();
+        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 
         $miga_pan = $this->get_array_miga_pan( $app, $modelo, 'Crear: '.$transaccion->descripcion );
         

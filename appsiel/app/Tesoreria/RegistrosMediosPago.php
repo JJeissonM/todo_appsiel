@@ -7,11 +7,16 @@ class RegistrosMediosPago
     public function depurar_tabla_registros_medios_recaudos( string $filas_tabla_medios_recaudos )
     {
         // Conviertir en un array asociativo al strig: JSON,true
-        $lineas_registros_medios_recaudos = json_decode( $filas_tabla_medios_recaudos, true ); 
+        $lineas_registros_medios_recaudos = json_decode( $filas_tabla_medios_recaudos, true );
+
+        if ( !is_array( $lineas_registros_medios_recaudos ) )
+        {
+            return json_decode( '[]' );
+        }
 
         // Eliminar ultimo elemento del array (totales de la tabla)
-        $aux = array_pop( $lineas_registros_medios_recaudos ); 
-
+        $aux = array_pop( $lineas_registros_medios_recaudos );
+        
         // Devolver en formato JSON
         return json_decode( json_encode( $lineas_registros_medios_recaudos ) );
     }
@@ -31,15 +36,4 @@ class RegistrosMediosPago
         return $datos;
 
     }
-        /*foreach( $campo_lineas_recaudos as $linea )
-        {
-            $datos['teso_motivo_id'] = explode("-", $linea->teso_motivo_id)[0];
-            $datos['teso_caja_id'] = explode("-", $linea->teso_caja_id)[0];
-            $datos['teso_cuenta_bancaria_id'] = explode("-", $linea->teso_cuenta_bancaria_id)[0];
-            $datos['valor_movimiento'] = (float)substr($linea->valor, 1);
-
-            dd( $datos );
-
-            //TesoMovimiento::create( $datos );
-        }*/
 }

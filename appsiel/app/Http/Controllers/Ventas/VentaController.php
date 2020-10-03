@@ -618,17 +618,6 @@ class VentaController extends TransaccionController
 
         return redirect( 'ventas/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
     
     // Parámetro enviados por GET
     public function consultar_clientes()
@@ -939,10 +928,6 @@ class VentaController extends TransaccionController
         $linea_registro = VtasDocRegistro::find( $request->linea_factura_id );
         $doc_encabezado = VtasDocEncabezado::find( $linea_registro->vtas_doc_encabezado_id );
         
-        // NO ACTUALIZA BIEN LA CONTABILIDAD DEL MOV DE TESORERIA,POR LOS MEDIOS DE RECAUDOS
-        return redirect( 'ventas/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','En estos momentos no se pueden editar registros. Consultar con el administrador.');
-
-        
         // Verificar si la factura tiene recaudos, si tiene no se pueden modificar sus registros
         $recaudos = CxcAbono::where('doc_cxc_transacc_id',$doc_encabezado->core_tipo_transaccion_id)->where('doc_cxc_tipo_doc_id',$doc_encabezado->core_tipo_doc_app_id)->where('doc_cxc_consecutivo',$doc_encabezado->consecutivo)->get()->toArray();
 
@@ -951,28 +936,32 @@ class VentaController extends TransaccionController
             return redirect( 'ventas/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los registros de la Factura NO pueden ser modificados. Factura tiene recaudos de cxc aplicados (Tesorería).');
         }
 
+        $viejo_total_encabezado = $doc_encabezado->valor_total;
+
         // Se pasaron las validaciones
-        $precio_unitario = $request->precio_unitario;
+        $precio_unitario = $request->precio_unitario; // IVA incluido
         $cantidad = $request->cantidad;
         $valor_total_descuento = $request->valor_total_descuento;
         $tasa_descuento = $request->tasa_descuento;
 
         $precio_total = $precio_unitario * $cantidad - $valor_total_descuento;
 
-        $precio_venta = $precio_unitario - ( $valor_total_descuento / $cantidad );
+        $precio_venta_unitario = $precio_unitario - ( $valor_total_descuento / $cantidad );
 
-        $base_impuesto = $precio_venta / ( 1 + $linea_registro->tasa_impuesto / 100);
-        $valor_impuesto = $precio_venta - $base_impuesto;
+        // Valores unitarios
+        $base_impuesto = $precio_venta_unitario / ( 1 + $linea_registro->tasa_impuesto / 100);
+        $valor_impuesto = $precio_venta_unitario - $base_impuesto;
+
         $base_impuesto_total = $base_impuesto * $cantidad;
         $valor_impuesto_total = $valor_impuesto * $cantidad;
 
         // 1. Actualizar total del encabezado de la factura
-        $nuevo_total_encabezado = $doc_encabezado->valor_total - $linea_registro->precio_total + $precio_total;
+        $nuevo_total_encabezado = $viejo_total_encabezado - $linea_registro->precio_total + $precio_total;
 
         $doc_encabezado->update(
                                     ['valor_total' => $nuevo_total_encabezado]
                                 );
-
+/* */
         // 2. Actualiza total de la cuenta por cobrar o Tesorería
         DocumentosPendientes::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                     ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
@@ -1009,57 +998,47 @@ class VentaController extends TransaccionController
 
         // 4. Actualizar movimiento contable del registro de la factura
 
-        // Cartera o Tesoreria. Con el total del documento
-        switch ( $doc_encabezado->forma_pago )
-        {
-            case 'contado':
-                $caja = TesoCaja::get()->first();
-                $cta_caja_id = $caja->contab_cuenta_id;
-                $mov_contab = ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                                            ->where('consecutivo',$doc_encabezado->consecutivo)
-                                            ->where('contab_cuenta_id',$cta_caja_id)
-                                            ->update( [ 
-                                                        'valor_debito' => $nuevo_total_encabezado,
-                                                        'valor_saldo' => $nuevo_total_encabezado
-                                                    ] );
-                break;
-            case 'credito':
-                $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $doc_encabezado->cliente_id );
-                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                            ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                            ->where('consecutivo', $doc_encabezado->consecutivo)
-                            ->where('contab_cuenta_id',$cta_x_cobrar_id)
-                            ->update( [ 
-                                        'valor_debito' => $nuevo_total_encabezado,
-                                        'valor_saldo' => $nuevo_total_encabezado
-                                    ] );
-                break;
-            
-            default:
-                # code...
-                break;
-        }
+        // Contabilizar DB: Cartera o Tesoreria. Con el total del documento
+        ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                        ->where('consecutivo',$doc_encabezado->consecutivo)
+                        ->where( 'valor_credito', 0)
+                        ->where( 'valor_debito', $viejo_total_encabezado )
+                        ->update( [ 
+                                    'valor_debito' => $nuevo_total_encabezado,
+                                    'valor_saldo' => $nuevo_total_encabezado
+                                ] );
                 
 
         // Contabilizar CR: Ingresos e Impuestos
         if ( $linea_registro->tasa_impuesto > 0 )
         {
             $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_ventas( $linea_registro->inv_producto_id );
-            ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+
+            $valor_anterior_credito = $linea_registro->valor_impuesto * $linea_registro->cantidad * -1;
+            $mov_contab = ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                         ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                         ->where('consecutivo',$doc_encabezado->consecutivo)
                         ->where('inv_producto_id',$linea_registro->inv_producto_id)
                         ->where('cantidad',$linea_registro->cantidad)
-                        ->where('valor_credito', ( $linea_registro->valor_impuesto * $linea_registro->cantidad * -1 ) )
+                        ->whereBetween('valor_credito', [ $valor_anterior_credito - 10, $valor_anterior_credito + 10] )
                         ->where('contab_cuenta_id',$cta_impuesto_ventas_id)
                         ->update( [ 
-                                    'valor_credito' => ($valor_impuesto_total * -1),
-                                    'valor_saldo' => ($valor_impuesto_total * -1),
-                                    'cantidad' => $cantidad,
-                                    'base_impuesto' => $base_impuesto_total,
-                                    'valor_impuesto' => $valor_impuesto_total
-                                ] );
+                        'valor_credito' => ($valor_impuesto_total * -1),
+                        'valor_saldo' => ($valor_impuesto_total * -1),
+                        'cantidad' => $cantidad,
+                        'base_impuesto' => $base_impuesto_total,
+                        'valor_impuesto' => $valor_impuesto_total
+                    ] );//->get();
+            //dd( $mov_contab );
+            /*$mov_contab->update( [ 
+                        'valor_credito' => ($valor_impuesto_total * -1),
+                        'valor_saldo' => ($valor_impuesto_total * -1),
+                        'cantidad' => $cantidad,
+                        'base_impuesto' => $base_impuesto_total,
+                        'valor_impuesto' => $valor_impuesto_total
+                    ] );
+            */
         }
 
 

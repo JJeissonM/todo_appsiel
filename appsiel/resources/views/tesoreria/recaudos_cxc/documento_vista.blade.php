@@ -20,7 +20,7 @@
             </td>
         </tr>
         <tr>
-            <td style="border: solid 1px #ddd;">docimpri
+            <td style="border: solid 1px #ddd;">
                 <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
                 <br/>
                 <b>Documento ID: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}

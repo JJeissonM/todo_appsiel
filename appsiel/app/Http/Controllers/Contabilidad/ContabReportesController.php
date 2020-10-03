@@ -1137,10 +1137,10 @@ class ContabReportesController extends Controller
         return $vista;
     }
 
-    public static function grafica_riqueza_neta( $fecha_corte )
+    public static function grafica_riqueza_neta( $fecha_desde, $fecha_hasta )
     {
-        $saldo_activos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'activos', $fecha_corte );
-        $saldo_pasivos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'pasivos', $fecha_corte );
+        $saldo_activos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'activos', $fecha_desde, $fecha_hasta );
+        $saldo_pasivos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'pasivos', $fecha_desde, $fecha_hasta );
 
         $stocksTable = Lava::DataTable();
         
@@ -1156,11 +1156,11 @@ class ContabReportesController extends Controller
         return (object)[ 'activos'=> $saldo_activos, 'pasivos'=> $saldo_pasivos, 'patrimonio' => ( $saldo_activos + $saldo_pasivos ) ];
     }
 
-    public static function grafica_flujo_efectivo_neto( $fecha_corte )
+    public static function grafica_flujo_efectivo_neto( $fecha_desde, $fecha_hasta )
     {
-        $saldo_ingresos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'ingresos', $fecha_corte );
-        $saldo_costos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'costos', $fecha_corte );
-        $saldo_gastos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'gastos', $fecha_corte );
+        $saldo_ingresos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'ingresos', $fecha_desde, $fecha_hasta );
+        $saldo_costos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'costos', $fecha_desde, $fecha_hasta );
+        $saldo_gastos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'gastos', $fecha_desde, $fecha_hasta );
 
         $stocksTable = Lava::DataTable();
         
@@ -1176,14 +1176,15 @@ class ContabReportesController extends Controller
         return (object)[ 'ingresos'=> $saldo_ingresos, 'costos_y_gastos'=> ( $saldo_costos + $saldo_gastos ), 'resultado' => ( $saldo_ingresos + ( $saldo_costos + $saldo_gastos ) ) ];
     }
 
-    public static function get_saldo_movimiento_por_clase_cuenta( $descripcion_clase_cuenta, $fecha_corte )
+    public static function get_saldo_movimiento_por_clase_cuenta( $descripcion_clase_cuenta, $fecha_desde, $fecha_hasta )
     {
+
         $clase_cuenta = ClaseCuenta::where( 'descripcion', $descripcion_clase_cuenta)->get()->first();
 
         return ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
                                 ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->where('contab_cuentas.contab_cuenta_clase_id', $clase_cuenta->id )
-                                ->where('contab_movimientos.fecha','<=', $fecha_corte)
+                                ->whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta ] )
                                 ->sum('contab_movimientos.valor_saldo');
 
     }
