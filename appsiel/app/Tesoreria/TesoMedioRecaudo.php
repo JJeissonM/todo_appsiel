@@ -23,4 +23,17 @@ class TesoMedioRecaudo extends Model
 
         return $registros;
     }
+
+    public static function opciones_campo_select()
+    {
+        $opciones = TesoMedioRecaudo::all();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id . '-' . $opcion->comportamiento] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
 }

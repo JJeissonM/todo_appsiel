@@ -205,7 +205,7 @@
 				$cant = count($tabla);
 				$totales = 0;
 				?>
-				<h3> Ventas de los últimos 30 días <small> <a href="#" data-toggle="tooltip" data-placement="right" title="IVA no incluido!"> <i class="fa fa-info-circle"></i> </a> </small> </h3>
+				<h3> Ventas de los últimos 30 días <small> <i class="fa fa-info-circle" title="IVA no incluido!"></i> </small> </h3>
 				<hr>
 				<div id="grafica1"></div>
 

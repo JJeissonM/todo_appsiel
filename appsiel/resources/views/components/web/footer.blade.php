@@ -26,7 +26,7 @@
 
     <!-- <div class="footerarea" style="padding-top: 20px; background: linear-gradient(180deg, rgba(255,255,255,1) 0%, { {$footer->background}} 100%); color: { {$footer->color}}"> -->
         
-    <div class="footerarea" style="padding-top: 20px; background: #46AED6; color: #2FAF72">
+    <div class="footerarea" style="padding-top: 20px; background: {{$footer->background}}; color: {{$footer->color}}">
         <div class="container">
             <div class="row">
                 @if($footer->ubicacion == '')

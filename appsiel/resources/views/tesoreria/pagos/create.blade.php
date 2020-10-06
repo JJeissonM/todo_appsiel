@@ -66,7 +66,7 @@
 
 			calcular_totales();
 
-
+			//console.log({ { $registro }});
 			$('#fecha').val( get_fecha_hoy() );
 			$('#fecha').focus();
 

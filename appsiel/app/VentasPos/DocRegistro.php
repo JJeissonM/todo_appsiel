@@ -26,6 +26,16 @@ class DocRegistro extends Model
         return $this->belongsTo( 'App\Inventarios\InvProducto','inv_producto_id');
     }
 
+    public function producto()
+    {
+        return $this->belongsTo('App\Inventarios\InvProducto','inv_producto_id');
+    }
+
+    public function motivo()
+    {
+        return $this->belongsTo('App\Inventarios\InvMotivo','vtas_motivo_id');
+    }
+
     public $campos_visibles_linea_registro = [ 
     											['&nbsp;','10px'],
     											['Item','250px'],
@@ -54,6 +64,7 @@ class DocRegistro extends Model
                                 'inv_productos.unidad_medida1',
                                 'inv_productos.referencia',
                                 'inv_productos.codigo_barras',
+                                'vtas_pos_doc_registros.inv_producto_id',
                                 'vtas_pos_doc_registros.precio_unitario',
                                 'vtas_pos_doc_registros.cantidad',
                                 'vtas_pos_doc_registros.precio_total',
@@ -87,6 +98,7 @@ class DocRegistro extends Model
                                 'inv_productos.unidad_medida1',
                                 'inv_productos.referencia',
                                 'inv_productos.codigo_barras',
+                                'vtas_pos_doc_registros.inv_producto_id',
                                 'vtas_pos_doc_registros.precio_unitario',
                                 'vtas_pos_doc_registros.cantidad',
                                 'vtas_pos_doc_registros.precio_total',

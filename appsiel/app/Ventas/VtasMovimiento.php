@@ -93,6 +93,9 @@ class VtasMovimiento extends Model
             case 'core_tipo_transaccion_id':
                 $agrupar_por = 'descripcion_tipo_transaccion';
                 break;
+            case 'forma_pago':
+                $agrupar_por = 'forma_pago';
+                break;
             
             default:
                 break;
@@ -106,25 +109,23 @@ class VtasMovimiento extends Model
             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
             ->select(
                         'vtas_movimientos.inv_producto_id',
-                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'),
+                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
                         'core_terceros.descripcion AS cliente',
                         'vtas_movimientos.cliente_id',
                         'vtas_clases_clientes.descripcion AS clase_cliente',
                         'vtas_movimientos.tasa_impuesto AS tasa_impuesto',
                         'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
+                        'vtas_movimientos.forma_pago',
                         'vtas_movimientos.cantidad',
                         'vtas_movimientos.precio_total',
                         'vtas_movimientos.base_impuesto_total AS base_imp_tot',
                         'vtas_movimientos.tasa_descuento',
                         'vtas_movimientos.valor_total_descuento' )
+            ->orderBy('vtas_movimientos.precio_total','DESC')
             ->get();
 
         foreach ($movimiento as $fila)
         {
-            /*if ( $fila->cantidad < 0)
-            {
-                $fila->base_impuesto_total = $fila->base_impuesto_total * -1;
-            }*/
             $fila->base_impuesto_total = (float) $fila->precio_total / (1 + (float)$fila->tasa_impuesto / 100 );
 
 

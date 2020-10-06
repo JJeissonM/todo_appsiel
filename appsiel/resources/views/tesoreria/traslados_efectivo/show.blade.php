@@ -53,48 +53,50 @@
         <div class="container-fluid">
             <div class="marco_formulario">
                 <div class="container">
-                    <table class="table table-bordered" style="margin-top: 20px;">
-                        <tr>
-                            <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
-                                @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
-                            </td>
-                            <td style="border: solid 1px #ddd; padding-top: -20px;">
-                                <div style="vertical-align: center;">
-                                    <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado['titulo'] }}</b>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" style="margin-top: 20px;">
+                            <tr>
+                                <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
+                                    @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
+                                </td>
+                                <td style="border: solid 1px #ddd; padding-top: -20px;">
+                                    <div style="vertical-align: center;">
+                                        <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado['titulo'] }}</b>
+                                        <br/>
+                                        <b>Documento:</b> {{ $doc_encabezado['documento'] }}
+                                        <br/>
+                                        <b>Fecha:</b> {{ $doc_encabezado['fecha'] }}
+
+                                        @yield('datos_adicionales_encabezado')
+
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: solid 1px #ddd;">
+                                    <b>Tercero:</b> {{ $doc_encabezado['tercero_nombre_completo'] }}
                                     <br/>
-                                    <b>Documento:</b> {{ $doc_encabezado['documento'] }}
+                                    <b>Documento ID: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado['numero_identificacion'], 0, ',', '.') }}
                                     <br/>
-                                    <b>Fecha:</b> {{ $doc_encabezado['fecha'] }}
+                                    <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado['direccion'] }}
+                                    <br/>
+                                    <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado['telefono'] }}
+                                    <br/>
+                                    <b>Fecha y Hora de Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
+                                    <br/>
+                                </td>
+                                <td style="border: solid 1px #ddd;">
 
-                                    @yield('datos_adicionales_encabezado')
-
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="border: solid 1px #ddd;">
-                                <b>Tercero:</b> {{ $doc_encabezado['tercero_nombre_completo'] }}
-                                <br/>
-                                <b>Documento ID: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado['numero_identificacion'], 0, ',', '.') }}
-                                <br/>
-                                <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado['direccion'] }}
-                                <br/>
-                                <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado['telefono'] }}
-                                <br/>
-                                <b>Fecha y Hora de Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
-                                <br/>
-                            </td>
-                            <td style="border: solid 1px #ddd;">
-
-                                <br/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="border: solid 1px #ddd;">
-                                <b>Observaciones:</b> {{$registro->descripcion}}
-                            </td>
-                        </tr>
-                    </table>
+                                    <br/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="border: solid 1px #ddd;">
+                                    <b>Observaciones:</b> {{$registro->descripcion}}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                     <hr>
                     @section('documento_vista')
                         @include('tesoreria.recaudos.documento_vista')

@@ -17,12 +17,6 @@ img {
     z-index: 400;
 }
 
-@media(max-width: 468px){
-    .header{
-        border-bottom: none !important;
-    }
-}
-
 .header-content {
     display: flex;
     justify-content: space-between;
@@ -35,6 +29,15 @@ img {
     padding: 5px 0;
 }
 
+@media(max-width: 468px){
+    .header{
+        border-bottom: none !important;
+    }
+
+    .header-content {
+        height: 250px;
+    }
+}
 
 .header .logo strong {
     position: absolute;
@@ -116,6 +119,12 @@ img {
     .nav-categorias {
         display: flex;
         justify-content: center;
+    }
+
+    @media (max-width: 479px){
+        .nav-categorias {
+            display: none;
+        }
     }
 
     .nav-categorias li{

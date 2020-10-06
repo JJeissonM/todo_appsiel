@@ -89,6 +89,8 @@
 				<input type="hidden" name="saldo_original" id="saldo_original" value="0">
 
 				<div id="popup_alerta"> </div>
+
+				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
 				
 			{{ Form::close() }}
 
@@ -153,6 +155,23 @@
 @endsection
 
 @section('scripts')
+
+	<script type="text/javascript">
+
+		var dias_plazo;
+
+		$.fn.actualizar_medio_recaudo = function(){
+    
+		    var texto_total_recaudos = this.html().substring(1);
+		    
+		    if( parseFloat( texto_total_recaudos ) == 0 )
+		    {
+		        return false;
+		    }
+
+		};
+
+	</script>
 	
 	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
 	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>

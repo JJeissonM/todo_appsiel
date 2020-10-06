@@ -229,7 +229,7 @@ class ContabReportesController extends Controller
 
         $tabla.='<td></td></tr>';
 
-        $tabla.='</tbody> </table>';
+        $tabla.='</tbody> </table> </div>';
 
         echo $tabla;
     }
@@ -285,7 +285,7 @@ class ContabReportesController extends Controller
 
         $tabla.='<td></td></tr>';
 
-        $tabla.='</tbody> </table>';
+        $tabla.='</tbody> </table> </div>';
 
         $empresa = Empresa::find( Auth::user()->empresa_id );
         
@@ -1137,53 +1137,54 @@ class ContabReportesController extends Controller
         return $vista;
     }
 
-    public static function grafica_riqueza_neta( $fecha_corte )
+    public static function grafica_riqueza_neta( $fecha_desde, $fecha_hasta )
     {
-        $saldo_activos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'activos', $fecha_corte ) );
-        $saldo_pasivos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'pasivos', $fecha_corte ) );
+        $saldo_activos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'activos', $fecha_desde, $fecha_hasta );
+        $saldo_pasivos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'pasivos', $fecha_desde, $fecha_hasta );
 
         $stocksTable = Lava::DataTable();
         
         $stocksTable->addStringColumn('rubro')
                     ->addNumberColumn('valor');
         
-        $stocksTable->addRow( [ 'Activos', (float)$saldo_activos ] );
-        $stocksTable->addRow( [ 'Pasivos', (float)$saldo_pasivos ] );
+        $stocksTable->addRow( [ 'Activos', (float)abs( $saldo_activos ) ] );
+        $stocksTable->addRow( [ 'Pasivos', (float)abs( $saldo_pasivos ) ] );
 
         // Creación de gráfico de Torta
         Lava::PieChart('Riqueza', $stocksTable);
 
-        return (object)[ 'activos'=> $saldo_activos, 'pasivos'=> $saldo_pasivos, 'patrimonio' => ( $saldo_activos - $saldo_pasivos ) ];
+        return (object)[ 'activos'=> $saldo_activos, 'pasivos'=> $saldo_pasivos, 'patrimonio' => ( $saldo_activos + $saldo_pasivos ) ];
     }
 
-    public static function grafica_flujo_efectivo_neto( $fecha_corte )
+    public static function grafica_flujo_efectivo_neto( $fecha_desde, $fecha_hasta )
     {
-        $saldo_ingresos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'ingresos', $fecha_corte ) );
-        $saldo_costos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'costos', $fecha_corte ) );
-        $saldo_gastos = abs( ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'gastos', $fecha_corte ) );
+        $saldo_ingresos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'ingresos', $fecha_desde, $fecha_hasta );
+        $saldo_costos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'costos', $fecha_desde, $fecha_hasta );
+        $saldo_gastos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'gastos', $fecha_desde, $fecha_hasta );
 
         $stocksTable = Lava::DataTable();
         
         $stocksTable->addStringColumn('rubro')
                     ->addNumberColumn('valor');
         
-        $stocksTable->addRow( [ 'Ingresos', (float)$saldo_ingresos ] );
-        $stocksTable->addRow( [ 'Costos y Gastos', (float)$saldo_costos + (float)$saldo_gastos ] );
+        $stocksTable->addRow( [ 'Ingresos', (float)abs( $saldo_ingresos ) ] );
+        $stocksTable->addRow( [ 'Costos y Gastos', (float)abs( $saldo_costos ) + (float)abs( $saldo_gastos ) ] );
 
         // Creación de gráfico de Torta
         Lava::PieChart('FlujoNeto', $stocksTable);
 
-        return (object)[ 'ingresos'=> $saldo_ingresos, 'costos_y_gastos'=> ( $saldo_costos + $saldo_gastos ), 'resultado' => ( $saldo_ingresos - ( $saldo_costos + $saldo_gastos ) ) ];
+        return (object)[ 'ingresos'=> $saldo_ingresos, 'costos_y_gastos'=> ( $saldo_costos + $saldo_gastos ), 'resultado' => ( $saldo_ingresos + ( $saldo_costos + $saldo_gastos ) ) ];
     }
 
-    public static function get_saldo_movimiento_por_clase_cuenta( $descripcion_clase_cuenta, $fecha_corte )
+    public static function get_saldo_movimiento_por_clase_cuenta( $descripcion_clase_cuenta, $fecha_desde, $fecha_hasta )
     {
+
         $clase_cuenta = ClaseCuenta::where( 'descripcion', $descripcion_clase_cuenta)->get()->first();
 
         return ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
                                 ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->where('contab_cuentas.contab_cuenta_clase_id', $clase_cuenta->id )
-                                ->where('contab_movimientos.fecha','<=', $fecha_corte)
+                                ->whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta ] )
                                 ->sum('contab_movimientos.valor_saldo');
 
     }

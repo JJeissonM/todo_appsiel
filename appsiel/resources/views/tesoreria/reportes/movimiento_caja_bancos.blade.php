@@ -1,6 +1,6 @@
 {{ Form::bsBtnExcel('movimiento_tesoreria') }}
 <h3>Movimiento de Cajas / Bancos</h3>
-<h4>{{ $mensaje }}</h4>
+<h4> {{"Desde: ".$fecha_desde." - Hasta: ".$fecha_hasta }} </h4>
 <div class="table-responsive">
     <table class="table table-striped table-bordered tabla_pdf">
         <thead>
@@ -28,6 +28,9 @@
                 
                 $saldo = $saldo_inicial;
 
+                $total_entradas = 0;
+                $total_salidas = 0;
+
                 foreach( $movimiento as $fila )
                 {
 
@@ -45,9 +48,11 @@
                     {
                         $entrada = '$'.number_format( $fila->valor_movimiento, 0, ',','.');
                         $salida = '';
+                        $total_entradas += $fila->valor_movimiento;
                     }else{
                         $entrada = '';
                         $salida = '$'.number_format( $fila->valor_movimiento * -1, 0, ',','.');
+                        $total_salidas += $fila->valor_movimiento;
                     }
 
                     $saldo += $fila->valor_movimiento;
@@ -64,6 +69,14 @@
                 </tr>
             <?php } ?>
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4"> &nbsp; </td>
+                <td> ${{ number_format( $total_entradas, 0, ',','.') }} </td>
+                <td> ${{ number_format( $total_salidas, 0, ',','.') }} </td>
+                <td></td>
+            </tr>
+        </tfoot>
     </table>
 </div>
     

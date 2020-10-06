@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title> {{ $pdv->tipo_doc_app->descripcion }} No. <div class="lbl_consecutivo_doc_encabezado" style="display: inline;"></div></title>
+    <title> {{ $pdv->tipo_doc_app->descripcion }} No. </title>
 
     <style type="text/css">
         body{

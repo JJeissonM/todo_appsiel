@@ -1,3 +1,4 @@
+$("#teso_motivo_id option:first").next().attr('selected','selected');
 
 /*
 			**	Abrir formulario de medios de pago
@@ -14,11 +15,11 @@ $("#btn_nuevo").click(function(event){
 });
 
 // Al mostrar la ventana modal
-$("#recaudoModal,#myModal2").on('shown.bs.modal', function () {
+$("#recaudoModal").on('shown.bs.modal', function () {
     $('#teso_medio_recaudo_id').focus();
 });
 // Al OCULTAR la ventana modal
-$("#recaudoModal,#myModal2").on('hidden.bs.modal', function () {
+$("#recaudoModal").on('hidden.bs.modal', function () {
     $('#btn_continuar2').focus();
 });
 
@@ -69,6 +70,25 @@ $('#valor_total').keyup(function(event){
         $(this).attr('style','background-color:#FF8C8C;');
         $(this).focus();
         ok = false;
+    }
+
+    if ( $('#teso_medio_recaudo_id').val() == '1-Efectivo' )
+    {
+        $('#teso_caja_id').attr('style','background-color:white;');
+        if ( $('#teso_caja_id').val() === null || $('#teso_caja_id').val() === '' )
+        {
+            $('#teso_caja_id').attr('style','background-color:#FF8C8C;');
+            $('#btn_agregar').hide();
+            return false;
+        }
+    }else{
+        $('#teso_cuenta_bancaria_id').attr('style','background-color:white;');
+        if ( $('#teso_cuenta_bancaria_id').val() === null || $('#teso_cuenta_bancaria_id').val() === '' )
+        {
+            $('#teso_cuenta_bancaria_id').attr('style','background-color:#FF8C8C;');
+            $('#btn_agregar').hide();
+            return false;
+        }
     }
 
     var x = event.which || event.keyCode;
@@ -132,6 +152,10 @@ $('#btn_agregar').click(function(event){
         calcular_totales_medio_recaudos();
         reset_form_registro();
 
+        // Por ahora, Solo se va a permitir agregar una sola línea de recaudo
+        $("#recaudoModal").modal("hide");
+        $("#btn_nuevo").hide();
+
         // deshabilitar_campos_form_create();
         $('#btn_guardar').show();
 
@@ -162,6 +186,7 @@ $(document).on('click', '.btn_eliminar_linea_medio_recaudo', function(event) {
     {
         $('#efectivo_recibido').removeAttr( 'readonly' );
     }
+    $("#btn_nuevo").show();
 });
 
 function calcular_totales_medio_recaudos()

@@ -12,9 +12,6 @@
 
 	    <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
         
-        @can('vtas_recontabilizar')
-        	<a class="btn btn-default btn-xs" href="{{ url( 'ventas_recontabilizar/'.$id.$variables_url ) }}"><i class="fa fa-file-o"></i> Recontabilizar </a>
-        @endcan
 	@endif
 	
 @endsection

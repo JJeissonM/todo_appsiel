@@ -50,11 +50,18 @@
                 <?php 
                     $precio_original = $linea->precio_unitario + ( $linea->valor_total_descuento / $linea->cantidad );
                     $subtotal_linea = ( $linea->cantidad * $precio_original ) - $linea->valor_impuesto;
+
+                    $unidad_medida = $linea->unidad_medida1;
+                    if( $linea->item->unidad_medida2 != '' )
+                    {
+                        $unidad_medida = $linea->item->unidad_medida1 . ' (Talla: ' . $linea->item->unidad_medida2 . ')';
+                    }
+
                 ?>
                 <tr>
                     <td> {{ $linea->producto_id }} </td>
                     <td> {{ $linea->producto_descripcion }} </td>
-                    <td style="text-align: right;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
+                    <td style="text-align: right;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $unidad_medida }} </td>
                     <td style="text-align: right;"> {{ '$ '.number_format( $precio_original, 0, ',', '.') }} </td>
                     <td style="text-align: right;"> {{ number_format( $linea->tasa_descuento, 0, ',', '.').'%' }} </td>
                     <td style="text-align: right;"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>

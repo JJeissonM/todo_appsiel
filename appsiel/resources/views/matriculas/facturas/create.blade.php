@@ -2,12 +2,6 @@
 
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
-
-	$responsable_financiero = App\Matriculas\Responsableestudiante::where('estudiante_id',Input::get('estudiante_id'))
-																	->where('tiporesponsable_id',3)
-																	->get()
-																	->first();
-	$cliente = 2;
 ?>
 
 @section('estilos_1')
@@ -72,21 +66,25 @@
 				{{ Form::hidden('url_id',Input::get('id')) }}
 				{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
 
+				<input type="hidden" name="estudiante_id" id="estudiante_id" value="{{ Input::get('estudiante_id') }}" required="required">
+				<input type="hidden" name="cartera_id" id="cartera_id" value="{{ Input::get('cartera_id') }}" required="required">
+
 				<input type="hidden" name="url_id_transaccion" id="url_id_transaccion" value="{{Input::get('id_transaccion')}}" required="required">
 
 				{{ Form::hidden('inv_bodega_id_aux',null,['id'=>'inv_bodega_id_aux']) }}
 
-				<input type="hidden" name="cliente_id" id="cliente_id" value="" required="required">
-				<input type="hidden" name="zona_id" id="zona_id" value="" required="required">
-				<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="" required="required">
-				<input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="" required="required">
+				<input type="hidden" name="cliente_id" id="cliente_id" value="{{ $cliente->id }}" required="required">
+				<input type="hidden" name="zona_id" id="zona_id" value="{{ $cliente->zona_id }}" required="required">
+				<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="{{ $cliente->clase_cliente_id }}" required="required">
 
 
-				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="" required="required">
-				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="" required="required">
-				<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="" required="required">
-				<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="" required="required">
+				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{ $cliente->tercero->id }}" required="required">
+				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{ $cliente->lista_precios_id }}" required="required">
+				<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="{{ $cliente->lista_descuentos_id }}" required="required">
+				<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="{{ $cliente->liquida_impuestos }}" required="required">
+
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
+				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
 
 				<input type="hidden" name="tipo_transaccion"  id="tipo_transaccion" value="factura_directa">
 
@@ -97,18 +95,14 @@
 
 				<div id="popup_alerta"> </div>		            
 
-				
+				Responsable finanaciero: {{ $responsable_financiero_estudiante->tercero->descripcion }}
+				<br>
+				C.C.: {{ $responsable_financiero_estudiante->tercero->numero_identificacion }}
 			{{ Form::close() }}
 
 			<br/>
 
-			@include('ventas.incluir.elementos_remisiones_pendientes')
-
-			<br/>
-
-
-
-			{!! $tabla->dibujar() !!}
+			@include( 'ventas.incluir.tabla_lineas_registros')
 
 
 			Productos ingresados: <span id="numero_lineas"> 0 </span>
@@ -117,7 +111,7 @@
 				<div id="total_cantidad" style="display: none;"> 0 </div>
             	<table style="display: inline;">
             		<tr>
-            			<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td> <td> <div id="subtotal"> $ 0 </div> </td>
+            			<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td> <td> <div id="subtotal"> $ {{ number_format( Input::get('valor_cartera'), 0, ',', '.' ) }} </div> </td>
             		</tr>
             		<tr>
             			<td style="text-align: right; font-weight: bold;"> Descuento: &nbsp; </td> <td> <div id="descuento"> $ 0 </div> </td>
@@ -126,7 +120,7 @@
             			<td style="text-align: right; font-weight: bold;"> Impuestos: &nbsp; </td> <td> <div id="total_impuestos"> $ 0 </div> </td>
             		</tr>
             		<tr>
-            			<td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td> <td> <div id="total_factura"> $ 0 </div> </td>
+            			<td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td> <td> <div id="total_factura"> $ {{ number_format( Input::get('valor_cartera'), 0, ',', '.' ) }} </div> </td>
             		</tr>
             	</table>
 			</div>
@@ -161,87 +155,42 @@
 
 @section('scripts')
 	
-	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
+	<!-- <script src="{ { asset( 'assets/js/ventas/create.js' ) }}"></script> -->
 
 	<script type="text/javascript">
 
+
+		hay_productos = 1;
+
 		$(document).ready(function(){
 
-			$("#agregar_examen").click(function(event){
+			$('#fecha_vencimiento').val( get_fecha_hoy() );
+			$('#fecha').val( get_fecha_hoy() );
+			$('#linea_ingreso_default').hide();
 
+			// GUARDAR EL FORMULARIO
+			$('#btn_guardar').click(function(event){
 				event.preventDefault();
 
-				if ( $("#cliente_input").val() == '' && $("#core_tercero_id").val() == '' )
+				if ( !validar_requeridos() )
 				{
-					alert('Debe ingresar un tercero.');
-					return false;
+					return false;	
 				}
 
-				$('#tabla_formula').find('tbody').html('');
-				$('#tabla_formula').fadeOut();
-				$('#tabla_formula_no_paciente').fadeOut();
+				// Desactivar el click del botón
+				$( this ).off( event );
 
-		        $("#myModal").modal({backdrop: "static"});
-		        $("#div_spin").show();
-		        $(".btn_edit_modal").hide();
-		        $(".btn_save_modal").hide();
+				$('#linea_ingreso_default').remove();
 
-		        var url = "{{url('form_agregar_formula_factura')}}" + "?core_tercero_id=" + $('#core_tercero_id').val();
+				// Se transfoma la tabla a formato JSON a través de un plugin JQuery
+				var table = $('#ingreso_registros').tableToJSON();
 
-				$.get( url )
-					.done(function( respuesta ) {
-						$("#div_spin").hide();
-						if ( respuesta !== 'no_es_paciente')
-						{
-							$('#contenido_modal').html( respuesta );
-							$('#no_es_paciente').val(0);
-						}else{
-							$('#contenido_modal').html( '' );							
-	            			$('#myModal').modal("hide");
-							$('#tabla_formula_no_paciente').fadeIn();
-							$('#no_es_paciente').val(1);
-							$('#esfera_ojo_derecho').focus();
-						}
+				// Se asigna el objeto JSON a un campo oculto del formulario
+		 		$('#lineas_registros').val(JSON.stringify(table));
 
-					});		        
-		    });
-
-
-			// Al presionar el botón "check". Nota: este botón fue creado dinámicamente, no se puede acceder a él directamente desde su ID o CLASS, sino a través de document()
-			$(document).on('click', '.btn_confirmar', function(event) {
-				
-				event.preventDefault();
-
-				$('#tabla_formula').fadeIn();
-				$('#tabla_formula').find('tbody:last').append( $(this).closest("tr") );
-
-				$(this).attr('style','display: none;');
-
-				$('#contenido_modal').html( ' ' );
-	            $('#myModal').modal("hide");
-
-	            $("inv_producto_id").select();
-
+		 		// Enviar formulario
+				$('#form_create').submit();					
 			});
-
-
-			$(document).on('click',".btn_ver_examen",function(event){
-				event.preventDefault();
-
-		        $('#contenido_modal2').html('');
-				$('#div_spin').fadeIn();
-
-		        $("#myModal2").modal(
-		        	{keyboard: 'true'}
-		        );
-
-		        var url = "{{ url('consultorio_medico_get_tabla_resultado_examen/') }}" + "/" + $(this).attr('data-consulta_id') + '/' + $(this).attr('data-paciente_id') + '/' + $(this).attr('data-examen_id');
-
-		        $.get( url, function( respuesta ){
-		        	$('#div_spin').hide();
-		        	$('#contenido_modal2').html( respuesta );
-		        });/**/
-		    });
 
 		});
 	</script>

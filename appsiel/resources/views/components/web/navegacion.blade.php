@@ -43,18 +43,18 @@
         }
 
     #navegacion > header.sticky {
-          position: fixed;
-          z-index: 1000;
-          top: 0;
-          width: 100%;
-          background: {{ $fondos['background_1'] }};
-          -webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.75);
-            -moz-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.75);
-            box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.75);
-        }
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        width: 100%;
+        background: {{ $fondos['background_1'] }};
+        -webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.75);
+        -moz-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.75);
+        box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.75);
+    }
 
 
-    a.icono img{
+    a.icono img {
         height: {{ $logo['altura_logo'] }}px;
         width: {{ $logo['anchura_logo'] }}px;
     }
@@ -67,7 +67,7 @@
     }
         
 
-      li.active a{
+      li.active a {
            color: black !important;
            background-color: white !important;
       }
@@ -76,10 +76,6 @@
           color: black !important;
           background-color: white !important;
       }
-
-    @media (max-width: 468px){
-
-    }
 
 </style>
 

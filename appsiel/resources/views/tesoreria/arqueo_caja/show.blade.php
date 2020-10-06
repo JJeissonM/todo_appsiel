@@ -56,145 +56,149 @@
         <div class="container-fluid">
             <div class="marco_formulario">
                 <div class="container">
-                    <table class="table table-bordered" style="margin-top: 20px;">
-                        <tr>
-                            <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
-                                @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
-                            </td>
-                            <td style="border: solid 1px #ddd; padding-top: -20px;">
-                                <div style="vertical-align: center;">
-                                    <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado['titulo'] }}</b>
-                                    <br/>
-                                    <b>Documento:</b> {{ $doc_encabezado['documento'] }}
-                                    <br/>
-                                    <b>Fecha:</b> {{ $doc_encabezado['fecha'] }}
+                    <div class="table-responsive">
+                        <table class="table table-bordered" style="margin-top: 20px;">
+                            <tr>
+                                <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
+                                    @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
+                                </td>
+                                <td style="border: solid 1px #ddd; padding-top: -20px;">
+                                    <div style="vertical-align: center;">
+                                        <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado['titulo'] }}</b>
+                                        <br/>
+                                        <b>Documento:</b> {{ $doc_encabezado['documento'] }}
+                                        <br/>
+                                        <b>Fecha:</b> {{ $doc_encabezado['fecha'] }}
 
-                                    @yield('datos_adicionales_encabezado')
+                                        @yield('datos_adicionales_encabezado')
 
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="border: solid 1px #ddd;">
-                                <b>Responsable:</b> {{$user->name}}
-                                <br/>
-                                <b>Fecha y Hora de Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
-                                <br/>
-                            </td>
-                            <td style="border: solid 1px #ddd;">
-                                <b>Observaciones:</b> {{$registro->observaciones}}
-                                <br/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="border: solid 1px #ddd;">
-                                <b>Base: &nbsp;&nbsp;</b> ${{number_format($registro->base,'0',',','.')}}
-                            </td>
-                        </tr>
-                    </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: solid 1px #ddd;">
+                                    <b>Responsable:</b> {{$user->name}}
+                                    <br/>
+                                    <b>Fecha y Hora de Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
+                                    <br/>
+                                </td>
+                                <td style="border: solid 1px #ddd;">
+                                    <b>Observaciones:</b> {{$registro->observaciones}}
+                                    <br/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="border: solid 1px #ddd;">
+                                    <b>Base: &nbsp;&nbsp;</b> ${{number_format($registro->base,'0',',','.')}}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                     <hr>
                     <h1 class="card-inside-title">Datos de la fecha {{$registro->fecha}}</h1>
                     <div class="row clearfix">
                         <div class="col-md-12">
-                            <table class="table table-hover">
-                                <tbody>
-                                <tr>
-                                    <td colspan="3">
-                                        <center><strong>ACTA DE ARQUEO DE CAJA</strong></center>
-                                    </td>
-                                </tr>
-                                <tr class="read">
-                                    <td class="contact"><b>EFECTIVO</b></td>
-                                    <td class="subject"><b>UNIDADES</b></td>
-                                    <td class="subject"><b>VALOR</b></td>
-                                </tr>
-                                @foreach($registro->billetes_contados as $key => $value)
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <tbody>
+                                    <tr>
+                                        <td colspan="3">
+                                            <center><strong>ACTA DE ARQUEO DE CAJA</strong></center>
+                                        </td>
+                                    </tr>
                                     <tr class="read">
-                                        <td class="contact"><b>Billetes de ${{number_format($key,'0',',','.')}}</b></td>
-                                        <td class="subject">{{$value == ""?0:$value}}</td>
+                                        <td class="contact"><b>EFECTIVO</b></td>
+                                        <td class="subject"><b>UNIDADES</b></td>
+                                        <td class="subject"><b>VALOR</b></td>
+                                    </tr>
+                                    @foreach($registro->billetes_contados as $key => $value)
+                                        <tr class="read">
+                                            <td class="contact"><b>Billetes de ${{number_format($key,'0',',','.')}}</b></td>
+                                            <td class="subject">{{$value == ""?0:$value}}</td>
+                                            <td class="subject">
+                                                ${{number_format($value == ""?0:$key*$value,'0',',','.')}}</td>
+                                        </tr>
+                                    @endforeach
+                                    @foreach($registro->monedas_contadas as $key => $value)
+                                        <tr class="read">
+                                            <td class="contact"><b>Monedas de ${{number_format($key,'0',',','.')}}</b></td>
+                                            <td class="subject">{{$value == ""?0:$value}}</td>
+                                            <td class="subject">
+                                                ${{number_format($value == ""?0:$key*$value,'0',',','.')}}</td>
+                                        </tr>
+                                    @endforeach
+                                    <tr class="read">
+                                        <td class="contact"><b>Otros Saldos (bonos,pagarés,etc.)</b></td>
+                                        <td class="subject">{{$registro->detalle_otros_saldos}}</td>
+                                        <td class="subject">${{number_format($registro->otros_saldos,'0',',','.')}}</td>
+                                    </tr>
+                                    <tr class="read">
+                                        <td class="contact"><b>Total Billetes</b></td>
+                                        <td class="subject"></td>
+                                        <td class="subject">${{number_format($registro->total_billetes,'0',',','.')}}</td>
+                                    </tr>
+                                    <tr class="read">
+                                        <td class="contact"><b>Total Monedas</b></td>
+                                        <td class="subject"></td>
+                                        <td class="subject">${{number_format($registro->total_monedas,'0',',','.')}}</td>
+                                    </tr>
+                                    <tr class="read">
+                                        <td class="contact"><b>Total Efectivo</b></td>
+                                        <td class="subject"></td>
                                         <td class="subject">
-                                            ${{number_format($value == ""?0:$key*$value,'0',',','.')}}</td>
+                                            ${{number_format($registro->lbl_total_efectivo,'0',',','.')}}</td>
                                     </tr>
-                                @endforeach
-                                @foreach($registro->monedas_contadas as $key => $value)
+                                    <tr>
+                                        <td colspan="3">
+                                            <center><strong>MOVIMIENTOS DEL SISTEMA</strong></center>
+                                        </td>
+                                    </tr>
                                     <tr class="read">
-                                        <td class="contact"><b>Monedas de ${{number_format($key,'0',',','.')}}</b></td>
-                                        <td class="subject">{{$value == ""?0:$value}}</td>
+                                        <td class="contact"><b>MOTIVO</b></td>
+                                        <td class="subject"><b>MOVIMIENTO</b></td>
+                                        <td class="subject"><b>VALOR</b></td>
+                                    </tr>
+                                    @foreach($registro->detalles_mov_entradas as $item)
+                                        <tr class="read">
+                                        <td class="contact"><b>{{$item->motivo}}</b></td>
+                                        <td class="subject">{{strtoupper($item->movimiento)}}</td>
+                                        <td class="subject">${{number_format($item->valor_movimiento,'0',',','.')}}</td>
+                                        </tr>
+                                    @endforeach
+                                    @foreach($registro->detalles_mov_salidas as $item)
+                                        <tr class="read">
+                                        <td class="contact"><b>{{$item->motivo}}</b></td>
+                                        <td class="subject">{{strtoupper($item->movimiento)}}</td>
+                                        <td class="subject">${{number_format($item->valor_movimiento,'0',',','.')}}</td>
+                                        </tr>
+                                    @endforeach
+                                    <tr class="read">
+                                        <td class="contact"><b>Total Entrada de Caja</b></td>
+                                        <td class="subject"></td>
                                         <td class="subject">
-                                            ${{number_format($value == ""?0:$key*$value,'0',',','.')}}</td>
+                                            ${{number_format($registro->total_mov_entradas,'0',',','.')}}</td>
                                     </tr>
-                                @endforeach
-                                <tr class="read">
-                                    <td class="contact"><b>Otros Saldos (bonos,pagarés,etc.)</b></td>
-                                    <td class="subject">{{$registro->detalle_otros_saldos}}</td>
-                                    <td class="subject">${{number_format($registro->otros_saldos,'0',',','.')}}</td>
-                                </tr>
-                                <tr class="read">
-                                    <td class="contact"><b>Total Billetes</b></td>
-                                    <td class="subject"></td>
-                                    <td class="subject">${{number_format($registro->total_billetes,'0',',','.')}}</td>
-                                </tr>
-                                <tr class="read">
-                                    <td class="contact"><b>Total Monedas</b></td>
-                                    <td class="subject"></td>
-                                    <td class="subject">${{number_format($registro->total_monedas,'0',',','.')}}</td>
-                                </tr>
-                                <tr class="read">
-                                    <td class="contact"><b>Total Efectivo</b></td>
-                                    <td class="subject"></td>
-                                    <td class="subject">
-                                        ${{number_format($registro->lbl_total_efectivo,'0',',','.')}}</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3">
-                                        <center><strong>MOVIMIENTOS DEL SISTEMA</strong></center>
-                                    </td>
-                                </tr>
-                                <tr class="read">
-                                    <td class="contact"><b>MOTIVO</b></td>
-                                    <td class="subject"><b>MOVIMIENTO</b></td>
-                                    <td class="subject"><b>VALOR</b></td>
-                                </tr>
-                                @foreach($registro->detalles_mov_entradas as $item)
                                     <tr class="read">
-                                    <td class="contact"><b>{{$item->motivo}}</b></td>
-                                    <td class="subject">{{strtoupper($item->movimiento)}}</td>
-                                    <td class="subject">${{number_format($item->valor_movimiento,'0',',','.')}}</td>
+                                        <td class="contact"><b>Total Salida de Caja</b></td>
+                                        <td class="subject"></td>
+                                        <td class="subject">
+                                            ${{number_format($registro->total_mov_salidas,'0',',','.')}}</td>
                                     </tr>
-                                @endforeach
-                                @foreach($registro->detalles_mov_salidas as $item)
                                     <tr class="read">
-                                    <td class="contact"><b>{{$item->motivo}}</b></td>
-                                    <td class="subject">{{strtoupper($item->movimiento)}}</td>
-                                    <td class="subject">${{number_format($item->valor_movimiento,'0',',','.')}}</td>
+                                        <td class="contact"><b>Total Saldo en el Sistema</b></td>
+                                        <td class="subject"></td>
+                                        <td class="subject">
+                                            ${{number_format($registro->lbl_total_sistema,'0',',','.')}}</td>
                                     </tr>
-                                @endforeach
-                                <tr class="read">
-                                    <td class="contact"><b>Total Entrada de Caja</b></td>
-                                    <td class="subject"></td>
-                                    <td class="subject">
-                                        ${{number_format($registro->total_mov_entradas,'0',',','.')}}</td>
-                                </tr>
-                                <tr class="read">
-                                    <td class="contact"><b>Total Salida de Caja</b></td>
-                                    <td class="subject"></td>
-                                    <td class="subject">
-                                        ${{number_format($registro->total_mov_salidas,'0',',','.')}}</td>
-                                </tr>
-                                <tr class="read">
-                                    <td class="contact"><b>Total Saldo en el Sistema</b></td>
-                                    <td class="subject"></td>
-                                    <td class="subject">
-                                        ${{number_format($registro->lbl_total_sistema,'0',',','.')}}</td>
-                                </tr>
-                                <tr class="read">
-                                    <td class="contact"><b>Diferencia</b></td>
-                                    <td class="subject"></td>
-                                    <td class="subject">
-                                        ${{number_format($registro->total_saldo,'0',',','.')}}</td>
-                                </tr>
-                                </tbody>
-                            </table>
+                                    <tr class="read">
+                                        <td class="contact"><b>Diferencia</b></td>
+                                        <td class="subject"></td>
+                                        <td class="subject">
+                                            ${{number_format($registro->total_saldo,'0',',','.')}}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

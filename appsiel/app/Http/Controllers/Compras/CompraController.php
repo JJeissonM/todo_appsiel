@@ -55,6 +55,8 @@ use App\CxP\CxpAbono;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
+use App\Tesoreria\RegistrosMediosPago;
+use App\Tesoreria\TesoCuentaBancaria;
 
 use App\Contabilidad\Impuesto;
 
@@ -93,6 +95,10 @@ class CompraController extends TransaccionController
     {
         //$lineas_registros = json_decode($request->lineas_registros);
 
+        $registros_medio_pago = new RegistrosMediosPago;
+
+        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'] );
+
         // 1ro. Crear documento de ENTRADA de inventarios (REMISIÓN)
         // WARNING. HECHO MANUALMENTE
         $request['entrada_almacen_id'] = $this->crear_entrada_almacen( $request );
@@ -100,8 +106,9 @@ class CompraController extends TransaccionController
         // 2do. Crear encabezado del documento
         $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
-        // 2do. Crear líneas de registros del documento
+        // 3ro. Crear líneas de registros del documento
         $request['creado_por'] = Auth::user()->email;
+        $request['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
         CompraController::crear_registros_documento( $request, $doc_encabezado );
 
         return redirect('compras/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
@@ -180,6 +187,8 @@ class CompraController extends TransaccionController
             $registros_entrada = InvDocRegistro::where( 'inv_doc_encabezado_id', $doc_entrada_id )->get();
 
             $linea = 0;
+            $linea_datos = [];
+            $detalle_operacion = '';
             foreach ($registros_entrada as $un_registro)
             {
                 // Nota: $un_registro contiene datos de inventarios 
@@ -227,7 +236,7 @@ class CompraController extends TransaccionController
                                         $datos +
                                         $linea_datos
                                     );
-
+                
                 // Contabilizar
                 $detalle_operacion = $datos['descripcion'];
 
@@ -255,7 +264,7 @@ class CompraController extends TransaccionController
         $doc_encabezado->valor_total = $total_documento;
         $doc_encabezado->entrada_almacen_id = $entrada_almacen_id;
         $doc_encabezado->save();
-        
+
         // Un solo registro de la cuenta por pagar (CR)
         $forma_pago = $datos['forma_pago']; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
 
@@ -321,10 +330,40 @@ class CompraController extends TransaccionController
             // Caja (CR)
             // WARNING: Esta cuenta en realidad la debe tomar de la caja por defecto asociada al usuario,
             // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            $caja = TesoCaja::get()->first();
-            $cta_caja_id = $caja->contab_cuenta_id;
-            ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, 0, abs($total_documento), $caja->id, 0 );
+            
         }
+
+        if ( $forma_pago == 'contado')
+        {
+            if ( empty( $datos['registros_medio_pago'] ) )
+            {
+                $caja = TesoCaja::get()->first();
+                $cta_caja_id = $caja->contab_cuenta_id;
+                ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, 0, abs($total_documento), $caja->id, 0 );
+
+            }else{
+
+                // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
+                $contab_cuenta_id = TesoCaja::find( 1 )->contab_cuenta_id;
+
+                $teso_caja_id = $datos['registros_medio_pago']['teso_caja_id'];
+                if ($teso_caja_id != 0)
+                {
+                    $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
+                }
+
+                $teso_cuenta_bancaria_id = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
+                if ($teso_cuenta_bancaria_id != 0)
+                {
+                    $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
+                }
+
+                ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, 0, $datos['registros_medio_pago']['valor_recaudo'], $teso_caja_id, $teso_cuenta_bancaria_id );
+                
+            }
+
+        }
+
     }
 
     public static function crear_registro_pago( $forma_pago, $datos, $total_documento, $detalle_operacion )
@@ -348,16 +387,26 @@ class CompraController extends TransaccionController
         
         if ( $forma_pago == 'contado')
         {
-            // WARNING: Esta cuenta en realidad la debe tomar de la caja por defecto asociada al usuario,
-            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            $caja = TesoCaja::get()->first();
-        
-            // Agregar el movimiento a tesorería
-            $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','salida')->get()->first()->id;
-            $datos['teso_caja_id'] = $caja->id;
-            $datos['teso_cuenta_bancaria_id'] = 0;
-            $datos['valor_movimiento'] = $total_documento * -1;// Motivo de salida, movimiento negativo
-            TesoMovimiento::create( $datos );
+            if ( empty( $datos['registros_medio_pago'] ) )
+            {
+                // Valores por defecto
+                $caja = TesoCaja::get()->first();
+            
+                // Agregar el movimiento a tesorería
+                $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','salida')->get()->first()->id;
+                $datos['teso_caja_id'] = $caja->id;
+                $datos['teso_cuenta_bancaria_id'] = 0;
+                $datos['valor_movimiento'] = $total_documento * -1;// Motivo de salida, movimiento negativo
+                TesoMovimiento::create( $datos );
+            }else{
+                // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
+                $datos['teso_motivo_id'] = $datos['registros_medio_pago']['teso_motivo_id'];
+                $datos['teso_caja_id'] = $datos['registros_medio_pago']['teso_caja_id'];
+                $datos['teso_cuenta_bancaria_id'] = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
+                $datos['valor_movimiento'] = $datos['registros_medio_pago']['valor_recaudo'] * -1;
+
+                TesoMovimiento::create( $datos );
+            }
         }
     }
 
@@ -384,6 +433,9 @@ class CompraController extends TransaccionController
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
+        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo )->first();
+        $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
+
         // Datos de los PAGOS aplicados a la factura
         $abonos = CxpAbono::get_abonos_documento( $doc_encabezado );
 
@@ -408,7 +460,7 @@ class CompraController extends TransaccionController
             $vista = Input::get('vista');
         }
 
-        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado', 'doc_registros', 'registros_contabilidad', 'abonos', 'notas_credito', 'empresa', 'docs_relacionados','url_crear') );
+        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado', 'doc_registros', 'registros_contabilidad', 'abonos', 'notas_credito', 'empresa', 'docs_relacionados','url_crear','medios_pago') );
     }
 
     /*
@@ -436,40 +488,6 @@ class CompraController extends TransaccionController
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');        
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
     
     // Parámetro enviados por GET
@@ -777,8 +795,12 @@ class CompraController extends TransaccionController
     // MODIFICACIÓN DE REGISTROS DE DOCUMENTOS COMPRAS
     public function doc_registro_guardar( Request $request )
     {
+
         $linea_registro = ComprasDocRegistro::find( $request->linea_factura_id );
         $doc_encabezado = ComprasDocEncabezado::find( $linea_registro->compras_doc_encabezado_id );
+        
+        // NO ACTUALIZA BIEN LA CONTABILIDAD DEL MOV DE TESORERIA,POR LOS MEDIOS DE RECAUDOS
+        //return redirect( 'compras/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','En estos momentos no se pueden editar registros. Consultar con el administrador.');
 
         // Verificar si la factura tiene abonos, si tiene no se pueden modificar sus registros
         $abonos = CxpAbono::where('doc_cxp_transacc_id',$doc_encabezado->core_tipo_transaccion_id)->where('doc_cxp_tipo_doc_id',$doc_encabezado->core_tipo_doc_app_id)->where('doc_cxp_consecutivo',$doc_encabezado->consecutivo)->get()->toArray();
@@ -787,6 +809,8 @@ class CompraController extends TransaccionController
         {
             return redirect( 'compras/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los registros de la Factura NO pueden ser modificados. Factura tiene Pagos de CXP aplicados (Tesorería).');
         }
+
+        $viejo_total_encabezado = $doc_encabezado->valor_total;
 
         $cantidad = $request->cantidad;
         $valor_total_descuento = $request->valor_total_descuento;
@@ -805,13 +829,20 @@ class CompraController extends TransaccionController
                                     ['valor_total' => $nuevo_total_encabezado]
                                 );
 
-        // 2. Actualiza total de la cuenta por pagar
+        // 2. Actualiza total de la cuenta por pagar o Tesorería
         DocumentosPendientes::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                     ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                     ->where('consecutivo',$doc_encabezado->consecutivo)
                     ->update( [ 
                                 'valor_documento' => $nuevo_total_encabezado,
                                 'saldo_pendiente' => $nuevo_total_encabezado
+                            ] );
+
+        TesoMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                    ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                    ->where('consecutivo',$doc_encabezado->consecutivo)
+                    ->update( [ 
+                                'valor_movimiento' => $nuevo_total_encabezado * -1
                             ] );
 
         // 3. Actualiza movimiento de compras
@@ -881,17 +912,17 @@ class CompraController extends TransaccionController
                                 'valor_impuesto' => $valor_impuesto
                             ] );
 
-        // Contabilizar Cta. Por Pagar (CR)
-        $cxp_id = Proveedor::get_cuenta_por_pagar( $doc_encabezado->proveedor_id );
-        ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo',$doc_encabezado->consecutivo)
-                    ->where('contab_cuenta_id',$cxp_id)
-                    ->update( [ 
-                                'valor_credito' => $nuevo_total_encabezado * -1,
-                                'valor_saldo' => $nuevo_total_encabezado * -1
-                            ] );
 
+        // Contabilizar Cta. Por Pagar (CR) o Caja/Banco Si es cuenta por pagar
+        ContabMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                        ->where('consecutivo',$doc_encabezado->consecutivo)
+                        ->where( 'valor_debito', 0)
+                        ->where( 'valor_credito', $viejo_total_encabezado * -1 )
+                        ->update( [ 
+                                    'valor_credito' => $nuevo_total_encabezado * -1,
+                                    'valor_saldo' => $nuevo_total_encabezado * -1
+                                ] );
 
         // 5. Actualizar el registro del documento de inventario
         $inv_doc_encabezado = InvDocEncabezado::find( $doc_encabezado->entrada_almacen_id );

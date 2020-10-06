@@ -130,6 +130,17 @@
 
 		var dias_plazo;
 
+		$.fn.actualizar_medio_recaudo = function(){
+    
+		    var texto_total_recaudos = this.html().substring(1);
+		    
+		    if( parseFloat( texto_total_recaudos ) == 0 )
+		    {
+		        return false;
+		    }
+
+		};
+
 		$(document).ready(function(){
 
 			// Variables de cada línea de ingresos de registros.
@@ -916,19 +927,21 @@
 
 			// GUARDAR EL FORMULARIO
 			$('#btn_guardar').click(function(event){
-				event.preventDefault();
-
-				var object = $('#ingreso_registros').val();
-				
-				if( typeof object == typeof undefined){
-					// Si no existe la tabla de ingreso_registros, se envía el formulario
-					// Esto es para los otros modelos que usan el ModeloController y que no
-					// son una transacción
-					$('#form_create').submit();
-				}
+				event.preventDefault();				
 
 				if ( !validar_todo() )
 				{
+					return false;
+				}
+
+				var valor_total_recaudos = $('#total_valor_total').text();
+				
+				// Se reemplaza varias veces el "." por vacio, y luego la coma por punto
+				var total_factura = $('#total_factura').text().replace(".","").replace(".","").replace(".","").replace(".","").replace(",",".");
+
+				if( valor_total_recaudos !== '$0.00' && parseFloat( valor_total_recaudos.substring(1) ) !== parseFloat( total_factura.substring(2) )  )
+				{
+					alert('El total de recaudos no coincide con el total de la factura.');
 					return false;
 				}
 
@@ -953,13 +966,13 @@
 				// Se asigna el objeto JSON a un campo oculto del formulario
 		 		$('#lineas_registros').val( JSON.stringify(table) );
 
-		 		/*		Para Recaudos
+		 		/*		Para Recaudos      */
 		 		// Se transfoma la tabla a formato JSON a través de un plugin JQuery
-				//var tabla_recaudos = $('#ingreso_registros_medios_recaudo').tableToJSON();
+				var tabla_recaudos = $('#ingreso_registros_medios_recaudo').tableToJSON();
 
 				// Se asigna el objeto JSON a un campo oculto del formulario
-		 		//$('#lineas_registros_medios_recaudo').val( JSON.stringify(tabla_recaudos) );
-				*/
+		 		$('#lineas_registros_medios_recaudo').val( JSON.stringify(tabla_recaudos) );
+				
 
 		 		// Se envía el formulario
 				$('#form_create').submit();

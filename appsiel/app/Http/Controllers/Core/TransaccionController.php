@@ -54,6 +54,10 @@ use App\Inventarios\InvMotivo;
 
 use App\Contabilidad\ContabMovimiento;
 
+use App\Tesoreria\TesoMedioRecaudo;
+use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
+
 class TransaccionController extends Controller
 {
     protected $doc_encabezado;
@@ -170,10 +174,24 @@ class TransaccionController extends Controller
                     ];
 
         $id_transaccion = 8;// 8 = Recaudo cartera
-        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
-        $medios_recaudo = RecaudoController::get_medios_recaudo();
-        $cajas = RecaudoController::get_cajas();
-        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+
+        switch ( $transaccion->id )
+        {
+            case 25: // Factura compras
+                $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Otros pagos' );
+                break;
+            case 23: // Factura ventas
+                $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+                break;
+            
+            default:
+                $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+                break;
+        }
+        
+        $medios_recaudo = TesoMedioRecaudo::opciones_campo_select();
+        $cajas = TesoCaja::opciones_campo_select();
+        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 
         $miga_pan = $this->get_array_miga_pan( $app, $modelo, 'Crear: '.$transaccion->descripcion );
         
@@ -296,12 +314,15 @@ class TransaccionController extends Controller
     public function get_total_campo_lineas_registros( $lineas_registros, string $campo )
     {
         $total = 0;
+
         foreach ($lineas_registros as $linea )
         {
             if ( isset($linea->$campo) )
+            {
                 $total += (float)$linea->$campo;
+            }
         }
-
+        
         return $total;
     }
 }

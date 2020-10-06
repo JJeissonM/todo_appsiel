@@ -27,7 +27,7 @@ $datos = [
 ?>
 
 <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#home">Medios de recaudo</a></li>
+    <li class="active"><a data-toggle="tab" href="#home">Medios de Pago/Recaudo</a></li>
 </ul>
 
 <div class="tab-content">
@@ -39,7 +39,7 @@ $datos = [
                 <table class="table table-striped" id="ingreso_registros_medios_recaudo">
                     <thead>
                     <tr>
-                        <th data-override="teso_medio_recaudo_id">Medio de recaudo</th>
+                        <th data-override="teso_medio_recaudo_id">Medio de Pago/Recaudo</th>
                         <th data-override="teso_motivo_id">Motivo</th>
                         <th data-override="teso_caja_id">Caja</th>
                         <th data-override="teso_cuenta_bancaria_id">Cta. Bancaria</th>
@@ -48,6 +48,10 @@ $datos = [
                     </tr>
                     </thead>
                     <tbody>
+                        
+                        @if( isset( $cuerpo_tabla_medios_recaudos ) )
+                            {!! $cuerpo_tabla_medios_recaudos !!}
+                        @endif
 
                     </tbody>
                     <tfoot>
@@ -65,7 +69,7 @@ $datos = [
 
         <a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none; cursor: pointer;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
     </div>
-    <input type="hidden" name="suma_cambio" id="suma_cambio" onselect="jordan()">
+
 </div>
 
 <!-- Modal -->

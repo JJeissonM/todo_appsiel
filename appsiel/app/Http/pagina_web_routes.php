@@ -211,3 +211,8 @@ Route::post('pagina_web/nube/ruta/get', 'web\NubeController@listPath')->name('nu
 Route::post('pagina_web/nube/ruta/get/all/delete', 'web\NubeController@delete')->name('nube.delete');
 Route::post('pagina_web/nube/ruta/nueva/carpeta', 'web\NubeController@nueva')->name('nube.nueva');
 Route::post('pagina_web/nube/ruta/upload', 'web\NubeController@upload')->name('nube.upload');
+
+
+//Modal
+Route::post('modal/store', 'web\ModalController@store')->name('modal.store');
+Route::put('modal/updated/{id}', 'web\ModalController@updated')->name('modal.update');

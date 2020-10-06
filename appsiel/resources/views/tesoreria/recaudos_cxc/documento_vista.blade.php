@@ -1,4 +1,4 @@
-<div>
+<div class="table-responsive">
     <table class="table table-bordered">
         <tr>
             <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
@@ -20,7 +20,7 @@
             </td>
         </tr>
         <tr>
-            <td style="border: solid 1px #ddd;">docimpri
+            <td style="border: solid 1px #ddd;">
                 <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
                 <br/>
                 <b>Documento ID: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
@@ -38,8 +38,10 @@
             </td>
         </tr>
     </table>
+</div>
 
-    <h4 style="text-align: center;"> Documentos abonados </h4>
+<h4 style="text-align: center;"> Documentos abonados </h4>
+<div class="table-responsive">
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Tercero','Documento','Fecha','Detalle','Abono','Saldo']) }}
         <tbody>
@@ -94,8 +96,10 @@
             </tr>
         </tfoot>
     </table>
+</div>
 
-    <h4 style="text-align: center;">Registros contables</h4>
+<h4 style="text-align: center;">Registros contables</h4>
+<div class="table-responsive">
     <table class="table table-bordered table-striped">
         <thead>
             <tr>

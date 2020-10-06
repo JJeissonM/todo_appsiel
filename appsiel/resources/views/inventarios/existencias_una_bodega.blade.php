@@ -28,46 +28,52 @@
 			</div>
 
 			{{ Form::bsBtnExcel('Existencias de inventarios') }}
-			<table class="table table-bordered" id="myTable">
-			    {{ Form::bsTableHeader(['Cód.','Producto','Cantidad','Costo Prom.','Costo Total']) }}
-			    <tbody>
-			        <?php 
-			        $total_cantidad=0;
-			        $total_costo_total=0;
-			        for($i=0;$i<count($productos);$i++){ 
-			        		$productos[$i]['Cantidad'] = round($productos[$i]['Cantidad'],2);
-			        		$costo_unitario = 0;
-			        		if( $productos[$i]['Cantidad'] != 0)
-			        		{
-			        			$costo_unitario = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];
-			        		}else{
-			        			$productos[$i]['Costo'] = 0;	
-			        		}
-			        	?>
-			        	<!-- @  -->
-			            <!-- @ endif -->
-				            <tr>
-				                <td>{{ $productos[$i]['id'] }}</td>
-				                <td>{{ $productos[$i]['descripcion'] }}</td>
-				                <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} {{ $productos[$i]['unidad_medida1'] }}</td>
-				                <td>{{ '$'.number_format($costo_unitario, 2, ',', '.') }}</td>
-				                <td>{{ '$'.number_format($productos[$i]['Costo'], 2, ',', '.') }}</td>
-				            </tr>
-			        <?php 
-			            $total_cantidad+= $productos[$i]['Cantidad'];
-			            $total_costo_total+= $productos[$i]['Costo'];
-			        } ?>
-			    </tbody>
-			    <tfoot>
-			        <tr>
-			            <td colspan="2">&nbsp;</td>
-			            <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
-			            <td>&nbsp;</td>
-			            <td> {{ '$'.number_format($total_costo_total, 2, ',', '.') }} </td>
-			        </tr>
-			    </tfoot>
-			</table>			
-			
+			<div class="table-responsive">
+				<table class="table table-bordered" id="myTable">
+				    {{ Form::bsTableHeader(['Cód.','Producto','Cantidad','Costo Prom.','Costo Total']) }}
+				    <tbody>
+				        <?php 
+				        $total_cantidad=0;
+				        $total_costo_total=0;
+				        for($i=0;$i<count($productos);$i++){ 
+				        		$productos[$i]['Cantidad'] = round($productos[$i]['Cantidad'],2);
+				        		$costo_unitario = 0;
+				        		if( $productos[$i]['Cantidad'] != 0)
+				        		{
+				        			$costo_unitario = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];
+				        		}else{
+				        			$productos[$i]['Costo'] = 0;	
+				        		}
+
+				        		$unidad_medida = $productos[$i]['unidad_medida1'];
+				        		if( $productos[$i]['unidad_medida2'] != '' )
+				        		{
+				        			$unidad_medida = $productos[$i]['unidad_medida1'] . ' - Talla: ' . $productos[$i]['unidad_medida2'];
+				        		}
+				        	?>
+					            <tr>
+					                <td>{{ $productos[$i]['id'] }}</td>
+					                <td>{{ $productos[$i]['descripcion'] }}</td>
+					                <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} {{ $unidad_medida }}</td>
+					                <td>{{ '$'.number_format($costo_unitario, 2, ',', '.') }}</td>
+					                <td>{{ '$'.number_format($productos[$i]['Costo'], 2, ',', '.') }}</td>
+					            </tr>
+				        <?php 
+				            $total_cantidad+= $productos[$i]['Cantidad'];
+				            $total_costo_total+= $productos[$i]['Costo'];
+				        } ?>
+				    </tbody>
+				    <tfoot>
+				        <tr>
+				            <td colspan="2">&nbsp;</td>
+				            <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
+				            <td>&nbsp;</td>
+				            <td> {{ '$'.number_format($total_costo_total, 2, ',', '.') }} </td>
+				        </tr>
+				    </tfoot>
+				</table>
+			</div>
+				
 		</div>
 	</div>
 	<br/><br/>	

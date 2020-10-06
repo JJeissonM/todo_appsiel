@@ -1,7 +1,7 @@
 <table>
     <tr>
-        <td rowspan="2" width="200px">
-            <img src="{{ $url.'?'.rand(1,1000) }}" width="60px" height="60px" />
+        <td rowspan="2" width="40%" style="text-align: right;">
+            <img src="{{ $url.'?'.rand(1,1000) }}" style="max-width: 190px; max-height: 80px; display: inline;" />
         </td>
 
         <td align="center">

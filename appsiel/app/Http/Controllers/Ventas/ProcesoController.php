@@ -24,6 +24,9 @@ use App\Ventas\InvCostoPromProducto;
 use App\Compras\ComprasMovimiento;
 use App\Contabilidad\ContabMovimiento;
 
+use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\RegistrosMediosPago;
+
 use Input;
 
 class ProcesoController extends Controller
@@ -79,7 +82,37 @@ class ProcesoController extends Controller
         }
 
         $forma_pago = $documento->forma_pago;
-        VentaController::contabilizar_movimiento_debito( $forma_pago, $documento->toArray(), $total_documento, $detalle_operacion );/**/
+        
+        $datos = $documento->toArray();
+        $datos['registros_medio_pago'] = ProcesoController::get_lineas_medios_recaudos( $documento );
+
+        VentaController::contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion );/**/
+    }
+
+    public static function get_lineas_medios_recaudos( $documento )
+    {
+        $registro = TesoMovimiento::get_registros_un_documento( $documento->core_tipo_transaccion_id, $documento->core_tipo_doc_app_id, $documento->consecutivo )->first();
+
+        $medio_recaudo = 'Efectivo'; // MUY MANUAL
+        $motivo = '1-Recaudo clientes'; // MUY MANUAL
+        $caja = (object)['descripcion'=>''];
+        if( $registro->teso_caja_id != 0 )
+        {
+            $medio_recaudo = 'Cuenta bancaria'; // MUY MANUAL
+            $caja = $registro->caja;
+        }
+
+        $cuenta_bancaria = (object)['descripcion'=>''];
+        if( $registro->teso_cuenta_bancaria_id != 0 )
+        {
+            $cuenta_bancaria = $registro->cuenta_bancaria;
+            $motivo = '5-Pago a proveedores'; // MUY MANUAL
+        }
+
+        $campo_lineas_recaudos = json_decode('[{"teso_medio_recaudo_id":"1-'.$medio_recaudo.'","teso_motivo_id":"'.$motivo.'","teso_caja_id":"'.$registro->teso_caja_id.'-'.$caja->descripcion.'","teso_cuenta_bancaria_id":"'.$registro->teso_cuenta_bancaria_id.'-'.$cuenta_bancaria->descripcion.'","valor":"$'. $registro->valor_movimiento .'"}]');
+
+        $registros_medio_pago = new RegistrosMediosPago;
+        return $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
     }
 
 

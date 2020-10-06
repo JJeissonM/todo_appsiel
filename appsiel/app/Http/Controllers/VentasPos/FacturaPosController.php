@@ -203,15 +203,26 @@ class FacturaPosController extends TransaccionController
 
         $aux = array_pop( $lineas_registros_medios_recaudos ); // eliminar ultimo elemento del array
 
-        if( json_encode( $lineas_registros_medios_recaudos ) == "[]" )
+        $medios_recaudos = json_encode( $lineas_registros_medios_recaudos );
+
+        if( $medios_recaudos == "[]" )
         {
             $pdv = Pdv::find( $request_2->pdv_id );
 
-            $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"'.$pdv->caja_default_id.'-'.$pdv->caja->descripcion.'","teso_cuenta_bancaria_id":"0-","valor":"$'.$request_2->total_efectivo_recibido.'"}]';
+            $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"'.$pdv->caja_default_id.'-'.$pdv->caja->descripcion.'","teso_cuenta_bancaria_id":"0-","valor":"$'. ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) .'"}]';
         }else{
-            $request_2['lineas_registros_medios_recaudos'] = json_encode( $lineas_registros_medios_recaudos ); // Se convierte a string JSON
+
+            // CUANDO HAY VARIOS MEDIOS DE RECAUDOS... ¿CÓMO CUADRAR CON EL TOTAL DE LA FACTURA?
+
+
+            $valor = json_decode( $medios_recaudos )[0]->valor;
+            $request_2['lineas_registros_medios_recaudos'] = str_replace($valor, "$" . ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) , $medios_recaudos);
         }
     }
+
+    /*
+        [{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"3-Caja Domicilios","teso_cuenta_bancaria_id":"0-","valor":"$0"},{"teso_medio_recaudo_id":"2-Tarjeta d\u00e9bito","teso_motivo_id":"1-Recaudo clientes (Ventas)","teso_caja_id":"0-","teso_cuenta_bancaria_id":"1-Bancolombia: 52370715696","valor":"$60300"}]
+    */
 
 
     /*
@@ -399,6 +410,14 @@ class FacturaPosController extends TransaccionController
                                         ] );
 
 
+        foreach ($lista_campos as $key => $value)
+        {
+            if ($value['name'] == 'cliente_input')
+            {
+                $lista_campos[$key]['value'] = $doc_encabezado->tercero_nombre_completo;
+            }
+        }
+
         $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
 
         $url_action = str_replace('id_fila', $registro->id, $acciones->update);
@@ -425,22 +444,26 @@ class FacturaPosController extends TransaccionController
             $tabla = '';
         }
 
+
+        $id_transaccion = 8;// 8 = Recaudo cartera
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+
         $numero_linea = count( $registro->lineas_registros ) + 1;
 
-        $lineas_registros = '<tbody>';
-        $i = 1;
-        foreach ( $registro->lineas_registros as $linea )
-        {
-            
-            $lineas_registros .= '<tr class="linea_registro" data-numero_linea="'.$i.'"><td style="display: none;"><div class="inv_producto_id">'.$linea->inv_producto_id.'</div></td><td style="display: none;"><div class="precio_unitario">'.$linea->precio_unitario.'</div></td><td style="display: none;"><div class="base_impuesto">'.$linea->base_impuesto.'</div></td><td style="display: none;"><div class="tasa_impuesto">'.$linea->tasa_impuesto.'</div></td><td style="display: none;"><div class="valor_impuesto">'.$linea->valor_impuesto.'</div></td><td style="display: none;"><div class="base_impuesto_total">'.$linea->base_impuesto_total.'</div></td><td style="display: none;"><div class="cantidad">'.$linea->cantidad.'</div></td><td style="display: none;"><div class="precio_total">'.$linea->precio_total.'</div></td><td style="display: none;"><div class="tasa_descuento">'.$linea->tasa_descuento.'</div></td><td style="display: none;"><div class="valor_total_descuento">'.$linea->valor_total_descuento.'</div></td><td> &nbsp; </td><td> <span style="background-color:#F7B2A3;">'.$linea->inv_producto_id.'</span> <div class="lbl_producto_descripcion" style="display: inline;"> '.$linea->item->descripcion.' </div> </td><td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> '.$linea->cantidad.'</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">'.$linea->item->unidad_medida1.'</div>) </td><td> <div class="lbl_precio_unitario" style="display: inline;">$ '.number_format($linea->precio_unitario,'0',',','.').'</div></td><td>'.$linea->tasa_descuento.'% ( $<div class="lbl_valor_total_descuento" style="display: inline;">'.number_format($linea->valor_total_descuento,'0',',','.').'</div> ) </td><td><div class="lbl_tasa_impuesto" style="display: inline;">'.$linea->tasa_impuesto.'%</div></td><td> <div class="lbl_precio_total" style="display: inline;">$ '.number_format( $linea->precio_total,'0',',','.' ).' </div> </td> <td><button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button></td></tr>';
-            $i++;
-        }
+        $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros( $registro->lineas_registros );
 
-        $lineas_registros .= '</tbody>';
+        $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos( $registro );
+        
+        $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact( 'id_transaccion', 'motivos','medios_recaudo','cajas','cuentas_bancarias', 'cuerpo_tabla_medios_recaudos') )->render();
+
+        $total_efectivo_recibido = $this->get_total_campo_lineas_registros( json_decode( str_replace("$", "", $registro->lineas_registros_medios_recaudos) ), 'valor' );
 
         $productos = InvProducto::get_datos_basicos( '', 'Activo' );
-        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id );
-        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id );
+        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $registro->cliente->lista_precios_id );
+        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $registro->cliente->lista_descuentos_id );
 
         $contenido_modal = View::make('ventas_pos.lista_items',compact( 'productos') )->render();
 
@@ -448,9 +471,55 @@ class FacturaPosController extends TransaccionController
 
         $redondear_centena = config('ventas_pos.redondear_centena');
 
-        return view( 'ventas_pos.edit', compact('form_create','miga_pan','registro','archivo_js','url_action','pdv', 'inv_motivo_id', 'tabla', 'productos', 'precios', 'descuentos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros' ) );
+        return view( 'ventas_pos.edit', compact('form_create','miga_pan','registro','archivo_js','url_action','pdv', 'inv_motivo_id', 'tabla', 'productos', 'precios', 'descuentos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido' ) );
     }
 
+
+
+    public function armar_cuerpo_tabla_lineas_registros( $lineas_registros_documento )
+    {
+
+        $cuerpo_tabla_lineas_registros = '<tbody>';
+        $i = 1;
+        foreach ( $lineas_registros_documento as $linea )
+        {
+            
+            $cuerpo_tabla_lineas_registros .= '<tr class="linea_registro" data-numero_linea="'.$i.'"><td style="display: none;"><div class="inv_producto_id">'.$linea->inv_producto_id.'</div></td><td style="display: none;"><div class="precio_unitario">'.$linea->precio_unitario.'</div></td><td style="display: none;"><div class="base_impuesto">'.$linea->base_impuesto.'</div></td><td style="display: none;"><div class="tasa_impuesto">'.$linea->tasa_impuesto.'</div></td><td style="display: none;"><div class="valor_impuesto">'.$linea->valor_impuesto.'</div></td><td style="display: none;"><div class="base_impuesto_total">'.$linea->base_impuesto_total.'</div></td><td style="display: none;"><div class="cantidad">'.$linea->cantidad.'</div></td><td style="display: none;"><div class="precio_total">'.$linea->precio_total.'</div></td><td style="display: none;"><div class="tasa_descuento">'.$linea->tasa_descuento.'</div></td><td style="display: none;"><div class="valor_total_descuento">'.$linea->valor_total_descuento.'</div></td><td> &nbsp; </td><td> <span style="background-color:#F7B2A3;">'.$linea->inv_producto_id.'</span> <div class="lbl_producto_descripcion" style="display: inline;"> '.$linea->item->descripcion.' </div> </td><td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> '.$linea->cantidad.'</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">'.$linea->item->unidad_medida1.'</div>) </td><td> <div class="lbl_precio_unitario" style="display: inline;">$ '.number_format($linea->precio_unitario,'0',',','.').'</div></td><td>'.$linea->tasa_descuento.'% ( $<div class="lbl_valor_total_descuento" style="display: inline;">'.number_format($linea->valor_total_descuento,'0',',','.').'</div> ) </td><td><div class="lbl_tasa_impuesto" style="display: inline;">'.$linea->tasa_impuesto.'%</div></td><td> <div class="lbl_precio_total" style="display: inline;">$ '.number_format( $linea->precio_total,'0',',','.' ).' </div> </td> <td><button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button></td></tr>';
+            $i++;
+        }
+
+        $cuerpo_tabla_lineas_registros .= '</tbody>';
+
+        return $cuerpo_tabla_lineas_registros;
+
+    }
+
+
+    public function armar_cuerpo_tabla_medios_recaudos( $doc_encabezado )
+    {
+        $cuerpo_tabla = '';
+        $lineas_recaudos = json_decode( $doc_encabezado->lineas_registros_medios_recaudos );
+
+        if( !is_null( $lineas_recaudos ) )
+        {
+            foreach( $lineas_recaudos as $linea )        
+            {
+                $medio_recaudo = explode('-', $linea->teso_medio_recaudo_id);
+                $motivo = explode('-', $linea->teso_motivo_id);
+                $caja = explode('-', $linea->teso_caja_id);
+                $cuenta_bancaria = explode('-', $linea->teso_cuenta_bancaria_id);
+
+                $cuerpo_tabla .= '<tr> <td> <span style="color:white;">'.$medio_recaudo[0].'-</span>'.$medio_recaudo[1].'</td>' .
+                            '<td><span style="color:white;">' . $motivo[0] . '-</span>' . $motivo[1] . '</td>' . 
+                            '<td><span style="color:white;">' . $caja[0] . '-</span>' . $caja[1] . '</td>' . 
+                            '<td><span style="color:white;">' . $cuenta_bancaria[0] . '-</span>' . $cuenta_bancaria[1] . '</td>' .
+                            '<td class="valor_total">' . $linea->valor . '</td>' .
+                            '<td> <button type="button" class="btn btn-danger btn-xs btn_eliminar_linea_medio_recaudo"><i class="fa fa-btn fa-trash"></i></button> </td> </tr>';
+            }
+        }
+
+        return $cuerpo_tabla;
+    }
 
 
     /**
@@ -761,6 +830,8 @@ class FacturaPosController extends TransaccionController
             {
                 foreach( $lineas_recaudos as $linea )
                 {
+                    $contab_cuenta_id = TesoCaja::find( 1 )->contab_cuenta_id;
+
                     $teso_caja_id = explode("-", $linea->teso_caja_id)[0];
                     if ($teso_caja_id != 0)
                     {

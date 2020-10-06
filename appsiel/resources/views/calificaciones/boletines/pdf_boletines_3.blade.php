@@ -83,9 +83,9 @@
 	
 	    <table class="banner">
             <tr>
-                <td rowspan="2" width="200px">
-                    <img src="{{ $url.'?'.rand(1,1000) }}" height="90px" style="padding-top: -25px;"/>
-                </td>
+				<td rowspan="2" width="40%" style="text-align: center;">
+		            <img src="{{ $url.'?'.rand(1,1000) }}" style="max-width: 190px; max-height: 80px; display: inline; padding-top: -25px;" />
+		        </td>
         
                 <td align="center">
                     <br/>

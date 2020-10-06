@@ -13,6 +13,8 @@
 			</td>
 			<td>
 				<b>Diagnostico: </b> {{ $formula->diagnostico }}
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<b>Recomendaciones: </b> {{ $formula->recomendaciones }}
 			</td>
 		</tr>
 	</table>

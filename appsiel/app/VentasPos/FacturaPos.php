@@ -175,8 +175,9 @@ class FacturaPos extends Model
                                     'vtas_pos_doc_encabezados.forma_pago AS campo4',
                                     'vtas_pos_doc_encabezados.descripcion AS campo5',
                                     'vtas_pos_doc_encabezados.valor_total AS campo6',
-                                    'vtas_pos_doc_encabezados.estado AS campo7',
-                                    'vtas_pos_doc_encabezados.id AS campo8'
+                                    'vtas_pos_doc_encabezados.lineas_registros_medios_recaudos AS campo7',
+                                    'vtas_pos_doc_encabezados.estado AS campo8',
+                                    'vtas_pos_doc_encabezados.id AS campo9'
                                 )
                                 ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
                                 ->get()

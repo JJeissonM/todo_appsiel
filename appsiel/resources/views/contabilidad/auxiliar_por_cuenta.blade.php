@@ -37,31 +37,7 @@
 					</div>
 				</div>
 				
-				<!--
-				<div class="row">
-					<div class="col-sm-12">
-						&nbsp;
-					</div>
-				</div>
-
-				
-				<div class="row">
-					<div class="col-sm-2">
-						{{ Form::checkbox('detallar_grupo_cuentas', '1')}}
-						{{ Form::label(' ',' Detallar grupo cuentas') }}
-					</div>
-					<div class="col-sm-2">
-						{{ Form::checkbox('detallar_terceros', '1')}}
-						{{ Form::label(' ',' Detallar terceros') }}
-					</div>
-					<div class="col-sm-2">
-						{{ Form::checkbox('detallar_documentos', '1')}}
-						{{ Form::label(' ',' Detallar documentos') }}
-					</div>
-				</div>
-			-->
 			{{ Form::close() }}
-				<!--		<button id="btn_ir">ir</button>		-->
 			
 		</div>
 	</div>

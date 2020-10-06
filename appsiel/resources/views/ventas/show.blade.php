@@ -1,5 +1,9 @@
 <?php  
 	$variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
+
+	//dd( $encabezado_documento );
+	//dd( [ $doc_encabezado->direccion1, $encabezado_documento->tercero->ciudad->descripcion, $encabezado_documento->tercero->ciudad->departamento->descripcion ] );
+
 ?>
 
 @extends('transaccion.show')
@@ -60,6 +64,7 @@
     </tr>
     <tr>        
         <td colspan="2" style="border: solid 1px #ddd;">
+        	{!! $medios_pago !!}
             <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
         </td>
     </tr>
