@@ -47,7 +47,8 @@ class LibretaPagoController extends ModeloController
     protected $j;
 
 
-    public function actualizar_estado_cartera(){
+    public function actualizar_estado_cartera()
+    {
         // 1ro. PROCESO QUE ACTUALIZA LAS CARTERAS, asignando EL ESTADO Vencida
         // Actualizar las cartera con fechas inferior a hoy y con estado distinto a Pagada
         TesoCarteraEstudiante::where('fecha_vencimiento','<', date('Y-m-d'))
@@ -175,19 +176,21 @@ class LibretaPagoController extends ModeloController
      */
     public function store( Request $request )
     {   
-        $parametros = config('configuracion'); // Llamar al archivo de configuración del core
+        $parametros = config('configuracion.matriculas'); // Llamar al archivo de configuración del core
 
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
         $request['id_estudiante'] = $matricula_estudiante->id_estudiante;
         $registro = $this->crear_nuevo_registro( $request );
 
+        $cpto_matricula = InvProducto::find( $inv_producto_id_default_matricula );
+        $cpto_pension = InvProducto::find( $inv_producto_id_default_pension );
 
-        /*      SE CREAN LOS REGISTROS DE CARTERA DE ESTUDIANTES    */
+        /*      SE CREAN LOS REGISTROS DE CARTERA DE ESTUDIANTES (Plan de Pagos)    */
         // 1. Se agrega el registro de matrícula por pagar en la cartera de estudiantes
         $cartera = new TesoCarteraEstudiante;
         $cartera->id_libreta = $registro->id;
-        $cartera->id_estudiante = $matricula_estudiante->id_estudiante;
-        $cartera->concepto = "Matrícula";
+        $cartera->id_estudiante = $request->id_estudiante;
+        $cartera->concepto = $cpto_matricula->descripcion; // Debe haber un registro en "inv_productos" tipo "servicio" con este mismo nombre para generar la factura de ventas
         $cartera->valor_cartera = $request->valor_matricula;
         $cartera->saldo_pendiente = $request->valor_matricula;
         $cartera->fecha_vencimiento = $request->fecha_inicio;
@@ -196,7 +199,7 @@ class LibretaPagoController extends ModeloController
 
 
         // Contabilización TODA MANUAL
-        $valor = $request->valor_matricula;
+        /*$valor = $request->valor_matricula;
         $core_empresa_id = Auth::user()->empresa_id;
 
         $core_tipo_transaccion_id = 21; //Recaudo libreta de pago
@@ -250,18 +253,19 @@ class LibretaPagoController extends ModeloController
                                     [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
                                 );
 
+        */
 
         // 2. Se agregan los registros de pensiones por pagar
-        $detalle_operacion = 'Generación libreta de pagos. Pensión.';
+        // $detalle_operacion = 'Generación libreta de pagos. Pensión.';
         $fecha = explode("-",$request->fecha_inicio);
         $num_mes = $fecha[1];
-        for($i=0;$i<$request->numero_periodos;$i++)
+        for( $i=0; $i < $request->numero_periodos ; $i++)
         {
             $fecha_vencimiento = $fecha[0].'-'.$num_mes.'-01';
             $cartera = new TesoCarteraEstudiante;
             $cartera->id_libreta = $registro->id;
             $cartera->id_estudiante = $request->id_estudiante;
-            $cartera->concepto = "Pensión";
+            $cartera->concepto = $cpto_pension->descripcion; // Debe haber un registro en "inv_productos" tipo "servicio" con este mismo nombre para generar la factura de ventas
             $cartera->valor_cartera = $request->valor_pension_mensual;
             $cartera->saldo_pendiente = $request->valor_pension_mensual;
             $cartera->fecha_vencimiento = $fecha_vencimiento;
@@ -269,7 +273,7 @@ class LibretaPagoController extends ModeloController
             $cartera->save();
             $num_mes++;
 
-            
+            /*
             $consecutivo = $this->get_consecutivo($core_empresa_id, $core_tipo_doc_app_id);
             // CONTABLIZACION
             $detalle_operacion = 'Generación libreta de pagos. Pensión. ID_LIBRETA'.$registro->id.'.';
@@ -299,6 +303,7 @@ class LibretaPagoController extends ModeloController
                                     [ 'valor_credito' => ($valor_credito * -1) ] + 
                                     [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
                                 );
+            */
         }
 
         return redirect('tesoreria/ver_plan_pagos/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Libreta creada correctamente.');
@@ -369,7 +374,7 @@ class LibretaPagoController extends ModeloController
         TesoCarteraEstudiante::where('id_libreta',$id)->delete();
 
         // Borrar registros contables asociados a la libreta 
-        ContabMovimiento::where('detalle_operacion','LIKE','%ID_LIBRETA'.$id.'.%')->delete();
+        //ContabMovimiento::where('detalle_operacion','LIKE','%ID_LIBRETA'.$id.'.%')->delete();
 
         // Se agrega el registro de matrícula por pagar en la cartera de estudiantes
         $cartera = new TesoCarteraEstudiante;
@@ -384,7 +389,7 @@ class LibretaPagoController extends ModeloController
 
 
         // Contabilización TODA MANUAL
-        $valor = $request->valor_matricula;
+        /*$valor = $request->valor_matricula;
         $core_empresa_id = Auth::user()->empresa_id;
         $core_tipo_transaccion_id = 21;
         $core_tipo_doc_app_id = 11;
@@ -432,6 +437,8 @@ class LibretaPagoController extends ModeloController
                                         [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
                                     );
 
+        */
+
 
         // Se agregan los registros de pensiones por pagar
         $fecha = explode("-",$request->fecha_inicio);
@@ -449,7 +456,7 @@ class LibretaPagoController extends ModeloController
             $num_mes++;
 
             // CONTABLIZACION
-
+            /*
             $detalle_operacion = 'Generación libreta de pagos. Pensión. ID_LIBRETA'.$id.'.';
             $valor = $request->valor_pension_mensual;
         
@@ -478,6 +485,7 @@ class LibretaPagoController extends ModeloController
                                         [ 'valor_credito' => ($valor_credito * -1) ] + 
                                         [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
                                     );
+            */
         }
 
         $registro->fill( $request->all() );
@@ -570,7 +578,6 @@ class LibretaPagoController extends ModeloController
 
             // Se guarda el recaudo
             TesoRecaudosLibreta::create( $datos );
-
 
             // Se Actualiza la cartera del estudiante
             $cartera = TesoCarteraEstudiante::find($request->id_cartera);
@@ -701,20 +708,12 @@ class LibretaPagoController extends ModeloController
         TesoCarteraEstudiante::where('fecha_vencimiento','<', date('Y-m-d'))
                                   ->where('estado','<>', 'Pagada')
                                   ->update(['estado' => 'Vencida']);
-          
-        $libreta = TesoLibretasPago::find($id_libreta);
 
-        //$estudiante = Estudiante::find($libreta->id_estudiante);
+        $libreta = TesoLibretasPago::find($id_libreta);
 
         $matricula_estudiante = Matricula::get_registro_impresion( $libreta->matricula_id );
 
         $cartera = TesoCarteraEstudiante::where('id_libreta',$id_libreta)->get();
-
-        //$matricula = Matricula::where('estado','Activo')->where('id_estudiante',$estudiante->id)->get()[0];
-
-        //$curso = Curso::find($matricula->curso_id);
-
-        //$codigo_matricula = $matricula->codigo;
 
         $miga_pan = [
                 ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],
@@ -722,7 +721,6 @@ class LibretaPagoController extends ModeloController
                 ['url'=>'NO','etiqueta'=>'Plan de pagos']
             ];
 
-        //return view('tesoreria.ver_plan_pagos',compact('matricula_estudiante', 'libreta','estudiante','cartera','miga_pan','codigo_matricula','curso'));
         return view('tesoreria.ver_plan_pagos', compact('matricula_estudiante', 'libreta', 'cartera', 'miga_pan') );
     }
 

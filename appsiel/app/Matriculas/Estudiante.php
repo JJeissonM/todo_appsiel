@@ -27,6 +27,36 @@ class Estudiante extends Model
 
     public $encabezado_tabla = ['ID', 'Nombre', 'Documento', 'Género', 'Fecha nacimiento', 'Teléfono', 'Email papá', 'Email mamá', 'Acción'];
 
+    public function tercero()
+    {
+        return $this->belongsTo( Tercero::class,'core_tercero_id');
+    }
+
+    /**
+     * Obtener todas las matriculas del estudiante.
+     */
+    public function matriculas()
+    {
+        return $this->hasMany(Matricula::class);
+    }
+
+    public function registros_cartera()
+    {
+        return $this->hasMany('App\Tesoreria\TesoCarteraEstudiante', 'id_estudiante');
+    }
+
+    public function responsableestudiantes()
+    {
+        return $this->hasMany(Responsableestudiante::class);
+    }
+
+    public function getTercero($id)
+    {
+        $e = Estudiante::find($id);
+        return Tercero::find($e->core_tercero_id);
+    }
+
+
     public static function consultar_registros()
     {
         return Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
@@ -62,18 +92,7 @@ class Estudiante extends Model
     }
 
 
-    /**
-     * Obtener todas las matriculas del estudiante.
-     */
-    public function matriculas()
-    {
-        return $this->hasMany(Matricula::class);
-    }
-
-    public function registros_cartera()
-    {
-        return $this->hasMany('App\Tesoreria\TesoCarteraEstudiante', 'id_estudiante');
-    }
+    
 
     public static function get_nombre_completo($id, $modo_ordenamiento = 1)
     {
@@ -190,16 +209,5 @@ class Estudiante extends Model
             )
             ->get()
             ->first();
-    }
-
-    public function responsableestudiantes()
-    {
-        return $this->hasMany(Responsableestudiante::class);
-    }
-
-    public function getTercero($id)
-    {
-        $e = Estudiante::find($id);
-        return Tercero::find($e->core_tercero_id);
     }
 }

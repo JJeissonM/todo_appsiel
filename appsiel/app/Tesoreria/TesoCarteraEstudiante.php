@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 
+// Plan de pagos del estudiante
 class TesoCarteraEstudiante extends Model
 {
     // NOTA: el campo "concepto" debe cambiar por uno tipo ID, que es el que se usa en la facturas.
@@ -15,7 +16,7 @@ class TesoCarteraEstudiante extends Model
 
     public function facturas_estudiantes()
     {
-        return $this->hasMany('App\Matriculas\FacturaEstudiante','cartera_estudiante_id');
+        return $this->hasMany('App\Matriculas\FacturaAuxEstudiante','cartera_estudiante_id');
     }
 
     public static function get_cartera_estudiantes_curso( $curso_id, $fecha_vencimiento, $concepto)

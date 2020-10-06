@@ -19,6 +19,34 @@ class Cliente extends Model
 	public $encabezado_tabla = ['ID','Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Clase de cliente', 'Lista de precios', 'Lista de descuentos', 'Zona', 'Acción'];
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
+    
+
+    public static function get_cuenta_cartera( $cliente_id )
+    {
+        $clase_cliente_id = Cliente::where( 'id', $cliente_id )->value( 'clase_cliente_id' );
+        return ClaseCliente::where( 'id', $clase_cliente_id )->value( 'cta_x_cobrar_id' );
+    }
+
+
+    public function lista_precios()
+    {
+        return $this->belongsTo(ListaPrecioEncabezado::class);
+    }
+
+    public function lista_descuentos()
+    {
+        return $this->belongsTo(ListaDctoEncabezado::class);
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo( Tercero::class,'core_tercero_id');
+    }
+
+    public function vendedor()
+    {
+        return $this->belongsTo( Vendedor::class,'vendedor_id');
+    }
 
 	public static function consultar_registros()
 	{
@@ -56,34 +84,6 @@ class Cliente extends Model
         }
 
         return $vec;
-    }
-    
-
-    public static function get_cuenta_cartera( $cliente_id )
-    {
-        $clase_cliente_id = Cliente::where( 'id', $cliente_id )->value( 'clase_cliente_id' );
-        return ClaseCliente::where( 'id', $clase_cliente_id )->value( 'cta_x_cobrar_id' );
-    }
-
-
-    public function lista_precios()
-    {
-        return $this->belongsTo(ListaPrecioEncabezado::class);
-    }
-
-    public function lista_descuentos()
-    {
-        return $this->belongsTo(ListaDctoEncabezado::class);
-    }
-
-    public function tercero()
-    {
-        return $this->belongsTo( Tercero::class,'core_tercero_id');
-    }
-
-    public function vendedor()
-    {
-        return $this->belongsTo( Vendedor::class,'vendedor_id');
     }
 
     public function validar_eliminacion($id)

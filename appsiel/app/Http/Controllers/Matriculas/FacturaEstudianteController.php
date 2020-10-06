@@ -24,6 +24,7 @@ use App\Http\Controllers\Inventarios\InventarioController;
 
 use App\Http\Controllers\Contabilidad\ContabilidadController;
 use App\Http\Controllers\Ventas\ReportesController;
+use App\Http\Controllers\Ventas\VentaController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
@@ -34,6 +35,8 @@ use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Core\Tercero;
 
+use App\Matriculas\Estudiante;
+use App\Matriculas\FacturaAuxEstudiante;
 
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
@@ -82,7 +85,61 @@ class FacturaEstudianteController extends TransaccionController
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros( VtasTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
 
-        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'matriculas.facturas.create', $tabla );
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo,'','create');
+        $cantidad_campos = count($lista_campos);
+
+        $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos, 'create', null);
+
+        $estudiante = Estudiante::find( Input::get('estudiante_id') );
+
+        $responsable_financiero_estudiante = $estudiante->responsableestudiantes->where('tiporesponsable_id', 3)->all();
+
+        if ( empty( $responsable_financiero_estudiante ) )
+        {
+            return 'El estudiante no tiene responsable finanaciero asociado.';
+        }
+
+        $responsable_financiero_estudiante = $responsable_financiero_estudiante[0];
+
+        $cliente = Cliente::where('core_tercero_id', $responsable_financiero_estudiante->tercero->id )->get()->first();
+
+        foreach ($lista_campos as $key => $value)
+        {
+            if ($value['name'] == 'cliente_input')
+            {
+                $lista_campos[$key]['value'] = $estudiante->tercero->descripcion;
+                $lista_campos[$key]['atributos'] = ['readonly'=>'readonly'];
+            }
+
+            if ($value['name'] == 'inv_bodega_id')
+            {
+                $lista_campos[$key]['value'] = $cliente->inv_bodega_id;
+            }
+
+            if ($value['name'] == 'forma_pago')
+            {
+                $lista_campos[$key]['value'] = 'credito';
+                $lista_campos[$key]['atributos'] = ['readonly'=>'readonly'];
+            }
+        }
+
+        $concepto = InvProducto::where( 'descripcion', Input::get('concepto') )->get()->first();
+
+        $linea_registro = '<tr class="linea_registro" data-numero_linea="1"><td style="display: none;"><div class="inv_motivo_id">10</div></td><td style="display: none;"><div class="inv_bodega_id">1</div></td><td style="display: none;"><div class="inv_producto_id">'. $concepto->id .'</div></td><td style="display: none;"><div class="costo_unitario">0</div></td><td style="display: none;"><div class="precio_unitario">'. Input::get('valor_cartera') .'</div></td><td style="display: none;"><div class="base_impuesto">'. Input::get('valor_cartera') .'</div></td><td style="display: none;"><div class="tasa_impuesto">0</div></td><td style="display: none;"><div class="valor_impuesto">0</div></td><td style="display: none;"><div class="base_impuesto_total">'. Input::get('valor_cartera') .'</div></td><td style="display: none;"><div class="cantidad">1</div></td><td style="display: none;"><div class="costo_total">0</div></td><td style="display: none;"><div class="precio_total">'. Input::get('valor_cartera') .'</div></td><td style="display: none;"><div class="tasa_descuento">0</div></td><td style="display: none;"><div class="valor_total_descuento">0</div></td><td> &nbsp; </td><td> <span style="background-color:#F7B2A3;">'. $concepto->id .'</span> '. $concepto->id . ' - ' . $concepto->descripcion .'  </td><td>Ventas POS</td><td> 0</td><td>1 </td><td> $ '. number_format( Input::get('valor_cartera'), 0, ',', '.' ) .'</td><td>0% </td><td> $ 0</td><td>0%</td><td> $ '. number_format( Input::get('valor_cartera'), 0, ',', '.' ) .' </td><td> &nbsp; </td></tr>';
+
+        $modelo_controller = new ModeloController;
+        $acciones = $modelo_controller->acciones_basicas_modelo( $this->modelo, '' );
+        
+        $form_create = [
+                        'url' => $acciones->store,
+                        'campos' => $lista_campos
+                    ];
+
+        $id_transaccion = $this->transaccion->id;
+
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Crear: '.$this->transaccion->descripcion );
+        //dd($cliente->id);
+        return view( 'matriculas.facturas.create', compact('form_create','miga_pan','tabla','id_transaccion','motivos', 'cliente', 'responsable_financiero_estudiante', 'estudiante','linea_registro') );
     }
 
     /**
@@ -93,41 +150,18 @@ class FacturaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $factura_ventas = new VentaController;
+        $vista = $factura_ventas->store( $request );
 
-        $datos = $request->all(); // Datos originales
+        /*FacturaAuxEstudiante::create( [ 
+                                            [ 'vtas_doc_encabezado_id' => 0 ],
+                                            [ 'matricula_id' => 0 ],
+                                            [ 'cartera_estudiante_id' => 0 ]
+                                     ] );*/
 
-        $lineas_registros = json_decode($request->lineas_registros);
+        return $vista;
 
-        // TRES TRANSACCIONES
 
-        // 1ra. Crear documento de salida de inventarios (REMISIÓN)
-        // WARNING. HECHO MANUALMENTE
-        $remision_doc_encabezado_id = $this->crear_remision_ventas( $request );
-
-        // 2da. Crear documento de Ventas
-        $request['remision_doc_encabezado_id'] = $remision_doc_encabezado_id;
-        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-
-        // 3ra. Crear Registro del documento de ventas
-        $request['creado_por'] = Auth::user()->email;
-        FacturaEstudianteController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
-
-        $modelo = Modelo::find( $request->url_id_modelo );
-
-        /*
-            Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)
-        */
-
-        if (method_exists(app($modelo->name_space), 'store_adicional'))
-        {
-            // Aquí mismo se puede hacer el return
-            app($modelo->name_space)->store_adicional($datos, $doc_encabezado);
-
-            return redirect( 'factura_medica/'.$doc_encabezado->id.'?id='.$datos['url_id'].'&id_modelo='.$datos['url_id_modelo'].'&id_transaccion='.$datos['url_id_transaccion'] );
-            
-        }else{
-            return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
-        }
     }
 
     /*
