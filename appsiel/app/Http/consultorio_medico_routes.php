@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 Route::resource('consultorio_medico', 'Salud\ConsultorioMedicoController', ['except' => ['show']]);
 Route::post('consultorio_medico/eliminar_paciente', 'Salud\PacienteController@eliminar');
@@ -34,6 +34,9 @@ Route::get('form_agregar_formula_factura', 'Salud\FormulaOpticaController@form_a
 
 
 Route::resource('consultorio_medico/anamnesis', 'Salud\AnamnesisController');
+
+//CITAS MEDICAS
+Route::resource('citas_medicas', 'Salud\CitasController');
 
 
 // REPORTES
