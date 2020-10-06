@@ -39,6 +39,7 @@ Route::resource('consultorio_medico/anamnesis', 'Salud\AnamnesisController');
 Route::resource('citas_medicas', 'Salud\CitasController');
 
 
+
 // REPORTES
 Route::post('reportes_consultorio_medico/resumen_consultas', 'Salud\ReporteController@resumen_consultas');
 Route::post('reportes_consultorio_medico/citas_control_vencidas', 'Salud\ReporteController@citas_control_vencidas');
