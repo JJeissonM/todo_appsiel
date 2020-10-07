@@ -52,4 +52,9 @@ class Grado extends Model
 
         return $vec;
     }
+
+    public function store_adicional( $datos, $registro )
+    {
+        //return 'prueba';
+    }
 }

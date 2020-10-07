@@ -91,7 +91,6 @@ class ModeloEavController extends ModeloController
         }
 
         $url = $request->session()->get('url_anterior');
-        //$request->session()->forget('url_anterior');
 
         return redirect( $url )->with( 'flash_message','Registro creado correctamente.' );
     }

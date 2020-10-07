@@ -12,19 +12,22 @@ class TesoCaja extends Model
 
     protected $fillable = ['descripcion','core_empresa_id','controla_usuarios','estado','contab_cuenta_id'];
 
-    public $encabezado_tabla = ['Descripción','Empresa','Controla usuarios','Estado','Acción'];
+    public $encabezado_tabla = ['ID','Descripción','Cuenta Contable','Controla usuarios','Estado','Acción'];
 
     public static function consultar_registros()
     {
-    	$select_raw = 'CONCAT(core_empresas.nombre1," ",core_empresas.otros_nombres," ",core_empresas.apellido1," ",core_empresas.apellido2," ",core_empresas.razon_social) AS campo2';
-
-        $registros = TesoCaja::leftJoin('core_empresas','core_empresas.id','=','teso_cajas.core_empresa_id')
-                    ->where('core_empresa_id',Auth::user()->empresa_id)
-                    ->select('teso_cajas.descripcion AS campo1',DB::raw($select_raw),'teso_cajas.controla_usuarios AS campo3','teso_cajas.estado AS campo4','teso_cajas.id AS campo5')
-                    ->get()
-                    ->toArray();
-
-        return $registros;
+    	return TesoCaja::leftJoin( 'core_empresas','core_empresas.id','=','teso_cajas.core_empresa_id')
+                        ->leftJoin( 'contab_cuentas', 'contab_cuentas.id', '=', 'teso_cajas.contab_cuenta_id')
+                        ->where( 'teso_cajas.core_empresa_id',Auth::user()->empresa_id)
+                        ->select(
+                                    'teso_cajas.id AS campo1',
+                                    'teso_cajas.descripcion AS campo2',
+                                    DB::raw( 'CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS campo3' ),
+                                    'teso_cajas.controla_usuarios AS campo4',
+                                    'teso_cajas.estado AS campo5',
+                                    'teso_cajas.id AS campo6')
+                        ->get()
+                        ->toArray();
     }
 
     public static function opciones_campo_select()

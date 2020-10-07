@@ -380,7 +380,12 @@ class ModeloController extends Controller
         if (method_exists(app($this->modelo->name_space), 'store_adicional'))
         {
             // Aquí mismo se puede hacer el return
-            app($this->modelo->name_space)->store_adicional($datos, $registro);
+            $url_respuesta = app($this->modelo->name_space)->store_adicional($datos, $registro);
+
+            if( !is_null( $url_respuesta ) )
+            {
+                return redirect( $url_respuesta )->with('flash_message', 'Registro CREADO correctamente.');
+            }
         }
 
         return redirect( $url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro CREADO correctamente.');

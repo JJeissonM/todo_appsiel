@@ -72,11 +72,17 @@ return [
     									"activo":0,
     									"orden":10
     								}, 
-    							"10":{ 
-    									"nombre_seccion":"Resultados de la consulta",
-    									"url_vista_show":"consultorio_medico.consultas.resultados",
-    									"activo":1,
-    									"orden":4
-    								} 
+                                "10":{ 
+                                        "nombre_seccion":"Resultados de la consulta",
+                                        "url_vista_show":"consultorio_medico.consultas.resultados",
+                                        "activo":1,
+                                        "orden":4
+                                    }, 
+                                "11":{ 
+                                        "nombre_seccion":"Historia Médica Ocupacional",
+                                        "url_vista_show":"consultorio_medico.consultas.historia_medica_ocupacional",
+                                        "activo":1,
+                                        "orden":1
+                                    } 
     						}',
 ];

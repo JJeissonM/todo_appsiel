@@ -23,6 +23,16 @@ class Paciente extends Model
                                 "store":"consultorio_medico/pacientes",
                                 "update":"consultorio_medico/pacientes/id_fila"}';
 
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function consultas()
+    {
+        return $this->hasMany('App\Salud\ConsultaMedica','paciente_id');
+    }
+
     public static function consultar_datatable()
     {
         $select_raw = "TRIM(CONCAT(core_terceros.nombre1,' ',core_terceros.otros_nombres,' ',core_terceros.apellido1,' ',core_terceros.apellido2)) AS nombre_completo";
@@ -75,16 +85,6 @@ class Paciente extends Model
 
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/salud_pacientes.js';
-
-	public function tercero()
-    {
-        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
-    }
-
-    public function consultas()
-    {
-        return $this->hasMany('App\Salud\ConsultaMedica','paciente_id');
-    }
 
     public static function datos_basicos_historia_clinica( $paciente_id )
     {
