@@ -44,4 +44,9 @@ class ProfesionalSalud extends Model
 
         return $vec;
     }
+
+    public function citamedicas()
+    {
+        return $this->hasMany(Citamedica::class);
+    }
 }
