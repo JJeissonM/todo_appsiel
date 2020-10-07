@@ -587,7 +587,7 @@ class ModeloController extends Controller
             }
         }
 
-        $registro->fill($request->all());
+        $registro->fill( $request->all() );
         $registro->save();
 
         $this->almacenar_imagenes($request, $modelo->ruta_storage_imagen, $registro2, 'edit');
@@ -595,8 +595,15 @@ class ModeloController extends Controller
         /*
             Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)
         */
-        if (method_exists(app($modelo->name_space), 'update_adicional')) {
-            app($modelo->name_space)->update_adicional($datos, $id);
+        if( method_exists(app($modelo->name_space), 'update_adicional') )
+        {
+            $url_respuesta = app($modelo->name_space)->update_adicional($datos, $id);
+
+
+            if( !is_null( $url_respuesta ) )
+            {
+                return redirect( $url_respuesta )->with('flash_message', 'Registro MODIFICADO correctamente.');
+            }
         }
 
         $acciones = $this->acciones_basicas_modelo( $modelo, '' );

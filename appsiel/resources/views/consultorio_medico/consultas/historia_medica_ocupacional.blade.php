@@ -25,17 +25,15 @@
 	<h4>{{$modelo_entidad->descripcion}}</h4>
 	<hr>
 
-	@if( $datos == '' )
-		&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate( 'core/eav/create?id='.Input::get('id').'&id_modelo='.$modelo_entidad_id.'&modelo_padre_id='.$modelo_padre_id.'&registro_modelo_padre_id='.$registro_modelo_padre_id.'&modelo_entidad_id='.$modelo_entidad_id ) }}
-	@else
-		&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'core/eav/'.$modelo_entidad_id.'/edit?id='.Input::get('id').'&id_modelo='.$modelo_entidad_id.'&modelo_padre_id='.$modelo_padre_id.'&registro_modelo_padre_id='.$registro_modelo_padre_id.'&modelo_entidad_id='.$modelo_entidad_id ) }}
+	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'core/eav/' . $modelo_entidad_id . '/edit?id=' . Input::get('id') . '&id_modelo=' . $modelo_entidad_id . '&modelo_padre_id=' . $modelo_padre_id . '&registro_modelo_padre_id=' . $registro_modelo_padre_id . '&modelo_entidad_id=' . $modelo_entidad_id ) }}
 
-		@include( 'core.modelo_eav.form_eliminar_registros', [ 'id_app' => Input::get('id'), 'id_modelo' => Input::get('id_modelo'), 'modelo_padre_id' => $modelo_padre_id, 'registro_modelo_padre_id' => $registro_modelo_padre_id, 'modelo_entidad_id' => $modelo_entidad_id, 'lbl_descripcion_modelo_entidad' => 'Antecedentes ocupacionales', 'ruta_redirect' => 'consultorio_medico/pacientes/'.$registro->id ] )
+	@include( 'core.modelo_eav.form_eliminar_registros', [ 'id_app' => Input::get('id'), 'id_modelo' => Input::get('id_modelo'), 'modelo_padre_id' => $modelo_padre_id, 'registro_modelo_padre_id' => $registro_modelo_padre_id, 'modelo_entidad_id' => $modelo_entidad_id, 'lbl_descripcion_modelo_entidad' => $modelo_entidad->descripcion, 'ruta_redirect' => 'consultorio_medico/pacientes/'.$registro->id ] )
 
-		<br>
-		{!! $datos !!}
+	<br><br>
+	{!! $datos !!}
 
-	@endif
+	<br>
+	<br>
 @endforeach
 
 	

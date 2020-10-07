@@ -19,7 +19,7 @@ class AntecedentesOcupacionales extends Model
 	
 	protected $crud_model_id = 96; // Es el mismo $modelo_padre_id, la variable no se puede usar en métodos estáticos
 
-	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"consultorio_medico/pacientes/id_fila"}';
+	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"consultorio_medico/pacientes/id_fila","update":"core/eav/id_fila"}';
 
 	public $encabezado_tabla = [ 'ID', 'Campo', 'Valor', 'Acción'];
 

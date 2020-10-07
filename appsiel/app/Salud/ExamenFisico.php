@@ -25,7 +25,7 @@ class ExamenFisico extends Model
 
 	public static function consultar_registros()
 	{
-		$modelo_padre_id = 96; // Consultas
+		$modelo_padre_id = 241;
 	    return ExamenFisico::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
 	    			->where('core_eav_valores.modelo_padre_id',$modelo_padre_id)
                     ->select(

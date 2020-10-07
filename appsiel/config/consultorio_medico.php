@@ -13,10 +13,10 @@ return [
 
     'secciones_consulta' => '{
     							"0":{ 
-    									"nombre_seccion":"Anamnesis",
-    									"url_vista_show":"consultorio_medico.consultas.anamnesis",
-    									"activo":1,
-    									"orden":1
+    									"nombre_seccion":"Historia Médica Ocupacional",
+                                        "url_vista_show":"consultorio_medico.consultas.historia_medica_ocupacional",
+                                        "activo":1,
+                                        "orden":1
     								}, 
     							"1":{ 
     									"nombre_seccion":"Exámenes",
@@ -27,7 +27,7 @@ return [
     							"2":{ 
     									"nombre_seccion":"Fórmula Óptica",
     									"url_vista_show":"consultorio_medico.consultas.formula_optica",
-    									"activo":1,
+    									"activo":0,
     									"orden":3
     								}, 
     							"3":{ 
@@ -79,8 +79,8 @@ return [
                                         "orden":4
                                     }, 
                                 "11":{ 
-                                        "nombre_seccion":"Historia Médica Ocupacional",
-                                        "url_vista_show":"consultorio_medico.consultas.historia_medica_ocupacional",
+                                        "nombre_seccion":"Anamnesis",
+                                        "url_vista_show":"consultorio_medico.consultas.anamnesis",
                                         "activo":1,
                                         "orden":1
                                     } 

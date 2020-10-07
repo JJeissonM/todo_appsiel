@@ -25,7 +25,7 @@ class AntecedentesGinecoObstetricos extends Model
 
 	public static function consultar_registros()
 	{
-		$modelo_padre_id = 96; // Consultas
+		$modelo_padre_id = 240;
 	    return AntecedentesGinecoObstetricos::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
 	    			->where('core_eav_valores.modelo_padre_id',$modelo_padre_id)
                     ->select(
