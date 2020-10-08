@@ -12,7 +12,10 @@ use App\Salud\Citamedica;
 use App\Salud\Consultorio;
 use App\Salud\Paciente;
 use App\Salud\ProfesionalSalud;
+use App\UserHasRole;
+use Illuminate\Support\Facades\Auth;
 use Input;
+use Spatie\Permission\Models\Role;
 
 class CitasController extends Controller
 {
@@ -28,6 +31,17 @@ class CitasController extends Controller
      */
     public function index()
     {
+        $u = Auth::user();
+        $roles = UserHasRole::where('user_id', $u->id)->get();
+        $rol = "NO";
+        if (count($roles) > 0) {
+            foreach ($roles as $r) {
+                $rr = Role::find($r->role_id);
+                if ($rr->name == 'Profesional Salud') {
+                    $rol = $rr->name;
+                }
+            }
+        }
         $app = Input::get('id');
         $modelo = Input::get('id_modelo');
         $miga_pan = [
@@ -35,7 +49,7 @@ class CitasController extends Controller
             ['url' => 'NO', 'etiqueta' => 'Menú Agenda Citas']
         ];
         $variables_url = "?id=" . $app . "&id_modelo=" . $modelo;
-        return view('consultorio_medico.citas.menu', compact('miga_pan', 'variables_url'));
+        return view('consultorio_medico.citas.menu', compact('rol', 'miga_pan', 'variables_url'));
     }
 
     /**
@@ -45,7 +59,55 @@ class CitasController extends Controller
      */
     public function create()
     {
-        //
+        $app = Input::get('id');
+        $modelo = Input::get('id_modelo');
+        $fecha = Input::get('fecha');
+        $variables_url = "?id=" . $app . "&id_modelo=" . $modelo;
+        $data = null;
+        if ($fecha == 'HOY') {
+            $hoy = getdate();
+            $fecha = $hoy["year"] . "-" . $hoy["mon"] . "-" . $hoy["mday"];
+        }
+        $profesional = "NO";
+        $u = Auth::user();
+        $terceros = Tercero::where('email', $u->email)->get();
+        if (count($terceros) > 0) {
+            foreach ($terceros as $t) {
+                $prof = ProfesionalSalud::where('core_tercero_id', $t->id)->first();
+                if ($prof != null) {
+                    $profesional = $prof->id;
+                    break;
+                }
+            }
+        }
+        if ($profesional != 'NO') {
+            $citas = Citamedica::where([['fecha', $fecha], ['profesional_id', $profesional]])->get();
+            if (count($citas) > 0) {
+                foreach ($citas as $ci) {
+                    $t2p = "---";
+                    $t2 = Tercero::find($ci->paciente->core_tercero_id);
+                    if ($t2 != null) {
+                        $t2p = $t2->nombre1 . " " . $t2->otros_nombres . " " . $t2->apellido1 . " " . $t2->apellido2;
+                    }
+                    $data[] = [
+                        'fecha' => $ci->fecha,
+                        'hora_inicio' => date("g:i A", strtotime($ci->hora_inicio)),
+                        'hora_fin' => date("g:i A", strtotime($ci->hora_fin)),
+                        'estado' => $ci->estado,
+                        'consultorio' => $ci->consultorio->descripcion . " - " . $ci->consultorio->sede,
+                        'paciente' => $t2p
+                    ];
+                }
+            }
+        } else {
+            return redirect("citas_medicas" . $variables_url)->with('mensaje_error', 'Usted no es un profesional de la salud');
+        }
+        $miga_pan = [
+            ['url' => 'consultorio_medico?id=' . $app, 'etiqueta' => 'Consultorio Médico'],
+            ['url' => 'citas_medicas' . $variables_url, 'etiqueta' => 'Menú Agenda Citas'],
+            ['url' => 'NO', 'etiqueta' => 'Ver Mis Citas']
+        ];
+        return view('consultorio_medico.citas.mis_citas', compact('miga_pan', 'variables_url', 'data', 'fecha', 'app', 'modelo'));
     }
 
     /**
