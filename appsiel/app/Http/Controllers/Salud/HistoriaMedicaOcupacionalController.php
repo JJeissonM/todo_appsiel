@@ -26,7 +26,7 @@ use App\Salud\Paciente;
 
 use App\Ventas\Cliente;
 
-class PacienteController extends Controller
+class HistoriaMedicaOcupacionalController extends Controller
 {
     public function __construct()
     {

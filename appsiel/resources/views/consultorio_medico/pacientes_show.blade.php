@@ -166,6 +166,14 @@
 @section('scripts')
 	<script>
 		$(document).ready(function(){
+
+			$(".btn_eliminar_datos_modelo").click(function(event){
+				event.preventDefault();
+				var r = confirm("¿Desea eliminar todos los datos de " + $(this).attr('data-descripcion_modelo') + " ingresados?");
+				if (r == true) {
+				  $(this).parents('.form_eliminar').submit();
+				}
+			});
 			
 			$(".btn_ver_examen").click(function(event){
 				event.preventDefault();

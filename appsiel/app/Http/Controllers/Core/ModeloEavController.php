@@ -91,7 +91,6 @@ class ModeloEavController extends ModeloController
         }
 
         $url = $request->session()->get('url_anterior');
-        //$request->session()->forget('url_anterior');
 
         return redirect( $url )->with( 'flash_message','Registro creado correctamente.' );
     }
@@ -122,9 +121,7 @@ class ModeloEavController extends ModeloController
         $modelo = Modelo::find( $id ); // $id corresponde al modelo_entidad_id
 
         // Se obtienen los campos asociados a ese modelo
-        $lista_campos = $general->get_campos_modelo($modelo, '', 'edit');        
-
-        //dd($lista_campos);
+        $lista_campos = $general->get_campos_modelo($modelo, '', 'edit');
 
         // Asignar a cada $campo en la key value el valor que tienen en la tabla core_eav_valores, pues el Form::model(), no lo puede asignar automáticamente a través del name.
         $cant = count($lista_campos);
@@ -136,20 +133,16 @@ class ModeloEavController extends ModeloController
                                                                 'edit' );
             }
                 
-        }/**/
-        
-        //dd($lista_campos);
+        }
+
+        $acciones = $this->acciones_basicas_modelo( $modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
+
+        $url_action = str_replace('id_fila', $id, $acciones->update);
         
         $form_create = [
-                        'url' => $modelo->url_form_create,
+                        'url' => $url_action,
                         'campos' => $lista_campos
                     ];
-
-        // Si tiene una accion diferente para el envío del formulario
-        $url_action = 'web/'.$id;
-        if ($modelo->url_form_create != '') {
-            $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
-        }
 
         $miga_pan = ModeloController::get_miga_pan($modelo,'Crear nuevo');
 
@@ -244,48 +237,56 @@ class ModeloEavController extends ModeloController
     {
 
         $modelo_entidad = Modelo::find( $modelo_entidad_id );
+        
+        $campos = $modelo_entidad->campos()->where('name','core_campo_id-ID')->orderBy('orden')->get();
+        
         $valores_entidades = app($modelo_entidad->name_space)->where([ 'modelo_padre_id' => $modelo_padre_id, 'registro_modelo_padre_id' => $registro_modelo_padre_id, 'modelo_entidad_id'=>$modelo_entidad_id])->get();
+        
+        
+        $salida = '<table class="table table-bordered">';
+        $num_cols = 2;
+        $i=0;
 
-        // Si el valor $salida no es alterado, se podrá eliminar el registro
-        $salida = '';
-        $cantidad = 0;
-        if ( !is_null($valores_entidades) )
+        foreach ( $campos as $linea ) 
         {
-            $cantidad = count( $valores_entidades->toArray() );
-        }
-
-        if ( $cantidad != 0 ) 
-        {
-            $salida = '<table class="table table-bordered">';
-            $num_cols = 2;
-            $i=0;
-            foreach ( $valores_entidades as $valor) 
+            if ( $i % $num_cols == 0) 
             {
-                if ( $i % $num_cols == 0) 
-                {
-                    $salida .= '<tr>';
-                }
-
-                $salida .= '<td>'.VistaController::mostrar_campo( $valor->core_campo_id, $valor->valor, 'show' ).'</td>';
-                $i++;
-
-                /*if ( $cantidad == $i ) 
-                {
-                        $salida .= '<td>&nbsp;</td>';
-                        $i++;
-                }*/
-
-                if ( $i % $num_cols == 0) 
-                {
-                    $salida .= '</tr>';
-                }
+                $salida .= '<tr>';
             }
+            
+            $valor = ModeloEavController::get_valor_desde_valores_entidades( $valores_entidades, $linea->id );
 
-            $salida .= '</table>';
-        }
+            $salida .= '<td>'.VistaController::mostrar_campo( $linea->id, $valor, 'show' ).'</td>';
+
+            $i++;
+
+            if ( $i % $num_cols == 0) 
+            {
+                $salida .= '</tr>';
+            }     
+        }            
+
+        $salida .= '</table>';
 
         return $salida;
     }
+
+
+    public static function get_valor_desde_valores_entidades( $valores_entidades, $core_campo_id )
+    {
+        $valor = '--';
+
+        foreach ($valores_entidades as $linea )
+        {
+            if( $linea->core_campo_id == $core_campo_id )
+            {
+                $valor = $linea->valor;
+            }
+        }
+
+        return $valor;
+    }
+
 
     function eliminar_registros_eav( Request $request )
     {

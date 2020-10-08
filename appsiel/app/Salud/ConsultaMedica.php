@@ -13,6 +13,19 @@ class ConsultaMedica extends Model
 	protected $fillable = ['paciente_id', 'tipo_consulta', 'fecha', 'profesional_salud_id', 'consultorio_id', 'nombre_acompañante', 'parentezco_acompañante', 'documento_identidad_acompañante', 'motivo_consulta', 'diagnostico', 'indicaciones'];
 
 	public $encabezado_tabla = ['Paciente', 'Tipo Consulta', 'Fecha', 'Atendido por', 'Diagnóstico', 'Indicaciones', 'Acción'];
+
+
+    public function formulas()
+    {
+        return $this->hasMany('App\Salud\FormulaOptica','consulta_id');
+    }
+
+    public function paciente()
+    {
+        return $this->belongsTo(Paciente::class);
+    }
+
+
 	public static function consultar_registros()
 	{
 	    $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
@@ -43,10 +56,4 @@ class ConsultaMedica extends Model
                     ->get();
 	}
 
-
-
-    public function formulas()
-    {
-        return $this->hasMany('App\Salud\FormulaOptica','consulta_id');
-    }
 }

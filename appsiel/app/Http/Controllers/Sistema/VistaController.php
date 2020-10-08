@@ -532,7 +532,15 @@ class VistaController extends Controller
     // Recibe el ID de un campo y su valor
     public static function mostrar_campo( $core_campo_id, $valor, $modo )
     {
-        $campo = Campo::find( $core_campo_id )->toArray();
+        $campo = Campo::find( $core_campo_id );
+
+        if ( is_null( $campo ) )
+        {
+            return '<div class="alert alert-danger">
+                              <strong>¡Error!</strong> Campo no existe.</div>';
+        }
+
+        $campo = $campo->toArray();
 
         // El campo Atributos se ingresa en  formato JSON {"campo1":"valor1","campo2":"valor2"}
         if ($campo['atributos']!='') {
