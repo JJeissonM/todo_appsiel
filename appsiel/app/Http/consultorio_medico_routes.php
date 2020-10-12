@@ -38,6 +38,11 @@ Route::resource('consultorio_medico/anamnesis', 'Salud\AnamnesisController');
 //CITAS MEDICAS
 Route::resource('citas_medicas', 'Salud\CitasController');
 Route::get('citas_medicas/{id}/delete', 'Salud\CitasController@destroy')->name('citas_medicas.delete');
+Route::get('citas_medicas/agenda/citas', 'Salud\CitasController@citas')->name('citas_medicas.citas');
+Route::get('citas_medicas/agenda/citas/{id}/delete', 'Salud\CitasController@citas_delete')->name('citas_medicas.citas_delete');
+Route::get('citas_medicas/agenda/citas/{id}/estado/{estado}/cambiar', 'Salud\CitasController@citas_estado')->name('citas_medicas.citas_estado');
+Route::post('citas_medicas/agenda/citas/store', 'Salud\CitasController@store_cita')->name('citas_medicas.store_cita');
+Route::get('citas_medicas/agenda/citas/{fecha}/{hi}/{hf}/{consultorio}/{profesional}/verificar', 'Salud\CitasController@citas_verificar')->name('citas_medicas.citas_verificar');
 
 // REPORTES
 Route::post('reportes_consultorio_medico/resumen_consultas', 'Salud\ReporteController@resumen_consultas');
