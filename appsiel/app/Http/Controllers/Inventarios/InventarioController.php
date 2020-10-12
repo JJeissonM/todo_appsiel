@@ -160,8 +160,8 @@ class InventarioController extends TransaccionController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {  
-        $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
+    {        
+        $lineas_registros = InventarioController::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
 
         $doc_encabezado_id = InventarioController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
@@ -170,12 +170,12 @@ class InventarioController extends TransaccionController
 
 
 
-    public function preparar_array_lineas_registros( $request_registros, $modo_ajuste )
+    public static function preparar_array_lineas_registros( $request_registros, $modo_ajuste )
     {
         $lineas_registros = json_decode( $request_registros );
 
         // Quitar primera línea
-        array_shift($lineas_registros);
+        array_shift( $lineas_registros );
 
         // Quitar las dos últimas líneas
         array_pop($lineas_registros);

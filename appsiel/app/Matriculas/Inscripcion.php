@@ -39,11 +39,12 @@ class Inscripcion extends Model
 
     public static function get_opciones_select_inscritos()
     {
-        $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero';
-
         $registros = Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
-                    ->select('sga_inscripciones.id AS id_inscripcion', DB::raw($select_raw))
-                    ->get();
+                                ->select(
+                                            'sga_inscripciones.id AS id_inscripcion',
+                                            DB::raw( 'core_terceros.descripcion AS tercero' ) 
+                                        )
+                                ->get();
 
         $candidatos['']='';
         foreach ($registros as $opcion){

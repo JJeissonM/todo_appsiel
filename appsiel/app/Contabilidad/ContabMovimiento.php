@@ -91,10 +91,6 @@ class ContabMovimiento extends Model
 
     public static function get_saldo_inicial($fecha_inicial, $contab_cuenta_id, $numero_identificacion, $operador, $codigo_referencia_tercero, $empresa_id )
     {
-        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento';
-
-        $select_raw2 = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero';
-        
         $saldo_inicial_sql = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')->leftJoin('core_terceros','core_terceros.id','=','contab_movimientos.core_tercero_id')->where('contab_movimientos.fecha','<',$fecha_inicial)
                         ->where( 'contab_cuentas.codigo', 'LIKE', $contab_cuenta_id)
                         ->where( 'core_terceros.numero_identificacion', 'LIKE', $numero_identificacion)

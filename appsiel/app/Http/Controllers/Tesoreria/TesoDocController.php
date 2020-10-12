@@ -295,17 +295,17 @@ class TesoDocController extends Controller
 
     public static function vista_preliminar($id,$vista)
     {
-        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados_pagos.consecutivo) AS documento';
-
-        $select_raw2 = 'CONCAT(core_terceros.numero_identificacion," ",core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero';
-
         $encabezado_doc = TesoDocEncabezadoPago::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados_pagos.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados_pagos.core_tercero_id')
                     ->leftJoin('teso_medios_recaudo', 'teso_medios_recaudo.id', '=', 'teso_doc_encabezados_pagos.teso_medio_recaudo_id')
                     ->leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_doc_encabezados_pagos.teso_caja_id')
                     ->leftJoin('teso_cuentas_bancarias', 'teso_cuentas_bancarias.id', '=', 'teso_doc_encabezados_pagos.teso_cuenta_bancaria_id')
                     ->where('teso_doc_encabezados_pagos.id', $id)
-                    ->select(DB::raw($select_raw),'teso_doc_encabezados_pagos.fecha',DB::raw($select_raw2),'teso_doc_encabezados_pagos.descripcion AS detalle','teso_doc_encabezados_pagos.documento_soporte','teso_doc_encabezados_pagos.core_tipo_transaccion_id','teso_doc_encabezados_pagos.core_tipo_doc_app_id','teso_doc_encabezados_pagos.id','teso_doc_encabezados_pagos.creado_por','teso_doc_encabezados_pagos.consecutivo','teso_doc_encabezados_pagos.core_empresa_id','teso_doc_encabezados_pagos.core_tercero_id','teso_doc_encabezados_pagos.teso_tipo_motivo','teso_medios_recaudo.descripcion AS medio_recaudo','teso_cajas.descripcion as caja','teso_cuentas_bancarias.descripcion AS cuenta_bancaria','teso_doc_encabezados_pagos.valor_total AS valor_total')
+                    ->select(
+                                DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados_pagos.consecutivo) AS documento' ),
+                                'teso_doc_encabezados_pagos.fecha',
+                                'core_terceros.descripcion AS tercero',
+                                'teso_doc_encabezados_pagos.descripcion AS detalle','teso_doc_encabezados_pagos.documento_soporte','teso_doc_encabezados_pagos.core_tipo_transaccion_id','teso_doc_encabezados_pagos.core_tipo_doc_app_id','teso_doc_encabezados_pagos.id','teso_doc_encabezados_pagos.creado_por','teso_doc_encabezados_pagos.consecutivo','teso_doc_encabezados_pagos.core_empresa_id','teso_doc_encabezados_pagos.core_tercero_id','teso_doc_encabezados_pagos.teso_tipo_motivo','teso_medios_recaudo.descripcion AS medio_recaudo','teso_cajas.descripcion as caja','teso_cuentas_bancarias.descripcion AS cuenta_bancaria','teso_doc_encabezados_pagos.valor_total AS valor_total')
                     ->get()[0];
 
         $tipo_transaccion = TipoTransaccion::find($encabezado_doc->core_tipo_transaccion_id);

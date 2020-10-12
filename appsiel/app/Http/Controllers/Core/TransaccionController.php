@@ -180,6 +180,9 @@ class TransaccionController extends Controller
             case 25: // Factura compras
                 $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Otros pagos' );
                 break;
+            case 48: // Doc. Soporte en adquisiciones no obligados a facturas (Compras)
+                $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Otros pagos' );
+                break;
             case 23: // Factura ventas
                 $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
                 break;

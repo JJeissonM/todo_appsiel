@@ -19,8 +19,8 @@ class TesoDocRegistro extends Model
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_registros.core_tercero_id')
                             ->where('teso_encabezado_id',$doc_encabezado_id)
                             ->select(
-                                    DB::raw( 'CONCAT(core_terceros.numero_identificacion," ",core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero' ),
-                                    DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero_nombre_completo' ),
+                                    'core_terceros.descripcion AS tercero',
+                                    'core_terceros.descripcion AS tercero_nombre_completo',
                                     'teso_medios_recaudo.descripcion AS medio_recaudo',
                                     'core_terceros.id AS tercero_id',
                                     'core_terceros.numero_identificacion',

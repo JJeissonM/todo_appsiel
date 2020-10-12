@@ -315,7 +315,7 @@ class ContabilidadController extends TransaccionController
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
-        $view_pdf = View::make('contabilidad.incluir.tabla_registros_documento', compact( 'doc_encabezado', 'doc_registros') )->render();
+        $view_pdf = View::make( 'contabilidad.incluir.tabla_registros_documento', compact( 'doc_encabezado', 'doc_registros') )->render();
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo );
 

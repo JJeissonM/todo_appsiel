@@ -117,7 +117,7 @@ class Habitos extends Model
         return 'consultorio_medico/pacientes/' . $consulta->paciente->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $id_modelo;
     }
 
-    public function get_campos_adicionales_edit($lista_campos, $registro)
+    public function get_campos_adicionales_edit( $lista_campos, $registro )
     {
         $modelo_padre_id = Modelo::find( $this->crud_model_id )->id;
 
@@ -189,7 +189,11 @@ class Habitos extends Model
                     $registro_eav->save();
                 }
             }
-        }       
+        }
+
+        $id_modelo = 95; // Pacientes
+        $consulta = ConsultaMedica::find( $datos['registro_modelo_padre_id'] );
+        return 'consultorio_medico/pacientes/' . $consulta->paciente->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $id_modelo;
     }
 
 

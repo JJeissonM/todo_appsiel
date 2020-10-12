@@ -222,6 +222,7 @@
 							
 						$('#contenido_modal').html( '<h1>Acumulación completada exitosamente. </h1> <h1> Contabilizando documentos... </h1>' );
 
+						/**/
 						// Nueva petición AJAX
 						var url_2 = "{{url('pos_factura_contabilizar')}}" + "/" + pdv_id;
 
@@ -235,12 +236,9 @@
 				                location.reload();
 
 							});
-
+						
 					});		        
 		    });
-		    
-
-
 
 			$(document).on('click',".btn_consultar_facturas",function(event){
 				event.preventDefault();
