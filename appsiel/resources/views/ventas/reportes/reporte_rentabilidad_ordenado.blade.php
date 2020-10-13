@@ -123,7 +123,7 @@
                     <td> ${{ number_format( $array_lista[$i]['costo_total'], 2, ',', '.') }} </td>
                     <?php
                         $margen_rentabilidad = 0;
-                        if ( $total_2_producto != 0)
+                        if ( $array_lista[$i]['costo_total'] != 0)
                         {
                             $margen_rentabilidad = $array_lista[$i]['rentabilidad'] / $array_lista[$i]['costo_total'] * 100;
                         }

@@ -246,6 +246,9 @@ use App\Http\Controllers\Sistema\VistaController;
             $('#codigo').val(codigo.replace(codigo.substr(codigo.search("-")), '-' + grado[1]));
         });
 
+
+        var documento_inicial = parseInt( $("#numero_identificacion").val() );
+        
         $(document).on('blur','.numero_docp',function(){
             var documento = $(this).val();
 
