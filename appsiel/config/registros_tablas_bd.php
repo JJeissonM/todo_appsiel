@@ -6272,6 +6272,36 @@
       'created_at' => '2020-10-07 07:32:08',
       'updated_at' => '2020-10-07 07:32:25',
     ),
+    418 => 
+    array (
+      'id' => 444,
+      'core_app_id' => 8,
+      'modelo_id' => 242,
+      'name' => 'inv_items_desarmes_automaticos',
+      'descripcion' => 'Config. Items desarme automático',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 11,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-10 16:24:30',
+      'updated_at' => '2020-10-10 16:24:30',
+    ),
+    419 => 
+    array (
+      'id' => 445,
+      'core_app_id' => 8,
+      'modelo_id' => 0,
+      'name' => 'inv_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-12 08:48:59',
+      'updated_at' => '2020-10-12 08:49:33',
+    ),
   ),
   'roles' => 
   array (
@@ -15153,6 +15183,30 @@
       'orden' => 0,
       'permission_id' => 443,
       'role_id' => 14,
+    ),
+    1456 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 444,
+      'role_id' => 1,
+    ),
+    1457 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 444,
+      'role_id' => 3,
+    ),
+    1458 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 444,
+      'role_id' => 17,
+    ),
+    1459 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 445,
+      'role_id' => 1,
     ),
   ),
   'sys_campos' => 
@@ -27623,6 +27677,614 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-10-07 09:46:22',
       'updated_at' => '2020-10-07 09:46:22',
     ),
+    773 => 
+    array (
+      'id' => 779,
+      'descripcion' => '01 Problemas de la piel',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:05:57',
+    ),
+    774 => 
+    array (
+      'id' => 780,
+      'descripcion' => '02 Epilepsia',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    775 => 
+    array (
+      'id' => 781,
+      'descripcion' => '03 Auditivas - Sordera',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    776 => 
+    array (
+      'id' => 782,
+      'descripcion' => '04 Nasales',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    777 => 
+    array (
+      'id' => 783,
+      'descripcion' => '05 Oculares',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    778 => 
+    array (
+      'id' => 784,
+      'descripcion' => '06 Respiratorias - TBC',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    779 => 
+    array (
+      'id' => 785,
+      'descripcion' => '07 Cardíacas-Circulatorias',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    780 => 
+    array (
+      'id' => 786,
+      'descripcion' => '08 Hernias',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    781 => 
+    array (
+      'id' => 787,
+      'descripcion' => '09 Músculo-Esqueléticas',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    782 => 
+    array (
+      'id' => 788,
+      'descripcion' => '10 Fracturas - Traumáticos',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    783 => 
+    array (
+      'id' => 789,
+      'descripcion' => '11 Hematológicas',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    784 => 
+    array (
+      'id' => 790,
+      'descripcion' => '12 Alérgicas - Asma',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 11:41:39',
+    ),
+    785 => 
+    array (
+      'id' => 791,
+      'descripcion' => '13 Cancerosas',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    786 => 
+    array (
+      'id' => 792,
+      'descripcion' => '14 Diabéticas',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    787 => 
+    array (
+      'id' => 793,
+      'descripcion' => '15 HIV',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    788 => 
+    array (
+      'id' => 794,
+      'descripcion' => '16 Cirugías',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    789 => 
+    array (
+      'id' => 795,
+      'descripcion' => '17 Intoxicaciones',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    790 => 
+    array (
+      'id' => 796,
+      'descripcion' => '18 Otras enfermedades',
+      'tipo' => 'bsRadioBtn',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"Personal":"Personal","Familiar":"Familiar"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    791 => 
+    array (
+      'id' => 797,
+      'descripcion' => 'Explique citando el código',
+      'tipo' => 'bsTextArea',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-07 09:46:22',
+      'updated_at' => '2020-10-07 09:46:22',
+    ),
+    792 => 
+    array (
+      'id' => 798,
+      'descripcion' => 'Lbl Alcohol',
+      'tipo' => 'personalizado',
+      'name' => 'lbl_alcohol',
+      'opciones' => '',
+      'value' => '<div style="padding-left: 15px;"> <h3> Alcohol </h3> <hr> </div>',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    793 => 
+    array (
+      'id' => 799,
+      'descripcion' => 'Consume Alcohol',
+      'tipo' => 'select',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"":"","Si":"Si","No":"No"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    794 => 
+    array (
+      'id' => 800,
+      'descripcion' => 'Años abstinencia',
+      'tipo' => 'bsText',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    795 => 
+    array (
+      'id' => 801,
+      'descripcion' => 'Frecuencia de consumo',
+      'tipo' => 'select',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"":"","Diaria":"Diaria","Semanal":"Semanal","Ocasional":"Ocasional"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    796 => 
+    array (
+      'id' => 802,
+      'descripcion' => 'Lbl Drogas',
+      'tipo' => 'personalizado',
+      'name' => 'lbl_drogas',
+      'opciones' => '',
+      'value' => '<div style="padding-left: 15px;"> <h3> Drogas </h3> <hr> </div>',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    797 => 
+    array (
+      'id' => 803,
+      'descripcion' => 'Consume Drogas',
+      'tipo' => 'select',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"":"","Si":"Si","No":"No"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    798 => 
+    array (
+      'id' => 804,
+      'descripcion' => '¿Cúal?',
+      'tipo' => 'bsText',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    799 => 
+    array (
+      'id' => 805,
+      'descripcion' => 'Años abstinencia',
+      'tipo' => 'bsText',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    800 => 
+    array (
+      'id' => 806,
+      'descripcion' => 'Frecuencia de consumo',
+      'tipo' => 'select',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"":"","Diaria":"Diaria","Semanal":"Semanal","Ocasional":"Ocasional"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    801 => 
+    array (
+      'id' => 807,
+      'descripcion' => 'Lbl Cigarrillo',
+      'tipo' => 'personalizado',
+      'name' => 'lbl_cigarrillo',
+      'opciones' => '',
+      'value' => '<div style="padding-left: 15px;"> <h3> Cigarrillo </h3> <hr> </div>',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    802 => 
+    array (
+      'id' => 808,
+      'descripcion' => 'Consume Cigarrillo',
+      'tipo' => 'select',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '{"":"","Si":"Si","No":"No"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    803 => 
+    array (
+      'id' => 809,
+      'descripcion' => 'Años abstinencia',
+      'tipo' => 'bsText',
+      'name' => 'core_campo_id-ID',
+      'opciones' => 'null',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 20:53:14',
+    ),
+    804 => 
+    array (
+      'id' => 810,
+      'descripcion' => 'No. cigarrillos al día',
+      'tipo' => 'bsText',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    805 => 
+    array (
+      'id' => 811,
+      'descripcion' => 'Tiempo (años)',
+      'tipo' => 'bsText',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    806 => 
+    array (
+      'id' => 812,
+      'descripcion' => 'Uso del tiempo libre (deportes)',
+      'tipo' => 'bsTextArea',
+      'name' => 'core_campo_id-ID',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-08 09:46:22',
+      'updated_at' => '2020-10-08 09:46:22',
+    ),
+    807 => 
+    array (
+      'id' => 813,
+      'descripcion' => 'Item a consumir',
+      'tipo' => 'select',
+      'name' => 'item_consumir_id',
+      'opciones' => 'model_App\\Inventarios\\InvProducto',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-10 09:46:22',
+      'updated_at' => '2020-10-10 09:46:22',
+    ),
+    808 => 
+    array (
+      'id' => 814,
+      'descripcion' => 'Item a producir',
+      'tipo' => 'select',
+      'name' => 'item_producir_id',
+      'opciones' => 'model_App\\Inventarios\\InvProducto',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-10 09:46:22',
+      'updated_at' => '2020-10-10 09:46:22',
+    ),
+    809 => 
+    array (
+      'id' => 815,
+      'descripcion' => 'Cantidad proporcional',
+      'tipo' => 'bsText',
+      'name' => 'cantidad_proporcional',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-10 09:46:22',
+      'updated_at' => '2020-10-10 09:46:22',
+    ),
+    810 => 
+    array (
+      'id' => 816,
+      'descripcion' => 'Agrupar por',
+      'tipo' => 'select',
+      'name' => 'agrupar_por',
+      'opciones' => '{"inv_producto_id":"Productos","core_tercero_id":"Clientes"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-13 06:12:54',
+      'updated_at' => '2020-10-13 09:39:27',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -32729,6 +33391,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-10-07 09:13:22',
       'updated_at' => '2020-10-07 09:13:22',
+    ),
+    232 => 
+    array (
+      'id' => 242,
+      'descripcion' => 'Items para desarme automático',
+      'modelo' => 'ItemDesarmeAutomatico',
+      'name_space' => 'App\\Inventarios\\ItemDesarmeAutomatico',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-10-10 09:13:22',
+      'updated_at' => '2020-10-10 09:13:22',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -44570,6 +45254,342 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 237,
       'core_campo_id' => 413,
     ),
+    1691 => 
+    array (
+      'id' => 1970,
+      'orden' => 2,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 779,
+    ),
+    1692 => 
+    array (
+      'id' => 1971,
+      'orden' => 99,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 412,
+    ),
+    1693 => 
+    array (
+      'id' => 1972,
+      'orden' => 99,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 413,
+    ),
+    1694 => 
+    array (
+      'id' => 1973,
+      'orden' => 99,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 432,
+    ),
+    1695 => 
+    array (
+      'id' => 1974,
+      'orden' => 4,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 780,
+    ),
+    1696 => 
+    array (
+      'id' => 1975,
+      'orden' => 6,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 781,
+    ),
+    1697 => 
+    array (
+      'id' => 1976,
+      'orden' => 8,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 782,
+    ),
+    1698 => 
+    array (
+      'id' => 1977,
+      'orden' => 10,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 783,
+    ),
+    1699 => 
+    array (
+      'id' => 1978,
+      'orden' => 12,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 784,
+    ),
+    1700 => 
+    array (
+      'id' => 1979,
+      'orden' => 14,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 785,
+    ),
+    1701 => 
+    array (
+      'id' => 1980,
+      'orden' => 16,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 786,
+    ),
+    1702 => 
+    array (
+      'id' => 1981,
+      'orden' => 18,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 787,
+    ),
+    1703 => 
+    array (
+      'id' => 1982,
+      'orden' => 3,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 788,
+    ),
+    1704 => 
+    array (
+      'id' => 1983,
+      'orden' => 5,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 789,
+    ),
+    1705 => 
+    array (
+      'id' => 1984,
+      'orden' => 7,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 790,
+    ),
+    1706 => 
+    array (
+      'id' => 1985,
+      'orden' => 9,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 791,
+    ),
+    1707 => 
+    array (
+      'id' => 1986,
+      'orden' => 11,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 792,
+    ),
+    1708 => 
+    array (
+      'id' => 1987,
+      'orden' => 13,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 793,
+    ),
+    1709 => 
+    array (
+      'id' => 1988,
+      'orden' => 15,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 794,
+    ),
+    1710 => 
+    array (
+      'id' => 1989,
+      'orden' => 17,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 795,
+    ),
+    1711 => 
+    array (
+      'id' => 1990,
+      'orden' => 19,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 796,
+    ),
+    1712 => 
+    array (
+      'id' => 1991,
+      'orden' => 21,
+      'core_modelo_id' => 238,
+      'core_campo_id' => 797,
+    ),
+    1713 => 
+    array (
+      'id' => 1992,
+      'orden' => 99,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 412,
+    ),
+    1714 => 
+    array (
+      'id' => 1993,
+      'orden' => 99,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 413,
+    ),
+    1715 => 
+    array (
+      'id' => 1994,
+      'orden' => 99,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 432,
+    ),
+    1716 => 
+    array (
+      'id' => 1995,
+      'orden' => 4,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 798,
+    ),
+    1717 => 
+    array (
+      'id' => 1996,
+      'orden' => 6,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 799,
+    ),
+    1718 => 
+    array (
+      'id' => 1997,
+      'orden' => 8,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 800,
+    ),
+    1719 => 
+    array (
+      'id' => 1998,
+      'orden' => 10,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 801,
+    ),
+    1720 => 
+    array (
+      'id' => 1999,
+      'orden' => 12,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 802,
+    ),
+    1721 => 
+    array (
+      'id' => 2000,
+      'orden' => 14,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 803,
+    ),
+    1722 => 
+    array (
+      'id' => 2001,
+      'orden' => 16,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 804,
+    ),
+    1723 => 
+    array (
+      'id' => 2002,
+      'orden' => 18,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 805,
+    ),
+    1724 => 
+    array (
+      'id' => 2003,
+      'orden' => 20,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 806,
+    ),
+    1725 => 
+    array (
+      'id' => 2004,
+      'orden' => 22,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 807,
+    ),
+    1726 => 
+    array (
+      'id' => 2005,
+      'orden' => 24,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 808,
+    ),
+    1727 => 
+    array (
+      'id' => 2006,
+      'orden' => 26,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 809,
+    ),
+    1728 => 
+    array (
+      'id' => 2007,
+      'orden' => 28,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 810,
+    ),
+    1729 => 
+    array (
+      'id' => 2008,
+      'orden' => 30,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 811,
+    ),
+    1730 => 
+    array (
+      'id' => 2009,
+      'orden' => 32,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 812,
+    ),
+    1731 => 
+    array (
+      'id' => 2010,
+      'orden' => 5,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 97,
+    ),
+    1732 => 
+    array (
+      'id' => 2012,
+      'orden' => 11,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 329,
+    ),
+    1733 => 
+    array (
+      'id' => 2013,
+      'orden' => 13,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 446,
+    ),
+    1734 => 
+    array (
+      'id' => 2014,
+      'orden' => 23,
+      'core_modelo_id' => 239,
+      'core_campo_id' => 123,
+    ),
+    1735 => 
+    array (
+      'id' => 2015,
+      'orden' => 2,
+      'core_modelo_id' => 242,
+      'core_campo_id' => 813,
+    ),
+    1736 => 
+    array (
+      'id' => 2016,
+      'orden' => 4,
+      'core_modelo_id' => 242,
+      'core_campo_id' => 814,
+    ),
+    1737 => 
+    array (
+      'id' => 2017,
+      'orden' => 6,
+      'core_modelo_id' => 242,
+      'core_campo_id' => 815,
+    ),
+    1738 => 
+    array (
+      'id' => 2018,
+      'orden' => 8,
+      'core_modelo_id' => 242,
+      'core_campo_id' => 22,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -44923,6 +45943,16 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-09-19 04:47:52',
       'updated_at' => '2020-09-19 04:48:29',
     ),
+    35 => 
+    array (
+      'id' => 37,
+      'descripcion' => 'Reporte de rentabilidad',
+      'core_app_id' => 13,
+      'url_form_action' => 'vtas_reporte_rentabilidad',
+      'estado' => 'Activo',
+      'created_at' => '2020-10-13 06:17:00',
+      'updated_at' => '2020-10-13 06:17:16',
+    ),
   ),
   'sys_reporte_tiene_campos' => 
   array (
@@ -45174,417 +46204,435 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     41 => 
     array (
+      'orden' => 2,
+      'core_reporte_id' => 37,
+      'core_campo_id' => 473,
+    ),
+    42 => 
+    array (
       'orden' => 6,
       'core_reporte_id' => 1,
       'core_campo_id' => 474,
     ),
-    42 => 
+    43 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 2,
       'core_campo_id' => 474,
     ),
-    43 => 
+    44 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 5,
       'core_campo_id' => 474,
     ),
-    44 => 
+    45 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 13,
-      'core_campo_id' => 474,
-    ),
-    45 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 15,
       'core_campo_id' => 474,
     ),
     46 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 23,
+      'core_reporte_id' => 15,
       'core_campo_id' => 474,
     ),
     47 => 
     array (
-      'orden' => 4,
-      'core_reporte_id' => 24,
+      'orden' => 2,
+      'core_reporte_id' => 23,
       'core_campo_id' => 474,
     ),
     48 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 26,
+      'core_reporte_id' => 24,
       'core_campo_id' => 474,
     ),
     49 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 27,
+      'core_reporte_id' => 26,
       'core_campo_id' => 474,
     ),
     50 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 30,
+      'core_reporte_id' => 27,
       'core_campo_id' => 474,
     ),
     51 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 31,
+      'core_reporte_id' => 30,
       'core_campo_id' => 474,
     ),
     52 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 33,
+      'core_reporte_id' => 31,
       'core_campo_id' => 474,
     ),
     53 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 35,
+      'core_reporte_id' => 33,
       'core_campo_id' => 474,
     ),
     54 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 36,
+      'core_reporte_id' => 35,
       'core_campo_id' => 474,
     ),
     55 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 36,
+      'core_campo_id' => 474,
+    ),
+    56 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 37,
+      'core_campo_id' => 474,
+    ),
+    57 => 
     array (
       'orden' => 9,
       'core_reporte_id' => 5,
       'core_campo_id' => 476,
     ),
-    56 => 
+    58 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 8,
       'core_campo_id' => 489,
     ),
-    57 => 
+    59 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 8,
       'core_campo_id' => 490,
     ),
-    58 => 
+    60 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 8,
       'core_campo_id' => 491,
     ),
-    59 => 
+    61 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 13,
       'core_campo_id' => 536,
     ),
-    60 => 
+    62 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 15,
       'core_campo_id' => 561,
     ),
-    61 => 
+    63 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 11,
       'core_campo_id' => 588,
     ),
-    62 => 
+    64 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 12,
       'core_campo_id' => 588,
     ),
-    63 => 
+    65 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 22,
       'core_campo_id' => 588,
     ),
-    64 => 
+    66 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 25,
       'core_campo_id' => 588,
     ),
-    65 => 
+    67 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 28,
       'core_campo_id' => 588,
     ),
-    66 => 
+    68 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 33,
       'core_campo_id' => 588,
     ),
-    67 => 
+    69 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 31,
       'core_campo_id' => 592,
     ),
-    68 => 
+    70 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 34,
       'core_campo_id' => 592,
     ),
-    69 => 
+    71 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 7,
       'core_campo_id' => 599,
     ),
-    70 => 
+    72 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 17,
       'core_campo_id' => 599,
     ),
-    71 => 
+    73 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 32,
       'core_campo_id' => 599,
     ),
-    72 => 
+    74 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 34,
       'core_campo_id' => 599,
     ),
-    73 => 
+    75 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 31,
       'core_campo_id' => 604,
     ),
-    74 => 
+    76 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 34,
       'core_campo_id' => 604,
     ),
-    75 => 
+    77 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 17,
       'core_campo_id' => 613,
     ),
-    76 => 
+    78 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 17,
       'core_campo_id' => 614,
     ),
-    77 => 
+    79 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 18,
       'core_campo_id' => 614,
     ),
-    78 => 
+    80 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 17,
       'core_campo_id' => 615,
     ),
-    79 => 
+    81 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 18,
       'core_campo_id' => 615,
     ),
-    80 => 
+    82 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 17,
       'core_campo_id' => 616,
     ),
-    81 => 
+    83 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 18,
       'core_campo_id' => 616,
     ),
-    82 => 
+    84 => 
     array (
       'orden' => 14,
       'core_reporte_id' => 17,
       'core_campo_id' => 617,
     ),
-    83 => 
+    85 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 17,
       'core_campo_id' => 618,
     ),
-    84 => 
+    86 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 18,
       'core_campo_id' => 619,
     ),
-    85 => 
+    87 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 20,
       'core_campo_id' => 622,
     ),
-    86 => 
+    88 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 622,
     ),
-    87 => 
+    89 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 35,
       'core_campo_id' => 622,
     ),
-    88 => 
+    90 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 20,
       'core_campo_id' => 623,
     ),
-    89 => 
+    91 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 20,
       'core_campo_id' => 629,
     ),
-    90 => 
+    92 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 21,
       'core_campo_id' => 630,
     ),
-    91 => 
+    93 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 21,
       'core_campo_id' => 632,
     ),
-    92 => 
+    94 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 633,
     ),
-    93 => 
+    95 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 35,
       'core_campo_id' => 633,
     ),
-    94 => 
+    96 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 13,
       'core_campo_id' => 636,
     ),
-    95 => 
+    97 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 13,
       'core_campo_id' => 637,
     ),
-    96 => 
+    98 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 24,
       'core_campo_id' => 637,
     ),
-    97 => 
+    99 => 
     array (
       'orden' => 15,
       'core_reporte_id' => 13,
       'core_campo_id' => 638,
     ),
-    98 => 
+    100 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 13,
       'core_campo_id' => 639,
     ),
-    99 => 
+    101 => 
     array (
       'orden' => 17,
       'core_reporte_id' => 13,
       'core_campo_id' => 640,
     ),
-    100 => 
+    102 => 
     array (
       'orden' => 18,
       'core_reporte_id' => 13,
       'core_campo_id' => 641,
     ),
-    101 => 
+    103 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 24,
       'core_campo_id' => 723,
     ),
-    102 => 
+    104 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 24,
       'core_campo_id' => 724,
     ),
-    103 => 
+    105 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 29,
       'core_campo_id' => 739,
     ),
-    104 => 
+    106 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 30,
       'core_campo_id' => 766,
     ),
-    105 => 
+    107 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 33,
       'core_campo_id' => 767,
     ),
-    106 => 
+    108 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 35,
       'core_campo_id' => 768,
     ),
-    107 => 
+    109 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 36,
       'core_campo_id' => 771,
     ),
-    108 => 
+    110 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 22,
       'core_campo_id' => 773,
     ),
-    109 => 
+    111 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 28,
       'core_campo_id' => 773,
+    ),
+    112 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 37,
+      'core_campo_id' => 816,
     ),
   ),
   'sys_tipos_transacciones' => 

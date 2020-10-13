@@ -34,16 +34,16 @@ use App\Http\Controllers\Sistema\VistaController;
                     <div class="panel-body">
                         <table class="fluid" width="100%">
                             <tr>
-                                <td><input type="checkbox" name="requisito1" id="matricular"> Documento identidad</td>
-                                <td><input type="checkbox" name="requisito2" id="matricular"> Constancia SIMAT</td>
+                                <td><input type="checkbox" name="requisito1"> Documento identidad</td>
+                                <td><input type="checkbox" name="requisito2"> Constancia SIMAT</td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" name="requisito3" id="matricular"> Fotos</td>
-                                <td><input type="checkbox" name="requisito4" id="matricular"> Registro calificaciones</td>
+                                <td><input type="checkbox" name="requisito3"> Fotos</td>
+                                <td><input type="checkbox" name="requisito4"> Registro calificaciones</td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" name="requisito5" id="matricular"> Carnet EPS</td>
-                                <td><input type="checkbox" name="requisito6" id="matricular"> Registro de vacunación</td>
+                                <td><input type="checkbox" name="requisito5"> Carnet EPS</td>
+                                <td><input type="checkbox" name="requisito6"> Registro de vacunación</td>
                             </tr>
                         </table>
                     </div>
@@ -245,6 +245,34 @@ use App\Http\Controllers\Sistema\VistaController;
 
             $('#codigo').val(codigo.replace(codigo.substr(codigo.search("-")), '-' + grado[1]));
         });
+
+        $(document).on('blur','.numero_docp',function(){
+            var documento = $(this).val();
+
+            /* Cuando el javascript está dentro de una vista blade se puede llamar la url de la siguiente forma:*/
+            var url = "{{ url('core/validar_numero_identificacion/') }}" + "/" + documento;
+            
+            $.get( url, function( datos ) 
+            {
+                if ( datos != '') 
+                {
+                    if ( parseInt(datos) == documento_inicial ) 
+                    {
+                        // No hay problema
+                        $('#bs_boton_guardar').show();
+                    }else{
+                        $('#bs_boton_guardar').hide();
+                        alert( "Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro." );
+                    }
+                    
+                }else{
+                    // Número de identificación
+                    $('#bs_boton_guardar').show();
+                }
+                
+            });
+        });
+
     });
 
     var tipos = <?php echo json_encode($tipos); ?>;
@@ -259,14 +287,14 @@ use App\Http\Controllers\Sistema\VistaController;
             selectTiposdoc = selectTiposdoc + "<option value='" + element.id + "'>" + element.descripcion + "</option>";
         });
         html = html + "<td>" + selectTiposdoc + "</select></td>";
-        html = html + "<td><input type='text' class='form-control' name='numero_docp[]' required /></td>";
+        html = html + "<td><input type='text' class='form-control numero_docp' name='numero_docp[]' required /></td>";
         html = html + "<td><input type='text' class='form-control' name='nombre1p[]' required /></td>";
         html = html + "<td><input type='text' class='form-control' name='otros_nombresp[]' required /></td>";
         html = html + "<td><input type='text' class='form-control' name='apellido1p[]' required /></td>";
         html = html + "<td><input type='text' class='form-control' name='apellido2p[]' required /></td>";
         html = html + "<td><input type='text' class='form-control' name='ocupacionp[]' required /></td>";
         html = html + "<td><input type='number' class='form-control' name='telefono1p[]' required /></td>";
-        html = html + "<td><input type='email' class='form-control' name='emailp[]' required /></td>";
+        html = html + "<td><input type='email' class='form-control emailp' name='emailp[]' required /></td>";
         io = io + 1;
         var selectTipos = "<select class='form-control' required name='tiporesponsable_idp[]' onchange='cambiar(this.id)' id='" + io + "'>";
         tipos.forEach(element => {

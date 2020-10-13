@@ -235,9 +235,9 @@ class MatriculaController extends ModeloController
             $user = User::crear_y_asignar_role($name, $email, 4); // 4 = Role Estudiante
 
             $datos = array_merge(
-                $request->all(),
-                ['user_id' => $user->id]
-            );
+                                    $request->all(),
+                                    ['user_id' => $user->id]
+                                );
 
             $estudiante = Estudiante::create($datos);
             //guardamos papa y mama, guardamos responsable financiero, acudiente, etc
