@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 class ClaseCliente extends Model
 {
     protected $table = 'vtas_clases_clientes';
-	protected $fillable = ['descripcion', 'cta_x_cobrar_id', 'cta_anticipo_id', 'clase_padre_id', 'estado'];
+	
+    protected $fillable = ['descripcion', 'cta_x_cobrar_id', 'cta_anticipo_id', 'clase_padre_id', 'estado'];
+
 	public $encabezado_tabla = ['Tercero', 'Cta x cobrar default', 'Cta anticipo default', 'Clase padre', 'Estado', 'Acción'];
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';

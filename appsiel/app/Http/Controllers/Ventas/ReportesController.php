@@ -20,6 +20,8 @@ use Lava;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasPedido;
 
+use App\Inventarios\InvMovimiento;
+
 use App\Contabilidad\Impuesto;
 
 class ReportesController extends Controller
@@ -118,14 +120,39 @@ class ReportesController extends Controller
 
         $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
 
+        //dd( $movimiento->toArray() );
+
         // En el movimiento se trae el precio_total con IVA incluido
-        $mensaje = 'IVA Incluido en precio.';
+        $mensaje = 'IVA Incluido en precio';
         if ( !$iva_incluido )
         {
-            $mensaje = 'IVA <b>NO</b> incluido en precio.';
+            $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
 
-        $vista = View::make('ventas.reportes.reporte_ventas', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
+        $vista = View::make('ventas.reportes.reporte_ventas_ordenado', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+
+    public function vtas_reporte_rentabilidad(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $agrupar_por = $request->agrupar_por;
+
+        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
+        
+        $movimiento_inventarios = InvMovimiento::get_movimiento_transacciones_ventas( $fecha_desde, $fecha_hasta );
+
+        //dd( $movimiento_inventarios->where( 'inv_producto_id', 2)->sum('costo_total') );
+
+        $mensaje = 'IVA <b>NO</b> incluido en precio';
+
+        $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

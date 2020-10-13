@@ -22,7 +22,22 @@ class InvMovimiento extends Model
     
     public function producto()
     {
-        return $this->belongsTo('App\Inventarios\InvProducto');
+        return $this->belongsTo(InvProducto::class);
+    }
+    
+    public function motivo()
+    {
+        return $this->belongsTo(InvMotivo::class);
+    }
+    
+    public function bodega()
+    {
+        return $this->belongsTo(InvBodega::class);
+    }
+    
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
 
 
@@ -195,8 +210,6 @@ class InvMovimiento extends Model
 
     public static function get_movimiento($id_producto, $id_bodega, $fecha_inicial, $fecha_final )
     {
-        //$select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2';
-
         return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                                 ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                                 ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
@@ -215,6 +228,26 @@ class InvMovimiento extends Model
                                 ->orderBy('inv_movimientos.created_at')
                                 ->get();
     }
+
+
+
+    public static function get_movimiento_transacciones_ventas( $fecha_inicial, $fecha_final )
+    {
+        /*              MOTIVOS DE INVENTARIOS
+            ID  Desccrpcion             Transacción asociada        Movimiento
+            22  Ventas POS              Factura de ventas POS      salida
+            17  Remisión de ventas      Remisión de ventas         salida
+            15  Devolución en ventas    Devolución en ventas       entrada
+            10  Ventas Estándar         Venta                      salida
+        */
+
+        return InvMovimiento::leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+                            ->whereIn( 'inv_movimientos.inv_motivo_id', [ 10, 15, 17, 22] )
+                            ->whereBetween('inv_doc_encabezados.fecha', [ $fecha_inicial, $fecha_final ] )
+                            ->get();
+    }
+
+
 
     public static function get_existencia_producto( $producto_id, $bodega_id, $fecha_corte )
     {

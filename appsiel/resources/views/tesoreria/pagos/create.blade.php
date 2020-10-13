@@ -19,8 +19,10 @@
 
 		    @if( is_null($registro) )
 				{{ Form::open( ['url'=>$form_create['url'],'id'=>'form_create']) }}
+					{{ Form::hidden( 'editando', 0, ['id'=>'editando'] ) }}
 			@else
 				{{ Form::model($registro, ['url' => [ $form_create['url'] ], 'method' => 'PUT','files' => true, 'id' => 'form_create']) }}
+					{{ Form::hidden( 'editando', 1, ['id'=>'editando'] ) }}
 			@endif
 
 				<?php
@@ -66,8 +68,11 @@
 
 			calcular_totales();
 
-			//console.log({ { $registro }});
-			$('#fecha').val( get_fecha_hoy() );
+			if ( $('#editando').val() == 0 )
+			{
+				$('#fecha').val( get_fecha_hoy() );
+			}
+			
 			$('#fecha').focus();
 
 			$('#fecha').keyup(function(event){
