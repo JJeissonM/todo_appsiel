@@ -99,8 +99,10 @@ class MatriculaController extends ModeloController
      */
     public function crear_nuevo(Request $request)
     {
+        //dd( $request->id_inscripcion );
+
         // LLAMAR AL FORMULARIO PARA CREAR UNA NUEVA MATRICULA, SEGÚN EL DOC. ID DEL ESTUDIANTE
-        $inscripcion = Inscripcion::find($request->id_inscripcion);
+        $inscripcion = Inscripcion::find( $request->id_inscripcion );
 
         $tercero = Tercero::find($inscripcion->core_tercero_id);
 

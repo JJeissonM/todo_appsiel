@@ -15,4 +15,16 @@ class Tiporesponsable extends Model
     {
         return $this->hasMany(Responsableestudiante::class);
     }
+
+    public static function opciones_campo_select()
+    {
+        $opciones = Tiporesponsable::all();
+
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
 }

@@ -25,10 +25,25 @@
         }else{
           $activo = '';
         }
+
+        $array_nombre = explode( ".", $foto->nombre );
+        $extension_archivo = end( $array_nombre );
+
       ?>
 
       <div class="carousel-item {{$activo}}">
-        <img src="{{ asset($foto->nombre) }}" alt="foto" class="img-fluid">
+        @if( $extension_archivo == 'mp4' )
+          <div style="text-align: center;">
+            <h5>Video</h5>
+            <video width="320" height="340" controls>
+              <source src="{{ asset($foto->nombre) }}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+            
+        @else
+          <img src="{{ asset($foto->nombre) }}" alt="foto" class="img-fluid">
+        @endif
       </div>
 
     @endforeach

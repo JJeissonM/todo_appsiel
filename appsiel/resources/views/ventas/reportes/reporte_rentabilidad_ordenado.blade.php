@@ -65,7 +65,11 @@
                     
                     if ( $agrupar_por == 'core_tercero_id' )
                     {
-                        $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->tercero->descripcion;
+                        $tercero = $coleccion_movimiento->first()->tercero;
+                        if ( !is_null($tercero) )
+                        {
+                            $array_lista[$i]['descripcion'] = $tercero->descripcion;
+                        }
                     }
 
                     $array_lista[$i]['cantidad'] = $cantidad;

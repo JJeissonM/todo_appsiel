@@ -50,10 +50,6 @@ class TerceroController extends Controller
         $datos = Tercero::where('core_terceros.estado','Activo')
                         ->where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
                         ->where('core_terceros.'.$campo_busqueda, 'LIKE', $texto_busqueda)
-                        ->select(
-                                    'core_terceros.id',
-                                    'core_terceros.descripcion',
-                                    'core_terceros.numero_identificacion')
                         ->get()
                         ->take(7);
 
@@ -84,6 +80,12 @@ class TerceroController extends Controller
                                 '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
 
             $html .=            '" data-tipo_campo="tercero" ';
+
+            $html .=            '" data-descripcion="'.$linea->descripcion;
+            $html .=            '" data-numero_identificacion="'.number_format($linea->numero_identificacion,0,',','.');
+            $html .=            '" data-direccion1="'.$linea->direccion1;
+            $html .=            '" data-telefono1="'.$linea->telefono1;
+            $html .=            '" data-email="'.$linea->email;
 
             $html .=            '" > '.$linea->descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
 

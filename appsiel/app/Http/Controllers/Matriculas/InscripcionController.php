@@ -9,6 +9,8 @@ use App\Http\Requests;
 
 use App\Http\Controllers\Sistema\ModeloController;
 
+use App\Http\Controllers\Matriculas\MatriculaController;
+
 use DB;
 use PDF;
 use View;
@@ -33,6 +35,15 @@ use App\Calificaciones\Boletin;
 class InscripcionController extends ModeloController
 {	
 	
+    public function crear_matricula( $id_inscripcion )
+    {
+        $matricula = new MatriculaController;
+
+        $request = new Request;
+        $request['id_inscripcion'] = $id_inscripcion;
+
+        return $matricula->crear_nuevo( $request );
+    }
 	
 	/**
 	 * Guardar un nuevo estudiante
@@ -82,7 +93,7 @@ class InscripcionController extends ModeloController
 
         $miga_pan = $this->get_miga_pan( $this->modelo, 'Consulta');
 
-        return view( 'matriculas.show_inscripcion',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') );
+        return view( 'matriculas.inscripciones.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') );
     }
 
     public function inscripcion_print($id)

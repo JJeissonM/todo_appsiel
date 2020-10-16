@@ -57,29 +57,38 @@ use App\Http\Controllers\Sistema\VistaController;
                 <div class="panel-heading">DATOS DE PADRES, ACUDIENTE, RESPONSABLE FINANCIERO, ETC.</div>
                 <div class="panel-body">
                     <div class="alert alert-warning" role="alert">
-                        <h4><b>Atención! </b>Debe como mínimo incluir al acudiente y al responsable financiero, de no ser así la matrícula no será registrada y tendrá que realizar el procedimiento de nuevo</h4>
+                        <h4><b>Atención! </b>Debe incluir, como mínimo, al responsable financiero (acudiente). Luego puede completar la información de los padres</h4>
                     </div>
-                    <a onclick="addRow()" class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> Agregar Persona</a>
-                    <table id="tbPersonas" class="table table-hover table-dark table-responsive">
-                        <thead>
-                            <tr>
-                                <th scope="col">Tipo Doc.</th>
-                                <th scope="col">Número Doc.</th>
-                                <th scope="col">Primer Nombre</th>
-                                <th scope="col">Segundo Nombre</th>
-                                <th scope="col">Primer Apellido</th>
-                                <th scope="col">Segundo Apellido</th>
-                                <th scope="col">Ocupación</th>
-                                <th scope="col">Teléfono</th>
-                                <th scope="col">Correo</th>
-                                <th scope="col">Tipo</th>
-                                <th scope="col"><i class="fa fa-remove"></i></th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div class="table-responsive">
+                        <table id="tbPersonas" class="table table-hover table-dark table-responsive">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Tercero</th>
+                                    <th scope="col">Dirección</th>
+                                    <th scope="col">Teléfono</th>
+                                    <th scope="col">Correo</th>
+                                    <th scope="col">Tipo de responsable</th>
+                                    <th scope="col"><i class="fa fa-remove"></i></th>
+                                </tr>
+                            </thead>
+                            <tbody>
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <input id="core_tercero_id" placeholder="*Nombre del tercero" autocomplete="off" class="form-control text_input_sugerencias" data-url_busqueda="{{ url('core_consultar_terceros_v2') }}" data-clase_modelo="App\Core\Tercero" required="required" name="numero_docp[]" type="text" value="">
+                                    </td>
+                                    <td colspan="4"></td>
+                                    <td>
+                                        {{ Form::bsSelect('tiporesponsable_idp', null, '', App\Matriculas\Tiporesponsable::opciones_campo_select(), ['class'=>'form-control']) }}
+                                    </td>
+                                    <td> <button class="btn btn-success btn-xs" id="btn_agregar_linea"> <i class="fa fa-check"></i> </button></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                        
                 </div>
             </div>
 
@@ -144,79 +153,61 @@ use App\Http\Controllers\Sistema\VistaController;
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">DATOS RESPONSABLE FINANCIERO</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="ponerID">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label">Dirección Trabajo*</label>
-                            <input type="text" class="form-control" id="direccion_trabajo" value=" " required>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Teléfono Trabajo*</label>
-                            <input type="text" class="form-control" id="telefono_trabajo" value=" " required>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Puesto Trabajo</label>
-                            <input type="text" class="form-control" id="puesto_trabajo">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="control-label">Empresa Dónde Labora</label>
-                            <input type="text" class="form-control" id="empresa_labora">
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Jefe Inmediato</label>
-                            <input type="text" class="form-control" id="jefe_inmediato">
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Teléfono Jefe</label>
-                            <input type="text" class="form-control" id="telefono_jefe">
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label class="control-label">Si Es Trabajador Independiente Escriba su Actividad</label>
-                            <input type="text" class="form-control" id="descripcion_trabajador_independiente">
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <h4>Presione Guardar Datos para terminar el proceso, la ventana se cerrará</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-                <button type="button" onclick="guardar()" class="btn btn-primary">Guardar Datos</button>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
 
 @section('scripts')
 
 <script type="text/javascript">
+    
+    var html;
+    var hay_responsable = 0;
+
+    function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+    {
+        console.log( item_sugerencia.attr('data-descripcion') );
+
+        $('#tiporesponsable_idp').focus();
+
+        html = "<tr>";
+
+        html = html + "<td>" + item_sugerencia.attr( 'data-numero_identificacion' ) + " - " + item_sugerencia.attr( 'data-descripcion' ) + "</td>";
+        html = html + "<td>" + item_sugerencia.attr( 'data-direccion1' ) + "</td>";
+        html = html + "<td>" + item_sugerencia.attr( 'data-telefono1' ) + "</td>";
+        html = html + "<td>" + item_sugerencia.attr( 'data-email' ) + "</td>";
+        html = html + "<td>" + $('#tiporesponsable_idp option:selected').text() + "</td>";
+        html = html + "<td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td>";
+        html = html + "</tr>";
+
+    }
+
+    $.fn.addRow = function() {
+        
+        $('#tbPersonas tr:last').after( html );
+        hay_responsable++;
+
+    }
+
     $(document).on('click', '.delete', function(event) {
         event.preventDefault();
         $(this).closest('tr').remove();
+        hay_responsable--;
     });
 
 
 
     $(document).ready(function() {
+        
+        $('#btn_agregar_linea').on('click', function(event) {
+            event.preventDefault();
 
+            /*if (!validar_requeridos()) {
+                return false;
+            }*/
+
+            $.fn.addRow();
+
+        });
+        
         $('#bs_boton_guardar').on('click', function(event) {
             event.preventDefault();
 
@@ -283,31 +274,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
     var io = 0;
 
-    function addRow() {
-        var html = "<tr>";
-        var selectTiposdoc = "<select class='form-control' required name='id_tipo_documento_idp[]'>";
-        tiposdoc.forEach(element => {
-            selectTiposdoc = selectTiposdoc + "<option value='" + element.id + "'>" + element.descripcion + "</option>";
-        });
-        html = html + "<td>" + selectTiposdoc + "</select></td>";
-        html = html + "<td><input type='text' class='form-control numero_docp' name='numero_docp[]' required /></td>";
-        html = html + "<td><input type='text' class='form-control' name='nombre1p[]' required /></td>";
-        html = html + "<td><input type='text' class='form-control' name='otros_nombresp[]' required /></td>";
-        html = html + "<td><input type='text' class='form-control' name='apellido1p[]' required /></td>";
-        html = html + "<td><input type='text' class='form-control' name='apellido2p[]' required /></td>";
-        html = html + "<td><input type='text' class='form-control' name='ocupacionp[]' required /></td>";
-        html = html + "<td><input type='number' class='form-control' name='telefono1p[]' required /></td>";
-        html = html + "<td><input type='email' class='form-control emailp' name='emailp[]' required /></td>";
-        io = io + 1;
-        var selectTipos = "<select class='form-control' required name='tiporesponsable_idp[]' onchange='cambiar(this.id)' id='" + io + "'>";
-        tipos.forEach(element => {
-            selectTipos = selectTipos + "<option value='" + element.id + "'>" + element.descripcion + "</option>";
-        });
-        html = html + "<td>" + selectTipos + "</select><input type='hidden' id='hidden_" + io + "' name='datosp[]'></td>";
-        html = html + "<td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td>";
-        html = html + "</tr>";
-        $('#tbPersonas tr:last').after(html);
-    }
+    
 
     function cambiar(id) {
         var rf = $("#" + id + " option:selected").text();

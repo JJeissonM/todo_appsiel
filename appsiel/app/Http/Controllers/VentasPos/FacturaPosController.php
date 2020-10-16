@@ -113,8 +113,6 @@ class FacturaPosController extends TransaccionController
         $modelo_controller = new ModeloController;
         $acciones = $modelo_controller->acciones_basicas_modelo( $this->modelo, '' );
 
-
-
         $user = Auth::user();        
 
         $pdv = Pdv::find( Input::get('pdv_id') );
@@ -220,10 +218,6 @@ class FacturaPosController extends TransaccionController
             $request_2['lineas_registros_medios_recaudos'] = str_replace($valor, "$" . ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) , $medios_recaudos);
         }
     }
-
-    /*
-        [{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"3-Caja Domicilios","teso_cuenta_bancaria_id":"0-","valor":"$0"},{"teso_medio_recaudo_id":"2-Tarjeta d\u00e9bito","teso_motivo_id":"1-Recaudo clientes (Ventas)","teso_caja_id":"0-","teso_cuenta_bancaria_id":"1-Bancolombia: 52370715696","valor":"$60300"}]
-    */
 
 
     /*
@@ -555,11 +549,7 @@ class FacturaPosController extends TransaccionController
 
 
     /*
-        Proceso de eliminar FACTURA POS 
-
-
-        PRIMERO TRABAJAR EN EDITAR
-
+        Proceso de eliminar FACTURA POS (Antes de acumulación)
     */
     public static function anular_factura_pos( $doc_encabezado_id )
     {        
@@ -658,9 +648,7 @@ class FacturaPosController extends TransaccionController
 
         $encabezados_documentos = FacturaPos::where( 'pdv_id', $pdv_id )->where( 'estado', 'Pendiente' )->get();
 
-        $this->hacer_desarme_automatico( $pdv_id, $encabezados_documentos->last()->fecha ); // Con la fecha de la última factura 
-
-        /*dd('ok, desarme hecho');*/
+        $this->hacer_desarme_automatico( $pdv_id, $encabezados_documentos->last()->fecha ); // Con la fecha de la última factura
 
         foreach ($encabezados_documentos as $factura)
         {
@@ -866,7 +854,7 @@ class FacturaPosController extends TransaccionController
     public static function crear_registro_pago( $forma_pago, $datos, $total_documento, $detalle_operacion )
     {        
         // Cargar la cuenta por cobrar (CxC)
-        if ( $forma_pago == 'credito')
+        if ( $forma_pago == 'credito' )
         {
             $datos['modelo_referencia_tercero_index'] = 'App\Ventas\Cliente';
             $datos['referencia_tercero_id'] = $datos['cliente_id'];

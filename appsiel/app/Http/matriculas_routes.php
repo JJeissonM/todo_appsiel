@@ -7,6 +7,7 @@
 Route::get('matriculas/inscripciones/creacion_masiva', 'Matriculas\InscripcionController@creacion_masiva');
 Route::get('matriculas/inscripciones/eliminar/{id}', 'Matriculas\InscripcionController@eliminar');
 Route::get('matriculas/inscripcion_print/{id_fila}', 'Matriculas\InscripcionController@inscripcion_print');
+Route::get('inscripciones_crear_matricula/{id_inscripcion}', 'Matriculas\InscripcionController@crear_matricula');
 Route::resource('matriculas/inscripcion', 'Matriculas\InscripcionController');
 
 // Usado para la lista de estudiantes
