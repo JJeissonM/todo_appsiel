@@ -121,7 +121,7 @@ class GaleriaController extends Controller
         if ($result) {
             if (isset($request->imagen)) {
                 foreach ($request->imagen as $value) {
-                    if ($value->getSize() < 12097152) {
+                    if ($value->getSize() < 120971520) {
                         $foto = new Foto();
                         $foto->album_id = $album->id;
                         $file = $value;
@@ -134,7 +134,7 @@ class GaleriaController extends Controller
                         $foto->save();
                         $response = $response . "<p>El archivo fue almacenado correctamente " . $file->getClientOriginalName() . "  <i class='fa fa-check'></i></p>";
                     } else {
-                        $response = $response . "<p>El archivo no fue almacenado " . $value->getClientOriginalName() . "  <i class='fa fa-warning'></i> El tamaño del archivo excedia lo permitido (2MB)</p>";
+                        $response = $response . "<p>El archivo no fue almacenado " . $value->getClientOriginalName() . "  <i class='fa fa-warning'></i> El tamaño del archivo excedia lo permitido (12MB)</p>";
                     }
                 }
             }
