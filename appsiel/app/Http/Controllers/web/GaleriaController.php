@@ -408,6 +408,6 @@ class GaleriaController extends Controller
     {
         $album = Album::find( $album_id );
         $fotos = $album->fotos;
-        return View::make( 'web.galeria.carousel', compact('fotos') )->render();
+        return View::make( 'web.galeria.carousel', compact('fotos', 'album') )->render();
     }
 }

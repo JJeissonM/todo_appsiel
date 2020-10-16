@@ -2,6 +2,13 @@
 
 ?>
 
+<div class="container-fluid">
+  <h4>{{ $album->titulo }}</h4>
+  <p style="width: 100%; text-align: justify;">
+    {{ $album->descripcion }}
+  </p>
+</div>
+
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="3000">
   <!-- Indicators 
   <ol class="carousel-indicators">
