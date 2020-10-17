@@ -1,0 +1,7 @@
+[2020-10-17 14:08:15] production.ERROR: ErrorException: Header may not contain more than a single header, new line detected in C:\xampp_72\htdocs\appsiel_2020\appsiel\vendor\symfony\http-foundation\Response.php:339
+Stack trace:
+#0 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'Header may not ...', 'C:\\xampp_72\\htd...', 339, Array)
+#1 C:\xampp_72\htdocs\appsiel_2020\appsiel\vendor\symfony\http-foundation\Response.php(339): header('Location: http:...', false, 302)
+#2 C:\xampp_72\htdocs\appsiel_2020\appsiel\vendor\symfony\http-foundation\Response.php(373): Symfony\Component\HttpFoundation\Response->sendHeaders()
+#3 C:\xampp_72\htdocs\appsiel_2020\index.php(56): Symfony\Component\HttpFoundation\Response->send()
+#4 {main}  

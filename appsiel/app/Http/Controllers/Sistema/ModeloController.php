@@ -384,7 +384,10 @@ class ModeloController extends Controller
 
             if( !is_null( $url_respuesta ) )
             {
-                return redirect( $url_respuesta )->with('flash_message', 'Registro CREADO correctamente.');
+                if ( gettype( $url_respuesta ) != "object" )
+                {
+                    return redirect( $url_respuesta )->with('flash_message', 'Registro CREADO correctamente.');
+                }
             }
         }
 

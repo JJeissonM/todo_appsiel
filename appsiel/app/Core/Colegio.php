@@ -39,7 +39,5 @@ class Colegio extends Model
         DB::insert('INSERT INTO sys_secuencias_codigos (id_colegio,modulo,consecutivo,anio,estructura_secuencia,estado,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)', [$registro->id,'matriculas',0, date('Y'),'anio-consecutivo-grado','Activo',date('Y-m-d H:i:s'),date('Y-m-d H:i:s')]);
 
         DB::insert('INSERT INTO sys_secuencias_codigos (id_colegio,modulo,consecutivo,anio,estructura_secuencia,estado,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?)', [$registro->id,'logros',0, date('Y'),'consecutivo','Activo',date('Y-m-d H:i:s'),date('Y-m-d H:i:s')]);
-
-        return redirect( 'web/'.$registro->id.'?id='.$datos['url_id'].'&id_modelo='.$datos['url_id_modelo'] );
     }
 }

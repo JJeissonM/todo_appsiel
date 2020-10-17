@@ -57,7 +57,6 @@ class TesoDocEncabezadoTraslado extends Model
 
     public function store_adicional($datos, $registro)
     {
-
         $registros = json_decode($datos['lineas_registros']);
         $total = 0;
         foreach ($registros as $item)
@@ -145,7 +144,7 @@ class TesoDocEncabezadoTraslado extends Model
         $registro->estado = 'Activo';
         $registro->save();
 
-        return redirect('web' . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro CREADO correctamente.');
+        return redirect( 'web' . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro CREADO correctamente.' );
     }
 
 

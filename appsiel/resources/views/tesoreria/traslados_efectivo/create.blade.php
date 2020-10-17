@@ -15,23 +15,23 @@ use App\Http\Controllers\Sistema\VistaController;
             <h4>Nuevo registro</h4>
             <hr>
             {{ Form::open([ 'url' => $form_create['url'],'id'=>'form_create']) }}
-            <?php
-            if (count($form_create['campos']) > 0) {
-                $url = htmlspecialchars($_SERVER['HTTP_REFERER']);
-                echo '<div class="row" style="margin: 5px;">' . Form::bsButtonsForm2($url) . '</div>';
-            } else {
-                echo "<p>El modelo no tiene campos asociados.</p>";
-            }
-            ?>
+                <?php
+                    if (count($form_create['campos']) > 0) {
+                        $url = htmlspecialchars($_SERVER['HTTP_REFERER']);
+                        echo '<div class="row" style="margin: 5px;">' . Form::bsButtonsForm2($url) . '</div>';
+                    } else {
+                        echo "<p>El modelo no tiene campos asociados.</p>";
+                    }
+                ?>
 
-            {{ VistaController::campos_dos_colummnas($form_create['campos']) }}
+                {{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-            {{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
-            {{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
-            {{ Form::hidden( 'url_id_transaccion', Input::get( 'id_transaccion' ) ) }}
-            {{ Form::hidden( 'teso_tipo_motivo', 'Traslado' ) }}
+                {{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
+                {{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
+                {{ Form::hidden( 'url_id_transaccion', Input::get( 'id_transaccion' ) ) }}
+                {{ Form::hidden( 'teso_tipo_motivo', 'Traslado' ) }}
 
-            <input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
+                <input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
 
             {{ Form::close() }}
 
