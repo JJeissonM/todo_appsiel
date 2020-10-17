@@ -44,7 +44,7 @@
             @foreach ($galeria->albums()->orderBy('created_at','DESC')->get()->chunk(4) as $chunk)
                 <div class="row">
                     @foreach ($chunk as $album)
-                        <div class="col-md-3 col-xs-6">
+                        <div class="col-md-3 col-sm-4 col-6" style="text-align: center;">
                             {!! $album->dibujar_individual() !!}
                         </div>
                     @endforeach

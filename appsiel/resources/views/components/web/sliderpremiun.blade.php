@@ -6,11 +6,11 @@
 @if($slider != null && $slider->items->count() > 0)
     <!-- Start WOWSlider.com BODY section --> <!-- add to the <body> of your page -->
         <div id="wowslider-container0">
-            <div class="ws_images">
+            <div class="ws_images" style="width: 100%;">
                 <ul>
                     {{$count = 0}}
                     @foreach($slider->items as $item)
-                        <li><img src="{{asset($item->imagen)}}" alt="{{$item->titulo}}" title="" id="wows0_{{$count}}" style="object-fit: cover"/>
+                        <li><img src="{{asset($item->imagen)}}" alt="{{$item->titulo}}" title="" id="wows0_{{$count}}"/>
                         </li>
                         {{$count = $count+1}}
                     @endforeach

@@ -8,20 +8,20 @@
         /*height: 550px;*/
     }
 
-    .owl-carousel img {
+    /*.owl-carousel img {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-    }
+    }*/
 
 </style>
 <section id="main-slider">
     @if($slider != null && $slider->items->count() > 0)
         <div class="owl-carousel">
             @foreach($slider->items as $item)
-                <div class="item">
+                <div class="item" style="width: 100%;">
                     <div class="slider-inner">
                         <div class="container">
                             <div class="row">
@@ -46,7 +46,7 @@
                             </div>
                         </div>
                     </div>
-                    <img class="image" src="{{asset($item->imagen)}}" alt="">
+                    <img class="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">
                 </div>
             @endforeach
         </div><!--/.item-->
