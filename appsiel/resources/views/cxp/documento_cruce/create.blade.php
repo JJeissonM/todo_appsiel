@@ -256,8 +256,8 @@
 				console.log(valor);
 				console.log(saldo_pendiente);
 
-
-				if( valor > 0  && valor <= (saldo_pendiente + 1) )
+				// Tolerancia de $100
+				if( valor > 0  && ( valor >= (saldo_pendiente - 10 ) || valor <= (saldo_pendiente + 10 ) ) )
 				{
 					celda.attr('style','background-color:white;');
 					ok = true;
@@ -284,9 +284,9 @@
 				$('#total_valor_total').text( sum );
 				$('#total_valor_aux').text( "$" + new Intl.NumberFormat("de-DE").format( sum ) );
 
-				//console.log( sum );
-
-				if ( sum == 0 ) {
+				// Tolerancia de $100
+				if ( sum >= -10 && sum <= 10 )
+				{
 			        $('#btn_guardar2').show();
 			        $('#btn_guardar2').focus();
 				}else{
