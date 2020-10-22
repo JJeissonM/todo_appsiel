@@ -639,7 +639,6 @@ class ModeloController extends Controller
             $lista_campos = app($this->modelo->name_space)->show_adicional($lista_campos, $registro);
         }
 
-
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, $registro->descripcion);
 
         $id_transaccion = TipoTransaccion::where('core_modelo_id', (int) Input::get('id_modelo'))->value('id');

@@ -39,9 +39,9 @@ class CxpAbono extends Model
 
 
     /*
-        Obtener un registro de encabezado de documento con sus datos relacionados
+        Obtener los registro de abonos hechos por $doc_encabezado
     */
-    public static function get_documentos_abonados($doc_encabezado)
+    public static function get_documentos_abonados( $doc_encabezado )
     {
 
         return CxpAbono::where('cxp_abonos.core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)

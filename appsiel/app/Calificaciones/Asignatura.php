@@ -19,6 +19,11 @@ class Asignatura extends Model
 
     public $encabezado_tabla = ['ID', 'Área', 'Descripción', 'Abreviatura', 'Estado', 'Acción'];
 
+    public function area()
+    {
+        return $this->belongsTo( Area::class, 'area_id');
+    }
+
     public function foros()
     {
         return $this->hasMany(Foro::class);

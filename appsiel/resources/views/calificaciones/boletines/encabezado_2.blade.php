@@ -1,3 +1,19 @@
+<style type="text/css">
+
+	table.encabezado{
+		border: 1px solid;
+		padding-top: -20px;
+	}
+	
+	span.etiqueta{
+		font-weight: bold;
+		display: inline-block;
+		width: 100px;
+		text-align:right;
+	}
+
+</style>
+
 <table class="encabezado">
 	<tr>											
 		@if($colegio->maneja_puesto=="Si")

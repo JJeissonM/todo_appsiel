@@ -41,6 +41,7 @@ use App\Tesoreria\TesoMovimiento;
 
 use App\Contabilidad\ContabMovimiento;
 
+use App\CxP\CxpMovimiento;
 use App\CxP\DocumentosPendientes;
 use App\CxP\CxpAbono;
 
@@ -385,13 +386,15 @@ class PagoCxpController extends TransaccionController
         }
         
 
-        // Se reversan los pagos hecho por este documento: aumenta el saldo_pendiente en el documento de CxP, si no existe el documento de cxp en documentos pendiente, se debe crear nuevamente su registro
+        // Se reversan los pagos hecho por este documento: aumenta el saldo_pendiente en el documento de CxP
+
+        // ?????? si no existe el documento de cxp en documentos pendiente, se debe crear nuevamente su registro
         $documentos_abonados = CxpAbono::get_documentos_abonados( $pago );
 
         foreach ($documentos_abonados as $linea)
         {
             // Se verifica si cada documento abonado aún tiene saldo pendiente por pagar
-            $documento_cxp_pendiente = DocumentosPendientes::where('core_tipo_transaccion_id', $linea->doc_cxp_transacc_id)
+            $documento_cxp_pendiente = CxpMovimiento::where('core_tipo_transaccion_id', $linea->doc_cxp_transacc_id)
                                                         ->where('core_tipo_doc_app_id', $linea->doc_cxp_tipo_doc_id)
                                                         ->where('consecutivo', $linea->doc_cxp_consecutivo)
                                                         ->where('core_tercero_id', $linea->core_tercero_id)
@@ -413,7 +416,7 @@ class PagoCxpController extends TransaccionController
                 $nuevo_valor_pagado = $valor_abonos_aplicados - $linea->abono; // el valor_abonos_aplicados es como mínimo el valor de $linea->abono
 
             }else{
-                // Si existe el documento_cxp_pendiente aún tiene saldo pendiente
+                
                 $nuevo_saldo_pendiente = $documento_cxp_pendiente->saldo_pendiente + $linea->abono;
                 $nuevo_valor_pagado = $documento_cxp_pendiente->valor_pagado - $linea->abono;
             }

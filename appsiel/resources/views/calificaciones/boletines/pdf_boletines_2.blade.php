@@ -9,19 +9,6 @@
 		border-collapse: collapse;
 	}
 
-	table.encabezado{
-		border: 1px solid;
-		padding-top: -20px;
-	}
-
-	table.banner{
-		font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
-		font-style: italic;
-		font-size: larger;
-		border: 1px solid;
-		padding-top: -20px;
-	}
-
 	table.contenido td {
 		border: 1px solid;
 	}
@@ -40,13 +27,6 @@
 		list-style-type: none;
 	}
 
-	span.etiqueta{
-		font-weight: bold;
-		display: inline-block;
-		width: 100px;
-		text-align:right;
-	}
-
 	.page-break {
 		page-break-after: always;
 	}
@@ -57,6 +37,14 @@
 	                    ->get()[0];
 
 	    $url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen;
+
+		if ( $mostrar_areas == 'Si')
+		{
+			$lbl_asigatura = 'Área / Asignaturas';
+		}else{
+
+			$lbl_asigatura = 'Asignaturas';
+		}
 
 
 	?>
@@ -69,17 +57,7 @@
 
 			$observacion = App\Calificaciones\ObservacionesBoletin::get_x_estudiante( $periodo->id, $curso->id, $estudiante->id);
 
-			$nombre_completo = $estudiante->nombre_completo;
-
 			$area_anterior = '';
-
-			if ( $mostrar_areas == 'Si')
-			{
-				$lbl_asigatura = 'Área / Asignaturas';
-			}else{
-
-				$lbl_asigatura = 'Asignaturas';
-			}
 		?>
 		
 		@include('calificaciones.boletines.encabezado_2')
@@ -100,44 +78,37 @@
 			<tbody>
 				@foreach($asignaturas as $asignatura)
 					<?php
-					// Se llama a la calificacion de cada asignatura
-					$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id_estudiante, $asignatura->id);					
+						// Se llama a la calificacion de cada asignatura
+						$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id_estudiante, $asignatura->id);					
 					?>
-					<?php 
-						if ( $area_anterior != $asignatura->area AND $mostrar_areas == 'Si')
-						{
-					?>
-						<tr style="font-size: {{$tam_letra}}mm;">
-							<td colspan="{{$cant_columnas}}">
-								<b> ÁREA: {{ strtoupper($asignatura->area) }}</b>
-							</td>
-						</tr>
+					
+					@include('calificaciones.boletines.fila_area')
 
-					<?php
-						}
-					?>
 					<tr style="font-size: {{$tam_letra}}mm;">
-						<td> 
-							{{ $asignatura->descripcion }}
-						</td>
+						
+						<td>  {{ $asignatura->descripcion }} </td>
+						
 						<td align="center">
 						    @if($asignatura->intensidad_horaria!=0) 
 						        {{ $asignatura->intensidad_horaria }}
 						    @endif
 						</td>
-							@if( $calificacion->valor != 0 )
-								<td align="center">
-									@include('calificaciones.boletines.lbl_descripcion_calificacion')
-								</td>
-							@else
-								<td align="center"> &nbsp; </td>
-							@endif
+
+						@if( $calificacion->valor != 0 )
+							<td align="center">
+								@include('calificaciones.boletines.lbl_descripcion_calificacion')
+							</td>
+						@else
+							<td align="center"> &nbsp; </td>
+						@endif
+
 						<td>
 							
 							@include('calificaciones.boletines.proposito')
 							
 							@include('calificaciones.boletines.lista_logros')
 						</td>
+
 					</tr>
 
 					<?php 
@@ -147,17 +118,15 @@
 				@endforeach {{--  Asignaturas --}}
 
 				<tr style="font-size: {{$tam_letra}}mm;"> 
-					@if($curso->maneja_calificacion)
-						<td colspan="4">
-					@else
-						<td colspan="3">
-					@endif
+					
+					<td colspan="{{ $cant_columnas }}">
+
 						<b> Observaciones: </b>
 						<br/>&nbsp;&nbsp;
 						@if( !is_null( $observacion ) )
 							{{ $observacion->observacion }}
 						@endif
-						</td>
+					</td>
 				</tr>
 
 				@if( $mostrar_etiqueta_final != 'No' )
@@ -175,7 +144,6 @@
 			</tbody>
 		</table>
 
-
 		@if( $mostrar_usuarios_estudiantes == 'Si') 
 			@include('calificaciones.boletines.mostrar_usuarios_estudiantes')
 		@endif
@@ -183,6 +151,7 @@
 		@include('calificaciones.boletines.seccion_firmas')
 		
 		<div class="page-break"></div>
+
 	@endforeach {{-- Estudiante --}}
 @else
 	No hay resgitros de estudiantes matriculados.

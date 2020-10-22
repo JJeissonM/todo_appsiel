@@ -84,19 +84,9 @@
 					$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id_estudiante, $asignatura->id);
 					
 					?>
-					<?php 
-						if ( $area_anterior != $asignatura->area  AND $mostrar_areas == 'Si')
-						{
-					?>
-						<tr style="font-size: {{$tam_letra}}mm; background-color: #CCCBCB;">
-							<td>
-								<b> ÁREA: {{ strtoupper($asignatura->area) }}</b>
-							</td>
-						</tr>
-
-					<?php
-						}
-					?>
+					
+					@include('calificaciones.boletines.fila_area')
+					
 					<tr style="font-size: {{$tam_letra}}mm; background-color: #E8E8E8;">
 						<td>							
 							<table width="100%" style="border: 0px;">

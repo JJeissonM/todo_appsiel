@@ -9,19 +9,6 @@
 		border-collapse: collapse;
 	}
 
-	table.encabezado{
-		border: 1px solid;
-		padding-top: -20px;
-	}
-
-	table.banner{
-		font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
-		font-style: italic;
-		font-size: 16px;
-		border: 1px solid;
-		padding-top: -20px;
-	}
-
 	table.contenido td {
 		border: 1px solid;
 	}
@@ -40,12 +27,6 @@
 		list-style-type: none;
 	}
 
-	span.etiqueta{
-		font-weight: bold;
-		display: inline-block;
-		width: 100px;
-		text-align:right;
-	}
 
 	.lbl_asignatura_descripcion
 	{
@@ -81,23 +62,7 @@
 
 	@foreach($estudiantes as $estudiante)
 	
-	    <table class="banner">
-            <tr>
-				<td rowspan="2" width="40%" style="text-align: center;">
-		            <img src="{{ $url.'?'.rand(1,1000) }}" style="max-width: 190px; max-height: 80px; display: inline; padding-top: -25px;" />
-		        </td>
-        
-                <td align="center">
-                    <br/>
-                    <b style="font-size: 1.1em;">{{ $colegio->descripcion }}</b>
-                    <br/>
-                    <b style="font-size: 0.9em;">{{ $colegio->ciudad }}</b>
-                    <br/>
-                    Resolución No. {{ $colegio->resolucion }}<br/>
-                    {{ $colegio->direccion }},Teléfono: {{ $colegio->telefonos }}
-                </td>
-            </tr>
-        </table>
+	    @include('calificaciones.boletines.banner_2')
 
 		<?php 
 
@@ -115,16 +80,11 @@
 				@foreach($asignaturas as $asignatura)
 					<?php
 						// Se llama a la calificacion de cada asignatura
-						$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id_estudiante, $asignatura->id);		
+						$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id_estudiante, $asignatura->id);
+						$cant_columnas = 1;	
 					?>
 
-					@if ( $area_anterior != $asignatura->area  AND $mostrar_areas == 'Si')
-						<tr style="font-size: {{$tam_letra}}mm; background-color: #CCCBCB;">
-							<td>
-								<b> ÁREA: {{ strtoupper($asignatura->area) }}</b>
-							</td>
-						</tr>
-					@endif
+					@include('calificaciones.boletines.fila_area')
 
 					<tr style="font-size: {{$tam_letra}}mm; background-color: #E8E8E8;">
 						<td> 

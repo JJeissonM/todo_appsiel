@@ -51,98 +51,83 @@ use App\Http\Controllers\Sistema\VistaController;
             </div>
 
             @if( !$estudiante_existe )
-            <!--@include('matriculas.incluir.paneles_padres')-->
 
-            <div class="panel panel-primary">
-                <div class="panel-heading">DATOS DE PADRES, ACUDIENTE, RESPONSABLE FINANCIERO, ETC.</div>
-                <div class="panel-body">
-                    <div class="alert alert-warning" role="alert">
-                        <h4><b>Atención! </b>Debe incluir, como mínimo, al responsable financiero (acudiente). Luego puede completar la información de los padres</h4>
-                    </div>
-                    <div class="table-responsive">
-                        <table id="tbPersonas" class="table table-hover table-dark table-responsive">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Tercero</th>
-                                    <th scope="col">Dirección</th>
-                                    <th scope="col">Teléfono</th>
-                                    <th scope="col">Correo</th>
-                                    <th scope="col">Tipo de responsable</th>
-                                    <th scope="col"><i class="fa fa-remove"></i></th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">DATOS DE PADRES, ACUDIENTE, RESPONSABLE FINANCIERO, ETC.</div>
+                    <div class="panel-body">
+                        <div class="alert alert-warning" role="alert">
+                            <h4><b>Atención! </b>Debe incluir, como mínimo, al responsable financiero (acudiente). Luego puede completar la información de los padres</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="ingreso_lineas_registros">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="display: none;">tercero_id</th>
+                                        <th scope="col" style="display: none;">tipo_responsable_id</th>
+                                        <th scope="col">Tercero</th>
+                                        <th scope="col">Dirección</th>
+                                        <th scope="col">Teléfono</th>
+                                        <th scope="col">Correo</th>
+                                        <th scope="col">Tipo de responsable</th>
+                                        <th scope="col"><i class="fa fa-remove"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
 
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td>
-                                        <input id="core_tercero_id" placeholder="*Nombre del tercero" autocomplete="off" class="form-control text_input_sugerencias" data-url_busqueda="{{ url('core_consultar_terceros_v2') }}" data-clase_modelo="App\Core\Tercero" required="required" name="numero_docp[]" type="text" value="">
-                                    </td>
-                                    <td colspan="4"></td>
-                                    <td>
-                                        {{ Form::bsSelect('tiporesponsable_idp', null, '', App\Matriculas\Tiporesponsable::opciones_campo_select(), ['class'=>'form-control']) }}
-                                    </td>
-                                    <td> <button class="btn btn-success btn-xs" id="btn_agregar_linea"> <i class="fa fa-check"></i> </button></td>
-                                </tr>
-                            </tfoot>
-                        </table>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td>
+                                            <input id="core_tercero_id" placeholder="*Nombre del tercero" autocomplete="off" class="form-control text_input_sugerencias" data-url_busqueda="{{ url('core_consultar_terceros_v2') }}" data-clase_modelo="App\Core\Tercero" name="numero_docp[]" type="text" value="">
+                                        </td>
+                                        <td colspan="3"></td>
+                                        <td>
+                                            {{ Form::bsSelect('tiporesponsable_idp', null, '', App\Matriculas\Tiporesponsable::opciones_campo_select(), ['class'=>'form-control']) }}
+                                        </td>
+                                        <td> <button class="btn btn-success btn-xs" id="btn_agregar_linea"> <i class="fa fa-check"></i> </button></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                            
                     </div>
-                        
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Controles médicos</div>
-                        <div class="panel-body">
-                            <div class="row" style="padding:5px;">
-                                {{ Form::bsText('grupo_sanguineo', null, 'Grupo sanguíneo', []) }}
-                            </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Controles médicos</div>
+                            <div class="panel-body">
+                                <div class="row" style="padding:5px;">
+                                    {{ Form::bsText('grupo_sanguineo', null, 'Grupo sanguíneo', []) }}
+                                </div>
 
-                            <div class="row" style="padding:5px;">
-                                {{ Form::bsText('medicamentos', null, 'Medicamento', []) }}
-                            </div>
+                                <div class="row" style="padding:5px;">
+                                    {{ Form::bsText('medicamentos', null, 'Medicamento', []) }}
+                                </div>
 
-                            <div class="row" style="padding:5px;">
-                                {{ Form::bsText('alergias', null, 'Alergias', []) }}
-                            </div>
+                                <div class="row" style="padding:5px;">
+                                    {{ Form::bsText('alergias', null, 'Alergias', []) }}
+                                </div>
 
-                            <div class="row" style="padding:5px;">
-                                {{ Form::bsText('eps', null, 'EPS', []) }}
+                                <div class="row" style="padding:5px;">
+                                    {{ Form::bsText('eps', null, 'EPS', []) }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-sm-6">
-                    &nbsp;
+                    <div class="col-sm-6">
+                        &nbsp;
+                    </div>
                 </div>
-            </div>
             @endif
 
             <div align="center">
 
-                {{ Form::hidden('estudiante_existe', $estudiante_existe) }}
+                {{ Form::hidden( 'lineas_registros', '', ['id'=>'lineas_registros'] ) }}
+                {{ Form::hidden( 'responsable_agregado', '', ['id'=>'responsable_agregado'] ) }}
 
-                {{ Form::hidden('core_tercero_id', $tercero->id) }}
-                {{ Form::hidden('nombre1', $tercero->nombre1) }}
-                {{ Form::hidden('otros_nombres', $tercero->otros_nombres) }}
-                {{ Form::hidden('apellido1', $tercero->apellido1) }}
-                {{ Form::hidden('apellido2', $tercero->apellido2) }}
-                {{ Form::hidden('email', $tercero->email) }}
-                {{ Form::hidden('nombres', $tercero->nombre1." ".$tercero->otros_nombres) }}
-                {{ Form::hidden('tipo_doc_id', $tercero->id_tipo_documento_id) }}
-                {{ Form::hidden('doc_identidad', $tercero->numero_identificacion) }}
-                {{ Form::hidden('direccion1', $tercero->direccion1) }}
-                {{ Form::hidden('telefono1', $tercero->telefono1) }}
-
-                {{ Form::hidden('genero',$inscripcion->genero) }}
-
-                {{ Form::hidden('fecha_nacimiento',$inscripcion->fecha_nacimiento) }}
-                {{ Form::hidden('ciudad_nacimiento',$inscripcion->ciudad_nacimiento) }}
-                {{ Form::hidden('estado','Activo') }}
                 {{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
                 {{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
 
@@ -157,141 +142,141 @@ use App\Http\Controllers\Sistema\VistaController;
 
 @section('scripts')
 
-<script type="text/javascript">
-    
-    var html;
-    var hay_responsable = 0;
-
-    function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
-    {
-        console.log( item_sugerencia.attr('data-descripcion') );
-
-        $('#tiporesponsable_idp').focus();
-
-        html = "<tr>";
-
-        html = html + "<td>" + item_sugerencia.attr( 'data-numero_identificacion' ) + " - " + item_sugerencia.attr( 'data-descripcion' ) + "</td>";
-        html = html + "<td>" + item_sugerencia.attr( 'data-direccion1' ) + "</td>";
-        html = html + "<td>" + item_sugerencia.attr( 'data-telefono1' ) + "</td>";
-        html = html + "<td>" + item_sugerencia.attr( 'data-email' ) + "</td>";
-        html = html + "<td>" + $('#tiporesponsable_idp option:selected').text() + "</td>";
-        html = html + "<td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td>";
-        html = html + "</tr>";
-
-    }
-
-    $.fn.addRow = function() {
+    <script type="text/javascript">
         
-        $('#tbPersonas tr:last').after( html );
-        hay_responsable++;
+        var html;
+        var hay_responsable = 0;
 
-    }
+        function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+        {
 
-    $(document).on('click', '.delete', function(event) {
-        event.preventDefault();
-        $(this).closest('tr').remove();
-        hay_responsable--;
-    });
+            $('#tiporesponsable_idp').focus();
 
+            // generar_html_fila
+            html = "<tr>";
 
+            html = html + '<td style="display: none;">' + item_sugerencia.attr( 'data-registro_id' ) + '</td>';
+            html = html + '<td style="display: none;"> _id_tipo_responsable_ </td>';
 
-    $(document).ready(function() {
-        
-        $('#btn_agregar_linea').on('click', function(event) {
-            event.preventDefault();
+            html = html + "<td>" + item_sugerencia.attr( 'data-numero_identificacion' ) + " - " + item_sugerencia.attr( 'data-descripcion' ) + "</td>";
+            html = html + "<td>" + item_sugerencia.attr( 'data-direccion1' ) + "</td>";
+            html = html + "<td>" + item_sugerencia.attr( 'data-telefono1' ) + "</td>";
+            html = html + "<td>" + item_sugerencia.attr( 'data-email' ) + "</td>";
+            html = html + '<td> _texto_responsable_ </td>';
+            html = html + "<td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td>";
+            html = html + "</tr>";
 
-            /*if (!validar_requeridos()) {
-                return false;
-            }*/
+        }
 
-            $.fn.addRow();
+        $.fn.addRow = function() {
+            
+            if( $( "#core_tercero_id" ).val() == '' || $( "#tiporesponsable_idp" ).val() == '' )
+            {
+                alert('Debe selecionar un tercero y el tipo de responsable.');
 
-        });
-        
-        $('#bs_boton_guardar').on('click', function(event) {
-            event.preventDefault();
-
-            if (!validar_requeridos()) {
                 return false;
             }
-            // Desactivar el click del botón
-            $(this).off(event);
 
-            $('#form_create').submit();
-        });
-
-
-        $('#sga_grado_id').focus();
-
-        if (typeof $('#btn_imprimir') !== 'undefined') {
-            $('#btn_imprimir').focus();
-        }
-
-
-
-        $('#sga_grado_id').change(function() {
-            var grado = $('#sga_grado_id').val().split('-');
-
-            var codigo = $('#codigo').val();
-
-            $('#codigo').val(codigo.replace(codigo.substr(codigo.search("-")), '-' + grado[1]));
-        });
-
-
-        var documento_inicial = parseInt( $("#numero_identificacion").val() );
-        
-        $(document).on('blur','.numero_docp',function(){
-            var documento = $(this).val();
-
-            /* Cuando el javascript está dentro de una vista blade se puede llamar la url de la siguiente forma:*/
-            var url = "{{ url('core/validar_numero_identificacion/') }}" + "/" + documento;
+            var html2 = html.replace('_id_tipo_responsable_', $( "#tiporesponsable_idp" ).val() );
+            var html3 = html2.replace('_texto_responsable_', $( "#tiporesponsable_idp option:selected" ).text() );
+            $('#ingreso_lineas_registros tbody:last').append( html3 );
             
-            $.get( url, function( datos ) 
+            $( "#core_tercero_id" ).val('');
+
+            if ( $( "#tiporesponsable_idp" ).val() == 3 )
             {
-                if ( datos != '') 
-                {
-                    if ( parseInt(datos) == documento_inicial ) 
+                $( "#responsable_agregado" ).val(1);
+            }
+
+            reset_tipo_responsable( $( "#tiporesponsable_idp" ).val(), $( "#tiporesponsable_idp option:selected" ).text(), 'quitar' );
+
+            hay_responsable++;
+        }
+
+        function reset_tipo_responsable( tipo_id, texto_opcion, accion )
+        {
+            switch( accion )
+            {
+                case 'quitar':
+                    $("#tiporesponsable_idp option[value='"+tipo_id+"']").remove();
+
+                    break;
+                case 'agregar':
+                    $('#tiporesponsable_idp').append( $('<option>', { value: tipo_id, text: texto_opcion} ) );
+
+                    if ( tipo_id == 3 )
                     {
-                        // No hay problema
-                        $('#bs_boton_guardar').show();
-                    }else{
-                        $('#bs_boton_guardar').hide();
-                        alert( "Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro." );
+                        $( "#responsable_agregado" ).val(0);
                     }
-                    
-                }else{
-                    // Número de identificación
-                    $('#bs_boton_guardar').show();
-                }
-                
-            });
+                    break;
+                default:
+                    break;
+            }
+
+            console.log( $( "#responsable_agregado" ).val() );
+        }
+
+        $(document).on('click', '.delete', function(event) {
+            event.preventDefault();
+            var fila = $(this).closest('tr');
+
+            reset_tipo_responsable( fila.find('td').eq(1).text(), fila.find('td').eq(6).text(), 'agregar' );
+
+            fila.remove();
+
+            hay_responsable--;
         });
 
-    });
 
-    var tipos = <?php echo json_encode($tipos); ?>;
-    var tiposdoc = <?php echo json_encode($tiposdoc); ?>;
 
-    var io = 0;
+        $(document).ready(function() {
 
-    
+            $('#sga_grado_id').focus();
 
-    function cambiar(id) {
-        var rf = $("#" + id + " option:selected").text();
-        if (rf == 'RESPONSABLE-FINANCIERO') {
-            $("#exampleModal").modal('show');
-            $("#ponerID").val(id);
-        }
-    }
+            if (typeof $('#btn_imprimir') !== 'undefined') {
+                $('#btn_imprimir').focus();
+            }
 
-    function guardar() {
-        var id = $("#ponerID").val();
-        //recojo la informacion y la coloco en el input hidden del row
-        var html = $("#direccion_trabajo").val() + ";" + $("#telefono_trabajo").val() + ";" + $("#puesto_trabajo").val();
-        html = html + ";" + $("#empresa_labora").val() + ";" + $("#jefe_inmediato").val() + ";" + $("#telefono_jefe").val();
-        html = html + ";" + $("#descripcion_trabajador_independiente").val()
-        $("#hidden_" + id).val(html);
-        $("#exampleModal").modal('hide');
-    }
-</script>
+            $('#btn_agregar_linea').on('click', function(event) {
+                event.preventDefault();
+
+                $.fn.addRow();
+
+            });
+
+            $('#sga_grado_id').change(function() {
+                var grado = $('#sga_grado_id').val().split('-');
+
+                var codigo = $('#codigo').val();
+
+                $('#codigo').val(codigo.replace(codigo.substr(codigo.search("-")), '-' + grado[1]));
+            });
+
+            
+            $('#bs_boton_guardar').on('click', function(event) {
+                event.preventDefault();
+
+                if ( $( "#responsable_agregado" ).val() == 0 )
+                {
+                    alert('Debe ingresar al responsable del estudiante.');
+                    $('#core_tercero_id').focus();
+                    return false;
+                }
+
+                if (!validar_requeridos()) {
+                    return false;
+                }
+
+                // Desactivar el click del botón
+                $(this).off(event);
+
+                var table = $('#ingreso_lineas_registros').tableToJSON();
+                $('#lineas_registros').val(JSON.stringify(table));
+
+                $('#form_create').submit();
+            });
+
+
+        });
+    </script>
 @endsection

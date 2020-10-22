@@ -20,6 +20,21 @@ class CursoTieneAsignatura extends Model
 
     protected $fillable = ['periodo_lectivo_id','curso_id','asignatura_id','intensidad_horaria','orden_boletin','maneja_calificacion'];
 
+    public function periodo_lectivo()
+    {
+        return $this->belongsTo( PeriodoLectivo::class, 'periodo_lectivo_id');
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo( Curso::class, 'curso_id');
+    }
+
+    public function asignatura()
+    {
+        return $this->belongsTo( Asignatura::class, 'asignatura_id');
+    }
+
     public static function asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas = null )
     {
         $empresa_id = 1;

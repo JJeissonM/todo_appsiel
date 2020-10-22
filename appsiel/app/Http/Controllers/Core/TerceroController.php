@@ -94,7 +94,7 @@ class TerceroController extends Controller
 
         // Linea crear nuevo registro
         $modelo_id = 7; // App\Core\Tercero
-        $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
+        $html .= '<a href="'.url('web/create?id=7&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
 
         $html .= '</div>';
 

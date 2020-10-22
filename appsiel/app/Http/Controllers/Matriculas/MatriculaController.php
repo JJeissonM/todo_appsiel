@@ -201,6 +201,8 @@ class MatriculaController extends ModeloController
      */
     public function store(Request $request)
     {
+        dd( $request->all() );
+
         $this->validate(
             $request,
             [
@@ -272,13 +274,13 @@ class MatriculaController extends ModeloController
 
 
         $datos2 = array_merge(
-            $request->all(),
-            [
-                'requisitos' => $requisitos,
-                'id_estudiante' => $estudiante->id,
-                'codigo' => $codigo
-            ]
-        );
+                                $request->all(),
+                                [
+                                    'requisitos' => $requisitos,
+                                    'id_estudiante' => $estudiante->id,
+                                    'codigo' => $codigo
+                                ]
+                            );
 
 
         // Obtener el id de la ultima matricula activa de ese estudiante

@@ -9,18 +9,6 @@
 		border-collapse: collapse;
 	}
 
-	table.encabezado{
-		padding:5px;
-		border: 1px solid;
-	}
-
-	table.banner{
-		font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
-		font-style: italic;
-		font-size: 17px;
-		border: 1px solid;
-	}
-
 	table.contenido td {
 		border: 1px solid;
 	}
@@ -39,13 +27,6 @@
 		list-style-type: none;
 	}
 
-	span.etiqueta{
-		font-weight: bold;
-		display: inline-block;
-		width: 100px;
-		text-align:right;
-	}
-
 	.page-break {
 		page-break-after: always;
 	}
@@ -56,71 +37,40 @@
 	                    ->get()[0];
 
 	$url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen;
+
+	if ( $mostrar_areas == 'Si')
+	{
+		$lbl_asigatura = 'Área / Asignaturas';
+	}else{
+
+		$lbl_asigatura = 'Asignaturas';
+	}
 	
 ?>
 
 @if( !is_null($estudiantes) )
 	@foreach($estudiantes as $estudiante)
 
-		<table class="banner">
-            <tr style="height: 120px;">
-                <td width="250px">
-                    <img src="{{ $url.'?'.rand(1,1000) }}" width="150px" height="140px" />
-                </td>
-        
-                <td align="center">
-                    <b style="font-size: 1.2em;">{{ $colegio->descripcion }}</b>
-                    <br/>
-                    <b style="font-size: 1.1em;">{{ $colegio->ciudad }}</b>
-                    <br/>
-                    Resolución No. {{ $colegio->resolucion }}<br/>
-                    {{ $colegio->direccion }}<br/>
-                    Teléfonos: {{ $colegio->telefonos }}<br/>
-                </td>
-            </tr>
-        </table>
-				
-		<table class="encabezado">
-			<tr>
-				<?php 
-					$observacion = App\Calificaciones\ObservacionesBoletin::get_x_estudiante( $periodo->id, $curso->id, $estudiante->id);
-				?>
-													
-				@if($colegio->maneja_puesto=="Si")
+		@include('calificaciones.boletines.banner_2')
 
-						@if( !is_null($observacion) )
-							
-							<td colspan="2"><span class="etiqueta">Estudiante:</span> {{ $estudiante->nombre_completo }}</td>
-							
-							@if($observacion->puesto=="")
-								<td> <b> ¡¡Puesto No calculado!! </b> </td>
-							@else
-								<td><span class="etiqueta"> Puesto:  </span> {{ $observacion->puesto }} </td>
-							@endif
+		<?php 
 
-						@else
-							<td colspan="3"><span class="etiqueta">Estudiante:</span> {{ $estudiante->nombre_completo }}</td>
-						@endif
+			$observacion = App\Calificaciones\ObservacionesBoletin::get_x_estudiante( $periodo->id, $curso->id, $estudiante->id);
 
-				@else
-					<td colspan="3"><span class="etiqueta">Estudiante:</span> {{ $estudiante->nombre_completo }}</td>
-				@endif
-				
-			</tr>
-			<tr>
-				<td><span class="etiqueta">Periodo/Año:</span> {{ $periodo->descripcion }} &#47;  {{ $anio }}</td>
-				<td><span class="etiqueta">Curso:</span> {{ $curso->descripcion }}</td>
-				<td><span class="etiqueta">Ciudad:</span> {{ $colegio->ciudad }}</td>
-			</tr>
-		</table>
+			$area_anterior = '';
+		?>
+		
+		@include('calificaciones.boletines.encabezado_2')
 				
 		<table class="contenido">
 			<thead>
 				<tr>
-					<th>Asignaturas</th>
+					<?php $cant_columnas = 3;  ?>
+					<th>{{ $lbl_asigatura }}</th>
 					<th>I.H.</th>
-					@if( $curso->maneja_calificacion == 1 )
+					@if($curso->maneja_calificacion==1)
 						<th>Calificación</th>
+						<?php $cant_columnas++;  ?>
 					@endif
 					<th>Logros</th>
 				</tr>
@@ -128,10 +78,13 @@
 			<tbody>
 				@foreach($asignaturas as $asignatura)
 					<?php
-					// Se llama a la calificacion de cada asignatura
-					$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id, $asignatura->id);
+						// Se llama a la calificacion de cada asignatura
+						$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id, $asignatura->id);
 
 					?>
+
+					@include('calificaciones.boletines.fila_area')
+
 					<tr style="font-size: {{$tam_letra}}mm;">
 
 						<td> {{ $asignatura->descripcion }}</td>
@@ -159,19 +112,22 @@
 							@include('calificaciones.boletines.lista_logros')
 						</td>
 					</tr>
+
+					<?php 
+						$area_anterior = $asignatura->area;
+					?>
+
 				@endforeach {{--  Asignaturas --}}
+
 				<tr style="font-size: {{$tam_letra}}mm;"> 
-					@if($curso->maneja_calificacion)
-						<td colspan="4">
-					@else
-						<td colspan="3">
-					@endif
+					
+					<td colspan="{{ $cant_columnas }}">
 						<b> Observaciones: </b>
 						<br/>&nbsp;&nbsp;
 						@if( !is_null($observacion) )
 							{{ $observacion->observacion }}
 						@endif
-						</td>
+					</td>
 				</tr>
 
 				@if( $mostrar_etiqueta_final != 'No' )

@@ -12,7 +12,7 @@ class ClaseProveedor extends Model
 	
 	protected $fillable = ['descripcion', 'cta_x_pagar_id', 'cta_anticipo_id', 'clase_padre_id', 'estado'];
 
-	public $encabezado_tabla = ['Tercero', 'Cta x pagar default', 'Cta anticipo default', 'Clase padre', 'Estado', 'Acción'];
+	public $encabezado_tabla = ['Descripción', 'Cta x pagar default', 'Cta anticipo default', 'Clase padre', 'Estado', 'Acción'];
 	
 	public static function consultar_registros()
 	{
