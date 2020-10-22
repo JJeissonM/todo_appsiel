@@ -84,7 +84,16 @@
 						$cant_columnas = 1;	
 					?>
 
-					@include('calificaciones.boletines.fila_area')
+					@if ( $area_anterior != $asignatura->area AND $mostrar_areas == 'Si')
+						<tr style="font-size: {{$tam_letra}}mm; background: #ddd;">
+							<td colspan="{{$cant_columnas}}">
+								&nbsp;
+								@if( $asignatura->asignatura->area->get_valor_eav( 122, $asignatura->area_id, 947) != "No" )
+									<b> ÁREA: {{ strtoupper($asignatura->area) }}</b>
+								@endif
+							</td>
+						</tr>
+					@endif
 
 					<tr style="font-size: {{$tam_letra}}mm; background-color: #E8E8E8;">
 						<td> 
