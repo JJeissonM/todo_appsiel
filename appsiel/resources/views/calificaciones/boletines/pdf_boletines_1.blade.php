@@ -80,7 +80,6 @@
 					<?php
 						// Se llama a la calificacion de cada asignatura
 						$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id, $asignatura->id);
-
 					?>
 
 					@include('calificaciones.boletines.fila_area')
