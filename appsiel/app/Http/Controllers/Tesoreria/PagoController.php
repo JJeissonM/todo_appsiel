@@ -540,7 +540,8 @@ class PagoController extends TransaccionController
         // 1ro. Borrar registros contables
         ContabMovimiento::where($array_wheres)->delete();
 
-        // 2do. Se elimina el documento del movimimeto de cuentas por pagar
+        // 2do. Se elimina el movimimeto de cartera (CxC o CxP)
+        CxcMovimiento::where($array_wheres)->delete();
         CxpMovimiento::where($array_wheres)->delete();
 
         // 3ro. Se elimina el movimiento de tesorería

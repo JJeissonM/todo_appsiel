@@ -201,8 +201,6 @@ class MatriculaController extends ModeloController
      */
     public function store(Request $request)
     {
-        dd( $request->all() );
-
         $this->validate(
             $request,
             [
@@ -216,24 +214,9 @@ class MatriculaController extends ModeloController
         // YA EL TERCERO FUE CREADO EN LA INSCRIPCION
 
         // Si el estudiante no existe, Se crea usuario y Estudiante
-        if ($request->estudiante_existe == false) {
-
-            $total = 0;
-
-            if (isset($request->id_tipo_documento_idp)) {
-                if (count($request->id_tipo_documento_idp) > 0) {
-                    foreach ($request->id_tipo_documento_idp as $key => $td) {
-                        if ($request->tiporesponsable_idp[$key] == '3' || $request->tiporesponsable_idp[$key] == '4') {
-                            $total = $total + 1;
-                        }
-                    }
-                }
-            }
-
-            if ($total < 2) {
-                return redirect('matriculas/create?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('mensaje_error', 'Debe indicar como mínimo el acudiente y el responsable financiero para crear la matrícula del estudiante');
-            }
-
+        if ( $request->estudiante_existe == false)
+        {
+            /**/
             $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
             $email = $request->email;
             $user = User::crear_y_asignar_role($name, $email, 4); // 4 = Role Estudiante
@@ -243,21 +226,19 @@ class MatriculaController extends ModeloController
                                     ['user_id' => $user->id]
                                 );
 
-            $estudiante = Estudiante::create($datos);
-            //guardamos papa y mama, guardamos responsable financiero, acudiente, etc
-            if (isset($request->id_tipo_documento_idp)) {
-                if (count($request->id_tipo_documento_idp) > 0) {
-                    foreach ($request->id_tipo_documento_idp as $key => $td) {
-                        $t = $this->setTercero($estudiante, $td, $request->numero_docp[$key], $request->nombre1p[$key], $request->otros_nombresp[$key], $request->apellido1p[$key], $request->apellido2p[$key], $request->telefono1p[$key], $request->emailp[$key]);
-                        $datosVacios = false;
-                        if ($request->datosp[$key] == "") {
-                            $datosVacios = true;
-                        }
-                        $data = explode(";", $request->datosp[$key]);
-                        $r = $this->setResponsable($data, $request->ocupacionp[$key], $request->tiporesponsable_idp[$key], $estudiante->id, $t->id, $datosVacios);
-                    }
-                }
+            $estudiante = Estudiante::create( $datos );
+            
+            $datos_responsables = json_decode( $request->lineas_registros );
+            $cantidad_registros = count($datos_responsables) - 1;// no se tiene en cuenta el ultimo elemento del array
+            for ($i=0; $i < $cantidad_registros; $i++) 
+            {
+                $datos = [];
+                $datos['tercero_id'] = (int)$datos_responsables[$i]->tercero_id;
+                $datos['tiporesponsable_id'] = (int)$datos_responsables[$i]->tiporesponsable_id;
+                $datos['estudiante_id'] = $estudiante->id;
+                $this->setResponsable( $datos );
             }
+
         } else {
             //echo "true";
             // Si ya existe, obtengo el registro según el tercero asociado
@@ -299,72 +280,12 @@ class MatriculaController extends ModeloController
         return redirect('matriculas/show/' . $matricula->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Matrícula creada correctamente. Código: ' . $matricula->codigo);
     }
 
-    //crea un tercero para los papás
-    public function setTercero($estudiante, $td, $numero_docp, $nombre1p, $otros_nombresp, $apellido1p, $apellido2p, $telefono1p, $emailp)
-    {
-        $t = null;
-        //si el tercero ya existe solamente es asignado como responsable y si no existe se crea
-        $t = Tercero::where('numero_identificacion', $numero_docp)->first();
-        if ($t == null) {
-            $t = new Tercero();
-            $t->core_empresa_id = $estudiante->getTercero($estudiante->id)->core_empresa_id;
-            $t->imagen = " ";
-            $t->tipo = "Persona natural";
-            $t->razon_social = " ";
-            $t->nombre1 = $nombre1p;
-            $t->otros_nombres = $otros_nombresp;
-            $t->apellido1 = $apellido1p;
-            $t->apellido2 = $apellido2p;
-            $t->descripcion = $nombre1p . " " . $otros_nombresp . " " . $apellido1p . " " . $apellido2p;
-            $t->id_tipo_documento_id = $td;
-            $t->numero_identificacion = $numero_docp;
-            $t->digito_verificacion = 0;
-            $t->direccion1 = " ";
-            $t->direccion2 = " ";
-            $t->barrio = " ";
-            $t->codigo_ciudad = 0;
-            $t->codigo_postal = 0;
-            $t->telefono1 = $telefono1p;
-            $t->telefono2 = 0;
-            $t->email = $emailp;
-            $t->pagina_web = " ";
-            $t->estado = "Activo";
-            $t->user_id = 0;
-            $t->contab_anticipo_cta_id = 0;
-            $t->contab_cartera_cta_id = 0;
-            $t->contab_cxp_cta_id = 0;
-            $t->creado_por = " ";
-            $t->modificado_por = " ";
-            $t->save();
-        }
-        return $t;
-    }
-
     //crea un responsable para los papás
-    public function setResponsable($data, $ocupacionp, $tiporesponsable_idp, $estudiante, $tercero, $datosVacios)
+    public function setResponsable($data)
     {
+
         $r = new Responsableestudiante();
-        if ($datosVacios) {
-            $r->direccion_trabajo = " ";
-            $r->telefono_trabajo = " ";
-            $r->puesto_trabajo = null;
-            $r->empresa_labora = null;
-            $r->jefe_inmediato = null;
-            $r->telefono_jefe = null;
-            $r->descripcion_trabajador_independiente = null;
-        } else {
-            $r->direccion_trabajo = $data[0];
-            $r->telefono_trabajo = $data[1];
-            $r->puesto_trabajo = $data[2];
-            $r->empresa_labora = $data[3];
-            $r->jefe_inmediato = $data[4];
-            $r->telefono_jefe = $data[5];
-            $r->descripcion_trabajador_independiente = $data[6];
-        }
-        $r->ocupacion = $ocupacionp;
-        $r->tiporesponsable_id = $tiporesponsable_idp;
-        $r->estudiante_id = $estudiante;
-        $r->tercero_id = $tercero;
+        $r->fill( $data );
         $r->save();
         return $r;
     }
@@ -633,3 +554,27 @@ class MatriculaController extends ModeloController
         return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Matrícula ELIMINADA correctamente. Código: ' . $registro->codigo);
     }
 }
+
+
+/*
+    array:17 [▼
+  "_token" => "r9JxNq41ZMNyUzgcDsZJVxKMlITeOqXjXKSpd3fs"
+  "id_colegio" => "1"
+  "codigo" => "19018-02"
+  "fecha_matricula" => "2020-10-22"
+  "sga_grado_id" => "6-02"
+  "curso_id" => "5"
+  "periodo_lectivo_id" => "2"
+  "numero_docp" => array:1 [▶]
+  "tiporesponsable_idp" => ""
+  "grupo_sanguineo" => ""
+  "medicamentos" => ""
+  "alergias" => ""
+  "eps" => ""
+  "lineas_registros" => "[{"tercero_id":"198","tipo_responsable_id":"3","Tercero":"1.065.567.198 - Adalberto  Pérez Oliveros","Dirección":"CL 7 22 39","Teléfono":"314 656 1062","Correo":"ing.adalbertoperez@gmail.com","Tipo de responsable":"RESPONSABLE-FINANCIERO"},{"tercero_id":"","tipo_responsable_id":"","Tercero":":\n\t\n\t\tPAPAMAMA","Dirección":""}]"
+  "responsable_agregado" => "1"
+  "url_id" => "1"
+  "url_id_modelo" => "19"
+]
+
+*/

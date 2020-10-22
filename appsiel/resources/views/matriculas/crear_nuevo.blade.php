@@ -20,6 +20,9 @@ use App\Http\Controllers\Sistema\VistaController;
             {{ csrf_field() }}
 
             <input type="hidden" name="id_colegio" id="id_colegio" value="{{ $id_colegio }}">
+            <input type="hidden" name="email" id="email" value="{{ $tercero->email }}">
+            <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{ $tercero->id }}">
+            <input type="hidden" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ $inscripcion->fecha_nacimiento }}">
 
             @include('matriculas.incluir.datos_inscripcion')
 
@@ -63,7 +66,7 @@ use App\Http\Controllers\Sistema\VistaController;
                                 <thead>
                                     <tr>
                                         <th scope="col" style="display: none;">tercero_id</th>
-                                        <th scope="col" style="display: none;">tipo_responsable_id</th>
+                                        <th scope="col" style="display: none;">tiporesponsable_id</th>
                                         <th scope="col">Tercero</th>
                                         <th scope="col">Dirección</th>
                                         <th scope="col">Teléfono</th>
@@ -78,7 +81,7 @@ use App\Http\Controllers\Sistema\VistaController;
                                 <tfoot>
                                     <tr>
                                         <td>
-                                            <input id="core_tercero_id" placeholder="*Nombre del tercero" autocomplete="off" class="form-control text_input_sugerencias" data-url_busqueda="{{ url('core_consultar_terceros_v2') }}" data-clase_modelo="App\Core\Tercero" name="numero_docp[]" type="text" value="">
+                                            <input id="tercero_responsable_id" placeholder="*Nombre del tercero" autocomplete="off" class="form-control text_input_sugerencias" data-url_busqueda="{{ url('core_consultar_terceros_v2') }}" data-clase_modelo="App\Core\Tercero" name="numero_docp[]" type="text" value="">
                                         </td>
                                         <td colspan="3"></td>
                                         <td>
@@ -170,7 +173,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
         $.fn.addRow = function() {
             
-            if( $( "#core_tercero_id" ).val() == '' || $( "#tiporesponsable_idp" ).val() == '' )
+            if( $( "#tercero_responsable_id" ).val() == '' || $( "#tiporesponsable_idp" ).val() == '' )
             {
                 alert('Debe selecionar un tercero y el tipo de responsable.');
 
@@ -181,7 +184,7 @@ use App\Http\Controllers\Sistema\VistaController;
             var html3 = html2.replace('_texto_responsable_', $( "#tiporesponsable_idp option:selected" ).text() );
             $('#ingreso_lineas_registros tbody:last').append( html3 );
             
-            $( "#core_tercero_id" ).val('');
+            $( "#tercero_responsable_id" ).val('');
 
             if ( $( "#tiporesponsable_idp" ).val() == 3 )
             {
@@ -259,7 +262,7 @@ use App\Http\Controllers\Sistema\VistaController;
                 if ( $( "#responsable_agregado" ).val() == 0 )
                 {
                     alert('Debe ingresar al responsable del estudiante.');
-                    $('#core_tercero_id').focus();
+                    $('#tercero_responsable_id').focus();
                     return false;
                 }
 

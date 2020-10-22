@@ -604,13 +604,10 @@ class RecaudoController extends TransaccionController
         // 1ro. Borrar registros contables
         ContabMovimiento::where($array_wheres)->delete();
 
-        // 2do. Si es un anticipo, se elimina el movimimeto de cartera
-        if ( $documento->teso_tipo_motivo == 'Anticipo' ) 
-        { 
-            $cxc_movimiento = CxcMovimiento::where($array_wheres)->delete();
-        }
+        // 2do. Se elimina el movimimeto de cartera (CxC o CxP)
+        CxcMovimiento::where($array_wheres)->delete();
+        CxpMovimiento::where($array_wheres)->delete();
 
-        // FALTA CUANDO SE TRATA DE UNA CANCELACION DE CARTERA
 
         // 3ro. Se elimina el movimiento de tesorería
         TesoMovimiento::where($array_wheres)->delete();
