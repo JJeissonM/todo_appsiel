@@ -14,23 +14,8 @@ class Calificacion extends Model
 {
     protected $table = 'sga_calificaciones';
 
-	protected $fillable = ['codigo_matricula','id_colegio','anio','id_periodo','curso_id','id_estudiante','id_asignatura','calificacion','logros','creado_por','modificado_por'];
-
-    /**
-     * Obtenet todos los logros para una calificación.
-     */
-    public function logros()
-    {
-        return $this->hasMany(Logro::class);
-    }
-
-    /**
-     * Obtener cada calificación que pertenece al boletín.
-     */
-    public function boletin()
-    {
-        return $this->belongsTo(Boletin::class);
-    }
+    // logros es un string donde se almacenan códigos de logros separados por coma (usado para logros adicionales)
+	protected $fillable = [ 'codigo_matricula', 'id_colegio', 'anio', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros', 'creado_por', 'modificado_por'];
 
     /**
      * Obtener todas las calificaciones con sus datos relacionados
@@ -105,6 +90,22 @@ class Calificacion extends Model
                                     'sga_calificaciones.id AS calificacion_id')
                         ->get();
 
+    }
+
+
+
+    public static function get_para_boletin( $periodo_id, $curso_id, $estudiante_id, $asignatura_id )
+    {
+        return Calificacion::where(
+                                    [ 
+                                        'id_periodo' => $periodo_id,
+                                        'curso_id' => $curso_id,
+                                        'id_estudiante' => $estudiante_id,
+                                        'id_asignatura' => $asignatura_id
+                                    ]
+                                )
+                            ->get()
+                            ->first();
     }
 
 
@@ -217,6 +218,7 @@ class Calificacion extends Model
                                 )
                             ->count();
     }
+
 
     public static function calificaciones_promedio_por_estudiante( $periodo_id )
     {

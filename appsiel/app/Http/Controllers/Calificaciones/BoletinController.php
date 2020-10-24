@@ -14,6 +14,7 @@ use App\Matriculas\Estudiante;
 
 use App\Calificaciones\EscalaValoracion;
 use App\Calificaciones\Logro;
+use App\Calificaciones\Meta;
 use App\Calificaciones\CursoTieneAsignatura;
 use App\Calificaciones\Periodo;
 use App\Calificaciones\Boletin;
@@ -22,8 +23,9 @@ use App\Calificaciones\ObservacionesBoletin;
 use App\Calificaciones\ObservacionIngresada;
 
 use App\AcademicoDocente\CursoTieneDirectorGrupo;
+use App\AcademicoDocente\AsignacionProfesor;
 
-
+use App\Core\PasswordReset;
 use App\Core\Colegio;
 use App\Sistema\Aplicacion;
 
@@ -94,7 +96,7 @@ class BoletinController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-	public function imprimir($id)
+	public function imprimir()
     {
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
 
@@ -110,9 +112,9 @@ class BoletinController extends Controller
 
         $formatos = [
                         'pdf_boletines_1' => 'Formato # 1 (estándar)',
-                        'pdf_boletines_2' => 'Formato # 2 (moderno)',
-                        'pdf_boletines_3' => 'Formato # 3 (visual)',
-                        'pdf_boletines_4' => 'Formato # 4 (metas)'
+                        'pdf_boletines_2' => 'Formato # 2 (preescolar)',
+                        'pdf_boletines_3' => 'Formato # 3 (moderno)'
+                        //'pdf_boletines_4' => 'Formato # 4 (metas)'
                     ];
 
         if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
@@ -129,82 +131,128 @@ class BoletinController extends Controller
         return view('calificaciones.boletines.form_imprimir',compact('cursos','periodos_lectivos', 'formatos', 'miga_pan'));
     }
 	
-	public function generarPDF(Request $request)
+	public function generarPDF( Request $request )
 	{
-		$colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+        $colegio = Auth::user()->empresa->colegio;
+        $curso = Curso::find( $request->curso_id );
+        $periodo = Periodo::find( $request->periodo_id );
 
-		$periodo = Periodo::find( $request->periodo_id );
-        $anio = explode("-",$periodo->fecha_desde)[0];
+        $matriculas = Matricula::where( 'periodo_lectivo_id', $periodo->periodo_lectivo_id )
+                                ->where( 'curso_id', $request->curso_id )
+                                ->get();        
 
+        if( empty( $matriculas->toArray() ) )
+        {
+            return redirect( 'calificaciones/boletines/imprimir?id=' . Input::get('id') . '&id_modelo=0' )->with( 'mensaje_error', "No hay regitros de estudiantes matriculados en el curso " . $curso->descripcion );
+        }
+
+        // Parametros enviados        
         $convetir_logros_mayusculas = $request->convetir_logros_mayusculas;
-
         $mostrar_areas = $request->mostrar_areas;
         $mostrar_nombre_docentes = $request->mostrar_nombre_docentes;
         $mostrar_escala_valoracion = $request->mostrar_escala_valoracion;
         $mostrar_usuarios_estudiantes = $request->mostrar_usuarios_estudiantes;
         $mostrar_etiqueta_final = $request->mostrar_etiqueta_final;
+        $tam_letra = $request->tam_letra;
 
+        $firmas = $this->almacenar_imagenes_de_firmas( $request );
+
+        $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas, $estudiante_id = null );
+
+		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas','mostrar_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos') )->render();
+		
+        //echo $view;
+        
+        // Se prepara el PDF
+        $orientacion='portrait';
+        $pdf = \App::make('dompdf.wrapper');			
+        $pdf->loadHTML(($view))->setPaper($request->tam_hoja,$orientacion);
+
+		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');//stream();
+		
+	}
+
+    public function preparar_datos_boletin( $periodo, $curso, $matriculas, $estudiante_id = null )
+    {
+        $asignaturas_asignadas = $curso->asignaturas_asignadas->where('periodo_lectivo_id', $periodo->periodo_lectivo_id);
+
+        $datos = (object)[];
+        $l = 0;
+        foreach ($matriculas as $matricula)
+        {
+            $datos->estudiantes[$l] = (object)[];
+            $datos->estudiantes[$l]->estudiante = $matricula->estudiante;
+            $datos->estudiantes[$l]->password_estudiante = PasswordReset::where( 'email', $matricula->estudiante->tercero->email )->get()->first();
+            $datos->estudiantes[$l]->observacion = ObservacionesBoletin::get_x_estudiante( $periodo->id, $curso->id, $matricula->estudiante->id );
+
+            $a = 0;
+            $cuerpo_boletin = (object)[];
+            foreach ($asignaturas_asignadas as $asignacion)
+            {                
+                $cuerpo_boletin->lineas[$a] = (object)[];
+                $cuerpo_boletin->lineas[$a]->asignacion_asignatura = $asignacion;
+
+                $calificacion = Calificacion::get_para_boletin( $periodo->id, $curso->id, $matricula->estudiante->id, $asignacion->asignatura_id );
+
+                $cuerpo_boletin->lineas[$a]->calificacion = $calificacion;
+
+                $cuerpo_boletin->lineas[$a]->escala_valoracion = null;
+                $cuerpo_boletin->lineas[$a]->logros = null;
+                $cuerpo_boletin->lineas[$a]->logros_adicionales = null;
+                if ( !is_null($calificacion) )
+                {
+                    $escala_valoracion = EscalaValoracion::get_escala_segun_calificacion( $calificacion->calificacion );
+                    $cuerpo_boletin->lineas[$a]->escala_valoracion = $escala_valoracion;
+
+                    $cuerpo_boletin->lineas[$a]->logros = Logro::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id, $escala_valoracion->id );
+
+                    $cuerpo_boletin->lineas[$a]->logros_adicionales = $this->get_logros_adicionales( $calificacion, $asignacion->asignatura_id );
+                }
+
+                $cuerpo_boletin->lineas[$a]->propositos = Meta::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id );
+
+                $cuerpo_boletin->lineas[$a]->profesor_asignatura = AsignacionProfesor::get_profesor_de_la_asignatura( $curso->id, $asignacion->asignatura_id, $periodo->periodo_lectivo_id );
+                
+                $a++;
+            }
+
+            $datos->estudiantes[$l]->cuerpo_boletin = $cuerpo_boletin;
+
+            $l++;
+        }
+        
+        return $datos->estudiantes;
+    }
+
+    public function get_logros_adicionales( $calificacion, $asignatura_id )
+    {
+        $vec_logros = explode( ",", $calificacion->logros);
+
+        return Logro::whereIn( 'codigo', $vec_logros )
+                    ->where( 'asignatura_id', $asignatura_id )
+                    ->get();
+    }
+
+    public function almacenar_imagenes_de_firmas( $request )
+    {
         $firmas = [];
         if ( $request->file('firma_rector') != null ) {
-        	$firmas[0] = $request->file('firma_rector');
-        	Storage::put('firma_rector.png',
+            $firmas[0] = $request->file('firma_rector');
+            Storage::put('firma_rector.png',
                 file_get_contents( $firmas[0]->getRealPath() ) );
         }else{
-        	$firmas[0] = 'No cargada';
+            $firmas[0] = 'No cargada';
         }
         if ( $request->file('firma_profesor') != null ) {
-        	$firmas[1] = $request->file('firma_profesor');
-        	Storage::put('firma_profesor.png',
+            $firmas[1] = $request->file('firma_profesor');
+            Storage::put('firma_profesor.png',
                 file_get_contents( $firmas[1]->getRealPath() ) );
         }else{
-        	$firmas[1] = 'No cargada';
+            $firmas[1] = 'No cargada';
         }
 
-        $estudiante_id = null;
-        if ( isset( $request->estudiante_id ) )
-        {
-            $estudiante_id = $request->estudiante_id;
-        }
-
-		// Listado de estudiantes con matriculas activas en el curso y año indicados
-		$estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, null, $estudiante_id );
-		
-        $curso = Curso::find($request->curso_id);
-
-		if( !empty($estudiantes) ){
-			
-            /*
-                ** Para imprimir se llaman solo a las asignaturas que han sido calificadas
-                ** No se pueden llamar las asignaturas del curso porque estas pudieron haber cambiado
-                ** Es decir a un curso se le pudieron agregar asignaturas nuevas y/o eliminar viejas 
-            */
-            
-			// Seleccionar asignaturas del curso
-			$asignaturas = CursoTieneAsignatura::asignaturas_del_curso($request->curso_id, null, $periodo->periodo_lectivo_id );
-			
-		
-			// Se prepara el PDF
-			$orientacion='portrait';
-            $tam_letra=$request->tam_letra;
-
-			$banner = View::make('banner_colegio')->render();
-
-			$view =  View::make('calificaciones.boletines.'.$request->formato, compact('estudiantes','asignaturas','colegio','curso','periodo','anio','tam_letra','banner','convetir_logros_mayusculas','mostrar_areas','mostrar_nombre_docentes','mostrar_escala_valoracion','firmas','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final'))->render();
-			
-            $pdf = \App::make('dompdf.wrapper');			
-            $pdf->loadHTML(($view))->setPaper($request->tam_hoja,$orientacion);
-
-			return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');//stream();
-			
-
-			//echo $view;/**/
-		}else{
-
-            // PENDIENTE!!!!! usar mejor un redirect con mensaje
-            
-    		echo "No hay regitros de estudiantes matriculados en el curso ".$curso->descripcion;
-		}
-	}
+        return $firmas;
+    }
 	
     // Muestra formulario para el cálculo del puesto (g = get)
 	public function calcular_puesto_g()

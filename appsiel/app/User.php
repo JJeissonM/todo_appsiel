@@ -43,6 +43,11 @@ class User extends Authenticatable
         return $this->hasMany(UserHasRole::class,'user_id','id');
     }*/
 
+    public function empresa()
+    {
+        return $this->belongsTo('App\Core\Empresa');
+    }
+
     public function foros()
     {
         return $this->hasMany(Foro::class);
@@ -73,11 +78,6 @@ class User extends Authenticatable
                             ->toArray();
     }
 
-    public function empresa()
-    {
-        //return $this->hasOne('App\Core\Empresa');
-        return $this->belongsTo('App\Core\Empresa');
-    }
     public static function crear_y_asignar_role( $name, $email, $role_id)
     {
         $user = User::create([

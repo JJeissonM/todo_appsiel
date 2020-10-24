@@ -148,6 +148,11 @@
 			});	
 
 			$("#btn_imprimir").on('click',function(){
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+				
 				$('#formulario').submit();
 			});
 		});

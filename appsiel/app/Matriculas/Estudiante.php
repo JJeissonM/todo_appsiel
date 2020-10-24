@@ -37,7 +37,7 @@ class Estudiante extends Model
      */
     public function matriculas()
     {
-        return $this->hasMany(Matricula::class);
+        return $this->hasMany(Matricula::class,'id_estudiante');
     }
 
     public function registros_cartera()
@@ -178,6 +178,7 @@ class Estudiante extends Model
                 'sga_estudiantes.genero',
                 'sga_estudiantes.fecha_nacimiento',
                 'sga_estudiantes.ciudad_nacimiento',
+                'sga_estudiantes.core_tercero_id',
                 'sga_estudiantes.papa',
                 'sga_estudiantes.cedula_papa',
                 'sga_estudiantes.ocupacion_papa',

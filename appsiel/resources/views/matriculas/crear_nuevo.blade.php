@@ -1,6 +1,5 @@
 <?php
-
-use App\Http\Controllers\Sistema\VistaController;
+    use App\Http\Controllers\Sistema\VistaController;
 ?>
 
 @extends('layouts.principal')
@@ -20,9 +19,10 @@ use App\Http\Controllers\Sistema\VistaController;
             {{ csrf_field() }}
 
             <input type="hidden" name="id_colegio" id="id_colegio" value="{{ $id_colegio }}">
-            <input type="hidden" name="email" id="email" value="{{ $tercero->email }}">
-            <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{ $tercero->id }}">
+            <input type="hidden" name="email" id="email" value="{{ $estudiante->tercero->email }}">
+            <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{ $estudiante->tercero->id }}">
             <input type="hidden" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ $inscripcion->fecha_nacimiento }}">
+            <input type="hidden" name="estudiante_existe" id="estudiante_existe" value="{{ $estudiante_existe }}">
 
             @include('matriculas.incluir.datos_inscripcion')
 
@@ -233,6 +233,11 @@ use App\Http\Controllers\Sistema\VistaController;
 
 
         $(document).ready(function() {
+
+            if( "{{ $estudiante_existe }}" == 1 )
+            {
+                $( "#responsable_agregado" ).val( 1 );
+            }
 
             $('#sga_grado_id').focus();
 

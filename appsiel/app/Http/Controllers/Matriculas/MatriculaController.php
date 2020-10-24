@@ -104,7 +104,7 @@ class MatriculaController extends ModeloController
         // LLAMAR AL FORMULARIO PARA CREAR UNA NUEVA MATRICULA, SEGÚN EL DOC. ID DEL ESTUDIANTE
         $inscripcion = Inscripcion::find( $request->id_inscripcion );
 
-        $tercero = Tercero::find($inscripcion->core_tercero_id);
+        $tercero = Tercero::find( $inscripcion->core_tercero_id );
 
         // Se obtiene el modelo según la variable modelo_id  de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
@@ -170,12 +170,12 @@ class MatriculaController extends ModeloController
         // Consultar matriculas del estudiante
         $estudiante = Estudiante::get_estudiante_x_tercero_id($tercero->id);
 
-        if (!is_null($estudiante)) {
+        if ( !is_null( $estudiante ) ) {
             $matriculas = Matricula::get_matriculas_un_estudiante($estudiante->id);
-            $estudiante_existe = true;
+            $estudiante_existe = 1;
         } else {
             $matriculas = array();
-            $estudiante_existe = false;
+            $estudiante_existe = 0;
         }
 
         $miga_pan = [
@@ -190,7 +190,7 @@ class MatriculaController extends ModeloController
         //obtenemos el listado de tipos de responsables (PAPA, MAMA, RESPONSABLE-FINANCIERO, ACUDIENTE, ETC)
         $tipos = Tiporesponsable::all();
         $tiposdoc = TipoDocumentoId::all();
-        return view('matriculas.crear_nuevo', compact('matriculas', 'miga_pan', 'form_create', 'tercero', 'id_colegio', 'inscripcion', 'estudiante_existe', 'tipos', 'tiposdoc'));
+        return view('matriculas.crear_nuevo', compact('matriculas', 'miga_pan', 'form_create', 'estudiante', 'id_colegio', 'inscripcion', 'estudiante_existe', 'tipos', 'tiposdoc'));
     }
 
     /**
@@ -210,11 +210,10 @@ class MatriculaController extends ModeloController
             ['required' => 'Los campos de fecha de matrícula y curso son obligatorios.']
         );
 
-
         // YA EL TERCERO FUE CREADO EN LA INSCRIPCION
 
         // Si el estudiante no existe, Se crea usuario y Estudiante
-        if ( $request->estudiante_existe == false)
+        if ( $request->estudiante_existe == 0 )
         {
             /**/
             $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
@@ -240,10 +239,10 @@ class MatriculaController extends ModeloController
             }
 
         } else {
-            //echo "true";
+
             // Si ya existe, obtengo el registro según el tercero asociado
-            $estudiante = Estudiante::get_estudiante_x_tercero_id($request->core_tercero_id);
-            //print_r($estudiante);
+            $estudiante = Estudiante::get_estudiante_x_tercero_id( $request->core_tercero_id );
+
         }
 
         $requisitos = $request->requisito1 . "-" . $request->requisito2 . "-" . $request->requisito3 . "-" . $request->requisito4
@@ -259,7 +258,8 @@ class MatriculaController extends ModeloController
                                 [
                                     'requisitos' => $requisitos,
                                     'id_estudiante' => $estudiante->id,
-                                    'codigo' => $codigo
+                                    'codigo' => $codigo,
+                                    'estado' => 'Activo'
                                 ]
                             );
 

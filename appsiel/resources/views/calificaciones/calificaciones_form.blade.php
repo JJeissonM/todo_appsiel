@@ -100,12 +100,8 @@
 		</div>
 
 		<div style="text-align: center; width: 100%;">
-			<input class="btn btn-primary btn-xs" id="bs_boton_guardar" type="submit" value="Guardar" disabled="disabled">
-
-			<button class="btn btn-danger btn-xs" id="bs_boton_volver">Volver</button>
-
-			<!-- <a href="{ { url()->previous() }}" class="btn btn-danger btn-xs" id="bs_boton_volver"></a> -->
-
+			<button class="btn btn-primary btn-xs" id="bs_boton_guardar" disabled="disabled">Guardar</button>
+			<a href="{{ url($ruta) }}" class="btn btn-danger btn-xs" id="bs_boton_volver"> Volver </a>
 		</div>
 
 	</div>
@@ -176,8 +172,9 @@
 			$("input[type=text]").on('blur',function()
 			{
 				var id = $(this).attr('id');
-					var vec_id = id.split("_");
-					$(".celda_"+vec_id[0]).css('background-color','transparent');	
+				var vec_id = id.split("_");
+				$(".celda_"+vec_id[0]).css('background-color','transparent');
+				$("#tabla_registros th.celda_"+vec_id[0]).css('background-color','#e5e4e3');
 			});
 
 

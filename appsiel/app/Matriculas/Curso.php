@@ -22,9 +22,27 @@ class Curso extends Model
 
     public $encabezado_tabla = ['ID','Nivel','Grado','Descripcion','Código','Maneja Calificacion (0=No, 1=Si)','Estado','Acción'];
 
+    public function grado(){
+        return $this->belongsTo(Grado::class,'sga_grado_id');
+    }
+
+    public function nivel(){
+        return $this->belongsTo(NivelAcademico::class,'nivel_grado');
+    }
+
     public function foros()
     {
         return $this->hasMany(Foro::class);
+    }
+
+    public function asignaturas_asignadas()
+    {
+        return $this->hasMany( CursoTieneAsignatura::class, 'curso_id' )->orderBy('orden_boletin');
+    }
+
+    public function director_grupo()
+    {
+        return $this->belongsToMany('App\User','sga_curso_tiene_director_grupo','curso_id','user_id');
     }
     
     /**/
@@ -47,57 +65,6 @@ class Curso extends Model
 
         return $registros;
     }
-    
-
-    public function grado(){
-        return $this->belongsTo(Grado::class,'sga_grado_id');
-    }
-
-    public function nivel(){
-        return $this->belongsTo(NivelAcademico::class,'nivel_grado');
-    }
-
-
-    /*public static function consultar_registros()
-    {
-
-        $registros = Curso::all();
-
-        $collect = [];
-        foreach ($registros as $curso) {
-
-             $collect[] = [
-                'id'=>$curso->id,
-                'nivel_descripcion' => $curso->nivel->descripcion,
-                'grado_descripcion'=> $curso->grado->descripcion,
-                'curso_descripcion'=> $curso->descripcion,
-                'codigo'=> $curso->codigo,
-                'maneja_calificacion'=> $curso->maneja_calificacion,
-                'estado'=> $curso->estado,
-                'accion' => $curso->id 
-            ];
-
-
-            
-
-        }
-        return $collect;
-       return Curso::leftJoin('sga_niveles', 'sga_niveles.id', '=', 'sga_cursos.nivel_grado')
-                    ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_cursos.sga_grado_id')
-                    ->orderBy('sga_cursos.nivel_grado','ASC')
-                    ->select(
-                            'sga_cursos.id',
-                            'sga_niveles.descripcion AS nivel_descripcion',
-                            'sga_grados.descripcion AS grado_descripcion',
-                            'sga_cursos.descripcion AS curso_descripcion',
-                            'sga_cursos.codigo',
-                            'sga_cursos.maneja_calificacion',
-                            'sga_cursos.estado',
-                            'sga_cursos.id AS accion_id')
-                    ->get()
-                    ->toArray();
-
-    }*/
 
     public static function get_array_to_select()
     {
@@ -152,11 +119,6 @@ class Curso extends Model
         return Curso::where('estado', 'Activo')
                     ->OrderBy('descripcion')
                     ->get();
-    }
-
-    public function director_grupo()
-    {
-        return $this->belongsToMany('App\User','sga_curso_tiene_director_grupo','curso_id','user_id');
     }
 
 

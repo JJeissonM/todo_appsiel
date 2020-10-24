@@ -433,7 +433,7 @@ class EstudianteController extends ModeloController
             $t->direccion2 = " ";
             $t->barrio = " ";
             $t->descripcion = $t->nombre1 . " " . $t->otros_nombres . " " . $t->apellido1 . " " . $t->apellido2;
-            $t->codigo_ciudad = 0;
+            $t->codigo_ciudad = 16920001;
             $t->codigo_postal = 0;
             $t->telefono2 = 0;
             $t->pagina_web = " ";
@@ -447,7 +447,11 @@ class EstudianteController extends ModeloController
             $t->save();
         }
         if ($t != null) {
-            $r = new Responsableestudiante($request->all());
+
+            $this->actualizar_datos_tercero( $t, $request );
+
+            $r = new Responsableestudiante( $request->all() );
+
             if ($request->tiporesponsable_id != 3) {
                 $r->direccion_trabajo = " ";
                 $r->telefono_trabajo = " ";
@@ -486,8 +490,9 @@ class EstudianteController extends ModeloController
     {
         $r = Responsableestudiante::find($id);
         $estudiante_id = $r->estudiante_id;
-        $t = $r->tercero;
-        if ($t->delete()) {
+        //$t = $r->tercero;
+        if ( $r->delete() )
+        {
             return redirect('matriculas/estudiantes/gestionresponsables/estudiante_id?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=&estudiante_id=' . $estudiante_id)->with('flash_message', 'Responsable eliminado correctamente.');
         } else {
             return redirect('matriculas/estudiantes/gestionresponsables/estudiante_id?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=&estudiante_id=' . $estudiante_id)->with('mensaje_error', 'Error, no se pudo eliminar el responsable.');
@@ -499,19 +504,13 @@ class EstudianteController extends ModeloController
     {
         $r = Responsableestudiante::find($request->responsable_id);
         $t = $r->tercero;
-        $t->nombre1 = $request->nombre1;
-        $t->otros_nombres = $request->otros_nombres;
-        $t->apellido1 = $request->apellido1;
-        $t->apellido2 = $request->apellido2;
-        $t->descripcion = $t->nombre1 . " " . $t->otros_nombres . " " . $t->apellido1 . " " . $t->apellido2;
-        $t->id_tipo_documento_id = $request->id_tipo_documento_id;
-        $t->numero_identificacion = $request->numero_identificacion;
-        $t->telefono1 = $request->telefono1;
-        $t->email = $request->email;
-        if ($t->save()) {
+
+        if ( $this->actualizar_datos_tercero( $t, $request ) )
+        {
             $r->ocupacion = $request->ocupacion;
             $r->tiporesponsable_id = $request->tiporesponsable_id;
-            if ($request->tiporesponsable_id == 3) {
+            if ($request->tiporesponsable_id == 3)
+            {
                 $r->direccion_trabajo = $request->direccion_trabajo;
                 $r->telefono_trabajo = $request->telefono_trabajo;
                 $r->puesto_trabajo = $request->puesto_trabajo;
@@ -528,14 +527,32 @@ class EstudianteController extends ModeloController
                 $r->telefono_jefe = null;
                 $r->descripcion_trabajador_independiente = null;
             }
-            if ($r->save()) {
+
+            if ($r->save())
+            {
                 return redirect('matriculas/estudiantes/gestionresponsables/estudiante_id' . $request->variables_url)->with('flash_message', 'Responsable modificado correctamente.');
             } else {
                 return redirect('matriculas/estudiantes/gestionresponsables/estudiante_id' . $request->variables_url)->with('mensaje_error', 'Alerta!, solo se modificaron los datos personales del responsable, los datos financieros no.');
             }
+
         } else {
             return redirect('matriculas/estudiantes/gestionresponsables/estudiante_id' . $request->variables_url)->with('mensaje_error', 'Error, no se pudo modificar el responsable.');
         }
+    }
+
+    public function actualizar_datos_tercero( $tercero, $request )
+    {
+        $tercero->nombre1 = $request->nombre1;
+        $tercero->otros_nombres = $request->otros_nombres;
+        $tercero->apellido1 = $request->apellido1;
+        $tercero->apellido2 = $request->apellido2;
+        $tercero->descripcion = $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2;
+        $tercero->id_tipo_documento_id = $request->id_tipo_documento_id;
+        $tercero->numero_identificacion = $request->numero_identificacion;
+        $tercero->telefono1 = $request->telefono1;
+        $tercero->email = $request->email;
+
+        return $tercero->save();
     }
 
     //consulta un tercero a partir de la identificacion

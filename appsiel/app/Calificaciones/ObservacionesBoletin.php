@@ -13,7 +13,6 @@ class ObservacionesBoletin extends Model
 
     protected $fillable = ['codigo_matricula','id_colegio','id_periodo','curso_id','id_estudiante','observacion','puesto'];
 
-
     public static function consultar_registros()
     {
         return ObservacionesBoletin::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_observaciones_boletines.id_estudiante')

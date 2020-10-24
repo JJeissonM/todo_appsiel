@@ -12,7 +12,7 @@ class EscalaValoracion extends Model
 {
     protected $table = 'sga_escala_valoracion';
 
-    protected $fillable = ['periodo_lectivo_id','calificacion_minima','calificacion_maxima','nombre_escala','sigla','escala_nacional'];
+    protected $fillable = ['periodo_lectivo_id','calificacion_minima','calificacion_maxima','nombre_escala','sigla','escala_nacional','imagen'];
 
     public $encabezado_tabla = ['Año lectivo','Escala nacional','Nombre escala','Sigla','Calificación mínima','Calificación máxima','Acción'];
 
@@ -87,7 +87,7 @@ class EscalaValoracion extends Model
         {
             $periodo_lectivo_id = PeriodoLectivo::get_actual()->id;
         }
-        
+
         return EscalaValoracion::where('calificacion_minima','<=',$calificacion)
                                         ->where('calificacion_maxima','>=',$calificacion)
                                         ->where('periodo_lectivo_id','=',$periodo_lectivo_id)

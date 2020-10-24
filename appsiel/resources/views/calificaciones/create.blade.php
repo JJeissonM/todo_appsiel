@@ -54,7 +54,7 @@
                 </div>	
 				{{ Form::hidden('id_app',Input::get('id')) }}
 				
-				{{ Form::hidden('ruta','calificaciones/create?id='.Input::get('id')) }}
+				{{ Form::hidden( 'ruta', 'calificaciones/create?id='.Input::get('id') ) }}
 
 			{{ Form::close() }}
 

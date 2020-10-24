@@ -288,19 +288,19 @@ class CalificacionController extends Controller
                         ['url'=>'NO','etiqueta'=>'Ingresar periodo '.$periodo->descripcion]
                     ];
 
-        return view('calificaciones.calificar2',[ 'vec_estudiantes'=>$vec_estudiantes,
-                'cantidad_estudiantes'=>count($estudiantes),
-                'anio'=>$anio,
-                'curso'=>$curso,
-                'periodo'=>$periodo,
-                'periodo_lectivo'=>$periodo_lectivo,
-                'datos_asignatura'=>$datos_asignatura,
-                'ruta'=>$request->ruta,
-                'miga_pan'=>$miga_pan,
-                'escala_min_max'=>$escala_min_max,
-                'creado_por'=>$creado_por,
-                'modificado_por'=>$modificado_por,
-                'id_colegio'=>$this->colegio->id]);
+        return view('calificaciones.calificar2',[ 'vec_estudiantes' => $vec_estudiantes,
+                'cantidad_estudiantes' => count($estudiantes),
+                'anio' => $anio,
+                'curso' => $curso,
+                'periodo' => $periodo,
+                'periodo_lectivo' => $periodo_lectivo,
+                'datos_asignatura' => $datos_asignatura,
+                'ruta' => $request->ruta,
+                'miga_pan' => $miga_pan,
+                'escala_min_max' => $escala_min_max,
+                'creado_por' => $creado_por,
+                'modificado_por' => $modificado_por,
+                'id_colegio' => $this->colegio->id]);
         
     }
     

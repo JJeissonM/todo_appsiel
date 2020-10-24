@@ -125,7 +125,7 @@ class ClienteWeb extends Model
                             'codigo_ciudad' => 16920001,
                             'telefono1' => $datos['telefono'],
                             'email' => $datos['email'],
-                            'estado' => 'Pendiente por activar' ];
+                            'estado' => 'Activo' ];
 
         $tercero = \App\Core\Tercero::create( $array_tercero );
 
@@ -141,7 +141,7 @@ class ClienteWeb extends Model
         $registro->zona_id = config('pagina_web.zona_id');
         $registro->liquida_impuestos = 1;
         $registro->condicion_pago_id = config('pagina_web.condicion_pago_id');
-        $registro->estado = 'Pendiente por activar';
+        $registro->estado = 'Activo';
 
         $registro->save();
 

@@ -1,8 +1,8 @@
 <?php  
 	$variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
 
-	//dd( $encabezado_documento );
-	//dd( [ $doc_encabezado->direccion1, $encabezado_documento->tercero->ciudad->descripcion, $encabezado_documento->tercero->ciudad->departamento->descripcion ] );
+	//dd( $encabezado_documento->tercero );
+	//dd( [ $encabezado_documento->tercero->direccion1, $encabezado_documento->tercero->ciudad->descripcion, $encabezado_documento->tercero->ciudad->departamento->descripcion ] );
 
 ?>
 
@@ -48,7 +48,7 @@
             <br/>
             <b>Documento ID: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
             <br/>
-            <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}, {{ $encabezado_documento->tercero->ciudad->descripcion }} - {{ $encabezado_documento->tercero->ciudad->departamento->descripcion }}
+            <b>Dirección: &nbsp;&nbsp;</b> {{ $encabezado_documento->tercero->direccion1 }}, {{ $encabezado_documento->tercero->ciudad->descripcion }} - {{ $encabezado_documento->tercero->ciudad->departamento->descripcion }}
             <br/>
             <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
         </td>

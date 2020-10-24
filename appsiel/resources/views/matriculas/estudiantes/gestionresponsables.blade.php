@@ -468,6 +468,16 @@
 		});
 	}
 
+	function limpiar3() {
+		$("#txt1").val( '' );
+		$("#txt2").val( '' );
+		$("#txt3").val( '' );
+		$("#txt4").val( '' );
+		$("#txt5").val( '' );
+		$("#txt6").val( '' );
+		$("#txt7").val( '' );
+	}
+
 	function edit(id) {
 		var id = id.split("_");
 		limpiar2();
@@ -522,6 +532,7 @@
 			url: "{{url('')}}/" + "matriculas/estudiantes/gestionresponsables/consultar/" + id + "/tercero",
 			data: {},
 		}).done(function(msg) {
+			limpiar3();
 			if (msg !== 'null') {
 				var m = JSON.parse(msg);
 				$("#txt1").val(m.id_tipo_documento_id);

@@ -39,6 +39,8 @@ use App\Tesoreria\TesoMovimiento;
 
 use App\Contabilidad\ContabMovimiento;
 
+use App\Inventarios\InvProducto;
+
 
 class LibretaPagoController extends ModeloController
 {
@@ -176,137 +178,48 @@ class LibretaPagoController extends ModeloController
      */
     public function store( Request $request )
     {   
-        $parametros = config('configuracion.matriculas'); // Llamar al archivo de configuración del core
+        $parametros = config('matriculas'); // Llamar al archivo de configuración del core
 
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
         $request['id_estudiante'] = $matricula_estudiante->id_estudiante;
         $registro = $this->crear_nuevo_registro( $request );
 
-        $cpto_matricula = InvProducto::find( $inv_producto_id_default_matricula );
-        $cpto_pension = InvProducto::find( $inv_producto_id_default_pension );
+        $cpto_matricula = InvProducto::find( $parametros['inv_producto_id_default_matricula'] );
+        $cpto_pension = InvProducto::find( $parametros['inv_producto_id_default_pension'] );
 
         /*      SE CREAN LOS REGISTROS DE CARTERA DE ESTUDIANTES (Plan de Pagos)    */
+        
+        $datos = array_combine( (new TesoCarteraEstudiante)->getFillable(), ['','','','','','','',''] );
+
+        // Datos comunes
+        $datos['id_libreta'] = $registro->id;
+        $datos['id_estudiante'] = $request->id_estudiante;
+        $datos['estado'] = "Pendiente";
+
         // 1. Se agrega el registro de matrícula por pagar en la cartera de estudiantes
-        $cartera = new TesoCarteraEstudiante;
-        $cartera->id_libreta = $registro->id;
-        $cartera->id_estudiante = $request->id_estudiante;
-        $cartera->concepto = $cpto_matricula->descripcion; // Debe haber un registro en "inv_productos" tipo "servicio" con este mismo nombre para generar la factura de ventas
-        $cartera->valor_cartera = $request->valor_matricula;
-        $cartera->saldo_pendiente = $request->valor_matricula;
-        $cartera->fecha_vencimiento = $request->fecha_inicio;
-        $cartera->estado = "Pendiente";
-        $cartera->save();
+        // Datos del concepto de Matrícula
+        $datos['concepto'] = $cpto_matricula->descripcion; // Debe haber un registro en "inv_productos" tipo "servicio" con este mismo nombre para generar la factura de ventas
+        $datos['valor_cartera'] = $request->valor_matricula;
+        $datos['saldo_pendiente'] = $request->valor_matricula;
+        $datos['fecha_vencimiento'] = $request->fecha_inicio;
+        $this->almacenar_linea_registro_cartera( $datos );
 
-
-        // Contabilización TODA MANUAL
-        /*$valor = $request->valor_matricula;
-        $core_empresa_id = Auth::user()->empresa_id;
-
-        $core_tipo_transaccion_id = 21; //Recaudo libreta de pago
-        $core_tipo_doc_app_id = 11; // FA Cuenta de cobro
-
-        // Obtener y aumentar el consecutivo
-        $consecutivo = $this->get_consecutivo($core_empresa_id, $core_tipo_doc_app_id);
-        
-
-        $detalle_operacion = 'Generación libreta de pagos. Matrícula. ID_LIBRETA'.$registro->id.'.';
-        $valor_operacion = $valor;
-
-        $datos = [ 'core_empresa_id' => $core_empresa_id ] +
-                [ 'core_tipo_transaccion_id' => $core_tipo_transaccion_id ] +
-                [ 'core_tipo_doc_app_id' => $core_tipo_doc_app_id ] + 
-                ['consecutivo' => $consecutivo] +
-                ['fecha' => date('Y-m-d')] +
-                ['core_tercero_id' => $matricula_estudiante->core_tercero_id] + 
-                [ 'codigo_referencia_tercero' => $matricula_estudiante->id_estudiante ];
-
-        // Contabilizar DB = CARTERA vs CR = INGRESOS
-
-        // CxC Clientes
-        $cxc_cuenta_id = $parametros['cta_cartera_default'];
-        // Ingresos ventas
-        $ingresos_cuenta_id = $parametros['cta_ingresos_default'];
-
-
-
-        $valor_debito = $valor;
-        $valor_credito = 0;
-
-        $reg_contab = ContabMovimiento::create(  $datos +
-                                    [ 'contab_cuenta_id' => $cxc_cuenta_id ] +
-                                    [ 'detalle_operacion' => $detalle_operacion] + 
-                                    [ 'valor_operacion' => $valor_operacion] + 
-                                    [ 'valor_debito' => $valor_debito] + 
-                                    [ 'valor_credito' => ($valor_credito * -1) ] + 
-                                    [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
-                                );
-        
-        $valor_debito = 0;
-        $valor_credito = $valor;
-
-        ContabMovimiento::create( $datos +
-                                    [ 'contab_cuenta_id' => $ingresos_cuenta_id ] +
-                                    [ 'detalle_operacion' => $detalle_operacion] + 
-                                    [ 'valor_operacion' => $valor_operacion] + 
-                                    [ 'valor_debito' => $valor_debito] + 
-                                    [ 'valor_credito' => ($valor_credito * -1) ] + 
-                                    [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
-                                );
-
-        */
 
         // 2. Se agregan los registros de pensiones por pagar
-        // $detalle_operacion = 'Generación libreta de pagos. Pensión.';
         $fecha = explode("-",$request->fecha_inicio);
         $num_mes = $fecha[1];
         for( $i=0; $i < $request->numero_periodos ; $i++)
         {
-            $fecha_vencimiento = $fecha[0].'-'.$num_mes.'-01';
-            $cartera = new TesoCarteraEstudiante;
-            $cartera->id_libreta = $registro->id;
-            $cartera->id_estudiante = $request->id_estudiante;
-            $cartera->concepto = $cpto_pension->descripcion; // Debe haber un registro en "inv_productos" tipo "servicio" con este mismo nombre para generar la factura de ventas
-            $cartera->valor_cartera = $request->valor_pension_mensual;
-            $cartera->saldo_pendiente = $request->valor_pension_mensual;
-            $cartera->fecha_vencimiento = $fecha_vencimiento;
-            $cartera->estado = "Pendiente";
-            $cartera->save();
+            $datos['concepto'] = $cpto_pension->descripcion; // Debe haber un registro en "inv_productos" tipo "servicio" con este mismo nombre para generar la factura de ventas
+            $datos['valor_cartera'] = $request->valor_pension_mensual;
+            $datos['saldo_pendiente'] = $request->valor_pension_mensual;
+            $datos['fecha_vencimiento'] = $fecha[0].'-'.$num_mes.'-01';
+            $this->almacenar_linea_registro_cartera( $datos );
+
             $num_mes++;
-
-            /*
-            $consecutivo = $this->get_consecutivo($core_empresa_id, $core_tipo_doc_app_id);
-            // CONTABLIZACION
-            $detalle_operacion = 'Generación libreta de pagos. Pensión. ID_LIBRETA'.$registro->id.'.';
-            $valor = $request->valor_pension_mensual;        
-            $valor_operacion = $valor;
-
-            $valor_debito = $valor;
-            $valor_credito = 0;
-
-            ContabMovimiento::create( $datos +  
-                                    [ 'contab_cuenta_id' => $cxc_cuenta_id ] +
-                                    [ 'detalle_operacion' => $detalle_operacion] + 
-                                    [ 'valor_operacion' => $valor_operacion] + 
-                                    [ 'valor_debito' => $valor_debito] + 
-                                    [ 'valor_credito' => ($valor_credito * -1) ] + 
-                                    [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
-                                );
-
-            $valor_debito = 0;
-            $valor_credito = $valor;
-
-            ContabMovimiento::create( $datos +  
-                                    [ 'contab_cuenta_id' => $ingresos_cuenta_id ] +
-                                    [ 'detalle_operacion' => $detalle_operacion] + 
-                                    [ 'valor_operacion' => $valor_operacion] + 
-                                    [ 'valor_debito' => $valor_debito] + 
-                                    [ 'valor_credito' => ($valor_credito * -1) ] + 
-                                    [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
-                                );
-            */
         }
 
-        return redirect('tesoreria/ver_plan_pagos/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Libreta creada correctamente.');
+        return redirect( 'tesoreria/ver_plan_pagos/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Libreta creada correctamente.');
     }
 
     /**
@@ -371,121 +284,37 @@ class LibretaPagoController extends ModeloController
         $registro = TesoLibretasPago::find($id);
 
         //Borrar los registros anteriores de cartera asociados a la libreta, para luego crearlos otra vez
-        TesoCarteraEstudiante::where('id_libreta',$id)->delete();
+        TesoCarteraEstudiante::where( 'id_libreta', $id )->delete();
 
-        // Borrar registros contables asociados a la libreta 
-        //ContabMovimiento::where('detalle_operacion','LIKE','%ID_LIBRETA'.$id.'.%')->delete();
+        // Crear nuevamente registros de cartera (Plan de pagos)
+        $datos = array_combine( (new TesoCarteraEstudiante)->getFillable(), ['','','','','','','',''] );
 
-        // Se agrega el registro de matrícula por pagar en la cartera de estudiantes
-        $cartera = new TesoCarteraEstudiante;
-        $cartera->id_libreta = $id;
-        $cartera->id_estudiante = $matricula_estudiante->id_estudiante;
-        $cartera->concepto = "Matrícula";
-        $cartera->valor_cartera = $request->valor_matricula;
-        $cartera->saldo_pendiente = $request->valor_matricula;
-        $cartera->fecha_vencimiento = $request->fecha_inicio;
-        $cartera->estado = "Pendiente";
-        $cartera->save();
+        // Datos comunes
+        $datos['id_libreta'] = $id;
+        $datos['id_estudiante'] = $matricula_estudiante->id_estudiante;
+        $datos['estado'] = "Pendiente";
 
+        // Datos del concepto de Matrícula
+        $datos['concepto'] = "Matrícula";
+        $datos['valor_cartera'] = $request->valor_matricula;
+        $datos['saldo_pendiente'] = $request->valor_matricula;
+        $datos['fecha_vencimiento'] = $request->fecha_inicio;
 
-        // Contabilización TODA MANUAL
-        /*$valor = $request->valor_matricula;
-        $core_empresa_id = Auth::user()->empresa_id;
-        $core_tipo_transaccion_id = 21;
-        $core_tipo_doc_app_id = 11;
+        $this->almacenar_linea_registro_cartera( $datos );
 
-        $consecutivo = $this->get_consecutivo($core_empresa_id, $core_tipo_doc_app_id);
-
-        $datos = [ 'core_empresa_id' => $core_empresa_id ] +
-                [ 'core_tipo_transaccion_id' => $core_tipo_transaccion_id ] +
-                [ 'core_tipo_doc_app_id' => $core_tipo_doc_app_id ] + 
-                ['consecutivo' => $consecutivo] +
-                ['fecha' => date('Y-m-d')] +
-                ['core_tercero_id' => $matricula_estudiante->core_tercero_id] + 
-                [ 'codigo_referencia_tercero' => $matricula_estudiante->id_estudiante ];
-
-        // Contabilizar DB = CARTERA vs CR = INGRESOS
-
-        $cxc_cuenta_id = $parametros['cta_cartera_default']; // CxC Clientes
-        $ingresos_cuenta_id = $parametros['cta_ingresos_default']; // Ingresos ventas
-        
-
-        $detalle_operacion = 'Generación libreta de pagos. Matrícula. ID_LIBRETA'.$id.'.';
-        $valor_operacion = $valor;
-
-        $valor_debito = $valor;
-        $valor_credito = 0;
-
-        ContabMovimiento::create( $datos + 
-                                        [ 'contab_cuenta_id' => $cxc_cuenta_id ] +
-                                        [ 'detalle_operacion' => $detalle_operacion] + 
-                                        [ 'valor_operacion' => $valor_operacion] + 
-                                        [ 'valor_debito' => $valor_debito] + 
-                                        [ 'valor_credito' => ($valor_credito * -1) ] + 
-                                        [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
-                                    );
-
-            $valor_debito = 0;
-            $valor_credito = $valor;
-
-            ContabMovimiento::create( $datos + 
-                                        [ 'contab_cuenta_id' => $ingresos_cuenta_id ] +
-                                        [ 'detalle_operacion' => $detalle_operacion] + 
-                                        [ 'valor_operacion' => $valor_operacion] + 
-                                        [ 'valor_debito' => $valor_debito] + 
-                                        [ 'valor_credito' => ($valor_credito * -1) ] + 
-                                        [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
-                                    );
-
-        */
-
-
-        // Se agregan los registros de pensiones por pagar
-        $fecha = explode("-",$request->fecha_inicio);
+        // Datos del concepto de Pensión (por cada mes)
+        $fecha = explode( "-", $request->fecha_inicio);
         $num_mes = $fecha[1];
-        for($i=0;$i<$request->numero_periodos;$i++){
-            $cartera = new TesoCarteraEstudiante;
-            $cartera->id_libreta = $id;
-            $cartera->id_estudiante = $matricula_estudiante->id_estudiante;
-            $cartera->concepto = "Pensión";
-            $cartera->valor_cartera = $request->valor_pension_mensual;
-            $cartera->saldo_pendiente = $request->valor_pension_mensual;
-            $cartera->fecha_vencimiento = $fecha[0].'-'.$num_mes.'-01';
-            $cartera->estado = "Pendiente";
-            $cartera->save();
+        for($i=0;$i<$request->numero_periodos;$i++)
+        {
+            $datos['concepto'] = "Pensión";
+            $datos['valor_cartera'] = $request->valor_pension_mensual;
+            $datos['saldo_pendiente'] = $request->valor_pension_mensual;
+            $datos['fecha_vencimiento'] = $fecha[0].'-'.$num_mes.'-01';
+
+            $this->almacenar_linea_registro_cartera( $datos );
+
             $num_mes++;
-
-            // CONTABLIZACION
-            /*
-            $detalle_operacion = 'Generación libreta de pagos. Pensión. ID_LIBRETA'.$id.'.';
-            $valor = $request->valor_pension_mensual;
-        
-            $valor_operacion = $valor;
-
-            $valor_debito = $valor;
-            $valor_credito = 0;
-            ContabMovimiento::create( $datos + 
-                                        [ 'contab_cuenta_id' => $cxc_cuenta_id ] +
-                                        [ 'detalle_operacion' => $detalle_operacion] + 
-                                        [ 'valor_operacion' => $valor_operacion] + 
-                                        [ 'valor_debito' => $valor_debito] + 
-                                        [ 'valor_credito' => ($valor_credito * -1) ] + 
-                                        [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
-                                    );
-
-        
-            $valor_debito = 0;
-            $valor_credito = $valor;
-
-            ContabMovimiento::create( $datos + 
-                                        [ 'contab_cuenta_id' => $ingresos_cuenta_id ] +
-                                        [ 'detalle_operacion' => $detalle_operacion] + 
-                                        [ 'valor_operacion' => $valor_operacion] + 
-                                        [ 'valor_debito' => $valor_debito] + 
-                                        [ 'valor_credito' => ($valor_credito * -1) ] + 
-                                        [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
-                                    );
-            */
         }
 
         $registro->fill( $request->all() );
@@ -493,6 +322,13 @@ class LibretaPagoController extends ModeloController
         $registro->save();
 
         return redirect('tesoreria/ver_plan_pagos/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Libreta modificada correctamente.');
+    }
+
+    public function almacenar_linea_registro_cartera( array $datos )
+    {
+        $cartera = new TesoCarteraEstudiante;
+        $cartera->fill( $datos );
+        $cartera->save();
     }
 
 

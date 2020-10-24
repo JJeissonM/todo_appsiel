@@ -33,6 +33,17 @@ class Logro extends Model
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","store":"calificaciones_logros","update":"calificaciones_logros/id_fila","cambiar_estado":"a_i/id_fila","eliminar":"calificaciones_eliminar_logro/id_fila"}';
 
+
+
+    /**
+     * Obtener cada logro que pertenece a la calificación.
+     */
+    public function calificacion()
+    {
+        return $this->belongsTo(Calificacion::class);
+    }
+
+
     public static function consultar_registros()
     {
         $select_raw = 'CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")") AS campo6';
@@ -127,14 +138,19 @@ class Logro extends Model
     }
 
 
-    /**
-     * Obtener cada logro que pertenece a la calificación.
-     */
-    public function calificacion()
-    {
-        return $this->belongsTo(Calificacion::class);
-    }
 
+    public static function get_para_boletin( $periodo_id, $curso_id, $asignatura_id, $escala_valoracion_id )
+    {
+        return Logro::where(
+                                [ 
+                                    'periodo_id' => $periodo_id,
+                                    'curso_id' => $curso_id,
+                                    'asignatura_id' => $asignatura_id,
+                                    'escala_valoracion_id' => $escala_valoracion_id,
+                                ]
+                            )
+                        ->get();
+    }
 
     // PADRE = CURSO, HIJO = asignaturas
     public static function get_registros_select_hijo($id_select_padre)

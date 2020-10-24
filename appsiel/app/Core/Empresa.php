@@ -16,6 +16,11 @@ class Empresa extends Model
 
     public $encabezado_tabla = ['Nombre/Razón Social','Establecimiento','Identificación','Dirección','Teléfono','Estado','Acción'];
 
+    public function colegio()
+    {
+        return $this->hasOne('App\Core\Colegio');
+    }
+
     public static function consultar_registros()
     {
     	

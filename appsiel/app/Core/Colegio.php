@@ -13,6 +13,10 @@ class Colegio extends Model
 	
     protected $fillable = ['empresa_id','descripcion', 'slogan', 'resolucion', 'direccion', 'telefonos','ciudad', 'piefirma1','piefirma2', 'maneja_puesto'];
 
+    public function empresa()
+    {
+        return $this->belongsTo('App\Core\Empresa');
+    }
 
     public $encabezado_tabla = ['ID','Descripcion','Slogan','Resolución','Dirección','Teléfono(s)','Acción'];
 

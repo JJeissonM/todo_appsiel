@@ -29,6 +29,18 @@ class Meta extends Model
 
     
 
+    public static function get_para_boletin( $periodo_id, $curso_id, $asignatura_id )
+    {
+        return Meta::where(
+                                [ 
+                                    'periodo_id' => $periodo_id,
+                                    'curso_id' => $curso_id,
+                                    'asignatura_id' => $asignatura_id
+                                ]
+                            )
+                        ->get();
+    }
+
 
     // PADRE = CURSO, HIJO = ASIGNATURAS
     public static function get_registros_select_hijo($id_select_padre)

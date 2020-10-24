@@ -8,12 +8,29 @@ use App\User;
 use App\Matriculas\PeriodoLectivo;
 
 use App\Calificaciones\CursoTieneAsignatura;
+use App\Calificaciones\Curso;
+use App\Calificaciones\Asignatura;
 
 class AsignacionProfesor extends Model
 {
     protected $table = 'sga_asignaciones_profesores';
 
     protected $fillable = ['periodo_lectivo_id', 'id_user', 'curso_id', 'id_asignatura'];
+
+    public function profesor()
+    {
+        return $this->belongsTo( User::class, 'id_user' );
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo( Curso::class, 'curso_id' );
+    }
+
+    public function asignatura()
+    {
+        return $this->belongsTo( Asignatura::class, 'id_asignatura' );
+    }
 
     /*
         Las asignaciones para un profesor
@@ -87,6 +104,15 @@ class AsignacionProfesor extends Model
                                     ->value('id_user');
 
         return User::find($user_id);
+    }
+
+    public static function get_profesor_de_la_asignatura( $curso_id, $asignatura_id, $periodo_lectivo_id )
+    {
+        return AsignacionProfesor::where('periodo_lectivo_id',$periodo_lectivo_id)
+                                    ->where('curso_id',$curso_id)
+                                    ->where('id_asignatura',$asignatura_id)
+                                    ->get()
+                                    ->first();
     }
 
     /*

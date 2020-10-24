@@ -92,16 +92,17 @@ class FacturaEstudianteController extends TransaccionController
 
         $estudiante = Estudiante::find( Input::get('estudiante_id') );
 
-        $responsable_financiero_estudiante = $estudiante->responsableestudiantes->where('tiporesponsable_id', 3)->all();
-
+        $responsable_financiero_estudiante = $estudiante->responsableestudiantes->where('tiporesponsable_id', 3)->first();
         if ( empty( $responsable_financiero_estudiante ) )
         {
             return 'El estudiante no tiene responsable finanaciero asociado.';
         }
 
-        $responsable_financiero_estudiante = $responsable_financiero_estudiante[0];
-
-        $cliente = Cliente::where('core_tercero_id', $responsable_financiero_estudiante->tercero->id )->get()->first();
+        $cliente = Cliente::where('core_tercero_id', $responsable_financiero_estudiante->tercero_id )->get()->first();
+        if ( is_null( $cliente ) )
+        {
+            return 'El responsable finanaciero no esta creado como cliente.';
+        }
 
         foreach ($lista_campos as $key => $value)
         {
@@ -150,16 +151,23 @@ class FacturaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $factura_ventas = new VentaController;
-        $vista = $factura_ventas->store( $request );
+        // Crear documento de Ventas
+        $request['remision_doc_encabezado_id'] = 0;
+        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
-        /*FacturaAuxEstudiante::create( [ 
-                                            [ 'vtas_doc_encabezado_id' => 0 ],
-                                            [ 'matricula_id' => 0 ],
-                                            [ 'cartera_estudiante_id' => 0 ]
-                                     ] );*/
+        // Crear Líneas de registros del documento de ventas
+        $lineas_registros = json_decode($request->lineas_registros);
+        $request['creado_por'] = Auth::user()->email;
+        $request['registros_medio_pago'] = '[]';
+        VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
-        return $vista;
+        FacturaAuxEstudiante::create( [ 
+                                            [ 'vtas_doc_encabezado_id' => $doc_encabezado->id ],
+                                            [ 'matricula_id' => $request->matricula_id ],
+                                            [ 'cartera_estudiante_id' => $request->cartera_id ]
+                                     ] );/**/
+
+        return redirect( 'ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
 
 
     }
