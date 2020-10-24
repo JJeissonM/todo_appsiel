@@ -114,7 +114,6 @@ class BoletinController extends Controller
                         'pdf_boletines_1' => 'Formato # 1 (estándar)',
                         'pdf_boletines_2' => 'Formato # 2 (preescolar)',
                         'pdf_boletines_3' => 'Formato # 3 (moderno)'
-                        //'pdf_boletines_4' => 'Formato # 4 (metas)'
                     ];
 
         if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )

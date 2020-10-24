@@ -93,5 +93,5 @@
 		
 		<div class="page-break"></div>
 		
-	@endforeach {{-- Estudiante --}}
+	@endforeach
 @endsection
