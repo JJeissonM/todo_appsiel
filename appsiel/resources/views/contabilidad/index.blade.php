@@ -148,22 +148,16 @@
 		$(document).ready(function(){
 
 			$('#fecha_corte').change(function(event){
-				cambio_fecha_hasta = 1;
 				$('#fecha_hasta').val( $('#fecha_corte').val() );
-
 				cambiar_enlace_boton_actualizar();
 			});
 
 			$('#fecha_desde').change(function(event){
-				cambio_fecha_desde = 1;
-
 				cambiar_enlace_boton_actualizar();
 			});
 
 			$('#fecha_hasta').change(function(event){
-				cambio_fecha_hasta = 1;
-				$('#fecha_corte').val( $('#fecha_hasta').val() );
-				
+				$('#fecha_corte').val( $('#fecha_hasta').val() );				
 				cambiar_enlace_boton_actualizar();
 			});
 
@@ -171,27 +165,7 @@
 			{
 				var id = getParameterByName('id');
 
-				if ( cambio_fecha_desde && !cambio_fecha_hasta )
-				{
-					var fecha_desde = $('#fecha_desde').val();
-					console.log('actualiza fecha desde');
-					$('.btn_actualizar').attr('href',"{{ url('contabilidad')}}" + "?id=" + id + "&fecha_desde=" + fecha_desde);
-				}
-
-				if ( !cambio_fecha_desde && cambio_fecha_hasta )
-				{
-					var fecha_hasta = $('#fecha_hasta').val();
-					console.log('actualiza fecha hasta');
-					$('.btn_actualizar').attr('href',"{{ url('contabilidad')}}" + "?id=" + id + "&fecha_hasta=" + fecha_hasta);
-				}
-
-				if ( cambio_fecha_desde && cambio_fecha_hasta )
-				{
-					var fecha_desde = $('#fecha_desde').val();
-					var fecha_hasta = $('#fecha_hasta').val();
-					console.log('actualiza las dos fechas fecha');
-					$('.btn_actualizar').attr( 'href', "{{ url('contabilidad')}}" + "?id=" + id + "&fecha_desde=" + fecha_desde + "&fecha_hasta=" + fecha_hasta );
-				}					
+				$('.btn_actualizar').attr( 'href', "{{ url('contabilidad')}}" + "?id=" + id + "&fecha_desde=" + $('#fecha_desde').val() + "&fecha_hasta=" + $('#fecha_hasta').val() );				
 			}
 
 			function getParameterByName( name )
