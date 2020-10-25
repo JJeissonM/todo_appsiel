@@ -184,7 +184,7 @@ class GrupoSanguineo extends Model
     {
         $vec_ids_campos = explode('-', $string_ids_campos);
 
-        if ( !isset( $vec_ids_campos[1] ) )
+        if ( !isset( $vec_ids_campos[1] ) || !isset( $vec_ids_campos[2] ) || !isset( $vec_ids_campos[3] ) )
         {
         	return '';
         }
