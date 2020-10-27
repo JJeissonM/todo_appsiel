@@ -39,7 +39,6 @@ use App\Tesoreria\TesoMovimiento;
 use App\Contabilidad\ContabMovimiento;
 
 use App\CxC\CxcMovimiento;
-use App\CxC\DocumentosPendientes;
 use App\CxC\CxcAbono;
 
 class RecaudoCxcController extends Controller
@@ -128,7 +127,7 @@ class RecaudoCxcController extends Controller
         for ($i=0; $i < $cantidad; $i++) 
         {
             $abono = (float)$lineas_registros[$i]->abono;
-            $registro_documento_pendiente = DocumentosPendientes::find( $lineas_registros[$i]->id_doc );
+            $registro_documento_pendiente = CxcMovimiento::find( $lineas_registros[$i]->id_doc );
             
             // Almacenar registro de abono
             $datos = ['core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id]+
@@ -338,7 +337,7 @@ class RecaudoCxcController extends Controller
         $operador = '=';
         $cadena = Input::get('core_tercero_id');    
 
-        $movimiento = DocumentosPendientes::get_documentos_referencia_tercero( $operador, $cadena );
+        $movimiento = CxcMovimiento::get_documentos_referencia_tercero( $operador, $cadena );
 
         $vista = View::make( 'cxc.incluir.documentos_pendientes', compact('movimiento') )->render();
    
@@ -424,7 +423,7 @@ class RecaudoCxcController extends Controller
 
         foreach ( $documentos_abonados as $linea )
         {
-            $documento_cxc_pendiente = DocumentosPendientes::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
+            $documento_cxc_pendiente = CxcMovimiento::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
                                                         ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                                                         ->where('consecutivo',$linea->doc_cxc_consecutivo)
                                                         ->get()

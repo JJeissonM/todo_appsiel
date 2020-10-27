@@ -10,6 +10,16 @@ class TesoRecaudosLibreta extends Model
 {
     public $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','id_libreta', 'id_cartera', 'concepto', 'fecha_recaudo', 'teso_medio_recaudo_id', 'cantidad_cuotas','valor_recaudo','mi_token','creado_por','modificado_por'];
 
+    public function libreta()
+    {
+        return $this->belongsTo( TesoLibretasPago::class, 'id_libreta' );
+    }
+
+    public function registro_cartera_estudiante()
+    {
+        return $this->belongsTo( TesoCarteraEstudiante::class, 'id_cartera');
+    }
+
     public $encabezado_tabla = ['Fecha','Documento','Estudiante','No. Identificacion','Detalle','Valor','Acción'];
 
     public static function consultar_registros()

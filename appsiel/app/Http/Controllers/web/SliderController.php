@@ -183,7 +183,8 @@ class SliderController extends Controller
                 {
                     if ( $old_image != '' )
                     {
-                        unlink($old_image);
+                        if ( file_exists( $old_image ) )
+                                { unlink($old_image); }
                     }
                     
                     $item->fill(['imagen' => $filename]);
@@ -225,7 +226,8 @@ class SliderController extends Controller
         $flag = $item->delete();
 
         if($flag){
-            unlink($item->imagen);
+            if ( file_exists( $item->imagen ) )
+                { unlink($item->imagen); }
             return redirect()->back()
                 ->with('flash_message',"Item eliminado correctamente");
         }else {

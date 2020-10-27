@@ -197,8 +197,6 @@ $(document).ready(function(){
 
 	$(document).on('change','#tipo',function(){
 
-		console.log( $(this).val() );
-
 		switch( $(this).val() )
 		{
 			case 'Persona natural':

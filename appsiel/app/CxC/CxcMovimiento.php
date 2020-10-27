@@ -11,7 +11,7 @@ class CxcMovimiento extends Model
 {
   //protected $table = '';
 
-  protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','core_empresa_id','core_tercero_id','modelo_referencia_tercero_index','referencia_tercero_id','fecha','fecha_vencimiento','valor_documento','valor_pagado','saldo_pendiente','creado_por','modificado_por','estado'];
+  protected $fillable = [ 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'core_empresa_id', 'core_tercero_id', 'modelo_referencia_tercero_index', 'referencia_tercero_id', 'fecha', 'fecha_vencimiento', 'valor_documento', 'valor_pagado', 'saldo_pendiente', 'creado_por', 'modificado_por', 'estado'];
 
   public static function documentos_pendientes_inmueble($ph_propiedad_id, $fecha_consulta, $operador)
   {
@@ -55,6 +55,21 @@ class CxcMovimiento extends Model
 
         return $movimiento_cxc;
   }
+
+  
+
+    public static function get_documentos_referencia_tercero($operador, $cadena) {
+        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_movimientos.consecutivo) AS documento';
+
+        return CxcMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
+            ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+            ->where('cxc_movimientos.core_empresa_id', Auth::user()->empresa_id)
+            ->where('cxc_movimientos.core_tercero_id', $operador, $cadena)
+            ->where('cxc_movimientos.saldo_pendiente', '<>', 0)
+            ->select('cxc_movimientos.id', 'cxc_movimientos.core_tipo_transaccion_id', 'cxc_movimientos.core_tipo_doc_app_id', 'cxc_movimientos.consecutivo', 'core_terceros.descripcion AS tercero', DB::raw($select_raw), 'cxc_movimientos.fecha', 'cxc_movimientos.fecha_vencimiento', 'cxc_movimientos.valor_documento', 'cxc_movimientos.valor_pagado', 'cxc_movimientos.saldo_pendiente', 'cxc_movimientos.core_tercero_id')
+            ->orderBy('cxc_movimientos.core_tercero_id')
+            ->get()->toArray();
+    }
 
     public static function get_documentos_tercero( $core_tercero_id, $fecha )
     {

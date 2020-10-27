@@ -169,7 +169,9 @@ class ArticleController extends Controller
         $article = Article::find($id);
         if ($article) {
             if ($article->imagen != '')
-                unlink($article->imagen);
+                if ( file_exists( $article->imagen ) )
+                { unlink( $article->imagen ); }
+
             $flag =  $article->delete();
             if ($flag) {
                 return response()->json([

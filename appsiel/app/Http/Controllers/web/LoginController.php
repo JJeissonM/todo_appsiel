@@ -81,9 +81,9 @@ class LoginController extends Controller
             $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
 
             if ($flag !== false) {
-//                if($img != ''){
-//                    unlink($img);
-//                }
+                if ( file_exists( $filename ) )
+                    { unlink($filename); }
+
                 $login->fill(['imagen' => url($filename)]);
             } else {
                 $message = 'Error inesperado al intentar guardar la imagen, por favor intente nuevamente mas tarde';

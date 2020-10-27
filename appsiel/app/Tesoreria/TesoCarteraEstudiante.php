@@ -13,10 +13,19 @@ class TesoCarteraEstudiante extends Model
     protected $fillable = ['id_libreta','id_estudiante','concepto',
     						'valor_cartera','valor_pagado','saldo_pendiente','fecha_vencimiento','estado'];
 
+    public function libreta()
+    {
+        return $this->belongsTo( TesoLibretasPago::class, 'id_libreta');
+    }
+
+    public function estudiante()
+    {
+        return $this->belongsTo( 'App\Matriculas\Estudiante', 'id_estudiante');
+    }
 
     public function facturas_estudiantes()
     {
-        return $this->hasMany('App\Matriculas\FacturaAuxEstudiante','cartera_estudiante_id');
+        return $this->hasMany( 'App\Matriculas\FacturaAuxEstudiante', 'cartera_estudiante_id');
     }
 
     public static function get_cartera_estudiantes_curso( $curso_id, $fecha_vencimiento, $concepto)

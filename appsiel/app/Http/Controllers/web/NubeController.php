@@ -212,7 +212,9 @@ class NubeController extends Controller
         if ($request->type == 'FOLDER') {
             $this->rmDir_rf($request->file_id);
         } else {
-            unlink($request->file_id);
+
+            if ( file_exists( $request->file_id ) )
+                    { unlink($request->file_id); }
         }
         $miga_pan = [
             [
@@ -243,7 +245,8 @@ class NubeController extends Controller
             if (is_dir($archivos_carpeta)) {
                 $this->rmDir_rf($archivos_carpeta);
             } else {
-                unlink($archivos_carpeta);
+                if ( file_exists( $archivos_carpeta ) )
+                    { unlink($archivos_carpeta); }
             }
         }
         rmdir($carpeta);

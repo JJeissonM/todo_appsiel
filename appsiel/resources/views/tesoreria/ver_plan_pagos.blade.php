@@ -62,6 +62,8 @@
 
 								$id_modelo = 234; // Factura de Estudiantes
 								$id_transaccion = 23; // Factura de Ventas
+
+								$cartera_id = $fila->id;
 							?>
 							<tr class="{{$clase_tr}}">
 								<td>{{$fila->concepto}}</td>
@@ -75,13 +77,18 @@
 								<td>
 
 									@if( empty( $fila->facturas_estudiantes->toArray() ) )
-										<a class="btn btn-success btn-xs btn-detail" href="{{ url('facturas_estudiantes/create?id='.Input::get('id').'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion.'&estudiante_id='.$fila->id_estudiante) . '&concepto='.$fila->concepto  . '&cartera_id='.$fila->id  . '&valor_cartera='.$fila->valor_cartera }}" title="Facturar"><i class="fa fa-btn fa-file"></i>&nbsp;Facturar</a>
+										<a class="btn btn-success btn-xs btn-detail" href="{{ url('facturas_estudiantes/create?id='.Input::get('id').'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion.'&estudiante_id='.$fila->id_estudiante) . '&concepto=' . $fila->concepto  . '&libreta_id=' . $libreta->id  . '&cartera_id=' . $cartera_id  . '&valor_cartera='.$fila->valor_cartera }}" title="Facturar"><i class="fa fa-btn fa-file"></i>&nbsp;Facturar</a>
+									@else
+										<?php 
+											$vtas_doc_encabezado_id = $fila->facturas_estudiantes->where('cartera_estudiante_id', $cartera_id)->first()->vtas_doc_encabezado_id;
+										?>
+										<a class="btn btn-info btn-xs btn-detail" href="{{ url( 'vtas_imprimir/' . $vtas_doc_encabezado_id . '?id=13&id_modelo=139&id_transaccion=' . $id_transaccion . '&formato_impresion_id=estandar' ) }}" title="Imprimir Factura" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir Factura</a>
 									@endif
 
-									@if($fila->estado!='Pagada')
-										<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/hacer_recaudo_cartera/'.$fila->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}" title="Recaudar"><i class="fa fa-btn fa-money"></i>&nbsp;Recaudar</a>
+									@if( $fila->estado != 'Pagada' )
+										<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/hacer_recaudo_cartera/'.$cartera_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&vtas_doc_encabezado_id=' . $vtas_doc_encabezado_id ) }}" title="Recaudar"><i class="fa fa-btn fa-money"></i>&nbsp;Recaudar</a>
 									@else
-										<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$fila->id) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
+										<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$cartera_id) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir recaudo</a>
 									@endif
 								</td>
 							</tr>

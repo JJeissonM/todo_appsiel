@@ -107,7 +107,8 @@ class ArchivoController extends Controller
         $result = $a->delete();
         $variables_url = $request->variables_url;
         if ($result) {
-            unlink('docs/' . $a->file);
+            if ( file_exists( 'docs/' . $a->file ) )
+            { unlink('docs/' . $a->file); }
             $message = 'El archivo fue borrado correctamente.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         } else {

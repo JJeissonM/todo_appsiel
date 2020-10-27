@@ -324,7 +324,8 @@ class PaginaController extends Controller
 
                         if ( $old_image != '' )
                         {
-                            unlink($old_image);
+                            if ( file_exists( $old_image ) )
+                                { unlink($old_image); }
                         }
                         
                         $pagina->fill(['favicon' => $filename])->save();

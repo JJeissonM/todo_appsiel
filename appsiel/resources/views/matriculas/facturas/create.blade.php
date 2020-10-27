@@ -65,15 +65,14 @@
 
 				{{ Form::hidden('url_id',Input::get('id')) }}
 				{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
+				<input type="hidden" name="url_id_transaccion" id="url_id_transaccion" value="{{Input::get('id_transaccion')}}" required="required">
 
 				<input type="hidden" name="estudiante_id" id="estudiante_id" value="{{ Input::get('estudiante_id') }}" required="required">
-				<input type="hidden" name="cartera_id" id="cartera_id" value="{{ Input::get('cartera_id') }}" required="required">
 
+				<input type="hidden" name="matricula_id" id="matricula_id" value="{{ $estudiante->matriculas->where('estado','Activo')->first()->id }}">
+				<input type="hidden" name="cartera_estudiante_id" id="cartera_estudiante_id" value="{{ Input::get('cartera_id') }}">
+				<input type="hidden" name="libreta_id" id="libreta_id" value="{{ Input::get('libreta_id') }}">
 
-				<input type="text" name="matricula_id" id="matricula_id" value="{{ $estudiante->matriculas->where('estado','Activo')->first()->id }}">
-				<input type="text" name="cartera_estudiante_id" id="cartera_estudiante_id" value="{{ $estudiante->matriculas->where('estado','Activo')->first()->id }}">
-
-				<input type="hidden" name="url_id_transaccion" id="url_id_transaccion" value="{{Input::get('id_transaccion')}}" required="required">
 
 				{{ Form::hidden('inv_bodega_id_aux',null,['id'=>'inv_bodega_id_aux']) }}
 

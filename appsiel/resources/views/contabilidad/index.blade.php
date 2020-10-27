@@ -10,7 +10,10 @@
 	}
 
 	// Tres meses atrás
-	$fecha_desde = date("Y-m-01", strtotime($fecha_hasta."- 3 month") );
+	//$fecha_desde = date("Y-m-01", strtotime($fecha_hasta."- 3 month") );
+
+	// Primero de enero del año actual
+	$fecha_desde = date("Y-01-01");
 	if ( !is_null( Input::get('fecha_desde') ) )
 	{
 		$fecha_desde = Input::get('fecha_desde');
@@ -52,7 +55,10 @@
 			</h4>
 			<div class="row container-fluid">
 				<div class="col-sm-6">
-
+					<h5>
+						Riqueza Neta
+						<hr>
+					</h5>
 					<?php 
 						echo Lava::render('PieChart', 'Riqueza', 'riqueza-neta-chart');
 					?>
@@ -87,6 +93,11 @@
 				</div>
 
 				<div  class="col-sm-6">
+					<h5>
+						Flujo de Efectivo Neto
+						<hr>
+					</h5>
+
 					<?php 
 						echo Lava::render('PieChart', 'FlujoNeto', 'flujo-neto-chart');
 					?>

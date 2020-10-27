@@ -14,6 +14,11 @@ class TesoLibretasPago extends Model
 
     public $encabezado_tabla = ['ID','Estudiante','Curso','Cód. Matricula','Fecha inicio','Vlr. Matrícula','Vlr. Pensión anual','No. periodos','Vlr. Pensión mes','Estado','Acción'];
 
+    public function estudiante()
+    {
+        return $this->belongsTo( 'App\Matriculas\Estudiante', 'id_estudiante' );
+    }
+
     public static function consultar_registros()
     {       
         $select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS campo1';

@@ -71,7 +71,10 @@ class ClienteController extends Controller
             $filename = "img/" . $name;
             $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
             if ($flag !== false) {
-                unlink($img);
+                if ( file_exists( $img ) )
+                    { unlink($img); }
+
+                
                 $cliente->fill(['logo' => url($filename)]);
             } else {
                 $message = 'Error inesperado al intentar guardar la imagen, por favor intente nuevamente mas tarde';
@@ -112,7 +115,8 @@ class ClienteController extends Controller
         ];
         $result = $cliente->delete();
         if ($result) {
-            unlink($img);
+            if ( file_exists( $img ) )
+                { unlink($img); }
             $message = 'Cliente eliminado correctamente.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
