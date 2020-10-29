@@ -33,6 +33,8 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo']) }}
 
+				<h4> Parámetros de facturas de estudiantes  </h4>
+				<hr>
 				<div class="row">
 
 					<div class="col-md-6">
@@ -60,6 +62,36 @@
 								}
 							?>
 							{{ Form::bsSelect('inv_producto_id_default_pension', $inv_producto_id_default_pension, 'Concepto por defecto para Pensión', App\Inventarios\Servicio::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$transaccion_id_factura_estudiante = 23;
+								if( isset($parametros['transaccion_id_factura_estudiante'] ) )
+								{
+									$transaccion_id_factura_estudiante = $parametros['transaccion_id_factura_estudiante'];
+								}
+							?>
+							{{ Form::bsSelect('transaccion_id_factura_estudiante', $transaccion_id_factura_estudiante, 'Transacción de facturación por defecto', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$modelo_id_factura_estudiante = 234; 
+								if( isset($parametros['modelo_id_factura_estudiante'] ) )
+								{
+									$modelo_id_factura_estudiante = $parametros['modelo_id_factura_estudiante'];
+								}
+							?>
+							{{ Form::bsSelect('modelo_id_factura_estudiante', $modelo_id_factura_estudiante, 'Modelo de factura por defecto', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 

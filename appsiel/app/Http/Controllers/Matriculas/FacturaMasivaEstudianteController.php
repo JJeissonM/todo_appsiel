@@ -26,10 +26,13 @@ use App\CxC\CxcMovimiento;
 use App\CxC\CxcServicio;
 use App\CxC\CxcEstadoCartera;
 
-use App\PropiedadHorizontal\Propiedad;
+use App\Tesoreria\TesoPlanPagosEstudiante;
 
+use App\Matriculas\FacturaAuxEstudiante;
 
 use App\Contabilidad\ContabMovimiento;
+
+use App\Inventarios\InvProducto;
 
 class FacturaMasivaEstudianteController extends TransaccionController
 {
@@ -75,78 +78,114 @@ class FacturaMasivaEstudianteController extends TransaccionController
     /**
      * 
      */
-    public function generar_consulta_preliminar_cxc(Request $request)
+    public function generar_consulta_preliminar(Request $request)
     {
-       $cartera = TesoCarteraEstudiante::where('estado','Pendiente')->where('fecha_vencimiento',$request->fecha)->get();
+        $concepto = InvProducto::find( $request->concepto_id );
+
+        if ( is_null($concepto) )
+        {
+            $planes_pagos = TesoPlanPagosEstudiante::where( 'fecha_vencimiento', '<=', $request->fecha )
+                                        ->orWhere(function ($query) {
+                                                $query->where('estado', '=', 'Pendiente')
+                                                      ->where('estado', '=', 'Vencida');
+                                            })
+                                        ->get();
+        }else{
+            $planes_pagos = TesoPlanPagosEstudiante::where( 'fecha_vencimiento', '<=', $request->fecha )
+                                        ->where( 'concepto', '=', $concepto->descripcion )
+                                        ->orWhere(function ($query) {
+                                                $query->where('estado', '=', 'Pendiente')
+                                                      ->where('estado', '=', 'Vencida');
+                                            })
+                                        ->get();
+        }
+            
+
+        $thead = '<tr>
+                    <th style="display:none;">cartera_id</th>
+                    <th>Estudiante  ' . $request->fecha . '</th> 
+                    <th>Acudiente</th>
+                    <th width="280px">Concepto</th>
+                    <th> Fecha vencimiento </th>
+                    <th> Precio Unit. </th>
+                    <th>Cantidad</th>
+                    <th>Precio Total</th>
+                    <th>&nbsp;</th>
+                </tr>';
 
         $tbody = '';
-        $precio_total=0;
-        $i=0;
-        $cant_registros_cartera = 0;
-        foreach ($cartera as $propiedad) { 
+        $precio_total = 0;
+        $cantidad_estudiantes = 0;
+        $cantidad_registros = 0;
+        $estudiante_anterior_id = 0;
 
-            // SERVICIO DEFAULT
-            // Se verifica si el inmueble tiene un Vlr. de cuota de administración por defecto
-            // Si no lo tiene se usa el concepto asignado por defecto
-            if ( (float)$propiedad['valor_cuota_defecto'] > 0 ) 
+        foreach ( $planes_pagos as $registro_plan_pagos)
+        {
+            $clase_danger = 'danger';
+            $cartera_id = 0;
+
+            $estudiante = $registro_plan_pagos->estudiante;
+
+            $acudiente = $estudiante->responsableestudiantes->where('tiporesponsable_id', 3)->first();
+            
+            $descripcion_acudiente = ' Sin responsable financiero. Asignar responsable aquí: <a href="' . url( 'matriculas/estudiantes/gestionresponsables/estudiante_id?id=1&id_modelo=29&estudiante_id=' . $estudiante->id ) . '" target="_blank" title="Gestionar Responsables" class="btn btn-success btn-xs">  <i class="fa fa-arrow-right"></i> </a>';
+            
+            if ( !is_null( $acudiente ) )
             {
-                $cxc_servicio_id = 0;
-                $precio_venta = (float)$propiedad['valor_cuota_defecto'];
-                $detalle_operacion = 'Cuota de administración - '.$request->descripcion;
-            }else{
-                $servicio_default = CxcServicio::find($propiedad['cxc_servicio_id']);
-                $cxc_servicio_id = $servicio_default->id;
-                $precio_venta = $servicio_default->precio_venta;
-                $detalle_operacion = $servicio_default->descripcion.' - '.$request->descripcion;
+                $clase_danger = '';
+                $cartera_id = $registro_plan_pagos->id;
+                $descripcion_acudiente = $acudiente->tercero->descripcion;
             }
 
-            $tbody.='<tr>
-                        <td>'.$propiedad['codigo'].'</td>
-                        <td>'.$propiedad['descripcion'].'</td>
-                        <td>'.$detalle_operacion.'</td>
-                        <td>$'.number_format($precio_venta, 0, ',', '.').'</td>
+            $btn_imprimir_factura = '';
+            $factura_estudiante = FacturaAuxEstudiante::where( 'cartera_estudiante_id', $registro_plan_pagos->id )->first();
+            if ( !is_null($factura_estudiante)) {
+                $clase_danger = 'danger';
+                $cartera_id = 0;
+                $btn_imprimir_factura = '<a class="btn btn-success btn-xs btn-detail" href="' . url( 'vtas_imprimir/' . $factura_estudiante->vtas_doc_encabezado_id . '?id=13&amp;id_modelo=139&amp;id_transaccion=23&amp;formato_impresion_id=estandar') . '" title="Imprimir Factura" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir Factura</a>';
+            }
+            
+            $tbody .= '<tr class="'.$clase_danger.'">
+                        <td style="display:none;">' . $cartera_id . '</td>
+                        <td>' . $estudiante->tercero->descripcion . '</td>
+                        <td>' . $descripcion_acudiente . '</td>
+                        <td>' . $registro_plan_pagos->concepto . '</td>
+                        <td>' . $registro_plan_pagos->fecha_vencimiento . '</td>
+                        <td>$'. number_format( $registro_plan_pagos->valor_cartera, 0, ',', '.') . '</td>
                         <td>1</td>
-                        <td>$'.number_format($precio_venta, 0, ',', '.').'</td>
+                        <td>$'. number_format( $registro_plan_pagos->valor_cartera, 0, ',', '.') . '</td>
+                        <td> 
+                            <a class="btn btn-primary btn-xs btn-detail" href="' . url( 'tesoreria/ver_plan_pagos/' . $registro_plan_pagos->libreta->id . '?id=3&amp;id_modelo=31&amp;id_transaccion=') . '" title="Consultar libreta" target="_blank"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>
+                            ' . $btn_imprimir_factura . '                            
+                        </td>
                     </tr>';
-            $precio_total+=$precio_venta;
-            $i++;
+            
+            $precio_total += $registro_plan_pagos->valor_cartera;
+            
+            $cantidad_registros++;
 
-            // Por cada servicio asociado
-            $servicios = DB::table('ph_propiedad_tiene_servicios')->where('propiedad_id',$propiedad['id'])->get();
-            //$servicios = $propiedad->servicios();
-            foreach ($servicios as $un_servicio) 
+            if ($estudiante->id != $estudiante_anterior_id )
             {
-                $sql_servicio = DB::table('cxc_servicios')->where('id',$un_servicio->cxc_servicio_id)->get();
-                $el_servicio = $sql_servicio[0];
-
-                if ( $un_servicio->valor_servicio == 0) 
-                {
-                    $precio_venta = $el_servicio->precio_venta;
-                }else{
-                    $precio_venta = $un_servicio->valor_servicio;
-                }
-
-                $tbody.='<tr>
-                            <td>'.$propiedad['codigo'].'</td>
-                            <td>'.$propiedad['descripcion'].'</td>
-                            <td>'.$el_servicio->descripcion.' '.$request->descripcion.'</td>
-                            <td>$'.number_format($precio_venta, 0, ',', '.').'</td>
-                            <td>1</td>
-                            <td>$'.number_format($precio_venta, 0, ',', '.').'</td>
-                        </tr>';
-                $precio_total+=$precio_venta;
-                $i++;
+                $cantidad_estudiantes++;
             }
-                
-            $cant_registros_cartera++;
+
+            $estudiante_anterior_id = $estudiante->id;
+            
         }
 
         $tbody.='<tr>
-                <td colspan="5"></td>
+                <td colspan="6"></td>
                 <td>$'.number_format($precio_total, 0, ',', '.').'</td>
+                <td></td>
             </tr>';
 
-        return [$tbody,number_format($precio_total, 0, ',', '.'),$i,$cant_registros_cartera];
+        return response()->json( [ 
+                        'thead' => $thead,
+                        'tbody' => $tbody,
+                        'precio_total' => number_format($precio_total, 0, ',', '.'),
+                        'cantidad_registros' => $cantidad_registros,
+                        'cantidad_estudiantes' => $cantidad_estudiantes
+                    ] );
     }
 
     /**
@@ -156,33 +195,26 @@ class FacturaMasivaEstudianteController extends TransaccionController
     public function store(Request $request)
     {
         
-        $modelo = Modelo::find($request->url_id_modelo);
-
-        // obtener cualquier registro del modelo, para obtener la table de ese modelo
-        $any_registro = New $modelo->name_space;
-        $nombre_tabla = $any_registro->getTable();
-
-        // LLamar a los campos del modelo para verificar los que son requeridos
-        $lista_campos = $modelo->campos->toArray();
-        for ($i=0; $i < count($lista_campos); $i++) { 
-            if ($lista_campos[$i]['requerido']) {
-                $this->validate($request,[$lista_campos[$i]['name']=>'required']);
-            }
-            if ($lista_campos[$i]['unico']) {
-                $this->validate($request,[$lista_campos[$i]['name']=>'unique:'.$nombre_tabla]);
-            }
-        }
-
-        // SELECCIONAR LAS PROPIEDADES (Inmuebles) ASOCIADAS A LA EMPRESA ENVIADA
-        $propiedades = Propiedad::get_propiedades($request->core_empresa_id);
+        
 
         $tbody = '';
-        $precio_total=0;
-        $i=0;
+        $precio_total = 0;
+        $i = 0;
         $cant_propiedades = 0;
         $primer_registro = 0;
-        // POR CADA PROPIEDAD
-        foreach ( $propiedades as $propiedad ) { 
+        $lineas_registros = json_decode( $request->lineas_registros );
+        // POR CADA LINEA DE REGISTRO
+        foreach ( $lineas_registros as $linea )
+        {
+            if ( (int)$linea->cartera_id == 0 )
+            {
+                continue;
+            }
+
+            $this->crear_factura_estudiante( $linea->cartera_id );
+
+
+            dd( $linea );
 
             $cant_propiedades++;
 
@@ -308,7 +340,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
                 $valor_credito = 0;
 
-                $this->contabilizar_registro( $core_tercero_id,$contab_cuenta_id,$detalle_operacion,$valor_debito,$valor_credito);
+                $this->contabilizar_registro( $core_tercero_id, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
 
                 // INGRESOS (CR)
                 $contab_cuenta_id = $el_servicio->contab_cuenta_id;
@@ -327,12 +359,6 @@ class FacturaMasivaEstudianteController extends TransaccionController
             // 2.2. Se almacena el registro del movimiento en la tabla cxc_movimientos
             $this->datos = array_merge($this->datos,['descripcion' => 'Cobro de servicios '.$request->descripcion]);
             
-
-            $cxc_movimiento = CxcMovimiento::create( $this->datos + 
-                            [ 'core_tercero_id' => $core_tercero_id ] +  
-                            [ 'valor_cartera' => $valor_cartera ] +
-                            [ 'detalle_operacion' => 'Facturación - '.$request->descripcion ]+
-                            [ 'estado' => 'Pendiente' ] );
 
             // Se agrega un nuevo estado de cartera para el movimiento creado
             CxcEstadoCartera::crear($cxc_movimiento->id, $request->fecha, 0, $valor_cartera, 'Pendiente', $request->creado_por, $request->modificado_por);
@@ -368,62 +394,55 @@ class FacturaMasivaEstudianteController extends TransaccionController
         return [$thead, $tbody, number_format($precio_total, 0, ',', '.'), $cant_propiedades, $mensaje, $request->core_empresa_id, $request->core_tipo_doc_app_id, $primer_registro, $consecutivo];
     }
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $fecha_factura )
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $request = $this->preparar_datos_factura_estudiante();
     }
 
 
-    /*public function contabilizar_registro($core_tercero_id,$contab_cuenta_id,$detalle_operacion,$valor_debito,$valor_credito)
+    public function preparar_datos_factura_estudiante( $request )
     {
-        ContabMovimiento::create( $this->datos +
-                            [ 'core_tercero_id' => $core_tercero_id ] + 
-                            [ 'contab_cuenta_id' => $contab_cuenta_id ] +
-                            [ 'detalle_operacion' => $detalle_operacion] + 
-                            [ 'valor_debito' => $valor_debito] + 
-                            [ 'valor_credito' => ($valor_credito * -1) ] + 
-                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
-                        );
-    }*/
+        $id_modelo = config('matriculas.modelo_id_factura_estudiante'); // Factura de Estudiantes
+        $id_transaccion = config('matriculas.transaccion_id_factura_estudiante'); // Factura de Ventas
+
+        $tipo_transaccion = TipoTransaccion::find( $id_transaccion );
+        
+        $datos = new Request;
+        $datos["core_empresa_id"] = Auth::user()->empresa_id;
+        $datos["core_tipo_doc_app_id"] = $tipo_transaccion->tipos_documentos->first()->id; // FV - Factura de venta
+        $datos["fecha"] = $request->fecha;
+        $datos["cliente_input"] = "";
+
+        //$cliente = 
+        $datos["vendedor_id"] = "1";
+        $datos["forma_pago"] = "credito";
+        $datos["fecha_vencimiento"] = "2020-10-27";
+        $datos["inv_bodega_id"] = "1";
+        $datos["orden_compras"] = "";
+        $datos["descripcion"] = "";
+        $datos["consecutivo"] = "";
+        $datos["core_tipo_transaccion_id"] = $id_transaccion;
+        $datos["url_id"] = "3";
+        $datos["url_id_modelo"] = $id_modelo;
+        $datos["url_id_transaccion"] = $id_transaccion;
+        $datos["estudiante_id"] = "19";
+        $datos["matricula_id"] = "14";
+        $datos["cartera_estudiante_id"] = "29";
+        $datos["libreta_id"] = "3";
+        $datos["inv_bodega_id_aux"] = "";
+        $datos["cliente_id"] = "214";
+        $datos["zona_id"] = "1";
+        $datos["clase_cliente_id"] = "1";
+        $datos["core_tercero_id"] = "479";
+        $datos["lista_precios_id"] = "1";
+        $datos["lista_descuentos_id"] = "1";
+        $datos["liquida_impuestos"] = "1";
+        $datos["lineas_registros"] = '[{"inv_motivo_id":"10","inv_bodega_id":"1","inv_producto_id":"25","costo_unitario":"0","precio_unitario":"150000","base_impuesto":"150000","tasa_impuesto":"0","valor_impuesto":"0","base_impuesto_total":"150000","cantidad":"1","costo_total":"0","precio_total":"150000","tasa_descuento":"0","valor_total_descuento":"0","Item":"25 25 - Pensión","Motivo":"Ventas POS","Stock":"0","Cantidad":"1","Precio Unit. (IVA incluido)":"$ 150.000","Dcto. (%)":"0%","Dcto. Tot. ($)":"$ 0","IVA":"0%","Total":"$ 150.000"}]';
+        $datos["lineas_registros_medios_recaudo"] = "0";
+        $datos["tipo_transaccion"] = "factura_directa";
+        $datos["rm_tipo_transaccion_id"] = "24";
+        $datos["dvc_tipo_transaccion_id"] = "34";
+        $datos["saldo_original"] = "0";
+    }
+
 }

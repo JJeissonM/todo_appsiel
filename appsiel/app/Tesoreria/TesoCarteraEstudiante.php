@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 
-// Plan de pagos del estudiante
+// PLAN DE PAGOS del estudiante
 class TesoCarteraEstudiante extends Model
 {
     // NOTA: el campo "concepto" debe cambiar por uno tipo ID, que es el que se usa en la facturas.

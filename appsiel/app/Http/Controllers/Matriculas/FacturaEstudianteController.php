@@ -85,7 +85,7 @@ class FacturaEstudianteController extends TransaccionController
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros( VtasTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
 
-        $lista_campos = ModeloController::get_campos_modelo($this->modelo,'','create');
+        $lista_campos = ModeloController::get_campos_modelo( $this->modelo, '', 'create' );
         $cantidad_campos = count($lista_campos);
 
         $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos, 'create', null);
@@ -95,13 +95,14 @@ class FacturaEstudianteController extends TransaccionController
         $responsable_financiero_estudiante = $estudiante->responsableestudiantes->where('tiporesponsable_id', 3)->first();
         if ( empty( $responsable_financiero_estudiante ) )
         {
-            return 'El estudiante no tiene responsable finanaciero asociado.';
+            return redirect( 'tesoreria/ver_plan_pagos/' . Input::get('libreta_id') . '?id=3&id_modelo=31&id_transaccion=' )->with( 'mensaje_error', 'El estudiante no tiene responsable finanaciero asociado.');
         }
 
         $cliente = Cliente::where('core_tercero_id', $responsable_financiero_estudiante->tercero_id )->get()->first();
         if ( is_null( $cliente ) )
         {
-            return 'El responsable finanaciero no esta creado como cliente.';
+
+            return redirect( 'tesoreria/ver_plan_pagos/' . Input::get('libreta_id') . '?id=3&id_modelo=31&id_transaccion=' )->with( 'mensaje_error', 'El responsable finanaciero no esta creado como cliente.');
         }
 
         foreach ($lista_campos as $key => $value)
@@ -151,6 +152,8 @@ class FacturaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
+        dd( $request->all() );
+
         // Crear documento de Ventas
         $request['remision_doc_encabezado_id'] = 0;
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);

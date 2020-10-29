@@ -220,7 +220,7 @@ class LibretaPagoController extends ModeloController
             $datos['concepto'] = $cpto_pension->descripcion; // Debe haber un registro en "inv_productos" tipo "servicio" con este mismo nombre para generar la factura de ventas
             $datos['valor_cartera'] = $request->valor_pension_mensual;
             $datos['saldo_pendiente'] = $request->valor_pension_mensual;
-            $datos['fecha_vencimiento'] = $fecha[0].'-'.$num_mes.'-01';
+            $datos['fecha_vencimiento'] = $fecha[0].'-'.$num_mes.'-' . $fecha[2];
             $this->almacenar_linea_registro_cartera( $datos );
 
             $num_mes++;
@@ -317,7 +317,7 @@ class LibretaPagoController extends ModeloController
             $datos['concepto'] = "Pensión";
             $datos['valor_cartera'] = $request->valor_pension_mensual;
             $datos['saldo_pendiente'] = $request->valor_pension_mensual;
-            $datos['fecha_vencimiento'] = $fecha[0].'-'.$num_mes.'-01';
+            $datos['fecha_vencimiento'] = $fecha[0] . '-' . $num_mes . '-' . $fecha[2];
 
             $this->almacenar_linea_registro_cartera( $datos );
 
@@ -440,7 +440,6 @@ class LibretaPagoController extends ModeloController
         return redirect( 'tesoreria/ver_plan_pagos/' . $request->id_libreta . '?id=' . $request->url_id . '&id_modelo=' . $url_id_modelo )->with( 'flash_message', 'Recaudo realizado correctamente.' );
     }
 
-
     public function actualizar_registro_cartera_estudiante( $id_cartera, $valor_recaudo )
     {
         $cartera = TesoCarteraEstudiante::find( $id_cartera );
@@ -462,7 +461,7 @@ class LibretaPagoController extends ModeloController
         $suma_matriculas = TesoCarteraEstudiante::where('id_libreta',$id_libreta)->where('concepto','Matrícula')->sum('valor_pagado');
         $suma_pensiones = TesoCarteraEstudiante::where('id_libreta',$id_libreta)->where('concepto','Pensión')->sum('valor_pagado');
         $total_pagado = $suma_matriculas + $suma_pensiones ;
-        $libreta = TesoLibretasPago::find($id_libreta);
+        $libreta = TesoLibretasPago::find( $id_libreta );
         $total_libreta = $libreta->valor_matricula + $libreta->valor_pension_anual;
         if ( $total_pagado == $total_libreta )
         {

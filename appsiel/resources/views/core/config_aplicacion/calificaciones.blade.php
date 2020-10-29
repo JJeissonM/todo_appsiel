@@ -102,6 +102,19 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$permitir_imprimir_boletin_a_estudiantes = 'Si';
+								if( isset($parametros['permitir_imprimir_boletin_a_estudiantes'] ) )
+								{
+									$permitir_imprimir_boletin_a_estudiantes = $parametros['permitir_imprimir_boletin_a_estudiantes'];
+								}
+							?>
+							{{ Form::bsSelect('permitir_imprimir_boletin_a_estudiantes', $permitir_imprimir_boletin_a_estudiantes, 'Permitir imprimir boletin a estudiantes', ['Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								if( isset($parametros['formato_boletin_default'] ) )
 								{
 									$formato_boletin_default = $parametros['formato_boletin_default'];
@@ -121,6 +134,10 @@
 						</div>
 					</div>
 
+				</div>
+
+				<div class="row">
+
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
@@ -135,10 +152,6 @@
 						</div>
 					</div>
 
-				</div>
-
-				<div class="row">
-
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
@@ -150,12 +163,6 @@
 								}
 							?>
 							{{ Form::bsSelect('estudiante_activar_foros_discucion', $estudiante_activar_foros_discucion, 'Estudiante puede participar en foros', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							&nbsp;
 						</div>
 					</div>
 

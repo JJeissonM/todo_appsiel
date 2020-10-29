@@ -14,7 +14,7 @@
 		<div class="marco_formulario">
 		    <h4>Generación de CxC</h4>
 		    <hr>
-			{{ Form::open(['url'=>'propiedad_horizontal','id'=>'form_generar_consulta_preliminar_cxc']) }}
+			{{ Form::open(['url'=>'facturacion_masiva_estudiantes','id'=>'form_generar_consulta_preliminar_cxc']) }}
 				<?php
 				  if (count($form_create['campos'])>0) {
 				  	
@@ -25,10 +25,14 @@
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
+				{{ Form::bsSelect( 'concepto_id', null, 'Concepto a facturar', [ '' => '', config('matriculas.inv_producto_id_default_matricula') => 'Matrícula', config('matriculas.inv_producto_id_default_pension') => 'Pensión' ], [] ) }}
+
+				<br><br>
+
 				{{ Form::hidden('url_id',Input::get('id'))}}
 				{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
 
-				<!-- <button>Enviar</button> -->
+				<input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
 				
 			{{ Form::close() }}
 			<div class="row">
@@ -40,7 +44,7 @@
 			</div>
 
 			<ul class="nav nav-tabs">
-			  <li class="active"><a href="#"><h3>Cuentas de cobro</h4></a></li>
+			  <li class="active"><a href="#"><h3>Facturas de Ventas</h4></a></li>
 			</ul>
 			<br/>
 
@@ -52,13 +56,13 @@
 					            Resultados 
 					        </a>
 					        <a href="#" class="list-group-item">
-					            <span class="glyphicon glyphicon-list"></span> Total registros <span class="badge" id="total_cantidad"></span>
+					            <span class="fa fa-list"></span> Total registros <span class="badge" id="total_cantidad_registros"></span>
 					        </a>
 					        <a href="#" class="list-group-item">
-					            <span class="glyphicon glyphicon-home"></span> Total propiedades <span class="badge" id="total_propiedades"></span>
+					            <span class="fa fa-users"></span> Total estudiantes <span class="badge" id="total_cantidad_estudiantes"></span>
 					        </a>
 					        <a href="#" class="list-group-item">
-					            <span class="glyphicon glyphicon-usd"></span> Valor total <span class="badge" id="total_precio_total"></span>
+					            <span class="fa fa-usd"></span> Valor total <span class="badge" id="total_precio_total"></span>
 					        </a>
 					    </div>
 			  		</div>
@@ -67,7 +71,7 @@
 			  				<div class="alert alert-warning">
                                       <strong>¡Advertencia!</strong> Este proceso no se puede reversar.
                                     </div>
-				  			<input type="checkbox" name="confirmacion" id="confirmacion"> Confirmar la creación de Cuentas de cobro
+				  			<input type="checkbox" name="confirmacion" id="confirmacion"> Confirmar la creación de facturas de ventas
 				  			<br/>
 				  			<button class="btn btn-primary btn-md" id="btn_guardar_cxc">
 								<i class="fa fa-btn fa-save"></i> Crear
@@ -94,25 +98,14 @@
 			</div>
 
 			<h3 id="lbl_tabla" align="center"></h3>
-		    <table class="table table-striped table-bordered" id="ingreso_cxc">
-		        <thead>
-		            <tr>
-		                <th>Propiedad</th>
-		                <th>Propietario</th>
-		                <th width="280px">Servicio</th>
-		                <th> Precio Unit. </th>
-		                <th>Cantidad</th>
-		                <th>Precio Total</th>
-		            </tr>
-		        </thead>
-		        <tbody>
-		            <tr>
-		                <td colspan="4">&nbsp;</td>
-		                <td> &nbsp;</td>
-		                <td> &nbsp;</td>
-		            </tr>
-		        </tbody>
-		    </table>			
+			<div class="table-responsive">
+			    <table class="table table-striped table-bordered" id="tablas_registros">
+			        <thead>
+			        </thead>
+			        <tbody>
+			        </tbody>
+			    </table>
+			</div>		
 		</div>
 	</div>
 	<br/><br/>
@@ -144,20 +137,21 @@
 
 			$('#btn_generar_consulta_preliminar_cxc').click(function(e){			
 				e.preventDefault();
-				if (validar_requeridos()==1) {
+				if ( validar_requeridos() ) {
 					$('#myModal').modal({keyboard: false, backdrop: "static"});
 					var form = $('#form_generar_consulta_preliminar_cxc');
-					var url = form.attr('action').replace("propiedad_horizontal", "propiedad_horizontal/generar_consulta_preliminar_cxc");
+					var url = form.attr('action').replace("facturacion_masiva_estudiantes", "facturacion_masiva_estudiantes/generar_consulta_preliminar");
 
 					data = form.serialize();
-					$.post(url,data,function(resultado){					
+					$.post(url,data,function( resultado ){					
 						$('#myModal').modal('hide');
-						$('#lbl_tabla').html('Detalles');
-						$('#ingreso_cxc').find('tbody').html(resultado[0]);
+						$('#lbl_tabla').html('Detalles <br> <span class="small" style="color: red;"> A las celdas de color rojo no se les generará factura </span>');
+						$('#tablas_registros').find('thead').html( resultado.thead );
+						$('#tablas_registros').find('tbody').html( resultado.tbody );
 						$('#div_alerta').show();
-						$('#total_precio_total').html('$'+resultado[1]);
-						$('#total_cantidad').html(resultado[2]);
-						$('#total_propiedades').html(resultado[3]);
+						$('#total_precio_total').html( '$' + resultado.precio_total );
+						$('#total_cantidad_registros').html( resultado.cantidad_registros );
+						$('#total_cantidad_estudiantes').html( resultado.cantidad_estudiantes );
 					});
 				}else{
 					alert('Faltan campos por llenar.');
@@ -166,7 +160,7 @@
 
 			$('#btn_guardar_cxc').click(function(e){
 				e.preventDefault();
-				if (validar_requeridos()==1) {
+				if ( validar_requeridos() ) {
 					if ($('#confirmacion').is(":checked")) {
 						
 						if(!confirm("¿Realmente desea generar todas las CxC consultadas?")){
@@ -174,19 +168,27 @@
 						}else{
 							$('#myModal').modal({keyboard: false, backdrop: "static"});
 
+							// Se transfoma la tabla a formato JSON a través de un plugin JQuery
+							var table = $('#tablas_registros').tableToJSON();
+
+							// Se asigna el objeto JSON a un campo oculto del formulario
+					 		$('#lineas_registros').val(JSON.stringify(table));
+
 							var form = $('#form_generar_consulta_preliminar_cxc');
 							var url = form.attr('action');
 							data = form.serialize();
+
+
 							$.post(url,data,function(resultado){
 								$('#btn_generar_consulta_preliminar_cxc').hide();		
 								$('#myModal').modal('hide');
 								$('#lbl_tabla').html('CxC generadas');
-								$('#ingreso_cxc').find('thead').html(resultado[0]);
-								$('#ingreso_cxc').find('tbody').html(resultado[1]);
+								$('#tablas_registros').find('thead').html(resultado[0]);
+								$('#tablas_registros').find('tbody').html(resultado[1]);
 
 
 								$('#total_precio_total').html('$'+resultado[2]);
-								$('#total_propiedades').html(resultado[3]);
+								$('#total_estudiantes').html(resultado[3]);
 								$('#div_panel_derecho').html(resultado[4]);
 								
 								$('#btn_imprimir_lote').show(1000);
@@ -208,20 +210,6 @@
 				}								
 			});
 
-			function validar_requeridos(){
-				var control = 1;
-				$( "*[required]" ).each(function() {
-					if ( $(this).val() == "" ) {
-					  $(this).focus();
-					  control = 0;
-					  alert('Este campo es requerido.');
-					  return false;
-					}else{
-					  control = 1;
-					}
-				});
-				return control;
-			}
 		});
 	</script>
 @endsection

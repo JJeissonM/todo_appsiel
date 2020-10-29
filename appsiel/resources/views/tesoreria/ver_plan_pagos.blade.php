@@ -5,6 +5,19 @@
 	<hr>
 
 	@include('layouts.mensajes')
+
+	@if( is_null( $matricula_estudiante->estudiante->responsableestudiantes->where('tiporesponsable_id',3)->first() ) )
+		<div class="container">
+			<div class="alert alert-danger">
+				<b>¡Advertencia!</b>
+				<br>
+				El estudiante no tiene responsable finanaciero asociado. No se podrán generar sus facturas mensuales.
+				<br>
+				Asignar responsable aquí: <a href="{{ url( 'matriculas/estudiantes/gestionresponsables/estudiante_id?id=1&id_modelo=29&estudiante_id=' .$matricula_estudiante->id_estudiante ) }}" target="_blank" title="Gestionar Responsables" class="btn btn-success btn-xs">  <i class="fa fa-arrow-right"></i> </a>
+			</div>
+		</div>
+	@endif
+
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 			
@@ -60,10 +73,12 @@
 										break;
 								}
 
-								$id_modelo = 234; // Factura de Estudiantes
-								$id_transaccion = 23; // Factura de Ventas
+								$id_modelo = config('matriculas.modelo_id_factura_estudiante'); // Factura de Estudiantes
+								$id_transaccion = config('matriculas.transaccion_id_factura_estudiante'); // Factura de Ventas
 
 								$cartera_id = $fila->id;
+
+								$vtas_doc_encabezado_id = 0;
 							?>
 							<tr class="{{$clase_tr}}">
 								<td>{{$fila->concepto}}</td>
@@ -82,13 +97,13 @@
 										<?php 
 											$vtas_doc_encabezado_id = $fila->facturas_estudiantes->where('cartera_estudiante_id', $cartera_id)->first()->vtas_doc_encabezado_id;
 										?>
-										<a class="btn btn-info btn-xs btn-detail" href="{{ url( 'vtas_imprimir/' . $vtas_doc_encabezado_id . '?id=13&id_modelo=139&id_transaccion=' . $id_transaccion . '&formato_impresion_id=estandar' ) }}" title="Imprimir Factura" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir Factura</a>
-									@endif
+										<a class="btn btn-success btn-xs btn-detail" href="{{ url( 'vtas_imprimir/' . $vtas_doc_encabezado_id . '?id=13&id_modelo=139&id_transaccion=' . $id_transaccion . '&formato_impresion_id=estandar' ) }}" title="Imprimir Factura" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir Factura</a>
 
-									@if( $fila->estado != 'Pagada' )
-										<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/hacer_recaudo_cartera/'.$cartera_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&vtas_doc_encabezado_id=' . $vtas_doc_encabezado_id ) }}" title="Recaudar"><i class="fa fa-btn fa-money"></i>&nbsp;Recaudar</a>
-									@else
-										<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$cartera_id) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir recaudo</a>
+										@if( $fila->estado != 'Pagada' )
+											<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/hacer_recaudo_cartera/'.$cartera_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&vtas_doc_encabezado_id=' . $vtas_doc_encabezado_id ) }}" title="Recaudar"><i class="fa fa-btn fa-money"></i>&nbsp;Recaudar</a>
+										@else
+											<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$cartera_id) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir recaudo</a>
+										@endif
 									@endif
 								</td>
 							</tr>

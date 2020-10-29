@@ -49,7 +49,10 @@ Route::resource('matriculas', 'Matriculas\MatriculaController', ['except' => ['s
 
 // FACTURACION ESTUDIANTES
 Route::resource('facturas_estudiantes', 'Matriculas\FacturaEstudianteController');
+
+Route::post('facturacion_masiva_estudiantes/generar_consulta_preliminar', 'Matriculas\FacturaMasivaEstudianteController@generar_consulta_preliminar');
 Route::resource('facturacion_masiva_estudiantes', 'Matriculas\FacturaMasivaEstudianteController');
+
 
 // Observador
 Route::get('/matriculas/estudiantes/observador/valorar_aspectos/{id_estudiante}', 'Matriculas\ObservadorEstudianteController@valorar_aspectos');

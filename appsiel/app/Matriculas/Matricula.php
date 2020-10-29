@@ -59,6 +59,13 @@ class Matricula extends Model
             ->toArray();
     }
 
+    public function get_segun_periodo_lectivo_y_curso( $periodo_lectivo_id, $curso_id )
+    {
+        return Matricula::where( 'periodo_lectivo_id', $periodo_lectivo_id )
+                                ->where( 'curso_id', $curso_id )
+                                ->get();
+    }
+
 
     public static function estudiantes_matriculados($curso_id, $periodo_lectivo_id, $estado_matricula, $estudiante_id = null)
     {

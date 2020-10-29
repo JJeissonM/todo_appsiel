@@ -136,13 +136,16 @@ class BoletinController extends Controller
         $curso = Curso::find( $request->curso_id );
         $periodo = Periodo::find( $request->periodo_id );
 
-        $matriculas = Matricula::where( 'periodo_lectivo_id', $periodo->periodo_lectivo_id )
-                                ->where( 'curso_id', $request->curso_id )
-                                ->get();        
-
+        $obj_matricula = new Matricula;
+        $matriculas = $obj_matricula->get_segun_periodo_lectivo_y_curso( $periodo->periodo_lectivo_id, $request->curso_id );
         if( empty( $matriculas->toArray() ) )
         {
             return redirect( 'calificaciones/boletines/imprimir?id=' . Input::get('id') . '&id_modelo=0' )->with( 'mensaje_error', "No hay regitros de estudiantes matriculados en el curso " . $curso->descripcion );
+        }
+
+        if( !is_null( $request->estudiante_id ) )
+        {
+            $matriculas = $matriculas->where( 'id_estudiante', (int)$request->estudiante_id )->all();
         }
 
         // Parametros enviados        
@@ -156,22 +159,19 @@ class BoletinController extends Controller
 
         $firmas = $this->almacenar_imagenes_de_firmas( $request );
 
-        $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas, $estudiante_id = null );
+        $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
 
 		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas','mostrar_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos') )->render();
-		
-        //echo $view;
         
         // Se prepara el PDF
         $orientacion='portrait';
         $pdf = \App::make('dompdf.wrapper');			
         $pdf->loadHTML(($view))->setPaper($request->tam_hoja,$orientacion);
 
-		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');//stream();
-		
+		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');		
 	}
 
-    public function preparar_datos_boletin( $periodo, $curso, $matriculas, $estudiante_id = null )
+    public function preparar_datos_boletin( $periodo, $curso, $matriculas )
     {
         $asignaturas_asignadas = $curso->asignaturas_asignadas->where('periodo_lectivo_id', $periodo->periodo_lectivo_id);
 

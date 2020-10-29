@@ -15,17 +15,6 @@ class TipoTransaccion extends Model
 
     public $encabezado_tabla = ['ID','App','Descripción','Modelo CRUD','Model Encabezado Docs.','Model Registro Docs.','Model movimientos','Acción','Estado'];
 
-    public static function consultar_registros()
-    {
-    	$registros = TipoTransaccion::leftJoin('sys_aplicaciones','sys_aplicaciones.id','=','sys_tipos_transacciones.core_app_id')
-                    ->leftJoin('sys_modelos','sys_modelos.id','=','sys_tipos_transacciones.core_modelo_id')
-                    ->select('sys_tipos_transacciones.id AS campo1','sys_aplicaciones.descripcion AS campo2','sys_tipos_transacciones.descripcion AS campo3','sys_modelos.descripcion AS campo4','sys_tipos_transacciones.modelo_encabezados_documentos AS campo5','sys_tipos_transacciones.modelo_registros_documentos AS campo6','sys_tipos_transacciones.modelo_movimientos AS campo7','sys_tipos_transacciones.estado AS campo8','sys_tipos_transacciones.id AS campo9')
-                    ->get()
-                    ->toArray();
-
-        return $registros;
-    }
-
     public function tipos_documentos()
     {
         return $this->belongsToMany('App\Core\TipoDocApp','core_transaccion_tiene_documento','core_tipo_transaccion_id','core_tipo_doc_id');
@@ -44,6 +33,17 @@ class TipoTransaccion extends Model
     public function modelo()
     {
         return $this->belongsTo('App\Sistema\Modelo');
+    }
+
+    public static function consultar_registros()
+    {
+    	$registros = TipoTransaccion::leftJoin('sys_aplicaciones','sys_aplicaciones.id','=','sys_tipos_transacciones.core_app_id')
+                    ->leftJoin('sys_modelos','sys_modelos.id','=','sys_tipos_transacciones.core_modelo_id')
+                    ->select('sys_tipos_transacciones.id AS campo1','sys_aplicaciones.descripcion AS campo2','sys_tipos_transacciones.descripcion AS campo3','sys_modelos.descripcion AS campo4','sys_tipos_transacciones.modelo_encabezados_documentos AS campo5','sys_tipos_transacciones.modelo_registros_documentos AS campo6','sys_tipos_transacciones.modelo_movimientos AS campo7','sys_tipos_transacciones.estado AS campo8','sys_tipos_transacciones.id AS campo9')
+                    ->get()
+                    ->toArray();
+
+        return $registros;
     }
 
     public static function opciones_campo_select()
