@@ -22,7 +22,7 @@ class FacturaAuxEstudiante extends Model
     
     public function cartera_estudiante()
     {
-        return $this->belongsTo('App\Tesoreria\TesoCarteraEstudiante', 'cartera_estudiante_id');
+        return $this->belongsTo('App\Tesoreria\TesoPlanPagosEstudiante', 'cartera_estudiante_id');
     }
 
 }

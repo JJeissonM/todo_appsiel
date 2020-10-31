@@ -5,7 +5,7 @@
 	    {{ Form::hidden('id_cartera',$cartera->id) }}
 	    {{ Form::hidden('id_estudiante',$libreta->id_estudiante) }}
 	    {{ Form::hidden('concepto',$cartera->concepto) }}
-	    {{ Form::hidden('core_tercero_id', $estudiante->responsableestudiantes->where('tiporesponsable_id',3)->first()->tercero->id) }}
+	    {{ Form::hidden('core_tercero_id', $estudiante->responsable_financiero()->tercero->id) }}
 
 
 	    {{ Form::hidden( 'vtas_doc_encabezado_id', Input::get('vtas_doc_encabezado_id') ) }}

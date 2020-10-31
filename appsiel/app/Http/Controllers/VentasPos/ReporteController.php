@@ -31,7 +31,7 @@ use App\Sistema\Aplicacion;
 
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoRecaudosLibreta;
-use App\Tesoreria\TesoCarteraEstudiante;
+use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoEntidadFinanciera;

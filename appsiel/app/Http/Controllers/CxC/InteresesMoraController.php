@@ -34,7 +34,6 @@
 
   use App\Tesoreria\TesoLibretasPago;
   use App\Tesoreria\TesoRecaudosLibreta;
-  use App\Tesoreria\TesoCarteraEstudiante;
   use App\Tesoreria\TesoCuentaBancaria;
 
 

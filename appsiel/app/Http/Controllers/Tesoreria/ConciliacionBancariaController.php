@@ -17,7 +17,7 @@ use App\Matriculas\Estudiante;
 
 use App\Core\Tercero;
 
-use App\Tesoreria\TesoCarteraEstudiante;
+use App\Tesoreria\TesoPlanPagosEstudiante;
 
 use App\Matriculas\Matricula;
 
@@ -71,7 +71,7 @@ class ConciliacionBancariaController extends Controller
 
                 $select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS estudiante';
 
-                $cartera_estudiante = TesoCarteraEstudiante::leftJoin('matriculas','matriculas.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')->leftJoin('sga_estudiantes','matriculas.id_estudiante','=','sga_estudiantes.id')->leftJoin('sga_cursos','matriculas.curso_id','=','sga_cursos.id')->where('matriculas.codigo',$codigo_referencia_tercero)->where('matriculas.estado','Activo')->where('teso_cartera_estudiantes.valor_cartera','=',$valor_transaccion)->select(DB::raw($select_raw),'sga_cursos.descripcion AS curso','teso_cartera_estudiantes.valor_cartera','teso_cartera_estudiantes.concepto','teso_cartera_estudiantes.fecha_vencimiento','teso_cartera_estudiantes.id AS id_cartera','teso_cartera_estudiantes.estado')->get()->toArray();
+                $cartera_estudiante = TesoPlanPagosEstudiante::leftJoin('matriculas','matriculas.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')->leftJoin('sga_estudiantes','matriculas.id_estudiante','=','sga_estudiantes.id')->leftJoin('sga_cursos','matriculas.curso_id','=','sga_cursos.id')->where('matriculas.codigo',$codigo_referencia_tercero)->where('matriculas.estado','Activo')->where('teso_cartera_estudiantes.valor_cartera','=',$valor_transaccion)->select(DB::raw($select_raw),'sga_cursos.descripcion AS curso','teso_cartera_estudiantes.valor_cartera','teso_cartera_estudiantes.inv_producto_id','teso_cartera_estudiantes.fecha_vencimiento','teso_cartera_estudiantes.id AS id_cartera','teso_cartera_estudiantes.estado')->get()->toArray();
 
                 $tabla = '<div style="border: 2px solid red;"><h3> Línea # '.$vec_fila[20].' del archivo cargado</h3><table class="table table-striped" style="margin-top: -4px;">
                         <thead>

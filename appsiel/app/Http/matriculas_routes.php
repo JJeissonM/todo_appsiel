@@ -50,6 +50,9 @@ Route::resource('matriculas', 'Matriculas\MatriculaController', ['except' => ['s
 // FACTURACION ESTUDIANTES
 Route::resource('facturas_estudiantes', 'Matriculas\FacturaEstudianteController');
 
+// para pruebas
+Route::get('facturacion_masiva_estudiantes/prueba', 'Matriculas\FacturaMasivaEstudianteController@prueba');
+
 Route::post('facturacion_masiva_estudiantes/generar_consulta_preliminar', 'Matriculas\FacturaMasivaEstudianteController@generar_consulta_preliminar');
 Route::resource('facturacion_masiva_estudiantes', 'Matriculas\FacturaMasivaEstudianteController');
 

@@ -45,7 +45,7 @@ class TesoCarteraEstudiante extends Model
                         ->leftJoin('sga_cursos','sga_cursos.id','=','sga_matriculas.curso_id')
                         ->where('sga_matriculas.curso_id', 'LIKE', $curso_id)
                 		->where('teso_cartera_estudiantes.fecha_vencimiento','LIKE', $cadena)
-                        ->where('teso_cartera_estudiantes.concepto', '=', $concepto)
+                        ->where('teso_cartera_estudiantes.inv_producto_id', '=', $concepto)
                         ->where('teso_cartera_estudiantes.estado','=','Vencida')
                         ->where('teso_cartera_estudiantes.saldo_pendiente','<>',0)
                         ->select(

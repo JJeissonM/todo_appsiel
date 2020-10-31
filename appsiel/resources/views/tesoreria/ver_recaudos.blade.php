@@ -42,7 +42,7 @@
 					<tbody>
 						@foreach($recaudos as $fila)
 							<?php 
-								$cartera = App\Tesoreria\TesoCarteraEstudiante::find($fila->id_cartera);
+								$cartera = App\Tesoreria\TesoPlanPagosEstudiante::find($fila->id_cartera);
 								$fecha = explode("-",$cartera->fecha_vencimiento);
 								$nombre_mes = nombre_mes($fecha[1]);
 							?>

@@ -92,7 +92,8 @@ class FacturaEstudianteController extends TransaccionController
 
         $estudiante = Estudiante::find( Input::get('estudiante_id') );
 
-        $responsable_financiero_estudiante = $estudiante->responsableestudiantes->where('tiporesponsable_id', 3)->first();
+        $responsable_financiero_estudiante = $estudiante->responsable_financiero();
+
         if ( empty( $responsable_financiero_estudiante ) )
         {
             return redirect( 'tesoreria/ver_plan_pagos/' . Input::get('libreta_id') . '?id=3&id_modelo=31&id_transaccion=' )->with( 'mensaje_error', 'El estudiante no tiene responsable finanaciero asociado.');
@@ -125,7 +126,7 @@ class FacturaEstudianteController extends TransaccionController
             }
         }
 
-        $concepto = InvProducto::where( 'descripcion', Input::get('concepto') )->get()->first();
+        $concepto = InvProducto::find( Input::get('inv_producto_id') );
 
         $linea_registro = '<tr class="linea_registro" data-numero_linea="1"><td style="display: none;"><div class="inv_motivo_id">10</div></td><td style="display: none;"><div class="inv_bodega_id">1</div></td><td style="display: none;"><div class="inv_producto_id">'. $concepto->id .'</div></td><td style="display: none;"><div class="costo_unitario">0</div></td><td style="display: none;"><div class="precio_unitario">'. Input::get('valor_cartera') .'</div></td><td style="display: none;"><div class="base_impuesto">'. Input::get('valor_cartera') .'</div></td><td style="display: none;"><div class="tasa_impuesto">0</div></td><td style="display: none;"><div class="valor_impuesto">0</div></td><td style="display: none;"><div class="base_impuesto_total">'. Input::get('valor_cartera') .'</div></td><td style="display: none;"><div class="cantidad">1</div></td><td style="display: none;"><div class="costo_total">0</div></td><td style="display: none;"><div class="precio_total">'. Input::get('valor_cartera') .'</div></td><td style="display: none;"><div class="tasa_descuento">0</div></td><td style="display: none;"><div class="valor_total_descuento">0</div></td><td> &nbsp; </td><td> <span style="background-color:#F7B2A3;">'. $concepto->id .'</span> '. $concepto->id . ' - ' . $concepto->descripcion .'  </td><td>Ventas POS</td><td> 0</td><td>1 </td><td> $ '. number_format( Input::get('valor_cartera'), 0, ',', '.' ) .'</td><td>0% </td><td> $ 0</td><td>0%</td><td> $ '. number_format( Input::get('valor_cartera'), 0, ',', '.' ) .' </td><td> &nbsp; </td></tr>';
 
@@ -140,7 +141,7 @@ class FacturaEstudianteController extends TransaccionController
         $id_transaccion = $this->transaccion->id;
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Crear: '.$this->transaccion->descripcion );
-        //dd($cliente->id);
+
         return view( 'matriculas.facturas.create', compact('form_create','miga_pan','tabla','id_transaccion','motivos', 'cliente', 'responsable_financiero_estudiante', 'estudiante','linea_registro') );
     }
 
@@ -152,7 +153,7 @@ class FacturaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
-        dd( $request->all() );
+        dd( 'vamos' );
 
         // Crear documento de Ventas
         $request['remision_doc_encabezado_id'] = 0;
@@ -167,7 +168,7 @@ class FacturaEstudianteController extends TransaccionController
         $aux_factura = FacturaAuxEstudiante::create( [ 'vtas_doc_encabezado_id' => $doc_encabezado->id,
                                                         'matricula_id' => (int)$request->matricula_id,
                                                         'cartera_estudiante_id' => (int)$request->cartera_estudiante_id
-                                                     ] );/**/
+                                                     ] );
         
         return redirect( 'tesoreria/ver_plan_pagos/' . (int)$request->libreta_id . '?id=3&id_modelo=31&id_transaccion=' )->with( 'flash_message', 'Factura creada correctamente.');
 
@@ -341,3 +342,46 @@ class FacturaEstudianteController extends TransaccionController
     }
 
 }
+
+
+
+/*
+        
+        array:34 [▼
+  "_token" => "IxUvccKD8qxnyeRzlgISLXdTW1DUTwDuvrIqkgIn"
+              "core_empresa_id" => "1"
+              "core_tipo_doc_app_id" => "18"
+              "fecha" => "2020-10-29"
+              "cliente_input" => "VALENTINA  PEREZ CUARTAS"
+              "vendedor_id" => "1"
+              "forma_pago" => "credito"
+              "fecha_vencimiento" => "2020-10-29"
+              "inv_bodega_id" => "1"
+              "orden_compras" => ""
+              "descripcion" => ""
+              "consecutivo" => ""
+              "core_tipo_transaccion_id" => "23"
+              "url_id" => "3"
+              "url_id_modelo" => "234"
+              "url_id_transaccion" => "23"
+              "estudiante_id" => "19"
+              "matricula_id" => "14"
+              "cartera_estudiante_id" => "29"
+              "libreta_id" => "3"
+              "inv_bodega_id_aux" => ""
+              "cliente_id" => "214"
+              "zona_id" => "1"
+              "clase_cliente_id" => "1"
+              "core_tercero_id" => "479"
+              "lista_precios_id" => "1"
+              "lista_descuentos_id" => "1"
+              "liquida_impuestos" => "1"
+              "lineas_registros" => "[{"inv_motivo_id":"10","inv_bodega_id":"1","inv_producto_id":"25","costo_unitario":"0","precio_unitario":"150000","base_impuesto":"150000","tasa_impuesto":"0","valor_impuesto":"0","base_impuesto_total":"150000","cantidad":"1","costo_total":"0","precio_total":"150000","tasa_descuento":"0","valor_total_descuento":"0","Item":"25 25 - Pensión","Motivo":"Ventas POS","Stock":"0","Cantidad":"1","Precio Unit. (IVA incluido)":"$ 150.000","Dcto. (%)":"0%","Dcto. Tot. ($)":"$ 0","IVA":"0%","Total":"$ 150.000"}]"
+              "lineas_registros_medios_recaudo" => "0"
+              "tipo_transaccion" => "factura_directa"
+              "rm_tipo_transaccion_id" => "24"
+              "dvc_tipo_transaccion_id" => "34"
+              "saldo_original" => "0"
+            ]
+
+*/

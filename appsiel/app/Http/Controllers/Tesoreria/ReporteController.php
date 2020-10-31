@@ -33,7 +33,7 @@ use App\Sistema\Aplicacion;
 
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoRecaudosLibreta;
-use App\Tesoreria\TesoCarteraEstudiante;
+use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoEntidadFinanciera;
@@ -125,7 +125,7 @@ class ReporteController extends TesoreriaController
     {
         // 1ro. PROCESO QUE ACTUALIZA LAS CARTERAS, asignando EL ESTADO Vencida
         // Actualizar las cartera con fechas inferior a hoy y con estado distinto a Pagada
-        TesoCarteraEstudiante::where('fecha_vencimiento', '<', date('Y-m-d'))
+        TesoPlanPagosEstudiante::where('fecha_vencimiento', '<', date('Y-m-d'))
             ->where('estado', '<>', 'Pagada')
             ->update(['estado' => 'Vencida']);
     }
@@ -173,11 +173,11 @@ class ReporteController extends TesoreriaController
                 $num_mes = "0" . $num_mes;
             }
             $cadena = "%-" . $num_mes . "-%";
-            $cartera_matriculas[$num_mes] = TesoCarteraEstudiante::leftJoin('teso_libretas_pagos','teso_libretas_pagos.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
+            $cartera_matriculas[$num_mes] = TesoPlanPagosEstudiante::leftJoin('teso_libretas_pagos','teso_libretas_pagos.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
                 ->leftJoin('sga_matriculas','sga_matriculas.id','=','teso_libretas_pagos.matricula_id')
                 ->where('curso_id', 'LIKE', $curso_id)
                 ->where('teso_cartera_estudiantes.fecha_vencimiento', 'LIKE', $cadena)
-                ->where('teso_cartera_estudiantes.concepto', '=', $concepto)
+                ->where('teso_cartera_estudiantes.inv_producto_id', '=', $concepto)
                 ->where('teso_cartera_estudiantes.estado', '=', 'Vencida')
                 ->sum('teso_cartera_estudiantes.saldo_pendiente');
 
@@ -211,11 +211,11 @@ class ReporteController extends TesoreriaController
                 $num_mes = "0" . $num_mes;
             }
             $cadena = "%-" . $num_mes . "-%";
-            $cartera_pensiones[$num_mes] = TesoCarteraEstudiante::leftJoin('teso_libretas_pagos','teso_libretas_pagos.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
+            $cartera_pensiones[$num_mes] = TesoPlanPagosEstudiante::leftJoin('teso_libretas_pagos','teso_libretas_pagos.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
                 ->leftJoin('sga_matriculas','sga_matriculas.id','=','teso_libretas_pagos.matricula_id')
                 ->where('curso_id', 'LIKE', $curso_id)
                 ->where('teso_cartera_estudiantes.fecha_vencimiento', 'LIKE', $cadena)
-                ->where('teso_cartera_estudiantes.concepto', '=', $concepto)
+                ->where('teso_cartera_estudiantes.inv_producto_id', '=', $concepto)
                 ->where('teso_cartera_estudiantes.estado', '=', 'Vencida')
                 ->sum('teso_cartera_estudiantes.saldo_pendiente');
 
@@ -611,7 +611,7 @@ class ReporteController extends TesoreriaController
                             <td>'.$una_matricula->nombre_completo.' ('.$una_matricula->codigo.')'.'</td>';
 
                 //Matrícula
-                $cartera_matricula = TesoCarteraEstudiante::where('id_libreta', $libreta_pagos->id)
+                $cartera_matricula = TesoPlanPagosEstudiante::where('id_libreta', $libreta_pagos->id)
                 											->where('concepto','Matrícula')
                 											->get();
 
@@ -653,7 +653,7 @@ class ReporteController extends TesoreriaController
                 }
 
                 //Pensión
-                $cartera_pension = TesoCarteraEstudiante::where('id_libreta',$libreta_pagos->id)->where('concepto','Pensión')->orderBy('fecha_vencimiento','ASC')->get();
+                $cartera_pension = TesoPlanPagosEstudiante::where('id_libreta',$libreta_pagos->id)->where('concepto','Pensión')->orderBy('fecha_vencimiento','ASC')->get();
                 
                 for ($i=2; $i < 12; $i++) 
                 { 

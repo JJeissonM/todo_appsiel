@@ -30,7 +30,7 @@ use App\Core\Tercero;
 
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoRecaudosLibreta;
-use App\Tesoreria\TesoCarteraEstudiante;
+use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoEntidadFinanciera;
@@ -60,7 +60,7 @@ class LibretaPagoController extends ModeloController
     {
         // 1ro. PROCESO QUE ACTUALIZA LAS CARTERAS, asignando EL ESTADO Vencida
         // Actualizar las cartera con fechas inferior a hoy y con estado distinto a Pagada
-        TesoCarteraEstudiante::where('fecha_vencimiento','<', date('Y-m-d'))
+        TesoPlanPagosEstudiante::where('fecha_vencimiento','<', date('Y-m-d'))
           ->where('estado','<>', 'Pagada')
           ->update(['estado' => 'Vencida']);
     }
@@ -102,7 +102,7 @@ class LibretaPagoController extends ModeloController
                     ->addNumberColumn('Valor');
 
         // Obtención de datos
-        $concepto = 'Matrícula';
+        $inv_producto_id = config('matriculas.inv_producto_id_default_matricula');
         $num_mes="01";
         $cartera_matriculas=array();
         for($i=0;$i<12;$i++){
@@ -110,10 +110,10 @@ class LibretaPagoController extends ModeloController
                 $num_mes="0".$num_mes;
             }
             $cadena="%-".$num_mes."-%";
-            $cartera_matriculas[$num_mes] = TesoCarteraEstudiante::leftJoin('sga_matriculas','sga_matriculas.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
+            $cartera_matriculas[$num_mes] = TesoPlanPagosEstudiante::leftJoin('sga_matriculas','sga_matriculas.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
                 ->where('curso_id','LIKE', $curso_id)
                 ->where('teso_cartera_estudiantes.fecha_vencimiento','LIKE',$cadena)
-                ->where('teso_cartera_estudiantes.concepto','=', $concepto)
+                ->where('teso_cartera_estudiantes.inv_producto_id','=', $inv_producto_id)
                 ->where('teso_cartera_estudiantes.estado','=','Vencida')
                 ->sum('teso_cartera_estudiantes.saldo_pendiente');
 
@@ -139,7 +139,7 @@ class LibretaPagoController extends ModeloController
                     ->addNumberColumn('Valor');
 
         // Obtención de datos
-        $concepto = 'Pensión';
+        $inv_producto_id = config('matriculas.inv_producto_id_default_pension');
         $num_mes="01";
         $cartera_pensiones=array();
         for($i=0;$i<12;$i++){
@@ -147,10 +147,10 @@ class LibretaPagoController extends ModeloController
                 $num_mes="0".$num_mes;
             }
             $cadena="%-".$num_mes."-%";
-            $cartera_pensiones[$num_mes] = TesoCarteraEstudiante::leftJoin('sga_matriculas','sga_matriculas.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
+            $cartera_pensiones[$num_mes] = TesoPlanPagosEstudiante::leftJoin('sga_matriculas','sga_matriculas.id_estudiante','=','teso_cartera_estudiantes.id_estudiante')
                 ->where('curso_id','LIKE', $curso_id)
                 ->where('teso_cartera_estudiantes.fecha_vencimiento','LIKE',$cadena)
-                ->where('teso_cartera_estudiantes.concepto','=',$concepto)
+                ->where('teso_cartera_estudiantes.inv_producto_id','=',$inv_producto_id)
                 ->where('teso_cartera_estudiantes.estado','=','Vencida')
                 ->sum('teso_cartera_estudiantes.saldo_pendiente');
 
@@ -184,19 +184,14 @@ class LibretaPagoController extends ModeloController
      * @return \Illuminate\Http\Response
      */
     public function store( Request $request )
-    {   
-        $parametros = config('matriculas'); // Llamar al archivo de configuración del core
-
+    {
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
         $request['id_estudiante'] = $matricula_estudiante->id_estudiante;
         $registro = $this->crear_nuevo_registro( $request );
 
-        $cpto_matricula = InvProducto::find( $parametros['inv_producto_id_default_matricula'] );
-        $cpto_pension = InvProducto::find( $parametros['inv_producto_id_default_pension'] );
-
         /*      SE CREAN LOS REGISTROS DE CARTERA DE ESTUDIANTES (Plan de Pagos)    */
         
-        $datos = array_combine( (new TesoCarteraEstudiante)->getFillable(), ['','','','','','','',''] );
+        $datos = array_combine( (new TesoPlanPagosEstudiante)->getFillable(), ['','','','','','','',''] );
 
         // Datos comunes
         $datos['id_libreta'] = $registro->id;
@@ -205,10 +200,11 @@ class LibretaPagoController extends ModeloController
 
         // 1. Se agrega el registro de matrícula por pagar en la cartera de estudiantes
         // Datos del concepto de Matrícula
-        $datos['concepto'] = $cpto_matricula->descripcion; // Debe haber un registro en "inv_productos" tipo "servicio" con este mismo nombre para generar la factura de ventas
+        $datos['inv_producto_id'] = (int)config('matriculas.inv_producto_id_default_matricula');
         $datos['valor_cartera'] = $request->valor_matricula;
         $datos['saldo_pendiente'] = $request->valor_matricula;
         $datos['fecha_vencimiento'] = $request->fecha_inicio;
+
         $this->almacenar_linea_registro_cartera( $datos );
 
 
@@ -217,7 +213,7 @@ class LibretaPagoController extends ModeloController
         $num_mes = $fecha[1];
         for( $i=0; $i < $request->numero_periodos ; $i++)
         {
-            $datos['concepto'] = $cpto_pension->descripcion; // Debe haber un registro en "inv_productos" tipo "servicio" con este mismo nombre para generar la factura de ventas
+            $datos['inv_producto_id'] = (int)config('matriculas.inv_producto_id_default_pension');
             $datos['valor_cartera'] = $request->valor_pension_mensual;
             $datos['saldo_pendiente'] = $request->valor_pension_mensual;
             $datos['fecha_vencimiento'] = $fecha[0].'-'.$num_mes.'-' . $fecha[2];
@@ -291,10 +287,10 @@ class LibretaPagoController extends ModeloController
         $registro = TesoLibretasPago::find($id);
 
         //Borrar los registros anteriores de cartera asociados a la libreta, para luego crearlos otra vez
-        TesoCarteraEstudiante::where( 'id_libreta', $id )->delete();
+        TesoPlanPagosEstudiante::where( 'id_libreta', $id )->delete();
 
         // Crear nuevamente registros de cartera (Plan de pagos)
-        $datos = array_combine( (new TesoCarteraEstudiante)->getFillable(), ['','','','','','','',''] );
+        $datos = array_combine( (new TesoPlanPagosEstudiante)->getFillable(), ['','','','','','','',''] );
 
         // Datos comunes
         $datos['id_libreta'] = $id;
@@ -302,7 +298,7 @@ class LibretaPagoController extends ModeloController
         $datos['estado'] = "Pendiente";
 
         // Datos del concepto de Matrícula
-        $datos['concepto'] = "Matrícula";
+        $datos['inv_producto_id'] = config('matriculas.inv_producto_id_default_matricula');
         $datos['valor_cartera'] = $request->valor_matricula;
         $datos['saldo_pendiente'] = $request->valor_matricula;
         $datos['fecha_vencimiento'] = $request->fecha_inicio;
@@ -314,7 +310,7 @@ class LibretaPagoController extends ModeloController
         $num_mes = $fecha[1];
         for($i=0;$i<$request->numero_periodos;$i++)
         {
-            $datos['concepto'] = "Pensión";
+            $datos['inv_producto_id'] = config('matriculas.inv_producto_id_default_pension');
             $datos['valor_cartera'] = $request->valor_pension_mensual;
             $datos['saldo_pendiente'] = $request->valor_pension_mensual;
             $datos['fecha_vencimiento'] = $fecha[0] . '-' . $num_mes . '-' . $fecha[2];
@@ -333,7 +329,7 @@ class LibretaPagoController extends ModeloController
 
     public function almacenar_linea_registro_cartera( array $datos )
     {
-        $cartera = new TesoCarteraEstudiante;
+        $cartera = new TesoPlanPagosEstudiante;
         $cartera->fill( $datos );
         $cartera->save();
     }
@@ -375,7 +371,7 @@ class LibretaPagoController extends ModeloController
 
     public function hacer_recaudo_cartera($id_cartera)
     {        
-        $cartera = TesoCarteraEstudiante::find($id_cartera);
+        $cartera = TesoPlanPagosEstudiante::find($id_cartera);
         $libreta = TesoLibretasPago::find($cartera->id_libreta);
         $estudiante = Estudiante::find( $libreta->id_estudiante );
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
@@ -442,7 +438,7 @@ class LibretaPagoController extends ModeloController
 
     public function actualizar_registro_cartera_estudiante( $id_cartera, $valor_recaudo )
     {
-        $cartera = TesoCarteraEstudiante::find( $id_cartera );
+        $cartera = TesoPlanPagosEstudiante::find( $id_cartera );
         $valor_pagado = $cartera->valor_pagado + $valor_recaudo;
         $saldo_pendiente = $cartera->saldo_pendiente - $valor_recaudo;
         $estado = $cartera->estado;
@@ -458,8 +454,8 @@ class LibretaPagoController extends ModeloController
 
     public function actualizar_estado_libreta_pago( $id_libreta )
     {
-        $suma_matriculas = TesoCarteraEstudiante::where('id_libreta',$id_libreta)->where('concepto','Matrícula')->sum('valor_pagado');
-        $suma_pensiones = TesoCarteraEstudiante::where('id_libreta',$id_libreta)->where('concepto','Pensión')->sum('valor_pagado');
+        $suma_matriculas = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $id_libreta, config('matriculas.inv_producto_id_default_matricula') );
+        $suma_pensiones = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $id_libreta, config('matriculas.inv_producto_id_default_pension') );
         $total_pagado = $suma_matriculas + $suma_pensiones ;
         $libreta = TesoLibretasPago::find( $id_libreta );
         $total_libreta = $libreta->valor_matricula + $libreta->valor_pension_anual;
@@ -494,7 +490,7 @@ class LibretaPagoController extends ModeloController
 
     public function ver_plan_pagos($id_libreta)
     {
-        TesoCarteraEstudiante::where('fecha_vencimiento','<', date('Y-m-d'))
+        TesoPlanPagosEstudiante::where('fecha_vencimiento','<', date('Y-m-d'))
                                   ->where('estado','<>', 'Pagada')
                                   ->update(['estado' => 'Vencida']);
 
@@ -502,7 +498,7 @@ class LibretaPagoController extends ModeloController
 
         $matricula_estudiante = Matricula::get_registro_impresion( $libreta->matricula_id );
 
-        $cartera = TesoCarteraEstudiante::where('id_libreta',$id_libreta)->get();
+        $plan_pagos = TesoPlanPagosEstudiante::where('id_libreta',$id_libreta)->get();
 
         $miga_pan = [
                 ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],
@@ -510,12 +506,12 @@ class LibretaPagoController extends ModeloController
                 ['url'=>'NO','etiqueta'=>'Plan de pagos']
             ];
 
-        return view('tesoreria.ver_plan_pagos', compact('matricula_estudiante', 'libreta', 'cartera', 'miga_pan') );
+        return view('tesoreria.ver_plan_pagos', compact('matricula_estudiante', 'libreta', 'plan_pagos', 'miga_pan') );
     }
 
     public function imprimir_comprobante_recaudo($id_cartera){
         //echo $id;
-        $cartera = TesoCarteraEstudiante::find($id_cartera);
+        $cartera = TesoPlanPagosEstudiante::find($id_cartera);
         $recaudos = TesoRecaudosLibreta::where('id_cartera',$id_cartera)->get();
         //$empresa = Empresa::find(Auth::user()->empresa_id);
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get();
@@ -552,7 +548,7 @@ class LibretaPagoController extends ModeloController
 
         // 3ro. Reversar valor que el recaudo descontó en cartera
         // Se Actualiza la cartera del estudiante
-        $cartera = TesoCarteraEstudiante::find($recaudo->id_cartera);
+        $cartera = TesoPlanPagosEstudiante::find($recaudo->id_cartera);
         $nuevo_valor_pagado = $cartera->valor_pagado - $recaudo->valor_recaudo;
         $saldo_pendiente = $cartera->saldo_pendiente + $recaudo->valor_recaudo;
         $estado = $cartera->estado;
@@ -570,8 +566,9 @@ class LibretaPagoController extends ModeloController
         $cartera->save();
 
         // Se verifica si la libreta no tiene cartera pendiente y se inactiva
-        $suma_matriculas = TesoCarteraEstudiante::where('id_libreta',$recaudo->id_libreta)->where('concepto','Matrícula')->sum('valor_pagado');
-        $suma_pensiones = TesoCarteraEstudiante::where('id_libreta',$recaudo->id_libreta)->where('concepto','Pensión')->sum('valor_pagado');
+        $suma_matriculas = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $recaudo->id_libreta, config('matriculas.inv_producto_id_default_matricula') );
+        $suma_pensiones = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $recaudo->id_libreta, config('matriculas.inv_producto_id_default_pension') );
+
         $total_pagado = $suma_matriculas + $suma_pensiones ;
         $libreta = TesoLibretasPago::find($recaudo->id_libreta);
         $total_libreta = $libreta->valor_matricula + $libreta->valor_pension_anual;
@@ -604,7 +601,7 @@ class LibretaPagoController extends ModeloController
         // Borrar registros contables
         ContabMovimiento::where('detalle_operacion', 'LIKE', '% ID_LIBRETA'.$id.'.%')->delete();
         //Borrar Cartera asociada a la libreta
-        TesoCarteraEstudiante::where('id_libreta',$id)->delete();
+        TesoPlanPagosEstudiante::where('id_libreta',$id)->delete();
         //Borrar Libreta
         TesoLibretasPago::find($id)->delete();
 

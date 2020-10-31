@@ -19,7 +19,7 @@ class Matricula extends Model
 
     protected $fillable = ['periodo_lectivo_id', 'id_colegio', 'codigo', 'fecha_matricula', 'id_estudiante', 'curso_id', 'requisitos', 'estado'];
 
-    public $encabezado_tabla = ['Código', 'Fecha matricula', 'Año lectivo', 'Nombres', 'Apellidos', 'Doc. Identidad', 'Email/Usuario', 'Acudiente', 'Curso', 'Estado', 'Acción'];
+    public $encabezado_tabla = [ 'Código', 'Fecha matricula', 'Año lectivo', 'Nombres', 'Apellidos', 'Doc. Identidad', 'Email/Usuario', 'Acudiente', 'Curso', 'Estado', 'Acción'];
 
     public function periodo_lectivo()
     {

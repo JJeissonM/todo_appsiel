@@ -6,7 +6,7 @@
 
 	@include('layouts.mensajes')
 
-	@if( is_null( $matricula_estudiante->estudiante->responsableestudiantes->where('tiporesponsable_id',3)->first() ) )
+	@if( is_null( $matricula_estudiante->estudiante->responsable_financiero() ) )
 		<div class="container">
 			<div class="alert alert-danger">
 				<b>¡Advertencia!</b>
@@ -50,7 +50,7 @@
 				<table class="table table-bordered table-striped">
 					{{ Form::bsTableHeader(['Concepto','Mes','Vlr. a pagar','Vlr. pagado','Saldo pendiente','Fecha vencimiento','Estado','Acción']) }}
 					<tbody>
-						@foreach($cartera as $fila)
+						@foreach($plan_pagos as $fila)
 							<?php
 								$fecha = explode("-",$fila->fecha_vencimiento);
 								$nombre_mes = nombre_mes($fecha[1]);
@@ -81,7 +81,7 @@
 								$vtas_doc_encabezado_id = 0;
 							?>
 							<tr class="{{$clase_tr}}">
-								<td>{{$fila->concepto}}</td>
+								<td>{{ $fila->concepto->descripcion }}</td>
 								<td>{{$nombre_mes}}</td>
 								<td><?php echo number_format($fila->valor_cartera, 0, ',', '.')?></td>
 								<td><?php echo number_format($fila->valor_pagado, 0, ',', '.')?></td>
@@ -92,7 +92,7 @@
 								<td>
 
 									@if( empty( $fila->facturas_estudiantes->toArray() ) )
-										<a class="btn btn-success btn-xs btn-detail" href="{{ url('facturas_estudiantes/create?id='.Input::get('id').'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion.'&estudiante_id='.$fila->id_estudiante) . '&concepto=' . $fila->concepto  . '&libreta_id=' . $libreta->id  . '&cartera_id=' . $cartera_id  . '&valor_cartera='.$fila->valor_cartera }}" title="Facturar"><i class="fa fa-btn fa-file"></i>&nbsp;Facturar</a>
+										<a class="btn btn-success btn-xs btn-detail" href="{{ url('facturas_estudiantes/create?id='.Input::get('id').'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion.'&estudiante_id='.$fila->id_estudiante) . '&inv_producto_id=' . $fila->inv_producto_id  . '&libreta_id=' . $libreta->id  . '&cartera_id=' . $cartera_id  . '&valor_cartera='.$fila->valor_cartera }}" title="Facturar"><i class="fa fa-btn fa-file"></i>&nbsp;Facturar</a>
 									@else
 										<?php 
 											$vtas_doc_encabezado_id = $fila->facturas_estudiantes->where('cartera_estudiante_id', $cartera_id)->first()->vtas_doc_encabezado_id;

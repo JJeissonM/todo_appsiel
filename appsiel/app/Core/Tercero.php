@@ -13,6 +13,7 @@ use Storage;
 
 use App\Matriculas\Estudiante;
 use App\Sistema\Modelo;
+use App\Ventas\Cliente;
 
 class Tercero extends Model
 {
@@ -40,6 +41,11 @@ class Tercero extends Model
     public function cuenta_cxp()
     {
         return $this->belongsTo('App\Contabilidad\ContabCuenta', 'contab_cxp_cta_id');
+    }
+
+    public function cliente()
+    {
+        return Cliente::where( 'core_tercero_id', $this->id )->get()->first();
     }
 
     public static function consultar_registros()

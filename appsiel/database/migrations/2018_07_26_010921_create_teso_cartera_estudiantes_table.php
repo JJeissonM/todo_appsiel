@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTesoCarteraEstudiantesTable extends Migration
+class CreateTesoPlanPagosEstudiantesTable extends Migration
 {
     /**
      * Run the migrations.

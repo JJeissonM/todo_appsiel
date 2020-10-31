@@ -12,7 +12,7 @@
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
-		    <h4>Generación de CxC</h4>
+		    <h4>Generación de facturas de ventas</h4>
 		    <hr>
 			{{ Form::open(['url'=>'facturacion_masiva_estudiantes','id'=>'form_generar_consulta_preliminar_cxc']) }}
 				<?php
@@ -137,78 +137,108 @@
 
 			$('#btn_generar_consulta_preliminar_cxc').click(function(e){			
 				e.preventDefault();
-				if ( validar_requeridos() ) {
-					$('#myModal').modal({keyboard: false, backdrop: "static"});
-					var form = $('#form_generar_consulta_preliminar_cxc');
-					var url = form.attr('action').replace("facturacion_masiva_estudiantes", "facturacion_masiva_estudiantes/generar_consulta_preliminar");
 
-					data = form.serialize();
-					$.post(url,data,function( resultado ){					
-						$('#myModal').modal('hide');
-						$('#lbl_tabla').html('Detalles <br> <span class="small" style="color: red;"> A las celdas de color rojo no se les generará factura </span>');
-						$('#tablas_registros').find('thead').html( resultado.thead );
-						$('#tablas_registros').find('tbody').html( resultado.tbody );
-						$('#div_alerta').show();
-						$('#total_precio_total').html( '$' + resultado.precio_total );
-						$('#total_cantidad_registros').html( resultado.cantidad_registros );
-						$('#total_cantidad_estudiantes').html( resultado.cantidad_estudiantes );
-					});
-				}else{
-					alert('Faltan campos por llenar.');
+				if ( !validar_requeridos() )
+				{
+					return false;
 				}
+
+				$('#myModal').modal({keyboard: false, backdrop: "static"});
+				var form = $('#form_generar_consulta_preliminar_cxc');
+				var url = form.attr('action').replace("facturacion_masiva_estudiantes", "facturacion_masiva_estudiantes/generar_consulta_preliminar");
+
+				data = form.serialize();
+				$.post(url,data,function( resultado ){					
+					$('#myModal').modal('hide');
+					$('#lbl_tabla').html('Detalles <br> <span class="small" style="color: red;"> Nota: A las filas de color rojo no se les creará factura </span>');
+					$('#tablas_registros').find('thead').html( resultado.thead );
+					$('#tablas_registros').find('tbody').html( resultado.tbody );
+					$('#div_alerta').show();
+					$('#total_precio_total').html( '$' + resultado.precio_total );
+					$('#total_cantidad_registros').html( resultado.cantidad_registros );
+					$('#total_cantidad_estudiantes').html( resultado.cantidad_estudiantes );
+				});
 			});
 
 			$('#btn_guardar_cxc').click(function(e){
 				e.preventDefault();
-				if ( validar_requeridos() ) {
-					if ($('#confirmacion').is(":checked")) {
-						
-						if(!confirm("¿Realmente desea generar todas las CxC consultadas?")){
-							return false;
-						}else{
-							$('#myModal').modal({keyboard: false, backdrop: "static"});
 
-							// Se transfoma la tabla a formato JSON a través de un plugin JQuery
-							var table = $('#tablas_registros').tableToJSON();
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
 
-							// Se asigna el objeto JSON a un campo oculto del formulario
-					 		$('#lineas_registros').val(JSON.stringify(table));
-
-							var form = $('#form_generar_consulta_preliminar_cxc');
-							var url = form.attr('action');
-							data = form.serialize();
-
-
-							$.post(url,data,function(resultado){
-								$('#btn_generar_consulta_preliminar_cxc').hide();		
-								$('#myModal').modal('hide');
-								$('#lbl_tabla').html('CxC generadas');
-								$('#tablas_registros').find('thead').html(resultado[0]);
-								$('#tablas_registros').find('tbody').html(resultado[1]);
-
-
-								$('#total_precio_total').html('$'+resultado[2]);
-								$('#total_estudiantes').html(resultado[3]);
-								$('#div_panel_derecho').html(resultado[4]);
-								
-								$('#btn_imprimir_lote').show(1000);
-								var enlace = $('#btn_imprimir_lote').find('a').attr('href');
-								$('#btn_imprimir_lote').find('a').attr('href',enlace+'/'+resultado[5]+'/'+resultado[6]+'/'+resultado[7]+'/'+resultado[8]);
-								
-								$('#btn_enviar_email_lote').show(1000);
-								var enlace2 = $('#btn_enviar_email_lote').find('a').attr('href');
-								$('#btn_enviar_email_lote').find('a').attr('href',enlace2+'/'+resultado[5]+'/'+resultado[6]+'/'+resultado[7]+'/'+resultado[8]);
-							});
-						}						
-						
+				if ($('#confirmacion').is(":checked"))
+				{
+					
+					if(!confirm("¿Realmente desea generar todas las facturas consultadas?")){
+						return false;
 					}else{
-						$('#confirmacion').focus();
-						alert('Debe confirmar la creación de CxC.');
-					}
+						$('#myModal').modal({keyboard: false, backdrop: "static"});
+
+						// Se transfoma la tabla a formato JSON a través de un plugin JQuery
+						var table = $('#tablas_registros').tableToJSON();
+
+						// Se asigna el objeto JSON a un campo oculto del formulario
+				 		$('#lineas_registros').val(JSON.stringify(table));
+
+						var form = $('#form_generar_consulta_preliminar_cxc');
+						var url = form.attr('action');
+						data = form.serialize();
+
+						$('#tablas_registros').find('thead').html( '' );
+						$('#tablas_registros').find('tbody').html( '' );
+
+						$.post(url,data,function(resultado){
+							$('#btn_generar_consulta_preliminar_cxc').hide();		
+							$('#myModal').modal('hide');
+							$('#lbl_tabla').html('Facturas generadas');
+							$('#tablas_registros').find('thead').html( resultado.thead );
+							$('#tablas_registros').find('tbody').html( resultado.tbody );
+
+
+							$('#total_precio_total').html( '$' + resultado.precio_total );
+							$('#total_cantidad_registros').html( resultado.cantidad_facturas );
+							$('#total_cantidad_estudiantes').html( resultado.cantidad_estudiantes );
+
+							$('#div_panel_derecho').html( resultado.mensaje );
+							
+							$('#btn_imprimir_lote').show(1000);
+							var enlace = $('#btn_imprimir_lote').find('a').attr('href');
+							$('#btn_imprimir_lote').find('a').attr( 'href', enlace );
+							
+							$('#btn_enviar_email_lote').show(1000);
+							var enlace2 = $('#btn_enviar_email_lote').find('a').attr('href');
+							$('#btn_enviar_email_lote').find('a').attr( 'href', enlace2 );
+						});
+					}						
+					
 				}else{
-					alert('Faltan campos por llenar.');
-				}								
+					$('#confirmacion').focus();
+					alert('Debe confirmar la creación de todas las facturas.');
+				}
 			});
+
+			$(document).on('click', '.btn_eliminar', function(event) {
+				event.preventDefault();
+				var fila = $(this).closest("tr");
+				fila.remove();
+				$('#btn_nuevo').show();
+				calcular_totales();
+			});
+
+			function calcular_totales()
+			{
+				var sum = 0.0;
+				$('.valor').each(function() {
+				    sum += parseFloat( $(this).text() );
+				});
+
+				$('#total_facturas').text( "$" + sum.toFixed(2) );
+				$('#total_precio_total').html( "$" + sum.toFixed(2) );
+				$('#total_cantidad_registros').html( '-' );
+				$('#total_cantidad_estudiantes').html( '-' );
+			}
 
 		});
 	</script>

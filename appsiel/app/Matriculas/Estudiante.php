@@ -40,14 +40,24 @@ class Estudiante extends Model
         return $this->hasMany(Matricula::class,'id_estudiante');
     }
 
+    public function matricula_activa()
+    {
+        return Matricula::where( 'id_estudiante', $this->id )->where( 'estado', 'Activo' )->first();
+    }
+
     public function registros_cartera()
     {
-        return $this->hasMany('App\Tesoreria\TesoCarteraEstudiante', 'id_estudiante');
+        return $this->hasMany('App\Tesoreria\TesoPlanPagosEstudiante', 'id_estudiante');
     }
 
     public function responsableestudiantes()
     {
         return $this->hasMany(Responsableestudiante::class);
+    }
+
+    public function responsable_financiero()
+    {
+        return Responsableestudiante::where( 'estudiante_id', $this->id )->where('tiporesponsable_id',3)->first();
     }
 
     public function getTercero($id)

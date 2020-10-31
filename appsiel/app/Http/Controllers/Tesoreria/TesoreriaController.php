@@ -32,7 +32,7 @@ use App\Core\Tercero;
 
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoRecaudosLibreta;
-use App\Tesoreria\TesoCarteraEstudiante;
+use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoEntidadFinanciera;
@@ -52,7 +52,7 @@ class TesoreriaController extends TransaccionController
     public function actualizar_estado_cartera(){
         // 1ro. PROCESO QUE ACTUALIZA LAS CARTERAS, asignando EL ESTADO Vencida
         // Actualizar las cartera con fechas inferior a hoy y con estado distinto a Pagada
-        TesoCarteraEstudiante::where('fecha_vencimiento','<', date('Y-m-d'))
+        TesoPlanPagosEstudiante::where('fecha_vencimiento','<', date('Y-m-d'))
           ->where('estado','<>', 'Pagada')
           ->update(['estado' => 'Vencida']);
     }
@@ -100,7 +100,7 @@ class TesoreriaController extends TransaccionController
         switch ($tipo) {
             case 'mes':
 
-                $carteras = TesoCarteraEstudiante::get_cartera_estudiantes_curso( Input::get('curso_id'), $fecha_vencimiento, $concepto);
+                $carteras = TesoPlanPagosEstudiante::get_cartera_estudiantes_curso( Input::get('curso_id'), $fecha_vencimiento, $concepto);
                 break;
             case 'estudiante':
                 # code...

@@ -20,9 +20,9 @@ class VtasDocEncabezado extends Model
     public $vistas = '{"index":"layouts.index3"}';
 
 
-    public function tipo_documento_transaccion()
+    public function tipo_documento_app()
     {
-        return $this->belongsTo('App\Core\TipoDocApp','core_tipo_doc_app_id');
+        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
     }
 
     public function tercero()

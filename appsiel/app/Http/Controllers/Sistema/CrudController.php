@@ -96,7 +96,7 @@ class CrudController extends Controller
 
         CrudController::validar_requeridos_y_unicos($request, $modelo);
 
-        // Se verifican si vienen campos con valores tipo arra_tokeny. Normalmente para los campos tipo chexkbox.
+        // Se verifican si vienen campos con valores tipo array. Normalmente para los campos tipo chexkbox.
         foreach ( $request->all() as $key => $value)
         {
             if ( is_array($value) )
@@ -130,8 +130,6 @@ class CrudController extends Controller
     // !!! Revisar cuando se está editando
     public static function validar_requeridos_y_unicos($request, $registro_modelo)
     {
-
-
         // Obtener la table de ese modelo
         //$any_registro = New $registro_modelo->name_space;
         $nombre_tabla = $registro_modelo->getTable();       

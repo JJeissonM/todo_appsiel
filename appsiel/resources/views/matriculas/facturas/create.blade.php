@@ -91,8 +91,8 @@
 
 				<input type="hidden" name="tipo_transaccion"  id="tipo_transaccion" value="factura_directa">
 
-				<input type="hidden" name="rm_tipo_transaccion_id"  id="rm_tipo_transaccion_id" value="{{config('ventas')['rm_tipo_transaccion_id']}}">
-				<input type="hidden" name="dvc_tipo_transaccion_id"  id="dvc_tipo_transaccion_id" value="{{config('ventas')['dvc_tipo_transaccion_id']}}">
+				<input type="hidden" name="rm_tipo_transaccion_id"  id="rm_tipo_transaccion_id" value="{{ config('ventas.rm_tipo_transaccion_id') }}">
+				<input type="hidden" name="dvc_tipo_transaccion_id"  id="dvc_tipo_transaccion_id" value="{{ config('ventas.dvc_tipo_transaccion_id') }}">
 
 				<input type="hidden" name="saldo_original" id="saldo_original" value="0">
 

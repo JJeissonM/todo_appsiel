@@ -2921,11 +2921,11 @@
       'descripcion' => 'Cuotas y Préstamos',
       'url' => 'web',
       'parent' => 0,
-      'orden' => 3,
+      'orden' => 4,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2019-04-29 17:36:31',
-      'updated_at' => '2019-04-29 17:36:31',
+      'updated_at' => '2020-10-27 04:43:00',
     ),
     195 => 
     array (
@@ -2966,11 +2966,11 @@
       'descripcion' => 'Informes y listados',
       'url' => 'web',
       'parent' => 0,
-      'orden' => 4,
+      'orden' => 6,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2019-04-29 17:38:04',
-      'updated_at' => '2019-04-29 17:38:04',
+      'updated_at' => '2020-10-27 04:43:25',
     ),
     198 => 
     array (
@@ -2996,11 +2996,11 @@
       'descripcion' => 'Catálogos',
       'url' => 'web',
       'parent' => 0,
-      'orden' => 5,
+      'orden' => 20,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2019-04-29 17:39:19',
-      'updated_at' => '2019-04-29 17:39:19',
+      'updated_at' => '2020-10-27 04:44:51',
     ),
     200 => 
     array (
@@ -6301,6 +6301,156 @@
       'fa_icon' => '',
       'created_at' => '2020-10-12 08:48:59',
       'updated_at' => '2020-10-12 08:49:33',
+    ),
+    420 => 
+    array (
+      'id' => 446,
+      'core_app_id' => 8,
+      'modelo_id' => 220,
+      'name' => 'inv_servicios',
+      'descripcion' => 'Servicios',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-26 05:10:05',
+      'updated_at' => '2020-10-26 05:13:23',
+    ),
+    421 => 
+    array (
+      'id' => 447,
+      'core_app_id' => 3,
+      'modelo_id' => 0,
+      'name' => 'teso_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-26 13:55:50',
+      'updated_at' => '2020-10-26 13:56:05',
+    ),
+    422 => 
+    array (
+      'id' => 448,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_procesos',
+      'descripcion' => 'Procesos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 8,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-27 04:26:56',
+      'updated_at' => '2020-10-27 04:43:49',
+    ),
+    423 => 
+    array (
+      'id' => 449,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_contabilizacion',
+      'descripcion' => 'Contabilización',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-27 04:27:57',
+      'updated_at' => '2020-10-27 04:44:25',
+    ),
+    424 => 
+    array (
+      'id' => 450,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_proc_provisiones',
+      'descripcion' => 'Cálculo provisiones',
+      'url' => 'web',
+      'parent' => 448,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-27 16:24:30',
+      'updated_at' => '2020-10-27 16:24:30',
+    ),
+    425 => 
+    array (
+      'id' => 451,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_proc_parafiscales',
+      'descripcion' => 'Cálculo parafiscales',
+      'url' => 'web',
+      'parent' => 448,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-27 16:24:30',
+      'updated_at' => '2020-10-27 16:24:30',
+    ),
+    426 => 
+    array (
+      'id' => 452,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_proc_planilla_integrada',
+      'descripcion' => 'Generación planilla integrada',
+      'url' => 'web',
+      'parent' => 448,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-27 16:24:30',
+      'updated_at' => '2020-10-27 16:24:30',
+    ),
+    427 => 
+    array (
+      'id' => 453,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_contab_nomina',
+      'descripcion' => 'Causación nómina',
+      'url' => 'web',
+      'parent' => 449,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-27 16:24:30',
+      'updated_at' => '2020-10-27 16:24:30',
+    ),
+    428 => 
+    array (
+      'id' => 454,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_contab_provisiones',
+      'descripcion' => 'Provisión mensual',
+      'url' => 'web',
+      'parent' => 449,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-27 16:24:30',
+      'updated_at' => '2020-10-27 16:24:30',
+    ),
+    429 => 
+    array (
+      'id' => 455,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_contab_parafiscales',
+      'descripcion' => 'Parafiscales',
+      'url' => 'web',
+      'parent' => 449,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-10-27 16:24:30',
+      'updated_at' => '2020-10-27 16:24:30',
     ),
   ),
   'roles' => 
@@ -15207,6 +15357,228 @@
       'orden' => 0,
       'permission_id' => 445,
       'role_id' => 1,
+    ),
+    1460 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 446,
+      'role_id' => 1,
+    ),
+    1461 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 446,
+      'role_id' => 3,
+    ),
+    1462 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 446,
+      'role_id' => 7,
+    ),
+    1463 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 446,
+      'role_id' => 17,
+    ),
+    1464 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 447,
+      'role_id' => 1,
+    ),
+    1465 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 448,
+      'role_id' => 1,
+    ),
+    1466 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 448,
+      'role_id' => 3,
+    ),
+    1467 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 448,
+      'role_id' => 9,
+    ),
+    1468 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 448,
+      'role_id' => 17,
+    ),
+    1469 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 449,
+      'role_id' => 1,
+    ),
+    1470 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 449,
+      'role_id' => 3,
+    ),
+    1471 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 449,
+      'role_id' => 9,
+    ),
+    1472 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 449,
+      'role_id' => 17,
+    ),
+    1473 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 450,
+      'role_id' => 1,
+    ),
+    1474 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 450,
+      'role_id' => 3,
+    ),
+    1475 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 450,
+      'role_id' => 9,
+    ),
+    1476 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 450,
+      'role_id' => 17,
+    ),
+    1477 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 451,
+      'role_id' => 1,
+    ),
+    1478 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 451,
+      'role_id' => 3,
+    ),
+    1479 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 451,
+      'role_id' => 9,
+    ),
+    1480 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 451,
+      'role_id' => 17,
+    ),
+    1481 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 452,
+      'role_id' => 1,
+    ),
+    1482 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 452,
+      'role_id' => 3,
+    ),
+    1483 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 452,
+      'role_id' => 9,
+    ),
+    1484 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 452,
+      'role_id' => 17,
+    ),
+    1485 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 453,
+      'role_id' => 1,
+    ),
+    1486 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 453,
+      'role_id' => 3,
+    ),
+    1487 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 453,
+      'role_id' => 9,
+    ),
+    1488 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 453,
+      'role_id' => 17,
+    ),
+    1489 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 454,
+      'role_id' => 1,
+    ),
+    1490 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 454,
+      'role_id' => 3,
+    ),
+    1491 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 454,
+      'role_id' => 9,
+    ),
+    1492 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 454,
+      'role_id' => 17,
+    ),
+    1493 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 455,
+      'role_id' => 1,
+    ),
+    1494 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 455,
+      'role_id' => 3,
+    ),
+    1495 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 455,
+      'role_id' => 9,
+    ),
+    1496 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 455,
+      'role_id' => 17,
     ),
   ),
   'sys_campos' => 
@@ -30412,6 +30784,22 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'unico' => 0,
       'created_at' => '2020-10-24 12:59:11',
       'updated_at' => '2020-10-24 13:29:40',
+    ),
+    943 => 
+    array (
+      'id' => 949,
+      'descripcion' => 'Lbl texto explicación factura masiva estudiantes',
+      'tipo' => 'personalizado',
+      'name' => 'lbl_texto_explicacion_factura_masiva_estudiantes',
+      'opciones' => ' ',
+      'value' => '<div style="padding-left: 15px; color:red;"> El sistema va a generar las facturas con base en el plan de pago de cada estudiante. <br> Se tomarán los registros <u>Pendientes</u>  con <u>Fecha de vencimiento</u> menor o igual a la fecha seleccionada.</div>',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-10-27 08:16:30',
+      'updated_at' => '2020-10-27 08:24:59',
     ),
   ),
   'sys_modelos' => 
@@ -48670,6 +49058,20 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 13,
       'core_campo_id' => 948,
     ),
+    1875 => 
+    array (
+      'id' => 2158,
+      'orden' => 0,
+      'core_modelo_id' => 235,
+      'core_campo_id' => 949,
+    ),
+    1876 => 
+    array (
+      'id' => 2159,
+      'orden' => 1,
+      'core_modelo_id' => 235,
+      'core_campo_id' => 97,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -49729,7 +50131,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 1,
       'estado' => 'Activo',
       'created_at' => '2018-09-06 14:23:20',
-      'updated_at' => '2019-12-02 09:22:20',
+      'updated_at' => '2020-10-26 04:09:09',
     ),
     1 => 
     array (
@@ -49750,14 +50152,14 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'id' => 3,
       'core_app_id' => 8,
       'core_modelo_id' => 25,
-      'descripcion' => 'Salida de inventario',
+      'descripcion' => 'Salida de almacén',
       'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
       'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
       'modelo_movimientos' => 'App\\Inventarios\\InvMovimiento',
       'orden' => 3,
       'estado' => 'Activo',
       'created_at' => '2018-09-06 05:00:00',
-      'updated_at' => '2019-12-07 07:51:54',
+      'updated_at' => '2020-10-26 04:09:00',
     ),
     3 => 
     array (

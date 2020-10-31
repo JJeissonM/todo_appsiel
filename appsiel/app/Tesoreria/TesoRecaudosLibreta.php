@@ -17,7 +17,7 @@ class TesoRecaudosLibreta extends Model
 
     public function registro_cartera_estudiante()
     {
-        return $this->belongsTo( TesoCarteraEstudiante::class, 'id_cartera');
+        return $this->belongsTo( TesoPlanPagosEstudiante::class, 'id_cartera');
     }
 
     public $encabezado_tabla = ['Fecha','Documento','Estudiante','No. Identificacion','Detalle','Valor','Acción'];

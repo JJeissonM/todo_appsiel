@@ -32,7 +32,7 @@ use App\AcademicoDocente\PlanClaseRegistro;
 use App\Cuestionarios\ActividadEscolar;
 
 use App\Tesoreria\TesoLibretasPago;
-use App\Tesoreria\TesoCarteraEstudiante;
+use App\Tesoreria\TesoPlanPagosEstudiante;
 
 
 class AcademicoEstudianteController extends Controller
@@ -255,7 +255,7 @@ class AcademicoEstudianteController extends Controller
 
         $estudiante = $this->estudiante;
 
-        $cartera = TesoCarteraEstudiante::where('id_libreta',$id_libreta)->get();
+        $cartera = TesoPlanPagosEstudiante::where('id_libreta',$id_libreta)->get();
 
         $matricula = Matricula::where('estado','Activo')->where('id_estudiante',$estudiante->id)->get()->first();
 
