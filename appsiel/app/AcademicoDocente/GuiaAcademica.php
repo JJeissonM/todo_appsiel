@@ -202,7 +202,6 @@ class GuiaAcademica extends Model
     }
 
 
-
     public static function store_adicional( $datos, $registro )
     {
 

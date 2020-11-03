@@ -26,6 +26,24 @@ class TerceroController extends Controller
         return Tercero::where('numero_identificacion',$numero_identificacion)->value('numero_identificacion');
     }
 
+    // Para Inscripciones de estudiantes
+    public function validar_numero_identificacion2( $numero_identificacion )
+    {
+        $tercero = Tercero::leftJoin('sga_inscripciones','sga_inscripciones.core_tercero_id','=','core_terceros.id')
+                            ->where('numero_identificacion',$numero_identificacion)
+                            ->where('sga_inscripciones.estado','<>','Pendiente')
+                            ->get()
+                            ->first();
+
+        if ( is_null($tercero) )
+        {
+            return '';
+        }
+                            //dd($tercero);
+        $tercero->email2 = $tercero->email;
+        return response()->json( $tercero->toArray() );
+    }
+
 
     public function validar_email( $email )
     {

@@ -7,13 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Core\Tercero;
+use App\Matriculas\Estudiante;
+
 class Inscripcion extends Model
 {
     protected $table = 'sga_inscripciones';
 
-    protected $fillable = ['codigo','fecha','sga_grado_id','core_tercero_id','genero','fecha_nacimiento','ciudad_nacimiento','origen','enterado_por','observacion','acudiente','colegio_anterior','creado_por','modificado_por'];
+    protected $fillable = [ 'codigo', 'fecha', 'sga_grado_id', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'origen', 'enterado_por', 'observacion', 'acudiente', 'colegio_anterior', 'estado', 'creado_por', 'modificado_por'];
 
-    public $encabezado_tabla = ['Candidato','Identificación','Código inscripción','Fecha','Grado','Observación','Acción'];
+    public $encabezado_tabla = [ 'Candidato', 'Identificación', 'Código inscripción', 'Fecha', 'Grado', 'Origen', 'Estado', 'Acción'];
+ 
+    public $urls_acciones = '{"create":"web/create","store":"matriculas/inscripcion","update":"matriculas/inscripcion/id_fila","edit":"web/id_fila/edit","show":"matriculas/inscripcion/id_fila","imprimir":"matriculas/inscripcion_print/id_fila","eliminar":"matriculas/inscripciones/eliminar/id_fila"}';
+
+    // El archivo js debe estar en la carpeta public
+    public $archivo_js = 'assets/js/matriculas/inscripcion.js';
 
     public static function consultar_registros()
     {
@@ -29,8 +37,9 @@ class Inscripcion extends Model
                             'sga_inscripciones.codigo AS campo3',
                             'sga_inscripciones.fecha AS campo4',
                             'sga_grados.descripcion AS campo5',
-                            'sga_inscripciones.observacion AS campo6',
-                            'sga_inscripciones.id AS campo7')
+                            'sga_inscripciones.origen AS campo6',
+                            'sga_inscripciones.estado AS campo7',
+                            'sga_inscripciones.id AS campo8')
                     ->get()
                     ->toArray();
 
@@ -40,19 +49,107 @@ class Inscripcion extends Model
     public static function get_opciones_select_inscritos()
     {
         $registros = Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
+                                ->where( 'sga_inscripciones.estado', 'Pendiente' )
                                 ->select(
                                             'sga_inscripciones.id AS id_inscripcion',
+                                            'core_terceros.numero_identificacion',
                                             DB::raw( 'core_terceros.descripcion AS tercero' ) 
                                         )
+                                ->distinct( 'core_terceros.id' )
                                 ->get();
 
         $candidatos['']='';
         foreach ($registros as $opcion){
-            $candidatos[$opcion->id_inscripcion] = $opcion->tercero;
+            $candidatos[$opcion->id_inscripcion] = $opcion->numero_identificacion . ' ' . $opcion->tercero;
         }
 
         return $candidatos;
     }
+
+    public function store_adicional( $datos, $registro )
+    {
+        // cambiar nombre de campo email
+        dd( $registro->tercero );
+        $registro->tercero->email = $datos['email2'];
+        $registro->tercero->save();
+    }
+
+    public function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+        $estudiante = Estudiante::get_estudiante_x_tercero_id( $registro->core_tercero_id );
+
+        // Si el tercero es un Estudiante, entonces ya tiene matrícula y su inscripción no se puede modificar.
+        if ( !is_null( $estudiante ) )
+        {
+            return [ null,'La incripción ya tiene matrículas asociadas. No puede ser modificada. Estudiante: '.$estudiante->nombre_completo ];
+        }else{
+
+            $tercero = Tercero::find( $registro->core_tercero_id );
+
+            $cantida_campos = count($lista_campos);
+
+            //Personalización de la lista de campos
+            for ($i=0; $i < $cantida_campos ; $i++) { 
+
+                switch ($lista_campos[$i]['name']) {
+                    case 'nombre1':
+                        $lista_campos[$i]['value'] = $tercero->nombre1;
+                        break;
+                    case 'otros_nombres':
+                        $lista_campos[$i]['value'] = $tercero->otros_nombres;
+                        break;
+                    case 'apellido1':
+                        $lista_campos[$i]['value'] = $tercero->apellido1;
+                        break;
+                    case 'apellido2':
+                        $lista_campos[$i]['value'] = $tercero->apellido2;
+                        break;
+                    case 'id_tipo_documento_id':
+                        $lista_campos[$i]['value'] = $tercero->id_tipo_documento_id;
+                        break;
+                    case 'numero_identificacion':
+                        $lista_campos[$i]['value'] = $tercero->numero_identificacion;
+                        break;
+                    case 'numero_identificacion2':
+                        $lista_campos[$i]['value'] = $tercero->numero_identificacion;
+                        break;
+                    case 'direccion1':
+                        $lista_campos[$i]['value'] = $tercero->direccion1;
+                        break;
+                    case 'telefono1':
+                        $lista_campos[$i]['value'] = $tercero->telefono1;
+                        break;
+                    case 'email':
+                        $lista_campos[$i]['value'] = $tercero->email;
+                        break;
+                    case 'email2':
+                        $lista_campos[$i]['value'] = $tercero->email;
+                        break;
+                    case 'codigo_ciudad':
+                        $lista_campos[$i]['value'] = $tercero->codigo_ciudad;
+                        break;
+                    
+                    default:
+                        # code...
+                        break;
+                }      
+                
+            }
+
+            // Agregar NUEVO campo con el core_tercero_id
+            $lista_campos[$i]['tipo'] = 'hidden';
+            $lista_campos[$i]['name'] = 'core_tercero_id';
+            $lista_campos[$i]['descripcion'] = '';
+            $lista_campos[$i]['opciones'] = [];
+            $lista_campos[$i]['value'] = $tercero->id;
+            $lista_campos[$i]['atributos'] = [];
+            $lista_campos[$i]['requerido'] = false;
+
+        }
+
+        return $lista_campos;
+    }
+
 
     public static function get_registro_impresion($id)
     {  

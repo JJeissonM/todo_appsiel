@@ -179,6 +179,17 @@
 			padding: 5px;
 			opacity: 0.7;
 		}
+
+		#myTable th{
+			padding: 0;
+			font-size: 1.3rem;
+		}
+
+		#myTable td{
+			padding: 5px !important;
+			font-size: 1.24rem;
+		}
+
 	</style>
 
 	@yield('webstyle')

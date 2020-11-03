@@ -22,7 +22,7 @@
 						<!-- estudiante nombres 
 						-->
 						<div class="form-group">
-								{{ Form::bsSelect('id_inscripcion',null,'Ingrese nombre del estudiante',$candidatos,['class'=>'combobox','required'=>'required']) }}
+								{{ Form::bsSelect('id_inscripcion',null,'Ingrese nombre o número de documento del estudiante',$candidatos,['class'=>'combobox','required'=>'required']) }}
 						</div>
 						
 				        <!-- Add matricula Button -->

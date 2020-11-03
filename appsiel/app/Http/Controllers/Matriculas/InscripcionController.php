@@ -124,10 +124,10 @@ class InscripcionController extends ModeloController
 	public function edit($id)
     {
 		// Se obtiene el modelo según la variable modelo_id de la url
-        $modelo = Modelo::find(Input::get('id_modelo'));
+        //$modelo = Modelo::find(Input::get('id_modelo'));
 
         // Se obtiene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id);
+        $registro = app($this->modelo->name_space)->find($id);
 
         $estudiante = Estudiante::get_estudiante_x_tercero_id( $registro->core_tercero_id );
 
@@ -139,7 +139,7 @@ class InscripcionController extends ModeloController
 
             $tercero = Tercero::find( $registro->core_tercero_id );
 
-            $lista_campos = ModeloController::get_campos_modelo($modelo,$registro,'edit');
+            $lista_campos = ModeloController::get_campos_modelo($this->modelo,$registro,'edit');
 
             //Personalización de la lista de campos
             for ($i=0; $i < count($lista_campos) ; $i++) { 
@@ -192,15 +192,16 @@ class InscripcionController extends ModeloController
             $lista_campos[$i]['atributos'] = [];
             $lista_campos[$i]['requerido'] = false;
 
-            // form_create para generar un formulario html 
+            $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
+
+            $url_action = str_replace('id_fila', $registro->id, $acciones->update);
+            
             $form_create = [
-                            'url' => $modelo->url_form_create,
-                            'campos' => $lista_campos
-                        ];
+                'url' => $url_action,
+                'campos' => $lista_campos
+            ];
 
-            $url_action = $modelo->url_form_create.'/'.$id;
-
-            $miga_pan = $this->get_miga_pan( $modelo, $registro->descripcion);
+            $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, $registro->descripcion);
 
             // Si el modelo tiene un archivo js particular
             $archivo_js = app($modelo->name_space)->archivo_js;
