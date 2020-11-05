@@ -25,7 +25,8 @@ border-collapse: collapse;" align="center">
             
             if( !is_null($calificacion) )
             {
-                if ( $calificacion->valor > 0 ) {
+                if ( $calificacion->valor > 0 )
+                {
                     $desempeno = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $calificacion->valor );
                 }                    
             }else{

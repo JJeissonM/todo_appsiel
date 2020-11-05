@@ -200,7 +200,7 @@ class BoletinController extends Controller
                 $cuerpo_boletin->lineas[$a]->logros_adicionales = null;
                 if ( !is_null($calificacion) )
                 {
-                    $escala_valoracion = EscalaValoracion::get_escala_segun_calificacion( $calificacion->calificacion );
+                    $escala_valoracion = EscalaValoracion::get_escala_segun_calificacion( $calificacion->calificacion, $periodo->periodo_lectivo_id );
                     $cuerpo_boletin->lineas[$a]->escala_valoracion = $escala_valoracion;
 
                     $cuerpo_boletin->lineas[$a]->logros = Logro::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id, $escala_valoracion->id );
