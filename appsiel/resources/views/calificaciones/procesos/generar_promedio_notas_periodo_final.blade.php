@@ -137,7 +137,7 @@
 	        		$('#div_cargando').hide();
 	        		$("#div_spin").hide();
 
-	        		$("#mensaje_ok").html( '<div class="alert alert-success" style="display: none;"><strong>Promedios del periodo final generados correctamente!</strong><br> Se almacenaron '+ datos +' calificaciones. </div>' );
+	        		$("#mensaje_ok").html( '<div class="alert alert-success"><strong>Promedios del periodo final generados correctamente!</strong><br> Se almacenaron '+ datos +' calificaciones. </div>' );
 			    });
 			
 		    });
