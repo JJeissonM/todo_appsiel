@@ -23,6 +23,11 @@ class Inscripcion extends Model
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/matriculas/inscripcion.js';
 
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
     public static function consultar_registros()
     {
     	$select_raw = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1';
@@ -69,83 +74,75 @@ class Inscripcion extends Model
     public function store_adicional( $datos, $registro )
     {
         // cambiar nombre de campo email
-        dd( $registro->tercero );
         $registro->tercero->email = $datos['email2'];
         $registro->tercero->save();
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
-        $estudiante = Estudiante::get_estudiante_x_tercero_id( $registro->core_tercero_id );
-
-        // Si el tercero es un Estudiante, entonces ya tiene matrícula y su inscripción no se puede modificar.
-        if ( !is_null( $estudiante ) )
+        if ( $registro->estado == 'Activo' )
         {
-            return [ null,'La incripción ya tiene matrículas asociadas. No puede ser modificada. Estudiante: '.$estudiante->nombre_completo ];
-        }else{
-
-            $tercero = Tercero::find( $registro->core_tercero_id );
-
-            $cantida_campos = count($lista_campos);
-
-            //Personalización de la lista de campos
-            for ($i=0; $i < $cantida_campos ; $i++) { 
-
-                switch ($lista_campos[$i]['name']) {
-                    case 'nombre1':
-                        $lista_campos[$i]['value'] = $tercero->nombre1;
-                        break;
-                    case 'otros_nombres':
-                        $lista_campos[$i]['value'] = $tercero->otros_nombres;
-                        break;
-                    case 'apellido1':
-                        $lista_campos[$i]['value'] = $tercero->apellido1;
-                        break;
-                    case 'apellido2':
-                        $lista_campos[$i]['value'] = $tercero->apellido2;
-                        break;
-                    case 'id_tipo_documento_id':
-                        $lista_campos[$i]['value'] = $tercero->id_tipo_documento_id;
-                        break;
-                    case 'numero_identificacion':
-                        $lista_campos[$i]['value'] = $tercero->numero_identificacion;
-                        break;
-                    case 'numero_identificacion2':
-                        $lista_campos[$i]['value'] = $tercero->numero_identificacion;
-                        break;
-                    case 'direccion1':
-                        $lista_campos[$i]['value'] = $tercero->direccion1;
-                        break;
-                    case 'telefono1':
-                        $lista_campos[$i]['value'] = $tercero->telefono1;
-                        break;
-                    case 'email':
-                        $lista_campos[$i]['value'] = $tercero->email;
-                        break;
-                    case 'email2':
-                        $lista_campos[$i]['value'] = $tercero->email;
-                        break;
-                    case 'codigo_ciudad':
-                        $lista_campos[$i]['value'] = $tercero->codigo_ciudad;
-                        break;
-                    
-                    default:
-                        # code...
-                        break;
-                }      
-                
-            }
-
-            // Agregar NUEVO campo con el core_tercero_id
-            $lista_campos[$i]['tipo'] = 'hidden';
-            $lista_campos[$i]['name'] = 'core_tercero_id';
-            $lista_campos[$i]['descripcion'] = '';
-            $lista_campos[$i]['opciones'] = [];
-            $lista_campos[$i]['value'] = $tercero->id;
-            $lista_campos[$i]['atributos'] = [];
-            $lista_campos[$i]['requerido'] = false;
-
+            return [ null,'La incripción ya tiene matrículas asociadas. No puede ser modificada. Estudiante: '. $registro->tercero->descripcion ];
         }
+        
+        $cantida_campos = count($lista_campos);
+
+        //Personalización de la lista de campos
+        for ($i=0; $i < $cantida_campos ; $i++) { 
+
+            switch ($lista_campos[$i]['name']) {
+                case 'nombre1':
+                    $lista_campos[$i]['value'] = $registro->tercero->nombre1;
+                    break;
+                case 'otros_nombres':
+                    $lista_campos[$i]['value'] = $registro->tercero->otros_nombres;
+                    break;
+                case 'apellido1':
+                    $lista_campos[$i]['value'] = $registro->tercero->apellido1;
+                    break;
+                case 'apellido2':
+                    $lista_campos[$i]['value'] = $registro->tercero->apellido2;
+                    break;
+                case 'id_tipo_documento_id':
+                    $lista_campos[$i]['value'] = $registro->tercero->id_tipo_documento_id;
+                    break;
+                case 'numero_identificacion':
+                    $lista_campos[$i]['value'] = $registro->tercero->numero_identificacion;
+                    break;
+                case 'numero_identificacion2':
+                    $lista_campos[$i]['value'] = $registro->tercero->numero_identificacion;
+                    break;
+                case 'direccion1':
+                    $lista_campos[$i]['value'] = $registro->tercero->direccion1;
+                    break;
+                case 'telefono1':
+                    $lista_campos[$i]['value'] = $registro->tercero->telefono1;
+                    break;
+                case 'email':
+                    $lista_campos[$i]['value'] = $registro->tercero->email;
+                    break;
+                case 'email2':
+                    $lista_campos[$i]['value'] = $registro->tercero->email;
+                    break;
+                case 'codigo_ciudad':
+                    $lista_campos[$i]['value'] = $registro->tercero->codigo_ciudad;
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }      
+            
+        }
+
+        // Agregar NUEVO campo con el core_tercero_id
+        $lista_campos[$i]['tipo'] = 'hidden';
+        $lista_campos[$i]['name'] = 'core_tercero_id';
+        $lista_campos[$i]['descripcion'] = '';
+        $lista_campos[$i]['opciones'] = [];
+        $lista_campos[$i]['value'] = $registro->tercero->id;
+        $lista_campos[$i]['atributos'] = [];
+        $lista_campos[$i]['requerido'] = false;
 
         return $lista_campos;
     }

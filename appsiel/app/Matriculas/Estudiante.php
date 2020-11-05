@@ -221,4 +221,100 @@ class Estudiante extends Model
             ->get()
             ->first();
     }
+
+
+    public function validar_eliminacion($id)
+    {
+        // Esta tabla ya no se usa: sga_estudiante_tiene_actividad_escolar 
+
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"sga_control_disciplinario",
+                                    "llave_foranea":"estudiante_id",
+                                    "mensaje":"Tiene registros de control disciplinario."
+                                },
+                            "1":{
+                                    "tabla":"sga_responsableestudiantes",
+                                    "llave_foranea":"estudiante_id",
+                                    "mensaje":"Tiene responsable relacionado."
+                                },
+                            "2":{
+                                    "tabla":"sga_respuestas_cuestionarios",
+                                    "llave_foranea":"estudiante_id",
+                                    "mensaje":"Tiene resgistros de respuestas a cuestionarios."
+                                },
+                            "3":{
+                                    "tabla":"sga_asistencia_clases",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Tiene registros de asistencia a clases."
+                                },
+                            "4":{
+                                    "tabla":"sga_aspectos_observador",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Ya registros de ascpectos en el observador."
+                                },
+                            "5":{
+                                    "tabla":"sga_calificaciones",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Ya Tiene calificaciones."
+                                },
+                            "6":{
+                                    "tabla":"sga_calificaciones_auxiliares",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Ya Tiene calificaciones."
+                                },
+                            "7":{
+                                    "tabla":"sga_calificaciones_encabezados",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Tiene encabezados de calificaciones relacionados."
+                                },
+                            "8":{
+                                    "tabla":"sga_foda_estudiantes",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Tiene registros de análisis DOFA."
+                                },
+                            "9":{
+                                    "tabla":"sga_matriculas",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Tiene matrículas asociadas."
+                                },
+                            "10":{
+                                    "tabla":"sga_novedades_observador",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Tiene registros de novedades en el observador."
+                                },
+                            "11":{
+                                    "tabla":"sga_observaciones_boletines",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Tiene registros de observaciones en boletines."
+                                },
+                            "12":{
+                                    "tabla":"sga_preinformes_academicos",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Tiene registros en preinformes académicos."
+                                },
+                            "13":{
+                                    "tabla":"teso_cartera_estudiantes",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Tiene registros de cartera (Plan de pagos) asociados."
+                                },
+                            "14":{
+                                    "tabla":"teso_libretas_pagos",
+                                    "llave_foranea":"id_estudiante",
+                                    "mensaje":"Tiene libretas de pago asociadas."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
+    }
 }

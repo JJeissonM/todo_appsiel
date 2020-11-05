@@ -274,11 +274,29 @@ class MatriculaController extends ModeloController
 
         $matricula = Matricula::create($datos2);
 
+        $this->actualizar_estado_ultima_inscripcion( $estudiante->core_tercero_id );
+
         // Se incrementa el consecutivo
         SecuenciaCodigo::incrementar_consecutivo('matriculas');
 
         return redirect('matriculas/show/' . $matricula->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Matrícula creada correctamente. Código: ' . $matricula->codigo);
     }
+
+    public function actualizar_estado_ultima_inscripcion( $core_tercero_id )
+    {
+        $inscripcion = Inscripcion::where( 'core_tercero_id', $core_tercero_id )
+                                    ->get()
+                                    ->last();
+
+        if ( $inscripcion->estado == 'Activo' )
+        {
+            $inscripcion->estado = 'Pendiente';
+        }else{
+            $inscripcion->estado = 'Activo';
+        }
+        
+        $inscripcion->save();
+    } 
 
     //crea un responsable para los papás
     public function setResponsable($data)
@@ -438,14 +456,9 @@ class MatriculaController extends ModeloController
 
         $miga_pan = $this->get_miga_pan($modelo, $registro->codigo);
 
-
-
         $estudiante = Estudiante::find($registro->id_estudiante);
 
-        //print_r($estudiante);
-        $tercero = Tercero::find($estudiante->core_tercero_id);
-
-        return view('matriculas.edit', compact('registro', 'cant_calificaciones', 'miga_pan', 'tercero', 'form_create'));
+        return view('matriculas.edit', compact('registro', 'cant_calificaciones', 'miga_pan', 'estudiante', 'form_create'));
     }
 
     /**
@@ -476,10 +489,6 @@ class MatriculaController extends ModeloController
         $registro->fill($datos)->save();
 
         return redirect('matriculas/show/' . $registro->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Matrícula MODIFICADA correctamente. Código: ' . $registro->codigo);
-
-        //return redirect('/matriculas');
-        //return redirect($request->return)->with('flash_message','Matrícula MODIFICADA correctamente.');
-
     }
 
     /**
@@ -522,21 +531,25 @@ class MatriculaController extends ModeloController
                 ]
             )
             ->count();
+
         if ($cant_calificaciones != 0) {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Matrícula NO puede ser eliminada. El estudiante tiene OBSERVACIONES de boletín resgistradas.');
         }
 
 
         // Si hay SOLO una (1) matrícula, se elimina al usuario y al estudiante
-        if (count($todas_las_matriculas->toArray()) == 1) {
+        if (count($todas_las_matriculas->toArray()) == 1)
+        {
 
-            $estudiante = Estudiante::find($registro->id_estudiante);
+            $estudiante = Estudiante::find( $registro->id_estudiante );
 
-            if (!is_null($estudiante)) {
+            if ( !is_null($estudiante) )
+            {
                 $user = User::find($estudiante->user_id);
 
                 //Borrar User
-                if (!is_null($user)) {
+                if (!is_null($user))
+                {
                     $user->roles()->sync([]); // borrar todos los roles y asignar los del array (en este caso vacío)
                     $user->delete();
                 }
@@ -546,7 +559,8 @@ class MatriculaController extends ModeloController
             }
         }
 
-
+        $this->actualizar_estado_ultima_inscripcion( $registro->estudiante->core_tercero_id );
+        
         //Borrar Matrícula
         $registro->delete();
 

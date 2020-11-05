@@ -27,8 +27,6 @@ use App\User;
 
 use App\Calificaciones\Logro;
 
-
-
 use App\Inventarios\InvBodega;
 
 use App\Tesoreria\TesoMedioRecaudo;

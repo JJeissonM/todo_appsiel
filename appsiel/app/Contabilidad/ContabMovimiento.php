@@ -65,7 +65,7 @@ class ContabMovimiento extends Model
                                 'contab_movimientos.valor_credito AS campo10',
                                 'contab_movimientos.id AS campo11')
                     ->orderBy('contab_movimientos.fecha', 'DESC')
-                    ->paginate(2000);
+                    ->paginate(20);
     }
 
     public function tercero()

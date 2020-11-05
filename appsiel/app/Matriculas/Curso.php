@@ -340,17 +340,20 @@ class Curso extends Model
                                     "tabla":"sga_observaciones_ingresadas",
                                     "llave_foranea":"curso_id",
                                     "mensaje":"Tiene boletines relacionados."
+                                },
+                            "15":{
+                                    "tabla":"sga_preinformes_academicos",
+                                    "llave_foranea":"curso_id",
+                                    "mensaje":"Tiene registros en preinformes académicos."
                                 }
                         }';
         $tablas = json_decode( $tablas_relacionadas );
-        //$cantidad = count($tablas);
         foreach($tablas AS $una_tabla)
         { 
             $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
 
             if ( !empty($registro) )
             {
-                //dd([ $una_tabla->tabla, $una_tabla->llave_foranea, $id, $registro, $una_tabla->mensaje ] );
                 return $una_tabla->mensaje;
             }
         }

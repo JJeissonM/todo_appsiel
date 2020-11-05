@@ -29,6 +29,12 @@
           background: #ddddddb5;
         }
 
+        #portfolio{
+          border-radius: 30% 70% 70% 30% / 55% 30% 70% 45%;
+          background-image: linear-gradient(45deg, #3023AE 0%, #f09 100%);
+        }
+
+
 </style>
 
 <section id="portfolio" style="background: white">
@@ -44,7 +50,7 @@
             @foreach ($galeria->albums()->orderBy('created_at','DESC')->get()->chunk(4) as $chunk)
                 <div class="row">
                     @foreach ($chunk as $album)
-                        <div class="col-md-3 col-sm-4 col-6" style="text-align: center;">
+                        <div class="col-md-3 col-sm-4 col-6 un_album" style="text-align: center;">
                             {!! $album->dibujar_individual() !!}
                         </div>
                     @endforeach

@@ -1,66 +1,82 @@
 $(document).ready(function(){
 
 	var url;
-	var datos;
+	var formulario_lleno = false;
 
 	var direccion = location.href;
 
 	var documento_inicial = parseInt( $("#numero_identificacion2").val() );
 
 	$(document).on('blur, keyup','#numero_identificacion2',function(){
-		
-		get_datos_tercero( get_url_validacion_tercero() );
 
-        if ( datos == '' ) 
-        {
-        	return false;
-        	vaciar_campos_formulario();
-        }
-
-        // Si se está editando y se cambia el número de identificación por el de otro tercero existente  
-        if( direccion.search("edit") !== -1 && parseInt( datos.numero_identificacion ) !== documento_inicial )
+		if( direccion.search("edit") == -1)
 		{
-			$('#bs_boton_guardar').hide();
-			alert( "Ya existe otra persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro." );
+			// Creando
+			url = '../core/validar_numero_identificacion2/';
+
+			validar_tercero_create( url );
+
+		}else{
+			// Editando
+			url = '../../core/validar_numero_identificacion2/';
+
+			validar_tercero_edit( url );
 		}
-
-		$('#bs_boton_guardar').show();
-        autollenar_formulario( datos );
-
 	});
 
-	function set_datos_tercero( respuesta )
+	function validar_tercero_create( url )
 	{
-		datos = respuesta;
-	}
-
-
-	function get_datos_tercero( url )
-	{
-		var documento = $("#numero_identificacion2").val();		
+		var documento = $("#numero_identificacion2").val();
+		$('#tercero_existe').remove();
+		$('#bs_boton_guardar').show();
 
 		$.get( url + documento, function( respuesta ) 
 		{
-			set_datos_tercero( respuesta );
+			if ( respuesta == '' ) 
+	        {
+	        	vaciar_campos_formulario();
+	        	return false;
+	        }
+
+	        if ( respuesta == 'ya_inscrito' ) 
+	        {
+	        	vaciar_campos_formulario();
+	        	$("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Tercero ya está inscrito. Desde aquí no puede modificar sus datos.</div>');
+	        	$('#bs_boton_guardar').hide();
+	        	return false;
+	        }
+
+	        $("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Tercero ya existe. Sus datos serán actualizados.</div>');
+	        autollenar_formulario( respuesta );
 		});
 	}
 
-	function get_url_validacion_tercero()
+	function validar_tercero_edit( url )
 	{
-		if( direccion.search("edit") == -1)
+		var documento = $("#numero_identificacion2").val();
+		$('#tercero_existe').remove();
+		$('#bs_boton_guardar').show();
+
+		$.get( url + documento, function( respuesta ) 
 		{
-			// creando
-			return '../core/validar_numero_identificacion2/';
-		}else{
-			// editando
-			return '../../../core/validar_numero_identificacion2/';
-		}
+			if ( respuesta == '' ) 
+	        {
+	        	return false;
+	        }
+
+			// Si se cambia el número de identificación por el de otro tercero existente  
+	        if( parseInt( respuesta.numero_identificacion ) !== documento_inicial )
+			{
+				$('#bs_boton_guardar').hide();
+				$("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Ya existe otra persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.</div>');
+			}
+		});
 	}
 
 	function autollenar_formulario( data )
 	{
 		var inputs = Array.prototype.slice.call(document.querySelectorAll('#form_create input, #form_create select, #form_create textarea'));
-		console.log( data );
+		
 		for (dataItem in data)
 		{
 		  inputs.map(function (inputItem) {
@@ -70,6 +86,7 @@ $(document).ready(function(){
 			}		    
 		  });
 		}
+		formulario_lleno = true;
 	}
 
 	function vaciar_campos_formulario()
@@ -77,11 +94,12 @@ $(document).ready(function(){
 		var inputs = Array.prototype.slice.call(document.querySelectorAll('#form_create input, #form_create select, #form_create textarea'));
 
 		inputs.map(function (inputItem) {
-			if ( inputItem.name != 'fecha' && inputItem.name != 'numero_identificacion2' )
+			if ( inputItem.name != 'fecha' && inputItem.name != 'numero_identificacion2' && inputItem.name != '_token' && inputItem.type != 'hidden' )
 			{
 				return inputItem.value = "";
 			}
 		  });
+		formulario_lleno = false;
 	}
 
 });

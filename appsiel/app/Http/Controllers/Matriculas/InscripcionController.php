@@ -21,6 +21,7 @@ use Input;
 use App\Core\Empresa;
 use App\Core\Tercero;
 use App\Sistema\Modelo;
+use App\Sistema\ModelAction;
 use App\Core\TipoDocumentoId;
 use App\Sistema\SecuenciaCodigo;
 
@@ -60,24 +61,38 @@ class InscripcionController extends ModeloController
         $codigo = SecuenciaCodigo::get_codigo( 'inscripciones', (object)['grado_id'=>$request->sga_grado_id] );
 
         // Se incrementa el consecutivo
-        SecuenciaCodigo::incrementar_consecutivo( 'inscripciones' );//where(['modulo'=>'inscripciones', 'estado'=>'Activo' ])->increment('consecutivo');
+        SecuenciaCodigo::incrementar_consecutivo( 'inscripciones' );
 
-        // Se almacena el tercero. ADVERTENCIA DATOS MANUALES (si se hace la inscripcion desde la página web, validar cómo se almacena la empresa si no es un usuario logueado)
-        
-        // OJO!!!!! Datos manuales
-        $tipo = 'Persona natural';
+        $tercero = Tercero::where( 'numero_identificacion', $request->numero_identificacion2 )->get()->first();
+
+        if ( is_null($tercero) )
+        {
+            $empresa_id = 1;
+            $user = Auth::user();
+            if ( !is_null($user) )
+            {
+                $empresa_id = $user->empresa_id;
+            }
+            
+            // OJO!!!!! Datos manuales
+            $tipo = 'Persona natural';
 
 
-        $tercero = Tercero::create( array_merge($request->all(),
-                                    [   'codigo_ciudad' => $request->codigo_ciudad, 
-                                        'core_empresa_id' => Auth::user()->empresa_id, 
-                                        'descripcion' => $request->nombre1." ".$request->otros_nombres." ".$request->apellido1." ".$request->apellido2, 
-                                        'tipo' => $tipo, 
-                                        'estado' => 'Activo'] ) );
+            $tercero = Tercero::create( array_merge($request->all(),
+                                        [   'codigo_ciudad' => $request->codigo_ciudad, 
+                                            'core_empresa_id' => $empresa_id, 
+                                            'descripcion' => $request->nombre1." ".$request->otros_nombres." ".$request->apellido1." ".$request->apellido2, 
+                                            'tipo' => $tipo, 
+                                            'estado' => 'Activo'] ) );
+        }else{
+            $tercero->fill( $request->all() );
+            $tercero->save();
+        }            
 
         // Almacenar datos restantes de la inscripcion
         $registro_creado->codigo = $codigo;
         $registro_creado->core_tercero_id = $tercero->id;
+        $registro_creado->estado = 'Pendiente';
         $registro_creado->save();
 
         // se llama la vista de show
@@ -90,10 +105,14 @@ class InscripcionController extends ModeloController
         $reg_siguiente = Inscripcion::where('id', '>', $id)->min('id');
 
         $view_pdf = InscripcionController::vista_preliminar($id,'show');
+        // Se le asigna a cada variable url, su valor en el modelo correspondiente
+        $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=0';
+        
+        $acciones = $this->acciones_basicas_modelo( $this->modelo, $variables_url );
 
         $miga_pan = $this->get_miga_pan( $this->modelo, 'Consulta');
 
-        return view( 'matriculas.inscripciones.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') );
+        return view( 'matriculas.inscripciones.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id','acciones') );
     }
 
     public function inscripcion_print($id)
@@ -118,97 +137,6 @@ class InscripcionController extends ModeloController
 
         return View::make('matriculas.formatos.inscripcion1',compact('inscripcion','descripcion_transaccion','empresa','vista') )->render();
     }
-
-
-
-	public function edit($id)
-    {
-		// Se obtiene el modelo según la variable modelo_id de la url
-        //$modelo = Modelo::find(Input::get('id_modelo'));
-
-        // Se obtiene el registro a modificar del modelo
-        $registro = app($this->modelo->name_space)->find($id);
-
-        $estudiante = Estudiante::get_estudiante_x_tercero_id( $registro->core_tercero_id );
-
-        // Si el tercero es un Estudiante, entonces ya tiene matrícula y su inscripción no se puede modificar.
-        if ( !is_null( $estudiante ) ) {
-            //print_r($registro);
-            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('mensaje_error','La incripción ya tiene matrículas asociadas. No puede ser modificada. Estudiante: '.$estudiante->nombre_completo);
-        }else{
-
-            $tercero = Tercero::find( $registro->core_tercero_id );
-
-            $lista_campos = ModeloController::get_campos_modelo($this->modelo,$registro,'edit');
-
-            //Personalización de la lista de campos
-            for ($i=0; $i < count($lista_campos) ; $i++) { 
-
-                switch ($lista_campos[$i]['name']) {
-                    case 'nombre1':
-                        $lista_campos[$i]['value'] = $tercero->nombre1;
-                        break;
-                    case 'otros_nombres':
-                        $lista_campos[$i]['value'] = $tercero->otros_nombres;
-                        break;
-                    case 'apellido1':
-                        $lista_campos[$i]['value'] = $tercero->apellido1;
-                        break;
-                    case 'apellido2':
-                        $lista_campos[$i]['value'] = $tercero->apellido2;
-                        break;
-                    case 'id_tipo_documento_id':
-                        $lista_campos[$i]['value'] = $tercero->id_tipo_documento_id;
-                        break;
-                    case 'numero_identificacion':
-                        $lista_campos[$i]['value'] = $tercero->numero_identificacion;
-                        break;
-                    case 'direccion1':
-                        $lista_campos[$i]['value'] = $tercero->direccion1;
-                        break;
-                    case 'telefono1':
-                        $lista_campos[$i]['value'] = $tercero->telefono1;
-                        break;
-                    case 'email':
-                        $lista_campos[$i]['value'] = $tercero->email;
-                        break;
-                    case 'codigo_ciudad':
-                        $lista_campos[$i]['value'] = $tercero->codigo_ciudad;
-                        break;
-                    
-                    default:
-                        # code...
-                        break;
-                }      
-                
-            }
-
-            // Agregar NUEVO campo con el core_tercero_id
-            $lista_campos[$i]['tipo'] = 'hidden';
-            $lista_campos[$i]['name'] = 'core_tercero_id';
-            $lista_campos[$i]['descripcion'] = '';
-            $lista_campos[$i]['opciones'] = [];
-            $lista_campos[$i]['value'] = $tercero->id;
-            $lista_campos[$i]['atributos'] = [];
-            $lista_campos[$i]['requerido'] = false;
-
-            $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
-
-            $url_action = str_replace('id_fila', $registro->id, $acciones->update);
-            
-            $form_create = [
-                'url' => $url_action,
-                'campos' => $lista_campos
-            ];
-
-            $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, $registro->descripcion);
-
-            // Si el modelo tiene un archivo js particular
-            $archivo_js = app($modelo->name_space)->archivo_js;
-
-            return view('layouts.edit',compact('form_create','miga_pan','registro','archivo_js','url_action'));
-        }
-    }
 	
 	public function update(Request $request, $id)
 	{
@@ -218,14 +146,13 @@ class InscripcionController extends ModeloController
         // Se obtinene el registro a modificar del modelo
         $registro = app($modelo->name_space)->find($id);
 
-
-        $tercero = Tercero::find( $registro->core_tercero_id );
         $descripcion = $request->nombre1.' '.$request->otros_nombres.' '.$request->apellido1.' '.$request->apellido2;
         $datos = array_merge( $request->all(), [ 'descripcion' => $descripcion ] );
+        $datos['numero_identificacion'] = $request->numero_identificacion2;
+        $datos['email'] = $request->email2;
 
-        $tercero->fill( $datos );
-        $tercero->save();
-
+        $registro->tercero->fill( $datos );
+        $registro->tercero->save();
 
         $registro->fill( $request->all() );
         $registro->save();
@@ -292,13 +219,16 @@ class InscripcionController extends ModeloController
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('mensaje_error','La incripción ya tiene matrícula registrada. No puede ser eliminada.');
         }
 
-        // Borrar tercero 
-        $tercero = Tercero::find($registro->core_tercero_id);        
-        $tercero->delete();
-
         //Borrar Inscripción
         $registro->delete();
 
+        // Borrar tercero 
+        $tercero = Tercero::find( $registro->core_tercero_id );
+
+        if ( $tercero->validar_eliminacion( $tercero->id ) == 'ok' )
+        {
+            $tercero->delete();
+        }
 
         return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('flash_message','Inscripción ELIMINADA correctamente. Código: '.$registro->codigo);
     }

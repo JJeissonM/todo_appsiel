@@ -240,7 +240,7 @@
     <main id="contenedor_principal">
 
         @foreach($view as $item)
-        {!! $item !!}
+            {!! $item !!}
         @endforeach
 
     </main>

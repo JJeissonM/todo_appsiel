@@ -7,11 +7,12 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use App\Core\Tercero;
 use Auth;
 use Input;
 
 use App\User;
+use App\Core\Tercero;
+use App\Matriculas\Inscripcion;
 
 class TerceroController extends Controller
 {
@@ -29,9 +30,34 @@ class TerceroController extends Controller
     // Para Inscripciones de estudiantes
     public function validar_numero_identificacion2( $numero_identificacion )
     {
-        $tercero = Tercero::leftJoin('sga_inscripciones','sga_inscripciones.core_tercero_id','=','core_terceros.id')
-                            ->where('numero_identificacion',$numero_identificacion)
-                            ->where('sga_inscripciones.estado','<>','Pendiente')
+        $tercero = Tercero::where('numero_identificacion',$numero_identificacion)
+                            ->get()
+                            ->first();
+
+        if ( is_null($tercero) )
+        {
+            return '';
+        }
+        
+        $tercero->email2 = $tercero->email;
+
+        $inscripcion = Inscripcion::where('core_tercero_id',$tercero->id)
+                                    ->where('estado','Pendiente')
+                                    ->get()->first();
+
+        if ( is_null($inscripcion) )
+        {
+            return response()->json( $tercero->toArray() );
+        }
+
+        return 'ya_inscrito';
+    }
+
+    public function validar_inscripcion( $numero_identificacion )
+    {
+        $tercero = Tercero::lefJoin('sga_inscripciones','sga_inscripciones.core_tercero_id','=','core_terceros.id')
+                            ->where('core_terceros.numero_identificacion',$numero_identificacion)
+                            ->where('sga_inscripciones.estado', 'Pendiente')
                             ->get()
                             ->first();
 

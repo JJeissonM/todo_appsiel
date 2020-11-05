@@ -108,6 +108,9 @@
                     ?>
                 @endif
 
+                    <label for="imagen" class="control-label"> Imágen </label>
+                    {{ Form::file( 'imagen', [ 'id' => 'imagen', 'accept' => 'jpg,png,gif' ] ) }}
+
                     <label class="form-label">Contenido</label>
                     <textarea name="contenido" class="form-control contenido" rows="15" required="required">{{ $contenido }}</textarea>
 
@@ -134,6 +137,11 @@
 @section('script')
     <script type="text/javascript">
         $(document).ready(function(){
+
+            CKEDITOR.replace('contenido', {
+                height: 200,
+                removeButtons: ''
+            });
 
             $('#bs_boton_guardar').on('click',function(event){
                 event.preventDefault();

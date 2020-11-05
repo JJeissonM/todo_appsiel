@@ -187,7 +187,7 @@
 
 		#myTable td{
 			padding: 5px !important;
-			font-size: 1.24rem;
+			font-size: 1.3rem;
 		}
 
 	</style>

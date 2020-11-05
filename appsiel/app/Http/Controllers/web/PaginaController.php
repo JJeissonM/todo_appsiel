@@ -234,7 +234,7 @@ class PaginaController extends Controller
                 $componente = $factory();
                 
                 if ($componente === false || $componente->DrawComponent() == false) continue;
-                $view[] = "<div id='" . str_slug($widget->seccion->nombre) . "'>" . $componente->DrawComponent() . "</div>";
+                $view[] = "<div id='" . str_slug($widget->seccion->nombre) . '-' . $widget->id .  "'>" . $componente->DrawComponent() . "</div>";
 
                 // Traer los elementos de diseño del widget
                 $elements_design = WidgetsElementsDesign::where('widget_id',$widget->id)->first();
