@@ -37675,7 +37675,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     242 => 
     array (
       'id' => 257,
-      'orden' => 2,
+      'orden' => 3,
       'core_modelo_id' => 66,
       'core_campo_id' => 45,
     ),
@@ -49197,7 +49197,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     1888 => 
     array (
       'id' => 2174,
-      'orden' => 3,
+      'orden' => 2,
       'core_modelo_id' => 66,
       'core_campo_id' => 951,
     ),
