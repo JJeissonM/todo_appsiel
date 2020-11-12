@@ -99,6 +99,8 @@
 												@foreach($vehiculos as $key=>$value)
 												<option value="{{$key}}">{!!$value!!}</option>
 												@endforeach
+												@else
+												<option value="0">No hay vehículos con documentos en regla habilitados. Si continúa, el contrato no será guardado.</option>
 												@endif
 											</select>
 											quien cumplirá todas las obligaciones derivadas del mismo. Hemos convenido celebrar el contrato de
@@ -243,7 +245,7 @@
 		var html = "<tr><td><input type='text' class='form-control' name='identificacion[]' required /></td><td><input type='text' class='form-control' name='persona[]' required /></td><td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td></tr>";
 		$('#' + tabla + ' tr:last').after(html);
 	}
-	
+
 
 	function validar() {
 		var f = $("#fecha_fin").val();
