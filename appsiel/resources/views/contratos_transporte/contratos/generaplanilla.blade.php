@@ -198,9 +198,11 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 											<td class="border" style="width: 85%; font-weight: bold; font-size: 14px;">
 												<select name="conductor_id[]" class="form-control select2">
 													<option value="">-- Seleccione opción --</option>
+													@if($conductores!=null)
 													@foreach($conductores as $key=>$value)
 													<option value="{{$key}}">{{$value}}</option>
 													@endforeach
+													@endif
 												</select>
 											</td>
 										</tr>
@@ -209,9 +211,11 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 											<td class="border" style="width: 85%; font-weight: bold; font-size: 14px;">
 												<select name="conductor_id[]" class="form-control select2">
 													<option value="">-- Seleccione opción --</option>
+													@if($conductores!=null)
 													@foreach($conductores as $key=>$value)
 													<option value="{{$key}}">{{$value}}</option>
 													@endforeach
+													@endif
 												</select>
 											</td>
 										</tr>
@@ -220,9 +224,11 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 											<td class="border" style="width: 85%; font-weight: bold; font-size: 14px;">
 												<select name="conductor_id[]" class="form-control select2">
 													<option value="">-- Seleccione opción --</option>
+													@if($conductores!=null)
 													@foreach($conductores as $key=>$value)
 													<option value="{{$key}}">{{$value}}</option>
 													@endforeach
+													@endif
 												</select>
 											</td>
 										</tr>

@@ -91,7 +91,19 @@ class ContratoTransporteController extends Controller
         $vehi = Vehiculo::all();
         if (count($vehi) > 0) {
             foreach ($vehi as $v) {
-                $vehiculos[$v->id] = "<b>PLACA " . $v->placa . ", MOVIL INTERNO " . $v->int . ", CAPACIDAD " . $v->capacidad;
+                //verificar documentos vencidos
+                $docs = $v->documentosvehiculos;
+                $vencido = false;
+                if (count($docs) > 0) {
+                    foreach ($docs as $d) {
+                        if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                            $vencido = true;
+                        }
+                    }
+                    if (!$vencido) {
+                        $vehiculos[$v->id] = "<b>PLACA " . $v->placa . ", MOVIL INTERNO " . $v->int . ", CAPACIDAD " . $v->capacidad;
+                    }
+                }
             }
         }
         return view('contratos_transporte.contratos.create')
@@ -109,6 +121,9 @@ class ContratoTransporteController extends Controller
         $mes_fecha_fin = explode('-', $request->fecha_fin)[1];
         if ((int) $mes_fecha_fin > (int) $mes_actual) {
             return redirect("web/" . $request->variables_url)->with('mensaje_error', 'El contrato no puede tener fecha de terminación del siguiente mes');
+        }
+        if ($request->vehiculo_id == "0") {
+            return redirect("web/" . $request->variables_url)->with('mensaje_error', 'Debe indicar el vehículo para guardar el contrato');
         }
         $result = $this->storeContract($request);
         if ($result) {
@@ -456,21 +471,21 @@ class ContratoTransporteController extends Controller
         $conductores = null;
         if (count($cond) > 0) {
             foreach ($cond as $c) {
-                $licencia = "[XX] SIN LICENCIA";
                 $docs = $c->documentosconductors;
                 if (count($docs) > 0) {
+                    $vencido = false;
                     foreach ($docs as $d) {
                         if ($d->licencia == 'SI') {
                             //tiene licencia, se revisa si esta vencida
                             if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
-                                $licencia = "[XX] LICENCIA VENCIDA";
-                            } else {
-                                $licencia = '[OK] LICENCIA VIGENTE';
+                                $vencido = true;
                             }
                         }
                     }
+                    if (!$vencido) {
+                        $conductores[$c->id] = $c->tercero->descripcion;
+                    }
                 }
-                $conductores[$c->id] =  $licencia . " - " . $c->tercero->descripcion;
             }
         }
         $emp = Empresa::find(1);
