@@ -27,6 +27,12 @@ class NomDocEncabezado extends Model
 	public $encabezado_tabla = [ 'Fecha', 'Documento', 'Descripción', 'Total devengos', 'Total deducciones', 'Estado', 'Acción'];
 
     public $urls_acciones = '{"cambiar_estado":"a_i/id_fila"}';
+
+    public function empleados()
+    {
+        return $this->belongsToMany(NomContrato::class,'nom_empleados_del_documento','nom_doc_encabezado_id','nom_contrato_id');
+    }
+
 	public static function consultar_registros()
 	{
 	    return NomDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_doc_encabezados.core_tipo_doc_app_id')
@@ -41,6 +47,22 @@ class NomDocEncabezado extends Model
                     	    ->get()
                     	    ->toArray();
 	}
+
+
+
+    public static function opciones_campo_select()
+    {
+        $opciones = NomDocEncabezado::where('estado','Activo')
+                                ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
 
     public static function get_un_registro($id)
     {
@@ -61,11 +83,6 @@ class NomDocEncabezado extends Model
                         ->first();
     }
 
-
-    public function empleados()
-    {
-        return $this->belongsToMany(NomContrato::class,'nom_empleados_del_documento','nom_doc_encabezado_id','nom_contrato_id');
-    }
 
     public function store_adicional( $datos, $registro )
     {

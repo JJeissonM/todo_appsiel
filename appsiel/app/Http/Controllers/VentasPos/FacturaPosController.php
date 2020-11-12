@@ -1138,7 +1138,7 @@ class FacturaPosController extends TransaccionController
             CxcMovimiento::create( $this->datos );
         }
 
-        return '<h4>Registro almacenado correctamente</h4><hr><a class="btn btn-info btn-lg" href="'.url('/').'/tesoreria/pagos_imprimir/'.$doc_encabezado->id.'?id=3&id_modelo='.$request->id_modelo.'&id_transaccion='.$request->id_transaccion.'" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;</a>';
+        return '<h4>Registro almacenado correctamente</h4><br>Documento: <span style="background-color: orange; color: white;">' . $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo . '</span><hr><a class="btn btn-info btn-lg" href="'.url('/').'/tesoreria/pagos_imprimir/'.$doc_encabezado->id.'?id=3&id_modelo='.$request->id_modelo.'&id_transaccion='.$request->id_transaccion.'" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;</a>';
     }    
 
     public function get_etiquetas()

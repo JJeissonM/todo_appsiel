@@ -11,7 +11,7 @@ class TesoPlanPagosEstudiante extends Model
 {
     protected $table = 'teso_cartera_estudiantes';
 
-    // NOTA: el campo "concepto" debe cambiar por uno tipo ID, que es el que se usa en la facturas.
+    // NOTA: el campo inv_producto_id corresponde al "concepto" que se usa en la facturas.
     protected $fillable = [ 'id_libreta', 'id_estudiante', 'inv_producto_id', 'valor_cartera', 'valor_pagado', 'saldo_pendiente', 'fecha_vencimiento', 'estado' ];
 
     public function libreta()

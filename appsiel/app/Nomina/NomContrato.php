@@ -9,10 +9,50 @@ use App\Core\Tercero;
 class NomContrato extends Model
 {
     //protected $table = 'nom_contratos';
-		protected $fillable = ['core_tercero_id', 'clase_contrato', 'cargo_id', 'horas_laborales', 'sueldo', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado',
-            'liquida_subsidio_transporte','planilla_pila_id','es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id'];
+	protected $fillable = ['core_tercero_id', 'clase_contrato', 'cargo_id', 'horas_laborales', 'sueldo', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado', 'liquida_subsidio_transporte','planilla_pila_id','es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id'];
 
 	public $encabezado_tabla = ['Empleado', 'Cargo', 'Sueldo', 'Estado', 'Acción'];
+
+    public function tercero()
+    {
+        return $this->belongsTo(Tercero::class,'core_tercero_id');
+    }
+
+    public function cargo()
+    {
+        return $this->belongsTo(NomCargo::class,'cargo_id');
+    }
+
+    public function entidad_salud()
+    {
+        return $this->belongsTo(NomEntidad::class,'entidad_salud_id');
+    }
+
+    public function entidad_pension()
+    {
+        return $this->belongsTo(NomEntidad::class,'entidad_pension_id');
+    }
+
+    public function entidad_arl()
+    {
+        return $this->belongsTo(NomEntidad::class,'entidad_arl_id');
+    }
+
+    public function entidad_cesantias()
+    {
+        return $this->belongsTo(NomEntidad::class,'entidad_cesantias_id');
+    }
+
+    public function entidad_caja_compensacion()
+    {
+        return $this->belongsTo(NomEntidad::class,'entidad_caja_compensacion_id');
+    }
+
+    public function planilla_pila()
+    {
+        return $this->belongsTo(NomEntidad::class,'planilla_pila_id');
+    }
+
 	public static function consultar_registros()
 	{
 	    $registros = NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
@@ -22,11 +62,6 @@ class NomContrato extends Model
 		    ->toArray();
 	    return $registros;
 	}
-
-    public function tercero()
-    {
-        return $this->belongsTo(Tercero::class,'core_tercero_id');
-    }
 
 
 	public static function get_empleados($estado)

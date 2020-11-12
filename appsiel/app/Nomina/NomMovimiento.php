@@ -4,12 +4,16 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Auth;
+
 class NomMovimiento extends Model
 {
     //protected $table = 'nom_movimientos';
 	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'descripcion', 'total_devengos', 'total_deducciones', 'codigo_referencia_tercero', 'porcentaje','nom_concepto_id','nom_cuota_id','nom_prestamo_id','cantidad_horas','valor_devengo','valor_deduccion','estado', 'creado_por', 'modificado_por'];
 
 	public $encabezado_tabla = ['Documento', 'Empleado', 'Fecha', 'Detalle', 'Concepto', 'Devengo', 'Deducción', 'Estado', 'Acción'];
+
+
 	public static function consultar_registros()
 	{
 	    return NomMovimiento::leftJoin('nom_doc_encabezados', 'nom_doc_encabezados.id', '=', 'nom_movimientos.nom_doc_encabezado_id')
@@ -27,5 +31,15 @@ class NomMovimiento extends Model
 				            			'nom_movimientos.id AS campo9')
 						    ->get()
 						    ->toArray();
+	}
+
+
+	public static function listado_acumulados( $fecha_desde, $fecha_hasta, $operador1, $nom_agrupacion_id)
+	{
+		return NomMovimiento::leftJoin('nom_agrupacion_tiene_conceptos','nom_agrupacion_tiene_conceptos.nom_concepto_id','=','nom_movimientos.nom_concepto_id')
+							->where('nom_movimientos.core_empresa_id', Auth::user()->empresa_id)
+				            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+				            ->where('nom_agrupacion_tiene_conceptos.nom_agrupacion_id', $operador1, $nom_agrupacion_id)
+				            ->get();
 	}
 }

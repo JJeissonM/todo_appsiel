@@ -509,6 +509,47 @@ class LibretaPagoController extends ModeloController
         return view('tesoreria.ver_plan_pagos', compact('matricula_estudiante', 'libreta', 'plan_pagos', 'miga_pan') );
     }
 
+
+    public function aplicar_descuento( $cartera_id )
+    {
+        // Se obtiene el modelo según la variable modelo_id de la url
+        $modelo = Modelo::find(Input::get('id_modelo'));
+
+        // Se obtiene el registro a modificar del modelo
+        $registro = app($modelo->name_space)->find($id);
+        $recaudos_libreta = TesoRecaudosLibreta::where('id_libreta',$id)->get();
+
+        // Si la libreta ya tiene recaudos, no se puede modificar.
+        if ( isset($recaudos_libreta[0]) ) 
+        {
+            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('mensaje_error','La Libreta ya tiene pagos aplicados. No puede ser modificada.' );
+        }
+
+        $lista_campos = ModeloController::get_campos_modelo($modelo,$registro,'edit');
+
+        /*
+            Como el select de estudiantes solo muesta los que no tienen libreta, para la edición se coloca al estudiante de la libreta que se está editando
+        */
+        $matricula_estudiante = Matricula::get_registro_impresion( $registro->matricula_id );
+
+        $lista_campos[0]['opciones'][$matricula_estudiante->id] = $matricula_estudiante->numero_identificacion.' '.$matricula_estudiante->nombre_estudiante.' ('.$matricula_estudiante->nombre_curso.')';
+
+        $form_create = [
+                        'url' => $modelo->url_form_create,
+                        'campos' => $lista_campos
+                    ];
+
+        $miga_pan = $this->get_miga_pan($modelo,$registro->descripcion);
+
+        $url_action = 'web/'.$id;
+        if ($modelo->url_form_create != '') {
+            $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
+        }
+
+
+        return view('layouts.edit',compact('form_create','miga_pan','registro', 'url_action'));
+    }
+
     public function imprimir_comprobante_recaudo($id_cartera){
         //echo $id;
         $cartera = TesoPlanPagosEstudiante::find($id_cartera);

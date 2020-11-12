@@ -70,9 +70,11 @@ class NominaController extends TransaccionController
 
     /**
      * Para almacenar los registros de documentos
+     *  Normalmente para conceptos tipo Manuales
      */
     public function store(Request $request)
     {
+        $datos = [];
         $usuario = Auth::user();
 
         $core_empresa_id = $usuario->empresa_id;
@@ -80,32 +82,78 @@ class NominaController extends TransaccionController
         $concepto = NomConcepto::find($request->nom_concepto_id);
         $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
 
-        // Guardar los valores para cada persona      
-        for($i=0;$i<$request->cantidad_empleados;$i++)
-        {
-            if ( $request->input('valor.'.$i) > 0) 
-            {
-                $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $request->input('valor.'.$i) );
+        $datos['nom_doc_encabezado_id'] = $request->nom_doc_encabezado_id;
+        $datos['fecha'] = $documento->fecha;
+        $datos['core_empresa_id'] = $documento->core_empresa_id;
+        $datos['nom_concepto_id'] = $request->nom_concepto_id;
+        $datos['estado'] = 'Activo';
+        $datos['creado_por'] = $usuario->email;
+        $datos['modificado_por'] = '';
 
-                $registro = NomDocRegistro::create(
-                    ['nom_doc_encabezado_id' => $request->nom_doc_encabezado_id] + 
-                    ['nom_concepto_id' => $request->nom_concepto_id] + 
-                    ['core_tercero_id' => $request->input('core_tercero_id.'.$i)] + 
-                    ['fecha' => $documento->fecha] + 
-                    ['core_empresa_id' => $documento->core_empresa_id] + 
-                    ['valor_devengo' => $valores[0] ] + 
-                    ['valor_deduccion' => $valores[1] ] + 
-                    ['estado' => 'Activo'] + 
-                    ['creado_por' => $usuario->email] + 
-                    ['modificado_por' => '']
-                    );
-              }
+        // Guardar los valores para cada persona      
+        for( $i=0; $i < $request->cantidad_empleados; $i++)
+        {
+            if ( isset( $request->valor ) )
+            {
+                $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i) );
+            }
+
+            if ( isset( $request->cantidad_horas ) )
+            {
+                $this->registrar_por_cantidad_horas( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('cantidad_horas.'.$i) );
+            }/**/
         }
 
         $this->actualizar_totales_documento($documento->id);
 
         return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'flash_message','Registros CREADOS correctamente. Nómina: '.$documento->descripcion.', Concepto:'.$concepto->descripcion );
     }
+
+    public function registrar_por_valor( $concepto, $core_tercero_id, $datos, $valor )
+    {
+        if ( $valor > 0 ) 
+        {            
+
+            $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor );
+
+            NomDocRegistro::create(
+                                    $datos +
+                                    [ 'core_tercero_id' => $core_tercero_id ] +
+                                    [ 'valor_devengo' => $valores[0] ] + 
+                                    [ 'valor_deduccion' => $valores[1] ]
+                                );
+        }
+    }
+
+    public function registrar_por_cantidad_horas( $concepto, $core_tercero_id, $datos, $cantidad_horas )
+    {
+        if ( $cantidad_horas > 0 )
+        {
+            $sueldo = NomContrato::where('core_tercero_id',$core_tercero_id)->where('estado','Activo')->value('sueldo');
+
+            if ( is_null( $sueldo ) )
+            {
+                return false;
+            }
+
+            $salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
+
+            $valor_a_liquidar = $salario_x_hora * ( 1 + $concepto->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
+
+            $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor_a_liquidar );
+
+            NomDocRegistro::create(
+                                    $datos +
+                                    [ 'core_tercero_id' => $core_tercero_id ] +
+                                    [ 'valor_devengo' => $valores[0] ] + 
+                                    [ 'valor_deduccion' => $valores[1] ] + 
+                                    [ 'cantidad_horas' => $cantidad_horas ]
+                                );
+        }
+
+    }
+
+
 
     /**
      * Muestra un documento de liquidación con sus registros
@@ -319,43 +367,43 @@ class NominaController extends TransaccionController
 
             $concepto = NomConcepto::find($request->nom_concepto_id);
             $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
+
+            $datos['nom_doc_encabezado_id'] = $request->nom_doc_encabezado_id;
+            $datos['fecha'] = $documento->fecha;
+            $datos['core_empresa_id'] = $documento->core_empresa_id;
+            $datos['nom_concepto_id'] = $request->nom_concepto_id;
+            $datos['estado'] = 'Activo';
+            $datos['creado_por'] = $usuario->email;
+            $datos['modificado_por'] = '';
             
             // Guardar los valores para cada persona      
             for($i=0;$i<$request->cantidad_empleados;$i++)
             {
-                $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $request->input('valor.'.$i) );
                 
                 if ( $request->input('nom_registro_id.'.$i) == "no" ) 
                 {
-                    // Se crea un nuevo registro
-                    if ( $request->input('valor.'.$i) > 0) 
+                    if ( isset( $request->valor ) )
                     {
+                        $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i) );
+                    }
 
-                        $registro = NomDocRegistro::create(
-                            ['nom_doc_encabezado_id' => $request->nom_doc_encabezado_id] + 
-                            ['nom_concepto_id' => $request->nom_concepto_id] + 
-                            ['core_tercero_id' => $request->input('core_tercero_id.'.$i)] + 
-                            ['fecha' => $documento->fecha] + 
-                            ['core_empresa_id' => $documento->core_empresa_id] + 
-                            ['valor_devengo' => $valores[0] ] + 
-                            ['valor_deduccion' => $valores[1] ] + 
-                            ['estado' => 'Activo'] + 
-                            ['creado_por' => $usuario->email] + 
-                            ['modificado_por' => '']
-                            );
-                    } // FIN - Si valor mayor a cero
+                    if ( isset( $request->cantidad_horas ) )
+                    {
+                        $this->registrar_por_cantidad_horas( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('cantidad_horas.'.$i) );
+                    }
+
                 }else{
                     // Se actualiza el registro
                     $registro = NomDocRegistro::find( $request->input('nom_registro_id.'.$i) );
 
-                    if ( $request->input('valor.'.$i) == 0) {
-                        // Eliminar el registro
-                        $registro->delete();
-                    }else{
-                        $registro->fill( ['valor_devengo' => $valores[0] ] + 
-                            ['valor_deduccion' => $valores[1] ] + 
-                            ['modificado_por' => $usuario->email] );
-                        $registro->save();
+                    if ( isset( $request->valor ) )
+                    {
+                        $this->actualizar_por_valor( $registro, $concepto, $request->input('valor.'.$i), $usuario );
+                    }
+
+                    if ( isset( $request->cantidad_horas ) )
+                    {
+                        $this->actualizar_por_cantidad_horas( $registro, $concepto, $request->input('core_tercero_id.'.$i), $request->input('cantidad_horas.'.$i), $usuario );
                     }
                 }
 
@@ -375,6 +423,53 @@ class NominaController extends TransaccionController
         }
     }
 
+    public function actualizar_por_valor( $registro, $concepto, $valor, $usuario )
+    {
+        $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor );
+
+        if ( $valor == 0 )
+        {
+            // Eliminar el registro
+            $registro->delete();
+        }else{
+            $registro->fill( 
+                            [ 'valor_devengo' => $valores[0] ] + 
+                            [ 'valor_deduccion' => $valores[1] ] + 
+                            [ 'modificado_por' => $usuario->email] );
+            $registro->save();
+        }
+    }
+
+    public function actualizar_por_cantidad_horas( $registro, $concepto, $core_tercero_id, $cantidad_horas, $usuario)
+    {
+        if ( $cantidad_horas == 0 )
+        {
+            // Eliminar el registro
+            $registro->delete();
+        }else{
+
+            $sueldo = NomContrato::where('core_tercero_id',$core_tercero_id)->where('estado','Activo')->value('sueldo');
+
+            if ( is_null( $sueldo ) )
+            {
+                return false;
+            }
+
+            $salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
+
+            $valor_a_liquidar = $salario_x_hora * ( 1 + $concepto->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
+
+            $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor_a_liquidar );
+
+            $registro->fill( 
+                            [ 'valor_devengo' => $valores[0] ] + 
+                            [ 'valor_deduccion' => $valores[1] ] + 
+                            [ 'cantidad_horas' => $cantidad_horas ]  + 
+                            [ 'modificado_por' => $usuario->email ] );
+            $registro->save();
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -388,6 +483,9 @@ class NominaController extends TransaccionController
 
 
 
+    /*
+        Pre-formulario donde seleccionar documento y concepto
+    */
     public function crear_registros1()
     {
         $opciones1 = NomDocEncabezado::where('estado','Activo')->get();
@@ -414,6 +512,10 @@ class NominaController extends TransaccionController
         return view('nomina.create_registros1',compact('documentos','conceptos','miga_pan'));
     }
 
+
+    /*
+        Formulario para registrar los valores a liquidar del concepto y el documento seleccionado
+    */
     public function crear_registros2(Request $request)
     {
 
@@ -452,22 +554,25 @@ class NominaController extends TransaccionController
                 
                 // Se verifica si cada persona tiene valor ingresado
                 $datos = NomDocRegistro::where(['nom_doc_encabezado_id'=>$request->nom_doc_encabezado_id,
-                'nom_concepto_id'=>$request->nom_concepto_id,
-                'core_tercero_id'=>$empleado->core_tercero_id])
-                ->get();
+                                                'nom_concepto_id'=>$request->nom_concepto_id,
+                                                'core_tercero_id'=>$empleado->core_tercero_id])
+                                        ->get()
+                                        ->first();
 
                 $vec_empleados[$i]['valor_concepto'] = 0;
+                $vec_empleados[$i]['cantidad_horas'] = 0;
                 $vec_empleados[$i]['nom_registro_id'] = "no";
                 
                 // Si el persona tiene calificacion se envian los datos de esta para editar
                 if( !is_null($datos) )
                 {
-                    switch ($concepto->naturaleza) {
+                    switch ($concepto->naturaleza)
+                    {
                         case 'devengo':
-                            $vec_empleados[$i]['valor_concepto'] = $datos[0]->valor_devengo;
+                            $vec_empleados[$i]['valor_concepto'] = $datos->valor_devengo;
                             break;
                         case 'deduccion':
-                            $vec_empleados[$i]['valor_concepto'] = $datos[0]->valor_deduccion;
+                            $vec_empleados[$i]['valor_concepto'] = $datos->valor_deduccion;
                             break;
                         
                         default:
@@ -475,7 +580,12 @@ class NominaController extends TransaccionController
                             break;
                     }
 
-                    $vec_empleados[$i]['nom_registro_id'] = $datos[0]->id;
+                    if ( (float)$concepto->porcentaje_sobre_basico != 0 )
+                    {
+                        $vec_empleados[$i]['cantidad_horas'] = $datos->cantidad_horas;
+                    }
+
+                    $vec_empleados[$i]['nom_registro_id'] = $datos->id;
 
                 }
                 

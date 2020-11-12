@@ -10,6 +10,14 @@ Route::get('nomina/retirar_liquidacion/{id}', 'Nomina\NominaController@retirar_l
 
 
 // INFORMES Y LISTADOS
+
+Route::post('nom_listado_acumulados','Nomina\ReporteController@listado_acumulados');
+Route::post('nom_libro_fiscal_vacaciones','Nomina\ReporteController@libro_fiscal_vacaciones');
+Route::post('nom_provisiones_x_entidad_empleado','Nomina\ReporteController@provisiones_x_entidad_empleado');
+Route::post('nom_listado_aportes_parafiscales','Nomina\ReporteController@listado_aportes_parafiscales');
+Route::post('','Nomina\ReporteController@');
+Route::post('','Nomina\ReporteController@');
+
 Route::get('nomina/reportes','Nomina\ReporteController@reportes');
 
 Route::get('nomina/reporte_desprendibles_de_pago','Nomina\ReporteController@reporte_desprendibles_de_pago');

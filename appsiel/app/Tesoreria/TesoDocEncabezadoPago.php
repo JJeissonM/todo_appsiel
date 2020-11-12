@@ -17,6 +17,26 @@ class TesoDocEncabezadoPago extends Model
     public $encabezado_tabla = ['Fecha','Documento','Tercero','Detalle','Valor total','Estado','Acción'];
 
     public $urls_acciones = '{"create":"tesoreria/pagos/create","store":"tesoreria/pagos","show":"tesoreria/pagos/id_fila","edit":"tesoreria/pagos/id_fila/edit","update":"tesoreria/pagos/id_fila","imprimir":"tesoreria/pagos_imprimir/id_fila"}';
+    
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function caja()
+    {
+        return $this->belongsTo( TesoCaja::class, 'teso_caja_id');
+    }
+
+    public function cuenta_bancaria()
+    {
+        return $this->belongsTo( TesoCuentaBancaria::class, 'teso_cuenta_bancaria_id');
+    }
 
     public static function consultar_registros()
     {

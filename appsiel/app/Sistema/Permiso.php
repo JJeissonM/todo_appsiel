@@ -14,6 +14,16 @@ class Permiso extends Permission
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 
+    public function aplicacion()
+    {
+        return $this->belongsTo(Aplicacion::class, 'core_app_id');
+    }
+
+    public function modelo()
+    {
+        return $this->belongsTo(Modelo::class, 'modelo_id');
+    }
+
     // METODO PARA LA VISTA INDEX
     public static function consultar_registros()
     {

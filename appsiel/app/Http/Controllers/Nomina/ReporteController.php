@@ -13,6 +13,7 @@ use View;
 use Lava;
 use Input;
 use Form;
+use Cache;
 use NumerosEnLetras;
 
 use App\Http\Controllers\Core\ConfiguracionController;
@@ -24,12 +25,14 @@ use App\Http\Controllers\Sistema\ModeloController;
 use App\Sistema\Aplicacion;
 use App\Core\Empresa;
 
+use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomConcepto;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
+use App\Nomina\NomMovimiento;
 
 class ReporteController extends Controller
 {
@@ -228,5 +231,87 @@ class ReporteController extends Controller
             </table> <br/> '.$firmas.'</div> <div class="page-break"></div>';
         }
         return $tabla;
+    }
+
+
+
+    public function listado_acumulados(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $nom_agrupacion_id = (int)$request->nom_agrupacion_id;
+        $agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id );
+
+        $detalla_empleados = $request->detalla_empleados;
+        $operador2 = '=';
+
+        $movimientos = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id);
+
+        $conceptos =  NomConcepto::whereIn( 'id', array_keys( $movimientos->groupBy('nom_concepto_id')->toArray() ) )->get();
+
+        $empleados =  NomContrato::whereIn( 'core_tercero_id', array_keys( $movimientos->groupBy('core_tercero_id')->toArray() ) )->get();
+
+        $vista = View::make('nomina.reportes.listado_acumulados', compact('movimientos','conceptos','empleados','detalla_empleados','agrupacion','fecha_desde', 'fecha_hasta'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+
+    public function libro_fiscal_vacaciones(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $vista = '<h3 style="width: 100%; text-align: center;">
+                        LIBRO FISCAL DE VACACIONES
+                    </h3>
+                    <p style="width: 100%; text-align: center;">
+                        Desde: ' . $fecha_desde . ' - Hasta: ' . $fecha_hasta . '
+                    </p>
+                    <hr>';
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+
+    public function provisiones_x_entidad_empleado(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $vista = '<h3 style="width: 100%; text-align: center;">
+                        PROVISIONES X ENTIDAD/EMPLEADO
+                    </h3>
+                    <p style="width: 100%; text-align: center;">
+                        Desde: ' . $fecha_desde . ' - Hasta: ' . $fecha_hasta . '
+                    </p>
+                    <hr>';
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function listado_aportes_parafiscales(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $vista = '<h3 style="width: 100%; text-align: center;">
+                        LISTADO DE APORTES PARAFISCALES
+                    </h3>
+                    <p style="width: 100%; text-align: center;">
+                        Desde: ' . $fecha_desde . ' - Hasta: ' . $fecha_hasta . '
+                    </p>
+                    <hr>';
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
     }
 }

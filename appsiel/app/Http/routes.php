@@ -160,6 +160,7 @@ Route::resource('propiedad_horizontal', 'PropiedadHorizontal\PropiedadHorizontal
 
 // Generación de reportes
 Route::get('vista_reporte', 'Sistema\ReporteController@vista_reporte');
+
 // GENERAR PDF Con base en el nombre_listado almacenado en la Cache 
 Route::get('generar_pdf/{reporte_id}', 'Sistema\ReporteController@generar_pdf');
 
@@ -180,7 +181,10 @@ Route::post('foros/inicio/participacion/guardarrespuesta', 'Core\ForoController@
 
 
 Route::post('carga_imagen_ckeditor', 'Sistema\ImagenController@carga_imagen_ckeditor');
+
+
 // PROCESOS
+Route::get('index_procesos/{vista_proceso}', 'Core\ProcesoController@principal');
 
 // ************************ Exportar/Importar registros tablas BD a través de archivo de configuración
 Route::get('form_exportar_importar_tablas_bd', 'Sistema\ProcesoController@form_exportar_importar_tablas_bd');
@@ -222,6 +226,9 @@ include __DIR__ . '/vtas_routes.php';
 
 // Aplicación VENTAS POS
 include __DIR__ . '/ventas_pos_routes.php';
+
+// Aplicación VENTAS POS
+include __DIR__ . '/facturacion_electronica_routes.php';
 
 // Aplicación COMPRAS
 include __DIR__ . '/compras_routes.php';

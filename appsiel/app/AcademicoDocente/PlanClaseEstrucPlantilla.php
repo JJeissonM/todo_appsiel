@@ -7,11 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 use App\Matriculas\PeriodoLectivo;
 use App\AcademicoDocente\PlanClaseEstrucElemento;
 
+use DB;
+
 class PlanClaseEstrucPlantilla extends Model
 {
     protected $table = 'sga_plan_clases_struc_plantillas';
+
+    // tipo_plantilla: { planeador | guia_academica }
 	protected $fillable = ['periodo_lectivo_id', 'tipo_plantilla', 'descripcion', 'detalle', 'estado'];
 	public $encabezado_tabla = ['Año Lectivo', 'Descripción', 'Detalle', 'Estado', 'Acción'];
+
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila","eliminar":"web_eliminar/id_fila"}';
 	
 	public static function consultar_registros()
 	{
@@ -58,5 +64,28 @@ class PlanClaseEstrucPlantilla extends Model
     public function elementos()
     {
         return $this->hasMany(PlanClaseEstrucElemento::class,'plantilla_plan_clases_id');
+    }
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"sga_plan_clases_encabezados",
+                                    "llave_foranea":"plantilla_plan_clases_id",
+                                    "mensaje":"Plantilla ya tiene registros en planes de clases y/o guías académicas."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
     }
 }

@@ -14,6 +14,16 @@ class NomConcepto extends Model
 	protected $fillable = ['modo_liquidacion_id','naturaleza', 'porcentaje_sobre_basico', 'valor_fijo', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'estado'];
 
 	public $encabezado_tabla = [ 'ID', 'Modo Liquidación', 'Descripción', 'Abreviatura', '% del básico', 'Vlr. Fijo', 'Naturaleza', 'Agrupación', 'Estado', 'Acción'];
+
+    public function modo_liquidacion()
+    {
+        return $this->belongsTo( NomModoLiquidacion::class, 'modo_liquidacion_id');
+    }
+
+    public function agrupacion()
+    {
+        return $this->belongsTo( AgrupacionConcepto::class, 'nom_agrupacion_id');
+    }
 	
     public static function consultar_registros()
 	{

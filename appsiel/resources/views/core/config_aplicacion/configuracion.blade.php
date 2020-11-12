@@ -69,7 +69,7 @@
 								{
 									$ancho_logo_formatos = $parametros['ancho_logo_formatos'];
 								}else{
-									$ancho_logo_formatos = 'Si';
+									$ancho_logo_formatos = 110;
 								}
 							?>
 							{{ Form::bsText('ancho_logo_formatos', $ancho_logo_formatos, 'Ancho logo formatos (px)', ['class'=>'form-control']) }}

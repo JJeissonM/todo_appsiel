@@ -1,12 +1,12 @@
 @extends('core.procesos.layout')
 
-@section( 'titulo', 'Calcular promedios para las calificaciones del periodo final' )
+@section( 'titulo', 'Cargar archivo plano para liquidación de conceptos' )
 
 @section('detalles')
-	Este proceso calcula el promedio de las asignaturas del Año Lectivo seleccionado.
+	Este permiter cargar un archivo plano (.txt) con una estructura definida para liquidar conceptos de nómina en un documento específico.
 					
 	<br>
-	Luego almacena los promedios calculados en el PERIODO FINAL (Debe estar creado con el indicador: <b> Es periodo de promedios </b>)
+	Luego se almacenan los registros del documento de nómina según las líneas de registros cargadas en el archivo plano.
 	
 	<br>
 @endsection
@@ -16,10 +16,10 @@
 		<div class="col-md-8">
 
 			<div class="row" style="padding:5px;">					
-				<label class="control-label col-sm-4" > <b> Año Lectivo origen: </b> </label>
+				<label class="control-label col-sm-4" > <b> Documento de liquidación: </b> </label>
 
 				<div class="col-sm-8">
-					{{ Form::select('periodo_lectivo_id', $periodos_lectivos, null, ['id' => 'periodo_lectivo_id', 'class' => 'form-control' ] ) }}
+					{{ Form::select('nom_doc_encabezado_id',App\Nomina\NomDocEncabezado::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'nom_doc_encabezado_id' ]) }}
 				</div>					 
 			</div>
 

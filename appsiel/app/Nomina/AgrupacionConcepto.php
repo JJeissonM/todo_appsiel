@@ -45,7 +45,7 @@ class AgrupacionConcepto extends Model
     */
     public static function get_tabla($registro_modelo_padre,$registros_asignados)
     {
-        $encabezado_tabla = ['ID','Modo Liquidación', 'Descripción', 'Abreviatura', 'Porc. sobre el básico', 'Naturaleza', 'Estado', 'Acción']; // 8 campos
+        $encabezado_tabla = ['Orden','ID','Modo Liquidación', 'Descripción', 'Abreviatura', 'Porc. sobre el básico', 'Naturaleza', 'Estado', 'Acción']; // 9 campos
 
         $registros = [];
         $i = 0;
@@ -56,6 +56,7 @@ class AgrupacionConcepto extends Model
                         ->value('orden');
 
             $registros[$i] = collect( [ 
+                                        $orden,
                                         $fila['id'],
                                         $fila['modo_liquidacion_id'],
                                         $fila['descripcion'],

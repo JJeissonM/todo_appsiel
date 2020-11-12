@@ -24,7 +24,7 @@ class PlanClaseEncabezado extends Model
 {
     protected $table = 'sga_plan_clases_encabezados';
 
-	protected $fillable = ['plantilla_plan_clases_id', 'fecha', 'semana_calendario_id', 'periodo_id', 'curso_id', 'asignatura_id', 'user_id','archivo_adjunto', 'estado'];
+	protected $fillable = ['plantilla_plan_clases_id', 'fecha', 'semana_calendario_id', 'periodo_id', 'curso_id', 'asignatura_id', 'user_id', 'archivo_adjunto', 'descripcion', 'estado'];
 	
     public $encabezado_tabla = ['Plan de clases', 'Fecha', 'Semana académica', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Estado', 'Acción'];
     
@@ -159,6 +159,27 @@ class PlanClaseEncabezado extends Model
         */
         
         $plantilla_default = PlanClaseEstrucPlantilla::get_actual();
+
+        if ( is_null($plantilla_default) )
+        {
+            return [
+                    [
+                                "id" => 999,
+                                "descripcion" => "",
+                                "tipo" => "personalizado",
+                                "name" => "lbl_planilla",
+                                "opciones" => "",
+                                "value" => '<div class="form-group">                    
+                                                <label class="control-label col-sm-3" style="color: red;" > <b> No se ha creado ninguna plantilla para PLANES DE CLASES en el año lectivo actual . </b> </label>
+                                            </div>',
+                                "atributos" => [],
+                                "definicion" => "",
+                                "requerido" => 0,
+                                "editable" => 1,
+                                "unico" => 0
+                            ]
+                ];
+        }
         
         // Agregar al comienzo del documento
         array_unshift($lista_campos, [

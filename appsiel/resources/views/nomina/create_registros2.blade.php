@@ -27,6 +27,7 @@ table td {
 				<div class="col-sm-12">
 					<b>Documento de nómina:</b><code>{{ $documento->descripcion }}</code>
 					<b>Concepto:</b>	<code>{{ $concepto->descripcion }}</code>
+					<b>Porc. del Básico:</b>	<code>{{ $concepto->porcentaje_sobre_basico }}%</code>
 					
 					{{ Form::hidden('nom_doc_encabezado_id', $documento->id, ['id' =>'nom_doc_encabezado_id']) }}
 					
@@ -41,10 +42,17 @@ table td {
 				<div class="col-sm-12">
 
 				<table class="table table-responsive" id="tabla">
+					<?php 
+						$lbl_encabezado = 'Valor concepto';
+						if ( (float)$concepto->porcentaje_sobre_basico != 0 )
+						{
+							$lbl_encabezado = 'Cantidad horas';
+						}
+					?>
 				<thead>
 					<tr>
 						<th>Empleado</th>
-						<th>Valor concepto</th>
+						<th>{{ $lbl_encabezado }}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -58,8 +66,11 @@ table td {
 							</td>
 
 							<td>
-								<input type="text" name="valor[]" class="form-control">
-
+								@if ( (float)$concepto->porcentaje_sobre_basico != 0 )
+									<input type="text" name="cantidad_horas[]" class="form-control" placeholder="Cantidad horas">
+								@else
+									<input type="text" name="valor[]" class="form-control" placeholder="Valor">
+								@endif
 							</td>
                         </tr>
 					@endforeach

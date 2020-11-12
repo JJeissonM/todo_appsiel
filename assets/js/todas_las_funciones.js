@@ -20,9 +20,9 @@ $(document).ready(function(){
 
 		
 		if( direccion.search("edit") == -1) {
-			url = '../core/validar_numero_identificacion/';
+			url = '../core/validar_numero_identificacion/'; // crear
 		}else{
-			url = '../../../core/validar_numero_identificacion/';
+			url = '../../core/validar_numero_identificacion/'; // editar
 		}
 		
 		$.get( url + documento, function( datos ) 

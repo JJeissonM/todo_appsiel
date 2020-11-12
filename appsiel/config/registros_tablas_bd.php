@@ -2978,14 +2978,14 @@
       'core_app_id' => 17,
       'modelo_id' => 0,
       'name' => 'nom_reportes',
-      'descripcion' => 'Reportes',
+      'descripcion' => 'Desprendibles de pago',
       'url' => 'nomina/reportes',
       'parent' => 223,
       'orden' => 1,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2019-04-29 17:38:55',
-      'updated_at' => '2019-04-29 17:38:55',
+      'updated_at' => '2020-11-12 04:15:33',
     ),
     199 => 
     array (
@@ -6369,7 +6369,7 @@
       'modelo_id' => 0,
       'name' => 'nom_proc_provisiones',
       'descripcion' => 'Cálculo provisiones',
-      'url' => 'web',
+      'url' => 'index_procesos/nomina.procesos.generar_provisiones',
       'parent' => 448,
       'orden' => 2,
       'enabled' => 1,
@@ -6384,7 +6384,7 @@
       'modelo_id' => 0,
       'name' => 'nom_proc_parafiscales',
       'descripcion' => 'Cálculo parafiscales',
-      'url' => 'web',
+      'url' => 'index_procesos/nomina.procesos.generar_parafiscales',
       'parent' => 448,
       'orden' => 4,
       'enabled' => 1,
@@ -6399,7 +6399,7 @@
       'modelo_id' => 0,
       'name' => 'nom_proc_planilla_integrada',
       'descripcion' => 'Generación planilla integrada',
-      'url' => 'web',
+      'url' => 'index_procesos/nomina.procesos.generar_planilla_integrada',
       'parent' => 448,
       'orden' => 6,
       'enabled' => 1,
@@ -6414,7 +6414,7 @@
       'modelo_id' => 0,
       'name' => 'nom_contab_nomina',
       'descripcion' => 'Causación nómina',
-      'url' => 'web',
+      'url' => 'index_procesos/nomina.procesos.contabilizar_nomina',
       'parent' => 449,
       'orden' => 2,
       'enabled' => 1,
@@ -6429,7 +6429,7 @@
       'modelo_id' => 0,
       'name' => 'nom_contab_provisiones',
       'descripcion' => 'Provisión mensual',
-      'url' => 'web',
+      'url' => 'index_procesos/nomina.procesos.contabilizar_provisiones',
       'parent' => 449,
       'orden' => 4,
       'enabled' => 1,
@@ -6444,13 +6444,13 @@
       'modelo_id' => 0,
       'name' => 'nom_contab_parafiscales',
       'descripcion' => 'Parafiscales',
-      'url' => 'web',
+      'url' => 'index_procesos/nomina.procesos.contabilizar_parafiscales',
       'parent' => 449,
       'orden' => 6,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-10-27 16:24:30',
-      'updated_at' => '2020-10-27 16:24:30',
+      'updated_at' => '2020-11-12 05:39:29',
     ),
     430 => 
     array (
@@ -6466,6 +6466,186 @@
       'fa_icon' => '',
       'created_at' => '2020-10-30 09:55:38',
       'updated_at' => '2020-10-30 09:57:40',
+    ),
+    431 => 
+    array (
+      'id' => 457,
+      'core_app_id' => 21,
+      'modelo_id' => 0,
+      'name' => 'Facturación Electrónica',
+      'descripcion' => 'Facturación Electrónica',
+      'url' => 'facturacion_electronica',
+      'parent' => 0,
+      'orden' => 25,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:15:34',
+      'updated_at' => '2020-11-10 03:15:34',
+    ),
+    432 => 
+    array (
+      'id' => 458,
+      'core_app_id' => 21,
+      'modelo_id' => 138,
+      'name' => 'fe_clientes',
+      'descripcion' => 'Clientes',
+      'url' => 'web',
+      'parent' => 460,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => 'smile-o',
+      'created_at' => '2020-11-10 03:19:35',
+      'updated_at' => '2020-11-10 03:23:33',
+    ),
+    433 => 
+    array (
+      'id' => 459,
+      'core_app_id' => 21,
+      'modelo_id' => 22,
+      'name' => 'fe_productos',
+      'descripcion' => 'Productos',
+      'url' => 'web',
+      'parent' => 460,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:20:16',
+      'updated_at' => '2020-11-10 03:23:09',
+    ),
+    434 => 
+    array (
+      'id' => 460,
+      'core_app_id' => 21,
+      'modelo_id' => 0,
+      'name' => 'fe_catalogos',
+      'descripcion' => 'Catálogos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 77,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:22:44',
+      'updated_at' => '2020-11-10 03:26:54',
+    ),
+    435 => 
+    array (
+      'id' => 461,
+      'core_app_id' => 21,
+      'modelo_id' => 0,
+      'name' => 'fe_transacciones',
+      'descripcion' => 'Transacciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:23:46',
+      'updated_at' => '2020-11-10 03:24:10',
+    ),
+    436 => 
+    array (
+      'id' => 462,
+      'core_app_id' => 21,
+      'modelo_id' => 0,
+      'name' => 'fe_factura_ventas',
+      'descripcion' => 'Factura de ventas',
+      'url' => 'web',
+      'parent' => 461,
+      'orden' => 1,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:24:17',
+      'updated_at' => '2020-11-10 03:25:03',
+    ),
+    437 => 
+    array (
+      'id' => 463,
+      'core_app_id' => 21,
+      'modelo_id' => 0,
+      'name' => 'fe_nota_credito',
+      'descripcion' => 'Nota Crédito',
+      'url' => 'web',
+      'parent' => 461,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:25:11',
+      'updated_at' => '2020-11-10 03:25:27',
+    ),
+    438 => 
+    array (
+      'id' => 464,
+      'core_app_id' => 21,
+      'modelo_id' => 0,
+      'name' => 'fe_nota_debito',
+      'descripcion' => 'Nota Débito',
+      'url' => 'web',
+      'parent' => 461,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:25:33',
+      'updated_at' => '2020-11-10 03:25:52',
+    ),
+    439 => 
+    array (
+      'id' => 465,
+      'core_app_id' => 21,
+      'modelo_id' => 0,
+      'name' => 'fe_factura_contingencia',
+      'descripcion' => 'Factura de contingencia',
+      'url' => 'web',
+      'parent' => 461,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:25:57',
+      'updated_at' => '2020-11-10 03:26:21',
+    ),
+    440 => 
+    array (
+      'id' => 466,
+      'core_app_id' => 21,
+      'modelo_id' => 152,
+      'name' => 'fe_resoluciones_facturacion',
+      'descripcion' => 'Resoluciones de facturación',
+      'url' => 'web',
+      'parent' => 460,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:56:21',
+      'updated_at' => '2020-11-10 03:57:05',
+    ),
+    441 => 
+    array (
+      'id' => 467,
+      'core_app_id' => 21,
+      'modelo_id' => 0,
+      'name' => 'fe_documentos_recibidos',
+      'descripcion' => 'Documentos recibidos',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-10 03:58:19',
+      'updated_at' => '2020-11-10 03:59:12',
+    ),
+    442 => 
+    array (
+      'id' => 468,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_transacciones_via_interface',
+      'descripcion' => 'Transacciones vía interface',
+      'url' => 'index_procesos/nomina.procesos.transacciones_via_interface',
+      'parent' => 217,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-12 04:36:07',
+      'updated_at' => '2020-11-12 05:13:22',
     ),
   ),
   'roles' => 
@@ -13907,1669 +14087,1807 @@
     array (
       'orden' => 0,
       'permission_id' => 364,
-      'role_id' => 3,
+      'role_id' => 18,
     ),
     1216 => 
     array (
       'orden' => 0,
       'permission_id' => 364,
-      'role_id' => 18,
+      'role_id' => 19,
     ),
     1217 => 
     array (
       'orden' => 0,
-      'permission_id' => 364,
-      'role_id' => 19,
+      'permission_id' => 365,
+      'role_id' => 1,
     ),
     1218 => 
     array (
       'orden' => 0,
       'permission_id' => 365,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1219 => 
     array (
       'orden' => 0,
-      'permission_id' => 365,
-      'role_id' => 3,
+      'permission_id' => 366,
+      'role_id' => 1,
     ),
     1220 => 
     array (
       'orden' => 0,
       'permission_id' => 366,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1221 => 
     array (
       'orden' => 0,
-      'permission_id' => 366,
-      'role_id' => 3,
+      'permission_id' => 367,
+      'role_id' => 1,
     ),
     1222 => 
     array (
       'orden' => 0,
       'permission_id' => 367,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1223 => 
     array (
       'orden' => 0,
-      'permission_id' => 367,
-      'role_id' => 3,
+      'permission_id' => 368,
+      'role_id' => 1,
     ),
     1224 => 
     array (
       'orden' => 0,
       'permission_id' => 368,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1225 => 
     array (
       'orden' => 0,
-      'permission_id' => 368,
-      'role_id' => 3,
+      'permission_id' => 369,
+      'role_id' => 1,
     ),
     1226 => 
     array (
       'orden' => 0,
       'permission_id' => 369,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1227 => 
     array (
       'orden' => 0,
-      'permission_id' => 369,
-      'role_id' => 3,
+      'permission_id' => 370,
+      'role_id' => 1,
     ),
     1228 => 
     array (
       'orden' => 0,
       'permission_id' => 370,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1229 => 
     array (
       'orden' => 0,
-      'permission_id' => 370,
-      'role_id' => 3,
+      'permission_id' => 371,
+      'role_id' => 1,
     ),
     1230 => 
     array (
       'orden' => 0,
       'permission_id' => 371,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1231 => 
     array (
       'orden' => 0,
-      'permission_id' => 371,
-      'role_id' => 3,
+      'permission_id' => 372,
+      'role_id' => 1,
     ),
     1232 => 
     array (
       'orden' => 0,
       'permission_id' => 372,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1233 => 
     array (
       'orden' => 0,
-      'permission_id' => 372,
-      'role_id' => 3,
+      'permission_id' => 373,
+      'role_id' => 1,
     ),
     1234 => 
     array (
       'orden' => 0,
       'permission_id' => 373,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1235 => 
     array (
       'orden' => 0,
-      'permission_id' => 373,
-      'role_id' => 3,
+      'permission_id' => 374,
+      'role_id' => 1,
     ),
     1236 => 
     array (
       'orden' => 0,
       'permission_id' => 374,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1237 => 
     array (
       'orden' => 0,
-      'permission_id' => 374,
-      'role_id' => 3,
+      'permission_id' => 375,
+      'role_id' => 1,
     ),
     1238 => 
     array (
       'orden' => 0,
       'permission_id' => 375,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1239 => 
     array (
       'orden' => 0,
-      'permission_id' => 375,
-      'role_id' => 3,
+      'permission_id' => 376,
+      'role_id' => 1,
     ),
     1240 => 
     array (
       'orden' => 0,
       'permission_id' => 376,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1241 => 
     array (
       'orden' => 0,
-      'permission_id' => 376,
-      'role_id' => 3,
+      'permission_id' => 377,
+      'role_id' => 1,
     ),
     1242 => 
     array (
       'orden' => 0,
       'permission_id' => 377,
-      'role_id' => 1,
+      'role_id' => 9,
     ),
     1243 => 
     array (
       'orden' => 0,
-      'permission_id' => 377,
-      'role_id' => 9,
+      'permission_id' => 378,
+      'role_id' => 15,
     ),
     1244 => 
     array (
       'orden' => 0,
-      'permission_id' => 378,
+      'permission_id' => 379,
       'role_id' => 15,
     ),
     1245 => 
     array (
       'orden' => 0,
       'permission_id' => 379,
-      'role_id' => 15,
+      'role_id' => 17,
     ),
     1246 => 
     array (
       'orden' => 0,
-      'permission_id' => 379,
-      'role_id' => 17,
+      'permission_id' => 380,
+      'role_id' => 1,
     ),
     1247 => 
     array (
       'orden' => 0,
       'permission_id' => 380,
-      'role_id' => 1,
+      'role_id' => 17,
     ),
     1248 => 
     array (
       'orden' => 0,
-      'permission_id' => 380,
-      'role_id' => 17,
+      'permission_id' => 381,
+      'role_id' => 1,
     ),
     1249 => 
     array (
       'orden' => 0,
       'permission_id' => 381,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1250 => 
     array (
       'orden' => 0,
       'permission_id' => 381,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1251 => 
     array (
       'orden' => 0,
-      'permission_id' => 381,
-      'role_id' => 17,
+      'permission_id' => 382,
+      'role_id' => 1,
     ),
     1252 => 
     array (
       'orden' => 0,
       'permission_id' => 382,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1253 => 
     array (
       'orden' => 0,
       'permission_id' => 382,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1254 => 
     array (
       'orden' => 0,
-      'permission_id' => 382,
-      'role_id' => 17,
+      'permission_id' => 383,
+      'role_id' => 1,
     ),
     1255 => 
     array (
       'orden' => 0,
       'permission_id' => 383,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1256 => 
     array (
       'orden' => 0,
       'permission_id' => 383,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1257 => 
     array (
       'orden' => 0,
       'permission_id' => 383,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1258 => 
     array (
       'orden' => 0,
-      'permission_id' => 383,
-      'role_id' => 17,
+      'permission_id' => 384,
+      'role_id' => 1,
     ),
     1259 => 
     array (
       'orden' => 0,
       'permission_id' => 384,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1260 => 
     array (
       'orden' => 0,
       'permission_id' => 384,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1261 => 
     array (
       'orden' => 0,
       'permission_id' => 384,
-      'role_id' => 9,
-    ),
-    1262 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 384,
       'role_id' => 17,
     ),
-    1263 => 
+    1262 => 
     array (
       'orden' => 0,
       'permission_id' => 385,
       'role_id' => 17,
     ),
-    1264 => 
+    1263 => 
     array (
       'orden' => 0,
       'permission_id' => 387,
       'role_id' => 1,
+    ),
+    1264 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 387,
+      'role_id' => 9,
     ),
     1265 => 
     array (
       'orden' => 0,
       'permission_id' => 387,
-      'role_id' => 9,
+      'role_id' => 12,
     ),
     1266 => 
     array (
       'orden' => 0,
-      'permission_id' => 387,
-      'role_id' => 12,
+      'permission_id' => 388,
+      'role_id' => 1,
     ),
     1267 => 
     array (
       'orden' => 0,
       'permission_id' => 388,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1268 => 
     array (
       'orden' => 0,
       'permission_id' => 388,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1269 => 
     array (
       'orden' => 0,
       'permission_id' => 388,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1270 => 
     array (
       'orden' => 0,
-      'permission_id' => 388,
-      'role_id' => 17,
+      'permission_id' => 389,
+      'role_id' => 1,
     ),
     1271 => 
     array (
       'orden' => 0,
       'permission_id' => 389,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1272 => 
     array (
       'orden' => 0,
       'permission_id' => 389,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1273 => 
     array (
       'orden' => 0,
       'permission_id' => 389,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1274 => 
     array (
       'orden' => 0,
-      'permission_id' => 389,
-      'role_id' => 17,
+      'permission_id' => 391,
+      'role_id' => 1,
     ),
     1275 => 
     array (
       'orden' => 0,
       'permission_id' => 391,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1276 => 
     array (
       'orden' => 0,
-      'permission_id' => 391,
-      'role_id' => 3,
+      'permission_id' => 392,
+      'role_id' => 1,
     ),
     1277 => 
     array (
       'orden' => 0,
       'permission_id' => 392,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1278 => 
     array (
       'orden' => 0,
-      'permission_id' => 392,
-      'role_id' => 3,
+      'permission_id' => 393,
+      'role_id' => 1,
     ),
     1279 => 
     array (
       'orden' => 0,
       'permission_id' => 393,
-      'role_id' => 1,
+      'role_id' => 9,
     ),
     1280 => 
     array (
       'orden' => 0,
-      'permission_id' => 393,
-      'role_id' => 9,
+      'permission_id' => 394,
+      'role_id' => 1,
     ),
     1281 => 
     array (
       'orden' => 0,
       'permission_id' => 394,
-      'role_id' => 1,
+      'role_id' => 9,
     ),
     1282 => 
     array (
       'orden' => 0,
-      'permission_id' => 394,
-      'role_id' => 9,
+      'permission_id' => 395,
+      'role_id' => 1,
     ),
     1283 => 
     array (
       'orden' => 0,
       'permission_id' => 395,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1284 => 
     array (
       'orden' => 0,
       'permission_id' => 395,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1285 => 
     array (
       'orden' => 0,
-      'permission_id' => 395,
-      'role_id' => 17,
+      'permission_id' => 396,
+      'role_id' => 1,
     ),
     1286 => 
     array (
       'orden' => 0,
       'permission_id' => 396,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1287 => 
     array (
       'orden' => 0,
       'permission_id' => 396,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1288 => 
     array (
       'orden' => 0,
       'permission_id' => 396,
-      'role_id' => 17,
+      'role_id' => 20,
     ),
     1289 => 
     array (
       'orden' => 0,
-      'permission_id' => 396,
-      'role_id' => 20,
+      'permission_id' => 397,
+      'role_id' => 1,
     ),
     1290 => 
     array (
       'orden' => 0,
       'permission_id' => 397,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1291 => 
     array (
       'orden' => 0,
       'permission_id' => 397,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1292 => 
     array (
       'orden' => 0,
       'permission_id' => 397,
-      'role_id' => 17,
+      'role_id' => 20,
     ),
     1293 => 
     array (
       'orden' => 0,
-      'permission_id' => 397,
-      'role_id' => 20,
+      'permission_id' => 398,
+      'role_id' => 1,
     ),
     1294 => 
     array (
       'orden' => 0,
       'permission_id' => 398,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1295 => 
     array (
       'orden' => 0,
       'permission_id' => 398,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1296 => 
     array (
       'orden' => 0,
-      'permission_id' => 398,
-      'role_id' => 17,
+      'permission_id' => 399,
+      'role_id' => 1,
     ),
     1297 => 
     array (
       'orden' => 0,
       'permission_id' => 399,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1298 => 
     array (
       'orden' => 0,
       'permission_id' => 399,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1299 => 
     array (
       'orden' => 0,
-      'permission_id' => 399,
-      'role_id' => 17,
+      'permission_id' => 400,
+      'role_id' => 1,
     ),
     1300 => 
     array (
       'orden' => 0,
       'permission_id' => 400,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1301 => 
     array (
       'orden' => 0,
       'permission_id' => 400,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1302 => 
     array (
       'orden' => 0,
-      'permission_id' => 400,
-      'role_id' => 17,
+      'permission_id' => 401,
+      'role_id' => 1,
     ),
     1303 => 
     array (
       'orden' => 0,
       'permission_id' => 401,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1304 => 
     array (
       'orden' => 0,
       'permission_id' => 401,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1305 => 
     array (
       'orden' => 0,
       'permission_id' => 401,
-      'role_id' => 17,
+      'role_id' => 20,
     ),
     1306 => 
     array (
       'orden' => 0,
-      'permission_id' => 401,
-      'role_id' => 20,
+      'permission_id' => 402,
+      'role_id' => 1,
     ),
     1307 => 
     array (
       'orden' => 0,
       'permission_id' => 402,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1308 => 
     array (
       'orden' => 0,
       'permission_id' => 402,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1309 => 
     array (
       'orden' => 0,
       'permission_id' => 402,
-      'role_id' => 17,
+      'role_id' => 20,
     ),
     1310 => 
     array (
       'orden' => 0,
-      'permission_id' => 402,
-      'role_id' => 20,
+      'permission_id' => 403,
+      'role_id' => 1,
     ),
     1311 => 
     array (
       'orden' => 0,
       'permission_id' => 403,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1312 => 
     array (
       'orden' => 0,
       'permission_id' => 403,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1313 => 
     array (
       'orden' => 0,
       'permission_id' => 403,
-      'role_id' => 17,
+      'role_id' => 20,
     ),
     1314 => 
     array (
       'orden' => 0,
-      'permission_id' => 403,
-      'role_id' => 20,
+      'permission_id' => 404,
+      'role_id' => 1,
     ),
     1315 => 
     array (
       'orden' => 0,
       'permission_id' => 404,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1316 => 
     array (
       'orden' => 0,
       'permission_id' => 404,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1317 => 
     array (
       'orden' => 0,
       'permission_id' => 404,
-      'role_id' => 17,
+      'role_id' => 20,
     ),
     1318 => 
     array (
       'orden' => 0,
-      'permission_id' => 404,
-      'role_id' => 20,
+      'permission_id' => 405,
+      'role_id' => 1,
     ),
     1319 => 
     array (
       'orden' => 0,
       'permission_id' => 405,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1320 => 
     array (
       'orden' => 0,
       'permission_id' => 405,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1321 => 
     array (
       'orden' => 0,
-      'permission_id' => 405,
-      'role_id' => 9,
+      'permission_id' => 406,
+      'role_id' => 1,
     ),
     1322 => 
     array (
       'orden' => 0,
       'permission_id' => 406,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1323 => 
     array (
       'orden' => 0,
       'permission_id' => 406,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1324 => 
     array (
       'orden' => 0,
       'permission_id' => 406,
-      'role_id' => 9,
+      'role_id' => 11,
     ),
     1325 => 
     array (
       'orden' => 0,
       'permission_id' => 406,
-      'role_id' => 11,
+      'role_id' => 17,
     ),
     1326 => 
     array (
       'orden' => 0,
-      'permission_id' => 406,
-      'role_id' => 17,
+      'permission_id' => 407,
+      'role_id' => 1,
     ),
     1327 => 
     array (
       'orden' => 0,
       'permission_id' => 407,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1328 => 
     array (
       'orden' => 0,
       'permission_id' => 407,
-      'role_id' => 3,
+      'role_id' => 7,
     ),
     1329 => 
     array (
       'orden' => 0,
-      'permission_id' => 407,
-      'role_id' => 7,
+      'permission_id' => 408,
+      'role_id' => 1,
     ),
     1330 => 
     array (
       'orden' => 0,
       'permission_id' => 408,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1331 => 
     array (
       'orden' => 0,
       'permission_id' => 408,
-      'role_id' => 3,
+      'role_id' => 14,
     ),
     1332 => 
     array (
       'orden' => 0,
-      'permission_id' => 408,
-      'role_id' => 14,
+      'permission_id' => 409,
+      'role_id' => 1,
     ),
     1333 => 
     array (
       'orden' => 0,
       'permission_id' => 409,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1334 => 
     array (
       'orden' => 0,
       'permission_id' => 409,
-      'role_id' => 3,
+      'role_id' => 14,
     ),
     1335 => 
     array (
       'orden' => 0,
-      'permission_id' => 409,
-      'role_id' => 14,
+      'permission_id' => 410,
+      'role_id' => 1,
     ),
     1336 => 
     array (
       'orden' => 0,
       'permission_id' => 410,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1337 => 
     array (
       'orden' => 0,
       'permission_id' => 410,
-      'role_id' => 3,
+      'role_id' => 14,
     ),
     1338 => 
     array (
       'orden' => 0,
-      'permission_id' => 410,
-      'role_id' => 14,
+      'permission_id' => 411,
+      'role_id' => 1,
     ),
     1339 => 
     array (
       'orden' => 0,
       'permission_id' => 411,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1340 => 
     array (
       'orden' => 0,
       'permission_id' => 411,
-      'role_id' => 3,
+      'role_id' => 14,
     ),
     1341 => 
     array (
       'orden' => 0,
-      'permission_id' => 411,
-      'role_id' => 14,
+      'permission_id' => 412,
+      'role_id' => 1,
     ),
     1342 => 
     array (
       'orden' => 0,
       'permission_id' => 412,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1343 => 
     array (
       'orden' => 0,
       'permission_id' => 412,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1344 => 
     array (
       'orden' => 0,
       'permission_id' => 412,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1345 => 
     array (
       'orden' => 0,
-      'permission_id' => 412,
-      'role_id' => 17,
+      'permission_id' => 413,
+      'role_id' => 1,
     ),
     1346 => 
     array (
       'orden' => 0,
       'permission_id' => 413,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1347 => 
     array (
       'orden' => 0,
       'permission_id' => 413,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1348 => 
     array (
       'orden' => 0,
       'permission_id' => 413,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1349 => 
     array (
       'orden' => 0,
-      'permission_id' => 413,
-      'role_id' => 17,
+      'permission_id' => 414,
+      'role_id' => 1,
     ),
     1350 => 
     array (
       'orden' => 0,
       'permission_id' => 414,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1351 => 
     array (
       'orden' => 0,
       'permission_id' => 414,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1352 => 
     array (
       'orden' => 0,
       'permission_id' => 414,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1353 => 
     array (
       'orden' => 0,
-      'permission_id' => 414,
-      'role_id' => 17,
+      'permission_id' => 415,
+      'role_id' => 1,
     ),
     1354 => 
     array (
       'orden' => 0,
       'permission_id' => 415,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1355 => 
     array (
       'orden' => 0,
       'permission_id' => 415,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1356 => 
     array (
       'orden' => 0,
       'permission_id' => 415,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1357 => 
     array (
       'orden' => 0,
-      'permission_id' => 415,
-      'role_id' => 17,
+      'permission_id' => 416,
+      'role_id' => 1,
     ),
     1358 => 
     array (
       'orden' => 0,
       'permission_id' => 416,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1359 => 
     array (
       'orden' => 0,
       'permission_id' => 416,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1360 => 
     array (
       'orden' => 0,
-      'permission_id' => 416,
-      'role_id' => 17,
+      'permission_id' => 417,
+      'role_id' => 1,
     ),
     1361 => 
     array (
       'orden' => 0,
       'permission_id' => 417,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1362 => 
     array (
       'orden' => 0,
       'permission_id' => 417,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1363 => 
     array (
       'orden' => 0,
-      'permission_id' => 417,
-      'role_id' => 17,
+      'permission_id' => 418,
+      'role_id' => 1,
     ),
     1364 => 
     array (
       'orden' => 0,
       'permission_id' => 418,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1365 => 
     array (
       'orden' => 0,
       'permission_id' => 418,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1366 => 
     array (
       'orden' => 0,
-      'permission_id' => 418,
-      'role_id' => 17,
+      'permission_id' => 419,
+      'role_id' => 1,
     ),
     1367 => 
     array (
       'orden' => 0,
       'permission_id' => 419,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1368 => 
     array (
       'orden' => 0,
       'permission_id' => 419,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1369 => 
     array (
       'orden' => 0,
-      'permission_id' => 419,
-      'role_id' => 17,
+      'permission_id' => 420,
+      'role_id' => 1,
     ),
     1370 => 
     array (
       'orden' => 0,
       'permission_id' => 420,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1371 => 
     array (
       'orden' => 0,
       'permission_id' => 420,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1372 => 
     array (
       'orden' => 0,
-      'permission_id' => 420,
-      'role_id' => 17,
+      'permission_id' => 421,
+      'role_id' => 1,
     ),
     1373 => 
     array (
       'orden' => 0,
       'permission_id' => 421,
-      'role_id' => 1,
+      'role_id' => 2,
     ),
     1374 => 
     array (
       'orden' => 0,
       'permission_id' => 421,
-      'role_id' => 2,
+      'role_id' => 9,
     ),
     1375 => 
     array (
       'orden' => 0,
       'permission_id' => 421,
-      'role_id' => 9,
+      'role_id' => 12,
     ),
     1376 => 
     array (
       'orden' => 0,
       'permission_id' => 421,
-      'role_id' => 12,
+      'role_id' => 13,
     ),
     1377 => 
     array (
       'orden' => 0,
-      'permission_id' => 421,
-      'role_id' => 13,
+      'permission_id' => 422,
+      'role_id' => 1,
     ),
     1378 => 
     array (
       'orden' => 0,
       'permission_id' => 422,
-      'role_id' => 1,
+      'role_id' => 2,
     ),
     1379 => 
     array (
       'orden' => 0,
       'permission_id' => 422,
-      'role_id' => 2,
+      'role_id' => 9,
     ),
     1380 => 
     array (
       'orden' => 0,
       'permission_id' => 422,
-      'role_id' => 9,
+      'role_id' => 12,
     ),
     1381 => 
     array (
       'orden' => 0,
       'permission_id' => 422,
-      'role_id' => 12,
+      'role_id' => 13,
     ),
     1382 => 
     array (
       'orden' => 0,
-      'permission_id' => 422,
-      'role_id' => 13,
+      'permission_id' => 423,
+      'role_id' => 1,
     ),
     1383 => 
     array (
       'orden' => 0,
       'permission_id' => 423,
-      'role_id' => 1,
+      'role_id' => 2,
     ),
     1384 => 
     array (
       'orden' => 0,
       'permission_id' => 423,
-      'role_id' => 2,
+      'role_id' => 3,
     ),
     1385 => 
     array (
       'orden' => 0,
       'permission_id' => 423,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1386 => 
     array (
       'orden' => 0,
       'permission_id' => 423,
-      'role_id' => 9,
+      'role_id' => 12,
     ),
     1387 => 
     array (
       'orden' => 0,
       'permission_id' => 423,
-      'role_id' => 12,
+      'role_id' => 13,
     ),
     1388 => 
     array (
       'orden' => 0,
-      'permission_id' => 423,
-      'role_id' => 13,
+      'permission_id' => 424,
+      'role_id' => 1,
     ),
     1389 => 
     array (
       'orden' => 0,
       'permission_id' => 424,
-      'role_id' => 1,
+      'role_id' => 2,
     ),
     1390 => 
     array (
       'orden' => 0,
       'permission_id' => 424,
-      'role_id' => 2,
+      'role_id' => 3,
     ),
     1391 => 
     array (
       'orden' => 0,
       'permission_id' => 424,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1392 => 
     array (
       'orden' => 0,
       'permission_id' => 424,
-      'role_id' => 9,
+      'role_id' => 13,
     ),
     1393 => 
     array (
       'orden' => 0,
-      'permission_id' => 424,
-      'role_id' => 13,
+      'permission_id' => 425,
+      'role_id' => 1,
     ),
     1394 => 
     array (
       'orden' => 0,
       'permission_id' => 425,
-      'role_id' => 1,
+      'role_id' => 2,
     ),
     1395 => 
     array (
       'orden' => 0,
       'permission_id' => 425,
-      'role_id' => 2,
+      'role_id' => 3,
     ),
     1396 => 
     array (
       'orden' => 0,
       'permission_id' => 425,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1397 => 
     array (
       'orden' => 0,
       'permission_id' => 425,
-      'role_id' => 9,
+      'role_id' => 12,
     ),
     1398 => 
     array (
       'orden' => 0,
       'permission_id' => 425,
-      'role_id' => 12,
+      'role_id' => 13,
     ),
     1399 => 
     array (
       'orden' => 0,
-      'permission_id' => 425,
-      'role_id' => 13,
+      'permission_id' => 426,
+      'role_id' => 1,
     ),
     1400 => 
     array (
       'orden' => 0,
       'permission_id' => 426,
-      'role_id' => 1,
+      'role_id' => 2,
     ),
     1401 => 
     array (
       'orden' => 0,
       'permission_id' => 426,
-      'role_id' => 2,
+      'role_id' => 3,
     ),
     1402 => 
     array (
       'orden' => 0,
       'permission_id' => 426,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1403 => 
     array (
       'orden' => 0,
       'permission_id' => 426,
-      'role_id' => 9,
+      'role_id' => 12,
     ),
     1404 => 
     array (
       'orden' => 0,
       'permission_id' => 426,
-      'role_id' => 12,
+      'role_id' => 13,
     ),
     1405 => 
     array (
       'orden' => 0,
-      'permission_id' => 426,
-      'role_id' => 13,
+      'permission_id' => 428,
+      'role_id' => 1,
     ),
     1406 => 
     array (
       'orden' => 0,
       'permission_id' => 428,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1407 => 
     array (
       'orden' => 0,
       'permission_id' => 428,
-      'role_id' => 3,
+      'role_id' => 17,
     ),
     1408 => 
     array (
       'orden' => 0,
-      'permission_id' => 428,
-      'role_id' => 17,
+      'permission_id' => 429,
+      'role_id' => 1,
     ),
     1409 => 
     array (
       'orden' => 0,
       'permission_id' => 429,
-      'role_id' => 1,
+      'role_id' => 17,
     ),
     1410 => 
     array (
       'orden' => 0,
-      'permission_id' => 429,
-      'role_id' => 17,
+      'permission_id' => 430,
+      'role_id' => 1,
     ),
     1411 => 
     array (
       'orden' => 0,
       'permission_id' => 430,
-      'role_id' => 1,
+      'role_id' => 2,
     ),
     1412 => 
     array (
       'orden' => 0,
       'permission_id' => 430,
-      'role_id' => 2,
+      'role_id' => 3,
     ),
     1413 => 
     array (
       'orden' => 0,
       'permission_id' => 430,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1414 => 
     array (
       'orden' => 0,
       'permission_id' => 430,
-      'role_id' => 9,
+      'role_id' => 12,
     ),
     1415 => 
     array (
       'orden' => 0,
       'permission_id' => 430,
-      'role_id' => 12,
+      'role_id' => 13,
     ),
     1416 => 
     array (
       'orden' => 0,
-      'permission_id' => 430,
-      'role_id' => 13,
+      'permission_id' => 431,
+      'role_id' => 1,
     ),
     1417 => 
     array (
       'orden' => 0,
       'permission_id' => 431,
-      'role_id' => 1,
+      'role_id' => 9,
     ),
     1418 => 
     array (
       'orden' => 0,
       'permission_id' => 431,
-      'role_id' => 9,
-    ),
-    1419 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 431,
       'role_id' => 12,
     ),
-    1420 => 
+    1419 => 
     array (
       'orden' => 0,
       'permission_id' => 432,
       'role_id' => 1,
     ),
-    1421 => 
+    1420 => 
     array (
       'orden' => 0,
       'permission_id' => 432,
       'role_id' => 3,
     ),
-    1422 => 
+    1421 => 
     array (
       'orden' => 0,
       'permission_id' => 432,
       'role_id' => 9,
     ),
-    1423 => 
+    1422 => 
     array (
       'orden' => 0,
       'permission_id' => 432,
       'role_id' => 17,
     ),
-    1424 => 
+    1423 => 
     array (
       'orden' => 0,
       'permission_id' => 433,
+      'role_id' => 1,
+    ),
+    1424 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 434,
       'role_id' => 1,
     ),
     1425 => 
     array (
       'orden' => 0,
       'permission_id' => 434,
-      'role_id' => 1,
+      'role_id' => 9,
     ),
     1426 => 
     array (
       'orden' => 0,
-      'permission_id' => 434,
-      'role_id' => 9,
+      'permission_id' => 435,
+      'role_id' => 1,
     ),
     1427 => 
     array (
       'orden' => 0,
       'permission_id' => 435,
-      'role_id' => 1,
+      'role_id' => 9,
     ),
     1428 => 
     array (
       'orden' => 0,
-      'permission_id' => 435,
-      'role_id' => 9,
+      'permission_id' => 436,
+      'role_id' => 1,
     ),
     1429 => 
     array (
       'orden' => 0,
       'permission_id' => 436,
-      'role_id' => 1,
+      'role_id' => 9,
     ),
     1430 => 
     array (
       'orden' => 0,
-      'permission_id' => 436,
-      'role_id' => 9,
+      'permission_id' => 437,
+      'role_id' => 1,
     ),
     1431 => 
     array (
       'orden' => 0,
       'permission_id' => 437,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1432 => 
     array (
       'orden' => 0,
       'permission_id' => 437,
-      'role_id' => 3,
+      'role_id' => 14,
     ),
     1433 => 
     array (
       'orden' => 0,
-      'permission_id' => 437,
-      'role_id' => 14,
+      'permission_id' => 438,
+      'role_id' => 1,
     ),
     1434 => 
     array (
       'orden' => 0,
       'permission_id' => 438,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1435 => 
     array (
       'orden' => 0,
       'permission_id' => 438,
-      'role_id' => 3,
+      'role_id' => 14,
     ),
     1436 => 
     array (
       'orden' => 0,
-      'permission_id' => 438,
-      'role_id' => 14,
+      'permission_id' => 439,
+      'role_id' => 1,
     ),
     1437 => 
     array (
       'orden' => 0,
       'permission_id' => 439,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1438 => 
     array (
       'orden' => 0,
       'permission_id' => 439,
-      'role_id' => 3,
+      'role_id' => 14,
     ),
     1439 => 
     array (
       'orden' => 0,
-      'permission_id' => 439,
-      'role_id' => 14,
+      'permission_id' => 440,
+      'role_id' => 1,
     ),
     1440 => 
     array (
       'orden' => 0,
       'permission_id' => 440,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1441 => 
     array (
       'orden' => 0,
-      'permission_id' => 440,
-      'role_id' => 3,
+      'permission_id' => 441,
+      'role_id' => 1,
     ),
     1442 => 
     array (
       'orden' => 0,
       'permission_id' => 441,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1443 => 
     array (
       'orden' => 0,
       'permission_id' => 441,
-      'role_id' => 3,
+      'role_id' => 14,
     ),
     1444 => 
     array (
       'orden' => 0,
-      'permission_id' => 441,
-      'role_id' => 14,
+      'permission_id' => 442,
+      'role_id' => 1,
     ),
     1445 => 
     array (
       'orden' => 0,
       'permission_id' => 442,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1446 => 
     array (
       'orden' => 0,
       'permission_id' => 442,
-      'role_id' => 3,
+      'role_id' => 14,
     ),
     1447 => 
     array (
       'orden' => 0,
-      'permission_id' => 442,
-      'role_id' => 14,
+      'permission_id' => 443,
+      'role_id' => 1,
     ),
     1448 => 
     array (
       'orden' => 0,
       'permission_id' => 443,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1449 => 
     array (
       'orden' => 0,
       'permission_id' => 443,
-      'role_id' => 3,
-    ),
-    1450 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 443,
       'role_id' => 14,
     ),
-    1451 => 
+    1450 => 
     array (
       'orden' => 0,
       'permission_id' => 444,
       'role_id' => 1,
     ),
-    1452 => 
+    1451 => 
     array (
       'orden' => 0,
       'permission_id' => 444,
       'role_id' => 3,
     ),
-    1453 => 
+    1452 => 
     array (
       'orden' => 0,
       'permission_id' => 444,
       'role_id' => 17,
     ),
-    1454 => 
+    1453 => 
     array (
       'orden' => 0,
       'permission_id' => 445,
+      'role_id' => 1,
+    ),
+    1454 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 446,
       'role_id' => 1,
     ),
     1455 => 
     array (
       'orden' => 0,
       'permission_id' => 446,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1456 => 
     array (
       'orden' => 0,
       'permission_id' => 446,
-      'role_id' => 3,
+      'role_id' => 7,
     ),
     1457 => 
     array (
       'orden' => 0,
       'permission_id' => 446,
-      'role_id' => 7,
+      'role_id' => 17,
     ),
     1458 => 
     array (
       'orden' => 0,
-      'permission_id' => 446,
-      'role_id' => 17,
+      'permission_id' => 447,
+      'role_id' => 1,
     ),
     1459 => 
     array (
       'orden' => 0,
-      'permission_id' => 447,
+      'permission_id' => 448,
       'role_id' => 1,
     ),
     1460 => 
     array (
       'orden' => 0,
       'permission_id' => 448,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1461 => 
     array (
       'orden' => 0,
       'permission_id' => 448,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1462 => 
     array (
       'orden' => 0,
       'permission_id' => 448,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1463 => 
     array (
       'orden' => 0,
-      'permission_id' => 448,
-      'role_id' => 17,
+      'permission_id' => 449,
+      'role_id' => 1,
     ),
     1464 => 
     array (
       'orden' => 0,
       'permission_id' => 449,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1465 => 
     array (
       'orden' => 0,
       'permission_id' => 449,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1466 => 
     array (
       'orden' => 0,
       'permission_id' => 449,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1467 => 
     array (
       'orden' => 0,
-      'permission_id' => 449,
-      'role_id' => 17,
+      'permission_id' => 450,
+      'role_id' => 1,
     ),
     1468 => 
     array (
       'orden' => 0,
       'permission_id' => 450,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1469 => 
     array (
       'orden' => 0,
       'permission_id' => 450,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1470 => 
     array (
       'orden' => 0,
       'permission_id' => 450,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1471 => 
     array (
       'orden' => 0,
-      'permission_id' => 450,
-      'role_id' => 17,
+      'permission_id' => 451,
+      'role_id' => 1,
     ),
     1472 => 
     array (
       'orden' => 0,
       'permission_id' => 451,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1473 => 
     array (
       'orden' => 0,
       'permission_id' => 451,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1474 => 
     array (
       'orden' => 0,
       'permission_id' => 451,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1475 => 
     array (
       'orden' => 0,
-      'permission_id' => 451,
-      'role_id' => 17,
+      'permission_id' => 452,
+      'role_id' => 1,
     ),
     1476 => 
     array (
       'orden' => 0,
       'permission_id' => 452,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1477 => 
     array (
       'orden' => 0,
       'permission_id' => 452,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1478 => 
     array (
       'orden' => 0,
       'permission_id' => 452,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1479 => 
     array (
       'orden' => 0,
-      'permission_id' => 452,
-      'role_id' => 17,
+      'permission_id' => 453,
+      'role_id' => 1,
     ),
     1480 => 
     array (
       'orden' => 0,
       'permission_id' => 453,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1481 => 
     array (
       'orden' => 0,
       'permission_id' => 453,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1482 => 
     array (
       'orden' => 0,
       'permission_id' => 453,
-      'role_id' => 9,
+      'role_id' => 17,
     ),
     1483 => 
     array (
       'orden' => 0,
-      'permission_id' => 453,
-      'role_id' => 17,
+      'permission_id' => 454,
+      'role_id' => 1,
     ),
     1484 => 
     array (
       'orden' => 0,
       'permission_id' => 454,
-      'role_id' => 1,
+      'role_id' => 3,
     ),
     1485 => 
     array (
       'orden' => 0,
       'permission_id' => 454,
-      'role_id' => 3,
+      'role_id' => 9,
     ),
     1486 => 
     array (
       'orden' => 0,
       'permission_id' => 454,
-      'role_id' => 9,
-    ),
-    1487 => 
-    array (
-      'orden' => 0,
-      'permission_id' => 454,
       'role_id' => 17,
     ),
-    1488 => 
+    1487 => 
     array (
       'orden' => 0,
       'permission_id' => 455,
       'role_id' => 1,
     ),
-    1489 => 
+    1488 => 
     array (
       'orden' => 0,
       'permission_id' => 455,
       'role_id' => 3,
     ),
-    1490 => 
+    1489 => 
     array (
       'orden' => 0,
       'permission_id' => 455,
       'role_id' => 9,
     ),
-    1491 => 
+    1490 => 
     array (
       'orden' => 0,
       'permission_id' => 455,
       'role_id' => 17,
     ),
-    1492 => 
+    1491 => 
     array (
       'orden' => 0,
       'permission_id' => 456,
       'role_id' => 18,
+    ),
+    1492 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 457,
+      'role_id' => 1,
+    ),
+    1493 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 457,
+      'role_id' => 3,
+    ),
+    1494 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 458,
+      'role_id' => 1,
+    ),
+    1495 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 458,
+      'role_id' => 3,
+    ),
+    1496 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 459,
+      'role_id' => 1,
+    ),
+    1497 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 459,
+      'role_id' => 3,
+    ),
+    1498 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 460,
+      'role_id' => 1,
+    ),
+    1499 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 460,
+      'role_id' => 3,
+    ),
+    1500 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 461,
+      'role_id' => 1,
+    ),
+    1501 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 461,
+      'role_id' => 3,
+    ),
+    1502 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 462,
+      'role_id' => 1,
+    ),
+    1503 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 462,
+      'role_id' => 3,
+    ),
+    1504 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 463,
+      'role_id' => 1,
+    ),
+    1505 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 463,
+      'role_id' => 3,
+    ),
+    1506 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 464,
+      'role_id' => 1,
+    ),
+    1507 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 464,
+      'role_id' => 3,
+    ),
+    1508 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 465,
+      'role_id' => 1,
+    ),
+    1509 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 465,
+      'role_id' => 3,
+    ),
+    1510 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 466,
+      'role_id' => 1,
+    ),
+    1511 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 466,
+      'role_id' => 3,
+    ),
+    1512 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 467,
+      'role_id' => 1,
+    ),
+    1513 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 467,
+      'role_id' => 3,
+    ),
+    1514 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 468,
+      'role_id' => 1,
+    ),
+    1515 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 468,
+      'role_id' => 3,
     ),
   ),
   'sys_campos' => 
@@ -30824,6 +31142,54 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-10-31 10:03:28',
       'updated_at' => '2020-10-31 10:03:35',
     ),
+    946 => 
+    array (
+      'id' => 952,
+      'descripcion' => 'Tipo plantilla',
+      'tipo' => 'select',
+      'name' => 'tipo_plantilla',
+      'opciones' => '{"":"","planeador":"Planeador de clases","guia_academica":"Guías académicas"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-06 10:23:30',
+      'updated_at' => '2020-11-06 10:23:30',
+    ),
+    947 => 
+    array (
+      'id' => 953,
+      'descripcion' => 'Agrupación de conceptos',
+      'tipo' => 'select',
+      'name' => 'nom_agrupacion_id',
+      'opciones' => 'model_App\\Nomina\\AgrupacionConcepto',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-11 14:30:31',
+      'updated_at' => '2020-11-11 14:30:52',
+    ),
+    948 => 
+    array (
+      'id' => 954,
+      'descripcion' => 'Detalla empleados',
+      'tipo' => 'select',
+      'name' => 'detalla_empleados',
+      'opciones' => '{"0":"No","1":"Si"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-11 14:34:01',
+      'updated_at' => '2020-11-11 14:34:17',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -34662,20 +35028,20 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'modelo' => 'PlanClaseEstrucPlantilla',
       'name_space' => 'App\\AcademicoDocente\\PlanClaseEstrucPlantilla',
       'modelo_relacionado' => '',
-      'url_crear' => 'web/create',
-      'url_edit' => 'web/id_fila/edit',
+      'url_crear' => '',
+      'url_edit' => '',
       'url_print' => '',
-      'url_ver' => 'web/id_fila',
+      'url_ver' => '',
       'enlaces' => '',
       'url_estado' => '',
       'url_eliminar' => '',
       'controller_complementario' => '',
       'url_form_create' => '',
-      'home_miga_pan' => 'academico_docente, Académico Docente',
+      'home_miga_pan' => '',
       'ruta_storage_imagen' => '',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-01-24 09:13:22',
-      'updated_at' => '2020-01-24 09:13:22',
+      'updated_at' => '2020-11-06 10:26:04',
     ),
     175 => 
     array (
@@ -45123,7 +45489,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     1306 => 
     array (
       'id' => 1540,
-      'orden' => 8,
+      'orden' => 10,
       'core_modelo_id' => 182,
       'core_campo_id' => 22,
     ),
@@ -49201,6 +49567,13 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 66,
       'core_campo_id' => 951,
     ),
+    1889 => 
+    array (
+      'id' => 2175,
+      'orden' => 8,
+      'core_modelo_id' => 182,
+      'core_campo_id' => 952,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -49564,6 +49937,46 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-10-13 06:17:00',
       'updated_at' => '2020-10-13 06:17:16',
     ),
+    36 => 
+    array (
+      'id' => 38,
+      'descripcion' => 'Listado de acumulados',
+      'core_app_id' => 17,
+      'url_form_action' => 'nom_listado_acumulados',
+      'estado' => 'Activo',
+      'created_at' => '2020-11-11 14:27:00',
+      'updated_at' => '2020-11-11 14:29:16',
+    ),
+    37 => 
+    array (
+      'id' => 39,
+      'descripcion' => 'Libro fiscal de vacaciones',
+      'core_app_id' => 17,
+      'url_form_action' => 'nom_libro_fiscal_vacaciones',
+      'estado' => 'Activo',
+      'created_at' => '2020-11-12 04:20:01',
+      'updated_at' => '2020-11-12 04:20:25',
+    ),
+    38 => 
+    array (
+      'id' => 40,
+      'descripcion' => 'Provisiones por Entidad/Empleado',
+      'core_app_id' => 17,
+      'url_form_action' => 'nom_provisiones_x_entidad_empleado',
+      'estado' => 'Activo',
+      'created_at' => '2020-11-12 04:26:45',
+      'updated_at' => '2020-11-12 04:27:20',
+    ),
+    39 => 
+    array (
+      'id' => 41,
+      'descripcion' => 'Listado aportes parafiscales',
+      'core_app_id' => 17,
+      'url_form_action' => 'nom_listado_aportes_parafiscales',
+      'estado' => 'Activo',
+      'created_at' => '2020-11-12 04:30:07',
+      'updated_at' => '2020-11-12 04:31:37',
+    ),
   ),
   'sys_reporte_tiene_campos' => 
   array (
@@ -49821,429 +50234,489 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     42 => 
     array (
+      'orden' => 2,
+      'core_reporte_id' => 38,
+      'core_campo_id' => 473,
+    ),
+    43 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 39,
+      'core_campo_id' => 473,
+    ),
+    44 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 40,
+      'core_campo_id' => 473,
+    ),
+    45 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 41,
+      'core_campo_id' => 473,
+    ),
+    46 => 
+    array (
       'orden' => 6,
       'core_reporte_id' => 1,
       'core_campo_id' => 474,
     ),
-    43 => 
+    47 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 2,
       'core_campo_id' => 474,
     ),
-    44 => 
+    48 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 5,
       'core_campo_id' => 474,
     ),
-    45 => 
+    49 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 13,
       'core_campo_id' => 474,
     ),
-    46 => 
+    50 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 15,
       'core_campo_id' => 474,
     ),
-    47 => 
+    51 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 23,
       'core_campo_id' => 474,
     ),
-    48 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 24,
-      'core_campo_id' => 474,
-    ),
-    49 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 26,
-      'core_campo_id' => 474,
-    ),
-    50 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 27,
-      'core_campo_id' => 474,
-    ),
-    51 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 30,
-      'core_campo_id' => 474,
-    ),
     52 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 31,
+      'core_reporte_id' => 24,
       'core_campo_id' => 474,
     ),
     53 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 33,
+      'core_reporte_id' => 26,
       'core_campo_id' => 474,
     ),
     54 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 35,
+      'core_reporte_id' => 27,
       'core_campo_id' => 474,
     ),
     55 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 36,
+      'core_reporte_id' => 30,
       'core_campo_id' => 474,
     ),
     56 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 37,
+      'core_reporte_id' => 31,
       'core_campo_id' => 474,
     ),
     57 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 33,
+      'core_campo_id' => 474,
+    ),
+    58 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 35,
+      'core_campo_id' => 474,
+    ),
+    59 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 36,
+      'core_campo_id' => 474,
+    ),
+    60 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 37,
+      'core_campo_id' => 474,
+    ),
+    61 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 38,
+      'core_campo_id' => 474,
+    ),
+    62 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 39,
+      'core_campo_id' => 474,
+    ),
+    63 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 40,
+      'core_campo_id' => 474,
+    ),
+    64 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 41,
+      'core_campo_id' => 474,
+    ),
+    65 => 
     array (
       'orden' => 9,
       'core_reporte_id' => 5,
       'core_campo_id' => 476,
     ),
-    58 => 
+    66 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 8,
       'core_campo_id' => 489,
     ),
-    59 => 
+    67 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 8,
       'core_campo_id' => 490,
     ),
-    60 => 
+    68 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 8,
       'core_campo_id' => 491,
     ),
-    61 => 
+    69 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 13,
       'core_campo_id' => 536,
     ),
-    62 => 
+    70 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 15,
       'core_campo_id' => 561,
     ),
-    63 => 
+    71 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 11,
       'core_campo_id' => 588,
     ),
-    64 => 
+    72 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 12,
       'core_campo_id' => 588,
     ),
-    65 => 
+    73 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 22,
       'core_campo_id' => 588,
     ),
-    66 => 
+    74 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 25,
       'core_campo_id' => 588,
     ),
-    67 => 
+    75 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 28,
       'core_campo_id' => 588,
     ),
-    68 => 
+    76 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 33,
       'core_campo_id' => 588,
     ),
-    69 => 
+    77 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 31,
       'core_campo_id' => 592,
     ),
-    70 => 
+    78 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 34,
       'core_campo_id' => 592,
     ),
-    71 => 
+    79 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 7,
       'core_campo_id' => 599,
     ),
-    72 => 
+    80 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 17,
       'core_campo_id' => 599,
     ),
-    73 => 
+    81 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 32,
       'core_campo_id' => 599,
     ),
-    74 => 
+    82 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 34,
       'core_campo_id' => 599,
     ),
-    75 => 
+    83 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 31,
       'core_campo_id' => 604,
     ),
-    76 => 
+    84 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 34,
       'core_campo_id' => 604,
     ),
-    77 => 
+    85 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 17,
       'core_campo_id' => 613,
     ),
-    78 => 
+    86 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 17,
       'core_campo_id' => 614,
     ),
-    79 => 
+    87 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 18,
       'core_campo_id' => 614,
     ),
-    80 => 
+    88 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 17,
       'core_campo_id' => 615,
     ),
-    81 => 
+    89 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 18,
       'core_campo_id' => 615,
     ),
-    82 => 
+    90 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 17,
       'core_campo_id' => 616,
     ),
-    83 => 
+    91 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 18,
       'core_campo_id' => 616,
     ),
-    84 => 
+    92 => 
     array (
       'orden' => 14,
       'core_reporte_id' => 17,
       'core_campo_id' => 617,
     ),
-    85 => 
+    93 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 17,
       'core_campo_id' => 618,
     ),
-    86 => 
+    94 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 18,
       'core_campo_id' => 619,
     ),
-    87 => 
+    95 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 20,
       'core_campo_id' => 622,
     ),
-    88 => 
+    96 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 622,
     ),
-    89 => 
+    97 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 35,
       'core_campo_id' => 622,
     ),
-    90 => 
+    98 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 20,
       'core_campo_id' => 623,
     ),
-    91 => 
+    99 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 20,
       'core_campo_id' => 629,
     ),
-    92 => 
+    100 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 21,
       'core_campo_id' => 630,
     ),
-    93 => 
+    101 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 21,
       'core_campo_id' => 632,
     ),
-    94 => 
+    102 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 633,
     ),
-    95 => 
+    103 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 35,
       'core_campo_id' => 633,
     ),
-    96 => 
+    104 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 13,
       'core_campo_id' => 636,
     ),
-    97 => 
+    105 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 13,
       'core_campo_id' => 637,
     ),
-    98 => 
+    106 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 24,
       'core_campo_id' => 637,
     ),
-    99 => 
+    107 => 
     array (
       'orden' => 15,
       'core_reporte_id' => 13,
       'core_campo_id' => 638,
     ),
-    100 => 
+    108 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 13,
       'core_campo_id' => 639,
     ),
-    101 => 
+    109 => 
     array (
       'orden' => 17,
       'core_reporte_id' => 13,
       'core_campo_id' => 640,
     ),
-    102 => 
+    110 => 
     array (
       'orden' => 18,
       'core_reporte_id' => 13,
       'core_campo_id' => 641,
     ),
-    103 => 
+    111 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 24,
       'core_campo_id' => 723,
     ),
-    104 => 
+    112 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 24,
       'core_campo_id' => 724,
     ),
-    105 => 
+    113 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 29,
       'core_campo_id' => 739,
     ),
-    106 => 
+    114 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 30,
       'core_campo_id' => 766,
     ),
-    107 => 
+    115 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 33,
       'core_campo_id' => 767,
     ),
-    108 => 
+    116 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 35,
       'core_campo_id' => 768,
     ),
-    109 => 
+    117 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 36,
       'core_campo_id' => 771,
     ),
-    110 => 
+    118 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 22,
       'core_campo_id' => 773,
     ),
-    111 => 
+    119 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 28,
       'core_campo_id' => 773,
     ),
-    112 => 
+    120 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 37,
       'core_campo_id' => 816,
+    ),
+    121 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 38,
+      'core_campo_id' => 953,
+    ),
+    122 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 38,
+      'core_campo_id' => 954,
     ),
   ),
   'sys_tipos_transacciones' => 

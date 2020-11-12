@@ -1077,12 +1077,12 @@ class ModeloController extends Controller
             $registro_modelo_padre_id = $registro_modelo_padre->id;
 
             $metodo_modelo_relacionado = $modelo_padre->modelo_relacionado;
+
             // etiqueta del tab de formuralio show
             $titulo_tab = ucfirst($metodo_modelo_relacionado);
 
             // Se obtienen los registros asignados al registro del modelo padre que se va a visualizar
             $registros_asignados = $registro_modelo_padre->$metodo_modelo_relacionado()->orderBy('orden')->get()->toArray(); //
-
 
             // Se obtiene una tabla con los registros asociados al registro del modelo
             $tabla = app($modelo_padre->name_space)->get_tabla($registro_modelo_padre, $registros_asignados);

@@ -39,12 +39,19 @@
 			</div>
 			<div class="row">
 				<div class="col-sm-12">
+					<?php 
+						$lbl_encabezado = 'Valor concepto';
+						if ( (float)$concepto->porcentaje_sobre_basico != 0 )
+						{
+							$lbl_encabezado = 'Cantidad horas';
+						}
+					?>
 
 				<table class="table table-responsive" id="tabla">
 				<thead>
 					<tr>
 						<th>Empleado</th>
-						<th>Valor concepto</th>
+						<th> {{ $lbl_encabezado }} </th>
 					</tr>
 				</thead>
 				<tbody>
@@ -60,8 +67,11 @@
 							</td>
 
 							<td>
-								<input type="text" name="valor[]" value="{{$vec_empleados[$k]['valor_concepto']}}" class="form-control">
-
+								@if ( (float)$concepto->porcentaje_sobre_basico != 0 )
+									<input type="text" name="cantidad_horas[]" value="{{$vec_empleados[$k]['cantidad_horas']}}" class="form-control" placeholder="Cantidad horas">
+								@else
+									<input type="text" name="valor[]" value="{{$vec_empleados[$k]['valor_concepto']}}" class="form-control" placeholder="Valor">
+								@endif
 							</td>
                         </tr>
 					@endfor
