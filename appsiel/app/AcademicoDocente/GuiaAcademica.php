@@ -218,7 +218,6 @@ class GuiaAcademica extends Model
                                     );
         }
 
-        return true;
     }
 
 

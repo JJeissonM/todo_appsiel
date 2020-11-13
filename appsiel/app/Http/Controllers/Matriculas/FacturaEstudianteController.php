@@ -153,8 +153,6 @@ class FacturaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
-        dd( 'vamos' );
-
         // Crear documento de Ventas
         $request['remision_doc_encabezado_id'] = 0;
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);

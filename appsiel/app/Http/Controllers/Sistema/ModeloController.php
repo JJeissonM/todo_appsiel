@@ -76,6 +76,8 @@ class ModeloController extends Controller
 
         $id_transaccion = TipoTransaccion::where('core_modelo_id', (int) Input::get('id_modelo') )->where('estado', 'Activo' )->value('id');
 
+        //dd( $id_transaccion );
+
         // Se le asigna a cada variable url, su valor en el modelo correspondiente
         $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
 
@@ -191,7 +193,6 @@ class ModeloController extends Controller
         {
             $acciones->otros_enlaces = $modelo->enlaces;
         }
-
 
         // MANEJO DE URLs DESDE EL ARCHIVO CLASS DEL PROPIO MODELO 
         // Se llaman las urls desde la class (name_space) del modelo
@@ -379,7 +380,7 @@ class ModeloController extends Controller
         {
             // Aquí mismo se puede hacer el return
             $url_respuesta = app($this->modelo->name_space)->store_adicional($datos, $registro);
-
+            
             if( !is_null( $url_respuesta ) )
             {
                 if ( gettype( $url_respuesta ) != "object" )
