@@ -4092,10 +4092,10 @@
       'url' => 'web',
       'parent' => 116,
       'orden' => 1,
-      'enabled' => 1,
+      'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2019-10-14 20:53:07',
-      'updated_at' => '2019-10-14 20:53:31',
+      'updated_at' => '2020-11-13 14:51:44',
     ),
     273 => 
     array (
@@ -4106,11 +4106,11 @@
       'descripcion' => 'Inventario Físico',
       'url' => 'web',
       'parent' => 116,
-      'orden' => 2,
+      'orden' => 8,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2019-10-14 20:53:37',
-      'updated_at' => '2020-01-17 01:58:49',
+      'updated_at' => '2020-11-13 14:52:05',
     ),
     274 => 
     array (
@@ -4196,11 +4196,11 @@
       'descripcion' => 'Movimiento de inventarios',
       'url' => 'web',
       'parent' => 116,
-      'orden' => 3,
+      'orden' => 12,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2019-10-21 04:51:02',
-      'updated_at' => '2019-10-21 04:51:40',
+      'updated_at' => '2020-11-13 14:52:22',
     ),
     280 => 
     array (
@@ -6546,7 +6546,7 @@
     array (
       'id' => 462,
       'core_app_id' => 21,
-      'modelo_id' => 0,
+      'modelo_id' => 244,
       'name' => 'fe_factura_ventas',
       'descripcion' => 'Factura de ventas',
       'url' => 'web',
@@ -6555,13 +6555,13 @@
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-11-10 03:24:17',
-      'updated_at' => '2020-11-10 03:25:03',
+      'updated_at' => '2020-11-13 04:53:41',
     ),
     437 => 
     array (
       'id' => 463,
       'core_app_id' => 21,
-      'modelo_id' => 0,
+      'modelo_id' => 245,
       'name' => 'fe_nota_credito',
       'descripcion' => 'Nota Crédito',
       'url' => 'web',
@@ -6570,13 +6570,13 @@
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-11-10 03:25:11',
-      'updated_at' => '2020-11-10 03:25:27',
+      'updated_at' => '2020-11-13 04:53:59',
     ),
     438 => 
     array (
       'id' => 464,
       'core_app_id' => 21,
-      'modelo_id' => 0,
+      'modelo_id' => 246,
       'name' => 'fe_nota_debito',
       'descripcion' => 'Nota Débito',
       'url' => 'web',
@@ -6585,13 +6585,13 @@
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-11-10 03:25:33',
-      'updated_at' => '2020-11-10 03:25:52',
+      'updated_at' => '2020-11-13 04:54:11',
     ),
     439 => 
     array (
       'id' => 465,
       'core_app_id' => 21,
-      'modelo_id' => 0,
+      'modelo_id' => 247,
       'name' => 'fe_factura_contingencia',
       'descripcion' => 'Factura de contingencia',
       'url' => 'web',
@@ -6600,7 +6600,7 @@
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-11-10 03:25:57',
-      'updated_at' => '2020-11-10 03:26:21',
+      'updated_at' => '2020-11-13 04:54:25',
     ),
     440 => 
     array (
@@ -6646,6 +6646,81 @@
       'fa_icon' => '',
       'created_at' => '2020-11-12 04:36:07',
       'updated_at' => '2020-11-12 05:13:22',
+    ),
+    443 => 
+    array (
+      'id' => 469,
+      'core_app_id' => 8,
+      'modelo_id' => 248,
+      'name' => 'inv_entradas_almacen',
+      'descripcion' => 'Entradas de almacén',
+      'url' => 'web',
+      'parent' => 116,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-13 13:56:57',
+      'updated_at' => '2020-11-13 13:58:36',
+    ),
+    444 => 
+    array (
+      'id' => 470,
+      'core_app_id' => 8,
+      'modelo_id' => 249,
+      'name' => 'inv_salidas_almacen',
+      'descripcion' => 'Salidas de almacén',
+      'url' => 'web',
+      'parent' => 116,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-13 14:17:57',
+      'updated_at' => '2020-11-13 14:18:14',
+    ),
+    445 => 
+    array (
+      'id' => 471,
+      'core_app_id' => 8,
+      'modelo_id' => 250,
+      'name' => 'inv_transferencias_mercancia',
+      'descripcion' => 'Transferencias de mercancía',
+      'url' => 'web',
+      'parent' => 116,
+      'orden' => 4,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-13 14:27:42',
+      'updated_at' => '2020-11-13 14:28:11',
+    ),
+    446 => 
+    array (
+      'id' => 472,
+      'core_app_id' => 8,
+      'modelo_id' => 251,
+      'name' => 'inv_fabricacion',
+      'descripcion' => 'Fabricación',
+      'url' => 'web',
+      'parent' => 116,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-13 14:28:18',
+      'updated_at' => '2020-11-13 14:28:39',
+    ),
+    447 => 
+    array (
+      'id' => 473,
+      'core_app_id' => 8,
+      'modelo_id' => 252,
+      'name' => 'inv_ajustes',
+      'descripcion' => 'Ajustes de inventarios',
+      'url' => 'web',
+      'parent' => 116,
+      'orden' => 6,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-13 14:28:42',
+      'updated_at' => '2020-11-13 14:29:00',
     ),
   ),
   'roles' => 
@@ -15888,6 +15963,126 @@
       'orden' => 0,
       'permission_id' => 468,
       'role_id' => 3,
+    ),
+    1516 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 469,
+      'role_id' => 1,
+    ),
+    1517 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 469,
+      'role_id' => 3,
+    ),
+    1518 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 469,
+      'role_id' => 6,
+    ),
+    1519 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 469,
+      'role_id' => 17,
+    ),
+    1520 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 470,
+      'role_id' => 1,
+    ),
+    1521 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 470,
+      'role_id' => 3,
+    ),
+    1522 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 470,
+      'role_id' => 6,
+    ),
+    1523 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 470,
+      'role_id' => 17,
+    ),
+    1524 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 471,
+      'role_id' => 1,
+    ),
+    1525 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 471,
+      'role_id' => 3,
+    ),
+    1526 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 471,
+      'role_id' => 6,
+    ),
+    1527 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 471,
+      'role_id' => 17,
+    ),
+    1528 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 472,
+      'role_id' => 1,
+    ),
+    1529 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 472,
+      'role_id' => 3,
+    ),
+    1530 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 472,
+      'role_id' => 6,
+    ),
+    1531 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 472,
+      'role_id' => 17,
+    ),
+    1532 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 473,
+      'role_id' => 1,
+    ),
+    1533 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 473,
+      'role_id' => 3,
+    ),
+    1534 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 473,
+      'role_id' => 6,
+    ),
+    1535 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 473,
+      'role_id' => 17,
     ),
   ),
   'sys_campos' => 
@@ -31190,6 +31385,134 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-11-11 14:34:01',
       'updated_at' => '2020-11-11 14:34:17',
     ),
+    949 => 
+    array (
+      'id' => 955,
+      'descripcion' => 'Zona cliente',
+      'tipo' => 'hidden',
+      'name' => 'zona_id',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-13 09:58:36',
+      'updated_at' => '0000-00-00 00:00:00',
+    ),
+    950 => 
+    array (
+      'id' => 956,
+      'descripcion' => 'Clase de cliente',
+      'tipo' => 'hidden',
+      'name' => 'clase_cliente_id',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-13 09:58:36',
+      'updated_at' => '0000-00-00 00:00:00',
+    ),
+    951 => 
+    array (
+      'id' => 957,
+      'descripcion' => 'Equipo de ventas ',
+      'tipo' => 'hidden',
+      'name' => 'equipo_ventas_id',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-13 09:58:36',
+      'updated_at' => '0000-00-00 00:00:00',
+    ),
+    952 => 
+    array (
+      'id' => 958,
+      'descripcion' => 'Lista de precios',
+      'tipo' => 'hidden',
+      'name' => 'lista_precios_id',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-13 09:58:36',
+      'updated_at' => '0000-00-00 00:00:00',
+    ),
+    953 => 
+    array (
+      'id' => 959,
+      'descripcion' => 'Lista de descuentos',
+      'tipo' => 'hidden',
+      'name' => 'lista_descuentos_id',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-13 09:58:36',
+      'updated_at' => '0000-00-00 00:00:00',
+    ),
+    954 => 
+    array (
+      'id' => 960,
+      'descripcion' => 'Liquida impuestos',
+      'tipo' => 'hidden',
+      'name' => 'liquida_impuestos',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-13 09:58:36',
+      'updated_at' => '0000-00-00 00:00:00',
+    ),
+    955 => 
+    array (
+      'id' => 961,
+      'descripcion' => 'Lineas de registros',
+      'tipo' => 'hidden',
+      'name' => 'lineas_registros',
+      'opciones' => '',
+      'value' => '0',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-13 09:58:36',
+      'updated_at' => '0000-00-00 00:00:00',
+    ),
+    956 => 
+    array (
+      'id' => 962,
+      'descripcion' => 'Tipo transaccion (venta)',
+      'tipo' => 'hidden',
+      'name' => 'tipo_transaccion',
+      'opciones' => '',
+      'value' => 'factura_directa',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-13 09:58:36',
+      'updated_at' => '0000-00-00 00:00:00',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -36340,6 +36663,204 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-10-30 09:52:38',
       'updated_at' => '2020-10-30 09:52:38',
+    ),
+    234 => 
+    array (
+      'id' => 244,
+      'descripcion' => 'Factura Electrónica de Ventas',
+      'modelo' => 'FacturaElectronicaVentas',
+      'name_space' => 'App\\FacturacionElectronica\\FacturaElectronicaVentas',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-13 09:13:22',
+      'updated_at' => '2020-11-13 09:13:22',
+    ),
+    235 => 
+    array (
+      'id' => 245,
+      'descripcion' => 'Nota Crédito Electrónica de Ventas',
+      'modelo' => 'NotaCreditoElectronicaVentas',
+      'name_space' => 'App\\FacturacionElectronica\\NotaCreditoElectronicaVentas',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-13 09:13:22',
+      'updated_at' => '2020-11-13 09:13:22',
+    ),
+    236 => 
+    array (
+      'id' => 246,
+      'descripcion' => 'Nota Débito Electrónica de Ventas',
+      'modelo' => 'NotaDebitoElectronicaVentas',
+      'name_space' => 'App\\FacturacionElectronica\\NotaDebitoElectronicaVentas',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-13 09:13:22',
+      'updated_at' => '2020-11-13 09:13:22',
+    ),
+    237 => 
+    array (
+      'id' => 247,
+      'descripcion' => 'Factura Electrónica de Contingencia de Ventas',
+      'modelo' => 'FacturaElectronicaContingenciaVentas',
+      'name_space' => 'App\\FacturacionElectronica\\FacturaElectronicaContingenciaVentas',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => 'NA',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-13 09:13:22',
+      'updated_at' => '2020-11-13 09:13:22',
+    ),
+    238 => 
+    array (
+      'id' => 248,
+      'descripcion' => 'Entradas de almacén',
+      'modelo' => 'InvEntradaAlmacen',
+      'name_space' => 'App\\Inventarios\\InvEntradaAlmacen',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-13 13:50:51',
+      'updated_at' => '2020-11-13 13:50:51',
+    ),
+    239 => 
+    array (
+      'id' => 249,
+      'descripcion' => 'Salidas de almacén',
+      'modelo' => 'InvSalidaAlmacen',
+      'name_space' => 'App\\Inventarios\\InvSalidaAlmacen',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-13 14:16:32',
+      'updated_at' => '2020-11-13 14:16:32',
+    ),
+    240 => 
+    array (
+      'id' => 250,
+      'descripcion' => 'Transferencias de mercancía',
+      'modelo' => 'InvTransferenciaMercancia',
+      'name_space' => 'App\\Inventarios\\InvTransferenciaMercancia',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-13 14:21:00',
+      'updated_at' => '2020-11-13 14:21:00',
+    ),
+    241 => 
+    array (
+      'id' => 251,
+      'descripcion' => 'Fabricación',
+      'modelo' => 'InvFabricacion',
+      'name_space' => 'App\\Inventarios\\InvFabricacion',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-13 14:23:41',
+      'updated_at' => '2020-11-13 14:23:41',
+    ),
+    242 => 
+    array (
+      'id' => 252,
+      'descripcion' => 'Ajustes de inventarios',
+      'modelo' => 'InvAjuste',
+      'name_space' => 'App\\Inventarios\\InvAjuste',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-13 14:25:48',
+      'updated_at' => '2020-11-13 14:50:05',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -49574,6 +50095,650 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 182,
       'core_campo_id' => 952,
     ),
+    1890 => 
+    array (
+      'id' => 2176,
+      'orden' => 16,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 8,
+    ),
+    1891 => 
+    array (
+      'id' => 2177,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 87,
+    ),
+    1892 => 
+    array (
+      'id' => 2178,
+      'orden' => 3,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 88,
+    ),
+    1893 => 
+    array (
+      'id' => 2179,
+      'orden' => 13,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 90,
+    ),
+    1894 => 
+    array (
+      'id' => 2180,
+      'orden' => 4,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 93,
+    ),
+    1895 => 
+    array (
+      'id' => 2181,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 100,
+    ),
+    1896 => 
+    array (
+      'id' => 2182,
+      'orden' => 12,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 194,
+    ),
+    1897 => 
+    array (
+      'id' => 2183,
+      'orden' => 2,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 201,
+    ),
+    1898 => 
+    array (
+      'id' => 2184,
+      'orden' => 8,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 521,
+    ),
+    1899 => 
+    array (
+      'id' => 2185,
+      'orden' => 6,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 522,
+    ),
+    1900 => 
+    array (
+      'id' => 2186,
+      'orden' => 10,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 523,
+    ),
+    1901 => 
+    array (
+      'id' => 2187,
+      'orden' => 14,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 524,
+    ),
+    1902 => 
+    array (
+      'id' => 2188,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 562,
+    ),
+    1903 => 
+    array (
+      'id' => 2189,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 955,
+    ),
+    1904 => 
+    array (
+      'id' => 2190,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 956,
+    ),
+    1905 => 
+    array (
+      'id' => 2191,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 957,
+    ),
+    1906 => 
+    array (
+      'id' => 2192,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 958,
+    ),
+    1907 => 
+    array (
+      'id' => 2193,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 959,
+    ),
+    1908 => 
+    array (
+      'id' => 2194,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 960,
+    ),
+    1909 => 
+    array (
+      'id' => 2195,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 961,
+    ),
+    1910 => 
+    array (
+      'id' => 2196,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 962,
+    ),
+    1911 => 
+    array (
+      'id' => 2197,
+      'orden' => 99,
+      'core_modelo_id' => 244,
+      'core_campo_id' => 334,
+    ),
+    1912 => 
+    array (
+      'id' => 2198,
+      'orden' => 9,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 8,
+    ),
+    1913 => 
+    array (
+      'id' => 2199,
+      'orden' => 4,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 39,
+    ),
+    1914 => 
+    array (
+      'id' => 2200,
+      'orden' => 99,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 87,
+    ),
+    1915 => 
+    array (
+      'id' => 2201,
+      'orden' => 2,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 88,
+    ),
+    1916 => 
+    array (
+      'id' => 2202,
+      'orden' => 11,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 90,
+    ),
+    1917 => 
+    array (
+      'id' => 2203,
+      'orden' => 10,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 92,
+    ),
+    1918 => 
+    array (
+      'id' => 2204,
+      'orden' => 3,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 93,
+    ),
+    1919 => 
+    array (
+      'id' => 2205,
+      'orden' => 99,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 94,
+    ),
+    1920 => 
+    array (
+      'id' => 2206,
+      'orden' => 99,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 95,
+    ),
+    1921 => 
+    array (
+      'id' => 2207,
+      'orden' => 99,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 99,
+    ),
+    1922 => 
+    array (
+      'id' => 2208,
+      'orden' => 99,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 100,
+    ),
+    1923 => 
+    array (
+      'id' => 2209,
+      'orden' => 99,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 101,
+    ),
+    1924 => 
+    array (
+      'id' => 2210,
+      'orden' => 12,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 122,
+    ),
+    1925 => 
+    array (
+      'id' => 2211,
+      'orden' => 1,
+      'core_modelo_id' => 248,
+      'core_campo_id' => 192,
+    ),
+    1926 => 
+    array (
+      'id' => 2212,
+      'orden' => 9,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 8,
+    ),
+    1927 => 
+    array (
+      'id' => 2213,
+      'orden' => 4,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 39,
+    ),
+    1928 => 
+    array (
+      'id' => 2214,
+      'orden' => 99,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 87,
+    ),
+    1929 => 
+    array (
+      'id' => 2215,
+      'orden' => 2,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 88,
+    ),
+    1930 => 
+    array (
+      'id' => 2216,
+      'orden' => 11,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 90,
+    ),
+    1931 => 
+    array (
+      'id' => 2217,
+      'orden' => 10,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 92,
+    ),
+    1932 => 
+    array (
+      'id' => 2218,
+      'orden' => 3,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 93,
+    ),
+    1933 => 
+    array (
+      'id' => 2219,
+      'orden' => 99,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 94,
+    ),
+    1934 => 
+    array (
+      'id' => 2220,
+      'orden' => 99,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 95,
+    ),
+    1935 => 
+    array (
+      'id' => 2221,
+      'orden' => 99,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 99,
+    ),
+    1936 => 
+    array (
+      'id' => 2222,
+      'orden' => 99,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 100,
+    ),
+    1937 => 
+    array (
+      'id' => 2223,
+      'orden' => 99,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 101,
+    ),
+    1938 => 
+    array (
+      'id' => 2224,
+      'orden' => 12,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 122,
+    ),
+    1939 => 
+    array (
+      'id' => 2225,
+      'orden' => 1,
+      'core_modelo_id' => 249,
+      'core_campo_id' => 192,
+    ),
+    1940 => 
+    array (
+      'id' => 2226,
+      'orden' => 9,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 8,
+    ),
+    1941 => 
+    array (
+      'id' => 2227,
+      'orden' => 4,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 39,
+    ),
+    1942 => 
+    array (
+      'id' => 2228,
+      'orden' => 99,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 87,
+    ),
+    1943 => 
+    array (
+      'id' => 2229,
+      'orden' => 2,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 88,
+    ),
+    1944 => 
+    array (
+      'id' => 2230,
+      'orden' => 11,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 90,
+    ),
+    1945 => 
+    array (
+      'id' => 2231,
+      'orden' => 10,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 92,
+    ),
+    1946 => 
+    array (
+      'id' => 2232,
+      'orden' => 3,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 93,
+    ),
+    1947 => 
+    array (
+      'id' => 2233,
+      'orden' => 99,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 94,
+    ),
+    1948 => 
+    array (
+      'id' => 2234,
+      'orden' => 99,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 95,
+    ),
+    1949 => 
+    array (
+      'id' => 2235,
+      'orden' => 99,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 99,
+    ),
+    1950 => 
+    array (
+      'id' => 2236,
+      'orden' => 99,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 100,
+    ),
+    1951 => 
+    array (
+      'id' => 2237,
+      'orden' => 99,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 101,
+    ),
+    1952 => 
+    array (
+      'id' => 2238,
+      'orden' => 12,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 122,
+    ),
+    1953 => 
+    array (
+      'id' => 2239,
+      'orden' => 1,
+      'core_modelo_id' => 250,
+      'core_campo_id' => 192,
+    ),
+    1954 => 
+    array (
+      'id' => 2240,
+      'orden' => 9,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 8,
+    ),
+    1955 => 
+    array (
+      'id' => 2241,
+      'orden' => 4,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 39,
+    ),
+    1956 => 
+    array (
+      'id' => 2242,
+      'orden' => 99,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 87,
+    ),
+    1957 => 
+    array (
+      'id' => 2243,
+      'orden' => 2,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 88,
+    ),
+    1958 => 
+    array (
+      'id' => 2244,
+      'orden' => 11,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 90,
+    ),
+    1959 => 
+    array (
+      'id' => 2245,
+      'orden' => 10,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 92,
+    ),
+    1960 => 
+    array (
+      'id' => 2246,
+      'orden' => 3,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 93,
+    ),
+    1961 => 
+    array (
+      'id' => 2247,
+      'orden' => 99,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 94,
+    ),
+    1962 => 
+    array (
+      'id' => 2248,
+      'orden' => 99,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 95,
+    ),
+    1963 => 
+    array (
+      'id' => 2249,
+      'orden' => 99,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 99,
+    ),
+    1964 => 
+    array (
+      'id' => 2250,
+      'orden' => 99,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 100,
+    ),
+    1965 => 
+    array (
+      'id' => 2251,
+      'orden' => 99,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 101,
+    ),
+    1966 => 
+    array (
+      'id' => 2252,
+      'orden' => 12,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 122,
+    ),
+    1967 => 
+    array (
+      'id' => 2253,
+      'orden' => 1,
+      'core_modelo_id' => 251,
+      'core_campo_id' => 192,
+    ),
+    1968 => 
+    array (
+      'id' => 2254,
+      'orden' => 9,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 8,
+    ),
+    1969 => 
+    array (
+      'id' => 2255,
+      'orden' => 4,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 39,
+    ),
+    1970 => 
+    array (
+      'id' => 2256,
+      'orden' => 99,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 87,
+    ),
+    1971 => 
+    array (
+      'id' => 2257,
+      'orden' => 2,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 88,
+    ),
+    1972 => 
+    array (
+      'id' => 2258,
+      'orden' => 11,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 90,
+    ),
+    1973 => 
+    array (
+      'id' => 2259,
+      'orden' => 10,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 92,
+    ),
+    1974 => 
+    array (
+      'id' => 2260,
+      'orden' => 3,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 93,
+    ),
+    1975 => 
+    array (
+      'id' => 2261,
+      'orden' => 99,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 94,
+    ),
+    1976 => 
+    array (
+      'id' => 2262,
+      'orden' => 99,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 95,
+    ),
+    1977 => 
+    array (
+      'id' => 2263,
+      'orden' => 99,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 99,
+    ),
+    1978 => 
+    array (
+      'id' => 2264,
+      'orden' => 99,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 100,
+    ),
+    1979 => 
+    array (
+      'id' => 2265,
+      'orden' => 99,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 101,
+    ),
+    1980 => 
+    array (
+      'id' => 2266,
+      'orden' => 12,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 122,
+    ),
+    1981 => 
+    array (
+      'id' => 2267,
+      'orden' => 1,
+      'core_modelo_id' => 252,
+      'core_campo_id' => 192,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -50725,7 +51890,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     array (
       'id' => 1,
       'core_app_id' => 8,
-      'core_modelo_id' => 25,
+      'core_modelo_id' => 248,
       'descripcion' => 'Entrada de almacén',
       'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
       'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
@@ -50733,13 +51898,13 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 1,
       'estado' => 'Activo',
       'created_at' => '2018-09-06 14:23:20',
-      'updated_at' => '2020-10-26 04:09:09',
+      'updated_at' => '2020-11-13 14:01:36',
     ),
     1 => 
     array (
       'id' => 2,
       'core_app_id' => 8,
-      'core_modelo_id' => 25,
+      'core_modelo_id' => 250,
       'descripcion' => 'Transferencia',
       'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
       'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
@@ -50747,13 +51912,13 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 2,
       'estado' => 'Activo',
       'created_at' => '2018-09-06 05:00:00',
-      'updated_at' => '2019-09-15 11:38:47',
+      'updated_at' => '2020-11-13 14:29:57',
     ),
     2 => 
     array (
       'id' => 3,
       'core_app_id' => 8,
-      'core_modelo_id' => 25,
+      'core_modelo_id' => 249,
       'descripcion' => 'Salida de almacén',
       'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
       'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
@@ -50761,13 +51926,13 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 3,
       'estado' => 'Activo',
       'created_at' => '2018-09-06 05:00:00',
-      'updated_at' => '2020-10-26 04:09:00',
+      'updated_at' => '2020-11-13 14:30:35',
     ),
     3 => 
     array (
       'id' => 4,
       'core_app_id' => 8,
-      'core_modelo_id' => 25,
+      'core_modelo_id' => 251,
       'descripcion' => 'Fabricación',
       'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
       'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
@@ -50775,7 +51940,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 4,
       'estado' => 'Activo',
       'created_at' => '2018-09-06 14:21:26',
-      'updated_at' => '2019-09-15 11:39:55',
+      'updated_at' => '2020-11-13 14:29:15',
     ),
     4 => 
     array (
@@ -51103,7 +52268,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     array (
       'id' => 28,
       'core_app_id' => 8,
-      'core_modelo_id' => 25,
+      'core_modelo_id' => 252,
       'descripcion' => 'Ajuste de inventarios',
       'modelo_encabezados_documentos' => 'App\\Inventarios\\InvDocEncabezado',
       'modelo_registros_documentos' => 'App\\Inventarios\\InvDocRegistro',
@@ -51111,7 +52276,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 2,
       'estado' => 'Activo',
       'created_at' => '2019-10-14 23:02:55',
-      'updated_at' => '2019-11-07 13:19:06',
+      'updated_at' => '2020-11-13 14:29:42',
     ),
     28 => 
     array (
@@ -51434,6 +52599,62 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'estado' => 'Activo',
       'created_at' => '2020-10-06 07:29:20',
       'updated_at' => '2020-10-06 07:29:20',
+    ),
+    51 => 
+    array (
+      'id' => 52,
+      'core_app_id' => 21,
+      'core_modelo_id' => 244,
+      'descripcion' => 'Factura Electrónica de Ventas',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-11-13 04:26:45',
+      'updated_at' => '2020-11-13 05:05:58',
+    ),
+    52 => 
+    array (
+      'id' => 53,
+      'core_app_id' => 21,
+      'core_modelo_id' => 245,
+      'descripcion' => 'Nota Crédito Electrónica de Ventas',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-11-13 04:50:36',
+      'updated_at' => '2020-11-13 04:50:54',
+    ),
+    53 => 
+    array (
+      'id' => 54,
+      'core_app_id' => 21,
+      'core_modelo_id' => 246,
+      'descripcion' => 'Nota Débito Electrónica de Ventas',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-11-13 04:51:08',
+      'updated_at' => '2020-11-13 04:51:20',
+    ),
+    54 => 
+    array (
+      'id' => 55,
+      'core_app_id' => 21,
+      'core_modelo_id' => 247,
+      'descripcion' => 'Factura Electrónica de Contingencia de Ventas',
+      'modelo_encabezados_documentos' => 'App\\Ventas\\VtasDocEncabezado',
+      'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
+      'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
+      'orden' => 1,
+      'estado' => 'Activo',
+      'created_at' => '2020-11-13 04:51:32',
+      'updated_at' => '2020-11-13 04:51:57',
     ),
   ),
 ) ;
