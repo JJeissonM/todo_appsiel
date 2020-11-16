@@ -135,10 +135,13 @@ class InventarioController extends TransaccionController
 
         $lista_campos = ModeloController::personalizar_campos($id_transaccion, $this->transaccion, $lista_campos, $cantidad_campos, 'create', $tipo_tranferencia);
 
+        $modelo_controller = new ModeloController;
+        $acciones = $modelo_controller->acciones_basicas_modelo( $this->modelo, '' );
+        
         $form_create = [
-            'url' => $this->modelo->url_form_create,
-            'campos' => $lista_campos
-        ];
+                        'url' => $acciones->store,
+                        'campos' => $lista_campos
+                    ];
 
         $productos = InventarioController::get_productos('r');
         $servicios = InventarioController::get_productos('servicio');

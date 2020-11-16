@@ -944,8 +944,6 @@
 				// Se reemplaza varias veces el "." por vacio, y luego la coma por punto
 				var total_factura = $('#total_factura').text().replace(".","").replace(".","").replace(".","").replace(".","").replace(",",".");
 
-				console.log( [ valor_total_recaudos, parseFloat( valor_total_recaudos.substring(1) ), total_factura, parseFloat( total_factura.substring(2) ) ] );
-
 				if( valor_total_recaudos !== '$0.00' && parseFloat( valor_total_recaudos.substring(1) ) !== parseFloat( total_factura.substring(2) )  )
 				{
 					return false;

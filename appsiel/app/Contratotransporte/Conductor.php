@@ -76,8 +76,6 @@ class Conductor extends Model
 
         $tercero->user_id = $usuario->id;
         $tercero->save();
-
-        return 0;
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
