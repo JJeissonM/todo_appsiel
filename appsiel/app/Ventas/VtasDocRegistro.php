@@ -39,11 +39,20 @@ class VtasDocRegistro extends Model
         return $this->belongsTo('App\Inventarios\InvProducto','inv_producto_id');
     }
 
+    public function item()
+    {
+        return $this->belongsTo('App\Inventarios\InvProducto','inv_producto_id');
+    }
+
     public function motivo()
     {
         return $this->belongsTo('App\Inventarios\InvMotivo','vtas_motivo_id');
     }
 
+    public function valor_impuesto_total()
+    {
+        return $this->valor_impuesto * $this->cantidad;
+    }
 
     public static function get_registros_impresion( $doc_encabezado_id )
     {

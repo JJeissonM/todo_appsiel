@@ -15,7 +15,6 @@ use Form;
 
 use Spatie\Permission\Models\Permission;
 
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;

@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use App\Calificaciones\Logro;
@@ -83,42 +82,6 @@ class LogroController extends Controller
         
         return redirect($ruta.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Logro creado correctamente.');
     }
-
-    /**
-     * Para almacenar todas las escalas de valración al mismo tiempo.
-     *
-     
-    public function store2(Request $request)
-    {
-        
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
-        $id_colegio=$colegio->id;
-
-        $vec_escalas_ids = explode('-', $request->all()['escalas_ids']);
-        $vec_descripciones = $request->all()['descripcion_escala'];
-
-        $i = 0;
-        $cantidad_escalas = count($vec_escalas_ids);
-        for( $i=0; $i < $cantidad_escalas; $i++ )
-        {
-            $request['escala_valoracion_id'] = $vec_escalas_ids[$i];
-            $request['descripcion'] = $vec_descripciones[$i];
-
-            $registro_creado = CrudController::crear_nuevo_registro( $request, $request->url_id_modelo );
-
-            // Se obtiene el consecutivo para actualizar el logro creado
-            $registro = SecuenciaCodigo::where(['id_colegio'=>$id_colegio,'modulo'=>'logros'])->value('consecutivo');
-            $consecutivo=$registro+1;
-
-            // Actualizar el consecutivo
-            SecuenciaCodigo::where(['id_colegio'=>$id_colegio,'modulo'=>'logros'])->increment('consecutivo');
-            
-            $registro_creado->codigo = $consecutivo;
-            $registro_creado->save();
-        }
-        
-        return redirect( 'web?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Logros creados correctamente.');
-    }*/
 
 
     /**

@@ -16,7 +16,6 @@ use Form;
 
 use Spatie\Permission\Models\Permission;
 
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Inventarios\InventarioController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -27,6 +26,8 @@ use App\Http\Controllers\Contabilidad\ContabilidadController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
+
+use App\Core\EncabezadoDocumentoTransaccion;
 
 // Modelos
 use App\Inventarios\InvDocEncabezado;
@@ -85,7 +86,8 @@ class NotaCreditoDirectaController extends TransaccionController
         $request['remision_doc_encabezado_id'] = $this->crear_devolucion( $request );
 
         // 2do. Crear encabezado del documento de Ventas (Nota Crédito)
-        $nota_credito = CrudController::crear_nuevo_registro($request, $request->url_id_modelo); // Nuevo encabezado
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
 
         // 3ro. Crear líneas de registros del documento
         NotaCreditoDirectaController::crear_registros_nota_credito( $request, $nota_credito );
@@ -259,7 +261,8 @@ class NotaCreditoDirectaController extends TransaccionController
     {
         $datos = $request->all();
 
-        $nota_credito = CrudController::crear_nuevo_registro( $request, $request->url_id_modelo );
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
 
         $lineas_registros = json_decode( $request->lineas_registros );
 

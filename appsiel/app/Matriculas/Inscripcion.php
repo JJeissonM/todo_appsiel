@@ -169,6 +169,7 @@ class Inscripcion extends Model
                             'sga_inscripciones.origen',
                             'sga_inscripciones.observacion',
                             'sga_inscripciones.creado_por',
+                            'sga_inscripciones.created_at',
                             'sga_inscripciones.colegio_anterior',
                             'core_terceros.nombre1',
                             'core_terceros.otros_nombres',

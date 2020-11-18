@@ -127,6 +127,7 @@ class CxcDocEncabezado extends Model
                         'cxc_doc_encabezados.core_tercero_id',
                         'cxc_doc_encabezados.valor_total',
                         'cxc_doc_encabezados.creado_por',
+                        'cxc_doc_encabezados.created_at',
                         'cxc_doc_encabezados.estado',
                         'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                         DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' )

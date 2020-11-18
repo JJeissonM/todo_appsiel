@@ -13,4 +13,5 @@ class AplicacionController extends Controller
     {
     	return view('facturacion_electronica.index');
     }
+
 }

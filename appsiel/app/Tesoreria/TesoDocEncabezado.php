@@ -92,6 +92,7 @@ class TesoDocEncabezado extends Model
                                 'teso_doc_encabezados.valor_total',
                                 'teso_doc_encabezados.estado',
                                 'teso_doc_encabezados.creado_por',
+                                'teso_doc_encabezados.created_at',
                                 'teso_doc_encabezados.modificado_por',
                                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' ),

@@ -14,6 +14,11 @@ class TipoDocApp extends Model
 
     public $encabezado_tabla = ['ID','Prefijo','Descripción','Estado','Acción'];
 
+    public function resolucion_facturacion()
+    {
+        return $this->hasMany( 'App\Ventas\ResolucionFacturacion', 'tipo_doc_app_id');
+    }
+
     public static function consultar_registros()
     {
     	$registros = TipoDocApp::select('core_tipos_docs_apps.id AS campo1','core_tipos_docs_apps.prefijo AS campo2','core_tipos_docs_apps.descripcion AS campo3','core_tipos_docs_apps.estado AS campo4','core_tipos_docs_apps.id AS campo5')

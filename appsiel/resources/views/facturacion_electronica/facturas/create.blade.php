@@ -74,7 +74,9 @@
 
 				<input type="hidden" name="saldo_original" id="saldo_original" value="0">
 
-				<div id="popup_alerta"> </div>		            
+				<div id="popup_alerta"> </div>
+
+				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">	            
 
 			{{ Form::close() }}
 

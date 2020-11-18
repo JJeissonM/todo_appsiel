@@ -39,9 +39,14 @@ class VtasDocEncabezado extends Model
         return $this->belongsTo( Vendedor::class,'vendedor_id');
     }
 
+    public function lineas_registros()
+    {
+        return $this->hasMany( VtasDocRegistro::class, 'vtas_doc_encabezado_id' );
+    }
+
     public function movimientos()
     {
-        return $this->hasMany('App\Ventas\InvMovimiento');
+        return $this->hasMany( VtasMovimiento::class );
     }
     
 

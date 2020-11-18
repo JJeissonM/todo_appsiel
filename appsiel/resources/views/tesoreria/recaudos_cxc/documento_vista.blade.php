@@ -136,3 +136,5 @@
         </tfoot>
     </table>
 </div>
+
+@include('transaccion.auditoria')

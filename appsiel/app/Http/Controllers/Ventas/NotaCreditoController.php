@@ -16,7 +16,6 @@ use Form;
 
 use Spatie\Permission\Models\Permission;
 
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Inventarios\InventarioController;
@@ -26,6 +25,8 @@ use App\Http\Controllers\Contabilidad\ContabilidadController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
+
+use App\Core\EncabezadoDocumentoTransaccion;
 
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
@@ -154,7 +155,8 @@ class NotaCreditoController extends TransaccionController
 
         // 2do. Crear encabezado del documento de ventas (Nota Crédito)
         $request['ventas_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
-        $nota_credito = CrudController::crear_nuevo_registro($request, $request->url_id_modelo); // Nuevo encabezado
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
 
         // 3ro. Crear líneas de registros del documento
         NotaCreditoController::crear_registros_nota_credito( $request, $nota_credito, $factura );
@@ -199,6 +201,7 @@ class NotaCreditoController extends TransaccionController
                 $linea_devolucion['inv_motivo_id'] = (int)explode('-', $request->all()['motivos_ids'][$l])[0];
                 $linea_devolucion['costo_total'] = $cantidad_devolver * $linea['costo_unitario'];
                 $inv_bodega_id = $linea['inv_bodega_id'];
+                $request['inv_bodega_id'] = $inv_bodega_id;
                 $lineas_registros[$l] = (object)( $linea_devolucion );
                 $l++;
             }
@@ -213,7 +216,6 @@ class NotaCreditoController extends TransaccionController
         $request['core_tipo_transaccion_id'] = $dvc_tipo_transaccion_id;
         $request['core_tipo_doc_app_id'] = $dvc_tipo_doc_app_id;
         $request['estado'] = 'Facturada';
-        $request['inv_bodega_id'] = $inv_bodega_id;
 
         $documento_inventario_id = InventarioController::crear_documento($request, $lineas_registros, $dvc_modelo_id);
 
@@ -336,7 +338,7 @@ class NotaCreditoController extends TransaccionController
         $nota_credito->save();
         
         // Un solo registro para reversar la cuenta por cobrar (CR)
-        NotaCreditoController::contabilizar_movimiento_credito( $datos + $linea_datos, $total_documento, $detalle_operacion, $factura );
+        NotaCreditoController::contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
 
         // Actualizar registro del pago de la factura a la que afecta la nota
         NotaCreditoController::actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' ); 

@@ -14,7 +14,6 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 // Controllers
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Contabilidad\ContabilidadController;
@@ -38,6 +37,7 @@ use App\Sistema\Campo;
 use Spatie\Permission\Models\Permission;
 use App\Core\Empresa;
 use App\Core\Tercero;
+use App\Core\EncabezadoDocumentoTransaccion;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
@@ -208,7 +208,10 @@ class TransaccionController extends Controller
     public function crear_encabezado_documento(Request $request, $modelo_id)
     {
         $request['creado_por'] = Auth::user()->email;
-        return CrudController::crear_nuevo_registro( $request, $modelo_id );
+
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
+
+        return $encabezado_documento->crear_nuevo( $request->all() );
     }
 
 

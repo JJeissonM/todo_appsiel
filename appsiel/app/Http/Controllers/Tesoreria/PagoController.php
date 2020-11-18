@@ -16,7 +16,6 @@ use Form;
 
 
 use App\Http\Controllers\Sistema\ModeloController;
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Core\TransaccionController;
 
 // Objetos

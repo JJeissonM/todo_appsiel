@@ -4,10 +4,13 @@ namespace App\FacturacionElectronica;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\Ventas\VtasDocEncabezado;
-
 use Auth;
 use DB;
+
+use App\Ventas\VtasDocEncabezado;
+
+use App\Tesoreria\RegistrosMediosPago;
+
 
 class FacturaElectronicaVentas extends VtasDocEncabezado
 {    
@@ -17,9 +20,11 @@ class FacturaElectronicaVentas extends VtasDocEncabezado
 
     public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'Estado', 'Acción'];
 
-    public $urls_acciones = '{"create":"web/create"}';
+    public $urls_acciones = '{"create":"web/create","store":"fe_factura","show":"fe_factura/id_fila"}';
 
     public $vistas = '{"index":"layouts.index3","create":"facturacion_electronica.facturas.create"}';
+
+    // ¡Extiende métodos!
 
     public static function consultar_registros2()
     {
@@ -41,8 +46,4 @@ class FacturaElectronicaVentas extends VtasDocEncabezado
             ->paginate(500);
     }
 
-    public function store_adicional( $datos, $registro )
-    {
-    	dd( $registro );
-    }
 }

@@ -28,7 +28,6 @@ class InvDocEncabezado extends Model
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
 
-
     public function lineas_registros()
     {
         return $this->hasMany( InvDocRegistro::class, 'inv_doc_encabezado_id' );

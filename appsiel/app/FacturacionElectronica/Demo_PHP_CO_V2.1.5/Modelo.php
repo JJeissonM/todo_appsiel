@@ -1,5 +1,7 @@
 <?php
 
+namespace App\FacturacionElectronica\TFHKA;
+
 class Extras {
     public $controlInterno1;
     public $controlInterno2;

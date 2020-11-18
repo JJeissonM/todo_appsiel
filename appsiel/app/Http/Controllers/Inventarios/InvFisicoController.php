@@ -12,11 +12,12 @@ use Form;
 
 
 use App\Http\Controllers\Sistema\ModeloController;
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Core\TransaccionController;
 
 // Objetos
 use App\Sistema\Html\BotonesAnteriorSiguiente;
+
+use App\Core\EncabezadoDocumentoTransaccion;
 
 // Modelos
 use App\Sistema\TipoTransaccion;
@@ -129,7 +130,8 @@ class InvFisicoController extends TransaccionController
     public static function crear_documento( Request $request, array $lineas_registros, $modelo_id )
     {
         $request['creado_por'] = Auth::user()->email;
-        $doc_encabezado = CrudController::crear_nuevo_registro( $request, $modelo_id );
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
+        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
         InvFisicoController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 

@@ -11,7 +11,6 @@ use Input;
 use Form;
 
 use App\Http\Controllers\Sistema\ModeloController;
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Core\TransaccionController;
 use App\Http\Controllers\Contabilidad\ContabilidadController;
 
@@ -21,6 +20,8 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 
 // Modelos
 use App\Sistema\TipoTransaccion;
+
+use App\Core\EncabezadoDocumentoTransaccion;
 use App\Core\TipoDocApp;
 use App\Core\Empresa;
 
@@ -214,7 +215,8 @@ class InventarioController extends TransaccionController
     public static function crear_documento(Request $request, array $lineas_registros, $modelo_id)
     {
         $request['creado_por'] = Auth::user()->email;
-        $doc_encabezado = CrudController::crear_nuevo_registro($request, $modelo_id);
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
+        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
         InventarioController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
