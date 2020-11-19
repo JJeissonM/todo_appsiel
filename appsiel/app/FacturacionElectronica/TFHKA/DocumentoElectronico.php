@@ -188,7 +188,7 @@ class DocumentoElectronico
 
 		$factDetalle->cantidadPorEmpaque = "1";
     	$factDetalle->cantidadReal = abs( $linea->cantidad );
-    	$factDetalle->cantidadRealUnidadMedida = "94"; // Código estándar
+    	$factDetalle->cantidadRealUnidadMedida = "UND"; // Código estándar
     	$factDetalle->cantidadUnidades = abs( $linea->cantidad );
 
     	$factDetalle->cargosDescuentos[0] = $this->preparar_cargos_descuentos( $linea, $secuencia_anterior + 1 );
@@ -218,7 +218,7 @@ class DocumentoElectronico
 		$factDetalle->precioTotalSinImpuestos = abs( number_format($precioTotal - $linea->valor_impuesto_total(), 2, '.', '') );
 		$factDetalle->precioVentaUnitario = number_format($linea->base_impuesto, 2, '.', '');
 		$factDetalle->secuencia = $secuencia_anterior + 1;
-		$factDetalle->unidadMedida = "94";
+		$factDetalle->unidadMedida = "UND";
 
 	    return $factDetalle;
 	}
@@ -353,6 +353,6 @@ class DocumentoElectronico
 
 	public function obtener_codigo_unidad_medida()
 	{
-		
+
 	}
 }
