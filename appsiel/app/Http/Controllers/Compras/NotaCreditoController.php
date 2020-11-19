@@ -281,15 +281,19 @@ class NotaCreditoController extends TransaccionController
 
                 $precio_total = $precio_unitario * $cantidad;
 
+                $tasa_descuento = $factura->lineas_registros->whereLoose('inv_producto_id', 5)->whereLoose('cantidad', 500)->first()->tasa_descuento;
+
+                $precio_total_con_descuento = $precio_total * ( 1 - $tasa_descuento / 100 );
+
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
                                 [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
                                 [ 'precio_unitario' => $precio_unitario ] +
                                 [ 'cantidad' => $cantidad ] +
-                                [ 'precio_total' => $precio_total ] +
+                                [ 'precio_total' => $precio_total_con_descuento ] +
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( abs($precio_total) - $total_base_impuesto ) ] +
+                                [ 'valor_impuesto' => ( abs($precio_total_con_descuento) - $total_base_impuesto ) ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
 
@@ -310,7 +314,7 @@ class NotaCreditoController extends TransaccionController
 
                 NotaCreditoController::contabilizar_movimiento_credito( $datos + $linea_datos, $detalle_operacion );
 
-                $total_documento += $precio_total;
+                $total_documento += $precio_total_con_descuento;
 
                 // Actualizar campo de cantidad_devuelta en cada línea de registro de la factura de compras
                 ComprasDocRegistro::where('compras_doc_encabezado_id', $factura->id)

@@ -176,7 +176,7 @@ class DocumentoElectronico
 		$cargoDescuento->extras = [];
 		$cargoDescuento->indicador = '0';
 		$cargoDescuento->monto = number_format( $linea->valor_total_descuento, 2, '.', '');
-		$cargoDescuento->montoBase = number_format( ( $linea->precio_unitario * $linea->cantidad ), 2, '.', '');
+		$cargoDescuento->montoBase = abs( number_format( ( $linea->precio_unitario * $linea->cantidad ), 2, '.', '') );
 		$cargoDescuento->porcentaje = number_format( $linea->tasa_descuento, 2, '.', '');
 		$cargoDescuento->secuencia = $secuencia;
 		return $cargoDescuento;
@@ -187,9 +187,9 @@ class DocumentoElectronico
 	    $factDetalle = new FacturaDetalle();
 
 		$factDetalle->cantidadPorEmpaque = "1";
-    	$factDetalle->cantidadReal = $linea->cantidad;
+    	$factDetalle->cantidadReal = abs( $linea->cantidad );
     	$factDetalle->cantidadRealUnidadMedida = "WSD"; // Código estándar
-    	$factDetalle->cantidadUnidades = $linea->cantidad;
+    	$factDetalle->cantidadUnidades = abs( $linea->cantidad );
 
     	$factDetalle->cargosDescuentos[0] = $this->preparar_cargos_descuentos( $linea, $secuencia_anterior + 1 );
 
@@ -214,8 +214,8 @@ class DocumentoElectronico
 		$factDetalle->muestraGratis = "0";
 
 		$precioTotal = $linea->cantidad * $linea->base_impuesto + $linea->valor_impuesto_total();
-		$factDetalle->precioTotal = number_format($precioTotal, 2, '.', '');
-		$factDetalle->precioTotalSinImpuestos = number_format($precioTotal - $linea->valor_impuesto_total(), 2, '.', '');
+		$factDetalle->precioTotal = abs( number_format($precioTotal, 2, '.', '') );
+		$factDetalle->precioTotalSinImpuestos = abs( number_format($precioTotal - $linea->valor_impuesto_total(), 2, '.', '') );
 		$factDetalle->precioVentaUnitario = number_format($linea->base_impuesto, 2, '.', '');
 		$factDetalle->secuencia = $secuencia_anterior + 1;
 		$factDetalle->unidadMedida = "WSD";
@@ -306,10 +306,10 @@ class DocumentoElectronico
 			$factura->detalleDeFactura[$l] = $this->preparar_linea_detalle_factura( $linea, $l );
 
 			// Sumatoria de totales
-			$montoTotalImpuestos += $linea->valor_impuesto_total();
+			$montoTotalImpuestos += abs( $linea->valor_impuesto_total() );
 			$totalBaseImponible += $linea->base_impuesto_total;
 			$totalSinImpuestos += $linea->base_impuesto_total;
-			$precioTotal += $linea->precio_total;
+			$precioTotal += abs( $linea->precio_total );
 			$totalDescuentos += $linea->valor_total_descuento;
 
 			$l++;
@@ -340,7 +340,6 @@ class DocumentoElectronico
 	    $factura->moneda = "COP";
 		$factura->redondeoAplicado = "100.00"	;
 	    
-	    $factura->tipoOperacion = "10"; // Para facturas: Estándar
 	    $factura->totalBaseImponible = number_format( $totalBaseImponible, 2, '.', '');
 	    $factura->totalBrutoConImpuesto =  number_format( $totalSinImpuestos + $montoTotalImpuestos, 2, '.', '');
 	    $factura->totalMonto = number_format( $precioTotal, 2, '.', '');

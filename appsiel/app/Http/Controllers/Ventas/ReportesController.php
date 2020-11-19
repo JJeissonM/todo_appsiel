@@ -148,8 +148,6 @@ class ReportesController extends Controller
         
         $movimiento_inventarios = InvMovimiento::get_movimiento_transacciones_ventas( $fecha_desde, $fecha_hasta );
 
-        //dd( $movimiento_inventarios->where( 'inv_producto_id', 2)->sum('costo_total') );
-
         $mensaje = 'IVA <b>NO</b> incluido en precio';
 
         $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje') )->render();

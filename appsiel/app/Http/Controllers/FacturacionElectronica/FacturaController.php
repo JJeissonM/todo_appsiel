@@ -30,7 +30,7 @@ use App\Tesoreria\TesoMovimiento;
 
 use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
-use App\FacturacionElectronica\FacturaElectronicaVentas;
+use App\FacturacionElectronica\Factura;
 
 class FacturaController extends TransaccionController
 {
@@ -99,24 +99,25 @@ class FacturaController extends TransaccionController
         $lineas_registros = json_decode( $request->lineas_registros );
         VentaController::crear_registros_documento( $request, $encabezado_factura, $lineas_registros );
 
-        // Paso 4
+        // Paso 4 (Se está haciendo en el Paso 3)
         //$this->contabilizar( $encabezado_documento );
-        if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
-        {
-        	$encabezado_factura->estado = 'Sin enviar';
-        	$encabezado_factura->save();
-
-        	return redirect( 'fe_factura/'.$encabezado_factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', 'El documento de factura no tiene resolución asociada. La factura electrónica no pudo ser enviada.');
-        }
 
         // Paso 5: Enviar factura electrónica
+        if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
+        {
+            $encabezado_factura->estado = 'Sin enviar';
+            $encabezado_factura->save();
+
+            return redirect( 'fe_factura/'.$encabezado_factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', 'El documento de factura no tiene resolución asociada. La factura electrónica no pudo ser enviada.');
+        }
+        
         $resultado = $this->procesar_envio_factura( $encabezado_factura );
 
         $mensaje = $this->get_mensaje( $resultado );
 
         if ( $mensaje->tipo == 'mensaje_error' )
         {
-        	$encabezado_factura->estado = 'Sin Enviar';
+        	$encabezado_factura->estado = 'Sin enviar';
         	
         }else{
         	$encabezado_factura->estado = 'Enviada';
@@ -127,31 +128,15 @@ class FacturaController extends TransaccionController
 
     }
 
-    public function enviar_factura_electronica( $id )
-    {
-    	$encabezado_factura = FacturaElectronicaVentas::find( $id );
-
-        $resultado = $this->procesar_envio_factura( $encabezado_factura );
-
-        $mensaje = $this->get_mensaje( $resultado );
-
-        if ( $mensaje->tipo != 'mensaje_error' )
-        {
-        	$encabezado_factura->estado = 'Enviada';
-        	$encabezado_factura->save();
-        }
-
-    	return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
-    }
-
     public function procesar_envio_factura( $encabezado_factura, $adjuntos = 0 )
     {
     	$documento = new DocumentoElectronico();
     	
     	$documento_factura = $documento->preparar_objeto_documento( $encabezado_factura );
 
-    	$documento_factura->tipoDocumento="01"; //Facturas
-    	
+        $documento_factura->tipoOperacion = "10"; // Para facturas: Estándar
+    	$documento_factura->tipoDocumento = "01"; //Facturas
+
     	//dd($documento_factura);
 		$params = array(
 				         'tokenEmpresa' =>  config('facturacion_electronica.tokenEmpresa'),
@@ -269,5 +254,23 @@ class FacturaController extends TransaccionController
     	}
 
     	return $mensaje;
+    }
+
+    // Llamado directamente
+    public function enviar_factura_electronica( $id )
+    {
+        $encabezado_factura = Factura::find( $id );
+
+        $resultado = $this->procesar_envio_factura( $encabezado_factura );
+
+        $mensaje = $this->get_mensaje( $resultado );
+
+        if ( $mensaje->tipo != 'mensaje_error' )
+        {
+            $encabezado_factura->estado = 'Enviada';
+            $encabezado_factura->save();
+        }
+
+        return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
     }
 }

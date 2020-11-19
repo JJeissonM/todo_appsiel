@@ -208,7 +208,7 @@ class InventarioController extends TransaccionController
 
 
     /*
-        Este método se llamada desde VentaController y CompraController
+        Este método se llamada desde VentaController, CompraController y varios Controllers más
         Crea un documento completo: encabezados, registros, movimiento y contabilización
         Devuelve en ID del documento creado
     */
@@ -364,9 +364,6 @@ class InventarioController extends TransaccionController
             }
         }
     }
-
-
-
 
     public static function crear_encabezado_remision_ventas( $datos )
     {
