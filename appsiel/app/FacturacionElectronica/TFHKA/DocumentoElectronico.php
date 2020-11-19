@@ -188,7 +188,7 @@ class DocumentoElectronico
 
 		$factDetalle->cantidadPorEmpaque = "1";
     	$factDetalle->cantidadReal = abs( $linea->cantidad );
-    	$factDetalle->cantidadRealUnidadMedida = "WSD"; // Código estándar
+    	$factDetalle->cantidadRealUnidadMedida = "94"; // Código estándar
     	$factDetalle->cantidadUnidades = abs( $linea->cantidad );
 
     	$factDetalle->cargosDescuentos[0] = $this->preparar_cargos_descuentos( $linea, $secuencia_anterior + 1 );
@@ -218,7 +218,7 @@ class DocumentoElectronico
 		$factDetalle->precioTotalSinImpuestos = abs( number_format($precioTotal - $linea->valor_impuesto_total(), 2, '.', '') );
 		$factDetalle->precioVentaUnitario = number_format($linea->base_impuesto, 2, '.', '');
 		$factDetalle->secuencia = $secuencia_anterior + 1;
-		$factDetalle->unidadMedida = "WSD";
+		$factDetalle->unidadMedida = "94";
 
 	    return $factDetalle;
 	}
@@ -348,129 +348,11 @@ class DocumentoElectronico
 	    $factura->totalDescuentos = number_format( $totalDescuentos, 2, '.', '');
 		$factura->totalSinImpuestos = number_format( $totalSinImpuestos, 2, '.', '');
 
-		//dd( $factura );
 		return $factura;
 	}
 
-	/*
-
-	//var_dump($_FILES['archivo']);
-
-	if(isset($_POST['Enviar']) OR isset($_POST['EnviarNC']) OR isset($_POST['EnviarND'])){
-
-	    
-
-		if ($enviarAdjunto == "TRUE"){
-
-			$adjuntos="1";
-
-		}else{
-
-			$adjuntos="0";
-			}
-
-		 
-		 $params = array(
-	         'tokenEmpresa' =>  $TokenEnterprise,
-	         'tokenPassword' =>$TokenAutorizacion,
-	         'factura' => $factura ,
-	         'adjuntos' => $adjuntos);
-		 //Enviar Objeto Factura
-		 $resultado = $this->WebService->enviar(WSDL,$options,$params);
-		 //capturar codigo de respuesta del WS del Autofact para dar respuesta al usuario
-		 
-		 echo "<h1>Resultado de la Emisión</h1></br>";
-		 
-		if($resultado["codigo"]==200){
-			
-				print_r("Código: " .$resultado["codigo"] ."</br>Mensaje:  " .$resultado["mensaje"] ."</br>Consecutivo:  " .$resultado["consecutivoDocumento"] ."</br>CUFE:  " .$resultado["cufe"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Hash:  " .$resultado["hash"] ."</br>Reglas de validación DIAN:  " .$resultado["reglasValidacionDIAN"] ."</br>Resultado:  " .$resultado["resultado"] ."</br>Tipo de CUFE:  " .$resultado["tipoCufe"] ."</br>Mensaje Validación:  " );
-
-				$max = sizeof($resultado["mensajesValidacion"]->string);
-				 for($i = 0; $i < $max;$i++){
-
-				 	print_r("</br>" .$resultado["mensajesValidacion"]->string[$i]  );
-				 }
+	public function obtener_codigo_unidad_medida()
+	{
 		
-		// ENVIO DE ADJUNTOS
-
-			if ($enviarAdjunto == "TRUE"){
-
-					$handle = fopen($_FILES['archivo']["tmp_name"],"r");
-					$conten = fread($handle,filesize($_FILES['archivo']["tmp_name"]));
-	        		
-
-	        		$nombreformato = explode(".", $_FILES['archivo']['name']);
-	        		$tm = sizeof($nombreformato);
-	        		
-
-	        		$Adjunto = new adjunto();
-					$Adjunto->archivo= $conten;
-
-					$correo = new strings();
-					$correo = $_POST["correo"];
-
-	      			$Adjunto->email[0] = $correo;
-	      			$Adjunto->enviar = "1";
-	     			$Adjunto->formato = $nombreformato[$tm-1];
-	      			$Adjunto->nombre= $nombreformato[0];
-	      			$Adjunto->numeroDocumento = $resultado["consecutivoDocumento"];
-	      			$Adjunto->tipo = "2";
-
-	      			$params = new CargarAdjuntos();
-	         			$params->tokenEmpresa =  $TokenEnterprise;
-	         			$params->tokenPassword = $TokenAutorizacion;
-	         			$params->adjunto = $Adjunto;
-
-					$options = array('exceptions' => true, 'trace' => true);
-	      			$resultado = $this->WebService->CargarAdjuntos(WSANEXO,$options,$params);
-
-	      			echo "<h2>Resultado del Envío de Adjuntos</h2></br>";
-
-	      			print_r("Código: " .$resultado["codigo"] ."</br>Mensaje:  " .$resultado["mensaje"] ."</br>Resultado:  " .$resultado["resultado"]);
-
-				}
-
-		}else{
-				$max = sizeof($resultado["mensajesValidacion"]->string);
-
-				print_r("Código: " .$resultado["codigo"] ."</br>Mensaje:  " .$resultado["mensaje"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Mensaje Validación:  " );
-				 for($i = 0; $i < $max;$i++){
-
-				 	print_r("</br>" .$resultado["mensajesValidacion"]->string[$i]  );
-				 }
-				 //."</br>Resultado:  " .$resultado["resultado"] );
-			
-		}
-		
-	    exit();
-
-	}elseif(isset($_POST['Folios'])){
-
-		$params = array(
-	         'tokenEmpresa' =>  $TokenEnterprise,
-	         'tokenPassword' =>$TokenAutorizacion);
-		 //Enviar Objeto Factura
-		 $resultado = $this->WebService->foliosrestantes(WSDL,$options,$params);
-
-		echo "<h1>Resultado de la consulta de Folios</h1></br>";
-
-		 print_r("Código: " .$resultado["codigo"] ."</br>Folios Restantes:  " .$resultado["foliosRestantes"] ."</br>Resultado:  " .$resultado["resultado"] ."</br>Mensaje:  " .$resultado["mensaje"] );
-
-	}elseif(isset($_POST['EstadoDoc'])){
-
-		$params = array(
-	         'tokenEmpresa' =>  $TokenEnterprise,
-	         'tokenPassword' =>$TokenAutorizacion,
-	     	 'documento' => $_POST["ConsultaDoc"]);
-			 
-		 //Enviar Objeto Factura
-		 $resultado = $this->WebService->getEstadoDocumento(WSDL,$options,$params);
-
-		echo "<h1>Resultado de la consulta de Documento</h1></br>";
-
-		 print_r("Código: " .$resultado["codigo"] ."</br>Aceptación Fisica:  " .$resultado["aceptacionFisica"] ."</br>Ambiente:  " .$resultado["ambiente"] ."</br>Consecutivo:  " .$resultado["consecutivo"] ."</br>CUFE:  " .$resultado["cufe"] ."</br>Descripcion Documento:  " .$resultado["descripcionDocumento"] ."</br>Fecha Documento:  " .$resultado["fechaDocumento"] ."</br>Resultado:  " .$resultado["resultado"] );
-
 	}
-
-	*/
 }

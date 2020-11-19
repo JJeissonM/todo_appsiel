@@ -14,4 +14,9 @@ class AplicacionController extends Controller
     	return view('facturacion_electronica.index');
     }
 
+    public function consultar_documentos_emitidos()
+    {
+    	return view('facturacion_electronica.consultar_documentos_emitidos');
+    }
+
 }
