@@ -155,26 +155,26 @@
         }
 
         .section-header .section-title:after {
-            background-color: {{ $configuracion->color_primario }} !important;
+            background-color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
         }
 
         .btn.btn-primary {
-            background: {{ $configuracion->color_primario }} !important;
+            background: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
 
-            border-color: {{ $configuracion->color_terciario }} !important;
+            border-color: @if($configuracion!=null){{ $configuracion->color_terciario }}@else #000 @endif !important;
         }
 
         .media.service-box .pull-left>i {
-            color: {{ $configuracion->color_primario }} !important;
+            color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
         }
 
         .media.service-box .pull-left>i:after {
-            background-color: {{ $configuracion->color_primario }} !important;
+            background-color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
         }
 
         .pagination>li>a,
         .pagination>li>span {
-            color: {{ $configuracion->color_primario }} !important;
+            color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
         }
 
         .pagination>.active>a,
@@ -183,16 +183,16 @@
         .pagination>.active>span:hover,
         .pagination>.active>a:focus,
         .pagination>.active>span:focus {
-            color: {{ $configuracion->color_segundario}} !important;
+            color: @if($configuracion!=null){{ $configuracion->color_segundario}}@else #000 @endif !important;
             cursor: default;
 
-            background-color: {{ $configuracion->color_primario}};
+            background-color: @if($configuracion!=null){{ $configuracion->color_primario}}@else #000 @endif;
 
-            border-color: {{ $configuracion->color_primario }};
+            border-color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif;
         }
 
         .column-title:after {
-            border-bottom: 1px solid {{ $configuracion->color_terciario}} !important;
+            border-bottom: 1px solid @if($configuracion!=null){{ $configuracion->color_terciario}}@else #000 @endif !important;
         }
 
         #formulario_pqr .control-label {

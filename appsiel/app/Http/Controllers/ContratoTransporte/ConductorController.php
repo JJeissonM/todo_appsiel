@@ -69,11 +69,33 @@ class ConductorController extends Controller
                 'etiqueta' => 'Ver'
             ]
         ];
+        //recogemos todos los vehículos conducidos por la persona, histórico de planillas
+        $planillas = $v->planillaconductors;
+        $vehiculos = null;
+        if (count($planillas) > 0) {
+            foreach ($planillas as $p) {
+                $vehiculo = $p->planillac->contrato->vehiculo;
+                if ($vehiculo != null) {
+
+                    $vehiculos[] = [
+                        'placa' => $vehiculo->placa,
+                        'interno' => $vehiculo->int,
+                        'modelo' => $vehiculo->modelo,
+                        'marca' => $vehiculo->marca,
+                        'clase' => $vehiculo->clase,
+                        'tipo' => 'USADO EN RUTA ASIGNADA, RUTA: ' . $p->planillac->contrato->origen . " - " . $p->planillac->contrato->destino . " - FECHA: " . $p->planillac->contrato->fecha_inicio,
+                        'id' => 0 //0 para vehiculo por ruta, 1 para vehiculo asociado
+                    ];
+                }
+            }
+        }
+        //recogemos todos los vehículos asociados a la persona
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
         return view('contratos_transporte.conductores.show')
             ->with('v', $v)
             ->with('variables_url', $variables_url)
-            ->with('miga_pan', $miga_pan);
+            ->with('miga_pan', $miga_pan)
+            ->with('vehiculos', $vehiculos);
     }
 
     /**

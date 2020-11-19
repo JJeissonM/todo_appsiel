@@ -51,6 +51,29 @@
 					@endif
 				</div>
 			</div>
+			<div class="col-md-12">
+				<div class="list-group">
+					<a href="#" class="list-group-item list-group-item-action active">
+						Vehículos asociados al conductor y vehículos que ha usado en las rutas asignadas
+					</a>
+					@if($vehiculos!=null)
+					@foreach($vehiculos as $v)
+					@if($v['id']==0)
+					<a class="list-group-item list-group-item-action list-group-item-success">
+						@else
+						<a class="list-group-item list-group-item-action list-group-item-info">
+							@endif
+							<p>
+								<b>Placa:</b> {{$v['placa']}},<b> Interno:</b> {{$v['interno']}}, <b>Modelo:</b> {{$v['modelo']}}, <b>Marca:</b> {{$v['marca']}}, <b>Clase:</b> {{$v['clase']}}<br>
+								<b>Tipo:</b> {{$v['tipo']}}
+							</p>
+						</a>
+						@endforeach
+						@else
+						<a href="#" class="list-group-item list-group-item-action list-group-item-danger">El conductor no tiene vehículos asociados ni ha realizado rutas</a>
+						@endif
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
