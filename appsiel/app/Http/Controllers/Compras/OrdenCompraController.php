@@ -16,11 +16,12 @@ use Form;
 
 use Spatie\Permission\Models\Permission;
 
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Core\TransaccionController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
+
+use App\Core\EncabezadoDocumentoTransaccion;
 
 // Modelos
 use App\Inventarios\InvProducto;
@@ -66,7 +67,8 @@ class OrdenCompraController extends TransaccionController
 
         // 2do. Crear encabezado del documento
         $request['estado'] = 'Pendiente';
-        $doc_encabezado = CrudController::crear_nuevo_registro($request, $request->url_id_modelo); // Nuevo encabezado
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
         // 3ro. Crear líneas de registros del documento
         OrdenCompraController::crear_lineas_registros($request, $doc_encabezado);

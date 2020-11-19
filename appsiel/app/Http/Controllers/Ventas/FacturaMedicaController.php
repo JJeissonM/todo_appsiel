@@ -15,7 +15,6 @@ use Form;
 
 use Spatie\Permission\Models\Permission;
 
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -34,6 +33,7 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Core\Tercero;
+use App\Core\EncabezadoDocumentoTransaccion;
 
 
 use App\Inventarios\InvDocEncabezado;
@@ -871,7 +871,8 @@ class FacturaMedicaController extends VentaController
     {
         $datos = $request->all();
 
-        $doc_encabezado = CrudController::crear_nuevo_registro( $request, $request->url_id_modelo );
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
         $lineas_registros = json_decode( $request->lineas_registros );
 

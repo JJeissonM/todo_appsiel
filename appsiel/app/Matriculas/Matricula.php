@@ -202,6 +202,7 @@ class Matricula extends Model
                 'sga_matriculas.cedula_acudiente',
                 'sga_matriculas.acudiente',
                 'sga_cursos.descripcion AS nombre_curso',
+                'sga_matriculas.created_at',
                 'sga_matriculas.estado',
                 'sga_matriculas.requisitos',
                 'sga_matriculas.id'

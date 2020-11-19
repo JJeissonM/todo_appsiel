@@ -15,7 +15,6 @@ use Form;
 
 use Spatie\Permission\Models\Permission;
 
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -33,10 +32,12 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Core\Tercero;
+use App\Core\EncabezadoDocumentoTransaccion;
 
 
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
+use App\Inventarios\RemisionVentas;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvCostoPromProducto;
@@ -107,11 +108,11 @@ class VentaController extends TransaccionController
         // TRES TRANSACCIONES
 
         // 1ra. Crear documento de salida de inventarios (REMISIÓN)
-        // WARNING. HECHO MANUALMENTE
-        $remision_doc_encabezado_id = $this->crear_remision_ventas( $request );
+        $remision = new RemisionVentas;
+        $documento_remision = $remision->crear_nueva( $request->all() );
 
         // 2da. Crear documento de Ventas
-        $request['remision_doc_encabezado_id'] = $remision_doc_encabezado_id;
+        $request['remision_doc_encabezado_id'] = $documento_remision->id;
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
         // 3ra. Crear Registro del documento de ventas
@@ -135,38 +136,6 @@ class VentaController extends TransaccionController
         }else{
             return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
         }
-    }
-
-    /*
-        Este método crea el documento de salida de inventarios de los productos vendidos (Remisión de ventas)
-        WARNING: Se asignan manualmente algunos campos de a tablas inv_doc_inventarios  
-    */
-    public function crear_remision_ventas(Request $request)
-    {
-        // Llamar a los parámetros del archivo de configuración
-        $parametros = config('ventas');
-
-        // Modelo del encabezado del documento
-        $rm_modelo_id = $parametros['rm_modelo_id'];
-        $rm_tipo_transaccion_id = $parametros['rm_tipo_transaccion_id'];
-        $rm_tipo_doc_app_id = $parametros['rm_tipo_doc_app_id'];
-
-        $lineas_registros = json_decode($request->lineas_registros);
-
-        // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
-        $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
-        $core_tipo_doc_app_id_original = $request['core_tipo_doc_app_id'];
-
-        $request['core_tipo_transaccion_id'] = $rm_tipo_transaccion_id;
-        $request['core_tipo_doc_app_id'] = $rm_tipo_doc_app_id;
-        $request['estado'] = 'Facturada';
-        $remision_creada_id = InventarioController::crear_documento($request, $lineas_registros, $rm_modelo_id);
-
-        // Se revierten los datos cambiados
-        $request['core_tipo_transaccion_id'] = $tipo_transaccion_id_original;
-        $request['core_tipo_doc_app_id'] = $core_tipo_doc_app_id_original;
-
-        return $remision_creada_id;
     }
 
     /*
@@ -1181,7 +1150,8 @@ class VentaController extends TransaccionController
     {
         $datos = $request->all();
 
-        $doc_encabezado = CrudController::crear_nuevo_registro( $request, $request->url_id_modelo );
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
         $lineas_registros = json_decode( $request->lineas_registros );
 
@@ -1189,6 +1159,7 @@ class VentaController extends TransaccionController
 
         return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
+
 
     // Se crean los registros con base en los registros de la remisión o remisiones
     public static function crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros )

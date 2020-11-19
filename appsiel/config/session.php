@@ -31,7 +31,7 @@ return [
     // 7200 minutos = 5 días
     'lifetime' => 7200,
 
-    'expire_on_close' => true,
+    'expire_on_close' => false,
 
     /*
     |--------------------------------------------------------------------------

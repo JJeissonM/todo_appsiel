@@ -7,10 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Core\EncabezadoDocumentoTransaccion;
+
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvDocRegistro;
+use App\Inventarios\InvMovimiento;
+use App\Inventarios\InvMotivo;
 
 use App\Contabilidad\Impuesto;
+use App\Contabilidad\ContabMovimiento;
+
 use App\Ventas\Cliente;
 use App\Compras\Proveedor;
 
@@ -27,7 +33,6 @@ class InvDocEncabezado extends Model
     {
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
-
 
     public function lineas_registros()
     {
@@ -69,6 +74,104 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.id AS campo7')
                     ->get()
                     ->toArray();
+    }
+
+    public function crear_encabezado( $modelo_id, $datos )
+    {
+        $datos['creado_por'] = Auth::user()->email;
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
+        return $encabezado_documento->crear_nuevo( $datos );
+    }
+
+    public function crear_lineas_registros( $datos, $doc_encabezado, array $lineas_registros)
+    {
+        $cantidad_registros = count($lineas_registros);
+
+        for ($i = 0; $i < $cantidad_registros; $i++)
+        {
+            $cantidad = (float)$lineas_registros[$i]->cantidad;
+            $costo_total = (float)$lineas_registros[$i]->costo_total;
+
+            $motivo = InvMotivo::find( (int)$lineas_registros[$i]->inv_motivo_id );
+
+            // Cuando el motivo de la transacción es de salida, 
+            // las cantidades y costos totales restan del movimiento ( negativo )
+            if ( $motivo->movimiento == 'salida' )
+            {
+                $cantidad = (float)$lineas_registros[$i]->cantidad * -1;
+                $costo_total = (float)$lineas_registros[$i]->costo_total * -1;
+            }
+
+            $linea_datos = ['inv_motivo_id' => (int)$lineas_registros[$i]->inv_motivo_id] +
+                            ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
+                            ['costo_unitario' => (float)$lineas_registros[$i]->costo_unitario] +
+                            ['cantidad' => $cantidad] +
+                            ['costo_total' => $costo_total];
+
+            InvDocRegistro::create(
+                                    $datos +
+                                    $linea_datos +
+                                    ['inv_doc_encabezado_id' => $doc_encabezado->id]
+                                );
+
+            // Solo se almacena el movimiento para productos almacenables
+            $tipo_producto = InvProducto::find($lineas_registros[$i]->inv_producto_id)->tipo;
+            if ( $tipo_producto == 'producto' )
+            {
+                $datos['consecutivo'] = $doc_encabezado->consecutivo;
+                InvMovimiento::create(
+                                        $datos +
+                                        $linea_datos +
+                                        ['inv_doc_encabezado_id' => $doc_encabezado->id]
+                                    );
+            }    
+        }
+    }
+
+
+    /*
+        Cuentas de Inventarios vs Costo de ventas
+        Aplica a productos almacenables
+    */
+    public function contabilizar( $encabezado_documento )
+    {
+        $lineas_registros = $encabezado_documento->lineas_registros;
+
+        foreach ($lineas_registros as $linea) {
+            if ( $linea->item->tipo != 'producto') {
+                continue; // Si no es un producto, saltar la contabilización de abajo.
+            }
+
+            $datos = $encabezado_documento->toArray() + $linea->toArray();
+
+            // Si el movimiento es de ENTRADA de inventarios, se DEBITA la cta. de inventarios vs la cta. contrapartida
+            $valor_debito = abs( $linea->costo_total );
+            $valor_credito = 0;
+
+            // Si el movimiento es de SALIDA de inventarios, se ACREDITA la cta. de inventarios vs la cta. contrapartida
+            if ( $linea->motivo->movimiento == 'salida') {
+                $valor_debito = 0;
+                $valor_credito = abs( $linea->costo_total );
+            }        
+            
+            $cta_inventarios_id = $linea->item->grupo_inventario->cta_inventarios_id; // Dada por el Grupo de Inventarios
+            $cta_contrapartida_id = $linea->motivo->cta_contrapartida_id; // Dada por el Motivo de Inventarios
+
+            $this->contabilizar_registro( $datos, $cta_inventarios_id, $valor_debito, $valor_credito);
+            // Se invierten los valores Débito y Crédito
+            $this->contabilizar_registro( $datos, $cta_contrapartida_id, $valor_credito, $valor_debito);
+        }
+    }
+
+    public function contabilizar_registro( $datos, $contab_cuenta_id, $valor_debito, $valor_credito )
+    {
+        ContabMovimiento::create(   
+                                    $datos + 
+                                    [ 'contab_cuenta_id' => $contab_cuenta_id ] +
+                                    [ 'valor_debito' => $valor_debito] + 
+                                    [ 'valor_credito' => ($valor_credito * -1) ] + 
+                                    [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
+                                );
     }
 
     public static function get_registro($id)

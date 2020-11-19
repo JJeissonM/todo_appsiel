@@ -13,10 +13,8 @@ use Lava;
 use Input;
 use Form;
 
-
 use Spatie\Permission\Models\Permission;
 
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Inventarios\InventarioController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -25,6 +23,8 @@ use App\Http\Controllers\Contabilidad\ContabilidadController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
+
+use App\Core\EncabezadoDocumentoTransaccion;
 
 // Modelos
 
@@ -55,33 +55,34 @@ class NotaCreditoController extends TransaccionController
      */
     public function create()
     {
-        $this->set_variables_globales();
-
-        $id_transaccion = $this->transaccion->id;
 
         if ( is_null( Input::get('factura_id') ) )
         {
             return redirect('web?id=9&id_modelo=166')->with('mensaje_error','No puede hacer notas crédito desde esta opción. Debe ir al Botón Crear Nota crédito directa');
-        }else{
-
-            $factura = ComprasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
-
-            $movimiento_cxc = CxpMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
-                                ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
-                                ->where('consecutivo', $factura->consecutivo)
-                                ->get()
-                                ->first();
-
-            if ( is_null( $movimiento_cxc ) )
-            {
-                return redirect('compras/'.$factura->id.'?id=9&id_modelo=159&id_transaccion=25')->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
-            }else{
-                if ( $movimiento_cxc->saldo_pendiente == 0 )
-                {
-                    return redirect('compras/'.$factura->id.'?id=9&id_modelo=159&id_transaccion=25')->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
-                }
-            }
         }
+            
+        $this->set_variables_globales();
+
+        $id_transaccion = $this->transaccion->id;
+
+        $factura = ComprasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
+
+        $movimiento_cxc = CxpMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+                            ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
+                            ->where('consecutivo', $factura->consecutivo)
+                            ->get()
+                            ->first();
+
+        if ( is_null( $movimiento_cxc ) )
+        {
+            return redirect('compras/'.$factura->id.'?id=9&id_modelo=159&id_transaccion=25')->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
+        }
+
+        if ( $movimiento_cxc->saldo_pendiente == 0 )
+        {
+            return redirect('compras/'.$factura->id.'?id=9&id_modelo=159&id_transaccion=25')->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
+        }
+        
 
         // Información de la Factura de compras
         $doc_encabezado = ComprasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
@@ -159,7 +160,8 @@ class NotaCreditoController extends TransaccionController
 
         // 2do. Crear encabezado del documento de Compras (Nota Crédito)
         $request['compras_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
-        $nota_credito = CrudController::crear_nuevo_registro($request, $request->url_id_modelo); // Nuevo encabezado
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
 
         // 3ro. Crear líneas de registros del documento
         NotaCreditoController::crear_registros_nota_credito( $request, $nota_credito, $factura );
@@ -279,15 +281,19 @@ class NotaCreditoController extends TransaccionController
 
                 $precio_total = $precio_unitario * $cantidad;
 
+                $tasa_descuento = $factura->lineas_registros->whereLoose('inv_producto_id', 5)->whereLoose('cantidad', 500)->first()->tasa_descuento;
+
+                $precio_total_con_descuento = $precio_total * ( 1 - $tasa_descuento / 100 );
+
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
                                 [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
                                 [ 'precio_unitario' => $precio_unitario ] +
                                 [ 'cantidad' => $cantidad ] +
-                                [ 'precio_total' => $precio_total ] +
+                                [ 'precio_total' => $precio_total_con_descuento ] +
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( abs($precio_total) - $total_base_impuesto ) ] +
+                                [ 'valor_impuesto' => ( abs($precio_total_con_descuento) - $total_base_impuesto ) ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
 
@@ -308,7 +314,7 @@ class NotaCreditoController extends TransaccionController
 
                 NotaCreditoController::contabilizar_movimiento_credito( $datos + $linea_datos, $detalle_operacion );
 
-                $total_documento += $precio_total;
+                $total_documento += $precio_total_con_descuento;
 
                 // Actualizar campo de cantidad_devuelta en cada línea de registro de la factura de compras
                 ComprasDocRegistro::where('compras_doc_encabezado_id', $factura->id)

@@ -6,25 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Ventas\VtasDocEncabezado;
 
-use Auth;
-use DB;
-
-class FacturaElectronicaVentas extends VtasDocEncabezado
+class NotaDebito extends VtasDocEncabezado
 {    
     protected $table = 'vtas_doc_encabezados';
     
     protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'orden_compras', 'valor_total'];
 
+    public $urls_acciones = '{"create":"fe_nota_debito/create","store":"fe_nota_debito"}';
+
     public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'Estado', 'Acción'];
-
-    public $urls_acciones = '{"create":"web/create"}';
-
-    public $vistas = '{"index":"layouts.index3","create":"facturacion_electronica.facturas.create"}';
 
     public static function consultar_registros2()
     {
-        $core_tipo_transaccion_id = 52; // Factura Electrónica
-        return VtasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+        $core_tipo_transaccion_id = 54;
+        return NotaDebito::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
@@ -39,10 +34,5 @@ class FacturaElectronicaVentas extends VtasDocEncabezado
             )
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->paginate(500);
-    }
-
-    public function store_adicional( $datos, $registro )
-    {
-    	dd( $registro );
     }
 }

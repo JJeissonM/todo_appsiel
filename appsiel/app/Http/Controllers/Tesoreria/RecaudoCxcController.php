@@ -16,7 +16,6 @@ use Form;
 
 
 use App\Http\Controllers\Sistema\ModeloController;
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Contabilidad\ContabilidadController;
@@ -25,7 +24,9 @@ use App\Http\Controllers\Contabilidad\ContabilidadController;
 // Modelos
 use App\Sistema\TipoTransaccion;
 use App\Sistema\Modelo;
+
 use App\Core\Tercero;
+use App\Core\EncabezadoDocumentoTransaccion;
 
 use App\Core\Empresa;
 
@@ -234,7 +235,9 @@ class RecaudoCxcController extends Controller
     public static function crear_encabezado_documento(Request $request, $modelo_id)
     {
         $request['creado_por'] = Auth::user()->email;
-        return CrudController::crear_nuevo_registro( $request, $modelo_id );
+
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
+        return $encabezado_documento->crear_nuevo( $request->all() );
     }
 
     /**

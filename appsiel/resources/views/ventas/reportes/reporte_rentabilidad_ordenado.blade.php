@@ -48,10 +48,7 @@
                 foreach( $movimiento as $campo_agrupado => $coleccion_movimiento)
                 {
                     $cantidad = $coleccion_movimiento->sum('cantidad');
-                    $precio_total = $coleccion_movimiento->sum('precio_total');
                     $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
-
-                    //$cantidad_inventario = $movimiento_inventarios->where( 'inv_producto_id', $coleccion_movimiento->first()->inv_producto_id )->sum('cantidad');
 
                     if ( $agrupar_por == 'core_tercero_id' )
                     {

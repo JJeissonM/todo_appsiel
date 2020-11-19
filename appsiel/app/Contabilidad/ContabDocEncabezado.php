@@ -60,6 +60,7 @@ class ContabDocEncabezado extends Model
                                 'contab_doc_encabezados.core_tipo_doc_app_id',
                                 'contab_doc_encabezados.id',
                                 'contab_doc_encabezados.creado_por',
+                                'contab_doc_encabezados.created_at',
                                 'contab_doc_encabezados.consecutivo',
                                 'contab_doc_encabezados.core_empresa_id',
                                 'contab_doc_encabezados.valor_total',

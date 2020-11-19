@@ -22,6 +22,11 @@ class ComprasDocEncabezado extends Model
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
 
+    public function lineas_registros()
+    {
+        return $this->hasMany( ComprasDocRegistro::class, 'compras_doc_encabezado_id' );
+    }
+
 	public static function consultar_registros()
 	{
         $core_tipo_transaccion_id = 25; // Facturas de compras

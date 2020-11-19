@@ -27,7 +27,6 @@ class Cliente extends Model
         return ClaseCliente::where( 'id', $clase_cliente_id )->value( 'cta_x_cobrar_id' );
     }
 
-
     public function lista_precios()
     {
         return $this->belongsTo(ListaPrecioEncabezado::class);
@@ -40,12 +39,22 @@ class Cliente extends Model
 
     public function tercero()
     {
-        return $this->belongsTo( Tercero::class,'core_tercero_id');
+        return $this->belongsTo( Tercero::class, 'core_tercero_id');
+    }
+
+    public function clase_cliente()
+    {
+        return $this->belongsTo( ClaseCliente::class, 'clase_cliente_id');
+    }
+
+    public function condicion_pago()
+    {
+        return $this->belongsTo( CondicionPago::class, 'condicion_pago_id');
     }
 
     public function vendedor()
     {
-        return $this->belongsTo( Vendedor::class,'vendedor_id');
+        return $this->belongsTo( Vendedor::class, 'vendedor_id');
     }
 
 	public static function consultar_registros()

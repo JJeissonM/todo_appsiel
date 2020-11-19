@@ -1023,19 +1023,6 @@ class AplicacionController extends TransaccionController
     }
 
 
-    public function factura_remision_pendiente( Request $request )
-    {
-        $datos = $request->all();
-
-        $doc_encabezado = CrudController::crear_nuevo_registro( $request, $request->url_id_modelo );
-
-        $lineas_registros = json_decode( $request->lineas_registros );
-
-        VentaController::crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros );
-
-        return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
-    }
-
     // Se crean los registros con base en los registros de la remisión o remisiones
     public static function crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros )
     {

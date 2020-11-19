@@ -16,7 +16,6 @@ use Form;
 
 use Spatie\Permission\Models\Permission;
 
-use App\Http\Controllers\Sistema\CrudController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Inventarios\InventarioController;
@@ -27,8 +26,11 @@ use App\Http\Controllers\Contabilidad\ContabilidadController;
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
 
+use App\Core\EncabezadoDocumentoTransaccion;
+
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
+use App\Inventarios\DevolucionVentas;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 
@@ -63,28 +65,27 @@ class NotaCreditoController extends TransaccionController
         if ( is_null( Input::get('factura_id') ) )
         {
             return redirect('web?id=13&id_modelo=167')->with('mensaje_error','No puede hacer notas crédito desde esta opción. Debe ir al Botón Crear Nota crédito directa');
-        }else{
-
-            $factura = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
-
-            $this->movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
-                                ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
-                                ->where('consecutivo', $factura->consecutivo)
-                                ->get()
-                                ->first();
-
-            if ( is_null( $this->movimiento_cxc ) )
-            {
-                return redirect('ventas/'.$factura->id.'?id=13&id_modelo=139&id_transaccion=23')->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
-            }else{
-                if ( $this->movimiento_cxc->saldo_pendiente == 0 )
-                {
-                    return redirect('ventas/'.$factura->id.'?id=13&id_modelo=139&id_transaccion=23')->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
-                }else{
-                    $vec_saldos = [$this->movimiento_cxc->valor_documento, $this->movimiento_cxc->valor_pagado, $this->movimiento_cxc->saldo_pendiente];
-                }
-            }
         }
+
+        $factura = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
+
+        $this->movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+                            ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
+                            ->where('consecutivo', $factura->consecutivo)
+                            ->get()
+                            ->first();
+
+        if ( is_null( $this->movimiento_cxc ) )
+        {
+            return redirect('ventas/'.$factura->id.'?id=13&id_modelo=139&id_transaccion=23')->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
+        }
+
+        if ( $this->movimiento_cxc->saldo_pendiente == 0 )
+        {
+            return redirect('ventas/'.$factura->id.'?id=13&id_modelo=139&id_transaccion=23')->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
+        }
+
+        $vec_saldos = [$this->movimiento_cxc->valor_documento, $this->movimiento_cxc->valor_pagado, $this->movimiento_cxc->saldo_pendiente];
 
         // Información de la Factura de ventas
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
@@ -149,12 +150,14 @@ class NotaCreditoController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
 
         // 1ro. Crear documento de Entrada de inventarios (Devolución) con base en la remisión y las cantidades a devolver
-        // WARNING. HECHO MANUALMENTE
-        $request['remision_doc_encabezado_id'] = $this->crear_devolucion( $request , $factura->remision_doc_encabezado_id );
+        $devolucion = new DevolucionVentas;
+        $documento_devolucion = $devolucion->crear_nueva( $request->all(), $factura->remision_doc_encabezado_id );
 
         // 2do. Crear encabezado del documento de ventas (Nota Crédito)
+        $request['remision_doc_encabezado_id'] = $documento_devolucion->id;
         $request['ventas_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
-        $nota_credito = CrudController::crear_nuevo_registro($request, $request->url_id_modelo); // Nuevo encabezado
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+        $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
 
         // 3ro. Crear líneas de registros del documento
         NotaCreditoController::crear_registros_nota_credito( $request, $nota_credito, $factura );
@@ -162,68 +165,6 @@ class NotaCreditoController extends TransaccionController
         return redirect('ventas_notas_credito_directa/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
 
-    /*
-        Este método crea el documento de salida de inventarios de los productos vendidos (Remisión de ventas)
-        WARNING: Se asignan manualmente algunos campos de a tablas inv_doc_inventarios  
-    */
-    public function crear_devolucion(Request $request, $remision_doc_encabezado_id)
-    {
-        // Llamar a los parámetros del archivo de configuración
-        $parametros = config('ventas');
-
-        // Modelo del encabezado del documento (dvc = Devolución en ventas)
-        $dvc_modelo_id = $parametros['dvc_modelo_id'];
-        $dvc_tipo_transaccion_id = $parametros['dvc_tipo_transaccion_id'];
-        $dvc_tipo_doc_app_id = $parametros['dvc_tipo_doc_app_id'];
-
-        // Se crea un nuevo campo para lineas_registros
-        $lineas_registros = []; // Para la devolución
-
-        $array_devolucion = [];
-
-        // Obtener registros de la remisión de la factura de ventas
-        // Se harán la devoluciones a cada línea de estos registros (si se le ingresó cantidad a devolver)
-        $registros_rm = InvDocRegistro::where( 'inv_doc_encabezado_id', $remision_doc_encabezado_id )->get();
-        $l = 0; // Contador para las lineas a devolver
-        $regs = 0; // Contador para los registro de la remisión
-
-
-        foreach ($registros_rm as $linea)
-        {
-            $cantidad_devolver = (float)$request->all()['cantidad_devolver'][$regs];
-            
-            if ( $cantidad_devolver > 0)
-            {
-                $linea_devolucion = $linea->toArray();
-                $linea_devolucion['cantidad'] = $cantidad_devolver;
-                $linea_devolucion['inv_motivo_id'] = (int)explode('-', $request->all()['motivos_ids'][$l])[0];
-                $linea_devolucion['costo_total'] = $cantidad_devolver * $linea['costo_unitario'];
-                $inv_bodega_id = $linea['inv_bodega_id'];
-                $lineas_registros[$l] = (object)( $linea_devolucion );
-                $l++;
-            }
-            $regs++;  
-        }
-
-        // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
-
-        $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
-        $core_tipo_doc_app_id_original = $request['core_tipo_doc_app_id'];
-
-        $request['core_tipo_transaccion_id'] = $dvc_tipo_transaccion_id;
-        $request['core_tipo_doc_app_id'] = $dvc_tipo_doc_app_id;
-        $request['estado'] = 'Facturada';
-        $request['inv_bodega_id'] = $inv_bodega_id;
-
-        $documento_inventario_id = InventarioController::crear_documento($request, $lineas_registros, $dvc_modelo_id);
-
-        // Se revierten los datos cambiados
-        $request['core_tipo_transaccion_id'] = $tipo_transaccion_id_original;
-        $request['core_tipo_doc_app_id'] = $core_tipo_doc_app_id_original;
-        $request['estado'] = 'Activo';
-
-        return $documento_inventario_id;
-    }
     /*
         Crea los registros, el movimiento y la contabilización de un documento. 
         Todas estas operaciones se crean juntas porque se almacenena en cada iteración de las lineas de registros
@@ -268,25 +209,34 @@ class NotaCreditoController extends TransaccionController
 
                 // Los precios se deben traer de la linea de la factura
                 $linea_factura = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $factura->id)
-                                                    ->where( 'inv_producto_id', $un_registro->inv_producto_id )
-                                                    ->get()
-                                                    ->first();
+                                                ->where( 'inv_producto_id', $un_registro->inv_producto_id )
+                                                ->get()
+                                                ->first();
 
                 $precio_unitario = $linea_factura->precio_unitario;
+
+                $precio_unitario_con_descuento = $linea_factura->precio_unitario * ( 1 - $linea_factura->tasa_descuento / 100 );
+
                 $base_impuesto = $linea_factura->base_impuesto;
 
                 $precio_total = $precio_unitario * $cantidad;
+
+                $precio_total_con_descuento = $precio_unitario_con_descuento * $cantidad;
+
+                $valor_total_descuento = ( $precio_unitario - $precio_unitario_con_descuento ) * $un_registro->cantidad;
 
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
                                 [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
                                 [ 'precio_unitario' => $precio_unitario ] +
                                 [ 'cantidad' => $cantidad ] +
-                                [ 'precio_total' => $precio_total ] +
+                                [ 'precio_total' => $precio_total_con_descuento ] +
                                 [ 'base_impuesto' =>  $base_impuesto ] +
                                 [ 'tasa_impuesto' => $linea_factura->tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( $precio_unitario - $base_impuesto ) ] +
+                                [ 'valor_impuesto' => ( $precio_unitario_con_descuento - $base_impuesto ) ] +
                                 [ 'base_impuesto_total' => ( $base_impuesto * $un_registro->cantidad ) ] +
+                                [ 'tasa_descuento' => $linea_factura->tasa_descuento ] +
+                                [ 'valor_total_descuento' => $valor_total_descuento ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
 
@@ -308,7 +258,7 @@ class NotaCreditoController extends TransaccionController
                 // Reversar ingresos e impuestos
                 NotaCreditoController::contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
 
-                $total_documento += $precio_total;
+                $total_documento += $precio_total_con_descuento;
 
                 // Actualizar campo de cantidad_devuelta en cada línea de registro de la factura de ventas
                 $nueva_cantidad_devuelta = $linea_factura->cantidad_devuelta + abs($un_registro->cantidad);
@@ -336,7 +286,7 @@ class NotaCreditoController extends TransaccionController
         $nota_credito->save();
         
         // Un solo registro para reversar la cuenta por cobrar (CR)
-        NotaCreditoController::contabilizar_movimiento_credito( $datos + $linea_datos, $total_documento, $detalle_operacion, $factura );
+        NotaCreditoController::contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
 
         // Actualizar registro del pago de la factura a la que afecta la nota
         NotaCreditoController::actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' ); 

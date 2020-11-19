@@ -26,6 +26,16 @@ class InvProducto extends Model
 
     public $encabezado_tabla = [ 'Código', 'Descripción', 'UM-1', 'Grupo inventario','Precio compra','Precio venta','IVA','Tipo','Estado','Acción'];
 
+    public function grupo_inventario()
+    {
+        return $this->belongsTo( InvGrupo::class, 'inv_grupo_id' );
+    }
+
+    public function impuesto()
+    {
+        return $this->belongsTo( 'App\Contabilidad\Impuesto', 'impuesto_id' );
+    }
+
     public function fichas()
     {
       return $this->hasMany(InvFichaProducto::class,'producto_id','id');

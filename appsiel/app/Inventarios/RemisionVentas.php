@@ -4,8 +4,8 @@ namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
 use Auth;
+use DB;
 
 class RemisionVentas extends InvDocEncabezado
 {
@@ -31,6 +31,32 @@ class RemisionVentas extends InvDocEncabezado
                                 'inv_doc_encabezados.id AS campo7')
                     ->get()
                     ->toArray();
+    }
+
+    public function crear_nueva( $datos, $parametros = null )
+    {
+        // Paso 1: Crear encabezado
+        if ( is_null( $parametros ) )
+        {
+            // Llamar a los parámetros del archivo de configuración
+            $parametros = config('ventas');
+        }
+
+        $datos['core_tipo_transaccion_id'] = $parametros['rm_tipo_transaccion_id'];
+        $datos['core_tipo_doc_app_id'] = $parametros['rm_tipo_doc_app_id'];
+        
+        $datos['estado'] = 'Facturada';
+        $encabezado_documento = $this->crear_encabezado( $parametros['rm_modelo_id'], $datos );
+
+        // Paso 2
+        // El campo lineas_registros viene del request
+        $lineas_registros = json_decode( $datos['lineas_registros'] );
+        $this->crear_lineas_registros( $datos, $encabezado_documento, $lineas_registros );
+
+        // Paso 3
+        $this->contabilizar( $encabezado_documento );
+
+        return $encabezado_documento;
     }
 
 }

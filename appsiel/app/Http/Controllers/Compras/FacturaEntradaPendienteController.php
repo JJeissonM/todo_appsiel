@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Compras;
 
 use Illuminate\Http\Request;
 
-use App\Http\Controllers\Sistema\CrudController;
+use App\Core\EncabezadoDocumentoTransaccion;
 
 use Auth;
 use View;
@@ -26,7 +26,8 @@ class FacturaEntradaPendienteController extends CompraController
     {
         $datos = $request->all();
 
-        $doc_encabezado = CrudController::crear_nuevo_registro( $request, $request->url_id_modelo );
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
         $lineas_registros = json_decode( $request->lineas_registros );
 

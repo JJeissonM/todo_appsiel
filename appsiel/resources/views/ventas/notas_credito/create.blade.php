@@ -94,7 +94,16 @@
 
 			$('#fecha').focus( );
 
-			$('.cantidad_devolver').on('keyup',function(){
+			$('.cantidad_devolver').on('keyup',function(event){
+				event.preventDefault();
+
+				var codigo_tecla_presionada = event.which || event.keyCode;
+
+				if ( codigo_tecla_presionada == 13 ) // Enter
+				{
+					$('#btn_guardar').focus();
+					return false;
+				}
 				
 				if( !validar_input_numerico( $(this) ) )
 				{

@@ -13,6 +13,7 @@ use Storage;
 
 use App\Matriculas\Estudiante;
 use App\Sistema\Modelo;
+use App\Core\Departamento;
 use App\Ventas\Cliente;
 
 class Tercero extends Model
@@ -26,6 +27,11 @@ class Tercero extends Model
     public function ciudad()
     {
         return $this->belongsTo('App\Core\Ciudad', 'codigo_ciudad');
+    }
+
+    public function departamento()
+    {
+        return Departamento::find( $this->ciudad->core_departamento_id )->get()->first();
     }
 
     public function cuenta_anticipos()
@@ -47,6 +53,8 @@ class Tercero extends Model
     {
         return Cliente::where( 'core_tercero_id', $this->id )->get()->first();
     }
+
+
 
     public static function consultar_registros()
     {

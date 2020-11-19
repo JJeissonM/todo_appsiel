@@ -49,7 +49,18 @@ class TesoDocEncabezadoPagoCxp extends Model
         return TesoDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
                     ->where('teso_doc_encabezados.id', $id)
-                    ->select(DB::raw($select_raw),'teso_doc_encabezados.fecha','core_terceros.descripcion AS tercero','teso_doc_encabezados.descripcion AS detalle','teso_doc_encabezados.documento_soporte','teso_doc_encabezados.core_tipo_transaccion_id','teso_doc_encabezados.core_tipo_doc_app_id','teso_doc_encabezados.id','teso_doc_encabezados.creado_por','teso_doc_encabezados.consecutivo','teso_doc_encabezados.core_empresa_id','teso_doc_encabezados.core_tercero_id','teso_doc_encabezados.teso_tipo_motivo')
+                    ->select(DB::raw($select_raw),'teso_doc_encabezados.fecha','core_terceros.descripcion AS tercero',
+                        'teso_doc_encabezados.descripcion AS detalle',
+                        'teso_doc_encabezados.documento_soporte',
+                        'teso_doc_encabezados.core_tipo_transaccion_id',
+                        'teso_doc_encabezados.core_tipo_doc_app_id',
+                        'teso_doc_encabezados.id',
+                        'teso_doc_encabezados.creado_por',
+                        'teso_doc_encabezados.created_at',
+                        'teso_doc_encabezados.consecutivo',
+                        'teso_doc_encabezados.core_empresa_id',
+                        'teso_doc_encabezados.core_tercero_id',
+                        'teso_doc_encabezados.teso_tipo_motivo')
                     ->get()[0];
     }
 }

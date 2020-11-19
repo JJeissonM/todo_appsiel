@@ -28,7 +28,12 @@ class InvDocRegistro extends Model
     
     public function item()
     {
-        return $this->belongsTo( 'App\Inventarios\InvProducto','inv_producto_id');
+        return $this->belongsTo( InvProducto::class, 'inv_producto_id' );
+    }
+
+    public function motivo()
+    {
+        return $this->belongsTo( InvMotivo::class, 'inv_motivo_id' );
     }
 
     /*
