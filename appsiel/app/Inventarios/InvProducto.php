@@ -43,14 +43,12 @@ class InvProducto extends Model
 
     public static function consultar_registros()
     {
-        $registros = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+        return InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                     ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
                     ->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
                     ->select('inv_productos.id AS campo1','inv_productos.descripcion AS campo2','inv_productos.unidad_medida1 AS campo3','inv_grupos.descripcion AS campo4','inv_productos.precio_compra AS campo5','inv_productos.precio_venta AS campo6','contab_impuestos.tasa_impuesto AS campo7','inv_productos.tipo AS campo8','inv_productos.estado AS campo9','inv_productos.id AS campo10')
                     ->get()
                     ->toArray();
-
-        return $registros;
     }
 
 
