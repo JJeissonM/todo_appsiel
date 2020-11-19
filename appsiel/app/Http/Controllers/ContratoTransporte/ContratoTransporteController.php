@@ -96,8 +96,10 @@ class ContratoTransporteController extends Controller
                 $vencido = false;
                 if (count($docs) > 0) {
                     foreach ($docs as $d) {
-                        if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
-                            $vencido = true;
+                        if ($d->vigencia_fin != '0000-00-00') {
+                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                                $vencido = true;
+                            }
                         }
                     }
                     if (!$vencido) {
@@ -116,6 +118,10 @@ class ContratoTransporteController extends Controller
 
     public function store(Request $request)
     {
+        //dd($request->all());
+        //verifico si el propietario ya hizo 4 contratos este mes, si los hizo se bloquea y no se deja... debe pagar para hacerlo
+        $propietario = Vehiculo::find($request->vehiculo_id)->propietario;
+        dd($propietario);
         $hoy = getdate();
         $mes_actual = $hoy['mon'];
         $mes_fecha_fin = explode('-', $request->fecha_fin)[1];
