@@ -596,7 +596,7 @@ class InventarioController extends TransaccionController
             $producto = InvProducto::where('estado', 'Activo')
                                 ->having('nueva_cadena', $operador, $texto_busqueda)
                                 ->select( 
-                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", unidad_medida2) AS nueva_cadena'),
+                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", unidad_medida2, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
                                             'unidad_medida2' )
@@ -606,7 +606,7 @@ class InventarioController extends TransaccionController
             $producto = InvProducto::where('estado', 'Activo')
                                     ->where($campo_busqueda, $operador, $texto_busqueda)
                                     ->select( 
-                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", unidad_medida2) AS nueva_cadena'),
+                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", unidad_medida2, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
                                             'unidad_medida2' )
@@ -623,8 +623,6 @@ class InventarioController extends TransaccionController
                 $clase = 'active';
                 $es_el_primero = false;
             }
-
-            //$html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->descripcion . '" data-producto_id="' . $linea->id . '">' . $linea->id . ' ' . $linea->descripcion . '</a>';
 
             $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->nueva_cadena . '" data-producto_id="' . $linea->id . '">' . $linea->id . ' ' . $linea->nueva_cadena  . '</a>';
         }

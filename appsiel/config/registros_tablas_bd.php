@@ -6737,6 +6737,21 @@
       'created_at' => '2020-11-17 11:40:47',
       'updated_at' => '2020-11-17 11:41:41',
     ),
+    449 => 
+    array (
+      'id' => 475,
+      'core_app_id' => 9,
+      'modelo_id' => 254,
+      'name' => 'compras_servicios_salud',
+      'descripcion' => 'Servicios de salud',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 8,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-19 09:10:31',
+      'updated_at' => '2020-11-19 09:10:57',
+    ),
   ),
   'roles' => 
   array (
@@ -16135,6 +16150,18 @@
       'orden' => 0,
       'permission_id' => 474,
       'role_id' => 17,
+    ),
+    1541 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 475,
+      'role_id' => 1,
+    ),
+    1542 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 475,
+      'role_id' => 3,
     ),
   ),
   'sys_campos' => 
@@ -31853,6 +31880,38 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-11-17 18:41:30',
       'updated_at' => '2020-11-17 18:42:04',
     ),
+    975 => 
+    array (
+      'id' => 981,
+      'descripcion' => 'Código SOAT',
+      'tipo' => 'bsText',
+      'name' => 'codigo_barras',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-19 08:50:18',
+      'updated_at' => '2020-11-19 08:50:42',
+    ),
+    976 => 
+    array (
+      'id' => 982,
+      'descripcion' => 'Código CUPS',
+      'tipo' => 'bsText',
+      'name' => 'referencia',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-19 08:50:49',
+      'updated_at' => '2020-11-19 08:51:06',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -37223,6 +37282,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-11-17 11:28:59',
       'updated_at' => '2020-11-17 11:41:53',
+    ),
+    244 => 
+    array (
+      'id' => 254,
+      'descripcion' => 'Servicios de salud',
+      'modelo' => 'InvServcioSalud',
+      'name_space' => 'App\\Inventarios\\ServicioSalud',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-11-19 08:53:17',
+      'updated_at' => '2020-11-19 08:53:17',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -51296,6 +51377,111 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 2,
       'core_modelo_id' => 245,
       'core_campo_id' => 201,
+    ),
+    2010 => 
+    array (
+      'id' => 2296,
+      'orden' => 4,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 2,
+    ),
+    2011 => 
+    array (
+      'id' => 2297,
+      'orden' => 30,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 22,
+    ),
+    2012 => 
+    array (
+      'id' => 2298,
+      'orden' => 8,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 79,
+    ),
+    2013 => 
+    array (
+      'id' => 2299,
+      'orden' => 10,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 84,
+    ),
+    2014 => 
+    array (
+      'id' => 2300,
+      'orden' => 14,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 85,
+    ),
+    2015 => 
+    array (
+      'id' => 2301,
+      'orden' => 16,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 86,
+    ),
+    2016 => 
+    array (
+      'id' => 2302,
+      'orden' => 99,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 94,
+    ),
+    2017 => 
+    array (
+      'id' => 2303,
+      'orden' => 99,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 95,
+    ),
+    2018 => 
+    array (
+      'id' => 2304,
+      'orden' => 6,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 119,
+    ),
+    2019 => 
+    array (
+      'id' => 2305,
+      'orden' => 20,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 982,
+    ),
+    2020 => 
+    array (
+      'id' => 2306,
+      'orden' => 20,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 981,
+    ),
+    2021 => 
+    array (
+      'id' => 2307,
+      'orden' => 2,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 140,
+    ),
+    2022 => 
+    array (
+      'id' => 2308,
+      'orden' => 0,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 201,
+    ),
+    2023 => 
+    array (
+      'id' => 2309,
+      'orden' => 12,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 530,
+    ),
+    2024 => 
+    array (
+      'id' => 2310,
+      'orden' => 24,
+      'core_modelo_id' => 254,
+      'core_campo_id' => 550,
     ),
   ),
   'sys_reportes' => 

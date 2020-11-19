@@ -5,6 +5,13 @@
 
 @extends('transaccion.show')
 
+@section('informacion_antes_encabezado')
+	<div style="width: 100%; text-align: center;">
+		<code>Nota: La visualización de este documento es diferente al documento enviado al cliente por el proveedor tecnológico.</code>	
+	</div>
+	<br>
+@endsection
+
 @section('botones_acciones')
 	@if($doc_encabezado->estado != 'Anulado')
         <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-close"></i> Anular </button>

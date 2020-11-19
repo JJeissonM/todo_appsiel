@@ -8,6 +8,13 @@
 
 @extends('transaccion.show')
 
+@section('informacion_antes_encabezado')
+	<div style="width: 100%; text-align: center;">
+		<code>Nota: La visualización de este documento es diferente al documento enviado al cliente por el proveedor tecnológico.</code>	
+	</div>
+	<br>
+@endsection
+
 @section('botones_acciones')
 	@if( $doc_encabezado->estado != 'Anulado' )
 	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn btn-success btn-xs"><i class="fa fa-btn fa-money"></i> Hacer abono </a>

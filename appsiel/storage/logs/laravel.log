@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2020-11-16 10:22:55] production.ERROR: PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'cte_contratos.conductor_id' in 'where clause' in C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Connection.php:333
 Stack trace:
 #0 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Connection.php(333): PDO->prepare('select * from `...')
@@ -6852,3 +6853,5 @@ Stack trace:
 #68 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #69 C:\xampp\htdocs\todo_appsiel\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #70 {main}  
+=======
+>>>>>>> f3dffe266000d5e6d78caa4a5426feb0e57be972

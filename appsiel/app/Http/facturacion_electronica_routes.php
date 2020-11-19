@@ -1,5 +1,7 @@
 <?php
 
+
+Route::get('consultar_documentos_emitidos', 'FacturacionElectronica\AplicacionController@consultar_documentos_emitidos');
 Route::resource('facturacion_electronica', 'FacturacionElectronica\AplicacionController');
 
 

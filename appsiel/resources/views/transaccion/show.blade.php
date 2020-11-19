@@ -41,6 +41,7 @@
 
 			<br><br>
 			<div class="table-responsive">
+				@yield('informacion_antes_encabezado')
 				<table class="table table-bordered">
 			        <tr>
 			            <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
