@@ -155,26 +155,62 @@
         }
 
         .section-header .section-title:after {
-            background-color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
+            background-color: @if($configuracion !=null) {
+                    {
+                    $configuracion->color_primario
+                }
+            }
+
+            @else #000 @endif  !important;
         }
 
         .btn.btn-primary {
-            background: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
+            background: @if($configuracion !=null) {
+                    {
+                    $configuracion->color_primario
+                }
+            }
 
-            border-color: @if($configuracion!=null){{ $configuracion->color_terciario }}@else #000 @endif !important;
+            @else #000 @endif  !important;
+
+            border-color: @if($configuracion !=null) {
+                    {
+                    $configuracion->color_terciario
+                }
+            }
+
+            @else #000 @endif  !important;
         }
 
         .media.service-box .pull-left>i {
-            color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
+            color: @if($configuracion !=null) {
+                    {
+                    $configuracion->color_primario
+                }
+            }
+
+            @else #000 @endif  !important;
         }
 
         .media.service-box .pull-left>i:after {
-            background-color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
+            background-color: @if($configuracion !=null) {
+                    {
+                    $configuracion->color_primario
+                }
+            }
+
+            @else #000 @endif  !important;
         }
 
         .pagination>li>a,
         .pagination>li>span {
-            color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif !important;
+            color: @if($configuracion !=null) {
+                    {
+                    $configuracion->color_primario
+                }
+            }
+
+            @else #000 @endif  !important;
         }
 
         .pagination>.active>a,
@@ -183,16 +219,40 @@
         .pagination>.active>span:hover,
         .pagination>.active>a:focus,
         .pagination>.active>span:focus {
-            color: @if($configuracion!=null){{ $configuracion->color_segundario}}@else #000 @endif !important;
+            color: @if($configuracion !=null) {
+                    {
+                    $configuracion->color_segundario
+                }
+            }
+
+            @else #000 @endif  !important;
             cursor: default;
 
-            background-color: @if($configuracion!=null){{ $configuracion->color_primario}}@else #000 @endif;
+            background-color: @if($configuracion !=null) {
+                    {
+                    $configuracion->color_primario
+                }
+            }
 
-            border-color: @if($configuracion!=null){{ $configuracion->color_primario }}@else #000 @endif;
+            @else #000 @endif;
+
+            border-color: @if($configuracion !=null) {
+                    {
+                    $configuracion->color_primario
+                }
+            }
+
+            @else #000 @endif;
         }
 
         .column-title:after {
-            border-bottom: 1px solid @if($configuracion!=null){{ $configuracion->color_terciario}}@else #000 @endif !important;
+            border-bottom: 1px solid @if($configuracion !=null) {
+                    {
+                    $configuracion->color_terciario
+                }
+            }
+
+            @else #000 @endif  !important;
         }
 
         #formulario_pqr .control-label {
@@ -228,10 +288,13 @@
             padding-top: 102px;
         }
 
-        @foreach($estilos as $key=> $value)
-         {{ $value }}
-        @endforeach
+        @foreach($estilos as $key=> $value) {
+                {
+                $value
+            }
+        }
 
+        @endforeach
     </style>
 </head>
 
@@ -240,7 +303,7 @@
     <main id="contenedor_principal">
 
         @foreach($view as $item)
-            {!! $item !!}
+        {!! $item !!}
         @endforeach
 
     </main>
@@ -273,6 +336,7 @@
     <script src="{{asset('js/wow.min.js')}}"></script>
     <script src="{{asset('js/main.js')}}"></script>
     <script src="{{asset('js/jquery.jscroll.min.js')}}"></script>
+    <script src="{{asset('js/jquery.ripples.min.js')}}"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -299,6 +363,15 @@
                 }
             });
 
+
+
+            $('.efecto-ondas-cursor').ripples({
+                resolution: 512,
+                dropRadius: 30,
+                perturbance: 0.01,
+                interactive: true,
+            });
+
         });
     </script>
 
@@ -320,55 +393,54 @@
     </script>
 
 
-        @foreach($scripts as $key => $value)
-            {!! $value !!}
-        @endforeach
-        
-@yield('script')
+    @foreach($scripts as $key => $value)
+    {!! $value !!}
+    @endforeach
 
-<script type="text/javascript">
-  $(document).ready(function(){
-    
-    $(".abrir_modal").click(function(){
-      $("#myModal").attr('data-elemento_id', $(this).attr('data-elemento_id') );
-      $("#myModal").modal("show");
-    });
+    @yield('script')
 
-    $("#myModal").on('show.bs.modal', function () {
-      //alert( $(this).attr('data-album_id') );
-      var url = $("#myModal").attr('data-url_busqueda') + "/" + $(this).attr('data-elemento_id');
-      $.get( url )
-            .done(function( data ) {
-                
-                $('#modal-body').html( data );
+    <script type="text/javascript">
+        $(document).ready(function() {
 
-            })
-    });
+            $(".abrir_modal").click(function() {
+                $("#myModal").attr('data-elemento_id', $(this).attr('data-elemento_id'));
+                $("#myModal").modal("show");
+            });
 
-    $("#showAlpha").spectrum({
-            showAlpha: true
-        });
+            $("#myModal").on('show.bs.modal', function() {
+                //alert( $(this).attr('data-album_id') );
+                var url = $("#myModal").attr('data-url_busqueda') + "/" + $(this).attr('data-elemento_id');
+                $.get(url)
+                    .done(function(data) {
 
-    $("#showAlpha2").spectrum({
-            showAlpha: true
-        });
+                        $('#modal-body').html(data);
+
+                    })
+            });
+
+            $("#showAlpha").spectrum({
+                showAlpha: true
+            });
+
+            $("#showAlpha2").spectrum({
+                showAlpha: true
+            });
 
 
-            $('#curso_id').on('change',function(){
+            $('#curso_id').on('change', function() {
 
                 $("#asignatura_id").html('<option value="">Seleccionar...</option>');
 
-                if ( $(this).val() == '')
-                {
+                if ($(this).val() == '') {
                     alert('Debe seleccionar un curso.');
                     return false;
                 }
 
-                $('#div_lista_guias_academicas').html( '' );
+                $('#div_lista_guias_academicas').html('');
 
                 var curso_id = $(this).val();
-                
-                if( curso_id != '' ){
+
+                if (curso_id != '') {
 
                     $('#div_spin').show();
 
@@ -376,39 +448,39 @@
                     $.ajax({
                         url: url,
                         type: 'get',
-                        success: function(datos){
-                            
+                        success: function(datos) {
+
                             $('#div_spin').hide();
-                            
+
                             $("#asignatura_id").html(datos);
-                            
+
                             $("#asignatura_id").focus();
                         },
                         error: function(xhr) {
                             $('#div_spin').hide();
-                            alert('Error en los datos seleccionados. '+xhr);
+                            alert('Error en los datos seleccionados. ' + xhr);
                         }
                     });
-                }else{
-                    
+                } else {
+
                 }
             });
 
-            $("#asignatura_id").on('change',function(){
-                $('#div_lista_guias_academicas').html( '' );
+            $("#asignatura_id").on('change', function() {
+                $('#div_lista_guias_academicas').html('');
                 $("#btn_consultar").removeAttr('disabled');
             });
 
-            $("#btn_consultar").on('click',function(event){
+            $("#btn_consultar").on('click', function(event) {
                 event.preventDefault();
                 console.log('btn_consultar');
             });
 
 
-  });
-</script>
+        });
+    </script>
 
-<script src="{{asset('assets/js/toastr.min.js')}}"></script>
+    <script src="{{asset('assets/js/toastr.min.js')}}"></script>
 
 </body>
 

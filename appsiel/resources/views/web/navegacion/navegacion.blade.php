@@ -267,6 +267,12 @@
         background.style.backgroundColor = background.getAttribute('value');*/
     });
 
+    function newItem(event) {
+        event.preventDefault();
+        $('#parent').val(0);
+        $('#exampleModalCenter').modal('show');
+    }
+
     function selectColor(event) {
         event.target.style.backgroundColor = event.target.value;
     }
@@ -279,8 +285,7 @@
     function rellenarSelect(select) {
 
         select = select.options[select.selectedIndex].value;
-        const url = '{{url('
-        ')}}/' + 'pagina/secciones/' + select;
+        const url = "{{url('')}}/" + "pagina/secciones/" + select;
 
         axios.get(url)
             .then(function(response) {
@@ -303,12 +308,6 @@
     function addSubItem(event, parent) {
         event.preventDefault();
         $('#parent').val(parent);
-        $('#exampleModalCenter').modal('show');
-    }
-
-    function newItem(event) {
-        event.preventDefault();
-        $('#parent').val(0);
         $('#exampleModalCenter').modal('show');
     }
 </script>
