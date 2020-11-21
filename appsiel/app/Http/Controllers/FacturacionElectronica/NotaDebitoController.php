@@ -42,11 +42,14 @@ use App\Tesoreria\TesoMotivo;
 use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
 use App\FacturacionElectronica\TFHKA\DocumentoReferenciado;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
+use App\FacturacionElectronica\ResultadoEnvio;
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\NotaDebito;
 
 class NotaDebitoController extends TransaccionController
 {
+    protected $documento_nota_debito;
+
     public function index()
     {
         return view('facturacion_electronica.index');
@@ -69,29 +72,6 @@ class NotaDebitoController extends TransaccionController
         {
             return redirect( 'web?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '')->with('mensaje_error','No puede hacer notas débito desde esta opción. Debe ir al Botón Crear Nota débito directa');
         }
-
-        /*
-        $factura = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
-
-        $this->movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
-                            ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
-                            ->where('consecutivo', $factura->consecutivo)
-                            ->get()
-                            ->first();
-
-        if ( is_null( $this->movimiento_cxc ) )
-        {
-            return redirect('fe_factura/'.$factura->id.'?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '&id_transaccion=' . $fe_factura_transaccion_id)->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
-        }
-
-        if ( $this->movimiento_cxc->saldo_pendiente == 0 )
-        {
-            return redirect('fe_factura/'.$factura->id.'?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '&id_transaccion=' . $fe_factura_transaccion_id)->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
-        }
-        
-        $vec_saldos = [$this->movimiento_cxc->valor_documento, $this->movimiento_cxc->valor_pagado, $this->movimiento_cxc->saldo_pendiente];
-
-        */
 
         // Información de la Factura de ventas
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
@@ -223,9 +203,12 @@ class NotaDebitoController extends TransaccionController
             return redirect( 'fe_nota_debito/'.$encabezado_nota_debito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', 'El documento no tiene resolución asociada. Por tanto no pudo ser enviado.');
         }
 
-        $resultado = $this->procesar_envio_factura( $encabezado_nota_debito );
+        // Paso 5: Enviar factura electrónica
+        $resultado_original = $this->procesar_envio_factura( $encabezado_nota_debito );
 
-        $mensaje = $this->get_mensaje( $resultado );
+        // Paso 6: Almacenar resultado en base de datos para Auditoria
+        $obj_resultado = new ResultadoEnvio;
+        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_nota_debito, $encabezado_nota_debito->id );
 
         if ( $mensaje->tipo == 'mensaje_error' )
         {
@@ -240,50 +223,13 @@ class NotaDebitoController extends TransaccionController
 
     }
 
-    public function get_bodega_para_remision( $encabezado_remision_id )
-    {
-        return InvDocRegistro::where( 'inv_doc_encabezado_id', $encabezado_remision_id )->get()->first()->inv_bodega_id;
-    }
-
-    public function obtener_lineas_registros_con_base_remision( $datos, $encabezado_remision_id )
-    {
-        $lineas_registros = [];
-
-        // Obtener registros de la remisión de la factura de ventas
-        // Se harán la devoluciones a cada línea de estos registros (si se le ingresó cantidad a devolver)
-        $registros_rm = InvDocRegistro::where( 'inv_doc_encabezado_id', $encabezado_remision_id )->get();
-        
-        $l = 0; // Contador para las lineas a devolver
-        $regs = 0; // Contador para los registro de la remisión, es la misma cantidad de registros enviados en $datos[]
-        foreach ($registros_rm as $linea)
-        {
-            $cantidad_devolver = (float)$datos['cantidad_devolver'][$regs];
-            
-            if ( $cantidad_devolver > 0)
-            {
-
-                $linea_devolucion = $linea->toArray();
-                $linea_devolucion['cantidad'] = $cantidad_devolver * -1; // salida de inventarios
-                $linea_devolucion['inv_motivo_id'] = (int)explode('-', $datos['motivos_ids'][$l])[0]; // El input del formulario trae los motivos en formato ID-descripcion, se toma solo el ID
-                $linea_devolucion['costo_total'] = $cantidad_devolver * $linea['costo_unitario'] * -1;
-
-                $lineas_registros[$l] = (object)( $linea_devolucion );
-
-                $l++;
-            }
-            $regs++;  
-        }
-        return $lineas_registros;
-    }
-
     public function procesar_envio_factura( $encabezado_nota_debito, $adjuntos = 0 )
     {
+        // Paso 1: Prepara documento electronico
         $documento = new DocumentoElectronico();
-
-        $documento_nota_debito = $documento->preparar_objeto_documento( $encabezado_nota_debito );
-
-        $documento_nota_debito->tipoOperacion = "30"; // Para ND
-        $documento_nota_debito->tipoDocumento = "92"; // Nota débito
+        $this->documento_nota_debito = $documento->preparar_objeto_documento( $encabezado_nota_debito );
+        $this->documento_nota_debito->tipoOperacion = "30"; // Para ND
+        $this->documento_nota_debito->tipoDocumento = "92"; // Nota débito
 
         $datos_factura_electronica = ResultadoEnvioDocumento::where( 'vtas_doc_encabezado_id', $encabezado_nota_debito->ventas_doc_relacionado_id )->get()->first();
 
@@ -297,7 +243,7 @@ class NotaDebitoController extends TransaccionController
             $DocRef->descripcion[0] = "Nota débito por devolución/anulación de factura";
             $DocRef->numeroDocumento= $datos_factura_electronica->consecutivoDocumento;
         
-        $documento_nota_debito->documentosReferenciados[0] =$DocRef;
+        $this->documento_nota_debito->documentosReferenciados[0] =$DocRef;
 
         $DocRef1 = new DocumentoReferenciado();
 
@@ -308,23 +254,18 @@ class NotaDebitoController extends TransaccionController
             $DocRef->tipoDocumento = $datos_factura_electronica->tipoDocumento;
             $DocRef1->numeroDocumento= $datos_factura_electronica->consecutivoDocumento;
 
-        $documento_nota_debito->documentosReferenciados[1] =$DocRef1;
+        $this->documento_nota_debito->documentosReferenciados[1] =$DocRef1;
 
+        // Paso 2: Preparar parámetros para envío
         $params = array(
                          'tokenEmpresa' =>  config('facturacion_electronica.tokenEmpresa'),
                          'tokenPassword' => config('facturacion_electronica.tokenPassword'),
-                         'factura' => $documento_nota_debito,
+                         'factura' => $this->documento_nota_debito,
                          'adjuntos' => $adjuntos 
                         );
 
-        //Enviar Objeto Factura
+        // Paso 3: Enviar Objeto Documento Electrónico
         $resultado_original = $documento->WebService->enviar( config('facturacion_electronica.WSDL'), $documento->options, $params );
-        
-        $resultado_almacenar = $this->formatear_resultado( $resultado_original );
-
-        $resultado_almacenar['vtas_doc_encabezado_id'] = $encabezado_nota_debito->id;
-        $resultado_almacenar['nombre'] = json_encode($documento_nota_debito);
-        ResultadoEnvioDocumento::create( $resultado_almacenar );
 
         return $resultado_original;
     }
@@ -684,14 +625,51 @@ class NotaDebitoController extends TransaccionController
         }
     }
 
+    public function get_bodega_para_remision( $encabezado_remision_id )
+    {
+        return InvDocRegistro::where( 'inv_doc_encabezado_id', $encabezado_remision_id )->get()->first()->inv_bodega_id;
+    }
+
+    public function obtener_lineas_registros_con_base_remision( $datos, $encabezado_remision_id )
+    {
+        $lineas_registros = [];
+
+        // Obtener registros de la remisión de la factura de ventas
+        // Se harán la devoluciones a cada línea de estos registros (si se le ingresó cantidad a devolver)
+        $registros_rm = InvDocRegistro::where( 'inv_doc_encabezado_id', $encabezado_remision_id )->get();
+        
+        $l = 0; // Contador para las lineas a devolver
+        $regs = 0; // Contador para los registro de la remisión, es la misma cantidad de registros enviados en $datos[]
+        foreach ($registros_rm as $linea)
+        {
+            $cantidad_devolver = (float)$datos['cantidad_devolver'][$regs];
+            
+            if ( $cantidad_devolver > 0)
+            {
+
+                $linea_devolucion = $linea->toArray();
+                $linea_devolucion['cantidad'] = $cantidad_devolver * -1; // salida de inventarios
+                $linea_devolucion['inv_motivo_id'] = (int)explode('-', $datos['motivos_ids'][$l])[0]; // El input del formulario trae los motivos en formato ID-descripcion, se toma solo el ID
+                $linea_devolucion['costo_total'] = $cantidad_devolver * $linea['costo_unitario'] * -1;
+
+                $lineas_registros[$l] = (object)( $linea_devolucion );
+
+                $l++;
+            }
+            $regs++;  
+        }
+        return $lineas_registros;
+    }
 
     public function enviar( $id )
     {
         $encabezado_nota_debito = NotaDebito::find( $id );
 
-        $resultado = $this->procesar_envio_factura( $encabezado_nota_debito );
+        $resultado_original = $this->procesar_envio_factura( $encabezado_nota_debito );
 
-        $mensaje = $this->get_mensaje( $resultado );
+        // Almacenar resultado en base de datos para Auditoria
+        $obj_resultado = new ResultadoEnvio;
+        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_nota_debito, $encabezado_nota_debito->id );
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {
