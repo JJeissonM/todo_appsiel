@@ -54,8 +54,8 @@ class NotaCreditoController extends TransaccionController
     	$this->set_variables_globales();
 
     	$fe_app_id = 21;
-        $fe_factura_modelo_id = 244;
-        $fe_factura_transaccion_id = 244;
+        $fe_factura_modelo_id = 244; // Se devuelve a la vista de Factura
+        $fe_factura_transaccion_id = 52; // Se devuelve a la vista de Factura
 
         $id_transaccion = $this->transaccion->id;
 
@@ -278,6 +278,7 @@ class NotaCreditoController extends TransaccionController
 		$resultado_almacenar = $this->formatear_resultado( $resultado_original );
 
 		$resultado_almacenar['vtas_doc_encabezado_id'] = $encabezado_nota_credito->id;
+        $resultado_almacenar['nombre'] = json_encode($documento_nota_credito);
 		ResultadoEnvioDocumento::create( $resultado_almacenar );
 
 		return $resultado_original;

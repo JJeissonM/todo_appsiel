@@ -72,7 +72,7 @@ class DevolucionVentas extends InvDocEncabezado
         // Se harán la devoluciones a cada línea de estos registros (si se le ingresó cantidad a devolver)
         $registros_rm = InvDocRegistro::where( 'inv_doc_encabezado_id', $encabezado_remision_id )->get();
         $l = 0; // Contador para las lineas a devolver
-        $regs = 0; // Contador para los registro de la remisión
+        $regs = 0; // Contador para los registro de la remisión, es la misma cantidad de registros enviados en $datos[]
         foreach ($registros_rm as $linea)
         {
             $cantidad_devolver = (float)$datos['cantidad_devolver'][$regs];

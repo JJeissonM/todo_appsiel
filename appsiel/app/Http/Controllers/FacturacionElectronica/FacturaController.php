@@ -151,6 +151,7 @@ class FacturaController extends TransaccionController
 		$resultado_almacenar = $this->formatear_resultado( $resultado_original );
 
 		$resultado_almacenar['vtas_doc_encabezado_id'] = $encabezado_factura->id;
+        $resultado_almacenar['nombre'] = json_encode($documento_factura);
 		ResultadoEnvioDocumento::create( $resultado_almacenar );
 
 		return $resultado_original;

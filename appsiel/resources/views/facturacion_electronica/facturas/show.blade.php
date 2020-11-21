@@ -22,6 +22,8 @@
 
 	@if( !$docs_relacionados[1] && $doc_encabezado->estado != 'Sin enviar' )
     	<a class="btn btn-warning btn-xs" href="{{ url( 'fe_nota_credito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=245&id_transaccion=53') }}"><i class="fa fa-file-o"></i> Nota crédito </a>
+
+    	<a class="btn btn-info btn-xs" href="{{ url( 'fe_nota_debito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=246&id_transaccion=54') }}"><i class="fa fa-file-o"></i> Nota Débito </a>
 	@endif
 
 	@if( $doc_encabezado->estado == 'Sin enviar' )

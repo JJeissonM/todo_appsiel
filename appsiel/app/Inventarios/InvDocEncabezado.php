@@ -102,7 +102,9 @@ class InvDocEncabezado extends Model
                 $costo_total = (float)$lineas_registros[$i]->costo_total * -1;
             }
 
-            $linea_datos = ['inv_motivo_id' => (int)$lineas_registros[$i]->inv_motivo_id] +
+            $linea_datos = 
+                            ['inv_bodega_id' => (int)$lineas_registros[$i]->inv_bodega_id] +
+                            ['inv_motivo_id' => (int)$lineas_registros[$i]->inv_motivo_id] +
                             ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
                             ['costo_unitario' => (float)$lineas_registros[$i]->costo_unitario] +
                             ['cantidad' => $cantidad] +
