@@ -6752,6 +6752,21 @@
       'created_at' => '2020-11-19 09:10:31',
       'updated_at' => '2020-11-19 09:10:57',
     ),
+    450 => 
+    array (
+      'id' => 476,
+      'core_app_id' => 21,
+      'modelo_id' => 0,
+      'name' => 'fe_configuracion',
+      'descripcion' => 'Configuración',
+      'url' => 'config',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-11-20 11:24:33',
+      'updated_at' => '2020-11-20 11:24:56',
+    ),
   ),
   'roles' => 
   array (
@@ -16162,6 +16177,12 @@
       'orden' => 0,
       'permission_id' => 475,
       'role_id' => 3,
+    ),
+    1543 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 476,
+      'role_id' => 1,
     ),
   ),
   'sys_campos' => 
@@ -31912,6 +31933,22 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-11-19 08:50:49',
       'updated_at' => '2020-11-19 08:51:06',
     ),
+    977 => 
+    array (
+      'id' => 983,
+      'descripcion' => 'Objeto Documento Electrónico Enviado',
+      'tipo' => 'bsText',
+      'name' => 'nombre',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-11-21 06:33:31',
+      'updated_at' => '2020-11-21 06:33:57',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -38858,7 +38895,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     221 => 
     array (
       'id' => 236,
-      'orden' => 1,
+      'orden' => 4,
       'core_modelo_id' => 138,
       'core_campo_id' => 41,
     ),
@@ -39089,7 +39126,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     254 => 
     array (
       'id' => 270,
-      'orden' => 4,
+      'orden' => 0,
       'core_modelo_id' => 138,
       'core_campo_id' => 46,
     ),
@@ -44752,7 +44789,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     1063 => 
     array (
       'id' => 1218,
-      'orden' => 6,
+      'orden' => 1,
       'core_modelo_id' => 138,
       'core_campo_id' => 47,
     ),
@@ -47867,7 +47904,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     1508 => 
     array (
       'id' => 1774,
-      'orden' => 0,
+      'orden' => 70,
       'core_modelo_id' => 138,
       'core_campo_id' => 140,
     ),
@@ -51483,6 +51520,76 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 254,
       'core_campo_id' => 550,
     ),
+    2025 => 
+    array (
+      'id' => 2311,
+      'orden' => 16,
+      'core_modelo_id' => 246,
+      'core_campo_id' => 8,
+    ),
+    2026 => 
+    array (
+      'id' => 2312,
+      'orden' => 99,
+      'core_modelo_id' => 246,
+      'core_campo_id' => 87,
+    ),
+    2027 => 
+    array (
+      'id' => 2313,
+      'orden' => 3,
+      'core_modelo_id' => 246,
+      'core_campo_id' => 88,
+    ),
+    2028 => 
+    array (
+      'id' => 2314,
+      'orden' => 4,
+      'core_modelo_id' => 246,
+      'core_campo_id' => 93,
+    ),
+    2029 => 
+    array (
+      'id' => 2315,
+      'orden' => 99,
+      'core_modelo_id' => 246,
+      'core_campo_id' => 94,
+    ),
+    2030 => 
+    array (
+      'id' => 2316,
+      'orden' => 99,
+      'core_modelo_id' => 246,
+      'core_campo_id' => 95,
+    ),
+    2031 => 
+    array (
+      'id' => 2317,
+      'orden' => 99,
+      'core_modelo_id' => 246,
+      'core_campo_id' => 98,
+    ),
+    2032 => 
+    array (
+      'id' => 2318,
+      'orden' => 99,
+      'core_modelo_id' => 246,
+      'core_campo_id' => 100,
+    ),
+    2033 => 
+    array (
+      'id' => 2319,
+      'orden' => 2,
+      'core_modelo_id' => 246,
+      'core_campo_id' => 201,
+    ),
+    2034 => 
+    array (
+      'id' => 2320,
+      'orden' => 40,
+      'core_modelo_id' => 253,
+      'core_campo_id' => 983,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -53130,9 +53237,9 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'modelo_registros_documentos' => 'App\\Compras\\ComprasDocRegistro',
       'modelo_movimientos' => 'App\\Compras\\ComprasMovimiento',
       'orden' => 3,
-      'estado' => 'Inactivo',
+      'estado' => 'Activo',
       'created_at' => '2019-10-08 00:16:52',
-      'updated_at' => '2019-10-29 00:35:02',
+      'updated_at' => '2020-11-20 04:57:36',
     ),
     36 => 
     array (
