@@ -34,9 +34,9 @@ class TerceroController extends Controller
                             ->get()
                             ->first();
 
-        if ( is_null($tercero) )
+        if ( is_null( $tercero ) )
         {
-            return '';
+            return 'tercero_no_existe';
         }
         
         $tercero->email2 = $tercero->email;

@@ -75,6 +75,8 @@ class Inscripcion extends Model
     {
         // cambiar nombre de campo email
         $registro->tercero->email = $datos['email2'];
+        $registro->tercero->numero_identificacion = $datos['numero_identificacion2'];
+        dd($datos);
         $registro->tercero->save();
     }
 

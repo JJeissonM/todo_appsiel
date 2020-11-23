@@ -40,7 +40,7 @@ class NominaController extends TransaccionController
     protected $pos = 0;
     protected $registros_procesados = 0;
     protected $vec_campos;
-    protected $modo_liquidacion_id = [1, 6, 3, 4, 8]; // 1: tiempo laborado, 6: aux. transporte, 3: cuotas, 4: prestamos, 8: seguridad social
+    protected $array_ids_modos_liquidacion_automaticos = [1, 6, 3, 4, 8]; // 1: tiempo laborado, 6: aux. transporte, 3: cuotas, 4: prestamos, 8: seguridad social
 
     /**
      * Display a listing of the resource.
@@ -337,18 +337,6 @@ class NominaController extends TransaccionController
         return $valor;
     }
 
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
     /**
      * Update the specified resource in storage.
      *
@@ -469,18 +457,6 @@ class NominaController extends TransaccionController
             $registro->save();
         }
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
 
 
     /*
@@ -623,15 +599,16 @@ class NominaController extends TransaccionController
         $documento = NomDocEncabezado::find($id);
 
         // Se obtienen los Empleados del documento
-        $personas = $documento->empleados;
+        $empleados_documento = $documento->empleados;
 
         // Guardar los valores para cada persona      
-        foreach ($personas as $una_persona) 
+        foreach ($empleados_documento as $empleado) 
         {
-            $cant = count($this->modo_liquidacion_id);
+            $cant = count( $this->array_ids_modos_liquidacion_automaticos );
+
             for ($i=0; $i < $cant; $i++) 
             { 
-                $this->liquidar_automaticos($this->modo_liquidacion_id[$i], $id, $una_persona, $documento, $usuario);
+                $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
             }
         }
 
@@ -643,111 +620,114 @@ class NominaController extends TransaccionController
     /*
         Recibe doc. de nómina, al empleado y el modo de liquidación para calcular el valor de devengo o deducción de cada concepto
     */
-    public function liquidar_automaticos($modo_liquidacion_id, $nom_doc_encabezado_id, $una_persona, $documento, $usuario)
+    public function liquidar_automaticos_empleado($modo_liquidacion_id, $empleado, $documento_nomina, $usuario)
     {
-        $documento_nomina = NomDocEncabezado::find( $nom_doc_encabezado_id );
-        $conceptos = NomConcepto::where('estado','Activo')->where('modo_liquidacion_id', $modo_liquidacion_id)->get();
+        $conceptos_automaticos = NomConcepto::where('estado','Activo')->where('modo_liquidacion_id', $modo_liquidacion_id)->get();
         
-        foreach ($conceptos as $un_concepto) 
+        foreach ($conceptos_automaticos as $un_concepto)
         {
-            // Se valida si no hay una liquidación previa del concepto en ese documento
-            $cant = NomDocRegistro::where('nom_doc_encabezado_id', $documento->id)
-                                    ->where('core_tercero_id', $una_persona->core_tercero_id)
+            // Se valida si ya hay una liquidación previa del concepto en ese documento
+            $cant = NomDocRegistro::where('nom_doc_encabezado_id', $documento_nomina->id)
+                                    ->where('core_tercero_id', $empleado->core_tercero_id)
                                     ->where('nom_concepto_id', $un_concepto->id)
                                     ->count();
 
-            if ( $cant == 0) 
+            if ( $cant != 0 ) 
             {
-                // Las horas laborales se traen de la configuración de nómina (240 horas al mes)
-                $salario_x_hora = $una_persona->sueldo / config('nomina')['horas_laborales'];
+                continue;
+            }
 
-                switch ($modo_liquidacion_id) 
-                {
+            // Las horas laborales se traen de la configuración de nómina (240 horas al mes)
+            $salario_x_hora = $empleado->sueldo / config('nomina')['horas_laborales'];
 
-                    case '1': // Tiempo laborado
+            switch ($modo_liquidacion_id) 
+            {
 
-                        $valor_a_liquidar = ($salario_x_hora * $documento_nomina->tiempo_a_liquidar) * $un_concepto->porcentaje_sobre_basico / 100;
+                case '1': // Tiempo laborado
 
-                        $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
+                    $valor_a_liquidar = ($salario_x_hora * $documento_nomina->tiempo_a_liquidar) * $un_concepto->porcentaje_sobre_basico / 100;
 
-                        $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
+                    $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
 
-                        break;
+                    $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
 
-                    case '6': // Aux. Transporte
+                    break;
 
-                        /*
-                            falta completar: solo se debe liquidar el tiempo proporcional a la quincena
-                        */
+                case '6': // Aux. Transporte
 
-                        // Se toma el valor directo del concepto
-                        $valor_a_liquidar = $un_concepto->valor_fijo / ( config('nomina')['horas_laborales'] / $documento_nomina->tiempo_a_liquidar );
+                    /*
+                        falta completar: solo se debe liquidar el tiempo proporcional a la quincena
+                    */
 
-                        $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valor_a_liquidar, 'valor_deduccion' => 0 ];
+                    // Se toma el valor directo del concepto
+                    $valor_a_liquidar = $un_concepto->valor_fijo / ( config('nomina')['horas_laborales'] / $documento_nomina->tiempo_a_liquidar );
 
-                        break;
+                    $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valor_a_liquidar, 'valor_deduccion' => 0 ];
 
-                    case '3': // Cuotas
-                        $this->liquidar_cuotas($una_persona, $un_concepto, $documento);
-                        break;
+                    break;
 
-                    case '4': // Préstamos
-                        $this->liquidar_prestamos($una_persona, $un_concepto, $documento);
-                        break;
+                case '3': // Cuotas
+                    $this->liquidar_cuotas($empleado, $un_concepto, $documento_nomina);
+                    break;
 
-                    case '8': // Seguridad social
+                case '4': // Préstamos
+                    $this->liquidar_prestamos($empleado, $un_concepto, $documento_nomina);
+                    break;
 
-                        // Se suman los valores liquidados en los conceptos de la Agrupación para cálculo
-                        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $un_concepto->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
+                case '8': // Seguridad social
 
-                        // Ingreso Base Cotización
-                        $total_ibc_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                                            ->where( 'nom_doc_encabezado_id', $documento->id )
-                                                            ->where( 'core_tercero_id', $una_persona->core_tercero_id )
-                                                            ->sum('valor_devengo');
+                    // Se suman los valores liquidados en los conceptos de la Agrupación para cálculo
+                    $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $un_concepto->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-                        $total_ibc_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                                            ->where( 'nom_doc_encabezado_id', $documento->id )
-                                                            ->where( 'core_tercero_id', $una_persona->core_tercero_id )
-                                                            ->sum('valor_deduccion');
+                    // Ingreso Base Cotización
+                    $total_ibc_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+                                                        ->where( 'nom_doc_encabezado_id', $documento_nomina->id )
+                                                        ->where( 'core_tercero_id', $empleado->core_tercero_id )
+                                                        ->sum('valor_devengo');
 
-                        $total_IBC = ($total_ibc_devengos - $total_ibc_deducciones);
+                    $total_ibc_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+                                                        ->where( 'nom_doc_encabezado_id', $documento_nomina->id )
+                                                        ->where( 'core_tercero_id', $empleado->core_tercero_id )
+                                                        ->sum('valor_deduccion');
 
-                        $valor_a_liquidar = $total_IBC * $un_concepto->porcentaje_sobre_basico / 100;
+                    $total_IBC = ($total_ibc_devengos - $total_ibc_deducciones);
 
-                        $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
+                    $valor_a_liquidar = $total_IBC * $un_concepto->porcentaje_sobre_basico / 100;
 
-                        $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
+                    $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
 
-                        break;
-                    
-                    default:
-                        # code...
-                        break;
-                }    
+                    $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
 
-                if( ($this->vec_campos->valor_devengo +$this->vec_campos->valor_deduccion ) > 0)
-                {
-                    $registro = NomDocRegistro::create(
-                        ['nom_doc_encabezado_id' => $nom_doc_encabezado_id] + 
-                        ['nom_concepto_id' => $un_concepto->id ] + 
-                        ['nom_cuota_id' => $this->vec_campos->nom_cuota_id ] + 
-                        ['nom_prestamo_id' => $this->vec_campos->nom_prestamo_id ] + 
-                        ['core_tercero_id' => $una_persona->core_tercero_id ] + 
-                        ['fecha' => $documento->fecha] + 
-                        ['core_empresa_id' => $documento->core_empresa_id] + 
-                        ['valor_devengo' => $this->vec_campos->valor_devengo ] + 
-                        ['valor_deduccion' => $this->vec_campos->valor_deduccion ] + 
-                        ['estado' => 'Activo'] + 
-                        ['creado_por' => $usuario->email] + 
-                        ['modificado_por' => '']
-                        );
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }    
 
-                    $this->registros_procesados++;
-                }
+            if( ($this->vec_campos->valor_devengo +$this->vec_campos->valor_deduccion ) > 0)
+            {
+                $registro = NomDocRegistro::create(
+                    ['nom_doc_encabezado_id' => $documento_nomina->id ] + 
+                    ['nom_concepto_id' => $un_concepto->id ] + 
+                    ['nom_cuota_id' => $this->vec_campos->nom_cuota_id ] + 
+                    ['nom_prestamo_id' => $this->vec_campos->nom_prestamo_id ] + 
+                    ['core_tercero_id' => $empleado->core_tercero_id ] + 
+                    ['fecha' => $documento_nomina->fecha] + 
+                    ['core_empresa_id' => $documento_nomina->core_empresa_id] + 
+                    ['valor_devengo' => $this->vec_campos->valor_devengo ] + 
+                    ['valor_deduccion' => $this->vec_campos->valor_deduccion ] + 
+                    ['estado' => 'Activo'] + 
+                    ['creado_por' => $usuario->email] + 
+                    ['modificado_por' => '']
+                    );
+
+                $this->registros_procesados++;
             }
         } // Fin Por cada concepto
     }
+
+
 
     public function liquidar_cuotas($una_persona, $un_concepto, $documento)
     {
@@ -834,7 +814,7 @@ class NominaController extends TransaccionController
 
     public function retirar_liquidacion($id)
     {
-        $conceptos = NomConcepto::where('estado','Activo')->whereIn('modo_liquidacion_id', $this->modo_liquidacion_id)->get();
+        $conceptos = NomConcepto::where('estado','Activo')->whereIn('modo_liquidacion_id', $this->array_ids_modos_liquidacion_automaticos)->get();
 
         foreach ($conceptos as $un_concepto)
         {

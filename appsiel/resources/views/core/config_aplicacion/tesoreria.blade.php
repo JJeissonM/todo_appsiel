@@ -96,11 +96,15 @@
 						</div>
 					</div>
 				</div>
-				
-				<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
 
-				{{ Form::hidden('url_id',Input::get('id')) }}
-				{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
+				<br><br>
+
+				<div style="width: 100%; text-align: center;">
+					<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
+
+					{{ Form::hidden('url_id',Input::get('id')) }}
+					{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
+				</div>
 
 			{{ Form::close() }}
 		</div>

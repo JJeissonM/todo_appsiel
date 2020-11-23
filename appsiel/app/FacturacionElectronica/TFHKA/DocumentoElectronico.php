@@ -22,16 +22,30 @@ use App\FacturacionElectronica\TFHKA\Tributos;
 use App\FacturacionElectronica\TFHKA\uploadAttachment;
 use App\FacturacionElectronica\TFHKA\WebService;
 
+/*
+	Campos obligatorios (Segú The Factory HKA)
+		Información Cliente
+			nombreRegistroRUT
+			numeroIdentificacion
+			tipoIdentificacion
+			codigoDepartamento (ISO 3166-2)
+			lenguaje (ISO 639-1)
+			zonaPostal
+*/
+
 class DocumentoElectronico
 {
 	public $WebService;
 	public $options;
+
+	protected $cantidadDecimales;
 	//protected $params;
 	
 	function __construct()
 	{
 		$this->WebService = new WebService();
 		$this->options = array( 'exceptions' => true, 'trace' => true, 'location'=> config('facturacion_electronica.WSDL') );
+		$this->cantidadDecimales = config('facturacion_electronica.cantidadDecimales');
 	}
 
 	public function preparar_direccion( $tercero )
@@ -149,13 +163,13 @@ class DocumentoElectronico
 	public function preparar_detalle_impuestos_linea_registro( $linea )
 	{
 		$impdet = new FacturaImpuestos;
-		$impdet->baseImponibleTOTALImp = abs( number_format( $linea->base_impuesto_total, 2, '.', '') );
+		$impdet->baseImponibleTOTALImp = abs( number_format( $linea->base_impuesto_total, $this->cantidadDecimales, '.', '') );
 		$impdet->codigoTOTALImp = "01"; // IVA
 		$impdet->controlInterno = "";
-		$impdet->porcentajeTOTALImp = number_format( $linea->tasa_impuesto, 2, '.', '');
+		$impdet->porcentajeTOTALImp = number_format( $linea->tasa_impuesto, $this->cantidadDecimales, '.', '');
 		$impdet->unidadMedida = "";
 		$impdet->unidadMedidaTributo = "";
-		$impdet->valorTOTALImp = abs( number_format( ( $linea->base_impuesto_total * $linea->tasa_impuesto / 100 ), 2, '.', '') );
+		$impdet->valorTOTALImp = abs( number_format( ( $linea->base_impuesto_total * $linea->tasa_impuesto / 100 ), $this->cantidadDecimales, '.', '') );
 		$impdet->valorTributoUnidad = "";
 		return $impdet;
 	}
@@ -164,7 +178,7 @@ class DocumentoElectronico
 	{
 		$impTot = new ImpuestosTotales;
 		$impTot->codigoTOTALImp = "01"; // IVA
-		$impTot->montoTotal = abs( number_format( ( $linea->base_impuesto_total * $linea->tasa_impuesto / 100 ), 2, '.', '') );
+		$impTot->montoTotal = abs( number_format( ( $linea->base_impuesto_total * $linea->tasa_impuesto / 100 ), $this->cantidadDecimales, '.', '') );
 		return $impTot;
 	}
 
@@ -175,9 +189,9 @@ class DocumentoElectronico
 		$cargoDescuento->descripcion = 'Descuento comercial';
 		$cargoDescuento->extras = [];
 		$cargoDescuento->indicador = '0';
-		$cargoDescuento->monto = number_format( $linea->valor_total_descuento, 2, '.', '');
-		$cargoDescuento->montoBase = abs( number_format( ( $linea->precio_unitario * $linea->cantidad ), 2, '.', '') );
-		$cargoDescuento->porcentaje = number_format( $linea->tasa_descuento, 2, '.', '');
+		$cargoDescuento->monto = number_format( $linea->valor_total_descuento, $this->cantidadDecimales, '.', '');
+		$cargoDescuento->montoBase = abs( number_format( ( $linea->precio_unitario * $linea->cantidad ), $this->cantidadDecimales, '.', '') );
+		$cargoDescuento->porcentaje = number_format( $linea->tasa_descuento, $this->cantidadDecimales, '.', '');
 		$cargoDescuento->secuencia = $secuencia;
 		return $cargoDescuento;
 	}
@@ -215,9 +229,9 @@ class DocumentoElectronico
 		$factDetalle->muestraGratis = "0";
 
 		$precioTotal = $linea->cantidad * $linea->base_impuesto + $linea->valor_impuesto_total();
-		$factDetalle->precioTotal = abs( number_format($precioTotal, 2, '.', '') );
-		$factDetalle->precioTotalSinImpuestos = abs( number_format($precioTotal - $linea->valor_impuesto_total(), 2, '.', '') );
-		$factDetalle->precioVentaUnitario = number_format($linea->base_impuesto, 2, '.', '');
+		$factDetalle->precioTotal = abs( number_format($precioTotal, $this->cantidadDecimales, '.', '') );
+		$factDetalle->precioTotalSinImpuestos = abs( number_format($precioTotal - $linea->valor_impuesto_total(), $this->cantidadDecimales, '.', '') );
+		$factDetalle->precioVentaUnitario = number_format($linea->base_impuesto, $this->cantidadDecimales, '.', '');
 		$factDetalle->secuencia = $secuencia_anterior + 1;
 
 	    return $factDetalle;
@@ -229,13 +243,13 @@ class DocumentoElectronico
 		$valorTOTALImp = $baseImponibleTOTALImp * ( $tasa_impuesto / 100 );
 
 		$objImpGen = new FacturaImpuestos;
-		$objImpGen->baseImponibleTOTALImp = abs( number_format($baseImponibleTOTALImp, 2, '.', '') );
+		$objImpGen->baseImponibleTOTALImp = abs( number_format($baseImponibleTOTALImp, $this->cantidadDecimales, '.', '') );
 		$objImpGen->codigoTOTALImp = "01"; // IVA
 		$objImpGen->controlInterno = "";
 		$objImpGen->porcentajeTOTALImp = number_format($tasa_impuesto,2, '.', '');
 		$objImpGen->unidadMedida = "";
 		$objImpGen->unidadMedidaTributo = "";
-		$objImpGen->valorTOTALImp = abs( number_format($valorTOTALImp, 2, '.', '') );
+		$objImpGen->valorTOTALImp = abs( number_format($valorTOTALImp, $this->cantidadDecimales, '.', '') );
 		$objImpGen->valorTributoUnidad = "0.00";
 
 		return $objImpGen;		
@@ -264,7 +278,7 @@ class DocumentoElectronico
 
 	    $factura->cliente = $this->preparar_objeto_cliente( $encabezado_factura->cliente );
 		
-		$factura->cantidadDecimales = "2";
+		$factura->cantidadDecimales = $this->cantidadDecimales;
 
 		$resolucion_facturacion = $encabezado_factura->tipo_documento_app->resolucion_facturacion->where('estado','Activo')->first();
 
@@ -331,7 +345,7 @@ class DocumentoElectronico
 		
 		$impTot2 = new ImpuestosTotales;
 		$impTot2->codigoTOTALImp = "01"; // IVA
-		$impTot2->montoTotal = number_format( $montoTotalImpuestos, 2, '.', '');
+		$impTot2->montoTotal = number_format( $montoTotalImpuestos, $this->cantidadDecimales, '.', '');
 				
 		$factura->impuestosTotales[0] = $impTot2;
 
@@ -340,13 +354,13 @@ class DocumentoElectronico
 	    $factura->moneda = "COP";
 		$factura->redondeoAplicado = "100.00"	;
 	    
-	    $factura->totalBaseImponible = abs( number_format( $totalBaseImponible, 2, '.', '') );
-	    $factura->totalBrutoConImpuesto =  abs( number_format( $totalSinImpuestos + $montoTotalImpuestos, 2, '.', '') );
-	    $factura->totalMonto = abs( number_format( $precioTotal, 2, '.', '') );
+	    $factura->totalBaseImponible = abs( number_format( $totalBaseImponible, $this->cantidadDecimales, '.', '') );
+	    $factura->totalBrutoConImpuesto =  abs( number_format( $totalSinImpuestos + $montoTotalImpuestos, $this->cantidadDecimales, '.', '') );
+	    $factura->totalMonto = abs( number_format( $precioTotal, $this->cantidadDecimales, '.', '') );
 	    $factura->totalProductos = count( $encabezado_factura->lineas_registros->toArray() );
 	    //$factura->totalCargosAplicados = '0.00';
-	    $factura->totalDescuentos = abs( number_format( $totalDescuentos, 2, '.', '') );
-		$factura->totalSinImpuestos = abs( number_format( $totalSinImpuestos, 2, '.', '') );
+	    $factura->totalDescuentos = abs( number_format( $totalDescuentos, $this->cantidadDecimales, '.', '') );
+		$factura->totalSinImpuestos = abs( number_format( $totalSinImpuestos, $this->cantidadDecimales, '.', '') );
 
 		return $factura;
 	}

@@ -74,7 +74,7 @@ class ModeloController extends Controller
             $encabezado_tabla = [];
         }
 
-        $id_transaccion = TipoTransaccion::where('core_modelo_id', (int) Input::get('id_modelo') )->where('estado', 'Activo' )->value('id');
+        $id_transaccion = TipoTransaccion::where( 'core_modelo_id', (int) Input::get('id_modelo') )->where('estado', 'Activo' )->value('id');
 
         //dd( $id_transaccion );
 
@@ -742,16 +742,16 @@ class ModeloController extends Controller
 
     public static function personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, $accion, $tipo_tranferencia = null)
     {
-
         $opciones = [];
         // Se crea un select SOLO con las opciones asignadas a la transacción
-        //if ($tipo_transaccion != 0) {
-        $tipo_docs_app = $tipo_transaccion->tipos_documentos;
-        foreach ($tipo_docs_app as $fila)
+        if ( !is_null( $tipo_transaccion ) )
         {
-            $opciones[$fila->id] = $fila->prefijo . " - " . $fila->descripcion;
-        }
-        //} 
+            $tipo_docs_app = $tipo_transaccion->tipos_documentos;
+            foreach ($tipo_docs_app as $fila)
+            {
+                $opciones[$fila->id] = $fila->prefijo . " - " . $fila->descripcion;
+            }
+        } 
 
         //Personalización de la lista de campos
         for ($i = 0; $i < $cantidad_campos; $i++)
