@@ -32,8 +32,12 @@ use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Factura;
 
+use App\FacturacionElectronica\ResultadoEnvio;
+
 class FacturaController extends TransaccionController
 {
+    protected $documento_factura;
+
     public function index()
     {
     	return view('facturacion_electronica.index');
@@ -102,7 +106,7 @@ class FacturaController extends TransaccionController
         // Paso 4 (Se está haciendo en el Paso 3)
         //$this->contabilizar( $encabezado_documento );
 
-        // Paso 5: Enviar factura electrónica
+        // Paso 5.0 : Validar Resolución (secuenciales) del documento antes del envío 
         if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
         {
             $encabezado_factura->estado = 'Sin enviar';
@@ -111,9 +115,12 @@ class FacturaController extends TransaccionController
             return redirect( 'fe_factura/'.$encabezado_factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', 'El documento de factura no tiene resolución asociada. La factura electrónica no pudo ser enviada.');
         }
         
-        $resultado = $this->procesar_envio_factura( $encabezado_factura );
+        // Paso 5: Enviar factura electrónica
+        $resultado_original = $this->procesar_envio_factura( $encabezado_factura );
 
-        $mensaje = $this->get_mensaje( $resultado );
+        // Paso 6: Almacenar resultado en base de datos para Auditoria
+        $obj_resultado = new ResultadoEnvio;
+        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $encabezado_factura->id );
 
         if ( $mensaje->tipo == 'mensaje_error' )
         {
@@ -130,130 +137,24 @@ class FacturaController extends TransaccionController
 
     public function procesar_envio_factura( $encabezado_factura, $adjuntos = 0 )
     {
+        // Paso 1: Prepara documento electronico
     	$documento = new DocumentoElectronico();
-    	
-    	$documento_factura = $documento->preparar_objeto_documento( $encabezado_factura );
+    	$this->documento_factura = $documento->preparar_objeto_documento( $encabezado_factura );
+        $this->documento_factura->tipoOperacion = "10"; // Para facturas: Estándar
+    	$this->documento_factura->tipoDocumento = "01"; //Facturas
 
-        $documento_factura->tipoOperacion = "10"; // Para facturas: Estándar
-    	$documento_factura->tipoDocumento = "01"; //Facturas
-
-    	//dd($documento_factura);
+        // Paso 2: Preparar parámetros para envío
 		$params = array(
 				         'tokenEmpresa' =>  config('facturacion_electronica.tokenEmpresa'),
 				         'tokenPassword' => config('facturacion_electronica.tokenPassword'),
-				         'factura' => $documento_factura,
+				         'factura' => $this->documento_factura,
 				         'adjuntos' => $adjuntos 
 				     	);
 
-		//Enviar Objeto Factura
+		// Paso 3: Enviar Objeto Documento Electrónico
 		$resultado_original = $documento->WebService->enviar( config('facturacion_electronica.WSDL'), $documento->options, $params );
-		
-		$resultado_almacenar = $this->formatear_resultado( $resultado_original );
-
-		$resultado_almacenar['vtas_doc_encabezado_id'] = $encabezado_factura->id;
-		ResultadoEnvioDocumento::create( $resultado_almacenar );
 
 		return $resultado_original;
-    }
-
-    public function formatear_resultado( $resultado )
-    {
-    	$mensaje = '';
-    	if ( !is_null( $resultado['mensajesValidacion'] ) )
-		{
-			if ( gettype( $resultado["mensajesValidacion"]->string ) == 'string' )
-			{
-				$mensaje .= $resultado["mensajesValidacion"]->string . '\n';
-			}else{
-				foreach ($resultado["mensajesValidacion"]->string as $key => $value) 
-				{
-					$mensaje .= $value . '\n';
-				}
-			}				
-		}
-		$resultado["mensajesValidacion"] = $mensaje;
-
-		
-    	$mensaje = '';
-    	if ( !is_null( $resultado['reglasNotificacionDIAN'] ) )
-		{
-			$mensaje = '<br>Notificaciones DIAN<br>';
-			if ( gettype( $resultado["reglasNotificacionDIAN"]->string ) == 'string' )
-			{
-				$mensaje .= $resultado["reglasNotificacionDIAN"]->string . '\n';
-			}else{
-				foreach ($resultado["reglasNotificacionDIAN"]->string as $key => $value) 
-				{
-					$mensaje .= $value . '\n';
-				}
-			}
-		}
-		$resultado["reglasNotificacionDIAN"] = $mensaje;
-		
-    	$mensaje = '';
-    	if ( !is_null( $resultado['reglasValidacionDIAN'] ) )
-		{
-			$mensaje = '<br>Validaciones DIAN<br>';
-			if ( gettype( $resultado["reglasValidacionDIAN"]->string ) == 'string' )
-			{
-				$mensaje .= $resultado["reglasValidacionDIAN"]->string . '\n';
-			}else{
-				foreach ($resultado["reglasValidacionDIAN"]->string as $key => $value) 
-				{
-					$mensaje .= $value . '\n';
-				}
-			}
-		}
-		$resultado["reglasValidacionDIAN"] = $mensaje;
-
-		return $resultado;
-    }
-
-    public function get_mensaje( $resultado )
-    {
-    	$mensaje = (object)['tipo'=>'','contenido'=>''];
-
-    	switch ( $resultado["codigo"] ) {
-    		case '200':
-    			$mensaje->tipo = 'flash_message';
-    			$mensaje->contenido = '<h3>Factura enviada correctamente hacia el proveedor tecnológico</h3>';
-    			$mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Mensaje:  " .$resultado["mensaje"] ."</br>Consecutivo:  " .$resultado["consecutivoDocumento"] ."</br>CUFE:  " .$resultado["cufe"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Hash:  " .$resultado["hash"] ."</br>Reglas de validación DIAN:  " .$resultado["reglasValidacionDIAN"] ."</br>Resultado:  " .$resultado["resultado"] ."</br>Tipo de CUFE:  " .$resultado["tipoCufe"] ."</br>Mensaje Validación:  ";
-
-    			if ( !is_null( $resultado['mensajesValidacion'] ) )
-				{
-					if ( gettype( $resultado["mensajesValidacion"]->string ) == 'string' )
-					{
-						$mensaje->contenido .= "</br>" .$resultado["mensajesValidacion"]->string;
-					}else{
-						foreach ($resultado["mensajesValidacion"]->string as $key => $value) 
-						{
-							$mensaje->contenido .= "</br>" . $value;
-						}
-					}				
-				}
-    			break;
-    		
-    		default:
-    			$mensaje->tipo = 'mensaje_error';
-
-				$mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Mensaje:  " .$resultado["mensaje"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Mensaje Validación:  ";
-
-				if ( !is_null( $resultado['mensajesValidacion'] ) )
-				{
-					if ( gettype( $resultado["mensajesValidacion"]->string ) == 'string' )
-					{
-						$mensaje->contenido .= "</br>" . $resultado["mensajesValidacion"]->string;
-					}else{
-						foreach ($resultado["mensajesValidacion"]->string as $key => $value) 
-						{
-							$mensaje->contenido .= "</br>" . $value;
-						}
-					}				
-				}
-    			break;
-    	}
-
-    	return $mensaje;
     }
 
     // Llamado directamente
@@ -261,9 +162,11 @@ class FacturaController extends TransaccionController
     {
         $encabezado_factura = Factura::find( $id );
 
-        $resultado = $this->procesar_envio_factura( $encabezado_factura );
+        $resultado_original = $this->procesar_envio_factura( $encabezado_factura );
 
-        $mensaje = $this->get_mensaje( $resultado );
+        // Almacenar resultado en base de datos para Auditoria
+        $obj_resultado = new ResultadoEnvio;
+        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $encabezado_factura->id );
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {

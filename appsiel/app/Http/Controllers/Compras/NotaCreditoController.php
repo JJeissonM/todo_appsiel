@@ -457,7 +457,7 @@ class NotaCreditoController extends TransaccionController
     {
         $this->set_variables_globales();
 
-        return redirect('compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.show');
+        return redirect( 'compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.show');
     }
 
     // ANULAR

@@ -13,4 +13,5 @@ Route::get('fe_nota_credito_enviar/{id}', 'FacturacionElectronica\NotaCreditoCon
 Route::resource('fe_nota_credito', 'FacturacionElectronica\NotaCreditoController');
 
 
+Route::get('fe_nota_debito_enviar/{id}', 'FacturacionElectronica\NotaDebitoController@enviar');
 Route::resource('fe_nota_debito', 'FacturacionElectronica\NotaDebitoController');

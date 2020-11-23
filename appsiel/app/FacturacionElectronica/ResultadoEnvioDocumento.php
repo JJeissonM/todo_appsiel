@@ -8,6 +8,9 @@ class ResultadoEnvioDocumento extends Model
 {
 	protected $table = 'fe_resultados_envios_documentos';
 
+	/*
+		El campo "nombre" almacenará, en formato JSON, al Objecto "Documento Electrónico" Enviado 
+	*/
     protected $fillable = [ 'vtas_doc_encabezado_id', 'codigo', 'consecutivoDocumento', 'cufe', 'esValidoDian', 'fechaAceptacionDIAN', 'fechaRespuesta', 'hash', 'mensaje', 'mensajesValidacion', 'nombre', 'qr', 'reglasNotificacionDIAN', 'reglasValidacionDIAN', 'resultado', 'tipoCufe', 'xml', 'tipoDocumento', 'trackID', 'poseeAdjuntos' ];
 
     public $encabezado_tabla = [ 'Documento', 'Codigo', 'CUFE', 'Mensaje', 'Resultado', 'Tipo Documento', 'Acción'];

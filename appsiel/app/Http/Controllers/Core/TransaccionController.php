@@ -214,26 +214,6 @@ class TransaccionController extends Controller
         return $encabezado_documento->crear_nuevo( $request->all() );
     }
 
-
-    // FOMRULARIO PARA EDITAR UN REGISTRO
-    public function edit($id)
-    {
-        //
-    }
-
-    //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-
-    // Mostra el documento de una transacción
-    public function show( $id )
-    {
-        /**/
-    }
-
     public static function get_registros_contabilidad( $doc_encabezado )
     {
         $registros_contabilidad = ContabMovimiento::get_registros_contables( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );

@@ -149,13 +149,13 @@ class DocumentoElectronico
 	public function preparar_detalle_impuestos_linea_registro( $linea )
 	{
 		$impdet = new FacturaImpuestos;
-		$impdet->baseImponibleTOTALImp = number_format( $linea->base_impuesto_total, 2, '.', '');
+		$impdet->baseImponibleTOTALImp = abs( number_format( $linea->base_impuesto_total, 2, '.', '') );
 		$impdet->codigoTOTALImp = "01"; // IVA
 		$impdet->controlInterno = "";
 		$impdet->porcentajeTOTALImp = number_format( $linea->tasa_impuesto, 2, '.', '');
 		$impdet->unidadMedida = "";
 		$impdet->unidadMedidaTributo = "";
-		$impdet->valorTOTALImp = number_format( ( $linea->base_impuesto_total * $linea->tasa_impuesto / 100 ), 2, '.', '');
+		$impdet->valorTOTALImp = abs( number_format( ( $linea->base_impuesto_total * $linea->tasa_impuesto / 100 ), 2, '.', '') );
 		$impdet->valorTributoUnidad = "";
 		return $impdet;
 	}
@@ -164,7 +164,7 @@ class DocumentoElectronico
 	{
 		$impTot = new ImpuestosTotales;
 		$impTot->codigoTOTALImp = "01"; // IVA
-		$impTot->montoTotal = number_format( ( $linea->base_impuesto_total * $linea->tasa_impuesto / 100 ), 2, '.', '');
+		$impTot->montoTotal = abs( number_format( ( $linea->base_impuesto_total * $linea->tasa_impuesto / 100 ), 2, '.', '') );
 		return $impTot;
 	}
 
@@ -188,7 +188,8 @@ class DocumentoElectronico
 
 		$factDetalle->cantidadPorEmpaque = "1";
     	$factDetalle->cantidadReal = abs( $linea->cantidad );
-    	$factDetalle->cantidadRealUnidadMedida = "UND"; // Código estándar
+    	$factDetalle->cantidadRealUnidadMedida = "WSD"; // Código estándar
+		$factDetalle->unidadMedida = "WSD";
     	$factDetalle->cantidadUnidades = abs( $linea->cantidad );
 
     	$factDetalle->cargosDescuentos[0] = $this->preparar_cargos_descuentos( $linea, $secuencia_anterior + 1 );
@@ -218,7 +219,6 @@ class DocumentoElectronico
 		$factDetalle->precioTotalSinImpuestos = abs( number_format($precioTotal - $linea->valor_impuesto_total(), 2, '.', '') );
 		$factDetalle->precioVentaUnitario = number_format($linea->base_impuesto, 2, '.', '');
 		$factDetalle->secuencia = $secuencia_anterior + 1;
-		$factDetalle->unidadMedida = "UND";
 
 	    return $factDetalle;
 	}
@@ -229,13 +229,13 @@ class DocumentoElectronico
 		$valorTOTALImp = $baseImponibleTOTALImp * ( $tasa_impuesto / 100 );
 
 		$objImpGen = new FacturaImpuestos;
-		$objImpGen->baseImponibleTOTALImp = number_format($baseImponibleTOTALImp, 2, '.', '');
+		$objImpGen->baseImponibleTOTALImp = abs( number_format($baseImponibleTOTALImp, 2, '.', '') );
 		$objImpGen->codigoTOTALImp = "01"; // IVA
 		$objImpGen->controlInterno = "";
 		$objImpGen->porcentajeTOTALImp = number_format($tasa_impuesto,2, '.', '');
 		$objImpGen->unidadMedida = "";
 		$objImpGen->unidadMedidaTributo = "";
-		$objImpGen->valorTOTALImp = number_format($valorTOTALImp, 2, '.', '');
+		$objImpGen->valorTOTALImp = abs( number_format($valorTOTALImp, 2, '.', '') );
 		$objImpGen->valorTributoUnidad = "0.00";
 
 		return $objImpGen;		
@@ -340,19 +340,14 @@ class DocumentoElectronico
 	    $factura->moneda = "COP";
 		$factura->redondeoAplicado = "100.00"	;
 	    
-	    $factura->totalBaseImponible = number_format( $totalBaseImponible, 2, '.', '');
-	    $factura->totalBrutoConImpuesto =  number_format( $totalSinImpuestos + $montoTotalImpuestos, 2, '.', '');
-	    $factura->totalMonto = number_format( $precioTotal, 2, '.', '');
+	    $factura->totalBaseImponible = abs( number_format( $totalBaseImponible, 2, '.', '') );
+	    $factura->totalBrutoConImpuesto =  abs( number_format( $totalSinImpuestos + $montoTotalImpuestos, 2, '.', '') );
+	    $factura->totalMonto = abs( number_format( $precioTotal, 2, '.', '') );
 	    $factura->totalProductos = count( $encabezado_factura->lineas_registros->toArray() );
 	    //$factura->totalCargosAplicados = '0.00';
-	    $factura->totalDescuentos = number_format( $totalDescuentos, 2, '.', '');
-		$factura->totalSinImpuestos = number_format( $totalSinImpuestos, 2, '.', '');
+	    $factura->totalDescuentos = abs( number_format( $totalDescuentos, 2, '.', '') );
+		$factura->totalSinImpuestos = abs( number_format( $totalSinImpuestos, 2, '.', '') );
 
 		return $factura;
-	}
-
-	public function obtener_codigo_unidad_medida()
-	{
-
 	}
 }

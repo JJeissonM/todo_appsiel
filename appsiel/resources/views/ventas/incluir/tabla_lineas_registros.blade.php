@@ -56,7 +56,7 @@
                             <input id="inv_producto_id" data-toggle="tooltip" autocomplete="off" title="" name="inv_producto_id" type="text" data-original-title="Presione dos veces ESC para terminar."><input id="tipo_producto" name="tipo_producto" type="hidden" value="producto">
                             <div id="suggestions" style="display: none;"></div>
                     </td>
-                    <td> <select id="inv_motivo_id" name="inv_motivo_id" style="background-color:#ECECE5;" disabled="disabled"><option value="10-salida">Ventas POS</option></select> </td>
+                    <td> <select id="inv_motivo_id" name="inv_motivo_id" style="background-color:#ECECE5;" disabled="disabled"><option value="10-salida">Ventas</option></select> </td>
                     <td> <input disabled="disabled" id="existencia_actual" width="15px" name="existencia_actual" type="text" style="background-color:#ECECE5;"> </td>
                     <td> <input id="cantidad" width="30px" name="cantidad" type="text" style="background-color:#ECECE5;" disabled="disabled"> </td>
                     <td> <input id="precio_unitario" name="precio_unitario" type="text"><input id="costo_unitario" name="costo_unitario" type="hidden"> </td>

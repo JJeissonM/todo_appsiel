@@ -39,11 +39,14 @@ use App\Tesoreria\TesoMovimiento;
 use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
 use App\FacturacionElectronica\TFHKA\DocumentoReferenciado;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
+use App\FacturacionElectronica\ResultadoEnvio;
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\NotaCredito;
 
 class NotaCreditoController extends TransaccionController
 {
+    protected $documento_nota_credito;
+
     public function index()
     {
     	return view('facturacion_electronica.index');
@@ -54,8 +57,8 @@ class NotaCreditoController extends TransaccionController
     	$this->set_variables_globales();
 
     	$fe_app_id = 21;
-        $fe_factura_modelo_id = 244;
-        $fe_factura_transaccion_id = 244;
+        $fe_factura_modelo_id = 244; // Se devuelve a la vista de Factura
+        $fe_factura_transaccion_id = 52; // Se devuelve a la vista de Factura
 
         $id_transaccion = $this->transaccion->id;
 
@@ -211,9 +214,12 @@ class NotaCreditoController extends TransaccionController
         	return redirect( 'fe_nota_credito/'.$encabezado_nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', 'El documento no tiene resolución asociada. Por tanto no pudo ser enviado.');
         }
 
-        $resultado = $this->procesar_envio_factura( $encabezado_nota_credito );
+        // Paso 5: Enviar factura electrónica
+        $resultado_original = $this->procesar_envio_factura( $encabezado_nota_credito );
 
-        $mensaje = $this->get_mensaje( $resultado );
+        // Paso 6: Almacenar resultado en base de datos para Auditoria
+        $obj_resultado = new ResultadoEnvio;
+        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_nota_credito, $encabezado_nota_credito->id );
 
         if ( $mensaje->tipo == 'mensaje_error' )
         {
@@ -230,12 +236,11 @@ class NotaCreditoController extends TransaccionController
 
     public function procesar_envio_factura( $encabezado_nota_credito, $adjuntos = 0 )
     {
+        // Paso 1: Prepara documento electronico
     	$documento = new DocumentoElectronico();
-
-    	$documento_nota_credito = $documento->preparar_objeto_documento( $encabezado_nota_credito );
-
-    	$documento_nota_credito->tipoOperacion = "20"; // Para NC
-        $documento_nota_credito->tipoDocumento = "91"; // Nota Crédito
+    	$this->documento_nota_credito = $documento->preparar_objeto_documento( $encabezado_nota_credito );
+    	$this->documento_nota_credito->tipoOperacion = "20"; // Para NC
+        $this->documento_nota_credito->tipoDocumento = "91"; // Nota Crédito
 
         $datos_factura_electronica = ResultadoEnvioDocumento::where( 'vtas_doc_encabezado_id', $encabezado_nota_credito->ventas_doc_relacionado_id )->get()->first();
 
@@ -249,7 +254,7 @@ class NotaCreditoController extends TransaccionController
             $DocRef->descripcion[0] = "Nota Crédito por devolución/anulación de factura";
             $DocRef->numeroDocumento= $datos_factura_electronica->consecutivoDocumento;
         
-        $documento_nota_credito->documentosReferenciados[0] =$DocRef;
+        $this->documento_nota_credito->documentosReferenciados[0] =$DocRef;
 
         $DocRef1 = new DocumentoReferenciado();
 
@@ -260,129 +265,21 @@ class NotaCreditoController extends TransaccionController
             $DocRef->tipoDocumento = $datos_factura_electronica->tipoDocumento;
             $DocRef1->numeroDocumento= $datos_factura_electronica->consecutivoDocumento;
 
-        $documento_nota_credito->documentosReferenciados[1] =$DocRef1;
+        $this->documento_nota_credito->documentosReferenciados[1] =$DocRef1;
 
-        //dd( $documento_nota_credito );
-
-    	//dd($documento_factura);
+        // Paso 2: Preparar parámetros para envío
 		$params = array(
 				         'tokenEmpresa' =>  config('facturacion_electronica.tokenEmpresa'),
 				         'tokenPassword' => config('facturacion_electronica.tokenPassword'),
-				         'factura' => $documento_nota_credito,
+				         'factura' => $this->documento_nota_credito,
 				         'adjuntos' => $adjuntos 
 				     	);
 
-		//Enviar Objeto Factura
+		// Paso 3: Enviar Objeto Documento Electrónico
 		$resultado_original = $documento->WebService->enviar( config('facturacion_electronica.WSDL'), $documento->options, $params );
-		
-		$resultado_almacenar = $this->formatear_resultado( $resultado_original );
-
-		$resultado_almacenar['vtas_doc_encabezado_id'] = $encabezado_nota_credito->id;
-		ResultadoEnvioDocumento::create( $resultado_almacenar );
 
 		return $resultado_original;
     }
-
-    public function formatear_resultado( $resultado )
-    {
-    	$mensaje = '';
-    	if ( !is_null( $resultado['mensajesValidacion'] ) )
-		{
-			if ( gettype( $resultado["mensajesValidacion"]->string ) == 'string' )
-			{
-				$mensaje .= $resultado["mensajesValidacion"]->string . '\n';
-			}else{
-				foreach ($resultado["mensajesValidacion"]->string as $key => $value) 
-				{
-					$mensaje .= $value . '\n';
-				}
-			}				
-		}
-		$resultado["mensajesValidacion"] = $mensaje;
-
-		
-    	$mensaje = '';
-    	if ( !is_null( $resultado['reglasNotificacionDIAN'] ) )
-		{
-			$mensaje = '<br>Notificaciones DIAN<br>';
-			if ( gettype( $resultado["reglasNotificacionDIAN"]->string ) == 'string' )
-			{
-				$mensaje .= $resultado["reglasNotificacionDIAN"]->string . '\n';
-			}else{
-				foreach ($resultado["reglasNotificacionDIAN"]->string as $key => $value) 
-				{
-					$mensaje .= $value . '\n';
-				}
-			}
-		}
-		$resultado["reglasNotificacionDIAN"] = $mensaje;
-		
-    	$mensaje = '';
-    	if ( !is_null( $resultado['reglasValidacionDIAN'] ) )
-		{
-			$mensaje = '<br>Validaciones DIAN<br>';
-			if ( gettype( $resultado["reglasValidacionDIAN"]->string ) == 'string' )
-			{
-				$mensaje .= $resultado["reglasValidacionDIAN"]->string . '\n';
-			}else{
-				foreach ($resultado["reglasValidacionDIAN"]->string as $key => $value) 
-				{
-					$mensaje .= $value . '\n';
-				}
-			}
-		}
-		$resultado["reglasValidacionDIAN"] = $mensaje;
-
-		return $resultado;
-    }
-
-    public function get_mensaje( $resultado )
-    {
-    	$mensaje = (object)['tipo'=>'','contenido'=>''];
-
-    	switch ( $resultado["codigo"] ) {
-    		case '200':
-    			$mensaje->tipo = 'flash_message';
-    			$mensaje->contenido = '<h3>Nota crédito enviada correctamente hacia el proveedor tecnológico</h3>';
-    			$mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Mensaje:  " .$resultado["mensaje"] ."</br>Consecutivo:  " .$resultado["consecutivoDocumento"] ."</br>CUFE:  " .$resultado["cufe"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Hash:  " .$resultado["hash"] ."</br>Reglas de validación DIAN:  " .$resultado["reglasValidacionDIAN"] ."</br>Resultado:  " .$resultado["resultado"] ."</br>Tipo de CUFE:  " .$resultado["tipoCufe"] ."</br>Mensaje Validación:  ";
-
-    			if ( !is_null( $resultado['mensajesValidacion'] ) )
-				{
-					if ( gettype( $resultado["mensajesValidacion"]->string ) == 'string' )
-					{
-						$mensaje->contenido .= "</br>" .$resultado["mensajesValidacion"]->string;
-					}else{
-						foreach ($resultado["mensajesValidacion"]->string as $key => $value) 
-						{
-							$mensaje->contenido .= "</br>" . $value;
-						}
-					}				
-				}
-    			break;
-    		
-    		default:
-    			$mensaje->tipo = 'mensaje_error';
-
-				$mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Mensaje:  " .$resultado["mensaje"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Mensaje Validación:  ";
-
-				if ( !is_null( $resultado['mensajesValidacion'] ) )
-				{
-					if ( gettype( $resultado["mensajesValidacion"]->string ) == 'string' )
-					{
-						$mensaje->contenido .= "</br>" . $resultado["mensajesValidacion"]->string;
-					}else{
-						foreach ($resultado["mensajesValidacion"]->string as $key => $value) 
-						{
-							$mensaje->contenido .= "</br>" . $value;
-						}
-					}				
-				}
-    			break;
-    	}
-
-    	return $mensaje;
-    }
-
 
 
     /*
@@ -615,9 +512,11 @@ class NotaCreditoController extends TransaccionController
     {
     	$encabezado_nota_credito = NotaCredito::find( $id );
 
-        $resultado = $this->procesar_envio_factura( $encabezado_nota_credito );
+        $resultado_original = $this->procesar_envio_factura( $encabezado_nota_credito );
 
-        $mensaje = $this->get_mensaje( $resultado );
+        // Almacenar resultado en base de datos para Auditoria
+        $obj_resultado = new ResultadoEnvio;
+        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_nota_credito, $encabezado_nota_credito->id );
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {

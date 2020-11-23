@@ -127,6 +127,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.created_at',
                 'vtas_doc_encabezados.orden_compras',
                 'vtas_doc_encabezados.ventas_doc_relacionado_id',
+                'vtas_doc_encabezados.forma_pago AS forma_pago',
                 'vtas_doc_encabezados.forma_pago AS condicion_pago',
                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                 'vtas_doc_encabezados.consecutivo AS documento_transaccion_consecutivo',
