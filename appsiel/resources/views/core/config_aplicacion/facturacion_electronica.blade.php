@@ -133,11 +133,43 @@
 					</div>
 
 				</div>
-				
-				<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
 
-				{{ Form::hidden('url_id',Input::get('id')) }}
-				{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
+				<br><br>
+
+				<h4> Parámetros de configuración para los documentos electrónicos </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								if( isset($parametros['cantidadDecimales'] ) )
+								{
+									$cantidadDecimales = $parametros['cantidadDecimales'];
+								}else{
+									$cantidadDecimales = 4;
+								}
+							?>
+							{{ Form::bsText('cantidadDecimales', $cantidadDecimales, 'Cantidad decimales en los valores', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br><br>
+
+				<div style="width: 100%; text-align: center;">
+					<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
+
+					{{ Form::hidden('url_id',Input::get('id')) }}
+					{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
+				</div>
 
 			{{ Form::close() }}
 		</div>

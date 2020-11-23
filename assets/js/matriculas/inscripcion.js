@@ -7,6 +7,9 @@ $(document).ready(function(){
 
 	var documento_inicial = parseInt( $("#numero_identificacion2").val() );
 
+	$("#id_tipo_documento_id").val('');
+	$("#numero_identificacion2").focus();
+
 	$(document).on('blur, keyup','#numero_identificacion2',function(){
 
 		if( direccion.search("edit") == -1)
@@ -32,22 +35,25 @@ $(document).ready(function(){
 
 		$.get( url + documento, function( respuesta ) 
 		{
-			if ( respuesta == '' ) 
+			if ( respuesta == 'tercero_no_existe' ) 
 	        {
-	        	vaciar_campos_formulario();
+	        	//vaciar_campos_formulario();
 	        	return false;
 	        }
 
 	        if ( respuesta == 'ya_inscrito' ) 
 	        {
 	        	vaciar_campos_formulario();
-	        	$("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Tercero ya está inscrito. Desde aquí no puede modificar sus datos.</div>');
+	        	$("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Esta persona ya se encuentra inscrita. Desde aquí no puede modificar sus datos.</div>');
 	        	$('#bs_boton_guardar').hide();
 	        	return false;
 	        }
 
-	        $("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Tercero ya existe. Sus datos serán actualizados.</div>');
-	        autollenar_formulario( respuesta );
+	        $("#numero_identificacion2").parent().append('<div style="color:red;" id="tercero_existe">Ya existe una persona con este número de identificación. Sus datos serán actualizados.</div>');
+	        if ( confirm('Ya existe una persona con este número de identificación. \n ¿Desea cargar sus datos básicos?') )
+	        {
+	        	autollenar_formulario( respuesta );
+	        }
 		});
 	}
 
@@ -59,7 +65,7 @@ $(document).ready(function(){
 
 		$.get( url + documento, function( respuesta ) 
 		{
-			if ( respuesta == '' ) 
+			if ( respuesta == 'tercero_no_existe' ) 
 	        {
 	        	return false;
 	        }
