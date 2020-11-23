@@ -38,13 +38,14 @@ class DocumentoElectronico
 	public $WebService;
 	public $options;
 
-	protected $cantidadDecimales = config('facturacion_electronica.cantidadDecimales');
+	protected $cantidadDecimales;
 	//protected $params;
 	
 	function __construct()
 	{
 		$this->WebService = new WebService();
 		$this->options = array( 'exceptions' => true, 'trace' => true, 'location'=> config('facturacion_electronica.WSDL') );
+		$this->cantidadDecimales = config('facturacion_electronica.cantidadDecimales');
 	}
 
 	public function preparar_direccion( $tercero )
