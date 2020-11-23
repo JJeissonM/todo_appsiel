@@ -91,6 +91,11 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label for="anchura_logo">Grado de Transparencia (solo para fixed)</label>
+                                <input type="range" min="1" max="10" class="form-control" name="alpha" value="{{$nav->alpha}}">
+                            </div>
+
                             <div class="col-md-12 d-flex justify-content-end">
                                 <button class="btn btn-info">Guardar</button>
                             </div>
