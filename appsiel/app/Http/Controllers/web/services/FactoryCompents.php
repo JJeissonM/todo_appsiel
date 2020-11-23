@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers\web\services;
 
-use App\Http\Controllers\web\GaleriaController;
-
 class FactoryCompents
 {
 
