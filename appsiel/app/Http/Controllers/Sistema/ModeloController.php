@@ -742,10 +742,10 @@ class ModeloController extends Controller
 
     public static function personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, $accion, $tipo_tranferencia = null)
     {
-
         $opciones = [];
         // Se crea un select SOLO con las opciones asignadas a la transacción
-        if ($tipo_transaccion != 0) {
+        if ( !is_null( $tipo_transaccion ) )
+        {
             $tipo_docs_app = $tipo_transaccion->tipos_documentos;
             foreach ($tipo_docs_app as $fila)
             {
