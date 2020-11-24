@@ -22,6 +22,7 @@ if ($nav->fixed) {
 } else {
     $clase_header = 'no-fixed';
 }
+
 ?>
 
 <style>
@@ -33,21 +34,8 @@ if ($nav->fixed) {
     }
 
     header {
-        color: {
-                {
-                $nav->color
-            }
-        }
-
-        ;
-
-        background: {
-                {
-                $fondos['background_0']
-            }
-        }
-
-        ;
+        color: <?php echo $nav->color; ?>;
+        background: <?php echo $fondos['background_0']; ?>;
     }
 
     #navegacion>header.sticky {
@@ -55,14 +43,7 @@ if ($nav->fixed) {
         z-index: 1000;
         top: 0;
         width: 100%;
-
-        background: {
-                {
-                $fondos['background_1']
-            }
-        }
-
-        ;
+        background: <?php echo $fondos['background_1']; ?>;
         -webkit-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.75);
         -moz-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.75);
         box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.75);
@@ -70,21 +51,8 @@ if ($nav->fixed) {
 
 
     a.icono img {
-        height: {
-                {
-                $logo['altura_logo']
-            }
-        }
-
-        px;
-
-        width: {
-                {
-                $logo['anchura_logo']
-            }
-        }
-
-        px;
+        height: <?php echo $logo['altura_logo']; ?>px;
+        width: <?php echo $logo['anchura_logo']; ?>px;
     }
 
 
@@ -96,20 +64,42 @@ if ($nav->fixed) {
 
 
     li.active a {
-        color: black !important;
-        background-color: white !important;
+        color: #FFF !important;
+        background-color: <?php echo $fondos['background_1']; ?> !important;
     }
 
     li a:hover {
-        color: black !important;
-        background-color: white !important;
+        color: #FFF !important;
+        background-color: <?php echo $fondos['background_1']; ?> !important;
+        transition: all 0.5s;
+    }
+
+    .owl-prev:hover,
+    .owl-next:hover {
+        background-color: <?php echo $fondos['background_0']; ?> !important;
+    }
+
+    .btn.btn-primary {
+        background-color: <?php echo $fondos['background_0']; ?> !important;
+        border-color: <?php echo $fondos['background_1']; ?> !important;
+    }
+
+    .dropdown-menu {
+        background-color: <?php echo $fondos['background_1']; ?> !important;
+        border-radius: 0 !important;
+        border: 1px solid !important;
+        border-color: <?php echo $fondos['background_1']; ?> !important;
+    }
+
+    .dropdown-item:hover {
+        background-color: <?php echo $fondos['background_0']; ?> !important;
     }
 </style>
 
 
 <header class="no" id="myHeader">
     <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light">
+        <nav class="navbar navbar-expand-lg navbar-light {{$clase_header}}" <?php if($clase_header=='fixed-top'){echo "style='background: ".$fondos['background_0']." !important; opacity: ".($nav->alpha/10).";'";} ?> >
             <!-- mu-navbar  d-flex -->
 
             <!-- Text based logo -->

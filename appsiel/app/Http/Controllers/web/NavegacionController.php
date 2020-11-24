@@ -7,7 +7,7 @@ use App\web\Icon;
 use App\web\Menunavegacion;
 use App\web\Navegacion;
 use App\web\Pagina;
-use App\web\Widget;
+use App\web\Widget; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
