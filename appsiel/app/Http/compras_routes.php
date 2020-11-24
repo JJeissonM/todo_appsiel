@@ -36,8 +36,6 @@ Route::post('compras_proveedores_tercero_a_proveedor_store', 'Compras\ProveedorC
 Route::resource('compras_proveedores', 'Compras\ProveedorController');
 
 
-Route::resource('compras_registro_cxp', 'Compras\RegistroCxpController');
-
 // Anular
 Route::post('compras_anular_factura', 'Compras\CompraController@anular_factura');
 /*Route::get('compras/eliminar_bodega/{id}', 'Compras\CompraController@eliminar_bodega');
