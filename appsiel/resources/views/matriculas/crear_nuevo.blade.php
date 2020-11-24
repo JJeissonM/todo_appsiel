@@ -19,8 +19,8 @@
             {{ csrf_field() }}
 
             <input type="hidden" name="id_colegio" id="id_colegio" value="{{ $id_colegio }}">
-            <input type="hidden" name="email" id="email" value="{{ $estudiante->tercero->email }}">
-            <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{ $estudiante->tercero->id }}">
+            <input type="hidden" name="email" id="email" value="{{ $inscripcion->tercero->email }}">
+            <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{ $inscripcion->tercero->id }}">
             <input type="hidden" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ $inscripcion->fecha_nacimiento }}">
             <input type="hidden" name="estudiante_existe" id="estudiante_existe" value="{{ $estudiante_existe }}">
 
