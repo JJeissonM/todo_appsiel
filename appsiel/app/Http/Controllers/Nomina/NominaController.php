@@ -32,6 +32,9 @@ use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
 use App\Nomina\AgrupacionConcepto;
 
+use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
+use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
+
 class NominaController extends TransaccionController
 {
     protected $total_devengos_empleado = 0;
@@ -637,73 +640,13 @@ class NominaController extends TransaccionController
                 continue;
             }
 
-            // Las horas laborales se traen de la configuración de nómina (240 horas al mes)
-            $salario_x_hora = $empleado->sueldo / config('nomina')['horas_laborales'];
+            $liquidacion = new LiquidacionConcepto($un_concepto->id, $empleado, $documento_nomina);
 
-            switch ($modo_liquidacion_id) 
-            {
+            $valores = $liquidacion->calcular( $un_concepto->modo_liquidacion_id );
 
-                case '1': // Tiempo laborado
+            dd( $valores );
 
-                    $valor_a_liquidar = ($salario_x_hora * $documento_nomina->tiempo_a_liquidar) * $un_concepto->porcentaje_sobre_basico / 100;
-
-                    $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
-
-                    $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
-
-                    break;
-
-                case '6': // Aux. Transporte
-
-                    /*
-                        falta completar: solo se debe liquidar el tiempo proporcional a la quincena
-                    */
-
-                    // Se toma el valor directo del concepto
-                    $valor_a_liquidar = $un_concepto->valor_fijo / ( config('nomina')['horas_laborales'] / $documento_nomina->tiempo_a_liquidar );
-
-                    $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valor_a_liquidar, 'valor_deduccion' => 0 ];
-
-                    break;
-
-                case '3': // Cuotas
-                    $this->liquidar_cuotas($empleado, $un_concepto, $documento_nomina);
-                    break;
-
-                case '4': // Préstamos
-                    $this->liquidar_prestamos($empleado, $un_concepto, $documento_nomina);
-                    break;
-
-                case '8': // Seguridad social
-
-                    // Se suman los valores liquidados en los conceptos de la Agrupación para cálculo
-                    $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $un_concepto->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
-
-                    // Ingreso Base Cotización
-                    $total_ibc_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                                        ->where( 'nom_doc_encabezado_id', $documento_nomina->id )
-                                                        ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                                        ->sum('valor_devengo');
-
-                    $total_ibc_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                                        ->where( 'nom_doc_encabezado_id', $documento_nomina->id )
-                                                        ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                                        ->sum('valor_deduccion');
-
-                    $total_IBC = ($total_ibc_devengos - $total_ibc_deducciones);
-
-                    $valor_a_liquidar = $total_IBC * $un_concepto->porcentaje_sobre_basico / 100;
-
-                    $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_a_liquidar );
-
-                    $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
-
-                    break;
-                
-                default:
-                    # code...
-                    break;
-            }    
+            $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
 
             if( ($this->vec_campos->valor_devengo +$this->vec_campos->valor_deduccion ) > 0)
             {

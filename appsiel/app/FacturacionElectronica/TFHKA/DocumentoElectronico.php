@@ -201,10 +201,10 @@ class DocumentoElectronico
 	    $factDetalle = new FacturaDetalle();
 
 		$factDetalle->cantidadPorEmpaque = "1";
-    	$factDetalle->cantidadReal = abs( $linea->cantidad );
+    	$factDetalle->cantidadReal = abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') );
     	$factDetalle->cantidadRealUnidadMedida = "WSD"; // Código estándar
 		$factDetalle->unidadMedida = "WSD";
-    	$factDetalle->cantidadUnidades = abs( $linea->cantidad );
+    	$factDetalle->cantidadUnidades = abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') );
 
     	$factDetalle->cargosDescuentos[0] = $this->preparar_cargos_descuentos( $linea, $secuencia_anterior + 1 );
 
@@ -352,16 +352,29 @@ class DocumentoElectronico
 	    $factura->mediosDePago[0] = $this->preparar_medios_pago( $encabezado_factura );
 
 	    $factura->moneda = "COP";
-		$factura->redondeoAplicado = "100.00"	;
 	    
 	    $factura->totalBaseImponible = abs( number_format( $totalBaseImponible, $this->cantidadDecimales, '.', '') );
 	    $factura->totalBrutoConImpuesto =  abs( number_format( $totalSinImpuestos + $montoTotalImpuestos, $this->cantidadDecimales, '.', '') );
 	    $factura->totalMonto = abs( number_format( $precioTotal, $this->cantidadDecimales, '.', '') );
+
+	    $factura->redondeoAplicado = $this->obtener_redondeo_aplicado( $factura->totalBrutoConImpuesto, $factura->totalMonto );		    
+
 	    $factura->totalProductos = count( $encabezado_factura->lineas_registros->toArray() );
 	    //$factura->totalCargosAplicados = '0.00';
 	    $factura->totalDescuentos = abs( number_format( $totalDescuentos, $this->cantidadDecimales, '.', '') );
 		$factura->totalSinImpuestos = abs( number_format( $totalSinImpuestos, $this->cantidadDecimales, '.', '') );
 
 		return $factura;
+	}
+
+	public function obtener_redondeo_aplicado( $totalBrutoConImpuesto, $totalMonto )
+	{
+		$diferencia = $totalBrutoConImpuesto - $totalMonto;
+		if ( $diferencia > 0 )
+	    {
+			$diferencia = $diferencia * -1;
+	    }
+
+	    return $diferencia;
 	}
 }

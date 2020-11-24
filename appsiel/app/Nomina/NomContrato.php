@@ -53,6 +53,11 @@ class NomContrato extends Model
         return $this->belongsTo(NomEntidad::class,'planilla_pila_id');
     }
 
+    public function salario_x_hora()
+    {
+        return $this->sueldo / config('nomina.horas_laborales');
+    }
+
 	public static function consultar_registros()
 	{
 	    $registros = NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
