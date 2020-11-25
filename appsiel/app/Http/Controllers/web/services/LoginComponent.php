@@ -16,15 +16,16 @@ class LoginComponent implements IDrawComponent
         $this->widget = $widget;
     }
 
-    public function DrawComponent() {
+    public function DrawComponent()
+    {
         $login = Login::where('widget_id', $this->widget)->first();
-        if($login->disposicion == 'DEFAULT'){
-            $nav = Navegacion::all()->first();
-            return Form::login($login,$nav);
+        if ($login != null) {
+            return Form::login($login);
         }
     }
 
-    public function viewComponent() {
+    public function viewComponent()
+    {
         $miga_pan = [
             [
                 'url' => 'pagina_web' . '?id=' . Input::get('id'),
@@ -45,5 +46,4 @@ class LoginComponent implements IDrawComponent
         $login = Login::where('widget_id', $widget)->first();
         return view('web.components.login.login', compact('miga_pan', 'variables_url', 'widget', 'login'));
     }
-
 }

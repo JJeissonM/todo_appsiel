@@ -18,10 +18,12 @@ class AboutComponent implements IDrawComponent
     function DrawComponent()
     {
         $aboutus = Aboutus::where('widget_id', $this->widget)->first();
-        if($aboutus->disposicion != 'DEFAULT'){
-            return Form::aboutuspremiun($aboutus);
-        }else{
-            return Form::aboutus($aboutus);
+        if ($aboutus != null) {
+            if ($aboutus->disposicion != 'DEFAULT') {
+                return Form::aboutuspremiun($aboutus);
+            } else {
+                return Form::aboutus($aboutus);
+            }
         }
     }
 
@@ -47,5 +49,4 @@ class AboutComponent implements IDrawComponent
         $aboutus = Aboutus::where('widget_id', $widget)->first();
         return view('web.components.about_us', compact('miga_pan', 'variables_url', 'widget', 'aboutus'));
     }
-
 }
