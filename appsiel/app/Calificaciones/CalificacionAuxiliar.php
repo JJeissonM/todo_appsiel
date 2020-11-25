@@ -38,4 +38,9 @@ class CalificacionAuxiliar extends Model
 					            			'sga_calificaciones_auxiliares.C15')
 					            ->get();
 	}
+
+	public function get_registro_vacio()
+	{
+		return $this->fill(['id'=>0,'codigo_matricula'=>0,'id_colegio'=>0,'anio'=>0,'id_periodo'=>0,'curso_id'=>0,'id_estudiante'=>0,'id_asignatura'=>0,'C1'=>0,'C2'=>0,'C3'=>0,'C4'=>0,'C5'=>0,'C6'=>0,'C7'=>0,'C8'=>0,'C9'=>0,'C10'=>0,'C11'=>0,'C12'=>0,'C13'=>0,'C14'=>0,'C15'=>0,'creado_por'=>0,'modificado_por'=>0]);
+	}
 }

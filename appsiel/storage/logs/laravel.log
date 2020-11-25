@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2020-11-23 11:36:27] production.ERROR: Symfony\Component\Debug\Exception\FatalThrowableError: Parse error: syntax error, unexpected '}', expecting ')' in C:\xampp\htdocs\todo_appsiel\appsiel\storage\framework\views\bace8b0ecae32d1a42be92ee9882470dcc823d40.php:54
 Stack trace:
 #0 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\View\Engines\CompilerEngine.php(59): Illuminate\View\Engines\PhpEngine->evaluatePath('C:\\xampp\\htdocs...', Array)
@@ -3603,3 +3604,5 @@ Stack trace:
 #68 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #69 C:\xampp\htdocs\todo_appsiel\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #70 {main}  
+=======
+>>>>>>> d81202d808adfd113c5b261f5a21b97ddab5ecd7

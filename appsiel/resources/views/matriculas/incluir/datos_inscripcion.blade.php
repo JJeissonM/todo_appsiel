@@ -6,21 +6,21 @@
     </tr>
     <tr>
         <td style="border: solid 1px black;">
-            <b>Nombre:</b> {{ $estudiante->tercero->apellido1 }} {{ $estudiante->tercero->apellido2 }} {{ $estudiante->tercero->nombre1 }} {{ $estudiante->tercero->otros_nombres }}
+            <b>Nombre:</b> {{ $inscripcion->tercero->apellido1 }} {{ $inscripcion->tercero->apellido2 }} {{ $inscripcion->tercero->nombre1 }} {{ $inscripcion->tercero->otros_nombres }}
         </td>
         <td style="border: solid 1px black;" colspan="2">
-            <b>Documento:</b> {{ $estudiante->tercero->numero_identificacion }}
+            <b>Documento:</b> {{ $inscripcion->tercero->numero_identificacion }}
         </td>
     </tr>
     <tr>
         <td style="border: solid 1px black;">
-            <b>Dirección:</b> {{ $estudiante->tercero->direccion1 }}
+            <b>Dirección:</b> {{ $inscripcion->tercero->direccion1 }}
         </td>
         <td style="border: solid 1px black;">
-            <b>Teléfono:</b> {{ $estudiante->tercero->telefono1 }}
+            <b>Teléfono:</b> {{ $inscripcion->tercero->telefono1 }}
         </td>
         <td style="border: solid 1px black;">
-            <b>Email:</b> {{ $estudiante->tercero->email }}
+            <b>Email:</b> {{ $inscripcion->tercero->email }}
         </td>
     </tr>
 </table>

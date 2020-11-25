@@ -264,6 +264,13 @@ class CalificacionController extends Controller
                                 'id_estudiante'=>$estudiante->id_estudiante])
                                 ->get()
                                 ->first();
+
+                if (is_null($calificacion_aux))
+                {
+                    $obj_calificacion_aux = new CalificacionAuxiliar;
+
+                    $calificacion_aux = $obj_calificacion_aux->get_registro_vacio();
+                }
                 
                 $vec_estudiantes[$i]['id_calificacion'] = $calificacion_est->id;
                 $vec_estudiantes[$i]['calificacion'] = $calificacion_est->calificacion;
