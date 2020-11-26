@@ -146,7 +146,7 @@ class Calificacion extends Model
             }
 
         }else{
-            $la_calificacion = (object)['valor' => '-',
+            $la_calificacion = (object)['valor' => 0,
                                         'escala_id' => 0,
                                         'escala_descripcion' => '-',
                                         'escala_abreviatura' => '-',
