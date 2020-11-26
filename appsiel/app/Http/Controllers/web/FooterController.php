@@ -192,11 +192,9 @@ class FooterController extends Controller
 
     public function eliminarEnlace($id)
     {
-
         $enlace = EnlaceFooter::find($id);
         $categoria =  $enlace->categoria;
         $flag =  $enlace->delete();
-
         if ($flag) {
             $enlaces =  $categoria->enlaces;
             return response()->json([
@@ -204,7 +202,6 @@ class FooterController extends Controller
                 'enlaces' => $enlaces
             ]);
         } else {
-
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error inesperado, por favor intentelo más tarde.'

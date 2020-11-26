@@ -182,7 +182,7 @@
                     <aside class="">
                         <ul id="menu-menu4" class="menu">
                             @foreach($item->enlaces as $enlace)
-                            <li id="" class="" style="list-style: none; margin-top: 10px;"><a style="color: {{$footer->color}}; font-size: 14px;" href="{{$enlace->enlace}}" target="_blank"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
+                            <li id="" class="" style="list-style: none; margin-top: 10px; text-align: ;"><a style="color: {{$footer->color}}; font-size: 14px;" href="{{$enlace->enlace}}" target="_blank"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                 </a>
                             </li>
                             @endforeach
@@ -291,7 +291,7 @@
         </div>
         <div class="row" style="background-color: {{$footer->background2}};">
             <div id="div1" class="col-md-12 col-sm-12 d-flex justify-content-between flex-wrap" style="margin-top: 20px; float: left;">
-                <p style="font-size: 15px; color: {{$footer->color}}; width: 50%; padding-left: 20px;">
+                <p style="font-size: 15px; color: {{$footer->color}}; width: 80%; padding-left: 20px;">
                     &copy; {{$footer->texto.' '.$footer->copyright}}
                 </p>
                 <ul class="d-flex justify-content-between">
