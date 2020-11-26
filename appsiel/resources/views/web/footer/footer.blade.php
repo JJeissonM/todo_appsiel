@@ -636,12 +636,11 @@
         axios.get("{{url('footer/eliminar/enlace')}}" + "/" + id)
             .then(function(response) {
                 const data = response.data;
-                console.log(data);
                 if (data.status == 'ok') {
                     llenarTabla(data.enlaces);
                     Swal.fire(
                         'Eliminado!',
-                        'Su archivo ha sido eliminado.',
+                        'El enlace ha sido eliminado.',
                         'success'
                     );
                 } else {
