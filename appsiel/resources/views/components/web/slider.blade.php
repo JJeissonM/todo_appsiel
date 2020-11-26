@@ -7,13 +7,13 @@
         /*height: 550px;*/
     }
 
-    /*.owl-carousel img {
+    .owl-carousel img {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
-    }*/
+        height: 554px;
+    }
 </style>
 <section id="main-slider">
     @if($slider != null && $slider->items->count() > 0)
@@ -27,11 +27,11 @@
                             <div class="carousel-content">
 
                                 @if( $item->titulo != '' )
-                                <h2 style="text-shadow: 1px 1px 2px black;">{{$item->titulo}}</h2>
+                                <h2 style="text-shadow: 1px 1px 2px black; color: {{$item->colorTitle}} !important;">{{$item->titulo}}</h2>
                                 @endif
 
                                 @if( $item->descripcion != '' )
-                                <p style="text-shadow: 1px 1px 2px black;">{{$item->descripcion}}</p>
+                                <p style="text-shadow: 1px 1px 2px black; color: {{$item->colorText}} !important;">{{$item->descripcion}}</p>
                                 @endif
 
                                 @if( $item->button != '')

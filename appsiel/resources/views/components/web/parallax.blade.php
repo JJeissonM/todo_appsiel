@@ -1,11 +1,13 @@
 <style>
     .parallax {
         position: relative;
+        @if($parallax!=null)
         @if($parallax->modo=='COLOR') 
             background-color: {{ $parallax->fondo }};
         @else 
             background: url("img/parallax/{{$parallax->fondo}}") no-repeat fixed;
         @endif 
+        @endif
         background-position: center center;
         -webkit-background-size: cover;
         -moz-background-size: cover;

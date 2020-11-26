@@ -62,7 +62,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsMigaPan', 'components.design.miga_pan', ['vec']);
 
         Form::component('NombreMes', 'components.design.nombre_mes', ['mes']);
-        Form::component('TextoMoneda', 'components.design.texto_moneda', ['valor','lbl'=>null]);
+        Form::component('TextoMoneda', 'components.design.texto_moneda', ['valor', 'lbl' => null]);
         Form::component('Spin', 'components.design.spin', ['tamaño']);
         Form::component('Spin2', 'components.design.spin2', ['tamaño']);
         Form::component('btnInfo', 'components.design.btn_info', ['title']);
@@ -78,9 +78,10 @@ class FormServiceProvider extends ServiceProvider
     {
         //componentes utilizado en el diseñador de la pagina web
         Form::component('navegacion', 'components.web.navegacion', ['nav']);
-        Form::component('navegacionpremium','components.web.navegacionpremium',['nav']);
+        Form::component('navegacionpremium', 'components.web.navegacionpremium', ['nav']);
         Form::component('slider', 'components.web.slider', ['slider']);
         Form::component('sliderpremiun', 'components.web.sliderpremiun', ['slider']);
+        Form::component('sliderbootstrap', 'components.web.sliderbootstrap', ['slider']);
         Form::component('aboutus', 'components.web.aboutus', ['aboutus']);
         Form::component('aboutuspremiun', 'components.web.aboutuspremiun', ['aboutus']);
         Form::component('galeria', 'components.web.galeria2', ['galeria']);
@@ -100,7 +101,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('sticky', 'components.web.sticky', ['sticky']);
         Form::component('modal', 'components.web.modal', ['modal']);
         Form::component('guias_academicas', 'components.web.guias_academicas', ['cursos']);
-        Form::component('login', 'components.web.login', ['login','nav']);
+        Form::component('login', 'components.web.login', ['login']);
     }
 
     /**

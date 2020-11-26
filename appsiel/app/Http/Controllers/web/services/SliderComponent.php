@@ -24,10 +24,16 @@ class SliderComponent implements IDrawComponent
         $slider = Slider::where('widget_id', $widget->id)->first();
 
         if ($slider != null) {
-            if ($slider->disposicion == 'DEFAULT')
-                return Form::slider($slider);
-            else {
-                return Form::sliderpremiun($slider);
+            switch ($slider->disposicion) {
+                case 'DEFAULT':
+                    return Form::slider($slider);
+                    break;
+                case 'PREMIUM':
+                    return Form::sliderpremiun($slider);
+                    break;
+                case 'BOOTSTRAP':
+                    return Form::sliderbootstrap($slider);
+                    break;
             }
         }
     }

@@ -6,5 +6,7 @@
 </style>
 
 <div class="custom_html">
-	{!! str_replace( '_el_token_csrf_', csrf_field(), $registro->contenido ) !!}
+  @if($registro!=null)
+  {!! str_replace( '_el_token_csrf_', csrf_field(), $registro->contenido ) !!}
+  @endif
 </div>

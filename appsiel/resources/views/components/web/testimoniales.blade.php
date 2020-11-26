@@ -1,8 +1,9 @@
 <style>
     #testimonial-area {
         padding: 115px 0 0;
-        background-image: url({{asset($testimonial->imagen_fondo)}});
-        background-repeat: no-repeat;
+        <?php if ($testimonial != null) {
+            echo "background-image: url({{asset(" . $testimonial->imagen_fondo . ");";
+        } ?>background-repeat: no-repeat;
         background-position: center;
     }
 
@@ -21,7 +22,9 @@
         margin-bottom: 54px;
     }
 
-    *, ::after, ::before {
+    *,
+    ::after,
+    ::before {
         box-sizing: border-box;
     }
 
@@ -129,7 +132,8 @@
         transform: scale(.40) !important;
     }
 
-    .client-single.position-3, .client-single.position-7 {
+    .client-single.position-3,
+    .client-single.position-7 {
         -webkit-transform: scale(.25) !important;
         transform: scale(.25) !important;
     }
@@ -322,7 +326,7 @@
             max-width: 300px;
         }
 
-        .awesome-feat-carousel.owl-carousel .owl-nav > div {
+        .awesome-feat-carousel.owl-carousel .owl-nav>div {
             bottom: -80px;
         }
 
@@ -389,10 +393,10 @@
             height: 630px;
         }
     }
-
 </style>
 <section id="testimonial-area">
     <div class="container" style="max-width: 540px;overflow: visible !important;">
+        @if($testimonial!=null)
         <div class="row" style="margin-left: -50px; margin-right: -405px;">
             <!--start section heading-->
             <div class="col-md-8 offset-md-2">
@@ -406,34 +410,39 @@
         </div>
         <div class="testi-wrap">
             @if(count($testimonial->itemtestimonials)>0)
-                <?php $aux = 0; ?>
-                @foreach($testimonial->itemtestimonials as $item)
-                    <?php $aux = $aux + 1; ?>
-                    @if($aux <= 7)
-                        @if($aux == 1)
-                            <?php $class = 'active'; ?>
-                        @else
-                            <?php $class = 'inactive'; ?>
-                        @endif
-                        <div class="client-single {{$class}} position-{{$aux}}" data-position="position-{{$aux}}">
-                            <div class="client-img">
-                                <img width="200px" height="200px"
-                                     src="{{asset($item->foto)}}" alt="">
-                            </div>
-                            <div class="client-comment">
-                                <h3>{{$item->testimonio}}</h3>
-                                <span><i class="fa fa-quote-left"></i></span>
-                            </div>
-                            <div class="client-info">
-                                <h3>{{$item->nombre}}</h3>
-                                <p>{{$item->cargo}}</p>
-                            </div>
-                        </div>
-                    @else
-                        @break
-                    @endif
-                @endforeach
-            @endif
+            <?php $aux = 0; ?>
+            @foreach($testimonial->itemtestimonials as $item)
+            <?php $aux = $aux + 1; ?>
+            @if($aux <= 7) @if($aux==1) <?php $class = 'active'; ?> @else <?php $class = 'inactive'; ?> @endif <div class="client-single {{$class}} position-{{$aux}}" data-position="position-{{$aux}}">
+                <div class="client-img">
+                    <img width="200px" height="200px" src="{{asset($item->foto)}}" alt="">
+                </div>
+                <div class="client-comment">
+                    <h3>{{$item->testimonio}}</h3>
+                    <span><i class="fa fa-quote-left"></i></span>
+                </div>
+                <div class="client-info">
+                    <h3>{{$item->nombre}}</h3>
+                    <p>{{$item->cargo}}</p>
+                </div>
         </div>
+        @else
+        @break
+        @endif
+        @endforeach
+        @endif
+    </div>
+    @else
+    <div class="row" style="margin-left: -50px; margin-right: -405px;">
+        <!--start section heading-->
+        <div class="col-md-8 offset-md-2">
+            <div class="section-heading text-center">
+                <h5></h5>
+                <h2>Sección sin configuración</h2>
+            </div>
+        </div>
+        <!--end section heading-->
+    </div>
+    @endif
     </div>
 </section>

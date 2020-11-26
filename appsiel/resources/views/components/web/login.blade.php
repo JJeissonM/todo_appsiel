@@ -1,6 +1,3 @@
-<link rel="stylesheet" type="text/css" href="{{asset('css/login/style.min.css')}}"/>
-<link rel="stylesheet" type="text/css" href="{{asset('css/login/facade.min.css')}}"/>
-<link rel="stylesheet" type="text/css" href="{{asset('css/login/max-sh-shbp.min.css')}}"/>
 <style>
     .estilo {
         margin-left: 800px;
@@ -15,132 +12,54 @@
             margin-bottom: 10px;
         }
     }
+
+    .login {
+        padding-top: 50px;
+        <?php if ($login->tipo_fondo == 'COLOR') {
+            echo "background-color: " . $login->fondo . ";";
+        } ?>
+    }
 </style>
 @if($login != null)
-    <section id="login">
-        <header class="fusion-header-wrapper">
-            <div class="fusion-secondary-header" style="background-color: #2FAF72">
-                <div class="fusion-row">
-                    <div class="fusion-alignleft">
-                        <div class="fusion-contact-info"><span class="fusion-contact-info-phone-number"><span style="color: #ffffff;">Llámanos hoy al:</span> <span style="color: #fff200;">  +57 (5) 585 8349</span></span></div>			</div>
+<section id="login">
+    <div class="container-wrapper login">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- IMAGEN -->
+                    <img src="{{asset('img/'.$login->imagen)}}">
                 </div>
-            </div>
-            <div class="fusion-sticky-header-wrapper" style="height: 263px">
-                <div class="fusion-header" style="margin-bottom: 10px">
-                    <div class="fusion-row">
-                        <div class="fusion-logo" data-margin-top="0px" data-margin-bottom="0px" data-margin-left="0px"
-                             data-margin-right="0px" style="">
-                            <a class="fusion-logo-link" style="margin-top: 50px">
+                <div class="col-md-6">
+                    <div class="contact-form">
+                        <h3>Contact Info</h3>
 
-                                <!-- standard logo -->
-                                <img src="{{asset($login->imagen)}}" width="360" height="111"
-                                     style="max-height:111px;height:auto;">
-                            </a>
-                            <div class="fusion-header-banner estilo">
-                                <p class="mobileOnlyItem"></p>
-                                <h4 style="color: #2FAF72; margin: 0; margin-bottom: 5px;">{{$login->titulo}}</h4>
-                                <div class="wpcf7-form">
-                                    <form action="https://appsiel.com.co/blog"
-                                          method="GET" target="_blank"><input style="margin-bottom: 7px;"
-                                                                               name="email"
-                                                                               type="text" placeholder="Username">
-                                        <input class="wpcf7-text" style="padding: 8px 15px; margin-bottom: 7px;"
-                                               name="password" type="password" placeholder="Password">
-                                        <input style="background-color: #2FAF72" name="submit" type="submit"
-                                               value="Login"></form>
-                                </div>
+                        <address>
+                            <strong>Twitter, Inc.</strong><br>
+                            795 Folsom Ave, Suite 600<br>
+                            San Francisco, CA 94107<br>
+                            <abbr title="Phone">P:</abbr> (123) 456-7890
+                        </address>
+
+                        <form id="main-contact-form" name="contact-form" method="post" action="#">
+                            <div class="form-group">
+                                <input type="text" name="name" class="form-control" placeholder="Name" required="">
                             </div>
-                        </div>
+                            <div class="form-group">
+                                <input type="email" name="email" class="form-control" placeholder="Email" required="">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="subject" class="form-control" placeholder="Subject" required="">
+                            </div>
+                            <div class="form-group">
+                                <textarea name="message" class="form-control" rows="8" placeholder="Message" required=""></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </form>
                     </div>
+
                 </div>
             </div>
-            <div class="fusion-secondary-main-menu" style="background-color: #46AED6">
-                <div class="fusion-row" style="text-align: center">
-                    <nav class="fusion-main-menu" aria-label="Main Menu" >
-                        <ul id="menu-mani-menu" class="fusion-menu" style="display: flex;justify-content: center">
-                            <?php $count = 31; ?>
-                            @foreach($nav->menus as $item)
-                                <?php $count++;?>
-                                @if($item->parent_id == 0)
-                                    @if($item->subMenus()->count()>0)
-                                        <li id="mobile-menu-item-{{$count}}"
-                                            class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-15 current_page_item menu-item-{{$count}} nav-item dropdown {{request()->url() == $item->enlace ? 'active':''}}"
-                                            data-item-id="{{$count}}" style="color: #46AED6 !important;">
-                                            <a href="{{$item->enlace}}" role="button" id="navbarDropdown"
-                                               aria-haspopup="true" aria-expanded="false"
-                                               class="fusion-bar-highlight">
-                                                <span class="menu-text">{{' '.$item->titulo}}</span>
-                                            </a>
-                                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                @foreach($item->subMenus() as $subItems)
-                                                    <a style="color: {{$nav->color}}" class="dropdown-item"
-                                                       href="{{$subItems->enlace}}"><i
-                                                                class="fa fa-{{$subItems->icono}}"
-                                                                style="font-size: 20px;"></i>{{' '.$subItems->titulo}}
-                                                    </a>
-                                                @endforeach
-                                            </div>
-                                        </li>
-                                    @else
-                                        <li id="mobile-menu-item-{{$count}}"
-                                            class="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-15 current_page_item menu-item-{{$count}} nav-item dropdown {{request()->url() == $item->enlace ? 'active':''}}"
-                                            data-item-id="{{$count}}" style="">
-                                            <a href="{{$item->enlace}}" role="button" id="navbarDropdown"
-                                               aria-haspopup="true" aria-expanded="false"
-                                                class="fusion-bar-highlight">
-                                                <span class="menu-text">{{' '.$item->titulo}}</span>
-                                            </a></li>
-                                    @endif
-                                @endif
-                            @endforeach
-                    </nav>
-                    <nav class="fusion-mobile-nav-holder fusion-mobile-menu-text-align-left"
-                         aria-label="Main Menu Mobile">
-                        <button class="fusion-mobile-selector" aria-expanded="false"
-                                aria-controls="mobile-menu-mani-menu"><span>Go to...</span>
-                            <div class="fusion-selector-down">+</div>
-                        </button>
-                        <ul id="mobile-menu-mani-menu" class="fusion-menu">
-                            @foreach($nav->menus as $item)
-                                @if($item->parent_id == 0)
-                                    @if($item->subMenus()->count()>0)
-                                        <li id="mobile-menu-item-32"
-                                            class="fusion-mobile-nav-item fusion-mobile-current-nav-item nav-item dropdown {{request()->url() == $item->enlace ? 'active':''}}"
-                                            data-item-id="32" style="">
-                                            <a href="{{$item->enlace}}" role="button" id="navbarDropdown"
-                                               aria-haspopup="true" aria-expanded="false"
-                                               class="fusion-bar-highlight">
-                                                <span class="menu-text">{{' '.$item->titulo}}</span>
-                                            </a>
-                                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                                @foreach($item->subMenus() as $subItems)
-                                                    <a style="color: {{$nav->color}}" class="dropdown-item"
-                                                       href="{{$subItems->enlace}}"><i
-                                                                class="fa fa-{{$subItems->icono}}"
-                                                                style="font-size: 20px;"></i>{{' '.$subItems->titulo}}
-                                                    </a>
-                                                @endforeach
-                                            </div>
-                                        </li>
-                                    @else
-                                        <li id="mobile-menu-item-32"
-                                            class="fusion-mobile-nav-item fusion-mobile-current-nav-item nav-item dropdown {{request()->url() == $item->enlace ? 'active':''}}"
-                                            data-item-id="32" style="">
-                                            <a href="{{$item->enlace}}" role="button" id="navbarDropdown"
-                                               aria-haspopup="true" aria-expanded="false"
-                                               class="fusion-bar-highlight">
-                                                <span class="menu-text">{{' '.$item->titulo}}</span>
-                                            </a></li>
-                                    @endif
-                                @endif
-                            @endforeach
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </header>
-    </section>
-{{--    <script type="text/javascript" src="{{asset('css/login/imagen.min.js')}}"></script>--}}
-{{--    <script type="text/javascript" src="{{asset('css/login/ded1aeb6f7defedf658095eb8eb251cd.min.js')}}"></script>--}}
-{{--    <script type="text/javascript" src="{{asset('css/login/jquery.js')}}"></script>--}}
+        </div>
+    </div>
+</section>
 @endif

@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Login extends Model
 {
     protected $table = 'pw_logins';
-    protected $fillable = ['id', 'titulo', 'ruta', 'imagen','disposicion', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'titulo', 'ruta', 'imagen', 'ondas', 'tipo_fondo', 'fondo', 'disposicion', 'widget_id', 'created_at', 'updated_at'];
 
-    public function widget(){
+    public function widget()
+    {
         return $this->belongsTo(Widget::class);
     }
 }
