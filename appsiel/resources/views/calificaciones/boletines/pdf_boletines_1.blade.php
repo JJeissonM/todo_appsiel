@@ -62,8 +62,7 @@
 								@endif
 							</td>
 						@endif
-						
-						
+
 						<td>
 							@include('calificaciones.boletines.proposito')
 							

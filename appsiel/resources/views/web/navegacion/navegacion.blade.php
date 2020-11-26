@@ -38,6 +38,8 @@
                                 $logo['anchura_logo'] = 100;
                             }
 
+
+                            // FORMULARIO
                             if ($nav == null) {
                                 echo Form::open(['url' => route('navegacion.storenav'), 'method' => 'POST', 'files' => 'true']);
                             } else {

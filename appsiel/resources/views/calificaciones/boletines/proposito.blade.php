@@ -18,7 +18,7 @@
 					break;
 			}
 		}
-			
-
+		
+		echo $lista_propositos;
 	}
 ?>

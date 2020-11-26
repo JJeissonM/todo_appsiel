@@ -96,10 +96,17 @@ if ($nav->fixed) {
     }
 </style>
 
+<?php
+    $style = '';
+    if( $clase_header == 'fixed-top')
+    {
+        $style = "background: " . $fondos['background_0'] . " !important; opacity: " . ($nav->alpha/10) . ";";
+    } 
+?>
 
 <header class="no" id="myHeader">
     <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light {{$clase_header}}" <?php if($clase_header=='fixed-top'){echo "style='background: ".$fondos['background_0']." !important; opacity: ".($nav->alpha/10).";'";} ?> >
+        <nav class="navbar navbar-expand-lg navbar-light {{ $clase_header }}" style="{{ $style }}" >
             <!-- mu-navbar  d-flex -->
 
             <!-- Text based logo -->
