@@ -68,6 +68,8 @@
 			text-align:right;
 		}
 
+		html{margin: 60px 40px 40px }
+
     </style>
 </head>
 <body>

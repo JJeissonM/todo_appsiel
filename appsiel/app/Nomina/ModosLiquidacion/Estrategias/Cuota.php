@@ -10,9 +10,9 @@ class Cuota implements Estrategia
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
 		$cuotas = NomCuota::where('estado', 'Activo')
-                        ->where('core_tercero_id', $liquidacion->empleado->core_tercero_id)
-                        ->where('nom_concepto_id', $liquidacion->concepto->id)
-                        ->where('fecha_inicio', '<=', $liquidacion->documento_nomina->fecha)
+                        ->where('core_tercero_id', $liquidacion['empleado']->core_tercero_id)
+                        ->where('nom_concepto_id', $liquidacion['concepto']->id)
+                        ->where('fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha)
                         ->get();
 
         $valores_cuotas = [];
@@ -42,8 +42,14 @@ class Cuota implements Estrategia
             }
             
             $cuota->save();
+
+            $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_cuota );
             
-            $valores_cuotas[] = $valor_real_cuota;
+            $valores_cuotas[] = [
+                                    'valor_devengo' => $valores->devengo,
+                                    'valor_deduccion' => $valores->deduccion,
+                                    'nom_cuota_id' => $cuota->id 
+                                ];
         }
 
         return $valores_cuotas;
