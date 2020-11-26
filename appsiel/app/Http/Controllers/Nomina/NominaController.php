@@ -627,12 +627,12 @@ class NominaController extends TransaccionController
     {
         $conceptos_automaticos = NomConcepto::where('estado','Activo')->where('modo_liquidacion_id', $modo_liquidacion_id)->get();
         
-        foreach ($conceptos_automaticos as $un_concepto)
+        foreach ($conceptos_automaticos as $concepto)
         {
             // Se valida si ya hay una liquidación previa del concepto en ese documento
             $cant = NomDocRegistro::where('nom_doc_encabezado_id', $documento_nomina->id)
                                     ->where('core_tercero_id', $empleado->core_tercero_id)
-                                    ->where('nom_concepto_id', $un_concepto->id)
+                                    ->where('nom_concepto_id', $concepto->id)
                                     ->count();
 
             if ( $cant != 0 ) 
@@ -640,120 +640,36 @@ class NominaController extends TransaccionController
                 continue;
             }
 
-            $liquidacion = new LiquidacionConcepto($un_concepto->id, $empleado, $documento_nomina);
+            $liquidacion = new LiquidacionConcepto($concepto->id, $empleado, $documento_nomina);
 
-            $valores = $liquidacion->calcular( $un_concepto->modo_liquidacion_id );
-
-            dd( $valores );
-
-            $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
-
-            if( ($this->vec_campos->valor_devengo +$this->vec_campos->valor_deduccion ) > 0)
+            $valores = $liquidacion->calcular( $concepto->modo_liquidacion_id );
+            
+            foreach( $valores as $registro )
             {
-                $registro = NomDocRegistro::create(
-                    ['nom_doc_encabezado_id' => $documento_nomina->id ] + 
-                    ['nom_concepto_id' => $un_concepto->id ] + 
-                    ['nom_cuota_id' => $this->vec_campos->nom_cuota_id ] + 
-                    ['nom_prestamo_id' => $this->vec_campos->nom_prestamo_id ] + 
-                    ['core_tercero_id' => $empleado->core_tercero_id ] + 
-                    ['fecha' => $documento_nomina->fecha] + 
-                    ['core_empresa_id' => $documento_nomina->core_empresa_id] + 
-                    ['valor_devengo' => $this->vec_campos->valor_devengo ] + 
-                    ['valor_deduccion' => $this->vec_campos->valor_deduccion ] + 
-                    ['estado' => 'Activo'] + 
-                    ['creado_por' => $usuario->email] + 
-                    ['modificado_por' => '']
-                    );
+                if( ($registro['valor_devengo'] + $registro['valor_deduccion']) > 0 )
+                {
+                    $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $registro, $usuario);
 
-                $this->registros_procesados++;
-            }
+                    $this->registros_procesados++;
+                }
+            }            
         } // Fin Por cada concepto
     }
 
-
-
-    public function liquidar_cuotas($una_persona, $un_concepto, $documento)
+    public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $registro, $usuario)
     {
-        $cuota = NomCuota::where('estado', 'Activo')
-                        ->where('core_tercero_id', $una_persona->core_tercero_id)
-                        ->where('nom_concepto_id', $un_concepto->id)
-                        ->where('fecha_inicio', '<=', $documento->fecha)
-                        ->get();
-
-        if ( count($cuota) > 0)
-        {
-            if ( $cuota[0]->tope_maximo != '' ) // si la cuota maneja tope máximo 
-            {
-                // El valor_acumulado no se puede pasar del tope_maximo
-                $saldo_pendiente = $cuota[0]->tope_maximo - $cuota[0]->valor_acumulado;
-                
-                if ( $saldo_pendiente < $cuota[0]->valor_cuota )
-                {
-                    $cuota[0]->valor_acumulado += $saldo_pendiente;
-                    $valor_real_cuota = $saldo_pendiente;
-                }else{
-                    $cuota[0]->valor_acumulado += $cuota[0]->valor_cuota;
-                    $valor_real_cuota = $cuota[0]->valor_cuota;
-                }
-
-                if ( $cuota[0]->valor_acumulado >= $cuota[0]->tope_maximo ) 
-                {
-                    $cuota[0]->estado = "Inactivo";
-                }
-            }else{
-                $cuota[0]->valor_acumulado += $cuota[0]->valor_cuota;
-                $valor_real_cuota = $cuota[0]->valor_cuota;
-            }
-            
-            $cuota[0]->save();
-            
-            $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_real_cuota );
-
-            $this->vec_campos = (object)['nom_cuota_id' => $cuota[0]->id, 'nom_prestamo_id' => 0, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
-        }/*else{
-            $this->vec_campos = (object)[ 'nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => 0, 'valor_deduccion' => 0 ];
-        }*/
+        NomDocRegistro::create(
+                                    ['nom_doc_encabezado_id' => $documento_nomina->id ] + 
+                                    ['fecha' => $documento_nomina->fecha] + 
+                                    ['core_empresa_id' => $documento_nomina->core_empresa_id] +  
+                                    ['nom_concepto_id' => $concepto->id ] + 
+                                    ['core_tercero_id' => $empleado->core_tercero_id ] + 
+                                    ['estado' => 'Activo'] + 
+                                    ['creado_por' => $usuario->email] + 
+                                    ['modificado_por' => '']+ 
+                                    $registro
+                                );        
     }
-
-    public function liquidar_prestamos($una_persona, $un_concepto, $documento)
-    {
-        // un solo préstamo por concepto
-        $prestamo = NomPrestamo::where('estado', 'Activo')
-                                ->where('core_tercero_id', $una_persona->core_tercero_id)
-                                ->where('nom_concepto_id', $un_concepto->id)
-                                ->where('fecha_inicio', '<=', $documento->fecha)
-                                ->get()
-                                ->first();
-
-        if ( !is_null($prestamo) )
-        {
-            // El valor_acumulado no se puede pasar del valor_prestamo
-            $saldo_pendiente = $prestamo->valor_prestamo - $prestamo->valor_acumulado;
-                
-            if ( $saldo_pendiente < $prestamo->valor_cuota )
-            {
-                $prestamo->valor_acumulado += $saldo_pendiente;
-                $valor_real_prestamo = $saldo_pendiente;
-            }else{
-                $prestamo->valor_acumulado += $prestamo->valor_cuota;
-                $valor_real_prestamo = $prestamo->valor_cuota;
-            }
-
-            if ( $prestamo->valor_acumulado >= $prestamo->valor_prestamo ) 
-            {
-                $prestamo->estado = "Inactivo";
-            }
-            
-            $prestamo->save();
-            
-            $valores = $this->get_valor_devengo_deduccion( $un_concepto->naturaleza, $valor_real_prestamo );
-
-            $this->vec_campos = (object)['nom_cuota_id' => 0, 'nom_prestamo_id' => $prestamo->id, 'valor_devengo' => $valores[0], 'valor_deduccion' => $valores[1] ];
-        }else{
-            $this->vec_campos = (object)[ 'nom_cuota_id' => 0, 'nom_prestamo_id' => 0, 'valor_devengo' => 0, 'valor_deduccion' => 0 ];
-        }
-    }
-
 
     public function retirar_liquidacion($id)
     {

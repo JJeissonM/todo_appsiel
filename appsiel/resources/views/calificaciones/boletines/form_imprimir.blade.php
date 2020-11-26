@@ -71,8 +71,26 @@
 							{{ Form::bsSelect('tam_hoja','','Tamaño hoja',['letter'=>'Carta','folio'=>'Oficio'],[]) }}
 						</div>
 
+						<?php 
+							$tam_letra = [ 
+											'2.5'=>'10',
+											'2.75'=>'10.5',
+											'3'=>'11',
+											'3.25'=>'11.5',
+											'3.5'=>'12',
+											'3.75'=>'12.5',
+											'4'=>'13',
+											'4.25'=>'13.5',
+											'4.5'=>'14',
+											'4.75'=>'14.5',
+											'5'=>'15',
+											'5.25'=>'15.5',
+											'5.5'=>'16'
+										];
+						?>
+
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('tam_letra',4,'Tamaño Letra',['2.5'=>'10','3'=>'11','3.5'=>'12','4'=>'13','4.5'=>'14','5'=>'15','5.5'=>'16'],[]) }}
+							{{ Form::bsSelect( 'tam_letra',  4, 'Tamaño Letra', $tam_letra, []) }}
 						</div>
 
 						<div class="row" style="padding:5px;">

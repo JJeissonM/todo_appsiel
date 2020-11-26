@@ -25,6 +25,6 @@ if (! function_exists('get_valores_devengo_deduccion'))
                 break;
         }
 
-        return (object)['devengo'=>$valor_devengo, 'deduccion'=>$valor_deduccion];
+        return (object)['devengo' => $valor_devengo, 'deduccion' => $valor_deduccion];
     }
 }

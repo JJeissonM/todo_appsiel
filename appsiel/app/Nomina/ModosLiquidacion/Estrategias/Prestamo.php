@@ -10,12 +10,12 @@ class Prestamo implements Estrategia
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
 		$prestamos = NomPrestamo::where('estado', 'Activo')
-                                ->where('core_tercero_id', $liquidacion->empleado->core_tercero_id)
-                                ->where('nom_concepto_id', $liquidacion->concepto->id)
-                                ->where('fecha_inicio', '<=', $liquidacion->documento_nomina->fecha)
+                                ->where('core_tercero_id', $liquidacion['empleado']->core_tercero_id)
+                                ->where('nom_concepto_id', $liquidacion['concepto']->id)
+                                ->where('fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha)
                                 ->get();
 
-        $valores = [];
+        $valores_prestamos = [];
         foreach( $prestamos as $prestamo )
         {
             // El valor_acumulado no se puede pasar del valor_prestamo
@@ -36,10 +36,16 @@ class Prestamo implements Estrategia
             }
             
             $prestamo->save();
+
+            $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_prestamo );
             
-            $valores[] = $valor_real_prestamo;
+            $valores_prestamos[] = [
+                                    'valor_devengo' => $valores->devengo,
+                                    'valor_deduccion' => $valores->deduccion,
+                                    'nom_prestamo_id' => $prestamo->id 
+                                ];
         }
 
-        return $valores;
+        return $valores_prestamos;
 	}
 }

@@ -18,16 +18,19 @@
                     $credito = $linea->valor_credito;
                     $saldo = $saldo_inicial + $debito + $credito;
 
-                    if( is_null( $linea->tercero ) )
+                    $tercero_numero_identificacion = 0;
+                    $tercero_descripcion = '':
+                    if( !is_null( $linea->tercero ) )
                     {
-                        dd( $linea );
+                        $tercero_numero_identificacion = $linea->tercero->numero_identificacion;
+                        $tercero_descripcion = $linea->tercero->descripcion:
                     }
 
                 ?>
                 <tr>
                     <td> {{ $linea->fecha }}</td>
                     <td> {{ $linea->cuenta->codigo }} {{ $linea->cuenta->descripcion }}</td>
-                    <td> {{ $linea->tercero->numero_identificacion }} {{ $linea->tercero->descripcion }}</td>
+                    <td> {{ $tercero_numero_identificacion }} {{ $tercero_descripcion }}</td>
                     <td> {{ $linea->tipo_documento_app->prefijo }} {{ $linea->consecutivo }}</td>
                     <td> {{ $linea->detalle_operacion }}</td>
                     <td> {{ number_format( $linea->valor_debito , 0, ',', '.') }} </td>
