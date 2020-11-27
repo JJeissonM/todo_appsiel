@@ -28,6 +28,10 @@ Route::get('cte_documentos_vehiculo/{id}/show', 'ContratoTransporte\VehiculoCont
 //CONDUCTORES
 Route::get('cte_conductores/{id}/show', 'ContratoTransporte\ConductorController@show')->name('cte_conductor.show');
 Route::get('cte_documentos_conductor/{id}/show', 'ContratoTransporte\ConductorController@showDocuments')->name('cte_conductor.showDocuments');
+Route::get('cte_conductores/{id}/vehiculos', 'ContratoTransporte\ConductorController@vehiculos')->name('cte_conductor.vehiculos');
+Route::post('cte_conductores/vehiculos/store', 'ContratoTransporte\ConductorController@vehiculoStore')->name('cte_conductor.vehiculoStore');
+Route::get('cte_conductores/vehiculos/{id}/delete', 'ContratoTransporte\ConductorController@vehiculoDelete')->name('cte_conductor.vehiculoDelete');
+Route::get('cte_conductores/{id}/eliminar', 'ContratoTransporte\ConductorController@destroy')->name('cte_conductor.delete');
 
 //AÑOS Y PERIODOS
 Route::get('cte_anioperiodos/{id}/show', 'ContratoTransporte\AnioperiodoController@show')->name('cte_anioperiodo.show');

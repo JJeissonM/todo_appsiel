@@ -103,7 +103,9 @@ class ContratoTransporteController extends Controller
                         }
                     }
                     if (!$vencido) {
-                        $vehiculos[$v->id] = "<b>PLACA " . $v->placa . ", MOVIL INTERNO " . $v->int . ", CAPACIDAD " . $v->capacidad;
+                        if ($v->bloqueado_cuatro_contratos == 'NO') {
+                            $vehiculos[$v->id] = "<b>PLACA " . $v->placa . ", MOVIL INTERNO " . $v->int . ", CAPACIDAD " . $v->capacidad;
+                        }
                     }
                 }
             }
@@ -118,13 +120,9 @@ class ContratoTransporteController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->all());
-        //verifico si el propietario ya hizo 4 contratos este mes, si los hizo se bloquea y no se deja... debe pagar para hacerlo
-        $propietario = Vehiculo::find($request->vehiculo_id)->propietario;
-        dd($propietario);
+        $mes_fecha_fin = explode('-', $request->fecha_fin)[1];
         $hoy = getdate();
         $mes_actual = $hoy['mon'];
-        $mes_fecha_fin = explode('-', $request->fecha_fin)[1];
         if ((int) $mes_fecha_fin > (int) $mes_actual) {
             return redirect("web/" . $request->variables_url)->with('mensaje_error', 'El contrato no puede tener fecha de terminación del siguiente mes');
         }
@@ -133,6 +131,22 @@ class ContratoTransporteController extends Controller
         }
         $result = $this->storeContract($request);
         if ($result) {
+            //verifico si el vehiculo ya hizo 4 contratos este mes, si los hizo se bloquea... debe pagar para hacerlo la proxima
+            $contratosMes = Contrato::where('vehiculo_id', $request->vehiculo_id)->get();
+            if (count($contratosMes) > 0) {
+                $total = 0;
+                foreach ($contratosMes as $cm) {
+                    $mes_fecha = explode('-', $cm->fecha_inicio)[1];
+                    if ($mes_actual == $mes_fecha) {
+                        $total = $total + 1;
+                    }
+                }
+                if ($total >= 4) {
+                    $vehi = Vehiculo::find($request->vehiculo_id);
+                    $vehi->bloqueado_cuatro_contratos = 'SI';
+                    $vehi->save();
+                }
+            }
             return redirect("web" . $request->variables_url)->with('flash_message', 'Almacenado con exito');
         } else {
             return redirect("web/" . $request->variables_url)->with('mensaje_error', 'No pudo ser almacenado');
@@ -568,14 +582,10 @@ class ContratoTransporteController extends Controller
                 }
             }
         }
-        $idapp = Input::get('id');
-        $modelo = Input::get('id_modelo');
-        $transaccion = Input::get('id_transaccion');
-        $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
         if ($result) {
-            return redirect('cte_contratos/' . $request->id . '/planillas/' . $request->source . '/index' . $variables_url)->with('flash_message', 'Planilla generada con éxito.');
+            return redirect('cte_contratos/' . $request->id . '/planillas/' . $request->source . '/index' . $request->variables_url)->with('flash_message', 'Planilla generada con éxito.');
         } else {
-            return redirect('cte_contratos/' . $request->id . '/planillas/' . $request->source . '/index' . $variables_url)->with('mensaje_error', 'La planilla no pudo ser generada.');
+            return redirect('cte_contratos/' . $request->id . '/planillas/' . $request->source . '/index' . $request->variables_url)->with('mensaje_error', 'La planilla no pudo ser generada.');
         }
     }
 

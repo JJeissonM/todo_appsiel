@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\DB;
 class Vehiculo extends Model
 {
     protected $table = 'cte_vehiculos';
-    protected $fillable = ['id', 'int','bloqueado_cuatro_contratos', 'placa', 'numero_vin', 'numero_motor', 'modelo', 'marca', 'clase', 'color', 'cilindraje', 'capacidad', 'fecha_control_kilometraje', 'propietario_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'int', 'bloqueado_cuatro_contratos', 'placa', 'numero_vin', 'numero_motor', 'modelo', 'marca', 'clase', 'color', 'cilindraje', 'capacidad', 'fecha_control_kilometraje', 'propietario_id', 'created_at', 'updated_at'];
 
-    public $encabezado_tabla = ['Interno', 'Vinculación', 'Placa', 'Marca', 'Clase', 'Modelo', 'Propietario', 'Acción'];
+    public $encabezado_tabla = ['Interno', 'Vinculación', 'Placa', 'Marca', 'Clase', 'Modelo', 'Propietario', 'Bloqueado 4 Contratos/Mes', 'Acción'];
 
     public $vistas = '{"index":"layouts.index3"}';
 
@@ -40,7 +40,8 @@ class Vehiculo extends Model
                 'cte_vehiculos.clase AS campo5',
                 'cte_vehiculos.modelo AS campo6',
                 DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo7'),
-                'cte_vehiculos.id AS campo8'
+                'cte_vehiculos.bloqueado_cuatro_contratos AS campo8',
+                'cte_vehiculos.id AS campo9'
             )
             ->orderBy('cte_vehiculos.created_at', 'DESC')
             ->paginate(100);
@@ -59,5 +60,10 @@ class Vehiculo extends Model
     public function contratos()
     {
         return $this->hasMany(Contrato::class);
+    }
+
+    public function vehiculoconductors()
+    {
+        return $this->hasMany(Vehiculoconductor::class);
     }
 }
