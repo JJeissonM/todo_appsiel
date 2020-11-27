@@ -11,10 +11,10 @@ use App\User;
 class Propietario extends Model
 {
     protected $table = 'cte_propietarios';
-    
+
     protected $fillable = ['id', 'genera_planilla', 'tercero_id', 'created_at', 'updated_at'];
 
-    public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Propietario', 'Email/Usuario', 'Genera Planilla', 'Estado', 'Acción'];
+    public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Propietario','Tipo Propietario', 'Acción'];
 
     public $vistas = '{"index":"layouts.index3"}';
 
@@ -27,8 +27,7 @@ class Propietario extends Model
         $vec[''] = '';
         foreach ($opciones as $opcion) {
             $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->descripcion;
-        }
-
+        } 
         return $vec;
     }
 
@@ -41,10 +40,8 @@ class Propietario extends Model
                 'core_tipos_docs_id.abreviatura AS campo1',
                 'core_terceros.numero_identificacion AS campo2',
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'users.email AS campo4',
-                'cte_propietarios.genera_planilla AS campo5',
-                'core_terceros.estado AS campo6',
-                'cte_propietarios.id AS campo7'
+                'cte_propietarios.tipo AS campo4',
+                'cte_propietarios.id AS campo5'
             )
             ->orderBy('cte_propietarios.created_at', 'DESC')
             ->paginate(100);
@@ -60,11 +57,11 @@ class Propietario extends Model
         return $this->belongsTo(Tercero::class);
     }
 
-    public function store_adicional( $datos, $registro )
+    public function store_adicional($datos, $registro)
     {
-        $tercero = Propietario::find( $registro->id )->tercero;
-        
-        $usuario = User::crear_y_asignar_role( $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 18); // 18 = Propietario vehículo (FUEC)
+        $tercero = Propietario::find($registro->id)->tercero;
+
+        $usuario = User::crear_y_asignar_role($tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 18); // 18 = Propietario vehículo (FUEC)
 
         $tercero->user_id = $usuario->id;
         $tercero->save();
@@ -72,21 +69,18 @@ class Propietario extends Model
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
-        $tercero = Propietario::find( $registro->id )->tercero;
+        $tercero = Propietario::find($registro->id)->tercero;
 
         // Personalizar campos
         $cantida_campos = count($lista_campos);
-        for ($i=0; $i <  $cantida_campos; $i++)
-        {
-            switch ( $lista_campos[$i]['name'] )
-            {
+        for ($i = 0; $i <  $cantida_campos; $i++) {
+            switch ($lista_campos[$i]['name']) {
                 case 'email':
-                    $usuario = User::find( $tercero->user_id );
-                    if( !is_null( $usuario ) )
-                    {
+                    $usuario = User::find($tercero->user_id);
+                    if (!is_null($usuario)) {
                         $lista_campos[$i]['value'] = $usuario->email;
                     }
-                    
+
                     break;
 
                 case 'tercero_id':
@@ -97,7 +91,7 @@ class Propietario extends Model
 
                 default:
                     # code...
-                break;
+                    break;
             }
         }
 
@@ -106,17 +100,16 @@ class Propietario extends Model
 
     public function update_adicional($datos, $id)
     {
-        $propietario = Propietario::find( $id );
+        $propietario = Propietario::find($id);
         $tercero = $propietario->tercero;
-        $usuario = User::find( $tercero->user_id );
+        $usuario = User::find($tercero->user_id);
 
-        if( is_null( $usuario ) )
-        {
-            $usuario = User::crear_y_asignar_role( $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 18); // 18 = Propietario vehículo (FUEC)
+        if (is_null($usuario)) {
+            $usuario = User::crear_y_asignar_role($tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 18); // 18 = Propietario vehículo (FUEC)
 
             $tercero->user_id = $usuario->id;
             $tercero->save();
-        }else{
+        } else {
             $usuario->email = $datos['email'];
             $usuario->save();
         }
