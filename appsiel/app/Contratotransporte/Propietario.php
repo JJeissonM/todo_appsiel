@@ -12,9 +12,9 @@ class Propietario extends Model
 {
     protected $table = 'cte_propietarios';
 
-    protected $fillable = ['id', 'genera_planilla', 'tercero_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'genera_planilla', 'estado', 'tipo', 'tercero_id', 'created_at', 'updated_at'];
 
-    public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Propietario','Tipo Propietario', 'Acción'];
+    public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Propietario', 'Tipo Propietario', 'Estado', 'Acción'];
 
     public $vistas = '{"index":"layouts.index3"}';
 
@@ -27,7 +27,7 @@ class Propietario extends Model
         $vec[''] = '';
         foreach ($opciones as $opcion) {
             $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->descripcion;
-        } 
+        }
         return $vec;
     }
 
@@ -41,7 +41,8 @@ class Propietario extends Model
                 'core_terceros.numero_identificacion AS campo2',
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
                 'cte_propietarios.tipo AS campo4',
-                'cte_propietarios.id AS campo5'
+                'cte_propietarios.estado AS campo5',
+                'cte_propietarios.id AS campo6'
             )
             ->orderBy('cte_propietarios.created_at', 'DESC')
             ->paginate(100);
