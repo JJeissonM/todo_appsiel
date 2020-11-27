@@ -57,16 +57,6 @@ class Propietario extends Model
         return $this->belongsTo(Tercero::class);
     }
 
-    public function store_adicional($datos, $registro)
-    {
-        $tercero = Propietario::find($registro->id)->tercero;
-
-        $usuario = User::crear_y_asignar_role($tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 18); // 18 = Propietario vehículo (FUEC)
-
-        $tercero->user_id = $usuario->id;
-        $tercero->save();
-    }
-
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
         $tercero = Propietario::find($registro->id)->tercero;
@@ -96,24 +86,5 @@ class Propietario extends Model
         }
 
         return $lista_campos;
-    }
-
-    public function update_adicional($datos, $id)
-    {
-        $propietario = Propietario::find($id);
-        $tercero = $propietario->tercero;
-        $usuario = User::find($tercero->user_id);
-
-        if (is_null($usuario)) {
-            $usuario = User::crear_y_asignar_role($tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 18); // 18 = Propietario vehículo (FUEC)
-
-            $tercero->user_id = $usuario->id;
-            $tercero->save();
-        } else {
-            $usuario->email = $datos['email'];
-            $usuario->save();
-        }
-
-        return 0;
     }
 }

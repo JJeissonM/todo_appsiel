@@ -15,6 +15,8 @@ class Conductor extends Model
 
     public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Conductor', 'Email/Usuario', 'Estado', 'Acción'];
 
+    public $urls_acciones = '{"eliminar":"cte_conductores/id_fila/eliminar"}';
+    
     public $vistas = '{"index":"layouts.index3"}';
 
     public static function opciones_campo_select()
@@ -68,16 +70,6 @@ class Conductor extends Model
         return $this->hasMany(Planillaconductor::class);
     }
 
-    public function store_adicional( $datos, $registro )
-    {
-        $tercero = Conductor::find( $registro->id )->tercero;
-        
-        $usuario = User::crear_y_asignar_role( $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 19); // 19 = Conductor
-
-        $tercero->user_id = $usuario->id;
-        $tercero->save();
-    }
-
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
         $tercero = Conductor::find( $registro->id )->tercero;
@@ -110,25 +102,5 @@ class Conductor extends Model
         }
 
         return $lista_campos;
-    }
-
-    public function update_adicional($datos, $id)
-    {
-        $propietario = Conductor::find( $id );
-        $tercero = $propietario->tercero;
-        $usuario = User::find( $tercero->user_id );
-
-        if( is_null( $usuario ) )
-        {
-            $usuario = User::crear_y_asignar_role( $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 19); // 19 = Conductor
-
-            $tercero->user_id = $usuario->id;
-            $tercero->save();
-        }else{
-            $usuario->email = $datos['email'];
-            $usuario->save();
-        }
-
-        return 0;
     }
 }
