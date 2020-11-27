@@ -134,33 +134,46 @@
 		<br><br>
 	</div>
 
-	<table border="0" style="font-size: 0.8em;">
-		<tr>
-			<td width="150px"> &nbsp; </td>
-			<td align="center">	_____________________________ </td>
-			<td align="center"> &nbsp;	</td>
-			<td align="center">	_____________________________ </td>
-			<td width="50px">&nbsp;</td>
-		</tr>
-		<tr>
-			<td width="150px"> &nbsp; </td>
-			<td align="center">	
-				{{ $firma_autorizada_1->tercero_nombre }} 
-				<br>
-				{{ $firma_autorizada_1->tercero_tipo_doc_identidad }} {{ number_format( $firma_autorizada_1->tercero_numero_identificacion, 0, ',', '.' ) }}
-				<br>
-				{{ $firma_autorizada_1->tercero_titulo }} 
-			</td>
-			<td align="center"> &nbsp;	</td>
-			<td align="center">	
-				{{ $firma_autorizada_2->tercero_nombre }} 
-				<br>
-				{{ $firma_autorizada_2->tercero_tipo_doc_identidad }} {{ number_format( $firma_autorizada_2->tercero_numero_identificacion, 0, ',', '.' ) }}
-				<br>
-				{{ $firma_autorizada_2->tercero_titulo }} 
-			</td>
-			<td width="50px">&nbsp;</td>
-		</tr>
-	</table>
+	<div style="width: 100%;">
+		
+		<div style="float: left; width: 50%; text-align: center;">
+			<?php
+				$url_firma = '';
+				if ( $firma_autorizada_1->imagen != '' )
+				{
+					$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada_1->imagen;
+				}
+			?>
+			@if( $url_firma != '')
+				<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
+			@else
+				_____________________________
+			@endif
+			<br><br><br>
+			{{ $firma_autorizada_1->tercero->descripcion }} 
+			<br>
+			{{ $firma_autorizada_1->titulo_tercero }} 
+		</div>
+
+		<div style="float: left; width: 50%; text-align: center;">
+			<?php
+				$url_firma = '';
+				if ( $firma_autorizada_2->imagen != '' )
+				{
+					$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada_2->imagen;
+				}
+			?>
+			@if( $url_firma != '')
+				<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
+			@else
+				_____________________________
+			@endif
+			<br><br><br>
+			{{ $firma_autorizada_2->tercero->descripcion }} 
+			<br>
+			{{ $firma_autorizada_2->titulo_tercero }} 
+		</div>
+	</div>
+
 	<div class="page-break"></div>
 @endforeach

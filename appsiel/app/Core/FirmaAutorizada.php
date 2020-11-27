@@ -15,6 +15,11 @@ class FirmaAutorizada extends Model
 
     public $encabezado_tabla = ['Tercero','Título/Cargo','Estado','Acción'];
 
+    public function tercero()
+    {
+        return $this->belongsTo(Tercero::class, 'core_tercero_id');
+    }
+
     public static function consultar_registros()
     {
         $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
