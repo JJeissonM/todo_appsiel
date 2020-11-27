@@ -118,6 +118,7 @@ class LoginController extends Controller
                 $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
                 if ($flag !== false) {
                     $login->fondo = $filename;
+                    $login->tipo_fondo = 'IMAGEN';
                 } else {
                     $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
                     return redirect()->back()->withInput($request->input())
@@ -125,6 +126,7 @@ class LoginController extends Controller
                 }
             } else {
                 $login->fondo = $request->fondo;
+                $login->tipo_fondo = "COLOR";
             }
         }
         $result = $login->save();

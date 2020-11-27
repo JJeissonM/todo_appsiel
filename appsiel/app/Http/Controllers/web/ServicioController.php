@@ -37,7 +37,6 @@ class ServicioController extends Controller
         $variables_url = '?id=' . Input::get('id');
         $servicios = Servicio::where('widget_id', $widget)->first();
         return view('web.components.servicios.create', compact('miga_pan', 'variables_url', 'servicios', 'iconos', 'widget'));
-
     }
 
     /* Guarda un servicio
@@ -46,7 +45,24 @@ class ServicioController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->tipo_fondo == '') {
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('mensaje_error', 'Debe indicar el tipo de fondo a usar en el componente.');
+        }
         $servicios = new Servicio($request->all());
+        if ($request->tipo_fondo == 'IMAGEN') {
+            //el fondo es una imagen
+            $file = $request->file('fondo');
+            $name = time() . $file->getClientOriginalName();
+            $filename = "img/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $servicios->fondo = $filename;
+            } else {
+                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                return redirect()->back()->withInput($request->input())
+                    ->with('mensaje_error', $message);
+            }
+        }
         $servicios->titulo = strtoupper($request->titulo);
         $servicios->descripcion = $request->descripcion;
         $result = $servicios->save();
@@ -67,6 +83,30 @@ class ServicioController extends Controller
         $servicio = Servicio::find($id);
         $servicio->titulo = strtoupper($request->titulo);
         $servicio->descripcion = $request->descripcion;
+        $tipo_fondo = $servicio->tipo_fondo;
+        if ($request->tipo_fondo == '') {
+            $servicio->tipo_fondo = $tipo_fondo;
+        }
+        if ($request->tipo_fondo != '') {
+            if ($request->tipo_fondo == 'IMAGEN') {
+                //el fondo es una imagen
+                $file = $request->file('fondo');
+                $name = time() . $file->getClientOriginalName();
+                $filename = "img/" . $name;
+                $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                if ($flag !== false) {
+                    $servicio->fondo = $filename;
+                    $servicio->tipo_fondo = 'IMAGEN';
+                } else {
+                    $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                    return redirect()->back()->withInput($request->input())
+                        ->with('mensaje_error', $message);
+                }
+            } else {
+                $servicio->fondo = $request->fondo;
+                $servicio->tipo_fondo = "COLOR";
+            }
+        }
         $result = $servicio->save();
         if ($result) {
             $message = 'La sección fue modificada correctamente.';
@@ -94,11 +134,9 @@ class ServicioController extends Controller
         if ($request) {
             $message = 'La sección fue almacenada correctamente.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
-
         } else {
             $message = 'La sección no fue almacenada de forma correcta.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
-
         }
     }
 
@@ -158,15 +196,16 @@ class ServicioController extends Controller
      * Elimina un itemservicio
      * @param Itemservicio $id
      */
-    public function destroy($id){
+    public function destroy($id)
+    {
         $item = Itemservicio::find($id);
         $widget = $item->servicio->widget_id;
         $result = $item->delete();
-        if($result){
+        if ($result) {
             $message = 'El Servicio fue eliminado correctamente.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
-        }else{
+        } else {
             $message = 'El Servicio no fue eliminado de forma correcta.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
@@ -177,15 +216,16 @@ class ServicioController extends Controller
      * Elimina toda los servicios
      * @param Servicio $id
      */
-    public function delete($id){
+    public function delete($id)
+    {
         $servicio = Servicio::find($id);
         $widget = $servicio->widget_id;
         $result = $servicio->delete();
-        if($result){
+        if ($result) {
             $message = 'Los servicios fueron eliminados de correctamente.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
-        }else{
+        } else {
             $message = 'Los servicios no fueron eliminados de forma correcta.';
             $variables_url = '?id=' . Input::get('id');
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
@@ -195,6 +235,6 @@ class ServicioController extends Controller
     //leer servicio
     public function leer_servicio($id)
     {
-        return view('web.components.servicios_leer_mas')->with( 'empresa', Itemservicio::find($id) );
+        return view('web.components.servicios_leer_mas')->with('empresa', Itemservicio::find($id));
     }
 }

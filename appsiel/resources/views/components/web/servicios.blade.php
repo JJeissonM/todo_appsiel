@@ -2,6 +2,17 @@
     #services {
         position: relative;
         z-index: 80 !important;
+
+        <?php
+        if ($servicios != null) {
+            if ($servicios->tipo_fondo == 'COLOR') {
+                echo "background-color: " . $servicios->fondo . ";";
+            } else {
+        ?>background: url('{{$servicios->fondo}}') {{$servicios->repetir}} center {{$servicios->direccion}};
+        <?php
+            }
+        }
+        ?>
     }
 
 
@@ -78,9 +89,8 @@
                     <div class="features d-flex justify-content-around flex-wrap">
                         @foreach($servicios->itemservicios as $item)
                         <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
-                            <div style="background-color: #f8f8f8; padding: 20px;  -webkit-box-shadow: 5px 5px 10px -8px rgba(0,0,0,0.75);
--moz-box-shadow: 5px 5px 10px -8px rgba(0,0,0,0.75);
-box-shadow: 5px 5px 10px -8px rgba(0,0,0,0.75);" class="col-md-12">
+                            <div style="background-color: #f8f8f8; padding: 20px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3; opacity: 0.8;" class="col-md-12">
+                                @if($servicios->disposicion=='ICONO')
                                 <div style="border-top: 10px solid; border-color: #7bb0e7; top: 0;"></div>
                                 <div class="media service-box" style="height: 150px;margin: 20px 0;">
                                     <div class="pull-left">
@@ -94,6 +104,9 @@ box-shadow: 5px 5px 10px -8px rgba(0,0,0,0.75);" class="col-md-12">
                                 <div class="pull-right">
                                     <a class="btn btn-primary animate" onclick="visor_contenido_servicios({{ $item->id }})" href="#">Leer más...</a>
                                 </div>
+                                @else
+                                <!-- TIPO SANTILLANA --> 
+                                @endif
                             </div>
                         </div>
                         <!--/.col-md-4-->
@@ -111,11 +124,6 @@ box-shadow: 5px 5px 10px -8px rgba(0,0,0,0.75);" class="col-md-12">
             </div>
             <!--/.container-->
 
-            @if($servicios!=null)
-            @if($servicios->disposicion == 'DEFAULT')
-            <!-- <img class="ilustracion" src="{ {asset('img/lading-page/bg-2.svg')}}" alt=""> -->
-            @endif
-            @endif
         </section>
         <script type="text/javascript">
             function visor_contenido_servicios(item_id) {

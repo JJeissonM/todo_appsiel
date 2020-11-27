@@ -1,159 +1,146 @@
 @extends('web.templates.main')
 
 @section('style')
-    <style>
-        .card-body {
-            padding: 0 !important;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-        }
+<style>
+    .card-body {
+        padding: 0 !important;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+    }
 
-        #wrapper {
-            overflow-y: scroll;
-            overflow-x: hidden;
-            width: 30%;
-            height: 100vh;
-            margin-right: 0;
-        }
+    #wrapper {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        width: 30%;
+        height: 100vh;
+        margin-right: 0;
+    }
 
-        .list-group-item {
-            background-color: transparent;
-            font-size: 16px;
-        }
+    .list-group-item {
+        background-color: transparent;
+        font-size: 16px;
+    }
 
-        .list-group-item:hover {
-            background-color: #3d6983;
-            color: white;
-            cursor: pointer;
-        }
+    .list-group-item:hover {
+        background-color: #3d6983;
+        color: white;
+        cursor: pointer;
+    }
 
-        .widgets {
-            overflow-y: scroll;
-            width: 70%;
-            height: 100vh;
-        }
+    .widgets {
+        overflow-y: scroll;
+        width: 70%;
+        height: 100vh;
+    }
 
-        .widgets img {
-            width: 100%;
-            object-fit: cover;
-            height: 72.5vh;
-            max-width: 100%;
-        }
+    .widgets img {
+        width: 100%;
+        object-fit: cover;
+        height: 72.5vh;
+        max-width: 100%;
+    }
 
-        .widgets .card-body {
-            position: relative;
-        }
+    .widgets .card-body {
+        position: relative;
+    }
 
-        .activo {
+    .activo {}
 
-        }
+    .contenido {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px;
+        margin-top: 10px;
+        border: 1px solid #3d6983;
+        border-radius: 5px;
+    }
 
-        .contenido {
-            display: flex;
-            justify-content: space-between;
-            padding: 5px;
-            margin-top: 10px;
-            border: 1px solid #3d6983;
-            border-radius: 5px;
-        }
+    .contenido img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+    }
 
-        .contenido img {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-        }
+    .descripcion {
+        padding: 5px;
+    }
 
-        .descripcion {
-            padding: 5px;
-        }
+    .descripcion h5 {
+        color: black;
+        font-size: 16px;
+    }
 
-        .descripcion h5 {
-            color: black;
-            font-size: 16px;
-        }
+    .add {
+        margin-top: 20px;
+    }
 
-        .add {
-            margin-top: 20px;
-        }
-
-        .add a {
-            color: #1c85c4;
-        }
-
-    </style>
+    .add a {
+        color: #1c85c4;
+    }
+</style>
 
 @endsection
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-                <h4>.:: En ésta Sección: Servicios ::.</h4>
-            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
+            <h4>.:: En ésta Sección: Servicios ::.</h4>
         </div>
     </div>
-    <div class="card">
-        <div class="card-body d-flex justify-content-between flex-wrap">
-            <div id="wrapper">
-                <h4 class="column-title" style="padding: 10px;">Menú Servicios</h4>
-                @if($servicios != null)
-                    <div class="descripcion" style="text-align: center; margin-top: 20px;">
-                        <h5 class="titulo">{{$servicios->titulo}}</h5>
-                        <p>{{str_limit($servicios->descripcion,30)}}</p>
-                        <a href="{{url('servicios/destroy').'/'.$servicios->id.$variables_url}}" class="btn btn-lg"
-                           title="Eliminar Seccion"><i class="fa fa-window-close"></i></a>
-                    </div>
-                    <div class="col-md-12 add d-flex">
-                        <div class="col-md-6">
-                            <a href="{{url('servicios/create').'/'.$widget.$variables_url}}"
-                               class="btn btn-primary waves-effect btn-block btn-sm"
-                               style="color: white; font-weight: bold;"> Agregar Servicios </a>
-                        </div>
-                        <div class="col-md-6 justify-content-end">
-                            <a data-toggle="modal" data-target="#Modaledit"
-                               class="btn btn-primary waves-effect btn-block btn-sm"
-                               style="color: white; font-weight: bold;"> Editar Sección </a>
-                        </div>
-                    </div>
-                    @if(count($servicios->itemservicios)>0)
-                        @foreach($servicios->itemservicios as $item)
-                            <div class="col-md-12">
-                                <div class="contenido">
-                                    <div class="media service-box wow fadeInRight animated"
-                                         style="visibility: visible; animation-name: fadeInRight;">
-                                        <div class="pull-left">
-                                            <i class="fa fa-{{$item->icono}}"></i>
-                                        </div>
-                                    </div>
-                                    <div class="descripcion">
-                                        <h5 class="titulo">{{$item->titulo}}</h5>
-                                        <p>{{str_limit($item->descripcion,30)}}</p>
-                                    </div>
-                                    <a href="{{url('servicios/edit').'/'.$item->id.$variables_url}}" class="btn"
-                                       title="Editar Servicio"><i class="fa fa-edit"></i></a>
-                                    <a href="{{url('servicios/destroy/item').'/'.$item->id.$variables_url}}" class="btn"
-                                       title="Eliminar Servicio"><i class="fa fa-eraser"></i></a>
-                                </div>
-                            </div>
-                        @endforeach
-                    @endif
-                @else
-                    <div class="add d-flex justify-content-end col-md-12">
-                        <a data-toggle="modal" data-target="#exampleModal"
-                           class="btn btn-primary waves-effect btn-block btn-sm"
-                           style="color: white; font-weight: bold;"> Agregar Sección </a>
-                    </div>
-                @endif
+</div>
+<div class="card">
+    <div class="card-body d-flex justify-content-between flex-wrap">
+        <div id="wrapper">
+            <h4 class="column-title" style="padding: 10px;">Menú Servicios</h4>
+            @if($servicios != null)
+            <div class="descripcion" style="text-align: center; margin-top: 20px;">
+                <h5 class="titulo">{{$servicios->titulo}}</h5>
+                <p>{{str_limit($servicios->descripcion,30)}}</p>
+                <a href="{{url('servicios/destroy').'/'.$servicios->id.$variables_url}}" class="btn btn-lg" title="Eliminar Seccion"><i class="fa fa-window-close"></i></a>
             </div>
-            <div class="widgets" id="widgets">
-                <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                @if($servicios != null)
-                    {!! Form::servicios($servicios)!!}
-                @endif
+            <div class="col-md-12 add d-flex">
+                <div class="col-md-6">
+                    <a href="{{url('servicios/create').'/'.$widget.$variables_url}}" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold;"> Agregar Servicios </a>
+                </div>
+                <div class="col-md-6 justify-content-end">
+                    <a data-toggle="modal" data-target="#Modaledit" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold;"> Editar Sección </a>
+                </div>
             </div>
+            @if(count($servicios->itemservicios)>0)
+            @foreach($servicios->itemservicios as $item)
+            <div class="col-md-12">
+                <div class="contenido">
+                    <div class="media service-box wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">
+                        <div class="pull-left">
+                            <i class="fa fa-{{$item->icono}}"></i>
+                        </div>
+                    </div>
+                    <div class="descripcion">
+                        <h5 class="titulo">{{$item->titulo}}</h5>
+                        <p>{!! str_limit($item->descripcion,30) !!}</p>
+                    </div>
+                    <a href="{{url('servicios/edit').'/'.$item->id.$variables_url}}" class="btn" title="Editar Servicio"><i class="fa fa-edit"></i></a>
+                    <a href="{{url('servicios/destroy/item').'/'.$item->id.$variables_url}}" class="btn" title="Eliminar Servicio"><i class="fa fa-eraser"></i></a>
+                </div>
+            </div>
+            @endforeach
+            @endif
+            @else
+            <div class="add d-flex justify-content-end col-md-12">
+                <a data-toggle="modal" data-target="#exampleModal" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold;"> Agregar Sección </a>
+            </div>
+            @endif
+        </div>
+        <div class="widgets" id="widgets">
+            <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
+            @if($servicios != null)
+            {!! Form::servicios($servicios)!!}
+            @endif
         </div>
     </div>
+</div>
 @endsection
 
 <div class="modal" id="exampleModal" tabindex="-1" role="dialog">
@@ -179,7 +166,24 @@
                         <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
                     </div>
                     <div class="form-group">
-                        <br/><br/><a class="btn btn-danger" id="exampleModal" style="color: white" onclick="cerrar(this.id)">Cancelar</a>
+                        <label>Estilo del Diseño</label>
+                        <select type="select" class="form-control" name="disposicion" required>
+                            <option value="ICONO">USANDO ÍCONO</option>
+                            <option value="ICONO">USANDO IMAGEN</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>¿El fondo es Imagen o Color?</label>
+                        <select type="select" class="form-control" id="tipo_fondo" required name="tipo_fondo" onchange="cambiar()">
+                            <option value="">-- Seleccione una opción --</option>
+                            <option value="IMAGEN">IMAGEN</option>
+                            <option value="COLOR">COLOR</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="fondo_container">
+                    </div>
+                    <div class="form-group">
+                        <br /><br /><a class="btn btn-danger" id="exampleModal" style="color: white" onclick="cerrar(this.id)">Cancelar</a>
                         <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
                         {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
                     </div>
@@ -202,26 +206,61 @@
             <div class="modal-body">
                 <div class="col-md-12">
                     @if($servicios != null)
-                        {!! Form::model($servicios,['route'=>['servicios.updated',$servicios],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
-                        <input type="hidden" name="widget_id" value="{{$widget}}">
-                        <input type="hidden" name="variables_url" value="{{$variables_url}}">
-                        <input type="hidden" name="servicio" value="{{$servicios->id}}">
-                        <div class="form-group">
-                            <label>Titulo</label>
-                            <input name="titulo" type="text" placeholder="Titulo" value="{{$servicios->titulo}}"
-                                   class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label>Descripción</label>
-                            <input name="descripcion" type="text" placeholder="Descripción"
-                                   value="{{$servicios->descripcion}}" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <br/><br/><a class="btn btn-danger" id="Modaledit" style="color: white" onclick="cerrar(this.id)">Cancelar</a>
-                            <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
-                            {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
-                        </div>
-                        {!! Form::close() !!}
+                    {!! Form::model($servicios,['route'=>['servicios.updated',$servicios],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
+                    <input type="hidden" name="widget_id" value="{{$widget}}">
+                    <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                    <input type="hidden" name="servicio" value="{{$servicios->id}}">
+                    <div class="form-group">
+                        <label>Titulo</label>
+                        <input name="titulo" type="text" placeholder="Titulo" value="{{$servicios->titulo}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input name="descripcion" type="text" placeholder="Descripción" value="{{$servicios->descripcion}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Estilo del Diseño</label>
+                        <select type="select" class="form-control" name="disposicion" required>
+                            @if($servicios->disposicion=='ICONO')
+                            <option selected value="ICONO">USANDO ÍCONO</option>
+                            <option value="ICONO">USANDO IMAGEN</option>
+                            @else
+                            <option value="ICONO">USANDO ÍCONO</option>
+                            <option selected value="ICONO">USANDO IMAGEN</option>
+                            @endif
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>¿El fondo es Imagen o Color?</label>
+                        <select type="select" class="form-control" id="tipo_fondo2" name="tipo_fondo" onchange="cambiar2()">
+                            @if($servicios->tipo_fondo=='IMAGEN')
+                            <option value="">-- Seleccione una opción --</option>
+                            <option selected value="IMAGEN">IMAGEN</option>
+                            <option value="COLOR">COLOR</option>
+                            @else
+                            <option value="">-- Seleccione una opción --</option>
+                            <option value="IMAGEN">IMAGEN</option>
+                            <option selected value="COLOR">COLOR</option>
+                            @endif
+                        </select>
+                    </div>
+                    <div class="form-group" id="fondo_container2">
+                        @if($servicios->tipo_fondo=='IMAGEN')
+                        <label>Imagen de Fondo</label>
+                        <a target="_blank" href="{{asset($servicios->fondo)}}">Ver Actual</a><br>
+                        <b>Repetir: {{$servicios->repetir}}</b><br>
+                        <b>Orientación Imagen: {{$servicios->direccion}}</b>
+                        @else
+                        <label>Color de Fondo</label>
+                        <div class="col-md-12" style="background-color: {{$servicios->fondo}}; width: 100%; height: 20px;"></div>
+                        @endif
+                    </div>
+                    <div class="form-group">
+                        <br /><br /><a class="btn btn-danger" id="Modaledit" style="color: white" onclick="cerrar(this.id)">Cancelar</a>
+                        <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
+                        {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
+                    </div>
+                    {!! Form::close() !!}
                     @endif
                 </div>
             </div>
@@ -230,11 +269,42 @@
 </div>
 @section('script')
 <script type="text/javascript">
-
     function cerrar(id) {
-        $("#"+id).modal('hide');
-        $("#"+id).removeClass('modal-open');
-        $('.'+id).remove();
+        $("#" + id).modal('hide');
+        $("#" + id).removeClass('modal-open');
+        $('.' + id).remove();
+    }
+
+    function cambiar() {
+        $("#fondo_container").html("");
+        var f = $("#tipo_fondo").val();
+        var html = "<label>";
+        if (f == 'IMAGEN') {
+            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
+                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
+                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option></select>";
+        } else if (f == 'COLOR') {
+            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+        } else {
+            html = "";
+        }
+        $("#fondo_container").html(html);
+    }
+
+    function cambiar2() {
+        $("#fondo_container2").html("");
+        var f = $("#tipo_fondo2").val();
+        var html = "<label>";
+        if (f == 'IMAGEN') {
+            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
+                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
+                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option></select>";
+        } else if (f == 'COLOR') {
+            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+        } else {
+            html = "";
+        }
+        $("#fondo_container2").html(html);
     }
 </script>
 @endsection

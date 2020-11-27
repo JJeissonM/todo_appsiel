@@ -85,10 +85,6 @@
         <div class="row">
             <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
                 <h4>.:: En ésta Sección: Html personalizado ::.</h4>
-
-
-
-
             </div>
         </div>
     </div>
@@ -108,10 +104,7 @@
                     ?>
                 @endif
 
-                    <label for="imagen" class="control-label"> Imágen </label>
-                    {{ Form::file( 'imagen', [ 'id' => 'imagen', 'accept' => 'jpg,png,gif' ] ) }}
-
-                    <label class="form-label">Contenido</label>
+                     <label class="form-label">Contenido</label>
                     <textarea name="contenido" class="form-control contenido" rows="15" required="required">{{ $contenido }}</textarea>
 
                     {{ Form::hidden('widget_id', $widget) }}
