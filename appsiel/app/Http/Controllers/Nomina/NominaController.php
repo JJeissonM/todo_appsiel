@@ -604,7 +604,7 @@ class NominaController extends TransaccionController
         // Se obtienen los Empleados del documento
         $empleados_documento = $documento->empleados;
 
-        // Guardar los valores para cada persona      
+        // Guardar los valores para cada empleado      
         foreach ($empleados_documento as $empleado) 
         {
             $cant = count( $this->array_ids_modos_liquidacion_automaticos );

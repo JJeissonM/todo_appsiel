@@ -65,7 +65,7 @@
 
 
     @foreach($links as $key => $value)
-    {!! $value !!}
+        {!! $value !!}
     @endforeach
 
     <style type="text/css">
@@ -267,18 +267,6 @@
             color: #ffffff !important;
         }
 
-        /*
-        .mu-navbar-nav>li>a {
-            color: white;
-        }
-
-        .mu-navbar-nav>li > a:hover {
-            background-color: #45aed6 !important;
-            color: #ffffff !important;
-            border-radius: none !important;
-        }
-        */
-
         .carousel-content {
             position: relative;
             z-index: 9999999;
@@ -288,13 +276,10 @@
             padding-top: 102px;
         }
 
-        @foreach($estilos as $key=> $value) {
-                {
-                $value
-            }
-        }
-
+        @foreach($estilos as $key => $value)
+            {!! $value !!}
         @endforeach
+        
     </style>
 </head>
 
@@ -303,7 +288,7 @@
     <main id="contenedor_principal">
 
         @foreach($view as $item)
-        {!! $item !!}
+            {!! $item !!}
         @endforeach
 
     </main>
@@ -394,7 +379,7 @@
 
 
     @foreach($scripts as $key => $value)
-    {!! $value !!}
+        {!! $value !!}
     @endforeach
 
     @yield('script')
