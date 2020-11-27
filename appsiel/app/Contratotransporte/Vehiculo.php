@@ -66,4 +66,13 @@ class Vehiculo extends Model
     {
         return $this->hasMany(Vehiculoconductor::class);
     }
+
+    public function store_adicional($datos, $registro)
+    {
+        /*$tercero = Conductor::find($registro->id)->tercero;
+
+        $usuario = User::crear_y_asignar_role($tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 19); // 19 = Conductor
+        $tercero->user_id = $usuario->id;
+        $tercero->save();*/
+    }
 }
