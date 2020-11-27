@@ -408,8 +408,8 @@ class ReporteController extends Controller
             $array_fecha = [ $fecha[2], ConfiguracionController::nombre_mes( $fecha[1] ), $fecha[0] ];            
         }
 
-        $firma_autorizada_1 = FirmaAutorizada::get_datos( $request->firma_autorizada_1 );
-        $firma_autorizada_2 = FirmaAutorizada::get_datos( $request->firma_autorizada_2 );
+        $firma_autorizada_1 = FirmaAutorizada::find( $request->firma_autorizada_1 );
+        $firma_autorizada_2 = FirmaAutorizada::find( $request->firma_autorizada_2 );
 
         $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja' )  )->render();
 
