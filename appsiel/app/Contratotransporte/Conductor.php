@@ -70,12 +70,12 @@ class Conductor extends Model
 
     public function store_adicional( $datos, $registro )
     {
-        $tercero = Conductor::find( $registro->id )->tercero;
+        /*$tercero = Conductor::find( $registro->id )->tercero;
         
         $usuario = User::crear_y_asignar_role( $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 19); // 19 = Conductor
 
         $tercero->user_id = $usuario->id;
-        $tercero->save();
+        $tercero->save();*/
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
@@ -114,7 +114,7 @@ class Conductor extends Model
 
     public function update_adicional($datos, $id)
     {
-        $propietario = Conductor::find( $id );
+        /*$propietario = Conductor::find( $id );
         $tercero = $propietario->tercero;
         $usuario = User::find( $tercero->user_id );
 
@@ -128,7 +128,7 @@ class Conductor extends Model
             $usuario->email = $datos['email'];
             $usuario->save();
         }
-
+*/
         return 0;
     }
 }

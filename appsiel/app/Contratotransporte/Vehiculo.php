@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class Vehiculo extends Model
 {
     protected $table = 'cte_vehiculos';
-    protected $fillable = ['id', 'int', 'placa', 'numero_vin', 'numero_motor', 'modelo', 'marca', 'clase', 'color', 'cilindraje', 'capacidad', 'fecha_control_kilometraje', 'propietario_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'int','bloqueado_cuatro_contratos', 'placa', 'numero_vin', 'numero_motor', 'modelo', 'marca', 'clase', 'color', 'cilindraje', 'capacidad', 'fecha_control_kilometraje', 'propietario_id', 'created_at', 'updated_at'];
 
     public $encabezado_tabla = ['Interno', 'Vinculación', 'Placa', 'Marca', 'Clase', 'Modelo', 'Propietario', 'Acción'];
 
