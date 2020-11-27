@@ -627,6 +627,7 @@ class VentaController extends TransaccionController
                                             'core_terceros.numero_identificacion',
                                             'core_terceros.direccion1',
                                             'core_terceros.telefono1',
+                                            'core_terceros.email',
                                             'vtas_vendedores.id AS vendedor_id',
                                             'vtas_vendedores.equipo_ventas_id',
                                             'inv_bodegas.id AS inv_bodega_id',
@@ -674,6 +675,7 @@ class VentaController extends TransaccionController
                                 '" data-vendedor_id="'.$linea->vendedor_id.
                                 '" data-equipo_ventas_id="'.$linea->equipo_ventas_id.
                                 '" data-inv_bodega_id="'.$linea->inv_bodega_id.
+                                '" data-email="'.$linea->email.
                                 '" data-dias_plazo="'.$linea->dias_plazo.
                                 '" data-lista_precios_id="'.$linea->lista_precios_id.
                                 '" data-lista_descuentos_id="'.$linea->lista_descuentos_id.
