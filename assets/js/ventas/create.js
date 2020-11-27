@@ -506,6 +506,8 @@
                 $('#liquida_impuestos').val( item_sugerencia.attr('data-liquida_impuestos') );
                 $('#core_tercero_id').val( item_sugerencia.attr('data-core_tercero_id') );
                 $('#lista_precios_id').val( item_sugerencia.attr('data-lista_precios_id') );
+                $('#email_lbl').val( item_sugerencia.attr('data-email') );
+                $('#email').val( item_sugerencia.attr('data-email') );
                 $('#lista_descuentos_id').val( item_sugerencia.attr('data-lista_descuentos_id') );
 
                 // Asignar resto de campos

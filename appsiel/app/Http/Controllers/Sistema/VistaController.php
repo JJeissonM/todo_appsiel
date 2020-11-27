@@ -172,7 +172,8 @@ class VistaController extends Controller
                         break;
                     
                     default:
-                        # code...
+                        $valor = $campo['value'];
+                        $empresa_id = Auth::user()->empresa_id;
                         break;
                 }
 
