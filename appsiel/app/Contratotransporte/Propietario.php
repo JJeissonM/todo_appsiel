@@ -27,8 +27,7 @@ class Propietario extends Model
         $vec[''] = '';
         foreach ($opciones as $opcion) {
             $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->descripcion;
-        }
-
+        } 
         return $vec;
     }
 
