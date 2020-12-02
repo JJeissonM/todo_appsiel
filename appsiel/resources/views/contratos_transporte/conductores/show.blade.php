@@ -52,27 +52,33 @@
 				</div>
 			</div>
 			<div class="col-md-12">
-				<div class="list-group">
-					<a href="#" class="list-group-item list-group-item-action active">
-						Vehículos asociados al conductor y vehículos que ha usado en las rutas asignadas
-					</a>
-					@if($vehiculos!=null)
-					@foreach($vehiculos as $v)
-					@if($v['id']==0)
-					<a class="list-group-item list-group-item-action list-group-item-success">
-						@else
-						<a class="list-group-item list-group-item-action list-group-item-info">
-							@endif
-							<p>
-								<b>Placa:</b> {{$v['placa']}},<b> Interno:</b> {{$v['interno']}}, <b>Modelo:</b> {{$v['modelo']}}, <b>Marca:</b> {{$v['marca']}}, <b>Clase:</b> {{$v['clase']}}<br>
-								<b>Tipo:</b> {{$v['tipo']}}
-							</p>
+				<h3 style="padding-left: 15px;">Vehículos del Conductor</h3>
+				@if($vehiculos!=null)
+				@foreach($vehiculos as $v)
+				<div class="col-md-3" style="background: url({{asset('img/vehiculo.png')}}); background-position: center; background-attachment: contain; background-size: cover;">
+					<div class="list-group">
+						<a href="#" class="list-group-item list-group-item-action active">
+							Interno: {{$v['interno']}}
 						</a>
-						@endforeach
-						@else
-						<a href="#" class="list-group-item list-group-item-action list-group-item-danger">El conductor no tiene vehículos asociados ni ha realizado rutas</a>
-						@endif
+						@if($v['id']==0)
+						<a class="list-group-item list-group-item-action list-group-item-warning" style="opacity: 0.9;">
+							@else
+							<a class="list-group-item list-group-item-action list-group-item-success" style="opacity: 0.9;">
+								@endif
+								<p>
+									<b>Placa:</b> {{$v['placa']}}<br>
+									<b>Modelo:</b> {{$v['modelo']}}<br>
+									<b>Marca:</b> {{$v['marca']}}<br>
+									<b>Clase:</b> {{$v['clase']}}<br>
+									<b>Tipo:</b> {{$v['tipo']}}<br>
+								</p>
+							</a>
+					</div>
 				</div>
+				@endforeach
+				@else
+				<a href="#" class="list-group-item list-group-item-action list-group-item-danger">El conductor no tiene vehículos asociados</a>
+				@endif
 			</div>
 		</div>
 	</div>

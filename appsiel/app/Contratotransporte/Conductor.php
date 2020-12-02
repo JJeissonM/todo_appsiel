@@ -13,7 +13,7 @@ class Conductor extends Model
     protected $table = 'cte_conductors';
     protected $fillable = ['id', 'tercero_id', 'estado', 'created_at', 'updated_at'];
 
-    public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Conductor', 'Email/Usuario', 'Estado', 'Acción'];
+    public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Conductor', 'Estado', 'Acción'];
 
     public $urls_acciones = '{"eliminar":"cte_conductores/id_fila/eliminar"}';
     
@@ -42,9 +42,8 @@ class Conductor extends Model
                 'core_tipos_docs_id.abreviatura AS campo1',
                 'core_terceros.numero_identificacion AS campo2',
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'users.email AS campo4',
-                'cte_conductors.estado AS campo5',
-                'cte_conductors.id AS campo6'
+                'cte_conductors.estado AS campo4',
+                'cte_conductors.id AS campo5'
             )
             ->orderBy('cte_conductors.created_at', 'DESC')
             ->paginate(100);
@@ -68,6 +67,11 @@ class Conductor extends Model
     public function planillaconductors()
     {
         return $this->hasMany(Planillaconductor::class);
+    }
+
+    public function vehiculoconductors()
+    {
+        return $this->hasMany(Vehiculoconductor::class);
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
