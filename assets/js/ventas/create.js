@@ -934,7 +934,7 @@
 				habilitar_campos_encabezado();
 
 		 		// Enviar formulario
-				$('#form_create').submit();					
+				$('#form_create').submit();
 			});
 
 

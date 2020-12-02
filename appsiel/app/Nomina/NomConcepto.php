@@ -24,6 +24,11 @@ class NomConcepto extends Model
     {
         return $this->belongsTo( AgrupacionConcepto::class, 'nom_agrupacion_id');
     }
+
+    public function get_valor_hora_porcentaje_sobre_basico( $salario_x_hora, $cantidad_horas )
+    {
+        return $salario_x_hora * ( 1 + $this->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
+    }
 	
     public static function consultar_registros()
 	{

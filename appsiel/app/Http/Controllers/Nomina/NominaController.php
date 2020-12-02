@@ -109,7 +109,7 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($documento->id);
 
-        return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'flash_message','Registros CREADOS correctamente. Nómina: '.$documento->descripcion.', Concepto:'.$concepto->descripcion );
+        return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'flash_message','Registros CREADOS correctamente. Nómina: '.$documento->descripcion.', Concepto: '.$concepto->descripcion );
     }
 
     public function registrar_por_valor( $concepto, $core_tercero_id, $datos, $valor )
@@ -403,7 +403,7 @@ class NominaController extends TransaccionController
 
             $this->actualizar_totales_documento($documento->id);
 
-            return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'flash_message','Registros ACTUALIZADOS correctamente. Nómina: '.$documento->descripcion.', Concepto:'.$concepto->descripcion );
+            return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'flash_message','Registros ACTUALIZADOS correctamente. Nómina: '.$documento->descripcion.', Concepto: '.$concepto->descripcion );
 
             break;
 

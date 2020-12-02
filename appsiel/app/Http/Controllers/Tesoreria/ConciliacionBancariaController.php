@@ -48,7 +48,7 @@ class ConciliacionBancariaController extends Controller
 
     public function procesa_archivo_plano_bancos(Request $request)
     {
-        $lineas = file($request->archivo);
+        $lineas = file( $request->archivo );
 
         $vista = '';
 
