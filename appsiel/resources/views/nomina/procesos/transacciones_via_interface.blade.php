@@ -13,28 +13,34 @@
 @endsection
 
 @section('formulario')
-	<div class="row">
+	<div class="row" id="div_formulario">
+		{{ Form::open(['url'=>'nom_procesar_archivo_plano','id'=>'formulario_inicial','files' => true]) }}
+			<div class="row" style="padding:5px;">					
+				<label class="control-label col-sm-4" > <b> *Documento de liquidación: </b> </label>
 
-		<div class="row" style="padding:5px;">					
-			<label class="control-label col-sm-4" > <b> Documento de liquidación: </b> </label>
+				<div class="col-sm-8">
+					{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
+				</div>					 
+			</div>
 
-			<div class="col-sm-8">
-				{{ Form::select('nom_doc_encabezado_id',App\Nomina\NomDocEncabezado::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'nom_doc_encabezado_id' ]) }}
-			</div>					 
-		</div>
+			<div class="row" style="padding:5px;">					
+				<label class="control-label col-sm-4" > <b> *Archivo plano: </b> </label>
 
-		<div class="row" style="padding:5px;">					
-			<label class="control-label col-sm-4" > <b> Archivo plano: </b> </label>
+				<div class="col-sm-8">
+					{{ Form::file('archivo_plano', [ 'class' => 'form-control', 'id' => 'archivo_plano', 'accept' => 'text/plain', 'required' => 'required' ]) }}
+				</div>					 
+			</div>
 
-			<div class="col-sm-8">
-				{{ Form::file('archivo_plano', [ 'class' => 'form-control', 'id' => 'archivo_plano', 'accept' => 'text/plain' ]) }}
-			</div>					 
-		</div>
-
-		<div class="col-md-4">
-			<button class="btn btn-success" id="btn_cargar" disabled="disabled"> <i class="fa fa-calculator"></i> Cargar </button>
-		</div>    				
+			<div class="col-md-4">
+				<button class="btn btn-success" id="btn_cargar"> <i class="fa fa-calculator"></i> Cargar </button>
+			</div>
+		{{ Form::close() }}
 	</div>
+
+	<div class="row" id="div_resultado">
+			
+	</div>
+
 @endsection
 
 @section('javascripts')
@@ -42,85 +48,87 @@
 
 		$(document).ready(function(){
 
-			$('#periodo_lectivo_id').focus();
-
-			$('#periodo_lectivo_id').on('change',function()
-			{
-				$("#mensaje_ok").html('');
-				$("#div_spin").hide();
-				$('#btn_calcular').attr('disabled', 'disabled');
-				$('#popup_alerta_danger').hide();
-
-				if ( $(this).val() == '')
-				{ 
-					$('#div_resultado').html( '' );
-					return false;
-				}
-
-				$('#div_cargando').show();
-				$('#div_advertencia').hide();
-
-				var url = "{{ url('consultar_periodos_periodo_lectivo') }}" + "/" + $('#periodo_lectivo_id').val();
-
-				$.get( url, function( datos ){
-
-	        		$('#div_cargando').hide();
-
-	        		$('#div_resultado').html( datos[0] );
-
-	        		switch( datos[1] )
-	        		{
-						case 0: // Incorrecto. No hay periodo final
-							$('#popup_alerta_danger').hide();
-							$('#btn_calcular').attr('disabled', 'disabled');
-							break;
-
-						case 1: // Correcto. Hay un solo periodo final.
-							$('#popup_alerta_danger').hide();
-							$('#btn_calcular').removeAttr('disabled');
-							break;
-
-						default: // Incorrecto.
-		        			mostrar_popup('Existe más de un (1) periodo final en el Año Lectivo seleccionado. No se puede continuar.');
-		        			$('#btn_calcular').attr('disabled','disabled');
-		        			return false;
-							break;
-					}    				
-			    });
-
-			});
-
-
-			function mostrar_popup( mensaje )
-			{
-				$('#popup_alerta_danger').show();
-				$('#popup_alerta_danger').text( mensaje );
-			}
-
-
-
-			$("#btn_calcular").on('click',function(event){
+			$("#btn_cargar").on('click',function(event){
 		    	event.preventDefault();
+
+		    	if ( !validar_requeridos() )
+		    	{
+		    		return false;
+		    	}
 
 		 		$("#div_spin").show();
 		 		$("#div_cargando").show();
-				$('#btn_calcular').attr('disabled','disabled');
+				
+				var form = $('#formulario_inicial');
+				var url = form.attr('action');
+				var datos = new FormData(document.getElementById("formulario_inicial"));
 
-				var url = "{{ url('calcular_promedio_notas_periodo_final') }}" + "/" + $('#periodo_lectivo_id').val();
+				$.ajax({
+				    url: url,
+				    type: "post",
+				    dataType: "html",
+				    data: datos,
+				    cache: false,
+				    contentType: false,
+				    processData: false
+				})
+			    .done(function( respuesta ){
+			        $('#div_cargando').hide();
+        			$("#div_spin").hide();
 
-				$.get( url, function(datos){
-
-	        		$('#div_cargando').hide();
-	        		$("#div_spin").hide();
-
-	        		$("#mensaje_ok").html( '<div class="alert alert-success"><strong>Promedios del periodo final generados correctamente!</strong><br> Se almacenaron '+ datos +' calificaciones. </div>' );
+        			$("#div_resultado").html( respuesta );
+        			$("#div_resultado").fadeIn( 1000 );
 			    });
-			
 		    });
 
+			$(document).on('click', '.btn_eliminar', function(event) {
+				event.preventDefault();
+				var fila = $(this).closest("tr");
+				if ( confirm('¿Esta seguro de eliminar esta fila de los registros a almacenar?') )
+				{
+					fila.remove();
+				}
+			});
 
+			$(document).on('click', '#btn_almacenar_registros', function(event) {
+				event.preventDefault();
+
+				var table = $( '#ingreso_registros' ).tableToJSON();
+				$('#lineas_registros').val(JSON.stringify(table));
+
+				$('#form_almacenar_registros').submit();
+				
+				/*
+				$("#div_resultado").fadeOut( 1000 );
+
+				$("#div_spin").show();
+		 		$("#div_cargando").show();
+				
+				var form = $('#form_almacenar_registros');
+				var url = form.attr('action');
+				var datos = new FormData(document.getElementById("form_almacenar_registros"));
+
+				$("#div_resultado").html( '' );
+
+				$.ajax({
+				    url: url,
+				    type: "post",
+				    dataType: "html",
+				    data: datos,
+				    cache: false,
+				    contentType: false,
+				    processData: false
+				})
+			    .done(function( respuesta ){
+			        $('#div_cargando').hide();
+        			$("#div_spin").hide();
+
+        			$("#div_resultado").html( respuesta );
+        			$("#div_resultado").fadeIn( 1000 );
+			    });
+			    */
+			});
 
 		});
-
 	</script>
 @endsection

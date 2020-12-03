@@ -60,7 +60,6 @@ class NomDocRegistro extends Model
 	}
 
 
-
 	public static function listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id)
 	{
 		if ( $nom_agrupacion_id == '' )
