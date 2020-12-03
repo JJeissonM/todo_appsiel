@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Preguntasfrecuentes extends Model
 {
     protected $table = 'pw_preguntas';
-    protected $fillable = ['id', 'titulo', 'descripcion','imagen_fondo', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'titulo', 'descripcion', 'color1', 'color2', 'imagen_fondo', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'widget_id', 'created_at', 'updated_at'];
 
     public function widget()
     {
@@ -16,6 +16,6 @@ class Preguntasfrecuentes extends Model
 
     public function itempreguntas()
     {
-        return $this->hasMany(Itempregunta::class,'pregunta_id');
+        return $this->hasMany(Itempregunta::class, 'pregunta_id');
     }
 }

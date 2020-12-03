@@ -1,17 +1,33 @@
+<?php
+$r=0;
+$g=0;
+$b=0;
+$r1=0;
+$g1=0;
+$b1=0;
+if($pregunta!=null){
+    list($r, $g, $b) = sscanf($pregunta->color1, "#%02x%02x%02x");
+    list($r1, $g1, $b1) = sscanf($pregunta->color2, "#%02x%02x%02x");
+}
+?>
+
 <style>
     #faq-area {
-        margin: 118px 0 100px;
-        background-repeat: no-repeat;
-        background-position: left;
-        background-size: 25% 95%;
+        margin: 50px 0 100px;
+        <?php
+        if ($pregunta != null) {
+            if ($pregunta->tipo_fondo == 'COLOR') {
+                echo "background-color: " . $pregunta->fondo . ";";
+            } else {
+        ?>background: url('{{$pregunta->fondo}}') {{$pregunta->repetir}} center {{$pregunta->direccion}};
+        <?php
+            }
+        }
+        ?>
     }
 
     #faq-area.bg-1 {
-        background-image: url('{{asset('img/lading-page/1583859741codelco.png')}}')
-    }
-
-    #faq-area.bg-2 {
-        background-image: url(../images/faq-bg-2.png)
+        
     }
 
     #faq-area .section-heading p {
@@ -43,16 +59,17 @@
 
     .card .card-header.active,
     .card .card-header:hover {
-        background-image: -webkit-gradient(linear, left top, right top, from(rgb(32, 0, 126)), to(rgb(230, 30, 182)));
-        background-image: linear-gradient(90deg, rgb(32, 0, 126) 0%, rgb(230, 30, 182) 100%);
+        background-image: -webkit-gradient(linear, left top, right top, from(rgb({{$r}}, {{$g}}, {{$b}})), to(rgb({{$r1}}, {{$g1}}, {{$b1}})));
+        background-image: linear-gradient(90deg, rgb({{$r}}, {{$g}}, {{$b}}) 0%, rgb({{$r1}}, {{$g1}}, {{$b1}}) 100%);
     }
 
     .card.two .card-header.active,
     .card.two .card-header:hover {
-        background-image: linear-gradient(45deg, rgb(157, 91, 254) 0%, rgb(56, 144, 254) 100%);
+        background-image: linear-gradient(45deg, rgb({{$r}}, {{$g}}, {{$b}}) 0%, rgb({{$r1}}, {{$g1}}, {{$b1}}) 100%);
     }
 
-    ::after, ::before {
+    ::after,
+    ::before {
         box-sizing: border-box;
     }
 
@@ -86,14 +103,14 @@
     }
 
     .card-body {
-        background-image: -webkit-gradient(linear, left top, right top, from(rgb(32, 0, 126)), to(rgb(230, 30, 182)));
-        background-image: linear-gradient(90deg, rgb(32, 0, 126) 0%, rgb(230, 30, 182) 100%);
+        background-image: -webkit-gradient(linear, left top, right top, from(rgb({{$r}}, {{$g}}, {{$b}})), to(rgb({{$r1}}, {{$g1}}, {{$b1}})));
+        background-image: linear-gradient(90deg, rgb({{$r}}, {{$g}}, {{$b}}) 0%, rgb({{$r1}}, {{$g1}}, {{$b1}}) 100%);
         border-radius: 0 0 10px 10px;
         padding: 0 30px 10px 30px
     }
 
     .card.two .card-body {
-        background-image: linear-gradient(45deg, rgb(157, 91, 254) 0%, rgb(56, 144, 254) 100%);
+        background-image: linear-gradient(45deg, rgb({{$r}}, {{$g}}, {{$b}}) 0%, rgb({{$r1}}, {{$g1}}, {{$b1}}) 100%);
 
     }
 
@@ -103,41 +120,11 @@
     }
 </style>
 
-{{--    <div class="section-header">--}}
-{{--        <h2 class="section-title text-center wow fadeInDown animated"--}}
-{{--            style="visibility: visible; animation-name: fadeInDown;">PREGUNTAS FRECUENTES</h2>--}}
-{{--    </div>--}}
-{{--    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">--}}
-{{--        @foreach($preguntas as $item)--}}
-{{--            <div class="panel panel-collapse col-md-12">--}}
-{{--                <div class="panel-heading" role="tab" id="heading{{$item->id}}">--}}
-{{--                    <h4 class="panel-title">--}}
-{{--                        <button class="col-md-12 collapsed"--}}
-{{--                                style="padding: 15px; cursor: pointer;text-align: left;border-radius: 5px; border: 1px solid; border-color: #1b6d85;"--}}
-{{--                                data-toggle="collapse" data-parent="#accordion" href="#collapse{{$item->id}}"--}}
-{{--                                aria-expanded="false" aria-controls="collapse{{$item->id}}">--}}
-{{--                            {{$item->pregunta}}<i class="fa fa-plus" style="margin-right: 0px; float: right;"></i>--}}
-{{--                        </button>--}}
-{{--                    </h4>--}}
-{{--                </div>--}}
-{{--                <div id="collapse{{$item->id}}" class="panel-collapse collapse" role="tabpanel"--}}
-{{--                     aria-labelledby="heading{{$item->id}}" aria-expanded="false" style="height: 0px;">--}}
-{{--                    <div class="panel-body">--}}
-{{--                        {{$item->respuesta}}--}}
-{{--                    </div>--}}
-{{--                </div>--}}
-{{--            </div>--}}
-{{--        @endforeach--}}
-{{--    </div>--}}
 <section id="faq-area" class="bg-1">
     <div class="container">
-        <div class="row" style="justify-content: center; margin-bottom: 50px;">
-            <div class="col-md-8 offset-md-2">
-                <div class="section-heading text-center">
-                    <h2>{{$pregunta->titulo}}</h2>
-                    <p>{{$pregunta->descripcion}}</p>
-                </div>
-            </div>
+        <div class="section-header">
+            <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$pregunta->titulo}}</h2>
+            <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: #000; font-weight: bold;">{{$pregunta->descripcion}}</p>
         </div>
         <div class="row">
 
@@ -145,33 +132,26 @@
                 <div id="accordion" role="tablist">
                     <!--start faq single-->
                     @if(count($pregunta->itempreguntas) > 0)
-                        @foreach($pregunta->itempreguntas as $item)
-                            <div class="card">
-                                <div class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar(event)"
-                                     onfocusout="agregar(event)">
-                                    <h5 class="mb-0">
-                                        <a data-toggle="collapse" href="#collapse{{$item->id}}" aria-expanded="false"
-                                           aria-controls="collapse{{$item->id}}"
-                                           class="collapsed">{{$item->pregunta}}</a>
-                                    </h5>
-                                </div>
-                                <div id="collapse{{$item->id}}" class="collapse" role="tabpanel"
-                                     aria-labelledby="faq{{$item->id}}"
-                                     data-parent="#accordion"
-                                     style="">
-                                    <div class="card-body">
-                                        <p>{{$item->respuesta}}</p>
-                                    </div>
-                                </div>
+                    @foreach($pregunta->itempreguntas as $item)
+                    <div class="card" style="opacity: 0.8 !important;">
+                        <div style="opacity: 0.8 !important;" class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar(event)" onfocusout="agregar(event)">
+                            <h5 class="mb-0">
+                                <a data-toggle="collapse" href="#collapse{{$item->id}}" aria-expanded="false" aria-controls="collapse{{$item->id}}" class="collapsed">{{$item->pregunta}}</a>
+                            </h5>
+                        </div>
+                        <div id="collapse{{$item->id}}" class="collapse" role="tabpanel" aria-labelledby="faq{{$item->id}}" data-parent="#accordion" style="">
+                            <div class="card-body">
+                                <p>{{$item->respuesta}}</p>
                             </div>
-                        @endforeach
+                        </div>
+                    </div>
+                    @endforeach
                     @endif
                 </div>
             </div>
             <div class="col-md-5">
                 <div class="faq-img">
-                    <img src="{{asset('img/lading-page/faq-img-1.png')}}" class="img-fluid"
-                         style="margin-top: -50px; margin-left: 55px;" alt="">
+                    <img src="{{asset($pregunta->imagen_fondo)}}" class="img-fluid" style="margin-top: -50px; margin-left: 55px;" alt="">
                 </div>
             </div>
         </div>

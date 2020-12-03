@@ -1,63 +1,133 @@
-@if($clientes != null)
-    <link rel="stylesheet" href="{{asset('css/swiper.css')}}">
-    <link rel="stylesheet" href="{{asset('css/main_galeria.css')}}">
-    <!-- 
-    <div class="section-header">
-        <h2 class="section-title text-center wow fadeInDown animated"
-            style="visibility: visible; animation-name: fadeInDown;">CLIENTES</h2>
-    </div>
--->
-<div class="col-md-12" style="position: relative; margin-top: 250px; margin-bottom: 250px;">
-    <main class="contenidoGaleria">
-        <div class="contenedor">
-            <section>
-                @if( !empty( $clientes->toArray() ) )
-                    <div class="swiper-container">
-                        <div class="swiper-wrapper">
-                            @foreach($clientes as $cli)
-                                <div class="swiper-slide"><img style="object-fit: cover; width: 100%" src="{{url($cli->logo)}}" alt="{{$cli->nombre}}"><p style="text-align: center; background-color: #45aed6 !important; color: #FFF !important;">{{$cli->nombre}}</p></div>
+<style>
+    #clientes {
+        position: relative;
+        z-index: 80 !important;
+
+        <?php
+        if ($clientes != null) {
+            if ($clientes->tipo_fondo == 'COLOR') {
+                echo "background-color: " . $clientes->fondo . ";";
+            } else {
+        ?>background: url('{{$clientes->fondo}}') {{$clientes->repetir}} center {{$clientes->direccion}};
+        <?php
+            }
+        }
+        ?>
+    }
+    
+    #clientes2 {
+        z-index: 80 !important;
+    }
+
+
+    #clientes p {
+        color: #000;
+        font-weight: bold;
+    }
+
+    #clientes .container {
+        position: relative;
+        z-index: 1000;
+    }
+
+
+    .ilustracion {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 60%;
+        height: 550px;
+    }
+
+    @media (max-width: 468px) {
+        .container h2 {
+            font-size: 28px !important;
+        }
+
+        .container p {
+            font-size: 16px !important;
+        }
+
+    }
+</style>
+@if($clientes!=null)
+<section id="clientes" style="padding: 100px;">
+    <div class="container" id="contenedor_seccion_clientes2">
+        @if($clientes!=null)
+        <div class="section-header">
+            <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$clientes->title}}</h2>
+            <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$clientes->descripcion}}</p>
+        </div>
+        <div class="row">
+            @if(count($clientes->clienteitems) > 0)
+            <div class="features d-flex justify-content-around flex-wrap">
+                <div class="col-sm-12">
+                    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner" role="listbox">
+                            <?php $i=0; $primero=true; $total=count($clientes->clienteitems); $van=0; ?>
+                            @foreach($clientes->clienteitems as $item)
+                            @if($i == 0)
+                            @if($primero)
+                            <div class="carousel-item active">
+                            <?php $primero=false; ?>
+                            @else
+                            <div class="carousel-item">
+                            @endif
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <img class="d-block img-fluid" src="{{$item->logo}}" alt="First slide">
+                                    <div style="background-color: #dcdede;" class="text-center">
+                                        <h6 style="padding: 10px;" class="card-title">{{$item->nombre}} @if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">VISITAR</a>@endif</h6>
+                                    </div>
+                                </div> 
+                            @else
+                            <div class="col-sm-3">
+                                <img class="d-block img-fluid" src="{{$item->logo}}" alt="First slide">
+                                <div style="background-color: #dcdede;" class="text-center">
+                                    <h6 style="padding: 10px;" class="card-title">{{$item->nombre}} @if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">VISITAR</a>@endif</h6>
+                                </div>
+                            </div> 
+                            @endif
+                            <?php $i=$i+1; $van=$van+1; ?>
+                            @if($i==4)
+                            <?php $i=0; ?>
+                                </div>
+                            </div>
+                            @else
+                            @if($van==$total)
+                                </div>
+                            </div>
+                            @endif
+                            @endif
                             @endforeach
                         </div>
-                        <!-- Add Pagination -->
-                        <div class="swiper-pagination"></div>
-
-                        <!-- If we need navigation buttons -->
-                        <div class="swiper-button-prev"></div>
-                        <div class="swiper-button-next"></div>
+                        <a style="width: 5% !important;" class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                            <i style="color: #000; opacity: 0.9; font-size: 60px;" class="fa fa-arrow-left"></i>
+                            <!--<span class="carousel-control-prev-icon" aria-hidden="true"></span>-->
+                            <span class="sr-only">Anterior</span>
+                        </a>
+                        <a style="width: 5% !important;" class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                            <i style="color: #000; opacity: 0.9; font-size: 60px;" class="fa fa-arrow-right"></i>
+                            <!--<span class="carousel-control-next-icon" aria-hidden="true"></span>-->
+                            <span class="sr-only">Siguiente</span>
+                        </a>
                     </div>
-                @endif
-            </section>
+                </div>
+            </div>
+            @endif
         </div>
-    </main>
-</div>
-    <script src="{{asset('js/swiper.js')}}"></script>
-    <script>
-        var swiper = new Swiper('.swiper-container', {
-            loop: true,
-            effect: 'coverflow',
-            grabCursor: true,
-            centeredSlides: true,
-            slidesPerView: 'auto',
-            coverflowEffect: {
-                rotate: 50,
-                stretch: 0,
-                depth: 100,
-                modifier: 1,
-                slideShadows: true,
-            },
-            pagination: {
-                el: '.swiper-pagination',
-            },
-            // Navigation arrows
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-        });
-    </script>
-@else
-    <div class="section-header">
-        <h2 class="section-title text-center wow fadeInDown">Sección</h2>
-        <p class="text-center wow fadeInDown">Sin configuración</p>
+        <!--/.row-->
+        @else
+        <div class="section-header">
+            <h2 class="section-title text-center wow fadeInDown">Sección</h2>
+            <p class="text-center wow fadeInDown">Sin configuración</p>
+        </div>
+        @endif
     </div>
+    <!--/.container-->
+
+</section>
+<script type="text/javascript">
+
+</script>
 @endif

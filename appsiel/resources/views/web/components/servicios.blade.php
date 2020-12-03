@@ -98,7 +98,7 @@
             <div class="descripcion" style="text-align: center; margin-top: 20px;">
                 <h5 class="titulo">{{$servicios->titulo}}</h5>
                 <p>{{str_limit($servicios->descripcion,30)}}</p>
-                <a href="{{url('servicios/destroy').'/'.$servicios->id.$variables_url}}" class="btn btn-lg" title="Eliminar Seccion"><i class="fa fa-window-close"></i></a>
+                <a href="{{url('servicios/destroy').'/'.$servicios->id.$variables_url}}" class="btn btn-lg" title="Eliminar Seccion"><i class="fa fa-window-close"></i> ELIMINAR SECCIÓN</a>
             </div>
             <div class="col-md-12 add d-flex">
                 <div class="col-md-6">
@@ -114,7 +114,11 @@
                 <div class="contenido">
                     <div class="media service-box wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight;">
                         <div class="pull-left">
+                            @if($servicios->disposicion=='ICONO')
                             <i class="fa fa-{{$item->icono}}"></i>
+                            @else
+                            <img src="{{asset($item->icono)}}">
+                            @endif
                         </div>
                     </div>
                     <div class="descripcion">
@@ -169,7 +173,7 @@
                         <label>Estilo del Diseño</label>
                         <select type="select" class="form-control" name="disposicion" required>
                             <option value="ICONO">USANDO ÍCONO</option>
-                            <option value="ICONO">USANDO IMAGEN</option>
+                            <option value="IMAGEN">USANDO IMAGEN</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -223,10 +227,10 @@
                         <select type="select" class="form-control" name="disposicion" required>
                             @if($servicios->disposicion=='ICONO')
                             <option selected value="ICONO">USANDO ÍCONO</option>
-                            <option value="ICONO">USANDO IMAGEN</option>
+                            <option value="IMAGEN">USANDO IMAGEN</option>
                             @else
                             <option value="ICONO">USANDO ÍCONO</option>
-                            <option selected value="ICONO">USANDO IMAGEN</option>
+                            <option selected value="IMAGEN">USANDO IMAGEN</option>
                             @endif
                         </select>
                     </div>

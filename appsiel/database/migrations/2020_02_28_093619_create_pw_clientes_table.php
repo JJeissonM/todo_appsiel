@@ -14,8 +14,12 @@ class CreatePwClientesTable extends Migration
     {
         Schema::create('pw_clientes', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('nombre');
-            $table->string('logo');
+            $table->string('title');
+            $table->string('descripcion');
+            $table->string('tipo_fondo', 20);
+            $table->string('fondo');
+            $table->string('repetir')->nullable();
+            $table->string('direccion')->nullable();
             $table->unsignedInteger('widget_id');
             $table->foreign('widget_id')->references('id')->on('pw_widget')->onDelete('CASCADE');
             $table->timestamps();

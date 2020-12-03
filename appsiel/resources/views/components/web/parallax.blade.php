@@ -19,7 +19,7 @@
     
 </style>
 <section id="parallax" class="parallax">
-    <div class="container" id="contenedor_seccion_servicios">
+    <div class="container" id="contenedor_seccion_servicios" style="padding-top: 30px;">
         @if($parallax!=null)
         <div class="section-header" style="color: {{$parallax->textcolor}}; font-weight: bold;">
             <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: {{$parallax->textcolor}}; font-weight: bold;">{{$parallax->titulo}}</h2>

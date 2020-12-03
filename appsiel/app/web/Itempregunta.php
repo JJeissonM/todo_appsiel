@@ -12,6 +12,6 @@ class Itempregunta extends Model
 
     public function preguntasfrecuente()
     {
-        return $this->belongsTo(Preguntasfrecuentes::class,'id');
+        return $this->belongsTo(Preguntasfrecuentes::class, 'id');
     }
 }

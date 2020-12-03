@@ -50,6 +50,7 @@
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="servicio_id" value="{{$servicios->id}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
+                    <input type="hidden" name="disposicion" value="{{$servicios->disposicion}}">
                     <div class="form-group">
                         <label>Titulo</label>
                         <input name="titulo" type="text" placeholder="Titulo" class="form-control">
@@ -58,11 +59,18 @@
                         <label>Descripción</label>
                         <textarea name="descripcion" class="form-control contenido" rows="5"></textarea>
                     </div>
+                    @if($servicios->disposicion=='ICONO')
                     <div class="form-group">
                         <label>Icono</label>
                         <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt"
                                placeholder="Nombre del icono" class="form-control">
                     </div>
+                    @else
+                    <div class="form-group">
+                        <label>Imagen (410x291 px, bordes superiores redondeados)</label>
+                        <input name="icono" type="file" placeholder="Archivo de Imagen" class="form-control">
+                    </div>
+                    @endif
                     <div class="form-group">
                         <br/><br/><a href="{{url('seccion/'.$widget).$variables_url}}"
                                      class="btn btn-danger">Cancelar</a>

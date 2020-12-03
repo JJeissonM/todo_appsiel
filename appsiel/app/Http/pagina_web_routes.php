@@ -66,6 +66,27 @@ Route::get('servicios/destroy/item/{itemservicio}', 'web\ServicioController@dest
 Route::get('servicios/destroy/{servicio}', 'web\ServicioController@delete');
 Route::get('/servicios/{id}/index', 'web\ServicioController@leer_servicio')->name('servicios.leer_servicio');
 
+//TEAMS
+Route::get('teams/create/{widget}', 'web\TeamController@create');
+Route::post('teams/store', 'web\TeamController@store')->name('teams.store');
+Route::get('teams/edit/{item}', 'web\TeamController@edit');
+Route::post('teams/guardar/item', 'web\TeamController@guardar')->name('teams.guardar');
+Route::put('teams/update/{id}', 'web\TeamController@update')->name('teams.update');
+Route::put('teams/updated/item/{id}', 'web\TeamController@modificar')->name('teams.editar');
+Route::get('teams/destroy/item/{item}', 'web\TeamController@destroy');
+Route::get('teams/destroy/{team}', 'web\TeamController@delete');
+//Route::get('/servicios/{id}/index', 'web\ServicioController@leer_servicio')->name('servicios.leer_servicio');
+
+//Prices
+Route::get('prices/create/{widget}', 'web\PriceController@create');
+Route::post('prices/store', 'web\PriceController@store')->name('prices.store');
+Route::get('prices/edit/{item}', 'web\PriceController@edit');
+Route::post('prices/guardar/item', 'web\PriceController@guardar')->name('prices.guardar');
+Route::put('prices/update/{id}', 'web\PriceController@update')->name('prices.update');
+Route::put('prices/updated/item/{id}', 'web\PriceController@modificar')->name('prices.editar');
+Route::get('prices/destroy/item/{item}', 'web\PriceController@destroy');
+Route::get('prices/destroy/{price}', 'web\PriceController@delete');
+
 //PARALLAX
 Route::get('parallax/create/{widget}', 'web\ParallaxController@create');
 Route::post('parallax/store', 'web\ParallaxController@store')->name('parallax.store');
@@ -89,9 +110,12 @@ Route::get('contactenos/configuracion/{names}/{email}/{asunto}/{message}/guardar
 
 //CLIENTES
 Route::get('clientes/create/{widget}', 'web\ClienteController@creaste');
+Route::post('clientes/store/seccion', 'web\ClienteController@storeSeccion')->name('clientes.storeSeccion');
 Route::post('clientes/store', 'web\ClienteController@store')->name('clientes.store');
 Route::get('clientes/destroy/{cliente}', 'web\ClienteController@destroy');
+Route::get('clientes/destroy/seccion/{id}', 'web\ClienteController@destroySeccion')->name('clientes.deleteSeccion');
 Route::post('clientes/modificar/cliente/', 'web\ClienteController@updated')->name('clientes.modificar');
+Route::put('clientes/seccion/modificar/{id}', 'web\ClienteController@updatedSection')->name('clientes.modificarSeccion');
 
 Route::post('pagina_web/contactenos', 'PaginaWeb\FrontEndController@contactenos');
 
@@ -108,7 +132,7 @@ Route::get('articles/article/viewfinder/{id}', 'web\ArticleController@show')->na
 Route::get('articles/article/viewfinder/only/{id}', 'web\ArticleController@show2')->name('article.show2');
 Route::get('article/delete/destroy/{id}', 'web\ArticleController@destroy');
 Route::get('article/category/articles/list/{id}', 'web\ArticleController@articlesCategory')->name('article.articlesCategory');
- 
+
 //Route::get('article/{id}','web\ArticleController@destroy');
 
 

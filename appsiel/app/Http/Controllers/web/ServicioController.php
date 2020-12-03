@@ -29,8 +29,12 @@ class ServicioController extends Controller
                 'etiqueta' => 'Paginas y secciones'
             ],
             [
-                'url' => 'NO',
+                'url' => 'seccion/' . $widget . '?id=' . Input::get('id'),
                 'etiqueta' => 'Servicios'
+            ],
+            [
+                'url' => 'NO',
+                'etiqueta' => 'Crear Servicio'
             ]
         ];
         $iconos = Icon::all();
@@ -83,24 +87,29 @@ class ServicioController extends Controller
         $servicio = Servicio::find($id);
         $servicio->titulo = strtoupper($request->titulo);
         $servicio->descripcion = $request->descripcion;
+        $servicio->disposicion = $request->disposicion;
         $tipo_fondo = $servicio->tipo_fondo;
         if ($request->tipo_fondo == '') {
             $servicio->tipo_fondo = $tipo_fondo;
         }
         if ($request->tipo_fondo != '') {
             if ($request->tipo_fondo == 'IMAGEN') {
-                //el fondo es una imagen
-                $file = $request->file('fondo');
-                $name = time() . $file->getClientOriginalName();
-                $filename = "img/" . $name;
-                $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-                if ($flag !== false) {
-                    $servicio->fondo = $filename;
-                    $servicio->tipo_fondo = 'IMAGEN';
-                } else {
-                    $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
-                    return redirect()->back()->withInput($request->input())
-                        ->with('mensaje_error', $message);
+                if (isset($request->fondo)) {
+                    //el fondo es una imagen
+                    $file = $request->file('fondo');
+                    $name = time() . $file->getClientOriginalName();
+                    $filename = "img/" . $name;
+                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                    if ($flag !== false) {
+                        $servicio->fondo = $filename;
+                        $servicio->tipo_fondo = 'IMAGEN';
+                        $servicio->repetir = $request->repetir;
+                        $servicio->direccion = $request->direccion;
+                    } else {
+                        $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                        return redirect()->back()->withInput($request->input())
+                            ->with('mensaje_error', $message);
+                    }
                 }
             } else {
                 $servicio->fondo = $request->fondo;
@@ -128,14 +137,29 @@ class ServicioController extends Controller
         $item = new Itemservicio();
         $item->titulo = strtoupper($request->titulo);
         $item->descripcion = $request->descripcion;
-        $item->icono = $request->icono;
+        if ($request->disposicion == 'IMAGEN') {
+            //el fondo es una imagen
+            $file = $request->file('icono');
+            $name = time() . $file->getClientOriginalName();
+            $filename = "img/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $item->icono = $filename;
+            } else {
+                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                return redirect()->back()->withInput($request->input())
+                    ->with('mensaje_error', $message);
+            }
+        } else {
+            $item->icono = $request->icono;
+        }
         $item->servicio_id = $request->servicio_id;
         $result = $item->save();
         if ($request) {
-            $message = 'La sección fue almacenada correctamente.';
+            $message = 'El ítem fue almacenado correctamente.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         } else {
-            $message = 'La sección no fue almacenada de forma correcta.';
+            $message = 'El ítem no fue almacenado de forma correcta.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         }
     }
@@ -168,7 +192,8 @@ class ServicioController extends Controller
         $variables_url = '?id=' . Input::get('id');
         $widget = $item->servicio->widget_id;
         $iconos = Icon::all();
-        return view('web.components.servicios.edit', compact('miga_pan', 'variables_url', 'item', 'iconos', 'widget'));
+        $servicio = $item->servicio;
+        return view('web.components.servicios.edit', compact('miga_pan', 'servicio', 'variables_url', 'item', 'iconos', 'widget'));
     }
 
     /*
@@ -181,7 +206,22 @@ class ServicioController extends Controller
         $item = Itemservicio::find($id);
         $item->titulo = strtoupper($request->titulo);
         $item->descripcion = $request->descripcion;
-        $item->icono = $request->icono;
+        if ($request->disposicion == 'IMAGEN') {
+            //el fondo es una imagen
+            $file = $request->file('icono');
+            $name = time() . $file->getClientOriginalName();
+            $filename = "img/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $item->icono = $filename;
+            } else {
+                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                return redirect()->back()->withInput($request->input())
+                    ->with('mensaje_error', $message);
+            }
+        } else {
+            $item->icono = $request->icono;
+        }
         $result = $item->save();
         if ($result) {
             $message = 'El servicio fue modificado correctamente.';
