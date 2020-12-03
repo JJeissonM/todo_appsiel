@@ -108,7 +108,7 @@ Route::post('contactenos/store', 'web\ContactenosController@store')->name('conta
 Route::put('contactenos/updated/{id}', 'web\ContactenosController@updated')->name('contactenos.updated');
 Route::get('contactenos/configuracion/{names}/{email}/{asunto}/{message}/guardar', 'web\ContactenosController@guardar_contactenos')->name('contactenos.guardar');
 
-//CLIENTES
+//CLIENTES 
 Route::get('clientes/create/{widget}', 'web\ClienteController@creaste');
 Route::post('clientes/store/seccion', 'web\ClienteController@storeSeccion')->name('clientes.storeSeccion');
 Route::post('clientes/store', 'web\ClienteController@store')->name('clientes.store');
