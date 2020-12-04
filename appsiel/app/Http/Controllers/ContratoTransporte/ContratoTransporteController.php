@@ -12,6 +12,7 @@ use App\Contratotransporte\Planillaconductor;
 use App\Contratotransporte\Plantilla;
 use App\Contratotransporte\Propietario;
 use App\Contratotransporte\Vehiculo;
+use App\Contratotransporte\Vehiculoconductor;
 use App\Core\Empresa;
 use App\Core\Tercero;
 use Illuminate\Http\Request;
@@ -189,6 +190,9 @@ class ContratoTransporteController extends Controller
         $idapp = Input::get('id');
         $modelo = Input::get('id_modelo');
         $transaccion = Input::get('id_transaccion');
+        if ($c->estado == 'ANULADO') {
+            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
+        }
         $miga_pan = [
             [
                 'url' => 'contratos_transporte' . '?id=' . $idapp,
@@ -255,6 +259,12 @@ class ContratoTransporteController extends Controller
     public function imprimir($id)
     {
         $c = Contrato::find($id);
+        $idapp = Input::get('id');
+        $modelo = Input::get('id_modelo');
+        $transaccion = Input::get('id_transaccion');
+        if ($c->estado == 'ANULADO') {
+            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
+        }
         $contratante = $c->contratante;
         $vehiculo = $c->vehiculo;
         $emp = null;
@@ -270,90 +280,21 @@ class ContratoTransporteController extends Controller
     }
 
 
-    //contratos de un propietario o un conductor
+    //contratos de un vehiculo
     public function miscontratos()
     {
         $u = Auth::user();
+        $v = Vehiculo::where('placa', $u->email)->first();
         $contratos = null;
-        $terceros = Tercero::where('user_id', $u->id)->get();
-        if (count($terceros) > 0) {
-            foreach ($terceros as $t) {
-                $p = null;
-                $c = null;
-                //reviso propietario
-                $p = $t->propietario;
-                if ($p != null) {
-                    $vehis = null;
-                    $vehis = $p->vehiculos;
-                    if ($vehis != null) {
-                        foreach ($vehis as $v) {
-                            $conts = null;
-                            $conts = $v->contratos;
-                            if ($conts != null) {
-                                foreach ($conts as $c) {
-                                    $contratos[] = [
-                                        'identificacion' => $t->numero_identificacion,
-                                        'persona' => $t->descripcion,
-                                        'tercero' => $t,
-                                        'propietario' => $p,
-                                        'conductor' => null,
-                                        'genera' => $p->genera_planilla,
-                                        'contrato' => $c,
-                                        'vehiculo' => $v,
-                                        'tipo' => 'PROPIETARIO'
-                                    ];
-                                }
-                            }
-                        }
-                    }
-                }
-                //reviso conductor
-                $c = $t->conductor;
-                if ($c != null) {
-                    $planillacond = null;
-                    $planillacond = $c->planillaconductors;
-                    if ($planillacond != null) {
-                        foreach ($planillacond as $pc) {
-                            $planilac = null;
-                            $planilac = $pc->planillac;
-                            if ($planilac != null) {
-                                $cont = null;
-                                $cont = $planilac->contrato;
-                                $genera = "NO";
-                                if ($c->estado == 'Activo') {
-                                    $genera = "SI";
-                                }
-                                //si tiene licencia vencida o no tiene no puede generar
-                                $docs = $c->documentosconductors;
-                                if (count($docs) > 0) {
-                                    foreach ($docs as $d) {
-                                        if ($d->licencia == 'SI') {
-                                            //tiene licencia, se revisa si esta vencida
-                                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
-                                                $genera = 'NO';
-                                            } else {
-                                                $genera = 'SI';
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    $genera = 'NO';
-                                }
-                                $contratos[] = [
-                                    'identificacion' => $t->numero_identificacion,
-                                    'persona' => $t->descripcion,
-                                    'tercero' => $t,
-                                    'propietario' => null,
-                                    'conductor' => $c,
-                                    'genera' => $genera,
-                                    'contrato' => $cont,
-                                    'vehiculo' => $cont->vehiculo,
-                                    'tipo' => 'CONDUCTOR'
-                                ];
-                            }
-                        }
-                    }
-                }
+        $cont = $v->contratos;
+        if (count($cont) > 0) {
+            foreach ($cont as $c) {
+                $contratos[] = [
+                    'propietario' => $c->vehiculo->propietario,
+                    'bloqueado' => $c->vehiculo->bloqueado_cuatro_contratos,
+                    'contrato' => $c,
+                    'vehiculo' => $v
+                ];
             }
         }
         $idapp = Input::get('id');
@@ -373,7 +314,8 @@ class ContratoTransporteController extends Controller
         return view('contratos_transporte.contratos.miscontratos')
             ->with('variables_url', $variables_url)
             ->with('miga_pan', $miga_pan)
-            ->with('contratos', $contratos);
+            ->with('contratos', $contratos)
+            ->with('v', $v);
     }
 
 
@@ -487,11 +429,11 @@ class ContratoTransporteController extends Controller
         if ($p == null) {
             return redirect('cte_contratos/' . $id . '/planillas/' . $source . '/index' . $variables_url)->with('mensaje_error', 'No hay plantilla para generar planilla, contacte al administrador del sistema.');
         }
-        $cond = Conductor::all();
+        $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $co->vehiculo_id)->get();
         $conductores = null;
-        if (count($cond) > 0) {
-            foreach ($cond as $c) {
-                $docs = $c->documentosconductors;
+        if (count($conductoresDelVehiculo) > 0) {
+            foreach ($conductoresDelVehiculo as $c) {
+                $docs = $c->conductor->documentosconductors;
                 if (count($docs) > 0) {
                     $vencido = false;
                     foreach ($docs as $d) {
@@ -503,7 +445,7 @@ class ContratoTransporteController extends Controller
                         }
                     }
                     if (!$vencido) {
-                        $conductores[$c->id] = $c->tercero->descripcion;
+                        $conductores[$c->conductor_id] = $c->conductor->tercero->descripcion;
                     }
                 }
             }
@@ -633,5 +575,24 @@ class ContratoTransporteController extends Controller
 
         //echo $documento_vista;
         return $pdf->stream('fuec.pdf');
+    }
+
+
+    //permite anular un contrato por su id
+    public function anular($id)
+    {
+        $contrato = Contrato::find($id);
+        $idapp = Input::get('id');
+        $modelo = Input::get('id_modelo');
+        $transaccion = Input::get('id_transaccion');
+        if ($contrato->estado == 'ANULADO') {
+            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
+        }
+        $contrato->estado = "ANULADO";
+        if ($contrato->save()) {
+            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('flash_message', 'Contrato ANULADO con éxito.');
+        } else {
+            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato no pudo ser ANULADO.');
+        }
     }
 }
