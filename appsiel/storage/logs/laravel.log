@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2020-11-27 11:29:57] production.ERROR: ErrorException: Illegal string offset 'mon' in C:\xampp\htdocs\todo_appsiel\appsiel\app\Http\Controllers\ContratoTransporte\ContratoTransporteController.php:130
 Stack trace:
 #0 C:\xampp\htdocs\todo_appsiel\appsiel\app\Http\Controllers\ContratoTransporte\ContratoTransporteController.php(130): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(2, 'Illegal string ...', 'C:\\xampp\\htdocs...', 130, Array)
@@ -12177,3 +12178,5 @@ Stack trace:
 #66 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #67 C:\xampp\htdocs\todo_appsiel\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #68 {main}  
+=======
+>>>>>>> 61820267b4d970f497f4f5c761acba0ddedcae75

@@ -602,7 +602,6 @@ class ModeloController extends Controller
         {
             $url_respuesta = app($modelo->name_space)->update_adicional($datos, $id);
 
-
             if( !is_null( $url_respuesta ) )
             {
                 return redirect( $url_respuesta )->with('flash_message', 'Registro MODIFICADO correctamente.');

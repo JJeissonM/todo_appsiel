@@ -126,8 +126,8 @@ class ReporteController extends TesoreriaController
         // 1ro. PROCESO QUE ACTUALIZA LAS CARTERAS, asignando EL ESTADO Vencida
         // Actualizar las cartera con fechas inferior a hoy y con estado distinto a Pagada
         TesoPlanPagosEstudiante::where('fecha_vencimiento', '<', date('Y-m-d'))
-            ->where('estado', '<>', 'Pagada')
-            ->update(['estado' => 'Vencida']);
+                                ->where('estado', '<>', 'Pagada')
+                                ->update(['estado' => 'Vencida']);
     }
 
     public function cartera_vencida_estudiantes()
@@ -165,7 +165,7 @@ class ReporteController extends TesoreriaController
             ->addNumberColumn('Valor');
 
         // Obtención de datos
-        $concepto = 'Matrícula';
+        $concepto = config('matriculas.inv_producto_id_default_matricula');
         $num_mes = "01";
         $cartera_matriculas = array();
         for ($i = 0; $i < 12; $i++) {
@@ -203,7 +203,7 @@ class ReporteController extends TesoreriaController
             ->addNumberColumn('Valor');
 
         // Obtención de datos
-        $concepto = 'Pensión';
+        $concepto = config('matriculas.inv_producto_id_default_pension');
         $num_mes = "01";
         $cartera_pensiones = array();
         for ($i = 0; $i < 12; $i++) {
@@ -611,8 +611,10 @@ class ReporteController extends TesoreriaController
                             <td>'.$una_matricula->nombre_completo.' ('.$una_matricula->codigo.')'.'</td>';
 
                 //Matrícula
+
+                $concepto_matricula_id = config('matriculas.inv_producto_id_default_matricula');               
                 $cartera_matricula = TesoPlanPagosEstudiante::where('id_libreta', $libreta_pagos->id)
-                											->where('concepto','Matrícula')
+                											->where('inv_producto_id', $concepto_matricula_id)
                 											->get();
 
                 if ( count($cartera_matricula) > 0 ) 
@@ -653,7 +655,11 @@ class ReporteController extends TesoreriaController
                 }
 
                 //Pensión
-                $cartera_pension = TesoPlanPagosEstudiante::where('id_libreta',$libreta_pagos->id)->where('concepto','Pensión')->orderBy('fecha_vencimiento','ASC')->get();
+                $concepto_pension_id = config('matriculas.inv_producto_id_default_pension');
+                $cartera_pension = TesoPlanPagosEstudiante::where('id_libreta',$libreta_pagos->id)
+                                                            ->where('inv_producto_id', $concepto_pension_id)
+                                                            ->orderBy('fecha_vencimiento','ASC')
+                                                            ->get();
                 
                 for ($i=2; $i < 12; $i++) 
                 { 
