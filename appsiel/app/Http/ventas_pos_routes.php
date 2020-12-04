@@ -24,4 +24,8 @@ Route::get('pos_factura_generar_remisiones/{pdv_id}', 'VentasPos\FacturaPosContr
 Route::post('ventas_pos_anular_factura', 'VentasPos\FacturaPosController@anular_factura_acumulada');
 Route::resource('pos_factura', 'VentasPos\FacturaPosController');
 
+// Archivos planos
+Route::post('ventas_pos_cargue_archivo_plano', 'VentasPos\ArchivoPlanoController@procesar_archivo');
+
+
 

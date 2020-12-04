@@ -283,6 +283,10 @@ use App\Http\Controllers\Sistema\VistaController;
             </div>
 
             <br>
+
+            @if( config('ventas_pos.permite_facturacion_con_archivo_plano') )
+                @include('ventas_pos.form_cargue_archivo_plano')
+            @endif
         </div>
     </div>
     <br/>
@@ -1299,6 +1303,41 @@ use App\Http\Controllers\Sistema\VistaController;
                 var expires = "expires=" + d.toUTCString();
                 document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
             }
+
+
+            $("#btn_cargar_plano").on('click',function(event){
+                event.preventDefault();
+
+                if ( !validar_requeridos() )
+                {
+                    return false;
+                }
+
+                $("#div_spin").show();
+                $("#div_cargando").show();
+                
+                var form = $('#form_archivo_plano');
+                var url = form.attr('action');
+                var datos = new FormData(document.getElementById("form_archivo_plano"));
+
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    dataType: "html",
+                    data: datos,
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                })
+                .done(function( respuesta ){
+                    $('#div_cargando').hide();
+                    $("#div_spin").hide();
+
+                    $("#ingreso_registros").find('tbody:last').prepend( respuesta );
+                    calcular_totales();
+                    hay_productos++;
+                });
+            });
 
         });
 
