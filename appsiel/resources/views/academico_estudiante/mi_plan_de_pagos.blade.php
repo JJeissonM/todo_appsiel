@@ -67,9 +67,10 @@
 											# code...
 											break;
 									}
+									//dd($fila);
 								?>
 								<tr class="{{$clase_tr}}">
-									<td>{{$fila->concepto}}</td>
+									<td>{{$fila->concepto->descripcion}}</td>
 									<td>{{$nombre_mes}}</td>
 									<td><?php echo number_format($fila->valor_cartera, 0, ',', '.')?></td>
 									<td><?php echo number_format($fila->valor_pagado, 0, ',', '.')?></td>
