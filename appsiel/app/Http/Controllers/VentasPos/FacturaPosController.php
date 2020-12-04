@@ -646,6 +646,11 @@ class FacturaPosController extends TransaccionController
 
         $encabezados_documentos = FacturaPos::where( 'pdv_id', $pdv_id )->where( 'estado', 'Pendiente' )->get();
 
+        if ( is_null( $encabezados_documentos ) )
+        {
+            return 1;
+        }
+
         $this->hacer_desarme_automatico( $pdv_id, $encabezados_documentos->last()->fecha ); // Con la fecha de la última factura
 
         foreach ($encabezados_documentos as $factura)
