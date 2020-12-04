@@ -53,6 +53,29 @@
 					</div>
 
 				</div>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['permite_facturacion_con_archivo_plano'] ) )
+								{
+									$permite_facturacion_con_archivo_plano = $parametros['permite_facturacion_con_archivo_plano'];
+								}else{
+									$permite_facturacion_con_archivo_plano = 0;
+								}
+							?>
+							{{ Form::bsSelect('permite_facturacion_con_archivo_plano', $permite_facturacion_con_archivo_plano, 'Permite facturación con archivo plano', [ '0' => 'No', '1' => 'Si' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
 
 				<br><br>
 
