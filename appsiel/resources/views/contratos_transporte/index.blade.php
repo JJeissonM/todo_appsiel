@@ -22,7 +22,7 @@
 											<th>Origen - Destino</th>
 											<th>Vigencia</th>
 											<th>Contratante</th>
-											<th></th>
+											<th>Imprimir</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -34,7 +34,11 @@
 											<td>{{"DESDE: ".$c->fecha_inicio." - HASTA: ".$c->fecha_fin}}</td>
 											<td>{{$c->contratante->tercero->descripcion}}</td>
 											<td>
+												@if($c->estado=='ANULADO')
+												<p>ANULADO</p>
+												@else
 												<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>
+												@endif
 											</td>
 										</tr>
 										@endforeach

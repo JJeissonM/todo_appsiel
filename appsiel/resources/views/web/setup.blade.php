@@ -165,7 +165,7 @@
                                         <input type="hidden" name="_method" value="POST">
                                         <div class="form-group">
                                             <label for="">Color Primario</label>
-                                            <input type="color" id="color_terciario" onchange="selectColor(event)" class="form-control" name="color_primario" value="" required>
+                                            <input type="color" id="color_primario" onchange="selectColor(event)" class="form-control" name="color_primario" value="" required>
                                         </div>
 
                                         <div class="form-group">
@@ -176,6 +176,18 @@
                                         <div class="form-group">
                                             <label for="">Color Terciario</label>
                                             <input type="color" id="color_terciario" onchange="selectColor(event)" class="form-control" name="color_terciario" value="" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="">Fuentes que Usará su Sitio Web</label>
+                                            <select name="fuentes[]" class="form-control select2" style="width: 100%;" multiple required>
+                                                <option value="">-- Seleccione opción --</option>
+                                                @if($fonts!=null)
+                                                @foreach($fonts as $key=>$value)
+                                                <option value="{{$key}}">{{$value}}</option>
+                                                @endforeach
+                                                @endif
+                                            </select>
                                         </div>
 
                                         <div class="form-group d-flex justify-content-end">
@@ -200,6 +212,13 @@
                                         <div class="form-group">
                                             <label for="">Color Terciario</label>
                                             <input type="color" id="color_terciario" onchange="selectColor(event)" class="form-control" name="color_terciario" value="{{$configuracion->color_terciario}}" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="">Fuentes que Usará su Sitio Web</label>
+                                            @if($fonts!=null)
+                                            {!! Form::select('fuentes[]',$fonts,$fontsconfig,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','multiple','style'=>'width: 100%;']) !!}
+                                            @endif
                                         </div>
 
                                         <div class="form-group d-flex justify-content-end">
@@ -308,11 +327,18 @@
 <script type="text/javascript">
     $(function() {
         const color_primario = document.getElementById('color_primario');
-        color_primario.style.backgroundColor = color_primario.getAttribute('value');
+        if (color_primario != null) {
+            color_primario.style.backgroundColor = color_primario.getAttribute('value');
+        }
         const color_segundario = document.getElementById('color_segundario');
-        color_segundario.style.backgroundColor = color_segundario.getAttribute('value');
+        if (color_segundario != null) {
+            color_segundario.style.backgroundColor = color_segundario.getAttribute('value');
+        }
         const color_terciario = document.getElementById('color_terciario');
-        color_terciario.style.backgroundColor = color_terciario.getAttribute('value');
+        if (color_terciario != null) {
+            color_terciario.style.backgroundColor = color_terciario.getAttribute('value');
+        }
+        $('.select2').select2();
     });
 
     function selectColor(event) {

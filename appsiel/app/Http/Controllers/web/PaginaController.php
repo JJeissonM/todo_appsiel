@@ -7,6 +7,7 @@ use App\web\Configuraciones;
 use App\web\Pagina;
 
 use App\Http\Controllers\Controller;
+use App\web\Configuracionfuente;
 use App\web\RedesSociales;
 use App\web\Seccion;
 use App\web\Widget;
@@ -212,42 +213,48 @@ class PaginaController extends Controller
     {
         $pagina = Pagina::where('slug', $slug)->first();
 
-        if( is_null( $pagina ) )
-        {
-            $pagina = Pagina::where('pagina_inicio',1)->get()->first();
+        if (is_null($pagina)) {
+            $pagina = Pagina::where('pagina_inicio', 1)->get()->first();
         }
 
         $configuracion = Configuraciones::all()->first();
-        
+
         $widgets = $pagina->widgets()->orderBy('orden')->get();
 
         $view = [];
         $links = [];
         $estilos = [];
         $scripts = [];
-        if (count($widgets) > 0)
-        {
-            foreach ($widgets as $widget)
-            {
+        if (count($widgets) > 0) {
+            foreach ($widgets as $widget) {
                 $factory = new FactoryCompents($widget->seccion->nombre, $widget->id);
-                
+
                 $componente = $factory();
-                
+
                 if ($componente === false || $componente->DrawComponent() == false) continue;
                 $view[] = "<div id='" . str_slug($widget->seccion->nombre) . '-' . $widget->id .  "'>" . $componente->DrawComponent() . "</div>";
 
                 // Traer los elementos de diseño del widget
-                $elements_design = WidgetsElementsDesign::where('widget_id',$widget->id)->first();
+                $elements_design = WidgetsElementsDesign::where('widget_id', $widget->id)->first();
 
-                if( $elements_design != null )
-                {
-                    $links = array_merge( $links, $elements_design->generar_array_links() );
+                if ($elements_design != null) {
+                    $links = array_merge($links, $elements_design->generar_array_links());
                     $estilos[] = $elements_design->estilos;
                     $scripts[] = $elements_design->scripts;
                 }
             }
         }
-        return view('web.index', compact('view', 'pagina', 'configuracion', 'links','estilos','scripts'));
+        $configuracion = Configuraciones::all()->first();
+        $fonts = null;
+        if ($configuracion != null) {
+            $fuentesya = Configuracionfuente::where('configuracion_id', $configuracion->id)->get();
+            if (count($fuentesya) > 0) {
+                foreach ($fuentesya as $fy) {
+                    $fonts[] = $fy->fuente;
+                }
+            }
+        }
+        return view('web.index', compact('view', 'fonts', 'pagina', 'configuracion', 'links', 'estilos', 'scripts'));
     }
 
     public function edit($id)
@@ -274,7 +281,6 @@ class PaginaController extends Controller
 
             $variables_url = '?id=' . Input::get('id');
             return view('web.paginas.edit', compact('variables_url', 'pagina', 'miga_pan'));
-
         } else {
 
             $message = 'El registro que intenta observar no se encuentra registrado, por favor verifique e intente nuevamente.';
@@ -288,15 +294,13 @@ class PaginaController extends Controller
 
         $pagina = Pagina::find($id);
 
-        if ($pagina)
-        {
+        if ($pagina) {
 
             $old_image = '';
-            if ( $pagina->favicon != '')
-            {
+            if ($pagina->favicon != '') {
                 $old_image = $pagina->favicon;
             }
-            
+
 
             if ($request->pagina_inicio) {
                 $principal = Pagina::where('pagina_inicio', true)->get()->first();
@@ -319,15 +323,14 @@ class PaginaController extends Controller
                     $filename = "img/" . $name;
                     $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
 
-                    if ($flag !== false)
-                    {
+                    if ($flag !== false) {
 
-                        if ( $old_image != '' )
-                        {
-                            if ( file_exists( $old_image ) )
-                                { unlink($old_image); }
+                        if ($old_image != '') {
+                            if (file_exists($old_image)) {
+                                unlink($old_image);
+                            }
                         }
-                        
+
                         $pagina->fill(['favicon' => $filename])->save();
                     }
                 }
@@ -385,14 +388,12 @@ class PaginaController extends Controller
                     'message' => 'Error inesperado, por favor intentelo más tarde.'
                 ]);
             }
-
         } else {
 
             return response()->json([
                 'status' => 'error',
                 'message' => 'La sección que intenta eliminar no se encuentra asociada a ninguna pagina, por favor verifique y vuelvalo a intentar.'
             ]);
-
         }
     }
 
@@ -412,8 +413,7 @@ class PaginaController extends Controller
         }*/
 
         $widget->orden = $orden;
-        
+
         $widget->save();
     }
-
 }

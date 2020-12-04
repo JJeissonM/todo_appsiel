@@ -48,7 +48,7 @@ class Contrato extends Model
                 DB::raw('CONCAT(t1.nombre1," ",t1.otros_nombres," ",t1.apellido1," ",t1.apellido2," ",t1.razon_social) AS campo6'),
                 DB::raw('CONCAT("INTERNO: ",cte_vehiculos.int," - PLACA: ",cte_vehiculos.placa," - MODELO: ",cte_vehiculos.modelo," - MARCA: ",cte_vehiculos.marca," - CLASE: ",cte_vehiculos.clase) AS campo7'),
                 DB::raw('CONCAT(t2.numero_identificacion," - ",t2.nombre1," ",t2.otros_nombres," ",t2.apellido1," ",t2.apellido2," ",t2.razon_social) AS campo8'),
-                'cte_contratos.id AS campo9',
+                'cte_contratos.estado AS campo9',
                 'cte_contratos.id AS campo10'
             )
             ->orderBy('cte_contratos.created_at', 'DESC')

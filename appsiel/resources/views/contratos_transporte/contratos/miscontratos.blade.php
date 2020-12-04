@@ -28,7 +28,7 @@
 		&nbsp;
 		<div class="row" style="padding: 20px;">
 			<div class="col-md-12">
-				<h3>Listado de contratos celebrados sobre mis vehículos (PROPIETARIO) y/o sobre los vehículos a los cuales he sido asociado como CONDUCTOR</h3>
+				<h3>Listado de contratos celebrados sobre el vehículo {{"INTERNO: ".$v->int." - PLACA: ".$v->placa." - MODELO: ".$v->modelo." - MARCA: ".$v->marca." - CLASE: ".$v->clase}}</h3>
 				<div class="table-responsive col-md-12" id="table_content">
 					<table class="table table-bordered table-striped" id="myTable">
 						<thead>
@@ -40,7 +40,6 @@
 								<th>Vigencia</th>
 								<th>Contratante</th>
 								<th>Vehículo</th>
-								<th>Contrato Como</th>
 								<th>Planillas FUEC</th>
 							</tr>
 						</thead>
@@ -55,8 +54,17 @@
 								<td>{{"DESDE ".$c['contrato']->fecha_inicio." HASTA ".$c['contrato']->fecha_fin}}</td>
 								<td>{{$c['contrato']->contratante->tercero->descripcion}}</td>
 								<td>{{"INTERNO: ".$c['vehiculo']->int." - PLACA: ".$c['vehiculo']->placa." - MODELO: ".$c['vehiculo']->modelo." - MARCA: ".$c['vehiculo']->marca." - CLASE: ".$c['vehiculo']->clase}}</td>
-								<td>{{$c['tipo']}}</td>
-								<td>@if($c['genera']=='SI')<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn btn-xs btn-primary"><i class="fa fa-arrow-right"></i></a>@else -- Usted no se encuentra activo en el sistema, no tiene licencia registrada o su licencia está vencida. No puede generar planillas -- @endif</td>
+								<td>
+									@if($c['contrato']->estado=='ACTIVO')
+									@if($c['bloqueado']=='NO')
+									<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn btn-xs btn-primary"><i class="fa fa-arrow-right"></i></a>
+									@else 
+									-- Usted no puede generar planillas -- 
+									@endif
+									@else
+									-- ANULADO --
+									@endif
+								</td>
 							</tr>
 							@endforeach
 							@endif
