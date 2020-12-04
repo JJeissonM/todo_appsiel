@@ -85,30 +85,4 @@ class ProcesosController extends Controller
 
     	return redirect( 'index_procesos/nomina.procesos.transacciones_via_interface?id=17' )->with('flash_message','Se almacenaron <b>' . $cantidad_registros . ' registros </b> correctamente en el documento <b>' . $encabezado_documento->descripcion . '</b>.' );
     }
-
-
-    public function procesar_archivo_plano( Request $request )
-    {
-
-    	// Acumulados por cada entidad
-
-    	// Entidades Salud
-
-    	// Entidades Pensión
-
-    	// Entidad ARL
-
-    	// Entidad Caja Compensación
-
-    	// Entidad SENA
-
-    	// Entidad ICBF
-
-    	$lineas_archivo_plano = $archivo->validar_estructura_archivo();
-
-    	return View::make( 'nomina.procesos.incluir.lineas_registros_acumulados_seguridad_social_parafiscales', compact( 'lineas_archivo_plano', 'nom_doc_encabezado_id' ) )->render();
-    }
-    
-    
-
 }
