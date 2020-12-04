@@ -104,6 +104,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('login', 'components.web.login', ['login']);
         Form::component('team', 'components.web.team', ['team']);
         Form::component('Price', 'components.web.price', ['Price']);
+        Form::component('formcontacto', 'components.web.contactenos2', ['contactenos']);
     }
 
     /**

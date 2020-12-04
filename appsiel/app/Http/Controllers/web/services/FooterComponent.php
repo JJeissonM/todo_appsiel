@@ -26,13 +26,14 @@ class FooterComponent implements IDrawComponent
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
         $widget =  Widget::find($this->widget);
-        $seccion =  Seccion::where('nombre','Contáctenos')->first();
+        $seccion =  Seccion::where('nombre', 'Contáctenos')->first();
         $contacto = Widget::where([
-            ['seccion_id',$seccion->id],
-            ['pagina_id',$widget->pagina_id]
+            ['seccion_id', $seccion->id],
+            ['pagina_id', $widget->pagina_id]
         ])->first();
-        $contactenos = $contacto != null ? Contactenos::where('widget_id', $contacto->id)->first() : null;
-        return Form::footer($footer,$redes,$contactenos,'small');
+        //$contactenos = $contacto != null ? Contactenos::where('widget_id', $contacto->id)->first() : null;
+        $contactenos =  null;
+        return Form::footer($footer, $redes, $contactenos, 'small');
     }
 
     function viewComponent()

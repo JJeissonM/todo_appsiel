@@ -108,11 +108,11 @@
                                     <textarea name="body" class="form-control" cols="30" rows="5">{{$modal->body}}</textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="body">Call to Action</label>
+                                    <label for="body">Enlace</label>
                                     <input type="text" id="body" class="form-control" name="enlace" value="{{$modal->enlace}}">
                                 </div>
                                 <div class="form-group">
-                                    <label for="recurso">Recurso</label>
+                                    <label for="recurso">Imagen de Fondo (800x550 px)</label>
                                     <input type="file" id="recurso" class="form-control" name="path" value="">
                                 </div>
                                 <button class="btn btn-primary waves-effect btn-block btn-sm">Guardar</button>
@@ -133,11 +133,11 @@
                                     <textarea name="body" class="form-control" cols="30" rows="5"></textarea>
                                 </div>
                                 <div class="form-group">
-                                    <label for="body">Call to Action</label>
+                                    <label for="body">Enlace</label>
                                     <input type="text" id="body" class="form-control" name="enlace">
                                 </div>
                                 <div class="form-group">
-                                    <label for="recurso">Recurso</label>
+                                    <label for="recurso">Imagen de Fondo (800x550 px)</label>
                                     <input type="file" id="recurso" class="form-control" name="path">
                                 </div>
                                 <button class="btn btn-primary waves-effect btn-block btn-sm">Guardar</button>

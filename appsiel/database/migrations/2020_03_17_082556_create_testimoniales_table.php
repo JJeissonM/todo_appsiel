@@ -16,7 +16,6 @@ class CreateTestimonialesTable extends Migration
             $table->increments('id');
             $table->string('titulo');
             $table->string('descripcion');
-            $table->string('imagen_fondo')->default('img/lading-page/map.png');
             $table->string('disposicion')->default('DEFAULT');
             $table->unsignedInteger('widget_id');
             $table->foreign('widget_id')->references('id')->on('pw_widget')->onDelete('CASCADE');

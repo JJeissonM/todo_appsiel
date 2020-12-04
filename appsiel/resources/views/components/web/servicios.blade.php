@@ -98,8 +98,8 @@
                         <!-- TIPO SANTILLANA -->
                         <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
                             <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
-                                <div><img style="width: 100%;" src="{{asset($item->icono)}}"></div>
-                                <div style="background-color: #fff; padding: 20px;">
+                                <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><img style="width: 100%;" src="{{asset($item->icono)}}"></div>
+                                <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
                                     <h4 class="media-heading" style="margin-top: 0px;">{{$item->titulo}}</h4>
                                     <p>{!! str_limit($item->descripcion,90) !!} </p>
                                     <a class="btn btn-primary animate" onclick="visor_contenido_servicios({{ $item->id }})" href="#">Leer más...</a>

@@ -3,7 +3,7 @@
     #team {
         position: relative;
         z-index: 80 !important;
-        padding: 100px 0 75px;
+        padding: 100px 0 100px;
         <?php
         if ($team != null) {
             if ($team->tipo_fondo == 'COLOR') {
@@ -158,7 +158,7 @@
     <div class="container" id="contenedor_seccion_servicios">
         @if($team!=null)
         <div class="section-header">
-<h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: {{$team->title_color}} !important;">{{$team->title}}</h2>
+            <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: {{$team->title_color}} !important;">{{$team->title}}</h2>
             <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: {{$team->description_color}} !important;">{{$team->description}}</p>
         </div>
         <div class="row">
@@ -167,8 +167,8 @@
             <!-- Team member -->
             <div class="col-xs-12 col-sm-6 col-md-4">
                 <div class="image-flip">
-                    <div class="mainflip flip-0">
-                        <div class="frontside" style="background-color: {{$item->background_color}} !important; opacity: 0.8;">
+                    <div class="mainflip flip-0" style="background-color: transparent;">
+                        <div class="frontside" style="border-radius: 20px; background-color: {{$item->background_color}} !important; opacity: 0.8;">
                             <div class="cardTeam">
                                 <div class="cardTeam-body text-center">
                                     <p><img class=" img-fluid" src="{{asset($item->imagen)}}" alt="cardTeam image"></p>
@@ -178,7 +178,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="backside" style="background-color: {{$item->background_color}} !important; opacity: 0.8;">
+                        <div class="backside" style="border-radius: 20px; background-color: {{$item->background_color}} !important; opacity: 0.8;">
                             <div class="cardTeam">
                                 <div class="cardTeam-body text-center mt-4">
                                     <h4 class="cardTeam-title" style="color: {{$item->title_color}};">{{$item->title}}</h4>

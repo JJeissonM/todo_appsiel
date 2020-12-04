@@ -26,8 +26,8 @@ class TestimonialController extends Controller
             if ($flag !== false) {
                 $testimonio->fill(['foto' => $filename]);
             }
-        }else{
-            $testimonio->foto="img/lading-page/avatar.svg";
+        } else {
+            $testimonio->foto = "img/lading-page/avatar.svg";
         }
         $result = $testimonio->save();
         if ($result) {
@@ -44,28 +44,30 @@ class TestimonialController extends Controller
     //guardar seccion testimonial
     public function guardar(Request $request)
     {
-        $seccion = new Testimoniale();
-        $seccion->titulo = $request->titulo;
-        $seccion->descripcion = $request->descripcion;
-        $seccion->widget_id = $request->widget_id;
-        if (isset($request->imagen_fondo)) {
-            $file = $request->imagen_fondo;
-            $name = time() . str_slug($file->getClientOriginalName());
+        if ($request->tipo_fondo == '') {
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('mensaje_error', 'Debe indicar el tipo de fondo a usar en el componente.');
+        }
+        $seccion = new Testimoniale($request->all());
+        if ($request->tipo_fondo == 'IMAGEN') {
+            //el fondo es una imagen
+            $file = $request->file('fondo');
+            $name = time() . $file->getClientOriginalName();
             $filename = "img/lading-page/" . $name;
             $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-
             if ($flag !== false) {
-                $seccion->fill(['imagen_fondo' => $filename]);
+                $seccion->fill(['fondo' => $filename]);
+            } else {
+                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                return redirect()->back()->withInput($request->input())
+                    ->with('mensaje_error', $message);
             }
-        }else{
-            $seccion->imagen_fondo="img/lading-page/map.png";
         }
         $result = $seccion->save();
-        if($result){
+        if ($result) {
             $message = 'La sección fue almacenada correctamente.';
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
-        }else{
+        } else {
             $message = 'La sección no fue almacenada correctamente, intente mas tarde.';
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
@@ -78,7 +80,7 @@ class TestimonialController extends Controller
         $testimonio = Itemtestimonial::find($request->itemtestimonial_id);
         $testimonio->nombre = $request->nombre;
         $testimonio->cargo = strtoupper($request->cargo);
-        $testimonio->testimonio= $request->testimonio;
+        $testimonio->testimonio = $request->testimonio;
         if (isset($request->foto)) {
             $file = $request->foto;
             $name = time() . str_slug($file->getClientOriginalName());
@@ -102,18 +104,37 @@ class TestimonialController extends Controller
     }
 
     //modificar seccion testimoniales
-    public function modificar(Request $request, $id){
+    public function modificar(Request $request, $id)
+    {
         $seccion = Testimoniale::find($id);
         $seccion->titulo = $request->titulo;
         $seccion->descripcion = $request->descripcion;
-        if (isset($request->imagen_fondo)) {
-            $file = $request->imagen_fondo;
-            $name = time() . str_slug($file->getClientOriginalName());
-            $filename = "img/lading-page/" . $name;
-            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-
-            if ($flag !== false) {
-                $seccion->fill(['imagen_fondo' => $filename]);
+        $tipo_fondo = $seccion->tipo_fondo;
+        if ($request->tipo_fondo == '') {
+            $seccion->tipo_fondo = $tipo_fondo;
+        }
+        if ($request->tipo_fondo != '') {
+            if ($request->tipo_fondo == 'IMAGEN') {
+                if (isset($request->fondo)) {
+                    //el fondo es una imagen
+                    $file = $request->file('fondo');
+                    $name = time() . $file->getClientOriginalName();
+                    $filename = "img/lading-page/" . $name;
+                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                    if ($flag !== false) {
+                        $seccion->fondo = $filename;
+                        $seccion->tipo_fondo = 'IMAGEN';
+                        $seccion->repetir = $request->repetir;
+                        $seccion->direccion = $request->direccion;
+                    } else {
+                        $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                        return redirect()->back()->withInput($request->input())
+                            ->with('mensaje_error', $message);
+                    }
+                }
+            } else {
+                $seccion->fondo = $request->fondo;
+                $seccion->tipo_fondo = "COLOR";
             }
         }
         $result = $seccion->save();
@@ -146,10 +167,11 @@ class TestimonialController extends Controller
     }
 
     //eliminar itemtestimonial
-    public function delete($id){
+    public function delete($id)
+    {
         $testimonio = Itemtestimonial::find($id);
-        $widget= $testimonio->testimoniale->widget_id;
-        $result=$testimonio->delete();
+        $widget = $testimonio->testimoniale->widget_id;
+        $result = $testimonio->delete();
         if ($result) {
             $message = 'Testimonio eliminado correctamente.';
             $variables_url = '?id=' . Input::get('id');

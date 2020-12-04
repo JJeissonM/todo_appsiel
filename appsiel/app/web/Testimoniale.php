@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Testimoniale extends Model
 {
     protected $table = 'pw_testimoniales';
-    protected $fillable = ['id', 'titulo', 'descripcion', 'imagen_fondo', 'disposicion', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'titulo', 'descripcion', 'disposicion', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'widget_id', 'created_at', 'updated_at'];
 
     public function widget()
     {
