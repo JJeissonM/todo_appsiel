@@ -26,11 +26,7 @@
     <link href="{{asset('assets/style.css')}}" rel="stylesheet">
     <!-- Fonts -->
 
-    <!-- Google Fonts Raleway -->
-    <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,400i,500,500i,600,700" rel="stylesheet">
-    <!-- Google Fonts Open sans -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800" rel="stylesheet">
-
+    
     <link href="{{asset('css/animate.min.css')}}" rel="stylesheet">
     <link href="{{asset('css/owl.carousel.css')}}" rel="stylesheet">
     <link href="{{asset('css/owl.transitions.css')}}" rel="stylesheet">
@@ -69,6 +65,33 @@
     @endforeach
 
     <style type="text/css">
+
+        <?php 
+        if($fonts!=null){
+            foreach($fonts as $f){
+                ?>
+               @font-face {
+                    font-family: '{{$f->font}}';
+                    src:url("{{url('')}}/{{$f->path}}/{{$f->font}}.woff") format('woff'),
+                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.woff2") format('woff2'),
+                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot"),
+                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot?#iefix") format('embedded-opentype'),
+                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.otf") format('truetype');
+
+                    font-weight: normal;
+                    font-style: normal;
+                    font-display: swap;
+                }
+                <?php
+            }
+        }
+        ?>
+
+        body{
+            font-family: 'Gotham-Narrow-Medium';
+        }
+
+
         .article-ls {
             border: 1px solid;
             border-color: #3d6983;
