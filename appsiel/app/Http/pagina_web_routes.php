@@ -9,7 +9,7 @@ Route::post('pagina/nuevaSeccion', 'web\PaginaController@nuevaSeccion');
 Route::delete('pagina/eliminarSeccion/{id}', 'web\PaginaController@eliminarSeccion');
 Route::get('pagina/cambiarorden/{id}/{orden}', 'web\PaginaController@cambiarOrden');
 
-//navegacion
+//navegacion 
 Route::resource('navegacion', 'web\NavegacionController');
 Route::post('navegacion/store', 'web\NavegacionController@storeNav')->name('navegacion.storenav');
 
