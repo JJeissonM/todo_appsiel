@@ -25,6 +25,7 @@ Route::get('cte_contratos/planillas/{id}/imprimir', 'ContratoTransporte\Contrato
 Route::get('cte_vehiculos/{id}/show', 'ContratoTransporte\VehiculoController@show')->name('cte_vehiculo.show');
 Route::get('cte_documentos_vehiculo/{id}/show', 'ContratoTransporte\VehiculoController@showDocuments')->name('cte_vehiculo.showDocuments');
 
+
 //CONDUCTORES 
 Route::get('cte_conductores/{id}/show', 'ContratoTransporte\ConductorController@show')->name('cte_conductor.show');
 Route::get('cte_documentos_conductor/{id}/show', 'ContratoTransporte\ConductorController@showDocuments')->name('cte_conductor.showDocuments');

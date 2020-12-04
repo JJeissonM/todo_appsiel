@@ -78,15 +78,20 @@ class User extends Authenticatable
                             ->toArray();
     }
 
-    public static function crear_y_asignar_role( $name, $email, $role_id)
+    public static function crear_y_asignar_role( $name, $email, $role_id, $password = null )
     {
+        if ( is_null($password) )
+        {
+            $password = 'colombia1';
+        }
+
         $user = User::create([
-            'empresa_id' => Auth::user()->empresa_id,
-            'name' => $name,
-            'email' => $email,
-            'password' => Hash::make('colombia1')
-        ]);
-        $role_id = $role_id;
+                                'empresa_id' => Auth::user()->empresa_id,
+                                'name' => $name,
+                                'email' => $email,
+                                'password' => Hash::make( $password )
+                            ]);
+
         $role_r = Role::where('id', '=', $role_id)->firstOrFail();
         $user->assignRole($role_r); //Assigning role to user
 

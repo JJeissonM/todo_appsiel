@@ -5,12 +5,17 @@ namespace App\Contratotransporte;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
+use App\Core\PasswordReset;
+use App\User;
+
 class Vehiculo extends Model
 {
     protected $table = 'cte_vehiculos';
     protected $fillable = ['id', 'int', 'bloqueado_cuatro_contratos', 'placa', 'numero_vin', 'numero_motor', 'modelo', 'marca', 'clase', 'color', 'cilindraje', 'capacidad', 'fecha_control_kilometraje', 'propietario_id', 'created_at', 'updated_at'];
 
     public $encabezado_tabla = ['Interno', 'Vinculación', 'Placa', 'Marca', 'Clase', 'Modelo', 'Propietario', 'Bloqueado 4 Contratos/Mes', 'Acción'];
+
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"cte_vehiculos/id_fila/show"}';
 
     public $vistas = '{"index":"layouts.index3"}';
 
@@ -69,10 +74,61 @@ class Vehiculo extends Model
 
     public function store_adicional($datos, $registro)
     {
-        /*$tercero = Conductor::find($registro->id)->tercero;
+        $descripcion = 'Vehículo ' . $registro->marca . ' ' . $registro->modelo . ', placa: ' . $registro->placa;
 
-        $usuario = User::crear_y_asignar_role($tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2, $datos['email'], 19); // 19 = Conductor
-        $tercero->user_id = $usuario->id;
-        $tercero->save();*/
+        $placa = str_replace(" ", "", $registro->placa );
+
+        $password = str_random(7);
+
+        $usuario = User::crear_y_asignar_role( $descripcion, $placa, 22, $password); // 22 = Vehículo (FUEC)
+
+        // Se almacena la contraseña temporalmente; cuando el usuario la cambie, se eliminará
+        PasswordReset::insert([
+                                'email' => $placa,
+                                'token' => $password ]);
+    }
+
+    public static function get_campos_adicionales_edit( $lista_campos, $registro )
+    {
+        $placa = str_replace(" ", "", $registro->placa );
+
+        $user = User::where('email',$placa)->get()->first();
+        
+        if ( !is_null($user) )
+        {
+            array_push($lista_campos, [
+                                    "id" => 9999,
+                                    "descripcion" => 'user_id',
+                                    "tipo" => "hidden",
+                                    "name" => "user_id",
+                                    "opciones" => "",
+                                    "value" => $user->id,
+                                    "atributos" => [],
+                                    "definicion" => "",
+                                    "requerido" => 0,
+                                    "editable" => 1,
+                                    "unico" => 0
+                                ] );
+        }
+
+        return $lista_campos;
+    }
+
+
+    public function update_adicional($datos, $id)
+    {
+        // Se actualiza al usuario asociado
+        $user = User::find( $datos['user_id']);
+
+        if ( !is_null($user) )
+        {
+            $descripcion = 'Vehículo ' . $datos['marca'] . ' ' . $datos['modelo'] . ', placa: ' . $datos['placa'];
+
+            $placa = str_replace(" ", "", $datos['placa'] );
+
+            PasswordReset::where( 'email', $user->email )->update( [ 'email' => $placa ] );
+
+            $user->update( [ 'name' => $descripcion, 'email' => $placa ] );
+        }
     }
 }

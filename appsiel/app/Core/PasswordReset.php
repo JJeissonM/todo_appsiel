@@ -12,7 +12,9 @@ class PasswordReset extends Model
     
     protected $fillable = [ 'email', 'token', 'created_at'];
 
-    public $encabezado_tabla = ['Perfil', 'Usuario', 'Email', 'Nueva contraseña', 'Fecha actualización', 'Acción'];
+    public $encabezado_tabla = ['Perfil', 'Nombre', 'Usuario/Email', 'Contraseña actual', 'Fecha actualización', 'Acción'];
+
+    public $urls_acciones = '{"show":"no"}';
 
     public static function consultar_registros()
     {
