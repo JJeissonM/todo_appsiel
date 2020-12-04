@@ -214,6 +214,31 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
+                                        <label>¿El fondo es Imagen o Color?</label>
+                                        <select type="select" class="form-control" id="tipo_fondo2" name="tipo_fondo" onchange="cambiarFondo2()">
+                                            @if($setup->tipo_fondo=='IMAGEN')
+                                            <option value="">-- Seleccione una opción --</option>
+                                            <option selected value="IMAGEN">IMAGEN</option>
+                                            <option value="COLOR">COLOR</option>
+                                            @else
+                                            <option value="">-- Seleccione una opción --</option>
+                                            <option value="IMAGEN">IMAGEN</option>
+                                            <option selected value="COLOR">COLOR</option>
+                                            @endif
+                                        </select>
+                                    </div>
+                                    <div class="form-group" id="fondo_container2">
+                                        @if($setup->tipo_fondo=='IMAGEN')
+                                        <label>Imagen de Fondo</label>
+                                        <a target="_blank" href="{{asset($setup->fondo)}}">Ver Actual</a><br>
+                                        <b>Repetir: {{$setup->repetir}}</b><br>
+                                        <b>Orientación Imagen: {{$setup->direccion}}</b>
+                                        @else
+                                        <label>Color de Fondo</label>
+                                        <div class="col-md-12" style="background-color: {{$setup->fondo}}; width: 100%; height: 20px;"></div>
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
                                         {!! Form::submit('Guardar',['class'=>'btn btn-primary waves-effect btn-block btn-sm']) !!}
                                     </div>
                                     {!! Form::close() !!}
@@ -271,6 +296,16 @@
                                             @endforeach
                                             @endif
                                         </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>¿El fondo es Imagen o Color?</label>
+                                        <select type="select" class="form-control" id="tipo_fondo" required name="tipo_fondo" onchange="cambiarFondo()">
+                                            <option value="">-- Seleccione una opción --</option>
+                                            <option value="IMAGEN">IMAGEN</option>
+                                            <option value="COLOR">COLOR</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" id="fondo_container">
                                     </div>
                                     <div class="form-group">
                                         {!! Form::submit('Guardar',['class'=>'btn btn-primary waves-effect btn-block btn-sm']) !!}
@@ -339,6 +374,38 @@
             $("#mos3").fadeOut();
             $("#mos4").fadeOut();
         }
+    }
+
+    function cambiarFondo() {
+        $("#fondo_container").html("");
+        var f = $("#tipo_fondo").val();
+        var html = "<label>";
+        if (f == 'IMAGEN') {
+            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
+                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
+                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option></select>";
+        } else if (f == 'COLOR') {
+            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+        } else {
+            html = "";
+        }
+        $("#fondo_container").html(html);
+    }
+
+    function cambiarFondo2() {
+        $("#fondo_container2").html("");
+        var f = $("#tipo_fondo2").val();
+        var html = "<label>";
+        if (f == 'IMAGEN') {
+            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
+                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
+                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option></select>";
+        } else if (f == 'COLOR') {
+            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+        } else {
+            html = "";
+        }
+        $("#fondo_container2").html(html);
     }
 </script>
 

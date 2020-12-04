@@ -1,4 +1,22 @@
 <style>
+
+    #blog {
+        padding-top: 100px !important;
+        position: relative;
+        z-index: 80 !important;
+
+        <?php
+        if ($setup != null) {
+            if ($setup->tipo_fondo == 'COLOR') {
+                echo "background-color: " . $setup->fondo . ";";
+            } else {
+        ?>background: url('{{$setup->fondo}}') {{$setup->repetir}} center {{$setup->direccion}};
+        <?php
+            }
+        }
+        ?>
+    }
+
     .article {
         background-color: white;
         border: 0px;
@@ -30,70 +48,61 @@
                 @endif
 
                 @if( $setup->descripcion != '' )
-                    <p class="text-center wow fadeInDown">{{ $setup->descripcion }}</p>
+                    <p class="text-center wow fadeInDown" style="font-weight: bold; color: #000;">{{ $setup->descripcion }}</p>
                 @endif
 
             </div>
 
             @if( $setup->article_id != null)
-                <div class="content-txt">
-                    <div class="blog-post blog-media">
+            <!-- SE MUESTRA SOLO UN ARTÍCULO -->
+                <div class="content-txt" style="padding: 20px; margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
+                    <div class="blog-post blog-media" style="border: none;">
                         <article class="media clearfix">
                             <div class="media-body">
-                                <header class="entry-header">
-
+                                <header class="entry-header" style="background-color: transparent !important;">
                                     <?php
                                     $url_imagen = 'assets/img/blog-default.jpg';
                                     if ($articles->imagen != '') {
                                         $url_imagen = $articles->imagen;
                                     }
                                     ?>
-
                                     <p style="text-align: center;width: 100%;">
-                                        <img src="{{ asset( $url_imagen )}}" style=" max-height: 350px;object-fit: cover;">
+                                        <img src="{{ asset( $url_imagen )}}" style=" max-height: auto; object-fit: cover;">
                                     </p>
-
-                                    <h2 class="entry-title" style="width: 100%; text-align: center;"><a href="#">{{$articles->titulo}}</a></h2>
+                                    <h2 style="width: 100%; text-align: center;">{{$articles->titulo}}</h2>
                                 </header>
-
                                 <div class="entry-content">
                                     <P>{!! $articles->contenido !!}</P>
                                 </div>
-
                                 <footer class="entry-meta" style="text-align: right;">
-                                    <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{{$articles->updated_at}}</a></span>
-                                    <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">@if($articles->articlecategory!=null) {{$articles->articlecategory->titulo}} @else Sin Categoría @endif</a></span>
+                                    <span class="entry-author"><i class="fa fa-calendar"></i> <a style="font-weight: bold; font-size: 20px;" href="#">{{$articles->updated_at}}</a></span>
+                                    <span class="entry-category"><i class="fa fa-folder-o"></i> <a style="font-weight: bold; font-size: 20px;" href="#">@if($articles->articlecategory!=null) {{$articles->articlecategory->titulo}} @else Sin Categoría @endif</a></span>
                                 </footer>
                             </div>
                         </article>
                     </div>
                 </div>
             @else
-
+            <!-- SE MUESTRA UNA CATEGORÍA SEGÚN FORMATO: LISTA O BLOG -->
                 @if($setup->formato=='LISTA')
                     @foreach($articles as $a)
-                        <div class="col-md-12 article-ls" style="line-height: 5px; margin-bottom: 20px;">
-                            <div class="media service-box" style="margin: 10px !important; font-size: 14px;">
+                        <div class="col-md-12 wow fadeInUp animated service-info"  data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
+                            <div class="media service-box" style="margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
                                 <div class="media-body">
                                     <div class="row">
                                         <div class="col-md-4" style="text-align: center;">
-
                                             <?php
                                             $url_imagen = 'assets/img/blog-default.jpg';
                                             if ($a->imagen != '') {
                                                 $url_imagen = $a->imagen;
                                             }
                                             ?>
-
-                                            <img src="{{ asset( $url_imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;">
-
+                                            <img src="{{ asset( $url_imagen )}}" style="width: 100%; max-height: 180px; object-fit: cover;">
                                         </div>
-                                        <div class="col-md-8">
-                                            <h3 style="font-size: 14px;" class="media-heading">{{$a->titulo}}</h3>
-                                            <p>{!! $a->descripcion !!}</p>
-                                            <!-- <p><span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span></p> -->
-                                            <!-- <p><span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span></p> -->
-                                            <p><a onclick="visor_contenido_articulos({{ $a->id }})" class="btn btn-primary waves-effect btn-sm"><i class="fa fa-plus"></i> Leer más...</a></p>
+                                        <div class="col-md-8" style="padding: 20px;">
+                                            <h4 class="media-heading">{{$a->titulo}}</h4>
+                                            <p>{!! str_limit($a->descripcion,100,'...') !!}</p>
+                                            <p><a onclick="visor_contenido_articulos({{ $a->id }})" class="btn btn-primary waves-effect btn-sm" style="color: #fff; cursor: pointer;">Leer más <i class="fa fa-arrow-right"></i></a></p>
                                         </div>
                                     </div>
                                 </div>
@@ -105,50 +114,21 @@
                 @if($setup->formato=='BLOG')
                     <div class="row">
                         @foreach($articles as $a)
-
-                        <div class="col-md-4">
-                            <div class="article blog-post blog-media">
-                                <article class="media clearfix">
-                                    <!-- <div class="entry-thumbnail pull-left">
-                                                    <span class="post-format post-format-gallery"><i class="fa fa-bullhorn"></i></span>
-                                                </div> 
-                                                <a target="_blank" href="{ {route('article.show',$a->id)}}" style="text-decoration: none;">-->
-
-                                    <a onclick="visor_contenido_articulos({{ $a->id }})">
-
-                                        <div class=" media-body">
-                                            <div style="text-align: center;">
-
-                                                <?php
-                                                $url_imagen = 'assets/img/blog-default.jpg';
-                                                if ($a->imagen != '') {
-                                                    $url_imagen = $a->imagen;
-                                                }
-                                                ?>
-
-                                                <img src="{{ asset( $url_imagen )}}" style="width: 100%; max-height: 180px;object-fit: cover;">
-                                            </div>
-
-                                            <header class="entry-header">
-                                                <!-- <div class="entry-date">{ {$a->created_at}}</div> -->
-                                                <h2 class="entry-title"> {{$a->titulo}} </h2>
-                                            </header>
-
-                                            <div class="entry-content">
-                                                <p>{!! str_limit($a->descripcion, $limit = 100, $end = '...') !!}</p>
-                                                <hr>
-                                            </div>
-
-                                            <!-- 
-                                                    <footer class="entry-meta">
-                                                        <span class="entry-author"><i class="fa fa-calendar"></i> <a href="#">{ {$a->updated_at}}</a></span>
-                                                        <span class="entry-category"><i class="fa fa-folder-o"></i> <a href="#">{ {$setup->titulo}}</a></span>
-                                                    </footer>
-                                                -->
-                                        </div>
-                                    </a>
-
-                                </article>
+                        <!-- TIPO SANTILLANA -->
+                        <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
+                            <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
+                                <?php
+                                    $url_imagen = 'assets/img/blog-default.jpg';
+                                    if ($a->imagen != '') {
+                                        $url_imagen = $a->imagen;
+                                    }
+                                ?>    
+                                <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><img style="width: 100%;" src="{{asset($url_imagen)}}"></div>
+                                <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
+                                    <h4 class="media-heading" style="margin-top: 0px;">{{$a->titulo}}</h4>
+                                    <p>{!! str_limit($a->descripcion,90,'...') !!} </p>
+                                    <a class="btn btn-primary animate" onclick="visor_contenido_articulos({{ $a->id }})" href="#">Leer más...</a>
+                                </div>
                             </div>
                         </div>
                         @endforeach

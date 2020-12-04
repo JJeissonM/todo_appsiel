@@ -55,6 +55,9 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->tipo_fondo == '') {
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('mensaje_error', 'Debe indicar el tipo de fondo a usar en el componente.');
+        }
         $as = new Articlesetup($request->all());
         $variables_url = $request->variables_url;
         if ($request->mostrara == 'ARTICULO') {
@@ -66,6 +69,20 @@ class ArticleController extends Controller
         } else {
             $message = 'Debe indicar el artículo o la categoría para esta sección.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('mensaje_error', $message);
+        }
+        if ($request->tipo_fondo == 'IMAGEN') {
+            //el fondo es una imagen
+            $file = $request->file('fondo');
+            $name = time() . $file->getClientOriginalName();
+            $filename = "img/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $as->fondo = $filename;
+            } else {
+                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                return redirect()->back()->withInput($request->input())
+                    ->with('mensaje_error', $message);
+            }
         }
         $result = $as->save();
         if ($result) {
@@ -148,6 +165,34 @@ class ArticleController extends Controller
             $message = 'Debe indicar el artículo o la categoría para esta sección.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('mensaje_error', $message);
         }
+        $tipo_fondo = $as->tipo_fondo;
+        if ($request->tipo_fondo == '') {
+            $as->tipo_fondo = $tipo_fondo;
+        }
+        if ($request->tipo_fondo != '') {
+            if ($request->tipo_fondo == 'IMAGEN') {
+                if (isset($request->fondo)) {
+                    //el fondo es una imagen
+                    $file = $request->file('fondo');
+                    $name = time() . $file->getClientOriginalName();
+                    $filename = "img/" . $name;
+                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                    if ($flag !== false) {
+                        $as->fondo = $filename;
+                        $as->tipo_fondo = 'IMAGEN';
+                        $as->repetir = $request->repetir;
+                        $as->direccion = $request->direccion;
+                    } else {
+                        $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                        return redirect()->back()->withInput($request->input())
+                            ->with('mensaje_error', $message);
+                    }
+                }
+            } else {
+                $as->fondo = $request->fondo;
+                $as->tipo_fondo = "COLOR";
+            }
+        }
         $result = $as->save();
         if ($result) {
             $message = 'La configuración de la sección fue modificada correctamente.';
@@ -169,8 +214,9 @@ class ArticleController extends Controller
         $article = Article::find($id);
         if ($article) {
             if ($article->imagen != '')
-                if ( file_exists( $article->imagen ) )
-                { unlink( $article->imagen ); }
+                if (file_exists($article->imagen)) {
+                    unlink($article->imagen);
+                }
 
             $flag =  $article->delete();
             if ($flag) {

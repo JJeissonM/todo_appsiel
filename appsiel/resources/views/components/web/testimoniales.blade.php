@@ -1,10 +1,16 @@
 <style>
     #testimonial-area {
-        padding: 115px 0 0;
-        <?php if ($testimonial != null) {
-            echo "background-image: url({{asset(" . $testimonial->imagen_fondo . ");";
-        } ?>background-repeat: no-repeat;
-        background-position: center;
+        padding: 100px 0 0;
+        <?php
+        if ($testimonial != null) {
+            if ($testimonial->tipo_fondo == 'COLOR') {
+                echo "background-color: " . $testimonial->fondo . ";";
+            } else {
+        ?>background: url('{{$testimonial->fondo}}') {{$testimonial->repetir}} center {{$testimonial->direccion}};
+        <?php
+            }
+        }
+        ?>
     }
 
     #testimonial-area .section-heading h2 {
@@ -58,11 +64,6 @@
     .section-heading p {
         font-size: 16px;
         line-height: 26px;
-    }
-
-    p {
-        color: #505b6d;
-        font-family: 'Open Sans', sans-serif;
     }
 
     .client-single {
@@ -398,15 +399,10 @@
     <div class="container" style="max-width: 540px;overflow: visible !important;">
         @if($testimonial!=null)
         <div class="row" style="margin-left: -50px; margin-right: -405px;">
-            <!--start section heading-->
-            <div class="col-md-8 offset-md-2">
-                <div class="section-heading text-center">
-                    <h5></h5>
-                    <h2>{{$testimonial->titulo}}</h2>
-                    <p>{{$testimonial->descripcion}}</p>
-                </div>
+            <div class="section-header">
+                <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: #000 !important;">{{$testimonial->titulo}}</h2>
+                <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: #000 !important;">{{$testimonial->descripcion}}</p>
             </div>
-            <!--end section heading-->
         </div>
         <div class="testi-wrap">
             @if(count($testimonial->itemtestimonials)>0)
