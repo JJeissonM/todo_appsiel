@@ -18,8 +18,7 @@ class PreguntasConmponent implements IDrawComponent
     public function DrawComponent()
     {
         $pregunta = Preguntasfrecuentes::where('widget_id', $this->widget)->first();
-
-        if($pregunta != null){
+        if ($pregunta != null) {
             return Form::preguntas($pregunta);
         }
     }

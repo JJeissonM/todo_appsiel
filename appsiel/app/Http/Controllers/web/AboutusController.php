@@ -31,8 +31,12 @@ class AboutusController extends Controller
                 'etiqueta' => 'Paginas y secciones'
             ],
             [
+                'url' => 'seccion/' . $widget . '?id=' . Input::get('id'),
+                'etiqueta' => 'Quiénes Somos'
+            ],
+            [
                 'url' => 'NO',
-                'etiqueta' => 'About Us'
+                'etiqueta' => 'Definir Información'
             ]
         ];
         $iconos = Icon::all();
@@ -43,16 +47,15 @@ class AboutusController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->tipo_fondo == '') {
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('mensaje_error', 'Debe indicar el tipo de fondo a usar en el componente.');
+        }
         $aboutus = new Aboutus($request->all());
-
         if ($request->hasFile('imagen')) {
-
             $file = $request->file('imagen');
             $name = time() . $file->getClientOriginalName();
-
             $filename = "img/" . $name;
             $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-
             if ($flag !== false) {
                 $aboutus->fill(['imagen' => $filename]);
             } else {
@@ -60,7 +63,20 @@ class AboutusController extends Controller
                 return redirect()->back()->withInput($request->input())
                     ->with('mensaje_error', $message);
             }
-
+        }
+        if ($request->tipo_fondo == 'IMAGEN') {
+            //el fondo es una imagen
+            $file = $request->file('fondo');
+            $name = time() . $file->getClientOriginalName();
+            $filename = "img/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $aboutus->fondo = $filename;
+            } else {
+                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                return redirect()->back()->withInput($request->input())
+                    ->with('mensaje_error', $message);
+            }
         }
         $result = $aboutus->save();
         if ($result) {
@@ -81,13 +97,10 @@ class AboutusController extends Controller
         $img = $aboutus->imagen;
         $aboutus->fill($request->all());
         if ($request->hasFile('imagen')) {
-
             $file = $request->file('imagen');
             $name = time() . $file->getClientOriginalName();
-
             $filename = "img/" . $name;
             $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-
             if ($flag !== false) {
                 // $bool = unlink($img);
                 $aboutus->fill(['imagen' => url($filename)]);
@@ -95,6 +108,34 @@ class AboutusController extends Controller
                 $message = 'Error inesperado al intentar guardar la imagen, por favor intente nuevamente mas tarde';
                 return redirect()->back()->withInput($request->input())
                     ->with('mensaje_error', $message);
+            }
+        }
+        $tipo_fondo = $aboutus->tipo_fondo;
+        if ($request->tipo_fondo == '') {
+            $aboutus->tipo_fondo = $tipo_fondo;
+        }
+        if ($request->tipo_fondo != '') {
+            if ($request->tipo_fondo == 'IMAGEN') {
+                if (isset($request->fondo)) {
+                    //el fondo es una imagen
+                    $file = $request->file('fondo');
+                    $name = time() . $file->getClientOriginalName();
+                    $filename = "img/" . $name;
+                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                    if ($flag !== false) {
+                        $aboutus->fondo = $filename;
+                        $aboutus->tipo_fondo = 'IMAGEN';
+                        $aboutus->repetir = $request->repetir;
+                        $aboutus->direccion = $request->direccion;
+                    } else {
+                        $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                        return redirect()->back()->withInput($request->input())
+                            ->with('mensaje_error', $message);
+                    }
+                }
+            } else {
+                $aboutus->fondo = $request->fondo;
+                $aboutus->tipo_fondo = "COLOR";
             }
         }
         $result = $aboutus->save();

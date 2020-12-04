@@ -53,10 +53,11 @@ class PreguntasfrecuenteController extends Controller
     //guardar seccion pregunta
     public function guardar(Request $request)
     {
-        $seccion = new Preguntasfrecuentes();
-        $seccion->titulo = $request->titulo;
-        $seccion->descripcion = $request->descripcion;
-        $seccion->widget_id = $request->widget_id;
+        if ($request->tipo_fondo == '') {
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('mensaje_error', 'Debe indicar el tipo de fondo a usar en el componente.');
+        }
+        $seccion = new Preguntasfrecuentes($request->all());
+        dd($seccion);
         if (isset($request->imagen_fondo)) {
             $file = $request->imagen_fondo;
             $name = time() . str_slug($file->getClientOriginalName());
@@ -66,15 +67,29 @@ class PreguntasfrecuenteController extends Controller
             if ($flag !== false) {
                 $seccion->fill(['imagen_fondo' => $filename]);
             }
-        }else{
-            $seccion->imagen_fondo="img/lading-page/faq-img-1.png";
+        } else {
+            $seccion->imagen_fondo = "img/lading-page/faq-img-1.png";
+        }
+        if ($request->tipo_fondo == 'IMAGEN') {
+            //el fondo es una imagen
+            $file = $request->file('fondo');
+            $name = time() . $file->getClientOriginalName();
+            $filename = "img/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $seccion->fondo = $filename;
+            } else {
+                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                return redirect()->back()->withInput($request->input())
+                    ->with('mensaje_error', $message);
+            }
         }
         $result = $seccion->save();
-        if($result){
+        if ($result) {
             $message = 'La sección fue almacenada correctamente.';
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
-        }else{
+        } else {
             $message = 'La sección no fue almacenada correctamente, intente mas tarde.';
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
@@ -100,10 +115,13 @@ class PreguntasfrecuenteController extends Controller
     }
 
     //modificar seccion pregunta
-    public function modificar(Request $request, $id){
+    public function modificar(Request $request, $id)
+    {
         $seccion = Preguntasfrecuentes::find($id);
         $seccion->titulo = $request->titulo;
         $seccion->descripcion = $request->descripcion;
+        $seccion->color1 = $request->color1;
+        $seccion->color2 = $request->color2;
         if (isset($request->imagen)) {
             $file = $request->imagen_fondo;
             $name = time() . str_slug($file->getClientOriginalName());
@@ -112,6 +130,34 @@ class PreguntasfrecuenteController extends Controller
 
             if ($flag !== false) {
                 $seccion->fill(['imagen_fondo' => $filename]);
+            }
+        }
+        $tipo_fondo = $seccion->tipo_fondo;
+        if ($request->tipo_fondo == '') {
+            $seccion->tipo_fondo = $tipo_fondo;
+        }
+        if ($request->tipo_fondo != '') {
+            if ($request->tipo_fondo == 'IMAGEN') {
+                if (isset($request->fondo)) {
+                    //el fondo es una imagen
+                    $file = $request->file('fondo');
+                    $name = time() . $file->getClientOriginalName();
+                    $filename = "img/" . $name;
+                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                    if ($flag !== false) {
+                        $seccion->fondo = $filename;
+                        $seccion->tipo_fondo = 'IMAGEN';
+                        $seccion->repetir = $request->repetir;
+                        $seccion->direccion = $request->direccion;
+                    } else {
+                        $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                        return redirect()->back()->withInput($request->input())
+                            ->with('mensaje_error', $message);
+                    }
+                }
+            } else {
+                $seccion->fondo = $request->fondo;
+                $seccion->tipo_fondo = "COLOR";
             }
         }
         $result = $seccion->save();
@@ -144,10 +190,12 @@ class PreguntasfrecuenteController extends Controller
     }
 
     //eliminar itempregunta
-    public function delete($id){
+    public function delete($id)
+    {
         $pregunta = Itempregunta::find($id);
-        $widget= $pregunta->preguntasfrecuente->widget_id;
-        $result=$pregunta->delete();
+        $pr = Preguntasfrecuentes::find($pregunta->pregunta_id);
+        $widget = $pr->widget_id;
+        $result = $pregunta->delete();
         if ($result) {
             $message = 'Pregunta eliminada correctamente.';
             $variables_url = '?id=' . Input::get('id');
@@ -158,5 +206,4 @@ class PreguntasfrecuenteController extends Controller
             return redirect(url('seccion/' . $widget) . $variables_url)->with('flash_message', $message);
         }
     }
-
 }

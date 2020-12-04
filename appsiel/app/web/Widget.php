@@ -123,4 +123,14 @@ class Widget extends Model
     {
         return $this->hasMany(Login::class);
     }
+
+    public function teams()
+    {
+        return $this->hasMany(Team::class);
+    }
+
+    public function prices()
+    {
+        return $this->hasMany(Price::class);
+    }
 }

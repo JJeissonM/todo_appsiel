@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Articlesetup extends Model
 {
     protected  $table = 'pw_articlesetups';
-    protected  $fillable = ['id', 'titulo', 'descripcion', 'formato', 'orden', 'widget_id', 'article_id', 'articlecategory_id', 'created_at', 'updated_at'];
+    protected  $fillable = ['id', 'titulo', 'descripcion', 'formato', 'orden', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'widget_id', 'article_id', 'articlecategory_id', 'created_at', 'updated_at'];
 
     public function widget()
     {

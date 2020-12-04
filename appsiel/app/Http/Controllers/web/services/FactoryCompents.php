@@ -66,7 +66,7 @@ class FactoryCompents
             case "Sticky":
                 $component = new StickyComponent($this->widget);
                 break;
-            case "Modal" :
+            case "Modal":
                 $component =  new ModalComponent($this->widget);
                 break;
             case "Guías académicas":
@@ -74,6 +74,12 @@ class FactoryCompents
                 break;
             case "Login":
                 $component = new LoginComponent($this->widget);
+                break;
+            case "Team":
+                $component = new TeamComponent($this->widget);
+                break;
+            case "Prices":
+                $component = new PriceComponent($this->widget);
                 break;
             default:
                 $component = false;

@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Cliente extends Model
 {
     protected $table = 'pw_clientes';
-    protected $fillable = ['id', 'logo', 'nombre', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'title', 'descripcion', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'widget_id', 'created_at', 'updated_at'];
 
     public function widget()
     {
         return $this->belongsTo(Widget::class);
+    }
+
+    public function clienteitems()
+    {
+        return $this->hasMany(Clienteitem::class);
     }
 }

@@ -102,6 +102,8 @@ class FormServiceProvider extends ServiceProvider
         Form::component('modal', 'components.web.modal', ['modal']);
         Form::component('guias_academicas', 'components.web.guias_academicas', ['cursos']);
         Form::component('login', 'components.web.login', ['login']);
+        Form::component('team', 'components.web.team', ['team']);
+        Form::component('Price', 'components.web.price', ['Price']);
     }
 
     /**
