@@ -97,6 +97,32 @@
 
 				</div>
 
+				<br>
+				<h4> Parámetros de tesorería  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cantidad_facturas_vencidas_permitidas = 2;
+								if( isset($parametros['cantidad_facturas_vencidas_permitidas'] ) )
+								{
+									$cantidad_facturas_vencidas_permitidas = $parametros['cantidad_facturas_vencidas_permitidas'];
+								}
+							?>
+							{{ Form::bsText('cantidad_facturas_vencidas_permitidas', $cantidad_facturas_vencidas_permitidas, 'Facturas vencidas permitidas para permitir acceso a estudiantes', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">
