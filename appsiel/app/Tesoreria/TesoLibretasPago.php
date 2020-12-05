@@ -19,6 +19,11 @@ class TesoLibretasPago extends Model
         return $this->belongsTo( 'App\Matriculas\Estudiante', 'id_estudiante' );
     }
 
+    public function lineas_registros_plan_pagos()
+    {
+        return $this->hasMany( TesoPlanPagosEstudiante::class, 'id_libreta' );
+    }
+
     public static function consultar_registros()
     {       
         $select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS campo1';

@@ -36,6 +36,11 @@ class Matricula extends Model
         return $this->belongsTo(Curso::class, 'curso_id');
     }
 
+    public function libretas_pagos()
+    {
+        return $this->hasMany( 'App\Tesoreria\TesoLibretasPago', 'matricula_id' );
+    }
+
     public static function consultar_registros()
     {
         return Matricula::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')

@@ -5,5 +5,6 @@
   'inv_producto_id_default_pension' => '25',
   'transaccion_id_factura_estudiante' => '23',
   'modelo_id_factura_estudiante' => '234',
+  'cantidad_facturas_vencidas_permitidas' => '2',
   'url_id_modelo' => '0',
 ) ;

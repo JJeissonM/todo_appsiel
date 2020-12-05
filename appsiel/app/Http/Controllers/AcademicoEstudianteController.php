@@ -116,6 +116,18 @@ class AcademicoEstudianteController extends Controller
     {
         $estudiante = $this->estudiante;
 
+        $libreta_pago = $estudiante->matricula_activa()->libretas_pagos->where('estado','Activo')->first();
+    
+        if ( !is_null( $libreta_pago ) )
+        {
+            $cantidad_facturas_vencidas = $libreta_pago->lineas_registros_plan_pagos->where('estado','Vencida')->count();
+
+            if ( $cantidad_facturas_vencidas > config('matriculas.cantidad_facturas_vencidas_permitidas') )
+            {
+                return redirect( 'academico_estudiante/mi_plan_de_pagos/' . $libreta_pago->id . '?id=6' )->with( 'mensaje_error', 'El estudiante tiene más de ' . config('matriculas.cantidad_facturas_vencidas_permitidas') . ' facturas vencidas. Debe ponerse al día para consultar Calificaciones y Boletines.' );
+            }
+        }            
+
         $opciones = Periodo::get_activos_periodo_lectivo();
 
         $vec['']='';
@@ -255,7 +267,7 @@ class AcademicoEstudianteController extends Controller
 
         $estudiante = $this->estudiante;
 
-        $cartera = TesoPlanPagosEstudiante::where('id_libreta',$id_libreta)->get();
+        $cartera = TesoPlanPagosEstudiante::where('id_libreta', $id_libreta )->get();
 
         $matricula = Matricula::where('estado','Activo')->where('id_estudiante',$estudiante->id)->get()->first();
 
