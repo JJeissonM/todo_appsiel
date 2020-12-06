@@ -44,8 +44,16 @@ class ProcesoController extends ModeloController
 
     public function consultar_periodos_periodo_lectivo( $periodo_lectivo_id )
     {
+        $periodo_lectivo = PeriodoLectivo::find( $periodo_lectivo_id );
 
-        $periodos = Periodo::get_activos_periodo_lectivo( $periodo_lectivo_id );
+        if ( is_null($periodo_lectivo) )
+        {
+            return [ '', '<span style="color: red;">Error en la obtención de los datos por favor intente nuevamente.</span>' ];
+        }
+        
+        $periodos = $periodo_lectivo->periodos;
+
+        //$periodos = Periodo::get_activos_periodo_lectivo( $periodo_lectivo_id );
 
         $tabla = '<table class="table table-bordered">';
 
@@ -109,7 +117,15 @@ class ProcesoController extends ModeloController
         
         $periodo_final_id = 0;
 
-        $periodos = Periodo::get_activos_periodo_lectivo( $periodo_lectivo_id );
+        //$periodos = Periodo::get_activos_periodo_lectivo( $periodo_lectivo_id );
+
+        if ( is_null($periodo_lectivo) )
+        {
+            return [ '', '<span style="color: red;">Error en la obtención de los datos por favor intente nuevamente.</span>' ];
+        }
+        
+        $periodos = $periodo_lectivo->periodos;
+        
         $array_ids_periodos_promediar = []; // A promediar
         $i = 0;
         foreach ($periodos as $fila)

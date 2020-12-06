@@ -18,6 +18,11 @@ class PeriodoLectivo extends Model
 
     public $encabezado_tabla = ['Descripcion','Fecha desde','Fecha hasta','Cerrado','Estado','Acción'];
 
+    public function periodos()
+    {
+        return $this->hasMany( 'App\Calificaciones\Periodo', 'periodo_lectivo_id' );
+    }
+
     public static function consultar_registros()
     {
     	$select_raw = 'IF(sga_periodos_lectivos.cerrado=0,REPLACE(sga_periodos_lectivos.cerrado,0,"No"),REPLACE(sga_periodos_lectivos.cerrado,1,"Si")) AS campo4';
