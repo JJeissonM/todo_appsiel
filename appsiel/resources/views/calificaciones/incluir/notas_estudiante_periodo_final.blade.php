@@ -15,6 +15,12 @@
     <table class="table table-striped tabla_registros" style="margin-top: -4px;">
         <thead>
             <tr>
+                <th> </th>
+                <th colspan="{{ count($periodos_del_anio_lectivo) }}"> Periodos </th>
+                <th> </th>
+                <th> </th>
+            </tr>
+            <tr>
                 <th>
                    Asignatura
                 </th>
@@ -23,12 +29,6 @@
                 @endforeach
                 <th> Desempeño </th>
                 <th> Logros </th>
-            </tr>
-            <tr>
-                <th> </th>
-                <th colspan="{{ count($periodos_del_anio_lectivo) }}"> Periodos </th>
-                <th> </th>
-                <th> </th>
             </tr>
         </thead>
         <tbody>
