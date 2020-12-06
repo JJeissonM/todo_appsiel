@@ -24,6 +24,12 @@
                 <th> Desempeño </th>
                 <th> Logros </th>
             </tr>
+            <tr>
+                <th> </th>
+                <th colspan="{{ count($periodos_del_anio_lectivo) }}"> Periodos </th>
+                <th> </th>
+                <th> </th>
+            </tr>
         </thead>
         <tbody>
             <?php
