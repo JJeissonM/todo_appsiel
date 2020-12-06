@@ -17,9 +17,13 @@ use App\Matriculas\Estudiante;
 use App\Matriculas\Matricula;
 use App\Matriculas\Curso;
 use App\Matriculas\PeriodoLectivo;
+
 use App\Calificaciones\Periodo;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\CalificacionAuxiliar;
+use App\Calificaciones\Calificacion;
+use App\Calificaciones\EscalaValoracion;
+use App\Calificaciones\Logro;
 
 use App\Calificaciones\CursoTieneAsignatura;
 
@@ -154,9 +158,16 @@ class AcademicoEstudianteController extends Controller
     
     public function ajax_calificaciones(Request $request)
     {
-    	$select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS campo4';
-        
-        $registros = CalificacionAuxiliar::get_todas_un_estudiante_periodo( $this->estudiante->id, $request->periodo_id );
+        $periodo = Periodo::find( $request->periodo_id );
+        $curso = Curso::find( $request->curso_id );
+
+        if( $periodo->periodo_de_promedios )
+        {
+            $periodos_del_anio_lectivo = Periodo::where( 'periodo_lectivo_id', $periodo->periodo_lectivo_id )->orderBy('periodo_de_promedios')->get();
+            $registros = $this->get_registros_tabla_datos( $this->estudiante, $periodos_del_anio_lectivo, $periodo, $curso );
+        }else{
+            $registros = CalificacionAuxiliar::get_todas_un_estudiante_periodo( $this->estudiante->id, $request->periodo_id );
+        }
 
         $periodo_id = $request->periodo_id;
         $curso_id = $request->curso_id;
@@ -170,7 +181,60 @@ class AcademicoEstudianteController extends Controller
 
         $estudiante = Estudiante::get_datos_basicos( $this->estudiante->id );
 
-        return View::make( 'calificaciones.incluir.notas_estudiante_periodo_tabla', compact( 'registros', 'periodo_id', 'curso_id', 'observacion_boletin', 'estudiante') )->render();
+        if( $periodo->periodo_de_promedios )
+        {
+            return View::make( 'calificaciones.incluir.notas_estudiante_periodo_final', compact( 'registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante', 'periodos_del_anio_lectivo') )->render();
+        }else{
+            return View::make( 'calificaciones.incluir.notas_estudiante_periodo_tabla', compact( 'registros', 'periodo_id', 'curso_id', 'observacion_boletin', 'estudiante') )->render();
+        }
+
+        
+    }
+
+    public function get_registros_tabla_datos( $estudiante, $periodos_del_anio_lectivo, $periodo, $curso )
+    {
+        $filas = [];
+        $asignaturas_asignadas = $curso->asignaturas_asignadas->where('periodo_lectivo_id', $periodo->periodo_lectivo_id);
+        foreach ( $asignaturas_asignadas as $registro_curso_tiene_asignatura )
+        {
+            $obj_fila = (object)[ 'asignatura' => '', 'periodos' => '', 'escala_valoracion_periodo_final' => '', 'logros' => '' ];
+            
+            $asignatura = $registro_curso_tiene_asignatura->asignatura;
+            $obj_fila->asignatura = $asignatura;
+            $obj_fila->escala_valoracion_periodo_final = '';
+
+            $periodos = [];
+            foreach ($periodos_del_anio_lectivo as $periodo )
+            {
+                $obj_periodos = (object)[ 'periodo' => '', 'calificacion' => '' ];
+                $obj_periodos->periodo = $periodo;
+                $obj_calificacion = Calificacion::get_para_boletin( $periodo->id, $curso->id, $estudiante->id, $asignatura->id );
+                $calificacion = 0;
+                if ( !is_null($obj_calificacion) )
+                {
+                    $calificacion = $obj_calificacion->calificacion;
+                }
+                
+                $obj_periodos->calificacion = $calificacion;
+                $periodos[] = $obj_periodos;
+
+                if ( $periodo->periodo_de_promedios )
+                {
+                    $escala_valoracion = EscalaValoracion::get_escala_segun_calificacion( $calificacion, $periodo->periodo_lectivo_id );
+
+                    $obj_fila->escala_valoracion_periodo_final = $escala_valoracion->nombre_escala;
+
+                    $obj_fila->logros = Logro::get_para_boletin( $periodo->id, $curso->id, $asignatura->id, $escala_valoracion->id );
+                }
+                
+            }
+
+            $obj_fila->periodos = $periodos;
+
+            $filas[] = $obj_fila;
+        }
+
+        return $filas;
     }
 
 
