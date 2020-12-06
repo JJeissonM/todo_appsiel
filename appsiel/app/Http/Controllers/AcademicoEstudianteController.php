@@ -163,7 +163,11 @@ class AcademicoEstudianteController extends Controller
 
         if( $periodo->periodo_de_promedios )
         {
-            $periodos_del_anio_lectivo = Periodo::where( 'periodo_lectivo_id', $periodo->periodo_lectivo_id )->orderBy('periodo_de_promedios')->get();
+            $periodos_del_anio_lectivo = Periodo::where( 'periodo_lectivo_id', $periodo->periodo_lectivo_id )
+                                                ->where( 'estado', 'Activo' )
+                                                ->orderBy('periodo_de_promedios')
+                                                ->get();
+                                                
             $registros = $this->get_registros_tabla_datos( $this->estudiante, $periodos_del_anio_lectivo, $periodo, $curso );
         }else{
             $registros = CalificacionAuxiliar::get_todas_un_estudiante_periodo( $this->estudiante->id, $request->periodo_id );
@@ -226,7 +230,7 @@ class AcademicoEstudianteController extends Controller
 
                     $obj_fila->logros = Logro::get_para_boletin( $periodo->id, $curso->id, $asignatura->id, $escala_valoracion->id );
                 }
-                
+
             }
 
             $obj_fila->periodos = $periodos;
