@@ -51,7 +51,7 @@ class ProcesoController extends ModeloController
             return [ '', '<span style="color: red;">Error en la obtención de los datos por favor intente nuevamente.</span>' ];
         }
         
-        $periodos = $periodo_lectivo->periodos;
+        $periodos = $periodo_lectivo->periodos->where('estado','Activo')->all();
 
         //$periodos = Periodo::get_activos_periodo_lectivo( $periodo_lectivo_id );
 
@@ -124,7 +124,7 @@ class ProcesoController extends ModeloController
             return [ '', '<span style="color: red;">Error en la obtención de los datos por favor intente nuevamente.</span>' ];
         }
         
-        $periodos = $periodo_lectivo->periodos;
+        $periodos = $periodo_lectivo->periodos->where('estado','Activo')->all();
         
         $array_ids_periodos_promediar = []; // A promediar
         $i = 0;
