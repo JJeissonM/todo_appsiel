@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class Contrato extends Model
 {
     protected $table = 'cte_contratos';
-    protected $fillable = ['id', 'codigo', 'version', 'fecha', 'numero_contrato', 'rep_legal', 'representacion_de', 'objeto', 'origen', 'destino', 'fecha_inicio', 'fecha_fin', 'valor_contrato', 'valor_empresa', 'valor_propietario', 'direccion_notificacion', 'telefono_notificacion', 'dia_contrato', 'mes_contrato', 'pie_uno', 'pie_dos', 'pie_tres', 'pie_cuatro', 'contratante_id', 'vehiculo_id', 'conductor_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'codigo', 'version', 'fecha', 'numero_contrato', 'rep_legal', 'representacion_de', 'objeto', 'origen', 'destino', 'fecha_inicio', 'fecha_fin', 'valor_contrato', 'valor_empresa', 'valor_propietario', 'direccion_notificacion', 'telefono_notificacion', 'dia_contrato', 'mes_contrato', 'pie_uno', 'pie_dos', 'pie_tres', 'pie_cuatro', 'contratanteText', 'contratante_id', 'vehiculo_id', 'conductor_id', 'created_at', 'updated_at'];
 
     public $encabezado_tabla = ['Nro.', 'Objeto', 'Fecha Celebrado', 'Origen - Destino', 'Vigencia', 'Contratante', 'Vehículo', 'Propietario', 'Estado', 'Acción'];
 
@@ -34,7 +34,7 @@ class Contrato extends Model
     public static function consultar_registros2()
     {
         //t1 es contratante, t2 es propietario
-        return Contrato::leftJoin('cte_contratantes', 'cte_contratantes.id', '=', 'cte_contratos.contratante_id')
+        $collection =  Contrato::leftJoin('cte_contratantes', 'cte_contratantes.id', '=', 'cte_contratos.contratante_id')
             ->leftJoin('core_terceros as t1', 't1.id', '=', 'cte_contratantes.tercero_id')
             ->leftJoin('cte_vehiculos', 'cte_vehiculos.id', '=', 'cte_contratos.vehiculo_id')
             ->leftJoin('cte_propietarios', 'cte_propietarios.id', '=', 'cte_vehiculos.propietario_id')
@@ -53,6 +53,14 @@ class Contrato extends Model
             )
             ->orderBy('cte_contratos.created_at', 'DESC')
             ->paginate(100);
+        if (count($collection) > 0) {
+            foreach ($collection as $c) {
+                if ($c->campo6 == null || $c->campo6 == 'null') {
+                    $c->campo6 = Contrato::find($c->campo10)->contratanteText;
+                }
+            }
+        }
+        return $collection;
     }
 
 

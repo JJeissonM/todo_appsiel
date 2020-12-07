@@ -32,7 +32,7 @@
 											<td>{{$c->numero_contrato}}</td>
 											<td>{{$c->origen." - ".$c->destino}}</td>
 											<td>{{"DESDE: ".$c->fecha_inicio." - HASTA: ".$c->fecha_fin}}</td>
-											<td>{{$c->contratante->tercero->descripcion}}</td>
+											<td>@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} @endif</td>
 											<td>
 												@if($c->estado=='ANULADO')
 												<p>ANULADO</p>

@@ -186,7 +186,7 @@
 					<p>Entre los suscritos a saber <b>{{$c->rep_legal}}</b>
 						en representación de la empresa <b>{{$emp->descripcion}}</b> con Nit. <b>{{$emp->numero_identificacion."-".$emp->digito_verificacion}}</b>, legalmente constituida
 						y habilitada por el ministerio de transporte para la prestación del servicio transporte
-						especial, de aquí en adelante el <b>CONTRATISTA</b>, y por otro lado <b>EL CONTRATANTE {{$c->contratante->tercero->descripcion}}</b> identificado con cedula <b>N° {{$c->contratante->tercero->numero_identificacion}}</b>
+						especial, de aquí en adelante el <b>CONTRATISTA</b>, y por otro lado <b>EL CONTRATANTE @if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} identificado con cedula N° {{$c->contratante->tercero->numero_identificacion}} @endif</b>
 						en representación de <b>{{$c->representacion_de}}</b>
 					</p>
 					<h4>DESCRIPCIÓN DEL GRUPO DE USUARIOS</h4>
