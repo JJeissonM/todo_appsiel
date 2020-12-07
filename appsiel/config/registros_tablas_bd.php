@@ -6827,6 +6827,21 @@
       'created_at' => '2020-12-07 06:44:45',
       'updated_at' => '2020-12-07 06:45:14',
     ),
+    455 => 
+    array (
+      'id' => 481,
+      'core_app_id' => 1,
+      'modelo_id' => 256,
+      'name' => 'matriculas_reconocimientos_estudiantes',
+      'descripcion' => 'Reconocimientos de estudiantes',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 99,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-12-07 08:41:55',
+      'updated_at' => '2020-12-07 08:42:59',
+    ),
   ),
   'roles' => 
   array (
@@ -16346,6 +16361,12 @@
       'orden' => 0,
       'permission_id' => 480,
       'role_id' => 22,
+    ),
+    1560 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 481,
+      'role_id' => 1,
     ),
   ),
   'sys_campos' => 
@@ -32240,6 +32261,38 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-12-07 05:52:05',
       'updated_at' => '2020-12-07 06:04:33',
     ),
+    986 => 
+    array (
+      'id' => 992,
+      'descripcion' => 'Estudiante',
+      'tipo' => 'select',
+      'name' => 'estudiante_id',
+      'opciones' => 'model_App\\Matriculas\\Estudiante',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-12-07 08:47:12',
+      'updated_at' => '2020-12-07 08:47:44',
+    ),
+    987 => 
+    array (
+      'id' => 993,
+      'descripcion' => 'Resúmen',
+      'tipo' => 'bsTextArea',
+      'name' => 'resumen',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-12-07 08:48:42',
+      'updated_at' => '2020-12-07 08:49:03',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -37654,6 +37707,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-11-26 14:09:42',
       'updated_at' => '2020-11-26 14:09:42',
+    ),
+    246 => 
+    array (
+      'id' => 256,
+      'descripcion' => 'Reconocimientos de estudiantes',
+      'modelo' => 'SgaEstudianteReconocimiento',
+      'name_space' => 'App\\AcademicoEstudiante\\SgaEstudianteReconocimiento',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => 'academico_estudiante/reconocimientos/',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-12-07 08:37:20',
+      'updated_at' => '2020-12-07 08:37:20',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -51979,6 +52054,55 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 26,
       'core_modelo_id' => 202,
       'core_campo_id' => 990,
+    ),
+    2046 => 
+    array (
+      'id' => 2345,
+      'orden' => 6,
+      'core_modelo_id' => 256,
+      'core_campo_id' => 182,
+    ),
+    2047 => 
+    array (
+      'id' => 2346,
+      'orden' => 2,
+      'core_modelo_id' => 256,
+      'core_campo_id' => 293,
+    ),
+    2048 => 
+    array (
+      'id' => 2347,
+      'orden' => 8,
+      'core_modelo_id' => 256,
+      'core_campo_id' => 2,
+    ),
+    2049 => 
+    array (
+      'id' => 2349,
+      'orden' => 14,
+      'core_modelo_id' => 256,
+      'core_campo_id' => 22,
+    ),
+    2050 => 
+    array (
+      'id' => 2350,
+      'orden' => 12,
+      'core_modelo_id' => 256,
+      'core_campo_id' => 174,
+    ),
+    2051 => 
+    array (
+      'id' => 2351,
+      'orden' => 4,
+      'core_modelo_id' => 256,
+      'core_campo_id' => 992,
+    ),
+    2052 => 
+    array (
+      'id' => 2352,
+      'orden' => 10,
+      'core_modelo_id' => 256,
+      'core_campo_id' => 993,
     ),
   ),
   'sys_reportes' => 

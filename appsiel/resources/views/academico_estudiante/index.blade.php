@@ -91,13 +91,11 @@
 			</div>
 
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				&nbsp;
-				<!-- <a href="{ { url( 'ver_foros/'.$curso->id.'?id='.Input::get('id') ) }}">
-          			<img class="img-responsive" src="{ {asset('assets/img/academico_estudiante/foros.png')}}" width="80px" height="80px" />
+				<a href="{{ url('academico_estudiante/reconocimientos?id=' . Input::get('id') ) }}">
+          			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/reconocimientos.png')}}" width="80px" height="80px" />
 	          		<br/>
-	                Foros de discusión
+	                Reconocimientos
 	            </a>
-	        -->
 			</div>
 		</div>
 	</div>

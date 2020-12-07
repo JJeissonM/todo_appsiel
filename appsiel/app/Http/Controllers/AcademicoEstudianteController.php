@@ -32,6 +32,7 @@ use App\Calificaciones\ObservacionesBoletin;
 use App\AcademicoDocente\PlanClaseEncabezado;
 use App\AcademicoDocente\PlanClaseRegistro;
 
+use App\AcademicoEstudiante\SgaEstudianteReconocimiento;
 
 use App\Cuestionarios\ActividadEscolar;
 
@@ -366,6 +367,19 @@ class AcademicoEstudianteController extends Controller
         return view('academico_estudiante.preinforme_academico',compact( 'estudiante','periodo','anio','curso','asignaturas'));
     }
 
+    public function reconocimientos()
+    {
+        $reconocimientos = SgaEstudianteReconocimiento::where( 'estudiante_id', $this->estudiante->id )
+                                                        ->where('estado', 'Activo')
+                                                        ->get();
+
+        $miga_pan = [
+                ['url'=>'academico_estudiante?id='.Input::get('id'),'etiqueta'=>'Académico estudiante'],
+                ['url'=>'NO','etiqueta'=>'Reconocimientos']
+            ];
+
+        return view('academico_estudiante.reconocimientos',compact('miga_pan', 'reconocimientos'));
+    }
 
     
 }
