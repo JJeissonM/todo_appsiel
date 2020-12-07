@@ -21,8 +21,11 @@
         <td style="display: none;">
             <div class="cantidad">{{$linea->cantidad}}</div>
         </td>
+        <?php
+            $precio_total = $linea->precio_unitario * $linea->cantidad;
+        ?>
         <td style="display: none;">
-            <div class="precio_total">{{$linea->precio_total_linea}}</div>
+            <div class="precio_total">{{$precio_total}}</div>
         </td>
         <td style="display: none;">
             <div class="tasa_descuento">0</div>
@@ -51,7 +54,7 @@
             <div class="lbl_tasa_impuesto" style="display: inline;">0%</div> <!-- { {$linea->articulo->impuesto->tasa_impuesto}} -->
         </td>
         <td> 
-            <div class="lbl_precio_total" style="display: inline;">$ {{ number_format( $linea->precio_total_linea, 0, ',', '.') }} </div> 
+            <div class="lbl_precio_total" style="display: inline;">$ {{ number_format( $precio_total, 0, ',', '.') }} </div> 
         </td> 
         <td>
             <button type="button" class="btn btn-danger btn-xs btn_eliminar">

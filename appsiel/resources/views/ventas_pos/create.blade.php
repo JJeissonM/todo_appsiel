@@ -358,8 +358,8 @@ use App\Http\Controllers\Sistema\VistaController;
         {!! $plantilla_factura !!}
     </div>
 
-    <div class="container-fluid elemento_fondo"
-         style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;"></div>
+    <div class="container-fluid elemento_fondo" style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;">
+    </div>
 
 @endsection
 
@@ -1335,7 +1335,12 @@ use App\Http\Controllers\Sistema\VistaController;
 
                     $("#ingreso_registros").find('tbody:last').prepend( respuesta );
                     calcular_totales();
-                    hay_productos++;
+                    $('#btn_nuevo').show();
+
+                    hay_productos = $('#ingreso_registros tr').length - 2;
+                    $('#numero_lineas').html( hay_productos );
+
+                    $('#inv_producto_id').focus();
                 });
             });
 

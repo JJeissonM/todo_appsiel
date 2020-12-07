@@ -29,7 +29,7 @@ class ArchivoPlano
 
 			$lineas_validadas[$l]->articulo = $this->validar_codigo_articulo( (int)substr($linea, 0, self::LONGITUD_CODIGO_ARTICULO) );
 
-			$lineas_validadas[$l]->cantidad = $this->formatear_valor_numerico( substr($linea, 5, self::LONGITUD_CANTIDAD), 3, 3);
+			$lineas_validadas[$l]->cantidad = $this->formatear_cantidad( $linea, $lineas_validadas[$l]->articulo );
 
 			$lineas_validadas[$l]->precio_unitario = $this->formatear_valor_numerico( substr($linea, 11, self::LONGITUD_PRECIO_UNITARIO), 5, 0 );
 
@@ -51,6 +51,27 @@ class ArchivoPlano
 		}
 		
 		return $articulo;
+	}
+
+	public function formatear_cantidad( $linea, $articulo )
+	{
+		// Cuando tiene unidad de medida UNIDAD (no pesado), la estructura de la cantidad en la línea cambia
+		$longitud_cantidad_articulos_no_pesados = 2;
+
+		switch ( $articulo->unidad_medida1 )
+		{
+			case 'UND':
+				return (int)substr($linea, 5 + self::LONGITUD_CANTIDAD - $longitud_cantidad_articulos_no_pesados, $longitud_cantidad_articulos_no_pesados);
+				break;
+			
+			case 'KG':
+				return $this->formatear_valor_numerico( substr($linea, 5, self::LONGITUD_CANTIDAD), 3, 3);
+				break;
+			
+			default:
+				return (int)substr($linea, 5 + self::LONGITUD_CANTIDAD - $longitud_cantidad_articulos_no_pesados, $longitud_cantidad_articulos_no_pesados);
+				break;
+		}
 	}
 
 	public function formatear_valor_numerico( $valor, $longitud_parte_entera, $longitud_parte_decimal )
