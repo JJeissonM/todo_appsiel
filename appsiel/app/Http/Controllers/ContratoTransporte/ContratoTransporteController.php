@@ -102,7 +102,7 @@ class ContratoTransporteController extends Controller
                 ]
             ];
         }
-        $emp = null;
+        $emp = null; 
         $emp = Empresa::find(1);
         $contratantes = null;
         $cont = Contratante::all();
