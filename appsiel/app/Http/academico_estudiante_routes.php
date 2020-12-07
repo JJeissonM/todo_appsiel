@@ -23,6 +23,8 @@ Route::get('mis_asignaturas/{curso_id}','AcademicoEstudianteController@mis_asign
 
 Route::get('consultar_preinforme/{periodo_id}/{curso_id}/{estudiante_id}','AcademicoEstudianteController@consultar_preinforme');
 
+Route::get('academico_estudiante/reconocimientos', 'AcademicoEstudianteController@reconocimientos');
+
 
 // Solo deberia contener rutas del AcademicoEstudianteController, nada de Matriculas
 // Route::get('academico_estudiante/usuarios_estudiantes', 'Matriculas\EstudianteController@usuarios_estudiantes');
