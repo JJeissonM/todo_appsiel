@@ -61,25 +61,48 @@ class ContratoTransporteController extends Controller
     //crear contrato
     public function create()
     {
+        $source = 'CONTRATOS';
+        $sourceTemp = Input::get('source');
+        if ($sourceTemp != null) {
+            $source = $sourceTemp;
+        }
         $idapp = Input::get('id');
         $modelo = Input::get('id_modelo');
         $transaccion = Input::get('id_transaccion');
-        $miga_pan = [
-            [
-                'url' => 'contratos_transporte' . '?id=' . $idapp,
-                'etiqueta' => 'Contratos transporte'
-            ],
-            [
-                'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
-                'etiqueta' => 'Contratos'
-            ],
-            [
-                'url' => 'NO',
-                'etiqueta' => 'Crear Contrato'
-            ]
-        ];
+        $miga_pan = null;
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
-        $emp = null;
+        if ($source == 'MISCONTRATOS') {
+            $miga_pan = [
+                [
+                    'url' => 'contratos_transporte' . '?id=' . $idapp,
+                    'etiqueta' => 'Contratos transporte'
+                ],
+                [
+                    'url' => 'cte_contratos_propietarios' . $variables_url,
+                    'etiqueta' => 'Mis Contratos'
+                ],
+                [
+                    'url' => 'NO',
+                    'etiqueta' => 'Crear Contrato'
+                ]
+            ];
+        } else {
+            $miga_pan = [
+                [
+                    'url' => 'contratos_transporte' . '?id=' . $idapp,
+                    'etiqueta' => 'Contratos transporte'
+                ],
+                [
+                    'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
+                    'etiqueta' => 'Contratos'
+                ],
+                [
+                    'url' => 'NO',
+                    'etiqueta' => 'Crear Contrato'
+                ]
+            ];
+        }
+        $emp = null; 
         $emp = Empresa::find(1);
         $contratantes = null;
         $cont = Contratante::all();
