@@ -24,7 +24,8 @@
 @include('layouts.mensajes')
 
 <div class="container-fluid">
-	<div class="marco_formulario">
+	<a href="{{route('cte_contratos.create').$variables_url.'&source=MISCONTRATOS'}}" class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> Crear Contrato Para FUEC</a>
+	<div class="marco_formulario" style="margin-top: 20px;">
 		&nbsp;
 		<div class="row" style="padding: 20px;">
 			<div class="col-md-12">
@@ -58,8 +59,8 @@
 									@if($c['contrato']->estado=='ACTIVO')
 									@if($c['bloqueado']=='NO')
 									<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn btn-xs btn-primary"><i class="fa fa-arrow-right"></i></a>
-									@else 
-									-- Usted no puede generar planillas -- 
+									@else
+									-- Usted no puede generar planillas --
 									@endif
 									@else
 									-- ANULADO --
