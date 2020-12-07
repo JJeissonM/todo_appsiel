@@ -154,7 +154,8 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 					<tbody>
 						<tr>
 							<td class="border" style="width: 40%;"><img style="width: 260px; height: 80px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
-							<td class="border" style="width: 20%; text-align: center;"><img style="width: 80px; height: 80px;" src="{{ asset('img/logos/super_transporte.png') }}"></td>
+							<!--<td class="border" style="width: 20%; text-align: center;"><img style="width: 80px; height: 80px;" src="{{ asset('img/logos/super_transporte.png') }}"></td>-->
+							<td class="border" style="width: 20%; text-align: center;"><img src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode"/></td>
 							<td class="border" style="width: 40%;"><img style="width: 260px; height: 80px;" src="{{ asset('img/logos/transporcol_center.png') }}"></td>
 						</tr>
 					</tbody>

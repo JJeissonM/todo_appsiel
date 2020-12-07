@@ -356,7 +356,7 @@ class ContratoTransporteController extends Controller
                 'url' => 'NO',
                 'etiqueta' => 'Mis Contratos'
             ]
-        ]; 
+        ];
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
         return view('contratos_transporte.contratos.miscontratos')
             ->with('variables_url', $variables_url)
@@ -614,7 +614,8 @@ class ContratoTransporteController extends Controller
         }
         $empresa = null;
         $empresa = Empresa::find(1);
-        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'conductores', 'v', 'c', 'fi', 'ff', 'to', 'empresa'))->render();
+        $url = route('cte_contratos.planillaverificar', $p->id);
+        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'url', 'conductores', 'v', 'c', 'fi', 'ff', 'to', 'empresa'))->render();
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
@@ -641,5 +642,11 @@ class ContratoTransporteController extends Controller
         } else {
             return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato no pudo ser ANULADO.');
         }
+    }
+
+    //verificar planilla pública
+    public function verificarPlanilla($id)
+    {
+        return $this->planillaimprimir($id);
     }
 }
