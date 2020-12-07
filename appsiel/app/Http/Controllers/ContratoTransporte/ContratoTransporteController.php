@@ -356,7 +356,7 @@ class ContratoTransporteController extends Controller
                 'url' => 'NO',
                 'etiqueta' => 'Mis Contratos'
             ]
-        ];
+        ]; 
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
         return view('contratos_transporte.contratos.miscontratos')
             ->with('variables_url', $variables_url)
