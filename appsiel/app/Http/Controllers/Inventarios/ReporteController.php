@@ -312,10 +312,11 @@ class ReporteController extends Controller
         $numero_columnas = $request->numero_columnas;
         $estado = $request->estado;
         $etiqueta = $request->etiqueta;
+        $items_a_mostrar = $request->items_a_mostrar;
                 
-        $items = InvProducto::get_datos_basicos( $grupo_inventario_id, $estado);
+        $items = InvProducto::get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar);
 
-        $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta') )->render();
+        $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar') )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
    

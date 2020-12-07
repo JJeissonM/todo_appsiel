@@ -52,7 +52,7 @@ class InvProducto extends Model
     }
 
 
-    public static function get_datos_basicos( $grupo_inventario_id, $estado )
+    public static function get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar = null )
     {
 
         $array_wheres = [ 
@@ -63,6 +63,16 @@ class InvProducto extends Model
         if ( $grupo_inventario_id != '')
         {
           $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
+        }
+
+        if ( $items_a_mostrar != null && $items_a_mostrar != '')
+        {
+            if ( $items_a_mostrar == 'sin_codigo_barras' )
+            {
+                $array_wheres = array_merge( $array_wheres, ['inv_productos.codigo_barras' => '' ] );
+            }else{
+                $array_wheres = array_merge( $array_wheres, [['inv_productos.codigo_barras', '<>', '' ]] );
+            }
         }
 
         $registros = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
