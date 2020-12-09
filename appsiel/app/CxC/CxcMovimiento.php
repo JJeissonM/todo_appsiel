@@ -13,6 +13,30 @@ class CxcMovimiento extends Model
 
   protected $fillable = [ 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'core_empresa_id', 'core_tercero_id', 'modelo_referencia_tercero_index', 'referencia_tercero_id', 'fecha', 'fecha_vencimiento', 'valor_documento', 'valor_pagado', 'saldo_pendiente', 'creado_por', 'modificado_por', 'estado'];
 
+  public $encabezado_tabla = ['ID', 'Documento', 'Fecha', 'Tercero', 'Valor cartera', 'Valor pagado', 'Saldo pendiente', 'Estado', 'Acción'];
+
+  public $urls_acciones = '{"show":"no"}';
+
+  // Se consultan los documentos para la empresa que tiene asignada el usuario
+  public static function consultar_registros()
+  {        
+    return CxcMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+                          ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
+                          ->where('cxc_movimientos.core_empresa_id', Auth::user()->empresa_id )
+                          ->select(
+                                    'cxc_movimientos.id AS campo1',
+                                    DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_movimientos.consecutivo) AS campo2' ),
+                                    'cxc_movimientos.fecha AS campo3',
+                                    'core_terceros.descripcion as campo4',
+                                    'cxc_movimientos.valor_documento AS campo5',
+                                    'cxc_movimientos.valor_pagado AS campo6',
+                                    'cxc_movimientos.saldo_pendiente AS campo7',
+                                    'cxc_movimientos.estado AS campo8',
+                                    'cxc_movimientos.id AS campo9')
+                          ->get()
+                          ->toArray();
+  }
+
   public static function documentos_pendientes_inmueble($ph_propiedad_id, $fecha_consulta, $operador)
   {
     $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_movimientos.consecutivo) AS documento';

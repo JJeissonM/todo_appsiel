@@ -424,7 +424,7 @@ class LibretaPagoController extends ModeloController
 
         $request['modificado_por'] = '';
         $request['creado_por'] = Auth::user()->email;
-        $request['cliente_id'] = Cliente::where( 'core_tercero_id', $request->core_tercero_id )->get()->first()->id;
+        //$request['cliente_id'] = Cliente::where( 'core_tercero_id', $request->core_tercero_id )->get()->first()->id;
         $request['tipo_recaudo_aux'] = '';
         
         $request['lineas_registros'] = '[{"id_doc":"'. $request->id_doc .'","Cliente":"","Documento interno":"","Fecha":"2020-10-23","Fecha vencimiento":"","Valor Documento":"$0,00","Valor pagado":"$0,00","Saldo pendiente":"$00,00","abono":"' . $request->valor_recaudo . '"},{"id_doc":"","Cliente":"","Documento interno":"$0.00","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';

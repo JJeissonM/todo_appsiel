@@ -64,22 +64,27 @@ class AcademicoEstudianteController extends Controller
     
     public function index()
     {
-    	if( !is_null($this->estudiante) )
+        if( is_null($this->estudiante) )
         {
-            
-            $matricula = Matricula::get_matricula_activa_un_estudiante( $this->estudiante->id );
-            $curso = Curso::find( $matricula->curso_id );
-
-    		$estudiante = $this->estudiante;
-
-        	$miga_pan = [
-                    ['url'=>'NO','etiqueta'=>'Académico estudiante']
-                ];
-            return view( 'academico_estudiante.index', compact( 'miga_pan', 'estudiante', 'curso') );
-        }else{
-
             return redirect( 'inicio' )->with('mensaje_error', 'El usuario actual no tiene perfil de estudiante.');
         }
+
+        $matricula = Matricula::get_matricula_activa_un_estudiante( $this->estudiante->id );
+
+        if( is_null( $matricula ) )
+        {
+            return redirect( 'inicio' )->with('mensaje_error', 'El estudiante no tiene alguna matrícua activa.');
+        }
+
+        $curso = Curso::find( $matricula->curso_id );
+
+		$estudiante = $this->estudiante;
+
+    	$miga_pan = [
+                ['url'=>'NO','etiqueta'=>'Académico estudiante']
+            ];
+        return view( 'academico_estudiante.index', compact( 'miga_pan', 'estudiante', 'curso') );
+
     }
     
     

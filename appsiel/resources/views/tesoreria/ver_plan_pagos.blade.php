@@ -20,9 +20,8 @@
 
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
-			
-			<h2>{{ $matricula_estudiante->nombre_estudiante }}</h2>
-			<h4>Matrícula: {{ $matricula_estudiante->codigo }} /  Curso: {{ $matricula_estudiante->nombre_curso }}</h4>
+
+			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', ['estudiante' => $matricula_estudiante->estudiante ])
 
 			<h3>Libreta de pagos</h3> {{ Form::bsBtnPrint( url('tesoreria/imprimir_libreta/'.$libreta->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))  ) }}
 			<div class="table-responsive">

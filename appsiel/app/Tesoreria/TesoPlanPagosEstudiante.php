@@ -34,9 +34,9 @@ class TesoPlanPagosEstudiante extends Model
         return $this->hasMany( 'App\Matriculas\FacturaAuxEstudiante', 'cartera_estudiante_id');
     }
 
-    public function get_registros_pendientes_o_vencidos_a_la_fecha( $fecha, $concepto_id = null )
+    public function get_registros_pendientes_o_vencidos_a_la_fecha( $fecha, $inv_producto_id = null )
     {
-        if ( is_null( $concepto_id ) )
+        if ( is_null( $inv_producto_id ) )
         {
             return TesoPlanPagosEstudiante::where( 'fecha_vencimiento', '<=', $fecha )
                                         ->orWhere(function ($query) {
@@ -46,7 +46,7 @@ class TesoPlanPagosEstudiante extends Model
                                         ->get();
         }else{
             return TesoPlanPagosEstudiante::where( 'fecha_vencimiento', '<=', $fecha )
-                                        ->where( 'inv_producto_id', '=', $concepto_id )
+                                        ->where( 'inv_producto_id', '=', $inv_producto_id )
                                         ->orWhere(function ($query) {
                                                 $query->where('estado', '=', 'Pendiente')
                                                       ->where('estado', '=', 'Vencida');
@@ -57,10 +57,10 @@ class TesoPlanPagosEstudiante extends Model
 
 
 
-    public static function get_total_valor_pagado_concepto( $libreta_id, $concepto_id )
+    public static function get_total_valor_pagado_concepto( $libreta_id, $inv_producto_id )
     {
-        return TesoPlanPagosEstudiante::where('id_libreta',$id_libreta)
-                                        ->where('concepto_id', $concepto_id)
+        return TesoPlanPagosEstudiante::where('id_libreta',$libreta_id)
+                                        ->where('inv_producto_id', $inv_producto_id)
                                         ->sum('valor_pagado');
     }
 
