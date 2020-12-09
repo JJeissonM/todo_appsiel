@@ -102,6 +102,9 @@ Route::post('core/usuario/perfil/cambiar_empresa', 'UserController@cambiar_empre
 Route::get('core/usuario/perfil/cambiar_mi_passwd', 'UserController@form_cambiar_mi_passwd');
 Route::post('core/usuario/perfil/cambiar_mi_passwd', 'UserController@cambiar_mi_passwd');
 
+Route::get('crear_usuarios_masivos', 'UserController@crear_usuarios_masivos');
+
+
 
 // importar datos
 Route::get('importar/formulario', 'Core\ImportarDatosController@formulario');
