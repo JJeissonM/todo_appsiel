@@ -2,11 +2,11 @@
       <p style="padding: 30px; font-size: 18px; font-weight: bold;">  
             <a href="{{url('/')}}"> <i class="fa fa-home"></i> </a>
             /
-            <a onclick="ver_contenedor_seccion_articulos()" href="#"> Volver </a>   
+            <a onclick="ver_contenedor_seccion_articulos()" style="text-decoration: none; color: #2a95be; cursor: pointer;"> Volver </a>   
       </p>
       <div class="col-md-12 light-txt">
       <div class="content-txt" style="padding: 20px; margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
-                    <div class="blog-post blog-media" style="border: none;">
+      <div class='blog-post blog-large wow fadeInLeft' data-wow-duration='300ms' data-wow-delay='0ms' style="border: none;">
                         <article class="media clearfix">
                               <div class="media-body">
                                     <header class="entry-header" style="background: transparent;">

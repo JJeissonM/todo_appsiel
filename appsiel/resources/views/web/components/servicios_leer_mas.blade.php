@@ -1,22 +1,20 @@
 
 <div class="container-fluid">
-      <p>
-            
+      <p style="padding: 30px; font-size: 18px; font-weight: bold;">
             <a href="{{url('/')}}"> <i class="fa fa-home"></i> </a>
             &nbsp; / &nbsp; 
-            <a onclick="ver_contenedor_seccion_servicios()" href="#"> {!! $empresa->servicio->titulo !!} </a>
+            <a onclick="ver_contenedor_seccion_servicios()" style="text-decoration: none; color: #2a95be; cursor: pointer;"> {!! $empresa->servicio->titulo !!} </a>
             &nbsp; / &nbsp; 
-            {{$empresa->titulo}}
-            
+            {{$empresa->titulo}} 
       </p>
 
-      <section>
+      <section style="padding: 20px; margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
             <div class='row'>
                   <div class='col-sm-12'>
-                        <div class='blog-post blog-large wow fadeInLeft' data-wow-duration='300ms' data-wow-delay='0ms'>
+                        <div class='blog-post blog-large wow fadeInLeft' data-wow-duration='300ms' data-wow-delay='0ms' style="border: none;">
                               <article>
 
-                                    <header class='entry-header'>
+                                    <header class='entry-header' style="background-color: transparent !important;">
                                           <div class='entry-thumbnail'>
                                           </div>
                                           <div class='entry-date'>

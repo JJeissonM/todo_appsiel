@@ -125,15 +125,15 @@ if ($nav->fixed) {
                     @if($item->parent_id == 0)
                     @if($item->subMenus()->count()>0)
                     <li class="nav-item dropdown {{request()->url() == $item->enlace ? 'active':''}}">
-                        <a class="dropdown-toggle" style="color: {{$nav->color}}" href="{{$item->enlace}}" role="button" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a>
+                        <a class="dropdown-toggle" style="color: {{$nav->color}}; text-transform: none !important;" href="{{$item->enlace}}" role="button" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             @foreach($item->subMenus() as $subItems)
-                            <a style="color: {{$nav->color}}" class="dropdown-item" href="{{$subItems->enlace}}"><i class="fa fa-{{$subItems->icono}}" style="font-size: 20px;"></i>{{' '.$subItems->titulo}}</a>
+                            <a style="color: {{$nav->color}}; text-transform: none !important;" class="dropdown-item" href="{{$subItems->enlace}}"><i class="fa fa-{{$subItems->icono}}" style="font-size: 20px;"></i>{{' '.$subItems->titulo}}</a>
                             @endforeach
                         </div>
                     </li>
                     @else
-                    <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}" style="color: {{$nav->color}}"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a></li>
+                    <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}" style="color: {{$nav->color}}; text-transform: none !important;"><i class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a></li>
                     @endif
                     @endif
                     @endforeach

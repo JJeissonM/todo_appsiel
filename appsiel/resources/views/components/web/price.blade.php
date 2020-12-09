@@ -79,31 +79,5 @@
 </section>
 @endif
 <script type="text/javascript">
-    function visor_contenido_servicios(item_id) {
-        $('#visor_contenido_servicios').html('');
-
-        $('#contenedor_seccion_servicios').fadeOut(1000);
-
-        var url = "{{url('/Prices')}}" + '/' + item_id + '/index';
-
-        $.get(url)
-            .done(function(data) {
-
-                $('#visor_contenido_servicios').html(data);
-                $('#visor_contenido_servicios').fadeIn(500);
-            })
-            .error(function() {
-
-                $('#contenedor_seccion_servicios').fadeIn(500);
-                $('#visor_contenido_servicios').show();
-                $('#visor_contenido_servicios').html('<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>');
-            });
-    }
-
-
-    function ver_contenedor_seccion_servicios() {
-        $('#contenedor_seccion_servicios').fadeIn(500);
-        $('#visor_contenido_servicios').html('');
-        $('#visor_contenido_servicios').hide();
-    }
+    
 </script>
