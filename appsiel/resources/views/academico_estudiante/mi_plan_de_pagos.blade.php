@@ -9,8 +9,7 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 			
-			<h2>{{ $estudiante->nombre_completo }}</h2>
-			<h4>Matrícula: {{ $codigo_matricula }} /  Curso: {{ $curso->descripcion }}</h4>
+			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', ['estudiante' => $estudiante ])
 
 			<p style="color: red;">Nota: Solo se muestra la última libreta de pagos.</p>
 

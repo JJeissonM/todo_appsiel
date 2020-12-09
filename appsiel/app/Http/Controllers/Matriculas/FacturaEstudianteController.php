@@ -95,14 +95,14 @@ class FacturaEstudianteController extends TransaccionController
 
         if ( empty( $responsable_financiero_estudiante ) )
         {
-            return redirect( 'tesoreria/ver_plan_pagos/' . Input::get('libreta_id') . '?id=3&id_modelo=31&id_transaccion=' )->with( 'mensaje_error', 'El estudiante no tiene responsable finanaciero asociado.');
+            return redirect( 'tesoreria/ver_plan_pagos/' . Input::get('libreta_id') . '?id=3&id_modelo=31&id_transaccion=' )->with( 'mensaje_error', 'El estudiante no tiene responsable financiero asociado.');
         }
 
         $cliente = Cliente::where('core_tercero_id', $responsable_financiero_estudiante->tercero_id )->get()->first();
         if ( is_null( $cliente ) )
         {
 
-            return redirect( 'tesoreria/ver_plan_pagos/' . Input::get('libreta_id') . '?id=3&id_modelo=31&id_transaccion=' )->with( 'mensaje_error', 'El responsable finanaciero no esta creado como cliente.');
+            return redirect( 'tesoreria/ver_plan_pagos/' . Input::get('libreta_id') . '?id=3&id_modelo=31&id_transaccion=' )->with( 'mensaje_error', 'El responsable financiero no esta creado como cliente.');
         }
 
         foreach ($lista_campos as $key => $value)

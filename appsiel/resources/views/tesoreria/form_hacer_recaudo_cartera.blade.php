@@ -1,3 +1,6 @@
+<?php 
+	//dd( $factura->tipo_documento_app );
+?>
 <div class="container-fluid">
 	{{ Form::open(array('url'=>'tesoreria/guardar_recaudo_cartera','class'=>'form-horizontal','id'=>'formulario')) }}
 
@@ -6,6 +9,7 @@
 	    {{ Form::hidden('id_estudiante',$libreta->id_estudiante) }}
 	    {{ Form::hidden('concepto',$cartera->concepto) }}
 	    {{ Form::hidden('core_tercero_id', $estudiante->responsable_financiero()->tercero->id) }}
+	    {{ Form::hidden('cliente_id', $factura->cliente_id) }}
 
 
 	    {{ Form::hidden( 'vtas_doc_encabezado_id', Input::get('vtas_doc_encabezado_id') ) }}
@@ -21,16 +25,16 @@
 		{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
 
 		<div class="row" style="padding:5px;">
-	        {{ Form::label('valor_pendiente','Factura de ventas: ' . $factura->tipo_documento_transaccion->prefijo . ' ' . $factura->consecutivo ,[]) }}
+	        {{ Form::label('lbl_factura','Factura de ventas: ' . $factura->tipo_documento_app->prefijo . ' ' . $factura->consecutivo ,[]) }}
 	    </div>
 
 		<div class="row" style="padding:5px;">
-			{{ Form::label('lbl_cpto','Concepto: '.$cartera->concepto,[]) }}
+			{{ Form::label('lbl_cpto','Concepto: ' . $cartera->concepto->descripcion, []) }}
 	    </div>
 
 		<div class="row" style="padding:5px;">
 	        @php $valor_pendiente = $cartera->valor_cartera - $cartera->valor_pagado @endphp
-			{{ Form::label('valor_pendiente','Valor pendiente: $'.number_format($valor_pendiente, 0, ',', '.'),[]) }}
+			{{ Form::label('lbl_valor_pendiente','Valor pendiente: $'.number_format($valor_pendiente, 0, ',', '.'),[]) }}
 	    </div>
 
 		<div class="row" style="padding:5px;">

@@ -177,7 +177,7 @@
 
 				if ( !validar_requeridos() )
 				{
-					return false;	
+					return false;
 				}
 
 				// Desactivar el click del botón
