@@ -35,6 +35,7 @@
 							<div class="col-md-12 page">
 								{{ Form::open(['route'=>'cte_contratos.store','method'=>'post','class'=>'form-horizontal']) }}
 								<input type="hidden" name="variables_url" value="{{$variables_url}}" />
+								<input type="hidden" name="source" value="{{$source}}" />
 								<table style="width: 100%;">
 									<tbody>
 										<tr>
@@ -67,13 +68,16 @@
 											en representación de la empresa <b>{{$e->descripcion}}</b> con Nit. <b>{{$e->numero_identificacion."-".$e->digito_verificacion}}</b>, legalmente constituida
 											y habilitada por el ministerio de transporte para la prestación del servicio transporte
 											especial, de aquí en adelante el <b>CONTRATISTA</b>, y por otro lado <b>EL CONTRATANTE</b>
-											<select class="select2" name="contratante_id" required>
+											<select class="select2" id="contratante" name="contratante_id" onchange="manual()" required>
+												<option value="MANUAL">-- Seleccione una opción --</option>
+												<option value="MANUAL">INTRODUCCIÓN MANUAL</option>
 												@if($contratantes!=null)
 												@foreach($contratantes as $key=>$value)
 												<option value="{{$key}}">{!!$value!!}</option>
 												@endforeach
 												@endif
 											</select>
+											<input type="text" name="contratanteText" id="contratanteText" class="form-control" style="display: none; margin-top: 20px; margin-bottom: 20px;" placeholder="Ingrese aquí el nombre y demás información del contratísta que necesite">
 											en representación de <input type="text" required name="representacion_de" style="width: 800px !important;" value="PARA UN GRUPO ESPECIFICO DE USUARIOS DE TRANSPORTE DE PERSONAL (TRANSPORTE PARTICULAR)" />
 										</p>
 										<div class="table-responsive col-md-12" id="table_content">
@@ -244,6 +248,14 @@
 	function addRow(tabla) {
 		var html = "<tr><td><input type='text' class='form-control' name='identificacion[]' required /></td><td><input type='text' class='form-control' name='persona[]' required /></td><td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td></tr>";
 		$('#' + tabla + ' tr:last').after(html);
+	}
+
+	function manual() {
+		if ($("#contratante").val() == 'MANUAL') {
+			$("#contratanteText").fadeIn();
+		} else {
+			$("#contratanteText").fadeOut();
+		}
 	}
 
 

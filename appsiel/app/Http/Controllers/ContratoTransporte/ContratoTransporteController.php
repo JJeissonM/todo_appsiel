@@ -102,7 +102,7 @@ class ContratoTransporteController extends Controller
                 ]
             ];
         }
-        $emp = null; 
+        $emp = null;
         $emp = Empresa::find(1);
         $contratantes = null;
         $cont = Contratante::all();
@@ -112,7 +112,13 @@ class ContratoTransporteController extends Controller
             }
         }
         $vehiculos = null;
-        $vehi = Vehiculo::all();
+        $vehi = null;
+        if ($source == 'MISCONTRATOS') {
+            $u = Auth::user();
+            $vehi = Vehiculo::where('placa', $u->email)->get();
+        } else {
+            $vehi = Vehiculo::all();
+        }
         if (count($vehi) > 0) {
             foreach ($vehi as $v) {
                 //verificar documentos vencidos
@@ -139,7 +145,8 @@ class ContratoTransporteController extends Controller
             ->with('miga_pan', $miga_pan)
             ->with('e', $emp)
             ->with('contratantes', $contratantes)
-            ->with('vehiculos', $vehiculos);
+            ->with('vehiculos', $vehiculos)
+            ->with('source', $source);
     }
 
     public function store(Request $request)
@@ -148,10 +155,10 @@ class ContratoTransporteController extends Controller
         $hoy = getdate();
         $mes_actual = $hoy['mon'];
         if ((int) $mes_fecha_fin > (int) $mes_actual) {
-            return redirect("web/" . $request->variables_url)->with('mensaje_error', 'El contrato no puede tener fecha de terminación del siguiente mes');
+            return $this->redirectTo($request->variables_url, 'mensaje_error', 'La fecha final debe estar en el mes actual', $request->source);
         }
         if ($request->vehiculo_id == "0") {
-            return redirect("web/" . $request->variables_url)->with('mensaje_error', 'Debe indicar el vehículo para guardar el contrato');
+            return $this->redirectTo($request->variables_url, 'mensaje_error', 'Debe indicar el vehículo para guardar el contrato', $request->source);
         }
         $result = $this->storeContract($request);
         if ($result) {
@@ -171,9 +178,21 @@ class ContratoTransporteController extends Controller
                     $vehi->save();
                 }
             }
-            return redirect("web" . $request->variables_url)->with('flash_message', 'Almacenado con exito');
+            return $this->redirectTo($request->variables_url, 'flash_message', 'Almacenado con exito', $request->source);
         } else {
-            return redirect("web/" . $request->variables_url)->with('mensaje_error', 'No pudo ser almacenado');
+            return $this->redirectTo($request->variables_url, 'mensaje_error', 'No pudo ser almacenado', $request->source);
+        }
+    }
+
+    //redirecciona para contrato
+    public function redirectTo($variables_url, $messageType, $message, $source)
+    {
+        if ($source == 'CONTRATOS') {
+            //listado de contratos web genérico
+            return redirect("web/" . $variables_url)->with($messageType, $message);
+        } else {
+            //mis contratos
+            return redirect('cte_contratos_propietarios' . $variables_url)->with($messageType, $message);
         }
     }
 
@@ -182,6 +201,11 @@ class ContratoTransporteController extends Controller
     {
         $result = false;
         $c = new Contrato($request->all());
+        $c->contratanteText = 'null';
+        if ($c->contratante_id == 'MANUAL') {
+            $c->contratante_id = null;
+            $c->contratanteText = $request->contratanteText;
+        }
         $c->codigo = strtoupper($c->codigo);
         $c->rep_legal = strtoupper($c->rep_legal);
         $c->representacion_de = strtoupper($c->representacion_de);
@@ -590,7 +614,8 @@ class ContratoTransporteController extends Controller
         }
         $empresa = null;
         $empresa = Empresa::find(1);
-        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'conductores', 'v', 'c', 'fi', 'ff', 'to', 'empresa'))->render();
+        $url = route('cte_contratos.planillaverificar', $p->id);
+        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'url', 'conductores', 'v', 'c', 'fi', 'ff', 'to', 'empresa'))->render();
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
@@ -617,5 +642,11 @@ class ContratoTransporteController extends Controller
         } else {
             return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato no pudo ser ANULADO.');
         }
+    }
+
+    //verificar planilla pública
+    public function verificarPlanilla($id)
+    {
+        return $this->planillaimprimir($id);
     }
 }

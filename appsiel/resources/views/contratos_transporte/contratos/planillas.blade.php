@@ -42,7 +42,7 @@
 				<div class="col-md-6">
 					<div class="list-group">
 						<a href="#" class="list-group-item list-group-item-action">Vigencia: {{"DESDE ".$c->fecha_inicio." HASTA ".$c->fecha_fin}}</a>
-						<a href="#" class="list-group-item list-group-item-action">Contratante: {{$c->contratante->tercero->descripcion}}</a>
+						<a href="#" class="list-group-item list-group-item-action">Contratante: @if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} @endif</a>
 						<a href="#" class="list-group-item list-group-item-action">Vehículo: {{"INTERNO: ".$c->vehiculo->int." - PLACA: ".$c->vehiculo->placa." - MODELO: ".$c->vehiculo->modelo." - MARCA: ".$c->vehiculo->marca." - CLASE: ".$c->vehiculo->clase}}</a>
 						<a href="#" class="list-group-item list-group-item-action">Propietario Vehículo: {{$c->vehiculo->propietario->tercero->descripcion}}</a>
 					</div>

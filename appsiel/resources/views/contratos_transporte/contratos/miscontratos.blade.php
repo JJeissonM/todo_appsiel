@@ -53,7 +53,9 @@
 								<td>{{"DÍA: ".$c['contrato']->dia_contrato." - MES: ".$c['contrato']->mes_contrato}}</td>
 								<td>{{$c['contrato']->origen." - ".$c['contrato']->destino}}</td>
 								<td>{{"DESDE ".$c['contrato']->fecha_inicio." HASTA ".$c['contrato']->fecha_fin}}</td>
-								<td>{{$c['contrato']->contratante->tercero->descripcion}}</td>
+								<td>
+									@if($c['contrato']->contratante_id==null || $c['contrato']->contratante_id=='null') {{$c['contrato']->contratanteText}} @else {{$c['contrato']->contratante->tercero->descripcion}} @endif
+								</td>
 								<td>{{"INTERNO: ".$c['vehiculo']->int." - PLACA: ".$c['vehiculo']->placa." - MODELO: ".$c['vehiculo']->modelo." - MARCA: ".$c['vehiculo']->marca." - CLASE: ".$c['vehiculo']->clase}}</td>
 								<td>
 									@if($c['contrato']->estado=='ACTIVO')
