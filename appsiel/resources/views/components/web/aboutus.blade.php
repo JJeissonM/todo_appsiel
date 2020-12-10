@@ -101,7 +101,7 @@
                             <h4 class="media-heading">Misión</h4>
                             <p>{!! str_limit($aboutus->mision,110) !!}</p>
 
-                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" href="#">Leer
+                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
                         </div>
                     </div>
@@ -114,7 +114,7 @@
                             <h4 class="media-heading">Visión</h4>
                             <p>{!! str_limit($aboutus->vision,110) !!}</p>
 
-                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" href="#">Leer
+                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
                         </div>
                     </div>
@@ -127,7 +127,7 @@
                             <h4 class="media-heading">Valores</h4>
                             <p>{!! str_limit($aboutus->valores,110) !!}</p>
 
-                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" href="#">Leer
+                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
                         </div>
                     </div>
@@ -141,7 +141,7 @@
                             <h4 class="media-heading">Reseña Historica</h4>
                             <p>{!! str_limit($aboutus->resenia,110) !!}</p>
 
-                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" href="#">Leer
+                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
                         </div>
                     </div>
@@ -168,12 +168,9 @@
 
         $.get(url)
             .done(function(data) {
-
                 $('#visor_contenido_aboutus').html(data);
                 $('#visor_contenido_aboutus').fadeIn(500);
-            })
-            .error(function() {
-
+            }).fail(function() {
                 $('#contenedor_seccion_aboutus').fadeIn(500);
                 $('#visor_contenido_aboutus').show();
                 $('#visor_contenido_aboutus').html('<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>');

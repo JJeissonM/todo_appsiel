@@ -127,7 +127,7 @@
                                 <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
                                     <h4 class="media-heading" style="margin-top: 0px;">{{$a->titulo}}</h4>
                                     <p>{!! str_limit($a->descripcion,90,'...') !!} </p>
-                                    <a class="btn btn-primary animate" onclick="visor_contenido_articulos({{ $a->id }})" href="#">Leer más...</a>
+                                    <a class="btn btn-primary animate" onclick="visor_contenido_articulos({{ $a->id }})" style="cursor: pointer; color: #fff;">Leer más...</a>
                                 </div>
                             </div>
                         </div>
@@ -154,14 +154,10 @@
 
             var url = "{{url('articles')}}" + '/' + item_id;
 
-            $.get(url)
-                .done(function(data) {
-
+            $.get(url).done(function(data) {
                     $('#visor_contenido_articulos').html(data);
                     $('#visor_contenido_articulos').fadeIn(500);
-                })
-                .error(function() {
-
+                }).fail(function() {
                     $('#contenedor_seccion_articulos').fadeIn(500);
                     $('#visor_contenido_articulos').show();
                     $('#visor_contenido_articulos').html('<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>');

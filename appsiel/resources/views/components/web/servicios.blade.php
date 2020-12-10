@@ -90,7 +90,7 @@
                                     </div>
                                 </div>
                                 <div class="pull-right">
-                                    <a class="btn btn-primary animate" onclick="visor_contenido_servicios({{ $item->id }})" href="#">Leer más...</a>
+                                    <a class="btn btn-primary animate" onclick="visor_contenido_servicios({{ $item->id }})" style="cursor: pointer; color: #fff;">Leer más...</a>
                                 </div>
                             </div>
                         </div>
@@ -102,7 +102,7 @@
                                 <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
                                     <h4 class="media-heading" style="margin-top: 0px;">{{$item->titulo}}</h4>
                                     <p>{!! str_limit($item->descripcion,90) !!} </p>
-                                    <a class="btn btn-primary animate" onclick="visor_contenido_servicios({{ $item->id }})" href="#">Leer más...</a>
+                                    <a class="btn btn-primary animate" onclick="visor_contenido_servicios({{ $item->id }})" style="cursor: pointer; color: #fff;">Leer más...</a>
                                 </div>
                             </div>
                         </div>
@@ -131,14 +131,10 @@
 
                 var url = "{{url('/servicios')}}" + '/' + item_id + '/index';
 
-                $.get(url)
-                    .done(function(data) {
-
+                $.get(url).done(function(data) {
                         $('#visor_contenido_servicios').html(data);
                         $('#visor_contenido_servicios').fadeIn(500);
-                    })
-                    .error(function() {
-
+                    }).fail(function() {
                         $('#contenedor_seccion_servicios').fadeIn(500);
                         $('#visor_contenido_servicios').show();
                         $('#visor_contenido_servicios').html('<p style="color:red;">Elemento no puede ser mostrado. Por favor, intente nuevamente.</p>');
