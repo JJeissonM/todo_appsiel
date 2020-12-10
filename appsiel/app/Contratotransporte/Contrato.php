@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 class Contrato extends Model
 {
     protected $table = 'cte_contratos';
+    
     protected $fillable = ['id', 'codigo', 'version', 'fecha', 'numero_contrato', 'rep_legal', 'representacion_de', 'objeto', 'origen', 'destino', 'fecha_inicio', 'fecha_fin', 'valor_contrato', 'valor_empresa', 'valor_propietario', 'direccion_notificacion', 'telefono_notificacion', 'dia_contrato', 'mes_contrato', 'pie_uno', 'pie_dos', 'pie_tres', 'pie_cuatro', 'contratanteText', 'contratante_id', 'vehiculo_id', 'conductor_id', 'created_at', 'updated_at'];
 
     public $encabezado_tabla = ['Nro.', 'Objeto', 'Fecha Celebrado', 'Origen - Destino', 'Vigencia', 'Contratante', 'Vehículo', 'Propietario', 'Estado', 'Acción'];

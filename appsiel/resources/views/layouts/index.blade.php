@@ -12,6 +12,9 @@
 	<hr>
 
 	@include('layouts.mensajes')
+
+	@include('layouts.index.filtros')
+
 	<div class="table-responsive" id="table_content">
 		<table class="table table-bordered table-striped" id="myTable">
 			{{ Form::bsTableHeader($encabezado_tabla) }}

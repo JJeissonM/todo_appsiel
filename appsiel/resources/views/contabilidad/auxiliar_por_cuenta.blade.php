@@ -14,12 +14,12 @@
 			{{ Form::open(['url'=>'contab_ajax_auxiliar_por_cuenta','id'=>'form_consulta']) }}
 				<div class="row">
 					<div class="col-sm-2">
-						{{ Form::label('fecha_inicial','Fecha inicial') }}
-						{{ Form::date('fecha_inicial',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_inicial']) }}
+						{{ Form::label('fecha_desde','Fecha inicial') }}
+						{{ Form::date('fecha_desde',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_desde']) }}
 					</div>
 					<div class="col-sm-2">
-						{{ Form::label('fecha_final','Fecha final') }}
-						{{ Form::date('fecha_final',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_final']) }}
+						{{ Form::label('fecha_hasta','Fecha final') }}
+						{{ Form::date('fecha_hasta',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_hasta']) }}
 					</div>
 					<div class="col-sm-3">
 						{{ Form::label('contab_cuenta_id','Cuenta') }}
@@ -65,16 +65,16 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			
-			$('#fecha_inicial').focus();
+			$('#fecha_desde').focus();
 
-			$('#fecha_inicial').keyup(function(event){
+			$('#fecha_desde').keyup(function(event){
 				var x = event.which || event.keyCode;
 				if(x==13){
-					$('#fecha_final').focus();				
+					$('#fecha_hasta').focus();				
 				}		
 			});
 
-			$('#fecha_final').keyup(function(event){
+			$('#fecha_hasta').keyup(function(event){
 				var x = event.which || event.keyCode;
 				if(x==13){
 					$('#mov_bodega_id').focus();				
@@ -123,7 +123,7 @@
 
 			function valida_campos(){
 				var valida = true;
-				if($('#fecha_inicial').val()=='' || $('#fecha_final').val()=='' )
+				if($('#fecha_desde').val()=='' || $('#fecha_hasta').val()=='' )
 				{
 					valida = false;
 				}

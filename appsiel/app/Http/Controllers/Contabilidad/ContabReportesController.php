@@ -711,8 +711,8 @@ class ContabReportesController extends Controller
     public function contab_ajax_auxiliar_por_cuenta(Request $request)
     {
         $contab_cuenta_id = $request->contab_cuenta_id;
-        $fecha_desde = $request->fecha_inicial;
-        $fecha_hasta = $request->fecha_final;
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
 
         $core_tercero_id = $request->core_tercero_id;
 
@@ -731,7 +731,7 @@ class ContabReportesController extends Controller
             return '<h1>Debe ingresar al menos una Cuenta o un Tercero</h1>';
         }
 
-        $saldo_inicial = ContabMovimiento::get_saldo_inicial_v2($fecha_desde, $contab_cuenta_id, $core_tercero_id );
+        $saldo_inicial = ContabMovimiento::get_saldo_inicial_v2( $fecha_desde, $contab_cuenta_id, $core_tercero_id );
 
         $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id );
 
