@@ -63,9 +63,8 @@
         </div>
     @endif
 
-    <?php 
-
-        $elaboro = $doc_encabezado->creado_po;
+    <?php
+        $elaboro = $doc_encabezado->creado_por;
     ?>
 
     @yield('encabezado_2')
