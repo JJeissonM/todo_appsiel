@@ -19,7 +19,7 @@
                     $saldo = $saldo_inicial + $debito + $credito;
 
                     $tercero_numero_identificacion = 0;
-                    $tercero_descripcion = '':
+                    $tercero_descripcion = '';
                     if( !is_null( $linea->tercero ) )
                     {
                         $tercero_numero_identificacion = $linea->tercero->numero_identificacion;

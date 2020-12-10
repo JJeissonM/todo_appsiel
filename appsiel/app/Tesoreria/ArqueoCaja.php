@@ -73,11 +73,8 @@ class ArqueoCaja extends Model
         $arqueocaja->detalles_mov_salidas = $datos['movimientos_salidas'];
         $arqueocaja->estado = 'ACTIVO';
         $result = $arqueocaja->save();
-        
-        if ($result) {
-            return redirect('tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('flash_message', 'Registro ACTUALIZADO correctamente.');
-        } else {
-            return redirect('tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'])->with('mensaje_error', 'Registro NO FUE ACTUALIZADO correctamente.');
-        }
+
+        return 'tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'];
+
     }
 }
