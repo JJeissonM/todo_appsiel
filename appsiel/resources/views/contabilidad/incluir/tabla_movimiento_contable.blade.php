@@ -23,7 +23,7 @@
                     if( !is_null( $linea->tercero ) )
                     {
                         $tercero_numero_identificacion = $linea->tercero->numero_identificacion;
-                        $tercero_descripcion = $linea->tercero->descripcion:
+                        $tercero_descripcion = $linea->tercero->descripcion;
                     }
 
                 ?>
