@@ -281,7 +281,14 @@ class NotaCreditoController extends TransaccionController
 
                 $precio_total = $precio_unitario * $cantidad;
 
-                $tasa_descuento = $factura->lineas_registros->whereLoose('inv_producto_id', $un_registro->inv_producto_id)->whereLoose('cantidad', $cantidad)->first()->tasa_descuento;
+                // Determinar tasa de descuento
+                $linea_de_la_cantidad = $factura->lineas_registros->whereLoose('inv_producto_id', $un_registro->inv_producto_id)->whereLoose('cantidad', $cantidad)->first();
+                $tasa_descuento = 0;
+                if ( !is_null( $linea_de_la_cantidad ) )
+                {
+                    $tasa_descuento = $linea_de_la_cantidad->tasa_descuento;
+                }
+                
 
                 $precio_total_con_descuento = $precio_total * ( 1 - $tasa_descuento / 100 );
 
