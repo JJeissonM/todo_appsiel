@@ -228,7 +228,7 @@ class VistaController extends Controller
                 <img src="'.asset('assets/img/spinning-wheel.gif').'" width="32px" height="32px"></div>';
                 break;
             case 'personalizado':
-                $control = $campo['value'];
+                $control = '<div id="' . $campo['name'] . '">' . $campo['value'] . '</div>';
                 break;
             case 'constante':
                 switch ( $campo['value'] )

@@ -6,6 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class NomModoLiquidacion extends Model
 {
+    /*
+            ID  Descripción
+            9   Prestaciones sociales
+            8   Seguridad social
+            7   Tiempo NO Laborado
+            6   Auxilio de transporte
+            5   Cruce de saldos de CxC
+            4   Préstamo
+            3   Cuota
+            2   Manual
+            1   Tiempo Laborado
+    */
+
     protected $table = 'nom_modos_liquidacion';
 	protected $fillable = ['descripcion','detalle', 'estado'];
 	public $encabezado_tabla = ['ID', 'Descripción', 'Detalle', 'Estado', 'Acción'];
