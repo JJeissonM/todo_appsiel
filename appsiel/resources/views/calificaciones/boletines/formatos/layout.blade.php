@@ -7,8 +7,11 @@
         body{
             font-family: Arial, Helvetica, sans-serif;
             font-size: {{$tam_letra}}mm;
+            margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo}}px;
         }
 
+        @page { margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo }}px; }
+        
         .page-break {
             page-break-after: always;
         }

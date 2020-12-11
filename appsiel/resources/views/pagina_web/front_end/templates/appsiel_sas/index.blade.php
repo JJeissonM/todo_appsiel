@@ -101,6 +101,7 @@
         <?php //echo '<br/>base_path: '.base_path(); ?>
       </p>
     </div>
+    
     <div class="col-sm-8">
       <br/>
       <button class="accordion">MISIÓN<a href="#" class="close" data-dismiss="alert" aria-label="close">&plus;</a></button>
@@ -127,11 +128,13 @@
             <li>&#9822; Liderazgo</li>
           </ul>
           
-          Si eres una persona con estas cualidades y quieres formar parte de algo grandioso, <a href="#contact"> Contactanos </a></div>
+          Si eres una persona con estas cualidades y quieres formar parte de algo grandioso, <a href="#contact"> Contactanos </a>
         </p>
       </div>
     </div>
+
   </div>
+
 </div>
 
 <!-- Container (Services Section) -->

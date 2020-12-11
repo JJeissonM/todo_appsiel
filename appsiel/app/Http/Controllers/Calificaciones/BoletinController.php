@@ -97,7 +97,7 @@ class BoletinController extends Controller
      * @return \Illuminate\Http\Response
      */
 	public function imprimir()
-    {
+    {        
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
 
         $opciones1 = Curso::where('id_colegio','=',$colegio->id)->where('estado','=','Activo')->OrderBy('nivel_grado')->get();
@@ -156,12 +156,19 @@ class BoletinController extends Controller
         $mostrar_usuarios_estudiantes = $request->mostrar_usuarios_estudiantes;
         $mostrar_etiqueta_final = $request->mostrar_etiqueta_final;
         $tam_letra = $request->tam_letra;
+        
+        $margenes = (object)[ 
+                                'superior' => $request->margen_superior - 5,
+                                'derecho' => $request->margen_derecho - 5,
+                                'inferior' => $request->margen_inferior - 5,
+                                'izquierdo' => $request->margen_izquierdo - 5 
+                            ];
 
         $firmas = $this->almacenar_imagenes_de_firmas( $request );
 
         $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
 
-		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas','mostrar_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos') )->render();
+		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas','mostrar_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes') )->render();
         
         // Se prepara el PDF
         $orientacion='portrait';

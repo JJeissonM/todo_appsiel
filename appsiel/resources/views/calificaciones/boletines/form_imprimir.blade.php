@@ -12,6 +12,39 @@
 						</div>';
 	}
 ?>
+
+@section('estilos_1')
+	<style type="text/css">
+			
+		/* Style the buttons that are used to open and close the accordion panel */
+		.accordion {
+		  background-color: #eee;
+		  color: #444;
+		  cursor: pointer;
+		  padding: 18px;
+		  width: 100%;
+		  text-align: left;
+		  border: none;
+		  outline: none;
+		  transition: 0.4s;
+		  font-weight: bold;
+		}
+
+		/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+		.active, .accordion:hover {
+		  background-color: #ccc;
+		}
+
+		/* Style the accordion panel. Note: hidden by default */
+		.panel {
+		  padding: 0 18px;
+		  background-color: white;
+		  display: none;
+		  overflow: hidden;
+		}
+	</style>
+@endsection
+
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
 	<hr>
@@ -25,90 +58,23 @@
 
 		    {{ Form::open( [ 'url' => 'calificaciones/boletines/generarPDF', 'files' => true, 'id' => 'formulario'] ) }}
 
-		    	<div class="row">
-		    		<div class="col-md-6">
-		    			<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('periodo_lectivo_id','','Año lectivo',$periodos_lectivos,['required' => 'required']) }}
-						</div>
+		    	<div class="container-fluid">
 
-		    			<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('periodo_id','','Periodo',[],['required' => 'required']) }}
-						</div>
+					<button class="accordion"> Selección datos básicos <a href="#" class="close" data-dismiss="alert" aria-label="close">&plus;</a></button>
+					<div class="panel show">
+						@include('calificaciones.boletines.formulario_imprimir.datos_basicos')
+					</div>
 
-						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('curso_id','','Curso',$cursos,['required' => 'required']) }}
-						</div>
+					<button class="accordion"> Opciones Adicionales <a href="#" class="close" data-dismiss="alert" aria-label="close">&plus;</a></button>
+					<div class="panel">
+						@include('calificaciones.boletines.formulario_imprimir.opciones_adicionales')
+					</div>
 
-						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('formato','','Formato', $formatos ,['required' => 'required']) }}
+					<button class="accordion"> Opciones de formato <a href="#" class="close" data-dismiss="alert" aria-label="close">&plus;</a></button>
+					<div class="panel">
+						@include('calificaciones.boletines.formulario_imprimir.opciones_formato')
+					</div>
 
-							<!-- , 'pdf_boletines_5' => 'Formato # 5 (prescolar)' -->
-						</div>
-
-						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('mostrar_areas',1,'Mostrar áreas',['No'=>'No','Si'=>'Si'],[]) }}
-						</div>
-
-						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('mostrar_nombre_docentes',1,'Mostrar nombre de docentes',['No'=>'No','Si'=>'Si'],[]) }}
-						</div>
-
-						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('mostrar_etiqueta_final',1,'Mostrar etiqueta al final',['No'=>'No','aprobo_reprobo'=>'Aprobó() Reprobó() Aplazó()'],[]) }}
-						</div>
-
-						<?php 
-							echo campo_firma('Firma para Rector(a)', 'firma_rector');
-						?>
-		    		</div>
-
-		    		<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('mostrar_escala_valoracion',1,'Mostrar Escala de valoración',['No'=>'No','Si'=>'Si'],[]) }}
-						</div>
-
-		    			<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('tam_hoja','','Tamaño hoja',['letter'=>'Carta','folio'=>'Oficio'],[]) }}
-						</div>
-
-						<?php 
-							$tam_letra = [ 
-											'2.5'=>'10',
-											'2.75'=>'10.5',
-											'3'=>'11',
-											'3.25'=>'11.5',
-											'3.5'=>'12',
-											'3.75'=>'12.5',
-											'4'=>'13',
-											'4.25'=>'13.5',
-											'4.5'=>'14',
-											'4.75'=>'14.5',
-											'5'=>'15',
-											'5.25'=>'15.5',
-											'5.5'=>'16'
-										];
-						?>
-
-						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect( 'tam_letra',  4, 'Tamaño Letra', $tam_letra, []) }}
-						</div>
-
-						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('convetir_logros_mayusculas',1,'Convertir logros a mayúsculas',['No'=>'No','Si'=>'Si'],[]) }}
-						</div>
-
-						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('mostrar_usuarios_estudiantes',1,'Mostrar usuario de estudiantes',['No'=>'No','Si'=>'Si'],[]) }}
-						</div>
-
-						<div class="row" style="padding:5px;">
-							<br><br><br>
-						</div>
-
-						<?php 
-							echo campo_firma('Firma para Director(a) de grupo', 'firma_profesor');
-						?>
-		    		</div>
 		    	</div>
 
 				<div style="padding:5px;" align="center">
@@ -173,6 +139,23 @@
 				
 				$('#formulario').submit();
 			});
+
+			// Accordion
+			var acc = document.getElementsByClassName("accordion");
+			var i;
+
+			for (i = 0; i < acc.length; i++) {
+			  acc[i].addEventListener("click", function() {
+			      this.classList.toggle("active");
+			      var panel = this.nextElementSibling;
+			      if (panel.style.display === "block") {
+			          panel.style.display = "none";
+			      } else {
+			          panel.style.display = "block";
+			      }
+			  });
+			}
+
 		});
 	</script>
 @endsection
