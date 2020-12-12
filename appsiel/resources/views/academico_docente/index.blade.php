@@ -75,11 +75,39 @@
 									  	-->
 									  	<?php 
 									  		$modelo_preinforme_academico_id = 192;
+
+									  		$opcion_ingresar_calificaciones = ['link' => 'academico_docente/calificar/'.$fila->curso_id.'/'.$fila->id_asignatura.'/'.rand(0,1000).'?id='.Input::get('id'), 'etiqueta' => 'Ingresar'];
+
+									  		$opcion_consultar_calificaciones = ['link' => 'academico_docente/revisar_calificaciones/curso_id/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id'), 'etiqueta' => 'Consultar' ];
+
+
+									  		$opcion_ingresar_notas_nivelaciones = ['link' => 'sga_ingresar_notas_nivelaciones/'.$fila->curso_id.'/'.$fila->id_asignatura . '?id='.Input::get('id'), 'etiqueta' => 'Ingresar nivelaciones'];
+
+									  		$opcion_consultar_notas_nivelaciones = ['link' => 'sga_notas_nivelaciones_revisar/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id'), 'etiqueta' => 'Consultar nivelaciones' ];
+
 									  	?>
 									  	@if( config('calificaciones.manejar_preinformes_academicos') == 'Si' )
-									  		{{ Form::bsBtnDropdown( 'Calificaciones', 'primary', 'edit', [ ['link' => 'academico_docente/calificar/'.$fila->curso_id.'/'.$fila->id_asignatura.'/'.rand(0,1000).'?id='.Input::get('id'), 'etiqueta' => 'Ingresar'], ['link' => 'academico_docente/revisar_calificaciones/curso_id/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id'), 'etiqueta' => 'Consultar' ], ['link' => 'cali_preinforme_academico/create?id='.Input::get('id').'&id_modelo='.$modelo_preinforme_academico_id.'&curso_id='.$fila->curso_id.'&asignatura_id='.$fila->id_asignatura, 'etiqueta' => 'Pre-informe: ingresar' ], ['link' => 'web?id='.Input::get('id').'&id_modelo='.$modelo_preinforme_academico_id.'&curso_id='.$fila->curso_id.'&asignatura_id='.$fila->id_asignatura, 'etiqueta' => 'Pre-informe: consultar' ] ] ) }}
+									  		{{ Form::bsBtnDropdown( 'Calificaciones', 'primary', 'edit', [ 
+										  			$opcion_ingresar_calificaciones, 
+										  			$opcion_consultar_calificaciones, 
+										  			['link' => 'cali_preinforme_academico/create?id='.Input::get('id').'&id_modelo='.$modelo_preinforme_academico_id.'&curso_id='.$fila->curso_id.'&asignatura_id='.$fila->id_asignatura, 'etiqueta' => 'Pre-informe: ingresar' ], 
+										  			['link' => 'web?id='.Input::get('id').'&id_modelo='.$modelo_preinforme_academico_id.'&curso_id='.$fila->curso_id.'&asignatura_id='.$fila->id_asignatura, 'etiqueta' => 'Pre-informe: consultar' ],
+										  			[
+										  				'link' => '#', 
+										  				'etiqueta' => '--------' ],
+										  			$opcion_ingresar_notas_nivelaciones,
+										  			$opcion_consultar_notas_nivelaciones
+									  			] ) }}
 									  	@else
-									  		{{ Form::bsBtnDropdown( 'Calificaciones', 'primary', 'edit', [ ['link' => 'academico_docente/calificar/'.$fila->curso_id.'/'.$fila->id_asignatura.'/'.rand(0,1000).'?id='.Input::get('id'), 'etiqueta' => 'Ingresar'], ['link' => 'academico_docente/revisar_calificaciones/curso_id/'.$fila->curso_id.'/'.$fila->id_asignatura.'?id='.Input::get('id'), 'etiqueta' => 'Consultar' ] ] ) }}
+									  		{{ Form::bsBtnDropdown( 'Calificaciones', 'primary', 'edit', [ 
+										  			$opcion_ingresar_calificaciones, 
+										  			$opcion_consultar_calificaciones,
+										  			[
+										  				'link' => '#', 
+										  				'etiqueta' => '--------' ],
+										  			$opcion_ingresar_notas_nivelaciones,
+										  			$opcion_consultar_notas_nivelaciones
+									  			] ) }}
 									  	@endif
 
 

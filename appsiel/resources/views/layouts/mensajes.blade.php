@@ -1,5 +1,5 @@
 @if(Session::has('flash_message'))
-	<div class="container">      
+	<div class="container">
 		<div class="alert alert-success alert-dismissible">
 			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
 			<em> {!! session('flash_message') !!}</em>

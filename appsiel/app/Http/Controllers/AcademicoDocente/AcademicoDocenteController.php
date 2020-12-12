@@ -30,6 +30,10 @@ use App\Calificaciones\Asignatura;
 use App\Calificaciones\Calificacion;
 use App\Calificaciones\Periodo;
 use App\Calificaciones\Logro;
+use App\Calificaciones\NotaNivelacion;
+
+use App\Calificaciones\EscalaValoracion;
+
 use App\AcademicoDocente\Asignacion;
 
 use App\Matriculas\CatalogoAspecto;
@@ -366,4 +370,153 @@ class AcademicoDocenteController extends Controller
         return view( 'academico_docente.estudiantes.observador_show',compact('miga_pan','view_pdf','id') );
     }
 
+
+
+    public function ingresar_notas_nivelaciones($curso_id, $asignatura_id)
+    {
+        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+
+        $periodos = Periodo::opciones_campo_select();
+
+        $curso = Curso::find($curso_id);
+        $asignatura = Asignatura::find($asignatura_id);
+
+        $estudiantes = Matricula::estudiantes_matriculados( $curso_id, PeriodoLectivo::get_actual()->id, 'Activo' );
+
+        $vec_estudiantes['']='';
+        foreach ($estudiantes as $opcion)
+        {
+            $vec_estudiantes[$opcion->id] = $opcion->nombre_completo;
+        }
+
+        $miga_pan = [
+                        ['url'=>'academico_docente?id='.Input::get('id'),'etiqueta'=>'Académico docente'],
+                        ['url'=>'NO','etiqueta'=>'Ingresar notas de nivelaciones']
+                    ];
+
+        return view('academico_docente.nivelaciones.formulario_precreate',compact('periodos','asignatura','curso','vec_estudiantes','miga_pan'));
+    }
+
+    public function notas_nivelaciones_cargar_estudiante( Request $request )
+    {
+        $estudiante = Estudiante::find( $request->estudiante_id );
+        $curso = Curso::find( $request->curso_id );
+        $periodo = Periodo::find( $request->periodo_id );
+        $asignatura = Asignatura::find( $request->asignatura_id );
+        $nota_nivelacion = (object)[
+                                    'id' => 0,
+                                    'estudiante' => $estudiante,
+                                    'curso' => $curso,
+                                    'periodo' => $periodo,
+                                    'asignatura' => $asignatura,
+                                    'calificacion' => '',
+                                    'observacion' => ''
+                                ];
+
+        $registro = NotaNivelacion::where( [
+                                                    'periodo_id' => $request->periodo_id,
+                                                    'curso_id' => $request->curso_id,
+                                                    'asignatura_id' => $request->asignatura_id,
+                                                    'estudiante_id' => $request->estudiante_id
+                                                ] )->get()->first();
+        if ( !is_null($registro) )
+        {
+            $nota_nivelacion = $registro;
+        }
+
+        $mensaje = '';
+        $clase_mensaje = 'success';
+        $escala_valoracion_maxima = EscalaValoracion::get_min_max( $periodo->periodo_lectivo_id )[1];
+
+        $vista = View::make( 'academico_docente.nivelaciones.formulario_actualizar_nota', compact( 'nota_nivelacion', 'mensaje', 'escala_valoracion_maxima', 'clase_mensaje' ) )->render();
+
+        return $vista;
+    }
+
+    public function notas_nivelaciones_actualizar( Request $request )
+    {
+        $estudiante = Estudiante::find( $request->estudiante_id );
+        $curso = Curso::find( $request->curso_id );
+        $periodo = Periodo::find( $request->periodo_id );
+        $asignatura = Asignatura::find( $request->asignatura_id );
+        $nota_nivelacion = (object)[
+                                    'id' => 0,
+                                    'estudiante' => $estudiante,
+                                    'curso' => $curso,
+                                    'periodo' => $periodo,
+                                    'asignatura' => $asignatura,
+                                    'calificacion' => '',
+                                    'observacion' => ''
+                                ];
+
+        $mensaje = 'Calificación en cero, no se afectó ninguna operación.';
+        $clase_mensaje = 'default';
+
+        $registro = NotaNivelacion::where( [
+                                            'periodo_id' => $request->periodo_id,
+                                            'curso_id' => $request->curso_id,
+                                            'asignatura_id' => $request->asignatura_id,
+                                            'estudiante_id' => $request->estudiante_id
+                                        ] )->get()->first();
+
+        if ( is_null( $registro ) )
+        {
+            if ( $request->calificacion != 0 )
+            {
+                $nota_nivelacion = NotaNivelacion::create( [
+                                                                'periodo_id' => $request->periodo_id,
+                                                                'curso_id' => $request->curso_id,
+                                                                'asignatura_id' => $request->asignatura_id,
+                                                                'estudiante_id' => $request->estudiante_id,
+                                                                'calificacion' => $request->calificacion,
+                                                                'observacion' => $request->observacion,
+                                                                'creado_por' => Auth::user()->email
+                                                            ] );
+
+                $mensaje = 'Nota de nivelación CREADA correctamente.';
+                $clase_mensaje = 'success';
+            }
+        }else{
+
+            if ( $request->calificacion == 0 )
+            {
+                $mensaje = 'Nota de nivelación ELIMINADA correctamente.';
+                $clase_mensaje = 'warning';
+
+                $registro->delete();
+            }else{
+                $registro->calificacion = $request->calificacion;
+                $registro->observacion = $request->observacion;
+                $registro->modificado_por = Auth::user()->email;
+                $registro->save();
+                $nota_nivelacion = $registro;
+                $mensaje = 'Nota de nivelación MODIFICADA correctamente.';
+                $clase_mensaje = 'info';
+            }
+        }
+
+        $periodo = Periodo::find( $request->periodo_id );
+        $escala_valoracion_maxima = EscalaValoracion::get_min_max( $periodo->periodo_lectivo_id )[1];
+
+        $vista2 = View::make( 'academico_docente.nivelaciones.formulario_actualizar_nota', compact( 'nota_nivelacion', 'mensaje', 'escala_valoracion_maxima', 'clase_mensaje' ) )->render();
+
+        return $vista2;
+    }
+
+
+    public function revisar_notas_nivelaciones( $curso_id, $asignatura_id)
+    {
+        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+        
+        $registros = NotaNivelacion::get_registros( $curso_id, $asignatura_id );
+
+        $miga_pan = [
+                        [ 'url' => 'academico_docente?id=' . Input::get('id'), 'etiqueta' => 'Académico docente'],
+                        [ 'url' => 'NO', 'etiqueta' => 'Notas de nivelaciones' ]
+                    ];
+
+        $encabezado_tabla = [ 'Estudiante', 'Año lectivo', 'Curso', 'Periodo', 'Asignatura', 'Calificación de nivelación', 'Observaciones', 'Acción'];
+
+        return view('layouts.index', compact('registros','encabezado_tabla','miga_pan'));
+    }
 }

@@ -34,6 +34,12 @@ Route::get('academico_docente/calificar/{curso_id}/{asignatura_id}/{ruta}','Acad
 Route::post('academico_docente/calificar2', 'AcademicoDocente\AcademicoDocenteController@calificar2'); 
 Route::get('academico_docente/revisar_calificaciones/curso_id/{curso_id}/{asignatura_id}','AcademicoDocente\AcademicoDocenteController@revisar_calificaciones');
 
+// NOTAS DE NIVELACIONES
+Route::get('sga_ingresar_notas_nivelaciones/{curso_id}/{asignatura_id}','AcademicoDocente\AcademicoDocenteController@ingresar_notas_nivelaciones');
+Route::post('sga_notas_nivelaciones_cargar_estudiante', 'AcademicoDocente\AcademicoDocenteController@notas_nivelaciones_cargar_estudiante'); 
+Route::post('sga_notas_nivelaciones_actualizar', 'AcademicoDocente\AcademicoDocenteController@notas_nivelaciones_actualizar'); 
+Route::get('sga_notas_nivelaciones_revisar/{curso_id}/{asignatura_id}','AcademicoDocente\AcademicoDocenteController@revisar_notas_nivelaciones');
+
 // Logros
 Route::get('academico_docente/ingresar_logros/{curso_id}/{asignatura_id}','AcademicoDocente\AcademicoDocenteController@ingresar_logros');
 
@@ -82,5 +88,5 @@ Route::post( 'sga_resumen_actividades_academicas', 'AcademicoDocente\ReportesCon
 
 Route::resource('sga_guias_academicas', 'AcademicoDocente\GuiasAcademicasController');
 
-
+// El resource debe estar al final
 Route::resource('academico_docente', 'AcademicoDocente\AcademicoDocenteController');

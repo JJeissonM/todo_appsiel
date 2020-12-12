@@ -96,6 +96,11 @@
 			
 			$('#periodo_lectivo_id').focus();
 
+			$('.accordion').on('click',function(e)
+			{
+				e.preventDefault();
+			});
+
 			// Para algunos reportes de calificaiones
 			$('#periodo_lectivo_id').on('change',function()
 			{

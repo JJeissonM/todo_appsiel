@@ -50,20 +50,22 @@ class ReporteController extends TesoreriaController
     public static function grafica_movimientos_diarios($fecha_desde, $fecha_hasta)
     {
         $registros_entradas = TesoMovimiento::leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
-            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-            ->where('teso_motivos.movimiento', '=', 'entrada')
-            ->select(DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento'), 'teso_movimientos.fecha')
-            ->groupBy('fecha')
-            ->orderBy('fecha')
-            ->get();
+                                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                                        ->where('teso_motivos.movimiento', '=', 'entrada')
+                                        ->where('teso_motivos.teso_tipo_motivo', '<>', 'Traslado')
+                                        ->select(DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento'), 'teso_movimientos.fecha')
+                                        ->groupBy('fecha')
+                                        ->orderBy('fecha')
+                                        ->get();
 
         $registros_salidas = TesoMovimiento::leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
-            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-            ->where('teso_motivos.movimiento', '=', 'salida')
-            ->select(DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento'), 'teso_movimientos.fecha')
-            ->groupBy('fecha')
-            ->orderBy('fecha')
-            ->get();
+                                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                                        ->where('teso_motivos.movimiento', '=', 'salida')
+                                        ->where('teso_motivos.teso_tipo_motivo', '<>', 'Traslado')
+                                        ->select(DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento'), 'teso_movimientos.fecha')
+                                        ->groupBy('fecha')
+                                        ->orderBy('fecha')
+                                        ->get();
 
 
         // Crear array temporal para luego llenar el array de la gráfica
