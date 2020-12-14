@@ -60,10 +60,16 @@
                                 $cantidad_horas = $registro->cantidad_horas;
                             }
                         }
+
+                        $descripcion_concepto = 'Registro > ' . $registro->id;
+                        if ( !is_null( $registro->concepto ) )
+                        {
+                            $descripcion_concepto = $registro->concepto->descripcion;
+                        }
                     ?>
 
                     <tr>
-                        <td> {{ $registro->concepto->descripcion }} </td>
+                        <td> {{ $descripcion_concepto }} </td>
                         <td> {{ $cantidad_horas }} </td>
                         <td> {{ $devengo }} </td>
                         <td> {{ $deduccion }} </td>
