@@ -196,7 +196,7 @@
             <!-- ./Team member -->
             @endforeach
             @endif
-        </div>
+        </div> 
         <!--/.row-->
         @else
         <div class="section-header">
