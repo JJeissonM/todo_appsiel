@@ -50,11 +50,14 @@ class NomDocEncabezado extends Model
         $horas_liquidadas = 0;
         foreach ($registros_documento as $registro )
         {   
-            // 7: Tiempo NO Laborado, 1: tiempo laborado
-            if ( in_array($registro->concepto->modo_liquidacion_id, [1,7] ) )
+            if ( !is_null($registro->concepto) )
             {
-                $horas_liquidadas += $registro->cantidad_horas;
-            }
+                // 7: Tiempo NO Laborado, 1: tiempo laborado
+                if ( in_array($registro->concepto->modo_liquidacion_id, [1,7] ) )
+                {
+                    $horas_liquidadas += $registro->cantidad_horas;
+                }
+            }                
         }
 
         return $horas_liquidadas;
