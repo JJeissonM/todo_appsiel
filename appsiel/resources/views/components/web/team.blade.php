@@ -16,6 +16,10 @@
         ?>
     }
 
+    .team-font {
+        font-family: <?php echo $team->configuracionfuente->fuente->font; ?> !important;
+    }
+
     .image-flip:hover .backside,
     .image-flip.hover .backside {
         -webkit-transform: rotateY(0deg);
@@ -127,8 +131,8 @@
 
     .frontside .cardTeam .cardTeam-body img {
         width: 180px;
-        height: 160px;
-        border-radius: 50%;
+        height: 180px;
+        border-radius: 10%;
     }
 
     .cardTeam-title {
@@ -151,15 +155,15 @@
     }
 </style>
 @if($team!=null)
-<section id="team">
+<section id="team" class="team-font">
     <div id="visor_contenido_servicios">
 
     </div>
     <div class="container" id="contenedor_seccion_servicios">
         @if($team!=null)
         <div class="section-header">
-            <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: {{$team->title_color}} !important;">{{$team->title}}</h2>
-            <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: {{$team->description_color}} !important;">{{$team->description}}</p>
+            <h2 class="section-title text-center wow fadeInDown animated team-font" style="visibility: visible; animation-name: fadeInDown; color: {{$team->title_color}} !important;">{{$team->title}}</h2>
+            <p class="text-center wow fadeInDown animated team-font" style="visibility: visible; animation-name: fadeInDown; color: {{$team->description_color}} !important;">{{$team->description}}</p>
         </div>
         <div class="row">
             @if(count($team->teamitems) > 0)
@@ -168,21 +172,21 @@
             <div class="col-xs-12 col-sm-6 col-md-4">
                 <div class="image-flip">
                     <div class="mainflip flip-0" style="background-color: transparent;">
-                        <div class="frontside" style="border-radius: 20px; background-color: {{$item->background_color}} !important; opacity: 0.8;">
+                        <div class="frontside" style="border-radius: 20px; background-color: {{$item->background_color}} !important;">
                             <div class="cardTeam">
                                 <div class="cardTeam-body text-center">
                                     <p><img class=" img-fluid" src="{{asset($item->imagen)}}" alt="cardTeam image"></p>
-                                    <h4 class="cardTeam-title" style="color: {{$item->title_color}};">{{$item->title}}</h4>
-                                    <p class="cardTeam-text" style="color: {{$item->text_color}};">{{$item->description}}</p>
+                                    <h4 class="cardTeam-title team-font" style="color: {{$item->title_color}};">{{$item->title}}</h4>
+                                    <p class="cardTeam-text team-font" style="color: {{$item->text_color}};">{{$item->description}}</p>
                                     <a class="btn btn-primary btn-sm" style="color: #fff;"><i class="fa fa-refresh"></i></a>
                                 </div>
                             </div>
                         </div>
-                        <div class="backside" style="border-radius: 20px; background-color: {{$item->background_color}} !important; opacity: 0.8;">
+                        <div class="backside" style="border-radius: 20px; background-color: {{$item->background_color}} !important;">
                             <div class="cardTeam">
                                 <div class="cardTeam-body text-center mt-4">
-                                    <h4 class="cardTeam-title" style="color: {{$item->title_color}};">{{$item->title}}</h4>
-                                    <p class="cardTeam-text" style="color: {{$item->text_color}};">{{$item->more_details}}</p>
+                                    <h4 class="cardTeam-title team-font" style="color: {{$item->title_color}};">{{$item->title}}</h4>
+                                    <p class="cardTeam-text team-font" style="color: {{$item->text_color}};">{{$item->more_details}}</p>
                                 </div>
                             </div>
                         </div>
@@ -192,7 +196,7 @@
             <!-- ./Team member -->
             @endforeach
             @endif
-        </div>
+        </div> 
         <!--/.row-->
         @else
         <div class="section-header">

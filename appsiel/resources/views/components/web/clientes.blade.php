@@ -76,15 +76,15 @@
                             <div class="row">
                                 <div class="col-sm-3">
                                     <img class="d-block img-fluid" src="{{$item->logo}}" alt="First slide">
-                                    <div style="background-color: #dcdede;" class="text-center">
-                                        <h6 style="padding: 10px;" class="card-title">{{$item->nombre}} @if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">VISITAR</a>@endif</h6>
+                                    <div class="text-center">
+                                        <h6 style="padding: 10px;" class="card-title">@if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">{{$item->nombre}}</a> @else {{$item->nombre}} @endif</h6>
                                     </div>
                                 </div> 
                             @else
                             <div class="col-sm-3">
                                 <img class="d-block img-fluid" src="{{$item->logo}}" alt="First slide">
-                                <div style="background-color: #dcdede;" class="text-center">
-                                    <h6 style="padding: 10px;" class="card-title">{{$item->nombre}} @if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">VISITAR</a>@endif</h6>
+                                <div class="text-center">
+                                    <h6 style="padding: 10px;" class="card-title">@if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">{{$item->nombre}}</a> @else {{$item->nombre}} @endif</h6>
                                 </div>
                             </div> 
                             @endif

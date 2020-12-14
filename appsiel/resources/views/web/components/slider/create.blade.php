@@ -105,6 +105,13 @@
                     <option value="BOOTSTRAP">SLIDER BOOTSTRAP</option>
                 </select>
             </div>
+            <div class="form-group">
+                <label for="">Fuente Para el Componente</label>
+                @if($fonts!=null)
+                {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                @endif
+            </div>
+
             <div class="col-md-12">
                 <h5>Enlazar a</h5>
                 <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="pagina">

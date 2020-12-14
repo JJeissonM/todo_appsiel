@@ -33,6 +33,10 @@ if ($nav->fixed) {
         width: 100%;
     }
 
+    .navegacion-font{
+        font-family: <?php echo $nav->configuracionfuente->fuente->font; ?> !important;
+    }
+
     header {
         color: <?php echo $nav->color; ?>;
         background: <?php echo $fondos['background_0']; ?>;
@@ -119,7 +123,7 @@ if ($nav->fixed) {
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="fa fa-bars" style="color: {{$nav->color}}"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="collapse navbar-collapse navegacion-font" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto mu-navbar-nav">
                     @foreach($nav->menus as $item)
                     @if($item->parent_id == 0)

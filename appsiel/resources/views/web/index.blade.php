@@ -86,12 +86,7 @@
             }
         }
         ?>
-
-        body{
-            font-family: 'Gotham-Narrow-Medium';
-        }
-
-
+        
         .article-ls {
             border: 1px solid;
             border-color: #3d6983;

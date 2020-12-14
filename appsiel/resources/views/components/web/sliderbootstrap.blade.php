@@ -1,7 +1,9 @@
 <style>
-
+    .slider-font {
+        font-family: <?php echo $slider->configuracionfuente->fuente->font; ?> !important;
+    }
 </style>
-<section id="main-slider">
+<section id="main-slider" class="slider-font">
     @if($slider != null && $slider->items->count() > 0)
     <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
@@ -15,7 +17,7 @@
             <?php $i = $i + 1; ?>
             @endforeach
         </ol>
-        <div class="carousel-inner">
+        <div class="carousel-inner slider-font">
             <?php $i = 0; ?>
             @foreach($slider->items as $item)
             @if($i==0)
@@ -25,8 +27,8 @@
                     @endif
                     <img src="{{asset($item->imagen)}}" alt="{{$item->titulo}}" class="d-block w-100">
                     <div class="carousel-caption d-none d-md-block">
-                        <h5 style="color: {{$item->colorTitle}} !important;">{{$item->titulo}}</h5>
-                        <p style="color: {{$item->colorText}} !important;">{{$item->descripcion}}<br><br><br><a class="btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}}</a></p>
+                        <h5 class="slider-font" style="color: {{$item->colorTitle}} !important;">{{$item->titulo}}</h5>
+                        <p class="slider-font" style="color: {{$item->colorText}} !important;">{{$item->descripcion}}<br><br><br><a class="slider-font btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}} <i class="fa fa-plus"></i></a></p>
                     </div>
                     <?php $i = $i + 1; ?>
                 </div>

@@ -244,7 +244,6 @@ class PaginaController extends Controller
                 }
             }
         }
-        $configuracion = Configuraciones::all()->first();
         $fonts = null;
         if ($configuracion != null) {
             $fuentesya = Configuracionfuente::where('configuracion_id', $configuracion->id)->get();

@@ -170,6 +170,12 @@
                         <input name="description" type="text" placeholder="Descripción" class="form-control">
                     </div>
                     <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
+                    <div class="form-group">
                         <label>Color de la Descripción</label>
                         <input type='color' class='form-control' name='description_color' required>
                     </div>
@@ -222,6 +228,12 @@
                     <div class="form-group">
                         <label>Descripción</label>
                         <input name="description" type="text" placeholder="Descripción" value="{{$team->description}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,$team->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
                     </div>
                     <div class="form-group">
                         <label>Color de la Descripción</label>
