@@ -51,20 +51,23 @@
                             $deduccion = Form::TextoMoneda( $registro->valor_deduccion );
                         }
 
+                        $descripcion_concepto = 'Registro > ' . $registro->id;
+                        $modo_liquidacion_id = 0;
+
+                        if ( !is_null( $registro->concepto ) )
+                        {
+                            $descripcion_concepto = $registro->concepto->descripcion;
+                            $modo_liquidacion_id = $registro->concepto->modo_liquidacion_id;
+                        }
+
                         $cantidad_horas = '';
                         if ( $registro->cantidad_horas != 0 )
                         {
                             // 8: seguridad social
-                            if ( !in_array( $registro->concepto->modo_liquidacion_id, [8] ) )
+                            if ( !in_array( $modo_liquidacion_id, [8] ) )
                             {
                                 $cantidad_horas = $registro->cantidad_horas;
                             }
-                        }
-
-                        $descripcion_concepto = 'Registro > ' . $registro->id;
-                        if ( !is_null( $registro->concepto ) )
-                        {
-                            $descripcion_concepto = $registro->concepto->descripcion;
                         }
                     ?>
 
@@ -80,7 +83,7 @@
                         $total_deducciones += $registro->valor_deduccion;
 
                         // 7: Tiempo NO Laborado, 1: tiempo laborado
-                        if ( in_array( $registro->concepto->modo_liquidacion_id, [1,7] ) ) {
+                        if ( in_array( $modo_liquidacion_id, [1,7] ) ) {
                             $total_horas += $registro->cantidad_horas;
                         }
                     ?>
