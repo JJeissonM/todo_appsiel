@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Servicio extends Model
 {
     protected $table = 'pw_servicios';
-    protected $fillable = ['id', 'titulo', 'descripcion', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'disposicion', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'titulo', 'descripcion', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'disposicion', 'configuracionfuente_id', 'widget_id', 'created_at', 'updated_at'];
 
     public function widget()
     {
@@ -17,5 +17,10 @@ class Servicio extends Model
     public function itemservicios()
     {
         return $this->hasMany(Itemservicio::class);
+    }
+
+    public function configuracionfuente()
+    {
+        return $this->belongsTo(Configuracionfuente::class);
     }
 }

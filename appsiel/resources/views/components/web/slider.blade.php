@@ -7,6 +7,10 @@
         /*height: 550px;*/
     }
 
+    .slider-font {
+        font-family: <?php echo $slider->configuracionfuente->fuente->font; ?> !important;
+    }
+
     .owl-carousel img {
         position: absolute;
         top: 0;
@@ -15,27 +19,27 @@
         height: 554px;
     }
 </style>
-<section id="main-slider">
+<section id="main-slider" class="slider-font">
     @if($slider != null && $slider->items->count() > 0)
-    <div class="owl-carousel">
+    <div class="owl-carousel slider-font">
         @foreach($slider->items as $item)
         <div class="item" style="width: 100%;">
             <div class="slider-inner">
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="carousel-content">
+                            <div class="carousel-content slider-font">
 
                                 @if( $item->titulo != '' )
-                                <h2 style="text-shadow: 1px 1px 2px black; color: {{$item->colorTitle}} !important;">{{$item->titulo}}</h2>
+                                <h2 class="slider-font" style="text-shadow: 1px 1px 2px black; color: {{$item->colorTitle}} !important;">{{$item->titulo}}</h2>
                                 @endif
 
                                 @if( $item->descripcion != '' )
-                                <p style="text-shadow: 1px 1px 2px black; color: {{$item->colorText}} !important;">{{$item->descripcion}}</p>
+                                <p class="slider-font" style="text-shadow: 1px 1px 2px black; color: {{$item->colorText}} !important;">{{$item->descripcion}}</p>
                                 @endif
 
                                 @if( $item->button != '')
-                                <a class="btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}}</a>
+                                <a class="slider-font btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}} <i class="fa fa-plus"></i></a>
                                 @endif
 
                             </div>

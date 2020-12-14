@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Team extends Model
 {
     protected $table = 'pw_teams';
-    protected $fillable = ['id', 'title', 'title_color', 'description', 'description_color', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'title', 'title_color', 'description', 'description_color', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'configuracionfuente_id', 'widget_id', 'created_at', 'updated_at'];
 
     public function widget()
     {
@@ -17,5 +17,10 @@ class Team extends Model
     public function teamitems()
     {
         return $this->hasMany(Teamitem::class);
+    }
+
+    public function configuracionfuente()
+    {
+        return $this->belongsTo(Configuracionfuente::class);
     }
 }

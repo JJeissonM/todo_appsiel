@@ -170,6 +170,12 @@
                         <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
                     </div>
                     <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
+                    <div class="form-group">
                         <label>Estilo del Diseño</label>
                         <select type="select" class="form-control" name="disposicion" required>
                             <option value="ICONO">USANDO ÍCONO</option>
@@ -221,6 +227,12 @@
                     <div class="form-group">
                         <label>Descripción</label>
                         <input name="descripcion" type="text" placeholder="Descripción" value="{{$servicios->descripcion}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,$servicios->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
                     </div>
                     <div class="form-group">
                         <label>Estilo del Diseño</label>

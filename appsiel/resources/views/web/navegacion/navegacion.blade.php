@@ -98,6 +98,13 @@
                                 <input type="range" min="1" max="10" class="form-control" name="alpha" value="{{$nav->alpha}}">
                             </div>
 
+                            <div class="form-group">
+                                <label for="">Fuente Para el Componente</label>
+                                @if($fonts!=null)
+                                {!! Form::select('configuracionfuente_id',$fonts,$nav->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                                @endif
+                            </div>
+
                             <div class="col-md-12 d-flex justify-content-end">
                                 <button class="btn btn-info">Guardar</button>
                             </div>

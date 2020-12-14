@@ -15,6 +15,10 @@
         ?>
     }
 
+    .servicios-font {
+        font-family: <?php echo $servicios->configuracionfuente->fuente->font; ?> !important;
+    }
+
 
     #servicios {
         z-index: 80 !important;
@@ -55,7 +59,7 @@
 @if($servicios->disposicion == 'DEFAULT')
 <section id="services" class="img">
     @else
-    <section id="services">
+    <section id="services" class="servicios-font">
         <!-- <img src="{ {asset('img/corazon/Diseño_Appsiel_3.jpg')}}" alt=""> -->
         @endif
         @else
@@ -69,8 +73,8 @@
             <div class="container" id="contenedor_seccion_servicios">
                 @if($servicios!=null)
                 <div class="section-header">
-                    <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$servicios->titulo}}</h2>
-                    <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$servicios->descripcion}}</p>
+                    <h2 class="section-title text-center wow fadeInDown animated servicios-font" style="visibility: visible; animation-name: fadeInDown;">{{$servicios->titulo}}</h2>
+                    <p class="text-center wow fadeInDown animated servicios-font" style="visibility: visible; animation-name: fadeInDown;">{{$servicios->descripcion}}</p>
                 </div>
                 <div class="row">
                     @if(count($servicios->itemservicios) > 0)
@@ -85,12 +89,12 @@
                                         <i class="fa fa-{{$item->icono}}"></i>
                                     </div>
                                     <div class="media-body">
-                                        <h4 class="media-heading" style="margin-top: 0px;">{{$item->titulo}}</h4>
-                                        <p>{!! str_limit($item->descripcion,90) !!} </p>
+                                        <h4 class="media-heading servicios-font" style="margin-top: 0px;">{{$item->titulo}}</h4>
+                                        <p class="servicios-font">{!! str_limit($item->descripcion,90) !!} </p>
                                     </div>
                                 </div>
                                 <div class="pull-right">
-                                    <a class="btn btn-primary animate" onclick="visor_contenido_servicios({{ $item->id }})" style="cursor: pointer; color: #fff;">Leer más...</a>
+                                    <a class="btn btn-primary animate btn-sm servicios-font" onclick="visor_contenido_servicios({{ $item->id }})" style="cursor: pointer; color: #fff;">Ver <i class="fa fa-plus"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -100,9 +104,11 @@
                             <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
                                 <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><img style="width: 100%;" src="{{asset($item->icono)}}"></div>
                                 <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
-                                    <h4 class="media-heading" style="margin-top: 0px;">{{$item->titulo}}</h4>
-                                    <p>{!! str_limit($item->descripcion,90) !!} </p>
-                                    <a class="btn btn-primary animate" onclick="visor_contenido_servicios({{ $item->id }})" style="cursor: pointer; color: #fff;">Leer más...</a>
+                                    <h4 class="media-heading servicios-font" style="margin-top: 0px;">{{$item->titulo}}</h4>
+                                    <p class="servicios-font">{!! str_limit($item->descripcion,90) !!} </p>
+                                    <div class="pull-right">
+                                        <a class="btn btn-primary animate btn-sm servicios-font" onclick="visor_contenido_servicios({{ $item->id }})" style="cursor: pointer; color: #fff;">Ver <i class="fa fa-plus"></i></a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

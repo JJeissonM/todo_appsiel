@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Articlesetup extends Model
 {
     protected  $table = 'pw_articlesetups';
-    protected  $fillable = ['id', 'titulo', 'descripcion', 'formato', 'orden', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'widget_id', 'article_id', 'articlecategory_id', 'created_at', 'updated_at'];
+    protected  $fillable = ['id', 'titulo', 'descripcion', 'formato', 'orden', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'configuracionfuente_id', 'widget_id', 'article_id', 'articlecategory_id', 'created_at', 'updated_at'];
 
     public function widget()
     {
@@ -22,5 +22,10 @@ class Articlesetup extends Model
     public function articlecategory()
     {
         return $this->belongsTo(Articlecategory::class);
+    }
+
+    public function configuracionfuente()
+    {
+        return $this->belongsTo(Configuracionfuente::class);
     }
 }

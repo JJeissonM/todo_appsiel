@@ -146,6 +146,7 @@ class TeamController extends Controller
         $team = Team::find($id);
         $team->title = strtoupper($request->title);
         $team->description = $request->description;
+        $team->configuracionfuente_id=$request->configuracionfuente_id;
         $tipo_fondo = $team->tipo_fondo;
         if ($request->tipo_fondo == '') {
             $team->tipo_fondo = $tipo_fondo;

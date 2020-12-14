@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\web\Configuracionfuente;
 use App\web\Icon;
 use App\web\Menunavegacion;
 use App\web\Navegacion;
 use App\web\Pagina;
-use App\web\Widget; 
+use App\web\Widget;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
@@ -27,7 +28,14 @@ class NavegacionController extends Controller
         $nav = Navegacion::all()->first();
         $variables_url = '?id=' . Input::get('id');
         $iconos = Icon::all();
-        return view('web.navegacion.navegacion', compact('miga_pan', 'nav', 'paginas', 'variables_url', 'iconos'));
+        $fuentes = Configuracionfuente::all();
+        $fonts = null;
+        if (count($fuentes) > 0) {
+            foreach ($fuentes as $f) {
+                $fonts[$f->id] = $f->fuente->font;
+            }
+        }
+        return view('web.navegacion.navegacion', compact('miga_pan', 'fonts', 'nav', 'paginas', 'variables_url', 'iconos'));
     }
 
     public function migapan()
@@ -104,7 +112,7 @@ class NavegacionController extends Controller
     public function guardar_backgrounds($request, &$nav)
     {
         $fondos = $request->all()['background'];
-        
+
         $parametros_a_guardar = '{';
         $primero = true;
         $cant = count($fondos);
@@ -143,7 +151,7 @@ class NavegacionController extends Controller
             $nav->fill($request->all());
 
             $this->guardar_backgrounds($request, $nav);
-            
+
             if ($request->hasFile('imagen_logo')) {
 
                 $file = $request->file('imagen_logo');

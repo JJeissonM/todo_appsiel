@@ -21,7 +21,7 @@
                         @endif
                         @if( $contactenos->correo != '' )
                         <a href="mailto:{{ $contactenos->correo }}">
-                            <span title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
+                            <span style="font-size: 22px;" title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
                         </a>
                         @endif
                         @if( $contactenos->direccion != '' )

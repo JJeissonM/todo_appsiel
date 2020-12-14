@@ -14,7 +14,7 @@
                             @endif
                             @if( $contactenos->correo != '' )
                                 <a href="mailto:{{ $contactenos->correo }}"> 
-                                    <span title="{{ $contactenos->correo }}"> {{str_limit($contactenos->correo,20)}}<br> </span>
+                                    <span style="font-size: 22px;" title="{{ $contactenos->correo }}"> {{str_limit($contactenos->correo,20)}}<br> </span>
                                 </a>
                             @endif
                             @if( $contactenos->direccion != '' )

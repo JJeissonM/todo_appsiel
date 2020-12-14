@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\web\Configuracionfuente;
 use Illuminate\Support\Facades\Input;
 
 use App\web\RedesSociales;
@@ -88,6 +89,7 @@ class ServicioController extends Controller
         $servicio->titulo = strtoupper($request->titulo);
         $servicio->descripcion = $request->descripcion;
         $servicio->disposicion = $request->disposicion;
+        $servicio->configuracionfuente_id = $request->configuracionfuente_id;
         $tipo_fondo = $servicio->tipo_fondo;
         if ($request->tipo_fondo == '') {
             $servicio->tipo_fondo = $tipo_fondo;
@@ -193,6 +195,7 @@ class ServicioController extends Controller
         $widget = $item->servicio->widget_id;
         $iconos = Icon::all();
         $servicio = $item->servicio;
+        $fuentes = Configuracionfuente::all();
         return view('web.components.servicios.edit', compact('miga_pan', 'servicio', 'variables_url', 'item', 'iconos', 'widget'));
     }
 
