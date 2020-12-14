@@ -267,7 +267,7 @@ class TiempoNoLaborado implements Estrategia
 		}
 
 		$lapso_documento = $registro->encabezado_documento->lapso();
-		$cantidad_horas_a_liquidar = $this->calcular_cantidad_horas_liquidar_incapacidad( $novedad, $lapso_documento );
+		$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_incapacidad( $novedad, $lapso_documento ) );
 		$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
 		$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
 
