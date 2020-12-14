@@ -348,12 +348,17 @@ class NominaController extends TransaccionController
 
         foreach ( $registros_documento as $registro )
         {
-            if ( in_array( $registro->concepto->modo_liquidacion_id, $this->array_ids_modos_liquidacion_automaticos) )
+            if ( !is_null( $registro->concepto ) && !is_null($registro->contrato) )
             {
-                // Se llama al subsistema de liquidación
-                $liquidacion = new LiquidacionConcepto( $registro->concepto->id, $registro->contrato, $documento_nomina);
-                $liquidacion->retirar( $registro->concepto->modo_liquidacion_id, $registro );
+                if ( in_array( $registro->concepto->modo_liquidacion_id, $this->array_ids_modos_liquidacion_automaticos) )
+                {
+                    // Se llama al subsistema de liquidación
+                    $liquidacion = new LiquidacionConcepto( $registro->concepto->id, $registro->contrato, $documento_nomina);
+                    $liquidacion->retirar( $registro->concepto->modo_liquidacion_id, $registro );
+                }
             }
+            
+                
         }
 
         $this->actualizar_totales_documento($id);
