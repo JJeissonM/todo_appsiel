@@ -219,7 +219,7 @@ class TiempoNoLaborado implements Estrategia
 		}
 
 		// Caso 2: Liquidar una parte del tiempo de la novedad, el tiempo restante queda para el siguiente documento
-		if ( $fecha_ini_novedad >= $fecha_ini_documento && $fecha_fin_novedad > $fecha_fin_documento )
+		if ( $fecha_ini_novedad >= $fecha_ini_documento && $fecha_ini_novedad < $fecha_fin_documento && $fecha_fin_novedad > $fecha_fin_documento )
 		{
 			$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $novedad->fecha_inicial_tnl, $lapso_documento->fecha_final );
 
