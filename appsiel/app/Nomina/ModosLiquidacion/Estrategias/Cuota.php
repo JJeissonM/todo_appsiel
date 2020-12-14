@@ -3,6 +3,7 @@
 namespace App\Nomina\ModosLiquidacion\Estrategias;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
+use App\Nomina\NomDocRegistro;
 use App\Nomina\NomCuota;
 
 class Cuota implements Estrategia
@@ -54,4 +55,28 @@ class Cuota implements Estrategia
 
         return $valores_cuotas;
 	}
+
+    public function retirar(NomDocRegistro $registro)
+    {
+        $cuota = $registro->cuota;
+
+        switch( $registro->concepto->naturaleza )
+        {
+            case 'devengo':
+                $cuota->valor_acumulado -= $registro->valor_devengo;
+                break;
+            case 'deduccion':
+                $cuota->valor_acumulado -= $registro->valor_deduccion;
+                break;
+            default:
+                break;
+        }
+
+        $cuota->estado = "Activo";
+        $cuota->save();
+
+        $registro->delete();
+
+        return 0;
+    }
 }

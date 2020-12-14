@@ -20,73 +20,74 @@ table td {
 	
 <div class="container-fluid">
 	<div class="marco_formulario">
-	    <h4>Ingreso de registros</h4>
-	    <hr>
-		{{Form::open(array('route'=>array('nomina.store'),'method'=>'POST','class'=>'form-horizontal','id'=>'formulario'))}}
-			<div class="row">
-				<div class="col-sm-12">
-					<b>Documento de nómina:</b><code>{{ $documento->descripcion }}</code>
-					<b>Concepto:</b>	<code>{{ $concepto->descripcion }}</code>
-					<b>Porc. del Básico:</b>	<code>{{ $concepto->porcentaje_sobre_basico }}%</code>
-					
-					{{ Form::hidden('nom_doc_encabezado_id', $documento->id, ['id' =>'nom_doc_encabezado_id']) }}
-					
-					{{ Form::hidden('nom_concepto_id', $concepto->id, ['id' =>'nom_concepto_id']) }}
+		<div class="container-fluid">
+		    <h4>Ingreso de registros</h4>
+		    <hr>
+			{{Form::open(array('route'=>array('nom_registros_documentos.store'),'method'=>'POST','class'=>'form-horizontal','id'=>'formulario'))}}
+				<div class="row">
+					<div class="col-sm-12">
+						<b>Documento de nómina:</b><code>{{ $documento->descripcion }}</code>
+						<b>Concepto:</b>	<code>{{ $concepto->descripcion }}</code>
+						<b>Porc. del Básico:</b>	<code>{{ $concepto->porcentaje_sobre_basico }}%</code>
+						
+						{{ Form::hidden('nom_doc_encabezado_id', $documento->id, ['id' =>'nom_doc_encabezado_id']) }}
+						
+						{{ Form::hidden('nom_concepto_id', $concepto->id, ['id' =>'nom_concepto_id']) }}
 
+						{{ Form::hidden('cantidad_empleados', $cantidad_empleados, ['id' =>'cantidad_empleados']) }}
 
-					{{ Form::hidden('cantidad_empleados', $cantidad_empleados, ['id' =>'cantidad_empleados']) }}
+					</div>							
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
 
-				</div>							
-			</div>
-			<div class="row">
-				<div class="col-sm-12">
+						<table class="table table-responsive" id="tabla">
+							<?php 
+								$lbl_encabezado = 'Valor concepto';
+								if ( (float)$concepto->porcentaje_sobre_basico != 0 )
+								{
+									$lbl_encabezado = 'Cantidad horas';
+								}
+							?>
+							<thead>
+								<tr>
+									<th>Empleado</th>
+									<th>{{ $lbl_encabezado }}</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach($empleados as $empleado)
+									<tr> 
+										<td style="font-size:12px">
+											<b>{{ $empleado->tercero->descripcion }}</b>
+											
+											{{ Form::hidden('core_tercero_id[]', $empleado->core_tercero_id, []) }}
 
-				<table class="table table-responsive" id="tabla">
-					<?php 
-						$lbl_encabezado = 'Valor concepto';
-						if ( (float)$concepto->porcentaje_sobre_basico != 0 )
-						{
-							$lbl_encabezado = 'Cantidad horas';
-						}
-					?>
-				<thead>
-					<tr>
-						<th>Empleado</th>
-						<th>{{ $lbl_encabezado }}</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach($empleados as $empleado)
-						<tr> 
-							<td style="font-size:12px">
-								<b>{{ $empleado->tercero->descripcion }}</b>
-								
-								{{ Form::hidden('core_tercero_id[]', $empleado->core_tercero_id, []) }}
+										</td>
 
-							</td>
+										<td>
+											@if ( (float)$concepto->porcentaje_sobre_basico != 0 )
+												<input type="text" name="cantidad_horas[]" class="form-control" placeholder="Cantidad horas">
+											@else
+												<input type="text" name="valor[]" class="form-control" placeholder="Valor">
+											@endif
+										</td>
+			                        </tr>
+								@endforeach
+							</tbody>
+						</table>
+					</div>
+				</div>	
 
-							<td>
-								@if ( (float)$concepto->porcentaje_sobre_basico != 0 )
-									<input type="text" name="cantidad_horas[]" class="form-control" placeholder="Cantidad horas">
-								@else
-									<input type="text" name="valor[]" class="form-control" placeholder="Valor">
-								@endif
-							</td>
-                        </tr>
-					@endforeach
-				</tbody>
-			</table>
-		</div>
-	</div>	
+				<div style="text-align: center; width: 100%;">
+					{{ Form::bsButtonsForm( url()->previous() ) }}
+				</div>
 
-			<div style="text-align: center; width: 100%;">
-				{{ Form::bsButtonsForm( url()->previous() ) }}
-			</div>
+				{{ Form::hidden('app_id',Input::get('id')) }}
+				{{ Form::hidden('modelo_id',Input::get('id_modelo')) }}
 
-			{{ Form::hidden('app_id',Input::get('id')) }}
-			{{ Form::hidden('modelo_id',Input::get('id_modelo')) }}
-
-		{{Form::close()}}					
+			{{Form::close()}}
+		</div>					
 	</div>
 </div> 
 

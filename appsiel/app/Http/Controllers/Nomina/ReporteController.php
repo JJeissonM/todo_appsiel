@@ -114,10 +114,31 @@ class ReporteController extends Controller
         return $pdf->download('reporte_desprendibles_de_pago.pdf');
     }
 
+
+    public function generar_reporte_desprendibles_de_pago($nom_doc_encabezado_id, $core_tercero_id )
+    {  
+        $documento = NomDocEncabezado::find( $nom_doc_encabezado_id );
+
+        if ( $core_tercero_id == 'Todos') 
+        {
+            $empleados = $documento->empleados;
+        }else{
+            $empleados = NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+                                    ->leftJoin('nom_cargos', 'nom_cargos.id', '=', 'nom_contratos.cargo_id')
+                                    ->where('nom_contratos.core_tercero_id', $core_tercero_id)
+                                    ->select('core_terceros.descripcion AS empleado', 'core_terceros.id AS core_tercero_id', 'nom_cargos.descripcion AS cargo', 'nom_contratos.sueldo AS salario', 'core_terceros.numero_identificacion AS cedula')
+                                    ->get();
+        }
+
+        $vista = View::make('nomina.reportes.tabla_desprendibles_pagos', compact('documento', 'empleados') )->render();
+
+        return $vista;
+    }
+
     /**
      * generar_reporte_desprendibles_de_pago
      *
-     */
+     
     public function generar_reporte_desprendibles_de_pago($nom_doc_encabezado_id, $core_tercero_id )
     {        
         $documento = NomDocEncabezado::find($nom_doc_encabezado_id);
@@ -231,8 +252,8 @@ class ReporteController extends Controller
             </table> <br/> '.$firmas.'</div> <div class="page-break"></div>';
         }
         return $tabla;
-    }
-
+    }    
+    */
 
 
     public function listado_acumulados(Request $request)

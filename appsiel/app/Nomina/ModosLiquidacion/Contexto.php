@@ -16,4 +16,9 @@ class Contexto
 	{
 		return $this->estrategia->calcular($modo_liquidacion);
 	}
+
+	public function retirar_registro_concepto( $registro )
+	{
+		return $this->estrategia->retirar( $registro );
+	}
 }

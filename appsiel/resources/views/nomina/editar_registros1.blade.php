@@ -20,74 +20,76 @@
 	
 <div class="container-fluid">
 	<div class="marco_formulario">
-	    <h4>Actualizar registros</h4>
-	    <hr>
-		{{Form::open(array('route'=>array('nomina.update','editar1'),'method'=>'PUT','class'=>'form-horizontal','id'=>'formulario'))}}
-			<div class="row">
-				<div class="col-sm-12">
-					<b>Documento de nómina:</b><code>{{ $documento->descripcion }}</code>
-					<b>Concepto:</b>	<code>{{ $concepto->descripcion }}</code>
-					
-					{{ Form::hidden('nom_doc_encabezado_id', $documento->id, ['id' =>'nom_doc_encabezado_id']) }}
-					
-					{{ Form::hidden('nom_concepto_id', $concepto->id, ['id' =>'nom_concepto_id']) }}
+		<div class="container-fluid">
+		    <h4>Actualizar registros</h4>
+		    <hr>
+			{{Form::open(array('route'=>array('nom_registros_documentos.update','editar1'),'method'=>'PUT','class'=>'form-horizontal','id'=>'formulario'))}}
+				<div class="row">
+					<div class="col-sm-12">
+						<b>Documento de nómina:</b><code>{{ $documento->descripcion }}</code>
+						<b>Concepto:</b>	<code>{{ $concepto->descripcion }}</code>
+						
+						{{ Form::hidden('nom_doc_encabezado_id', $documento->id, ['id' =>'nom_doc_encabezado_id']) }}
+						
+						{{ Form::hidden('nom_concepto_id', $concepto->id, ['id' =>'nom_concepto_id']) }}
 
 
-					{{ Form::hidden('cantidad_empleados', $cantidad_empleados, ['id' =>'cantidad_empleados']) }}
+						{{ Form::hidden('cantidad_empleados', $cantidad_empleados, ['id' =>'cantidad_empleados']) }}
 
-				</div>							
-			</div>
-			<div class="row">
-				<div class="col-sm-12">
-					<?php 
-						$lbl_encabezado = 'Valor concepto';
-						if ( (float)$concepto->porcentaje_sobre_basico != 0 )
-						{
-							$lbl_encabezado = 'Cantidad horas';
-						}
-					?>
+					</div>							
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						<?php 
+							$lbl_encabezado = 'Valor concepto';
+							if ( (float)$concepto->porcentaje_sobre_basico != 0 )
+							{
+								$lbl_encabezado = 'Cantidad horas';
+							}
+						?>
 
-				<table class="table table-responsive" id="tabla">
-				<thead>
-					<tr>
-						<th>Empleado</th>
-						<th> {{ $lbl_encabezado }} </th>
-					</tr>
-				</thead>
-				<tbody>
-					@for($k=0;$k<$cantidad_empleados;$k++)
-						<tr> 
-							<td style="font-size:12px">
-								<b>{{ $vec_empleados[$k]['nombre'] }}</b>
-								
-								{{ Form::hidden('core_tercero_id[]', $vec_empleados[$k]['core_tercero_id'], []) }}
+						<table class="table table-responsive" id="tabla">
+							<thead>
+								<tr>
+									<th>Empleado</th>
+									<th> {{ $lbl_encabezado }} </th>
+								</tr>
+							</thead>
+							<tbody>
+								@for($k=0;$k<$cantidad_empleados;$k++)
+									<tr> 
+										<td style="font-size:12px">
+											<b>{{ $vec_empleados[$k]['nombre'] }}</b>
+											
+											{{ Form::hidden('core_tercero_id[]', $vec_empleados[$k]['core_tercero_id'], []) }}
 
-								{{ Form::hidden('nom_registro_id[]', $vec_empleados[$k]['nom_registro_id'], []) }}
+											{{ Form::hidden('nom_registro_id[]', $vec_empleados[$k]['nom_registro_id'], []) }}
 
-							</td>
+										</td>
 
-							<td>
-								@if ( (float)$concepto->porcentaje_sobre_basico != 0 )
-									<input type="text" name="cantidad_horas[]" value="{{$vec_empleados[$k]['cantidad_horas']}}" class="form-control" placeholder="Cantidad horas">
-								@else
-									<input type="text" name="valor[]" value="{{$vec_empleados[$k]['valor_concepto']}}" class="form-control" placeholder="Valor">
-								@endif
-							</td>
-                        </tr>
-					@endfor
-				</tbody>
-			</table>
+										<td>
+											@if ( (float)$concepto->porcentaje_sobre_basico != 0 )
+												<input type="text" name="cantidad_horas[]" value="{{$vec_empleados[$k]['cantidad_horas']}}" class="form-control" placeholder="Cantidad horas">
+											@else
+												<input type="text" name="valor[]" value="{{$vec_empleados[$k]['valor_concepto']}}" class="form-control" placeholder="Valor">
+											@endif
+										</td>
+			                        </tr>
+								@endfor
+							</tbody>
+						</table>
+					</div>
+				</div>	
+
+				<div style="text-align: center; width: 100%;">
+					{{ Form::bsButtonsForm( url()->previous() ) }}
+				</div>
+
+				{{ Form::hidden('app_id',Input::get('id')) }}
+				{{ Form::hidden('modelo_id',Input::get('id_modelo')) }}
+
+			{{Form::close()}}
 		</div>
-	</div>	
-
-			<div style="text-align: center; width: 100%;">
-				{{ Form::bsButtonsForm( url()->previous() ) }}
-			</div>
-
-			{{ Form::hidden('app_id',Input::get('id')) }}
-			{{ Form::hidden('modelo_id',Input::get('id_modelo')) }}
-
-		{{Form::close()}}					
 	</div>
 </div> 
 

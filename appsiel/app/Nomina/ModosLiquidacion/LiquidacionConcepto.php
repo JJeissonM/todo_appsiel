@@ -29,4 +29,10 @@ class LiquidacionConcepto extends Model
         $fachada = new ModoLiquidacion;
         return $fachada->calcular($modo_liquidacion_id, $this);
     }
+
+    public function retirar( $modo_liquidacion_id, $registro )
+    {
+        $fachada = new ModoLiquidacion;
+        return $fachada->retirar( $modo_liquidacion_id, $registro );
+    }
 }

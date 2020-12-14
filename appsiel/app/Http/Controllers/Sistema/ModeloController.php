@@ -528,7 +528,6 @@ class ModeloController extends Controller
 
         $archivo_js = app($this->modelo->name_space)->archivo_js;
 
-
         $vista = 'layouts.edit';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
         if (!is_null($vistas))

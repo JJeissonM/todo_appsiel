@@ -28,9 +28,77 @@ class NomDocEncabezado extends Model
 
     public $urls_acciones = '{"cambiar_estado":"a_i/id_fila"}';
 
+    public function empresa()
+    {
+        return $this->belongsTo( 'App\Core\Empresa', 'core_empresa_id' );
+    }
+
     public function empleados()
     {
         return $this->belongsToMany(NomContrato::class,'nom_empleados_del_documento','nom_doc_encabezado_id','nom_contrato_id');
+    }
+
+    public function registros_liquidacion()
+    {
+        return $this->hasMany( NomDocRegistro::class, 'nom_doc_encabezado_id' );
+    }
+
+    public function horas_liquidadas_empleado( $contrato )
+    {
+        $registros_documento = $this->registros_liquidacion->where( 'core_tercero_id', $contrato->core_tercero_id )->all();
+
+        $horas_liquidadas = 0;
+        foreach ($registros_documento as $registro )
+        {   
+            // 7: Tiempo NO Laborado, 1: tiempo laborado
+            if ( in_array($registro->concepto->modo_liquidacion_id, [1,7] ) )
+            {
+                $horas_liquidadas += $registro->cantidad_horas;
+            }
+        }
+
+        return $horas_liquidadas;
+    }
+
+    public function horas_liquidadas_tiempo_laborado_empleado( $contrato )
+    {
+        $registros_documento = $this->registros_liquidacion->where( 'core_tercero_id', $contrato->core_tercero_id )->all();
+
+        $horas_liquidadas = 0;
+        foreach ($registros_documento as $registro )
+        {   
+            // 1: tiempo laborado
+            if ( in_array($registro->concepto->modo_liquidacion_id, [1] ) )
+            {
+                $horas_liquidadas += $registro->cantidad_horas;
+            }
+        }
+
+        return $horas_liquidadas;
+    }
+
+    public function lapso()
+    {
+        $array_fecha = explode( '-', $this->fecha );
+
+        $dia_inicio = '01';
+        $dia_fin = '15';
+
+        if ( (int)$array_fecha[2] > 16 )
+        {
+            $dia_inicio = '16';
+            $dia_fin = '30';
+            // Mes de febrero
+            if ( $array_fecha[1] == '02' )
+            {
+                $dia_fin = '28';
+            }
+        }
+
+        return (object)[ 
+                        'fecha_inicial' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_inicio,
+                        'fecha_final' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_fin
+                    ];
     }
 
 	public static function consultar_registros()
