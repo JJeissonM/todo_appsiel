@@ -40,11 +40,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$inv_producto_id_default_matricula = 24;
 								if( isset($parametros['inv_producto_id_default_matricula'] ) )
 								{
 									$inv_producto_id_default_matricula = $parametros['inv_producto_id_default_matricula'];
-								}else{
-									$inv_producto_id_default_matricula = 'Si';
 								}
 							?>
 							{{ Form::bsSelect('inv_producto_id_default_matricula', $inv_producto_id_default_matricula, 'Concepto por defecto para Matrícula', App\Inventarios\Servicio::opciones_campo_select(), ['class'=>'form-control']) }}
@@ -53,12 +52,11 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
+							<?php
+								$inv_producto_id_default_pension = 25; 
 								if( isset($parametros['inv_producto_id_default_pension'] ) )
 								{
 									$inv_producto_id_default_pension = $parametros['inv_producto_id_default_pension'];
-								}else{
-									$inv_producto_id_default_pension = 'Si';
 								}
 							?>
 							{{ Form::bsSelect('inv_producto_id_default_pension', $inv_producto_id_default_pension, 'Concepto por defecto para Pensión', App\Inventarios\Servicio::opciones_campo_select(), ['class'=>'form-control']) }}

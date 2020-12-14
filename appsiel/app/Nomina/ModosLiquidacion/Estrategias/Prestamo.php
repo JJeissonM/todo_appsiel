@@ -3,6 +3,7 @@
 namespace App\Nomina\ModosLiquidacion\Estrategias;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
+use App\Nomina\NomDocRegistro;
 use App\Nomina\NomPrestamo;
 
 class Prestamo implements Estrategia
@@ -48,4 +49,28 @@ class Prestamo implements Estrategia
 
         return $valores_prestamos;
 	}
+
+    public function retirar(NomDocRegistro $registro)
+    {
+        $prestamo = $registro->prestamo;
+
+        switch( $registro->concepto->naturaleza )
+        {
+            case 'devengo':
+                $prestamo->valor_acumulado -= $registro->valor_devengo;
+                break;
+            case 'deduccion':
+                $prestamo->valor_acumulado -= $registro->valor_deduccion;
+                break;
+            default:
+                break;
+        }
+
+        $prestamo->estado = "Activo";
+        $prestamo->save();
+
+        $registro->delete();
+
+        return 0;
+    }
 }

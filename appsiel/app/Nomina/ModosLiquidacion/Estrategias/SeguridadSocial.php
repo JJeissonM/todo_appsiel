@@ -10,6 +10,19 @@ class SeguridadSocial implements Estrategia
 {
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
+
+        // Para empleados con tipo contrato labor_contratada
+        if ( $liquidacion['empleado']->clase_contrato == 'labor_contratada' )
+        {
+            return [ 
+                        [
+                            'cantidad_horas' => 0,
+                            'valor_devengo' => 0,
+                            'valor_deduccion' => 0 
+                        ]
+                    ];
+        }
+
 		// Cada concepto de Seguridad social se debe liquidar al final, porque se usan los valores de otros conceptos para calcular su valor
 
         // Un concepto de seguridad social tiene una agrupación de conceptos para el cálculo de su valor; se deben suman los valores liquidados de cada concepto de su Agrupación para cálculo
@@ -39,4 +52,11 @@ class SeguridadSocial implements Estrategia
                     ]
                 ];
 	}
+
+    public function retirar(NomDocRegistro $registro)
+    {
+        $registro->delete();
+
+        return 0;
+    }
 }

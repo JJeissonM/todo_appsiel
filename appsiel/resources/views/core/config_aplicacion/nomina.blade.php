@@ -24,7 +24,7 @@
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
-		    <h4>{{$parametros['titulo']}}</h4>
+		    <h4>{!! $parametros['titulo'] !!}</h4>
 		    <hr>
 
 		    {{ Form::open(['url'=>'guardar_config','id'=>'form_create','files' => true]) }}
@@ -72,13 +72,50 @@
 									$sabado_es_dia_habil = $parametros['sabado_es_dia_habil'];
 								}
 							?>
-							{{ Form::bsText('sabado_es_dia_habil', $sabado_es_dia_habil, 'El sábado es día hábil', ['class'=>'form-control']) }}
+							{{ Form::bsSelect('sabado_es_dia_habil', $sabado_es_dia_habil, 'El sábado es día hábil', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$concepto_salario_integral = 2;
+								if( isset($parametros['concepto_salario_integral'] ) )
+								{
+									$concepto_salario_integral = $parametros['concepto_salario_integral'];
+								}
+							?>
+							{{ Form::bsSelect('concepto_salario_integral', $concepto_salario_integral, 'Concepto de salario integral', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$pago_salario_completo_en_incapacidades = 1; 
+								if( isset($parametros['pago_salario_completo_en_incapacidades'] ) )
+								{
+									$pago_salario_completo_en_incapacidades = $parametros['pago_salario_completo_en_incapacidades'];
+								}
+							?>
+							{{ Form::bsSelect('pago_salario_completo_en_incapacidades', $pago_salario_completo_en_incapacidades, 'Pago de salario completo en incapacidades', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$id_concepto_pagar_empresa_en_incapacidades = 2;
+								if( isset($parametros['id_concepto_pagar_empresa_en_incapacidades'] ) )
+								{
+									$id_concepto_pagar_empresa_en_incapacidades = $parametros['id_concepto_pagar_empresa_en_incapacidades'];
+								}
+							?>
+							{{ Form::bsSelect('id_concepto_pagar_empresa_en_incapacidades', $id_concepto_pagar_empresa_en_incapacidades, 'Concepto incapacidad asumida por la empresa', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 

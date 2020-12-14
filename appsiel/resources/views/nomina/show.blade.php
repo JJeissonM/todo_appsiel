@@ -15,6 +15,8 @@
 		            ['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'etiqueta' => 'Retirar registros automáticos' ]
 		          ] ) }}
 
+	<!-- @ include('nomina.incluir.btn_liquidacion') -->
+
 	<div class="pull-right">
 		@if($reg_anterior!='')
 			{{ Form::bsBtnPrev( 'nomina/'.$reg_anterior.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
@@ -30,11 +32,9 @@
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
-
-			<?php
-				echo $view_pdf;
-			?>
-			
+			<div class="container-fluid">
+				{!! $view_pdf !!}
+			</div>
 		</div>
 	</div>
 	<br/><br/>	

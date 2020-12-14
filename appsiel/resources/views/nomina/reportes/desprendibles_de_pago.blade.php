@@ -47,6 +47,8 @@
 			{{ Form::bsBtnExcel('reporte_cartera_por_curso') }}
 			{{ Form::bsBtnPdf('reporte_cartera_por_curso') }}
 
+			{{ Form::Spin(48) }}
+
 			<div id="resultado_consulta">
 
 			</div>	
@@ -74,6 +76,7 @@
 				}
 
 				$('#resultado_consulta').html( '' );
+				$('#div_spin').show();
 				$('#div_cargando').show();
 
 				// Preparar datos de los controles para enviar formulario
@@ -83,6 +86,7 @@
 				// Enviar formulario de ingreso de productos vía POST
 				$.post(url,datos,function(respuesta){
 					$('#div_cargando').hide();
+					$('#div_spin').hide();
 					$('#resultado_consulta').html(respuesta);
 					$('#btn_excel').show(500);
 					$('#btn_pdf').show(500);

@@ -294,7 +294,7 @@ class ReporteController extends TesoreriaController
             Se debe cambiar la $tabla2 por una vista que ya está creada, solo falta terminarla
             View::make('tesoreria.incluir.flujo_efectivo_tabla', compact( variables requeridas por la vista))
         */
-        $tabla2 = '<h3> Flujo de efectivo </h3><table class="table table-striped tabla_registros" style="margin-top: -4px;">
+        $tabla2 = '<h3> Flujo de efectivo </h3><p>Nota: no se tienen en cuenta los movimientos con motivo tipo <b>Traslado</b>.</p><hr><table class="table table-striped tabla_registros" style="margin-top: -4px;">
                         <thead>
                             <tr>
                                 <th>

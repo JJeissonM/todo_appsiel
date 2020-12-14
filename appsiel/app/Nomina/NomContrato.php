@@ -5,11 +5,12 @@ namespace App\Nomina;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Core\Tercero;
+use App\Nomina\MovimientoIbcEmpleado;
 
 class NomContrato extends Model
 {
     //protected $table = 'nom_contratos';
-	protected $fillable = [ 'core_tercero_id', 'clase_contrato', 'cargo_id', 'horas_laborales', 'sueldo', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado', 'liquida_subsidio_transporte', 'planilla_pila_id', 'es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id', 'grupo_empleado_id'];
+	protected $fillable = [ 'core_tercero_id', 'clase_contrato', 'cargo_id', 'horas_laborales', 'sueldo', 'salario_integral', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado', 'liquida_subsidio_transporte', 'planilla_pila_id', 'es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id', 'grupo_empleado_id'];
 
 	public $encabezado_tabla = [ 'Núm. identificación', 'Empleado', 'Cargo', 'Sueldo', 'Fecha ingreso', 'Contrato hasta', 'Estado', 'Acción'];
 
@@ -56,6 +57,18 @@ class NomContrato extends Model
     public function salario_x_hora()
     {
         return $this->sueldo / config('nomina.horas_laborales');
+    }
+
+    public function valor_ibc()
+    {
+        $valor_ibc = MovimientoIbcEmpleado::where( 'nom_contrato_id', $this->id )->get()->last(); 
+
+        if ( is_null( $valor_ibc ) )
+        {
+            return $this->sueldo;
+        }
+        
+        return $valor_ibc;
     }
 
 	public static function consultar_registros()
