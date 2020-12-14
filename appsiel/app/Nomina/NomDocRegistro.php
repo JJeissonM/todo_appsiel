@@ -45,7 +45,7 @@ class NomDocRegistro extends Model
 
 	public function prestamo()
 	{
-		return $this->belongsTo(NomCuota::class, 'nom_prestamo_id');
+		return $this->belongsTo(NomPrestamo::class, 'nom_prestamo_id');
 	}
 
 	public function novedad_tnl()

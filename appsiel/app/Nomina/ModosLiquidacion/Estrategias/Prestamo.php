@@ -53,7 +53,7 @@ class Prestamo implements Estrategia
     public function retirar(NomDocRegistro $registro)
     {
         $prestamo = $registro->prestamo;
-
+        
         switch( $registro->concepto->naturaleza )
         {
             case 'devengo':
