@@ -28,7 +28,6 @@ class TiempoNoLaborado implements Estrategia
 										[ 'nom_concepto_id', '=', $liquidacion['concepto']->id ],
 										[ 'nom_contrato_id', '=', $liquidacion['empleado']->id ],
 										[ 'cantidad_dias_pendientes_amortizar', '>', 0 ],
-										[ 'fecha_inicial_tnl', '>=', $lapso_documento->fecha_inicial ],
 										[ 'fecha_inicial_tnl', '<=', $lapso_documento->fecha_final ],
 										[ 'estado', '=', 'Activo' ] 
 									] )
@@ -228,16 +227,15 @@ class TiempoNoLaborado implements Estrategia
 			return ( ( $diferencia_en_dias + 1 ) * self::CANTIDAD_HORAS_DIA_LABORAL ); // Se suma 1, pues se debe incluir el mismo día inicial.
 		}
 
-		// Caso 3: La novedad ya tiene tiempos amortizados. Se continua amortizando desde la fecha inicial del lapso
-		if ( $novedad->cantidad_dias_amortizados > 0 )
+		// Caso 3: La novedad es vieja; ya tiene tiempos amortizados. Se continua amortizando desde la fecha inicial del lapso
+		if ( $fecha_ini_novedad < $fecha_ini_documento )
 		{
 			
 			if ( $fecha_fin_novedad > $fecha_fin_documento )
 			{
 				// Caso 3.1: liquidar todo el tiempo del lapso
 				$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $lapso_documento->fecha_inicial, $lapso_documento->fecha_final );
-			}else
-			{
+			}else{
 				// Caso 3.2: liquidar hasta el tiempo final de la novedad
 				$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $lapso_documento->fecha_inicial, $novedad->fecha_final_tnl );
 			}
