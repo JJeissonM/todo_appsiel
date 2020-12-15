@@ -46,7 +46,7 @@
 
 			        $k = 0;
 
-	                $fila .= '<td> ' . $empleado->tercero->descripcion . '</td>';
+	                $fila .= '<td> ' . $empleado->tercero->numero_identificacion . ' - ' . $empleado->tercero->descripcion . '</td>';
 
 	                $total_fila_devengos = 0;
 	                $total_fila_deducciones = 0;
