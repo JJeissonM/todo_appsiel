@@ -265,6 +265,7 @@ class ReporteController extends Controller
     {
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
+        $valores_a_mostrar  = $request->valores_a_mostrar;
 
         $nom_agrupacion_id = (int)$request->nom_agrupacion_id;
         $agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id );
@@ -278,7 +279,7 @@ class ReporteController extends Controller
 
         $empleados =  NomContrato::whereIn( 'core_tercero_id', array_keys( $movimientos->groupBy('core_tercero_id')->toArray() ) )->get();
 
-        $vista = View::make('nomina.reportes.listado_acumulados', compact('movimientos','conceptos','empleados','detalla_empleados','agrupacion','fecha_desde', 'fecha_hasta'))->render();
+        $vista = View::make('nomina.reportes.listado_acumulados2', compact('movimientos','conceptos','empleados','detalla_empleados','agrupacion','fecha_desde', 'fecha_hasta','valores_a_mostrar'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

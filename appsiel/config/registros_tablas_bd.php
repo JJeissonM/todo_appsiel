@@ -32872,6 +32872,22 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2020-12-14 03:19:19',
       'updated_at' => '2020-12-14 03:19:32',
     ),
+    1015 => 
+    array (
+      'id' => 1021,
+      'descripcion' => 'Valores a mostrar',
+      'tipo' => 'select',
+      'name' => 'valores_a_mostrar',
+      'opciones' => '{"solo_valores":"Solo valores","valores_y_cantidades":"Valores y cantidades","solo_cantidades":"Solo cantidades"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2020-12-15 15:32:35',
+      'updated_at' => '2020-12-15 15:56:07',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -54180,6 +54196,12 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 10,
       'core_reporte_id' => 20,
       'core_campo_id' => 991,
+    ),
+    124 => 
+    array (
+      'orden' => 10,
+      'core_reporte_id' => 38,
+      'core_campo_id' => 1021,
     ),
   ),
   'sys_tipos_transacciones' => 
