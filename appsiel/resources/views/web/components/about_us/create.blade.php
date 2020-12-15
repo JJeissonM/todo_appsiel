@@ -57,6 +57,12 @@
                     <input name="descripcion" type="text" placeholder="Descripción" value="{{$aboutus->descripcion}}" class="form-control">
                 </div>
                 <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,$aboutus->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
+                <div class="form-group">
                     <label>Misión</label>
                     <textarea name="mision" class="form-control contenido" rows="5">{{$aboutus->mision}}</textarea>
                 </div>
@@ -139,6 +145,12 @@
                     <label>Descripción</label>
                     <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
                 </div>
+                <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
                 <div class="form-group">
                     <label>Misión</label>
                     <textarea name="mision" class="form-control contenido" rows="5"></textarea>

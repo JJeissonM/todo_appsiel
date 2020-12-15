@@ -17,6 +17,10 @@
         ?>
     }
 
+    .article-font {
+        font-family: <?php echo $setup->configuracionfuente->fuente->font; ?> !important;
+    }
+
     .article {
         background-color: white;
         border: 0px;
@@ -29,11 +33,11 @@
     }
 </style>
 
-<section id="blog">
+<section id="blog" class="article-font">
 
     {{ Form::Spin(128) }}
 
-    <div id="visor_contenido_articulos">
+    <div id="visor_contenido_articulos" class="article-font">
 
     </div>
 
@@ -44,11 +48,11 @@
             <div class="section-header">
 
                 @if( $setup->titulo != '' )
-                    <h2 class="section-title text-center wow fadeInDown">{{ $setup->titulo }}</h2>
+                    <h2 class="section-title text-center wow fadeInDown article-font">{{ $setup->titulo }}</h2>
                 @endif
 
                 @if( $setup->descripcion != '' )
-                    <p class="text-center wow fadeInDown" style="font-weight: bold; color: #000;">{{ $setup->descripcion }}</p>
+                    <p class="text-center wow fadeInDown article-font" style="font-weight: bold; color: #000;">{{ $setup->descripcion }}</p>
                 @endif
 
             </div>
@@ -69,14 +73,14 @@
                                     <p style="text-align: center;width: 100%;">
                                         <img src="{{ asset( $url_imagen )}}" style=" max-height: auto; object-fit: cover;">
                                     </p>
-                                    <h2 style="width: 100%; text-align: center;">{{$articles->titulo}}</h2>
+                                    <h2 class="article-font" style="width: 100%; text-align: center;">{{$articles->titulo}}</h2>
                                 </header>
                                 <div class="entry-content">
-                                    <P>{!! $articles->contenido !!}</P>
+                                    <P class="article-font">{!! $articles->contenido !!}</P>
                                 </div>
                                 <footer class="entry-meta" style="text-align: right;">
-                                    <span class="entry-author"><i class="fa fa-calendar"></i> <a style="font-weight: bold; font-size: 20px;" href="#">{{$articles->updated_at}}</a></span>
-                                    <span class="entry-category"><i class="fa fa-folder-o"></i> <a style="font-weight: bold; font-size: 20px;" href="#">@if($articles->articlecategory!=null) {{$articles->articlecategory->titulo}} @else Sin Categoría @endif</a></span>
+                                    <span class="entry-author"><i class="fa fa-calendar"></i> <a style="font-weight: bold; font-size: 20px;" class="article-font" href="#">{{$articles->updated_at}}</a></span>
+                                    <span class="entry-category"><i class="fa fa-folder-o"></i> <a style="font-weight: bold; font-size: 20px;" class="article-font" href="#">@if($articles->articlecategory!=null) {{$articles->articlecategory->titulo}} @else Sin Categoría @endif</a></span>
                                 </footer>
                             </div>
                         </article>
@@ -100,9 +104,9 @@
                                             <img src="{{ asset( $url_imagen )}}" style="width: 100%; max-height: 180px; object-fit: cover;">
                                         </div>
                                         <div class="col-md-8" style="padding: 20px;">
-                                            <h4 class="media-heading">{{$a->titulo}}</h4>
-                                            <p>{!! str_limit($a->descripcion,100,'...') !!}</p>
-                                            <p><a onclick="visor_contenido_articulos({{ $a->id }})" class="btn btn-primary waves-effect btn-sm" style="color: #fff; cursor: pointer;">Leer más <i class="fa fa-arrow-right"></i></a></p>
+                                            <h4 class="media-heading article-font">{{$a->titulo}}</h4>
+                                            <p class="article-font">{!! str_limit($a->descripcion,100,'...') !!}</p>
+                                            <p><a onclick="visor_contenido_articulos({{ $a->id }})" class="btn btn-primary waves-effect btn-sm article-font" style="color: #fff; cursor: pointer;">Leer más <i class="fa fa-arrow-right"></i></a></p>
                                         </div>
                                     </div>
                                 </div>
@@ -125,9 +129,9 @@
                                 ?>    
                                 <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><img style="width: 100%;" src="{{asset($url_imagen)}}"></div>
                                 <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
-                                    <h4 class="media-heading" style="margin-top: 0px;">{{$a->titulo}}</h4>
-                                    <p>{!! str_limit($a->descripcion,90,'...') !!} </p>
-                                    <a class="btn btn-primary animate" onclick="visor_contenido_articulos({{ $a->id }})" style="cursor: pointer; color: #fff;">Leer más...</a>
+                                    <h4 class="media-heading article-font" style="margin-top: 0px;">{{$a->titulo}}</h4>
+                                    <p class="article-font">{!! str_limit($a->descripcion,90,'...') !!} </p>
+                                    <a class="btn btn-primary animate article-font" onclick="visor_contenido_articulos({{ $a->id }})" style="cursor: pointer; color: #fff;">Leer más...</a>
                                 </div>
                             </div>
                         </div>

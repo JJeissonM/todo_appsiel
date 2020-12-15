@@ -156,6 +156,12 @@
                         <textarea name="descripcion" class="form-control" rows="3" required="required"></textarea>
                     </div>
                     <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
+                    <div class="form-group">
                         <label>Color 1 Para el Degradado</label>
                         <input type="color" name="color1" class="form-control" required="required">
                     </div>
@@ -214,6 +220,12 @@
                     <div class="form-group">
                         <label>Descripción</label>
                         <input name="descripcion" type="text" placeholder="Titulo" value="{{$pregunta->descripcion}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,$pregunta->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
                     </div>
                     <div class="form-group">
                         <label>Color 1 Para el Degradado</label>

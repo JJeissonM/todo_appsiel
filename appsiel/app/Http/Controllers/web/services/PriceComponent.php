@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers\web\services;
 
+use App\web\Configuracionfuente;
 use App\web\Price;
 use Form;
 use Illuminate\Support\Facades\Input;
@@ -39,9 +40,15 @@ class PriceComponent implements IDrawComponent
             ]
         ];
         $widget = $this->widget;
-
+        $fuentes = Configuracionfuente::all();
+        $fonts = null;
+        if (count($fuentes) > 0) {
+            foreach ($fuentes as $f) {
+                $fonts[$f->id] = $f->fuente->font;
+            }
+        }
         $variables_url = '?id=' . Input::get('id');
         $Price = Price::where('widget_id', $widget)->first();
-        return view('web.components.prices', compact('miga_pan', 'variables_url', 'widget', 'Price'));
+        return view('web.components.prices', compact('miga_pan', 'fonts', 'variables_url', 'widget', 'Price'));
     }
 }

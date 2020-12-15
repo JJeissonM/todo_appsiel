@@ -14,6 +14,10 @@
         }
         ?>
     }
+
+    .clientes-font {
+        font-family: <?php echo $clientes->configuracionfuente->fuente->font; ?> !important;
+    }
     
     #clientes2 {
         z-index: 80 !important;
@@ -51,12 +55,12 @@
     }
 </style>
 @if($clientes!=null)
-<section id="clientes" style="padding: 100px;">
+<section id="clientes" style="padding: 100px;" class="clientes-font">
     <div class="container" id="contenedor_seccion_clientes2">
         @if($clientes!=null)
         <div class="section-header">
-            <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$clientes->title}}</h2>
-            <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$clientes->descripcion}}</p>
+            <h2 class="section-title text-center wow fadeInDown animated clientes-font" style="visibility: visible; animation-name: fadeInDown;">{{$clientes->title}}</h2>
+            <p class="text-center wow fadeInDown animated clientes-font" style="visibility: visible; animation-name: fadeInDown;">{{$clientes->descripcion}}</p>
         </div>
         <div class="row">
             @if(count($clientes->clienteitems) > 0)
@@ -77,14 +81,14 @@
                                 <div class="col-sm-3">
                                     <img class="d-block img-fluid" src="{{$item->logo}}" alt="First slide">
                                     <div class="text-center">
-                                        <h6 style="padding: 10px;" class="card-title">@if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">{{$item->nombre}}</a> @else {{$item->nombre}} @endif</h6>
+                                        <h6 style="padding: 10px;" class="card-title clientes-font">@if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">{{$item->nombre}}</a> @else {{$item->nombre}} @endif</h6>
                                     </div>
                                 </div> 
                             @else
                             <div class="col-sm-3">
                                 <img class="d-block img-fluid" src="{{$item->logo}}" alt="First slide">
                                 <div class="text-center">
-                                    <h6 style="padding: 10px;" class="card-title">@if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">{{$item->nombre}}</a> @else {{$item->nombre}} @endif</h6>
+                                    <h6 style="padding: 10px;" class="card-title clientes-font">@if($item->enlace!=null || $item->enlace!='')<a target="_blank" href="{{$item->enlace}}">{{$item->nombre}}</a> @else {{$item->nombre}} @endif</h6>
                                 </div>
                             </div> 
                             @endif

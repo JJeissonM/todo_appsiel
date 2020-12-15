@@ -16,6 +16,7 @@ use App\web\Footer;
 use App\web\Pagina;
 
 use App\Http\Controllers\web\services\NavegacionComponent;
+use App\web\Configuracionfuente;
 
 class AboutusController extends Controller
 {
@@ -39,10 +40,17 @@ class AboutusController extends Controller
                 'etiqueta' => 'Definir Información'
             ]
         ];
+        $fuentes = Configuracionfuente::all();
+        $fonts = null;
+        if (count($fuentes) > 0) {
+            foreach ($fuentes as $f) {
+                $fonts[$f->id] = $f->fuente->font;
+            }
+        }
         $iconos = Icon::all();
         $variables_url = '?id=' . Input::get('id');
         $aboutus = Aboutus::where('widget_id', $widget)->first();
-        return view('web.components.about_us.create', compact('miga_pan', 'variables_url', 'aboutus', 'iconos', 'widget'));
+        return view('web.components.about_us.create', compact('miga_pan', 'fonts', 'variables_url', 'aboutus', 'iconos', 'widget'));
     }
 
     public function store(Request $request)
@@ -88,7 +96,6 @@ class AboutusController extends Controller
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         }
-
     }
 
     public function updated(Request $request, $id)
@@ -148,12 +155,11 @@ class AboutusController extends Controller
             $variables_url = $request->variables_url;
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         }
-
     }
 
     //Leer institucional
     public function leer_institucional($id)
     {
-        return view('web.components.about_us_leer_mas')->with( 'empresa', Aboutus::find($id) );
+        return view('web.components.about_us_leer_mas')->with('empresa', Aboutus::find($id));
     }
 }

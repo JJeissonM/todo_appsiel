@@ -27,18 +27,22 @@
 
     }
 
+    .about-font {
+        font-family: <?php echo $aboutus->configuracionfuente->fuente->font; ?> !important;
+    }
+
 </style>
 
-<div class="aboutus" style="background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}})">
+<div class="aboutus about-font" style="background-image: url({{asset('img/corazon/Diseño_Appsiel_2.jpg')}})">
     <div class="container">
         <div class="container" style="padding: 40px;">
             @if($aboutus!=null)
                 <div class="section-header">
-                    <h2 class="section-title text-center wow fadeInDown animated"
+                    <h2 class="section-title text-center wow fadeInDown animated about-font"
                         style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->titulo}}</h2>
-                    <p class="text-center wow fadeInDown animated"
+                    <p class="text-center wow fadeInDown animated about-font"
                        style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->descripcion}}
-                    <center><a class="btn btn-primary btn-md text-center"
+                    <center><a class="btn btn-primary btn-md text-center about-font"
                                href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer todo</a></center>
                 </div>
                 <div class="row" style="margin-top: -50px;">
@@ -52,10 +56,10 @@
                                 <i class="fa fa-{{$aboutus->mision_icono}}"></i>
                             </div>
                             <div class="media-body">
-                                <h4 class="media-heading">Misión</h4>
-                                <p>{!! str_limit($aboutus->mision,150) !!}</p>
+                                <h4 class="media-heading about-font">Misión</h4>
+                                <p class="about-font">{!! str_limit($aboutus->mision,150) !!}</p>
 
-                                <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
+                                <a class="pull-right about-font" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
                                     mas...</a>
                             </div>
                         </div>
@@ -66,10 +70,10 @@
                                 <i class="fa fa-{{$aboutus->vision_icono}}"></i>
                             </div>
                             <div class="media-body">
-                                <h4 class="media-heading">Visión</h4>
-                                <p>{!! str_limit($aboutus->vision,150) !!}</p>
+                                <h4 class="media-heading about-font">Visión</h4>
+                                <p class="about-font">{!! str_limit($aboutus->vision,150) !!}</p>
 
-                                <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
+                                <a class="pull-right about-font" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
                                     mas...</a>
                             </div>
                         </div>
@@ -80,10 +84,10 @@
                                     <i class="fa fa-{{$aboutus->valor_icono}}"></i>
                                 </div>
                                 <div class="media-body">
-                                    <h4 class="media-heading">Valores</h4>
-                                    <p>{!! str_limit($aboutus->valores,150) !!}</p>
+                                    <h4 class="media-heading about-font">Valores</h4>
+                                    <p class="about-font">{!! str_limit($aboutus->valores,150) !!}</p>
 
-                                    <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
+                                    <a class="pull-right about-font" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
                                         mas...</a>
                                 </div>
                             </div>
@@ -95,10 +99,10 @@
                                     <i class="fa fa-{{$aboutus->resenia_icono}}"></i>
                                 </div>
                                 <div class="media-body">
-                                    <h4 class="media-heading">Reseña Historica</h4>
-                                    <p>{!! str_limit($aboutus->resenia,150) !!}</p>
+                                    <h4 class="media-heading about-font">Reseña Historica</h4>
+                                    <p class="about-font">{!! str_limit($aboutus->resenia,150) !!}</p>
 
-                                    <a class="pull-right" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
+                                    <a class="pull-right about-font" href="{{route('aboutus.leer_institucional',$aboutus->id)}}">Leer
                                         mas...</a>
                                 </div>
                             </div>

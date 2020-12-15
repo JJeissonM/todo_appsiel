@@ -109,6 +109,7 @@ class TestimonialController extends Controller
         $seccion = Testimoniale::find($id);
         $seccion->titulo = $request->titulo;
         $seccion->descripcion = $request->descripcion;
+        $seccion->configuracionfuente_id = $request->configuracionfuente_id;
         $tipo_fondo = $seccion->tipo_fondo;
         if ($request->tipo_fondo == '') {
             $seccion->tipo_fondo = $tipo_fondo;

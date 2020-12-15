@@ -11,9 +11,13 @@
     @endif
 }
 
+.modal-font {
+    font-family: <?php echo $modal->configuracionfuente->fuente->font; ?> !important;
+}
+
 </style>
 
-<div id="modal">
+<div id="modal" class="modal-font">
     <!-- Modal -->
     <div class="modal fade" style="overflow-y: hidden;" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -23,10 +27,10 @@
                 </button>
                 <div class="modal-body" style="padding: 0;">
                     <div class="col-md-12" style="padding: 40px; color: #000; text-align: justify;">
-                        <h3>{{$modal->title}}</h3>
-                        <p>{{$modal->body}}</p>
+                        <h3 class="modal-font">{{$modal->title}}</h3>
+                        <p class="modal-font">{{$modal->body}}</p>
                         @if($modal->enlace!=null || $modal->enlace!='')
-                        <a target="_blank" class="btn btn-primary" href="{{$modal->enlace}}">Conoce más...</a>
+                        <a target="_blank" class="btn btn-primary modal-font" href="{{$modal->enlace}}">Conoce más...</a>
                         @endif
                     </div>
                 </div>

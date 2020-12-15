@@ -180,6 +180,12 @@
                                         <input type="text" class="form-control" name="texto" value="{{$footer->texto}}">
                                     </div>
                                     <div class="form-group">
+                                        <label for="">Fuente Para el Componente</label>
+                                        @if($fonts!=null)
+                                        {!! Form::select('configuracionfuente_id',$fonts,$footer->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
                                         <label>Ubicación (<i class="fa fa-question" data-toggle="tooltip" data-placement="top" title="Agregue incrustado un Mapa de Google o solo texto con una dirección por ejemplo. Tenga en cuenta que si escoge mapa, el mapa debe tener tamaño de width='300' y height='250'"> Ayuda</i>)</label>
                                         <input type="text" class="form-control" name="ubicacion" value="{{$footer->ubicacion}}">
                                     </div>
@@ -225,6 +231,12 @@
                                     <div class="form-group">
                                         <label>Texto Junto a Copyright</label>
                                         <input type="text" class="form-control" name="texto">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Fuente Para el Componente</label>
+                                        @if($fonts!=null)
+                                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                                        @endif
                                     </div>
                                     <div class="form-group">
                                         <label>Ubicación (<i class="fa fa-question" data-toggle="tooltip" data-placement="top" title="Agregue incrustado un Mapa de Google o solo texto con una dirección por ejemplo. Tenga en cuenta que si escoge mapa, el mapa debe tener tamaño de width='300' y height='250'"> Ayuda</i>)</label>

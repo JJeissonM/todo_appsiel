@@ -160,6 +160,12 @@
                         <input name="title" type="text" placeholder="Titulo" class="form-control">
                     </div>
                     <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
+                    <div class="form-group">
                         <label>¿El fondo es Imagen o Color?</label>
                         <select type="select" class="form-control" id="tipo_fondo" required name="tipo_fondo" onchange="cambiar()">
                             <option value="">-- Seleccione una opción --</option>
@@ -200,6 +206,12 @@
                     <div class="form-group">
                         <label>Titulo</label>
                         <input name="title" type="text" placeholder="Titulo" value="{{$Price->title}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,$Price->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
                     </div>
                     <div class="form-group">
                         <label>¿El fondo es Imagen o Color?</label>

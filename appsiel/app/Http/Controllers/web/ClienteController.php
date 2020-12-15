@@ -177,6 +177,7 @@ class ClienteController extends Controller
         $cliente = Cliente::find($id);
         $cliente->title = strtoupper($request->title);
         $cliente->descripcion = $request->descripcion;
+        $cliente->configuracionfuente_id = $request->configuracionfuente_id;
         $tipo_fondo = $cliente->tipo_fondo;
         if ($request->tipo_fondo == '') {
             $cliente->tipo_fondo = $tipo_fondo;
