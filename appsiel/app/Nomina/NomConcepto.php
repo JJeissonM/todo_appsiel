@@ -27,7 +27,7 @@ class NomConcepto extends Model
 
     public function get_valor_hora_porcentaje_sobre_basico( $salario_x_hora, $cantidad_horas )
     {
-        $salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
+        //$salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
 
         if ( $this->porcentaje_sobre_basico < 1 )
         {
