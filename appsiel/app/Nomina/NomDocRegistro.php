@@ -17,6 +17,8 @@ class NomDocRegistro extends Model
 						'create' => 'web',
 						'edit' => 'web/id_fila/edit' 
 						];
+	
+	public $urls_acciones = '{"edit":"web/id_fila/edit"}';
 
 	public function encabezado_documento()
 	{
@@ -90,4 +92,39 @@ class NomDocRegistro extends Model
 				            ->get();
 							
 	}
+
+
+    public static function get_campos_adicionales_edit( $lista_campos, $registro )
+    {
+
+    	/*
+			3: Cuota
+			4: Prestamo
+			7: Tiempo NO Laborado
+    	*/
+        if( in_array( $registro->concepto->modo_liquidacion_id, [3,4,7]) ) 
+        {
+         	return [[
+         	                        "id" => 999,
+         	                        "descripcion" => "",
+         	                        "tipo" => "personalizado",
+         	                        "name" => "lbl_planilla",
+         	                        "opciones" => "",
+         	                        "value" => '<p>Concepto: <b>' . $registro->concepto->descripcion . '</b> </p> <div class="form-group">                    
+         	                                        <div class="alert alert-danger">
+         											  <strong>¡Advertencia!</strong>
+         											  <br>
+         											  Por esta opción No puede modificar conceptos con modo de liquidación tipo <b>' . $registro->concepto->modo_liquidacion->descripcion . '</b>. <br> Debe reliquidar las transacciones automáticas.
+         											</div>
+         	                                    </div>',
+         	                        "atributos" => [],
+         	                        "definicion" => "",
+         	                        "requerido" => 0,
+         	                        "editable" => 1,
+         	                        "unico" => 0
+         	                    ]];       
+        }
+        
+        return $lista_campos;
+    }
 }
