@@ -27,12 +27,13 @@ class TiempoNoLaborado implements Estrategia
 		$novedad = NovedadTnl::where( [
 										[ 'nom_concepto_id', '=', $liquidacion['concepto']->id ],
 										[ 'nom_contrato_id', '=', $liquidacion['empleado']->id ],
-										[ 'cantidad_dias_pendientes_amortizar', '>', 0 ] ,
-										[ 'fecha_inicial_tnl', '>=', $lapso_documento->fecha_inicial ] ,
-										[ 'fecha_inicial_tnl', '<=', $lapso_documento->fecha_final ] 
+										[ 'cantidad_dias_pendientes_amortizar', '>', 0 ],
+										[ 'fecha_inicial_tnl', '>=', $lapso_documento->fecha_inicial ],
+										[ 'fecha_inicial_tnl', '<=', $lapso_documento->fecha_final ],
+										[ 'estado', '=', 'Activo' ] 
 									] )
-							->get()
-							->first();
+								->get()
+								->first();
 
 		if ( is_null( $novedad ) )
 		{
