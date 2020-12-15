@@ -27,7 +27,18 @@ class NomConcepto extends Model
 
     public function get_valor_hora_porcentaje_sobre_basico( $salario_x_hora, $cantidad_horas )
     {
-        return $salario_x_hora * ( 1 + $this->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
+        $salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
+
+        if ( $this->porcentaje_sobre_basico < 1 )
+        {
+            // Fraccion del Salario
+            $valor_a_liquidar = ( $salario_x_hora * $this->porcentaje_sobre_basico ) * $cantidad_horas;
+        }else{
+            // Valor completo Salario + Adicional
+            $valor_a_liquidar = $salario_x_hora * ( 1 + $this->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
+        }
+        
+        return $valor_a_liquidar;
     }
 	
     public static function consultar_registros()
