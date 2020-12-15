@@ -15,7 +15,7 @@ class NovedadTnl extends Model
 	
 	protected $fillable = ['nom_concepto_id', 'nom_contrato_id', 'fecha_inicial_tnl', 'fecha_final_tnl', 'cantidad_dias_tnl', 'cantidad_horas_tnl', 'tipo_novedad_tnl', 'codigo_diagnostico_incapacidad', 'numero_incapacidad', 'fecha_expedicion_incapacidad', 'origen_incapacidad', 'clase_incapacidad', 'fecha_incapacidad', 'valor_a_pagar_eps', 'valor_a_pagar_arl', 'valor_a_pagar_afp', 'valor_a_pagar_empresa', 'observaciones', 'estado', 'cantidad_dias_amortizados', 'cantidad_dias_pendientes_amortizar', 'es_prorroga', 'novedad_tnl_anterior_id'];
 	
-	public $encabezado_tabla = ['Concepto', 'Empleado', 'Tipo novedad', 'Fecha inicial TNL', 'Cant. días TNL', 'Cant. días amortizados', 'Cant. días pend.', 'Observaciones', 'Estado', 'Acción'];
+	public $encabezado_tabla = ['Concepto', 'Empleado', 'Tipo novedad', 'Origen', 'Inicio TNL',  'Fin TNL', 'Cant. días TNL', 'Cant. días amortizados', 'Cant. días pend.', 'Observaciones', 'Estado', 'Acción'];
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 
@@ -39,14 +39,16 @@ class NovedadTnl extends Model
 	    				->select(
 	    						'nom_conceptos.descripcion AS campo1',
 	    						'core_terceros.descripcion AS campo2',
-	    						'nom_novedades_tnl.tipo_novedad_tnl AS campo3',
-	    						'nom_novedades_tnl.fecha_inicial_tnl AS campo4',
-	    						'nom_novedades_tnl.cantidad_dias_tnl AS campo5',
-                                'nom_novedades_tnl.cantidad_dias_amortizados AS campo6',
-                                'nom_novedades_tnl.cantidad_dias_pendientes_amortizar AS campo7',
-	    						'nom_novedades_tnl.observaciones AS campo8',
-	    						'nom_novedades_tnl.estado AS campo9',
-	    						'nom_novedades_tnl.id AS campo10')
+                                'nom_novedades_tnl.tipo_novedad_tnl AS campo3',
+                                'nom_novedades_tnl.origen_incapacidad AS campo4',
+                                'nom_novedades_tnl.fecha_inicial_tnl AS campo5',
+                                'nom_novedades_tnl.fecha_final_tnl AS campo6',
+	    						'nom_novedades_tnl.cantidad_dias_tnl AS campo7',
+                                'nom_novedades_tnl.cantidad_dias_amortizados AS campo8',
+                                'nom_novedades_tnl.cantidad_dias_pendientes_amortizar AS campo9',
+	    						'nom_novedades_tnl.observaciones AS campo10',
+	    						'nom_novedades_tnl.estado AS campo11',
+	    						'nom_novedades_tnl.id AS campo12')
 					    ->get()
 					    ->toArray();
 	}
@@ -66,10 +68,10 @@ class NovedadTnl extends Model
         return $vec;
     }
 
+        /*
     public static function get_campos_adicionales_edit( $lista_campos, $registro )
     {
     	//dd( $lista_campos );
-
         if( $registro->cantidad_dias_amortizados != 0 ) 
         {
          	return [[
@@ -92,7 +94,8 @@ class NovedadTnl extends Model
          	                        "unico" => 0
          	                    ]];       
         }
-
+        
         return $lista_campos;
     }
+    */
 }

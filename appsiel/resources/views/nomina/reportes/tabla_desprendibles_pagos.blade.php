@@ -14,7 +14,7 @@
             <tr>
                 <td style="border: 1px solid;"><b> Empleado: </b></td>
                 <td style="border: 1px solid;">{{ $empleado->tercero->descripcion }}</td>
-                <td style="border: 1px solid;"> {{ Form::TextoMoneda($empleado->sueldo, 'Sueldo: ') }} </td>
+                <td style="border: 1px solid;"> {{ Form::TextoMoneda( $empleado->sueldo, 'Sueldo: ') }} </td>
             </tr>
         </table>
 

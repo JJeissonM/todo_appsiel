@@ -130,7 +130,7 @@ class NominaController extends TransaccionController
             }
 
             // Se llama al subsistema de liquidación
-            $liquidacion = new LiquidacionConcepto($concepto->id, $empleado, $documento_nomina);
+            $liquidacion = new LiquidacionConcepto( $concepto->id, $empleado, $documento_nomina);
 
             $valores = $liquidacion->calcular( $concepto->modo_liquidacion_id );
 

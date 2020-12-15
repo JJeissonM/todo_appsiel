@@ -126,7 +126,12 @@ class ReporteController extends Controller
             $empleados = NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
                                     ->leftJoin('nom_cargos', 'nom_cargos.id', '=', 'nom_contratos.cargo_id')
                                     ->where('nom_contratos.core_tercero_id', $core_tercero_id)
-                                    ->select('core_terceros.descripcion AS empleado', 'core_terceros.id AS core_tercero_id', 'nom_cargos.descripcion AS cargo', 'nom_contratos.sueldo AS salario', 'core_terceros.numero_identificacion AS cedula')
+                                    ->select(
+                                                'core_terceros.descripcion AS empleado',
+                                                'core_terceros.id AS core_tercero_id',
+                                                'nom_cargos.descripcion AS cargo',
+                                                'nom_contratos.sueldo as sueldo',
+                                                'core_terceros.numero_identificacion AS cedula')
                                     ->get();
         }
 
