@@ -22,8 +22,8 @@ $(document).ready(function(){
 		$('#valor_a_pagar_eps').parent().parent().parent().parent().hide();
 		$('#valor_a_pagar_arl').parent().parent().parent().parent().hide();
 		$('#valor_a_pagar_empresa').parent().parent().parent().parent().hide();
-		$('#cantidad_dias_amortizados').parent().parent().parent().parent().hide();
-		$('#cantidad_dias_pendientes_amortizar').parent().parent().parent().parent().hide();
+		//$('#cantidad_dias_amortizados').parent().parent().parent().parent().hide();
+		//$('#cantidad_dias_pendientes_amortizar').parent().parent().parent().parent().hide();
 		$('#es_prorroga').parent().parent().parent().parent().hide();
 		$('#novedad_tnl_anterior_id').parent().parent().parent().parent().hide();
 	}
@@ -40,8 +40,8 @@ $(document).ready(function(){
 		$('#valor_a_pagar_eps').parent().parent().parent().parent().show();
 		$('#valor_a_pagar_arl').parent().parent().parent().parent().show();
 		$('#valor_a_pagar_empresa').parent().parent().parent().parent().show();
-		$('#cantidad_dias_amortizados').parent().parent().parent().parent().show();
-		$('#cantidad_dias_pendientes_amortizar').parent().parent().parent().parent().show();
+		//$('#cantidad_dias_amortizados').parent().parent().parent().parent().show();
+		//$('#cantidad_dias_pendientes_amortizar').parent().parent().parent().parent().show();
 		$('#es_prorroga').parent().parent().parent().parent().show();
 	}
 	

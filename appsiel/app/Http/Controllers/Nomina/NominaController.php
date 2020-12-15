@@ -113,11 +113,16 @@ class NominaController extends TransaccionController
 
         foreach ( $conceptos_automaticos as $concepto )
         {
-            // Se valida si ya hay una liquidación previa del concepto en ese documento
-            $cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
-                                    ->where('core_tercero_id', $empleado->core_tercero_id)
-                                    ->where('nom_concepto_id', $concepto->id)
-                                    ->count();
+            $cant = 0;
+            if ( $modo_liquidacion_id != 7 ) // Si no es TNL, de esta pueden haber varias en el mismo Doc.
+            {
+                // Se valida si ya hay una liquidación previa del concepto en ese documento
+                $cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
+                                        ->where('core_tercero_id', $empleado->core_tercero_id)
+                                        ->where('nom_concepto_id', $concepto->id)
+                                        ->count();
+            }
+                
 
             if ( $cant != 0 ) 
             {
@@ -125,7 +130,7 @@ class NominaController extends TransaccionController
             }
 
             // Se llama al subsistema de liquidación
-            $liquidacion = new LiquidacionConcepto($concepto->id, $empleado, $documento_nomina);
+            $liquidacion = new LiquidacionConcepto( $concepto->id, $empleado, $documento_nomina);
 
             $valores = $liquidacion->calcular( $concepto->modo_liquidacion_id );
 
@@ -356,9 +361,7 @@ class NominaController extends TransaccionController
                     $liquidacion = new LiquidacionConcepto( $registro->concepto->id, $registro->contrato, $documento_nomina);
                     $liquidacion->retirar( $registro->concepto->modo_liquidacion_id, $registro );
                 }
-            }
-            
-                
+            }   
         }
 
         $this->actualizar_totales_documento($id);

@@ -12,6 +12,11 @@ use App\Nomina\NomDocRegistro;
 
 class TiempoNoLaborado implements Estrategia
 {
+
+	protected $valor_a_pagar_eps;
+	protected $valor_a_pagar_arl;
+	protected $valor_a_pagar_afp;
+	protected $valor_a_pagar_empresa;
 	/*
 		tipo_novedad_tnl: { incapacidad | permiso_remunerado | permiso_no_remunerado | suspencion }
 		origen_incapacidad: { comun | laboral }
@@ -22,100 +27,88 @@ class TiempoNoLaborado implements Estrategia
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
-
-		$novedad = NovedadTnl::where( [
-										[ 'nom_concepto_id', '=', $liquidacion['concepto']->id ],
-										[ 'nom_contrato_id', '=', $liquidacion['empleado']->id ],
-										[ 'cantidad_dias_pendientes_amortizar', '>', 0 ] 
-									] )
-							->get()
-							->first();
-
-		if ( is_null( $novedad ) )
-		{
-			return [ 
-						[
-							'cantidad_horas' => 0,
-							'valor_devengo' => 0,
-							'valor_deduccion' => 0 
-						]
-					];
-		}
-		
-		// NO se puede liquidar más tiempo del que tiene el documento
-		if ( $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado'] ) >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
-		{
-			return [ 
-						[
-							'cantidad_horas' => 0,
-							'valor_devengo' => 0,
-							'valor_deduccion' => 0 
-						]
-					];
-		}
-		
 		$lapso_documento = $liquidacion['documento_nomina']->lapso();
-		
-		$cantidad_horas_a_liquidar = $this->calcular_cantidad_horas_liquidar_incapacidad( $novedad, $lapso_documento );
 
-		$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
+		$novedades = NovedadTnl::where( [
+											[ 'nom_concepto_id', '=', $liquidacion['concepto']->id ],
+											[ 'nom_contrato_id', '=', $liquidacion['empleado']->id ],
+											[ 'cantidad_dias_pendientes_amortizar', '>', 0 ],
+											[ 'fecha_inicial_tnl', '<=', $lapso_documento->fecha_final ],
+											[ 'estado', '=', 'Activo' ] 
+										] )
+								->get();
 
+		$valores_novedades = [];
+        foreach( $novedades as $novedad )
+        {			
+			// NO se puede liquidar más tiempo del que tiene el documento
+			if ( $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado'] ) >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
+			{
+				continue;
+			}
+
+			$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
+
+			$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
+
+        	$valor_real_novedad = $this->calcular_valores_liquidar_novedad( $novedad, $liquidacion['empleado'], $liquidacion['documento_nomina'], $cantidad_horas_a_liquidar, $salario_x_hora );
+
+        	if ( $novedad->tipo_novedad_tnl == 'incapacidad' )
+        	{
+        		$this->crear_registro_concepto_pagado_por_la_empresa( $novedad, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+        	}        		
+
+			$novedad->cantidad_dias_amortizados += ($cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL);
+			$novedad->cantidad_dias_pendientes_amortizar -= ($cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL);
+        	$novedad->save();
+
+            $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_novedad );
+            
+            $valores_novedades[] = [
+	                                    'cantidad_horas' => $cantidad_horas_a_liquidar,
+										'valor_devengo' => $valores->devengo,
+										'valor_deduccion' => $valores->deduccion,
+										'novedad_tnl_id' => $novedad->id
+                                	];
+        }
+        return $valores_novedades;
+	}
+
+	public function calcular_valores_liquidar_novedad( &$novedad, $empleado, $documento_nomina, $cantidad_horas_a_liquidar, $salario_x_hora )
+	{
 		switch ( $novedad->tipo_novedad_tnl )
 		{
 			case 'incapacidad':
 				
-				$valores_liquidar = $this->calcular_valores_liquidar_incapacidad( $novedad, $liquidacion['empleado'], $cantidad_horas_a_liquidar );
+				$this->calcular_valores_liquidar_incapacidad( $novedad, $empleado, $cantidad_horas_a_liquidar );
 
-				$novedad->valor_a_pagar_eps = $valores_liquidar->valor_a_pagar_eps;
-				$novedad->valor_a_pagar_arl = $valores_liquidar->valor_a_pagar_arl;
-				$novedad->valor_a_pagar_afp = $valores_liquidar->valor_a_pagar_afp;
-				$novedad->valor_a_pagar_empresa = $valores_liquidar->valor_a_pagar_empresa;
+				$novedad->valor_a_pagar_eps += $this->valor_a_pagar_eps;
+				$novedad->valor_a_pagar_arl += $this->valor_a_pagar_arl;
+				$novedad->valor_a_pagar_afp += $this->valor_a_pagar_afp;
+				$novedad->valor_a_pagar_empresa += $this->valor_a_pagar_empresa;
 
-				$valor_registro = $valores_liquidar->valor_a_pagar_eps + $valores_liquidar->valor_a_pagar_arl + $valores_liquidar->valor_a_pagar_afp;
-
-				// Crear registro adicional en el documento (GASTO EMPRESA)
-				if ( $valores_liquidar->valor_a_pagar_empresa > 0 && $valor_registro != 0)
-				{
-					$cantidad_horas = 0;
-
-					$registro = NomDocRegistro::create(
-                                    [ 'nom_doc_encabezado_id' => $liquidacion['documento_nomina']->id ] + 
-                                    [ 'fecha' => $liquidacion['documento_nomina']->fecha] + 
-                                    [ 'core_empresa_id' => $liquidacion['documento_nomina']->core_empresa_id] +  
-                                    [ 'nom_concepto_id' => (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades') ] + 
-                                    [ 'core_tercero_id' => $liquidacion['empleado']->core_tercero_id ] + 
-                                    [ 'nom_contrato_id' => $liquidacion['empleado']->id ] +
-                                    [ 'estado' => 'Activo' ] + 
-                                    [ 'creado_por' => Auth::user()->email ] + 
-                                    [ 'modificado_por' => '' ] +
-                                    [ 'cantidad_horas' => $cantidad_horas ] +
-									[ 'valor_devengo' => $valores_liquidar->valor_a_pagar_empresa ] +
-									[ 'valor_deduccion' => 0 ] +
-									[ 'novedad_tnl_id' => $novedad->id ]
-                                );
-
-				}
+				$valor_registro = $this->valor_a_pagar_eps + $this->valor_a_pagar_arl + $this->valor_a_pagar_afp;
 
 				// Cuando todo lo paga la empresa ( 2 primeros días )
-				if ( $valores_liquidar->valor_a_pagar_empresa > 0 && $valor_registro == 0)
+				if ( $this->valor_a_pagar_empresa > 0 && $valor_registro == 0)
 				{
-					$valor_registro = $valores_liquidar->valor_a_pagar_empresa;
+					$valor_registro = $this->valor_a_pagar_empresa;
 				}
 
-				$valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_registro );
+				$valor_novedad = $valor_registro;
 				
 				break;
 			
 			case 'permiso_remunerado':
-				$valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $salario_x_hora * $cantidad_horas_a_liquidar );
+				$valor_novedad = $salario_x_hora * $cantidad_horas_a_liquidar;
 				break;
 			
 			case 'permiso_no_remunerado':
-				$valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, 0 );
+				$valor_novedad = 0.0001;
 				break;
 			
 			case 'suspencion':
-				$valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, 0 );
+				$valor_novedad = 0.0001;
 				break;
 			
 			default:
@@ -123,19 +116,34 @@ class TiempoNoLaborado implements Estrategia
 				break;
 		}
 
-		$novedad->cantidad_dias_amortizados += $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
-		$novedad->cantidad_dias_pendientes_amortizar -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
+		return $valor_novedad;
+	}
 
-		$novedad->save();
+	public function crear_registro_concepto_pagado_por_la_empresa( $novedad, $documento_nomina, $empleado)
+	{
 
-		return [ 
-					[
-						'cantidad_horas' => $cantidad_horas_a_liquidar,
-						'valor_devengo' => $valores->devengo,
-						'valor_deduccion' => $valores->deduccion,
-						'novedad_tnl_id' => $novedad->id
-					]
-				];
+		// Crear registro adicional en el documento (GASTO EMPRESA)
+		if ( $this->valor_a_pagar_empresa > 0 )
+		{
+			$cantidad_horas = 0;
+
+			$registro = NomDocRegistro::create(
+                            [ 'nom_doc_encabezado_id' => $documento_nomina->id ] + 
+                            [ 'fecha' => $documento_nomina->fecha] + 
+                            [ 'core_empresa_id' => $documento_nomina->core_empresa_id] +  
+                            [ 'nom_concepto_id' => (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades') ] + 
+                            [ 'core_tercero_id' => $empleado->core_tercero_id ] + 
+                            [ 'nom_contrato_id' => $empleado->id ] +
+                            [ 'estado' => 'Activo' ] + 
+                            [ 'creado_por' => Auth::user()->email ] + 
+                            [ 'modificado_por' => '' ] +
+                            [ 'cantidad_horas' => $cantidad_horas ] +
+							[ 'valor_devengo' => $this->valor_a_pagar_empresa ] +
+							[ 'valor_deduccion' => 0 ] +
+							[ 'novedad_tnl_id' => $novedad->id ]
+                        );
+
+		}
 	}
 
 	public function calcular_valores_liquidar_incapacidad( $novedad, $empleado, $cantidad_horas_a_liquidar )
@@ -150,7 +158,7 @@ class TiempoNoLaborado implements Estrategia
 		// Las incapacidades de origen "comun" se pagan al 66.66%
 		// La empresa puede asumir o NO el pago del otro 33.33%
 		$porcentaje_a_pagar = 100;
-		if ( config('nomina.pago_salario_completo_en_incapacidades') == 0 && $novedad->origen != 'laboral' )
+		if ( config('nomina.pago_salario_completo_en_incapacidades') == 0 && $novedad->origen_incapacidad != 'laboral' )
 		{
 			$porcentaje_a_pagar = $porcentaje_liquidacion_legal;
 		}
@@ -164,12 +172,13 @@ class TiempoNoLaborado implements Estrategia
 		}
 
 		$valor_total_liquidar = $valor_hora * $cantidad_horas_a_liquidar;
+		
 		$valor_a_pagar_eps = 0;
 		$valor_a_pagar_arl = 0;
 		$valor_a_pagar_afp = 0;
 		$valor_a_pagar_empresa = 0;
 
-		if ( $novedad->origen == 'laboral' )
+		if ( $novedad->origen_incapacidad == 'laboral' )
 		{
 			$valor_a_pagar_arl = $valor_total_liquidar;
 		}else{
@@ -194,15 +203,13 @@ class TiempoNoLaborado implements Estrategia
 			}
 		}
 
-		return (object)[ 
-							'valor_a_pagar_eps' => $valor_a_pagar_eps,
-							'valor_a_pagar_arl' => $valor_a_pagar_arl,
-							'valor_a_pagar_afp' => $valor_a_pagar_afp,
-							'valor_a_pagar_empresa' => $valor_a_pagar_empresa
-						];
+		$this->valor_a_pagar_eps = $valor_a_pagar_eps;
+		$this->valor_a_pagar_arl = $valor_a_pagar_arl;
+		$this->valor_a_pagar_afp = $valor_a_pagar_afp;
+		$this->valor_a_pagar_empresa = $valor_a_pagar_empresa;
 	}
 
-	public function calcular_cantidad_horas_liquidar_incapacidad( $novedad, $lapso_documento )
+	public function calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento )
 	{
 
 		$fecha_ini_novedad = strtotime( $novedad->fecha_inicial_tnl );
@@ -219,23 +226,21 @@ class TiempoNoLaborado implements Estrategia
 		}
 
 		// Caso 2: Liquidar una parte del tiempo de la novedad, el tiempo restante queda para el siguiente documento
-		if ( $fecha_ini_novedad >= $fecha_ini_documento && $fecha_fin_novedad > $fecha_fin_documento )
+		if ( $fecha_ini_novedad >= $fecha_ini_documento && $fecha_ini_novedad < $fecha_fin_documento && $fecha_fin_novedad > $fecha_fin_documento )
 		{
 			$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $novedad->fecha_inicial_tnl, $lapso_documento->fecha_final );
 
 			return ( ( $diferencia_en_dias + 1 ) * self::CANTIDAD_HORAS_DIA_LABORAL ); // Se suma 1, pues se debe incluir el mismo día inicial.
 		}
 
-		// Caso 3: La novedad ya tiene tiempos amortizados. Se continua amortizando desde la fecha inicial del lapso
-		if ( $novedad->cantidad_dias_amortizados > 0 )
+		// Caso 3: La novedad es vieja; ya tiene tiempos amortizados. Se continua amortizando desde la fecha inicial del lapso
+		if ( $fecha_ini_novedad < $fecha_ini_documento )
 		{
-			
 			if ( $fecha_fin_novedad > $fecha_fin_documento )
 			{
 				// Caso 3.1: liquidar todo el tiempo del lapso
 				$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $lapso_documento->fecha_inicial, $lapso_documento->fecha_final );
-			}else
-			{
+			}else{
 				// Caso 3.2: liquidar hasta el tiempo final de la novedad
 				$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $lapso_documento->fecha_inicial, $novedad->fecha_final_tnl );
 			}
@@ -249,7 +254,7 @@ class TiempoNoLaborado implements Estrategia
 		$fecha_ini = Carbon::createFromFormat('Y-m-d', $fecha_inicial);
 		$fecha_fin = Carbon::createFromFormat('Y-m-d', $fecha_final );
 
-		return $fecha_ini->diffInDays($fecha_fin);
+		return abs( $fecha_ini->diffInDays($fecha_fin) );
 	}
 
 	public function retirar(NomDocRegistro $registro)
@@ -267,15 +272,29 @@ class TiempoNoLaborado implements Estrategia
 		}
 
 		$lapso_documento = $registro->encabezado_documento->lapso();
-		$cantidad_horas_a_liquidar = $this->calcular_cantidad_horas_liquidar_incapacidad( $novedad, $lapso_documento );
-		$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
-		$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
+		$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
 
-		$valores_liquidar = $this->calcular_valores_liquidar_incapacidad( $novedad, $registro->contrato, $cantidad_horas_a_liquidar );
-		$novedad->valor_a_pagar_eps = $valores_liquidar->valor_a_pagar_eps;
-		$novedad->valor_a_pagar_arl = $valores_liquidar->valor_a_pagar_arl;
-		$novedad->valor_a_pagar_afp = $valores_liquidar->valor_a_pagar_afp;
-		$novedad->valor_a_pagar_empresa = $valores_liquidar->valor_a_pagar_empresa;
+		if ( $registro->nom_concepto_id != (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades') )
+		{
+			$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
+			$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
+		}
+
+		if ( $novedad->tipo_novedad_tnl == 'incapacidad' )
+		{
+			$this->calcular_valores_liquidar_incapacidad( $novedad, $registro->contrato, $cantidad_horas_a_liquidar );
+
+			$novedad->valor_a_pagar_eps -= $this->valor_a_pagar_eps;
+			$novedad->valor_a_pagar_arl -= $this->valor_a_pagar_arl;
+			$novedad->valor_a_pagar_afp -= $this->valor_a_pagar_afp;
+			$novedad->valor_a_pagar_empresa -= $this->valor_a_pagar_empresa;
+
+		}else{
+			$novedad->valor_a_pagar_eps = 0;
+			$novedad->valor_a_pagar_arl = 0;
+			$novedad->valor_a_pagar_afp = 0;
+			$novedad->valor_a_pagar_empresa = 0;
+		}
 
 		$novedad->save();
 

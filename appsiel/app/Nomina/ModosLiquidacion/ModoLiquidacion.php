@@ -4,7 +4,7 @@ namespace App\Nomina\ModosLiquidacion;
 
 use App\Nomina\ModosLiquidacion\Estrategias\TiempoNoLaborado;
 use App\Nomina\ModosLiquidacion\Estrategias\TiempoLaborado;
-use App\Nomina\ModosLiquidacion\Estrategias\AuxilioTransporte;
+use App\Nomina\ModosLiquidacion\Estrategias\AuxilioTransporte; // Lo está dejando por fuera
 use App\Nomina\ModosLiquidacion\Estrategias\Cuota;
 use App\Nomina\ModosLiquidacion\Estrategias\Prestamo;
 use App\Nomina\ModosLiquidacion\Estrategias\SeguridadSocial;
