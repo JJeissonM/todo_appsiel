@@ -22,11 +22,14 @@ class TiempoNoLaborado implements Estrategia
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
+		$lapso_documento = $liquidacion['documento_nomina']->lapso();
 
 		$novedad = NovedadTnl::where( [
 										[ 'nom_concepto_id', '=', $liquidacion['concepto']->id ],
 										[ 'nom_contrato_id', '=', $liquidacion['empleado']->id ],
-										[ 'cantidad_dias_pendientes_amortizar', '>', 0 ] 
+										[ 'cantidad_dias_pendientes_amortizar', '>', 0 ] ,
+										[ 'fecha_inicial_tnl', '>=', $lapso_documento->fecha_inicial ] ,
+										[ 'fecha_inicial_tnl', '<=', $lapso_documento->fecha_final ] 
 									] )
 							->get()
 							->first();
@@ -53,8 +56,6 @@ class TiempoNoLaborado implements Estrategia
 						]
 					];
 		}
-		
-		$lapso_documento = $liquidacion['documento_nomina']->lapso();
 		
 		$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_incapacidad( $novedad, $lapso_documento ) );
 
