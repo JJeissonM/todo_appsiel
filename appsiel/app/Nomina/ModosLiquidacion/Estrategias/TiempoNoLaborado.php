@@ -249,7 +249,7 @@ class TiempoNoLaborado implements Estrategia
 		$fecha_ini = Carbon::createFromFormat('Y-m-d', $fecha_inicial);
 		$fecha_fin = Carbon::createFromFormat('Y-m-d', $fecha_final );
 
-		return $fecha_ini->diffInDays($fecha_fin);
+		return abs( $fecha_ini->diffInDays($fecha_fin) );
 	}
 
 	public function retirar(NomDocRegistro $registro)
