@@ -118,7 +118,15 @@ class RegistrosDocumentosController extends TransaccionController
 
             $salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
 
-            $valor_a_liquidar = $salario_x_hora * ( 1 + $concepto->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
+            if ( $concepto->porcentaje_sobre_basico < 1 )
+            {
+                // Fraccion del Salario
+                $valor_a_liquidar = ( $salario_x_hora * $concepto->porcentaje_sobre_basico ) * $cantidad_horas;
+            }else{
+                // Valor completo Salario + Adicional
+                $valor_a_liquidar = $salario_x_hora * ( 1 + $concepto->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
+            }
+            
 
             $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor_a_liquidar );
 
