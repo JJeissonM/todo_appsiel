@@ -157,6 +157,12 @@
                         <textarea name="descripcion" class="form-control" rows="3" required="required"></textarea>
                     </div>
                     <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
+                    <div class="form-group">
                         <label>¿El fondo es Imagen o Color?</label>
                         <select type="select" class="form-control" id="tipo_fondo" required name="tipo_fondo" onchange="cambiar()">
                             <option value="">-- Seleccione una opción --</option>
@@ -203,6 +209,12 @@
                     <div class="form-group">
                         <label>Descripción</label>
                         <input name="descripcion" type="text" placeholder="Titulo" value="{{$testimonial->descripcion}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,$testimonial->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
                     </div>
                     <div class="form-group">
                         <label>¿El fondo es Imagen o Color?</label>

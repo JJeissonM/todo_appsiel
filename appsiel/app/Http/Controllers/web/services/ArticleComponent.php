@@ -6,6 +6,7 @@ namespace App\Http\Controllers\web\services;
 use App\web\Article;
 use App\web\Articlecategory;
 use App\web\Articlesetup;
+use App\web\Configuracionfuente;
 use Form;
 use Illuminate\Support\Facades\Input;
 
@@ -70,6 +71,13 @@ class ArticleComponent implements IDrawComponent
         $categorias = Articlecategory::all();
         //todos los articulos
         $articulos = Article::all();
-        return view('web.components.articles', compact('articulos', 'categorias', 'miga_pan', 'variables_url', 'widget', 'setup', 'articles'));
+        $fuentes = Configuracionfuente::all();
+        $fonts = null;
+        if (count($fuentes) > 0) {
+            foreach ($fuentes as $f) {
+                $fonts[$f->id] = $f->fuente->font;
+            }
+        }
+        return view('web.components.articles', compact('articulos','fonts', 'categorias', 'miga_pan', 'variables_url', 'widget', 'setup', 'articles'));
     }
 }

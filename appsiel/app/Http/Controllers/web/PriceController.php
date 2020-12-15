@@ -52,6 +52,7 @@ class PriceController extends Controller
         $item = Price::find($id);
         $item->title = strtoupper($request->title);
         $tipo_fondo = $item->tipo_fondo;
+        $item->configuracionfuente_id = $request->configuracionfuente_id;
         if ($request->tipo_fondo == '') {
             $item->tipo_fondo = $tipo_fondo;
         }

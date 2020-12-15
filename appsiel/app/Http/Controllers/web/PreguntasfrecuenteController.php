@@ -57,7 +57,6 @@ class PreguntasfrecuenteController extends Controller
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('mensaje_error', 'Debe indicar el tipo de fondo a usar en el componente.');
         }
         $seccion = new Preguntasfrecuentes($request->all());
-        dd($seccion);
         if (isset($request->imagen_fondo)) {
             $file = $request->imagen_fondo;
             $name = time() . str_slug($file->getClientOriginalName());
@@ -120,6 +119,7 @@ class PreguntasfrecuenteController extends Controller
         $seccion = Preguntasfrecuentes::find($id);
         $seccion->titulo = $request->titulo;
         $seccion->descripcion = $request->descripcion;
+        $seccion->configuracionfuente_id = $request->configuracionfuente_id;
         $seccion->color1 = $request->color1;
         $seccion->color2 = $request->color2;
         if (isset($request->imagen)) {

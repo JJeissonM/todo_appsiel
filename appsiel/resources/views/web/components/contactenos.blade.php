@@ -164,6 +164,12 @@
                         <input name="direccion" type="text" placeholder="Dirección de contacto" class="form-control">
                     </div>
                     <div class="form-group">
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
+                    <div class="form-group">
                         <br/><br/>
                         <a class="btn btn-danger" id="exampleModal" style="color: white" onclick="cerrar(this.id)">
                             Cancelar
@@ -218,6 +224,12 @@
                             <label>Dirección</label>
                             <input name="direccion" type="text" placeholder="Dirección de contacto"
                                    value="{{$contactenos->direccion}}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="">Fuente Para el Componente</label>
+                            @if($fonts!=null)
+                            {!! Form::select('configuracionfuente_id',$fonts,$contactenos->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                            @endif
                         </div>
                         <div class="form-group">
                             <br/><br/><a class="btn btn-danger" id="Modaledit" style="color: white"

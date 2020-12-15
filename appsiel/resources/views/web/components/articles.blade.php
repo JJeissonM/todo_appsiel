@@ -162,6 +162,12 @@
                                         <input type="text" class="form-control" value="{{$setup->descripcion}}" name="descripcion">
                                     </div>
                                     <div class="form-group">
+                                        <label for="">Fuente Para el Componente</label>
+                                        @if($fonts!=null)
+                                        {!! Form::select('configuracionfuente_id',$fonts,$setup->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
                                         <label>Formato (Solo aplica para categoría de artículos)</label>
                                         <select class="form-control" name="formato">
                                             @if($setup->formato=='LISTA')
@@ -254,6 +260,12 @@
                                     <div class="form-group">
                                         <label>Descripción</label>
                                         <input type="text" class="form-control" name="descripcion">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="">Fuente Para el Componente</label>
+                                        @if($fonts!=null)
+                                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                                        @endif
                                     </div>
                                     <div class="form-group">
                                         <label>Formato (Solo aplica para categoría de artículos)</label>

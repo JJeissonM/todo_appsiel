@@ -16,6 +16,10 @@
         ?>
     }
 
+    .about-font {
+        font-family: <?php echo $aboutus->configuracionfuente->fuente->font; ?> !important;
+    }
+
     @keyframes rotate {
         from {
             transform: rotate(0deg);
@@ -71,18 +75,18 @@
 
     }
 </style>
-<div class="aboutus" id="aboutus" style="padding-top: 100px;">
+<div class="aboutus about-font" id="aboutus" style="padding-top: 100px;">
 
     <div id="visor_contenido_aboutus">
 
     </div>
 
-    <div class="container" id="contenedor_seccion_aboutus">
+    <div class="container about-font" id="contenedor_seccion_aboutus">
         <div class="container">
             @if($aboutus!=null)
             <div class="section-header">
-                <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->titulo}}</h2>
-                <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">
+                <h2 class="section-title text-center wow fadeInDown animated about-font" style="visibility: visible; animation-name: fadeInDown;">{{$aboutus->titulo}}</h2>
+                <p class="text-center wow fadeInDown animated about-font" style="visibility: visible; animation-name: fadeInDown;">
                     {{$aboutus->descripcion}}
                 </p>
                 <!-- <center><a class="btn btn-primary btn-md text-center"
@@ -97,11 +101,11 @@
                         <div class="pull-left">
                             <i class="fa fa-{{$aboutus->mision_icono}}"></i>
                         </div>
-                        <div class="media-body">
-                            <h4 class="media-heading">Misión</h4>
-                            <p>{!! str_limit($aboutus->mision,110) !!}</p>
+                        <div class="media-body about-font">
+                            <h4 class="media-heading about-font">Misión</h4>
+                            <p class="about-font">{!! str_limit($aboutus->mision,110) !!}</p>
 
-                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
+                            <a class="pull-right btn btn-primary about-font" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
                         </div>
                     </div>
@@ -111,10 +115,10 @@
                             <i class="fa fa-{{$aboutus->vision_icono}}"></i>
                         </div>
                         <div class="media-body">
-                            <h4 class="media-heading">Visión</h4>
-                            <p>{!! str_limit($aboutus->vision,110) !!}</p>
+                            <h4 class="media-heading about-font">Visión</h4>
+                            <p class="about-font">{!! str_limit($aboutus->vision,110) !!}</p>
 
-                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
+                            <a class="pull-right btn btn-primary about-font" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
                         </div>
                     </div>
@@ -124,10 +128,10 @@
                             <i class="fa fa-{{$aboutus->valor_icono}}"></i>
                         </div>
                         <div class="media-body">
-                            <h4 class="media-heading">Valores</h4>
-                            <p>{!! str_limit($aboutus->valores,110) !!}</p>
+                            <h4 class="media-heading about-font">Valores</h4>
+                            <p class="about-font">{!! str_limit($aboutus->valores,110) !!}</p>
 
-                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
+                            <a class="pull-right btn btn-primary about-font" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
                         </div>
                     </div>
@@ -138,10 +142,10 @@
                             <i class="fa fa-{{$aboutus->resenia_icono}}"></i>
                         </div>
                         <div class="media-body">
-                            <h4 class="media-heading">Reseña Historica</h4>
-                            <p>{!! str_limit($aboutus->resenia,110) !!}</p>
+                            <h4 class="media-heading about-font">Reseña Historica</h4>
+                            <p class="about-font">{!! str_limit($aboutus->resenia,110) !!}</p>
 
-                            <a class="pull-right btn btn-primary" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
+                            <a class="pull-right btn btn-primary about-font" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
                         </div>
                     </div>
@@ -149,7 +153,7 @@
                 </div>
             </div>
             @else
-            <div class="section-header">
+            <div class="section-header about-font">
                 <h2 class="section-title text-center wow fadeInDown">Sección</h2>
                 <p class="text-center wow fadeInDown">Sin configuración</p>
             </div>

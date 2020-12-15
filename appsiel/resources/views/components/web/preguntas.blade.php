@@ -30,6 +30,10 @@ if($pregunta!=null){
         
     }
 
+    .pregunta-font {
+        font-family: <?php echo $pregunta->configuracionfuente->fuente->font; ?> !important;
+    }
+
     #faq-area .section-heading p {
         padding: 0 20px;
     }
@@ -120,11 +124,11 @@ if($pregunta!=null){
     }
 </style>
 
-<section id="faq-area" class="bg-1">
+<section id="faq-area" class="bg-1 pregunta-font">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown;">{{$pregunta->titulo}}</h2>
-            <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: #000; font-weight: bold;">{{$pregunta->descripcion}}</p>
+            <h2 class="section-title text-center wow fadeInDown animated pregunta-font" style="visibility: visible; animation-name: fadeInDown;">{{$pregunta->titulo}}</h2>
+            <p class="text-center wow fadeInDown animated pregunta-font" style="visibility: visible; animation-name: fadeInDown; color: #000; font-weight: bold;">{{$pregunta->descripcion}}</p>
         </div>
         <div class="row">
 
@@ -133,14 +137,14 @@ if($pregunta!=null){
                     <!--start faq single-->
                     @if(count($pregunta->itempreguntas) > 0)
                     @foreach($pregunta->itempreguntas as $item)
-                    <div class="card" style="opacity: 0.8 !important;">
+                    <div class="card pregunta-font" style="opacity: 0.8 !important;">
                         <div style="opacity: 0.8 !important;" class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar(event)" onfocusout="agregar(event)">
                             <h5 class="mb-0">
-                                <a data-toggle="collapse" href="#collapse{{$item->id}}" aria-expanded="false" aria-controls="collapse{{$item->id}}" class="collapsed">{{$item->pregunta}}</a>
+                                <a data-toggle="collapse" href="#collapse{{$item->id}}" aria-expanded="false" aria-controls="collapse{{$item->id}}" class="collapsed pregunta-font">{{$item->pregunta}}</a>
                             </h5>
                         </div>
                         <div id="collapse{{$item->id}}" class="collapse" role="tabpanel" aria-labelledby="faq{{$item->id}}" data-parent="#accordion" style="">
-                            <div class="card-body">
+                            <div class="card-body pregunta-font">
                                 <p>{{$item->respuesta}}</p>
                             </div>
                         </div>

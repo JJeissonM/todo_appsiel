@@ -1,12 +1,19 @@
+<style>
+
+.contactenos-font {
+    font-family: <?php echo $contactenos->configuracionfuente->fuente->font; ?> !important;
+}
+
+</style>
 <link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
-<div class="container-wrapper" style="padding-top: 100px;">
+<div class="container-wrapper contactenos-font" style="padding-top: 100px;">
     <div class="container">
         @if($contactenos != null)
-        <div class="row">
+        <div class="row contactenos-font">
             <div class="col-md-12">
                 <div class="section-header">
-                    <h2 class="section-title text-center wow fadeInDown">CONTÁCTENOS</h2>
-                    <p class="text-center wow fadeInDown" style="font-weight: bold; font-size: 20px; color: #000;">¡Escríbenos para tener el gusto de atenderte!</p>
+                    <h2 class="section-title text-center wow fadeInDown contactenos-font">CONTÁCTENOS</h2>
+                    <p class="text-center wow fadeInDown contactenos-font" style="font-weight: bold; font-size: 20px; color: #000;">¡Escríbenos para tener el gusto de atenderte!</p>
                 </div>
             </div>
             <div class="col-md-3"></div>
@@ -15,28 +22,28 @@
                     <address style="color: black; text-align: center; font-size: 16px;">
                         @if( $contactenos->empresa != '' )
                         <strong style="color: black; font-size: 28px;">
-                            <span title="{{ $contactenos->empresa }}"> {{$contactenos->empresa}} </span>
+                            <span class="contactenos-font" title="{{ $contactenos->empresa }}"> {{$contactenos->empresa}} </span>
                         </strong>
                         <br>
                         @endif
                         @if( $contactenos->correo != '' )
                         <a href="mailto:{{ $contactenos->correo }}">
-                            <span style="font-size: 22px;" title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
+                            <span class="contactenos-font" style="font-size: 22px;" title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
                         </a>
                         @endif
                         @if( $contactenos->direccion != '' )
-                        <span title="{{ $contactenos->direccion }}"> {{$contactenos->direccion}} </span>
+                        <span class="contactenos-font" title="{{ $contactenos->direccion }}"> {{$contactenos->direccion}} </span>
                         <br>
                         @endif
                         @if( $contactenos->ciudad != '' )
-                        <span title="{{ $contactenos->ciudad }}"> {{$contactenos->ciudad}} </span>
+                        <span class="contactenos-font" title="{{ $contactenos->ciudad }}"> {{$contactenos->ciudad}} </span>
                         <br>
                         @endif
                         @if( $contactenos->telefono != '' )
                         <i class="fa fa-whatsapp"></i> {{$contactenos->telefono}}
                         @endif
                     </address>
-                    <div class="col-md-12">
+                    <div class="col-md-12" class="contactenos-font">
                         <input type="hidden" name="contactenos_id" id="contactenos_id" value="{{$contactenos->id}}">
                         <div class="form-group">
                             <input type="text" name="names" class="form-control" id="names" placeholder="Nombre completo" required="">
@@ -57,7 +64,7 @@
             <div class="col-md-3"></div>
         </div>
         @else
-        <p style="color: red"><i class="fa fa-warning"></i> No ha creado formulario de contacto.</p>
+        <p style="color: red" class="contactenos-font"><i class="fa fa-warning"></i> No ha creado formulario de contacto.</p>
         @endif
     </div>
 </div>

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\web\Configuracionfuente;
 use Illuminate\Support\Facades\Input;
 use App\web\Footer;
 
@@ -44,8 +45,15 @@ class FooterController extends Controller
         $iconos = Icon::all();
         $paginas = Pagina::all();
         $contactenos = Contactenos::all()->first();
+        $fuentes = Configuracionfuente::all();
+        $fonts = null;
+        if (count($fuentes) > 0) {
+            foreach ($fuentes as $f) {
+                $fonts[$f->id] = $f->fuente->font;
+            }
+        }
         $animaciones = ['ninguna', 'circulos-descienden', 'efecto-ondas-cursor'];
-        return view('web.footer.footer', compact('footer', 'animaciones', 'variables_url', 'miga_pan', 'iconos', 'redes', 'contactenos', 'paginas'));
+        return view('web.footer.footer', compact('footer', 'fonts', 'animaciones', 'variables_url', 'miga_pan', 'iconos', 'redes', 'contactenos', 'paginas'));
     }
 
     public function store(Request $request)

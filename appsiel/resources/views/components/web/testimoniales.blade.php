@@ -13,6 +13,11 @@
         ?>
     }
 
+
+    .testimonial-font {
+        font-family: <?php echo $testimonial->configuracionfuente->fuente->font; ?> !important;
+    }
+
     #testimonial-area .section-heading h2 {
         font-size: 48px;
         line-height: 58px;
@@ -395,13 +400,13 @@
         }
     }
 </style>
-<section id="testimonial-area">
+<section id="testimonial-area" class="testimonial-font">
     <div class="container" style="max-width: 540px;overflow: visible !important;">
         @if($testimonial!=null)
         <div class="row" style="margin-left: -50px; margin-right: -405px;">
             <div class="section-header">
-                <h2 class="section-title text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: #000 !important;">{{$testimonial->titulo}}</h2>
-                <p class="text-center wow fadeInDown animated" style="visibility: visible; animation-name: fadeInDown; color: #000 !important;">{{$testimonial->descripcion}}</p>
+                <h2 class="section-title text-center wow fadeInDown animated testimonial-font" style="visibility: visible; animation-name: fadeInDown; color: #000 !important;">{{$testimonial->titulo}}</h2>
+                <p class="text-center wow fadeInDown animated testimonial-font" style="visibility: visible; animation-name: fadeInDown; color: #000 !important;">{{$testimonial->descripcion}}</p>
             </div>
         </div>
         <div class="testi-wrap">
@@ -414,12 +419,12 @@
                     <img width="200px" height="200px" src="{{asset($item->foto)}}" alt="">
                 </div>
                 <div class="client-comment">
-                    <h3>{{$item->testimonio}}</h3>
+                    <h3 class="testimonial-font">{{$item->testimonio}}</h3>
                     <span><i class="fa fa-quote-left"></i></span>
                 </div>
                 <div class="client-info">
-                    <h3>{{$item->nombre}}</h3>
-                    <p>{{$item->cargo}}</p>
+                    <h3 class="testimonial-font">{{$item->nombre}}</h3>
+                    <p class="testimonial-font">{{$item->cargo}}</p>
                 </div>
         </div>
         @else

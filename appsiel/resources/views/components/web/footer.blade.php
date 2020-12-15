@@ -75,6 +75,10 @@
             display: none;
         }
     }
+
+    .footer-font {
+        font-family: <?php echo $footer->configuracionfuente->fuente->font; ?> !important;
+    }
 </style>
 
 <!-- <div class="footerarea" style="padding-top: 20px; background: linear-gradient(180deg, rgba(255,255,255,1) 0%, { {$footer->background}} 100%); color: { {$footer->color}}"> -->
@@ -90,8 +94,8 @@
 </div>
 @endif
 
-<div class="footerarea @if($footer->animacion=='efecto-ondas-cursor') efecto-ondas-cursor @endif" style="padding-top: 20px; background: {{$footer->background}}; color: {{$footer->color}}; overflow: hidden;">
-    <div class="container">
+<div class="footer-font footerarea @if($footer->animacion=='efecto-ondas-cursor') efecto-ondas-cursor @endif" style="padding-top: 20px; background: {{$footer->background}}; color: {{$footer->color}}; overflow: hidden;">
+    <div class="container footer-font">
         <?php
         switch ($footer->animacion) {
             case 'circulos-descienden':
@@ -172,17 +176,17 @@
                 break;
         }
         ?>
-        <div class="row">
+        <div class="row footer-font">
             @if($footer->ubicacion == '')
             @if($contactenos == null)
             <div class="col-md-12 col-sm-12 d-flex  flex-wrap">
                 @foreach($footer->categorias as $item)
                 <div class="contenido col-md-4 col-sm-12" style="margin-top: 20px">
-                    <h5 class="column-title" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">{{$item->texto}}</h5>
+                    <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">{{$item->texto}}</h5>
                     <aside class="">
                         <ul id="menu-menu4" class="menu">
                             @foreach($item->enlaces as $enlace)
-                            <li id="" class="" style="list-style: none; margin-top: 10px; text-align: ;"><a style="color: {{$footer->color}}; font-size: 14px;" href="{{$enlace->enlace}}" target="_blank"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
+                            <li id="" class="footer-font" style="list-style: none; margin-top: 10px; text-align: ;"><a class="footer-font" style="color: {{$footer->color}}; font-size: 14px;" href="{{$enlace->enlace}}" target="_blank"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                 </a>
                             </li>
                             @endforeach
@@ -196,11 +200,11 @@
             <div class="col-md-9 col-sm-12 d-flex justify-content-between flex-wrap">
                 @foreach($footer->categorias as $item)
                 <div class="contenido col-md-6 col-sm-12" style="margin-top: 20px">
-                    <h5 class="column-title" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">{{$item->texto}}</h5>
+                    <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">{{$item->texto}}</h5>
                     <aside class="">
                         <ul id="menu-menu4" class="menu">
                             @foreach($item->enlaces as $enlace)
-                            <li id="" class="" style="list-style: none; margin-top: 10px;"><a style="color: {{$footer->color}}; font-size: 14px" target="_blank" href="{{$enlace->enlace}}"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
+                            <li id="" class="footer-font" style="list-style: none; margin-top: 10px;"><a class="footer-font" style="color: {{$footer->color}}; font-size: 14px" target="_blank" href="{{$enlace->enlace}}"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                 </a>
                             </li>
                             @endforeach
@@ -212,7 +216,7 @@
             </div>
             <div class="col-md-3 col-sm-12 d-flex justify-content-between flex-wrap">
                 <div class="contenido col-md-12 col-sm-12" style="margin:20px 0;">
-                    <h5 class="column-title" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
+                    <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
                         CONTACTENOS</h5>
                     <aside class="">
                         {{Form::contactenos($contactenos)}}
@@ -226,11 +230,11 @@
             <div class="col-md-9 col-sm-12 d-flex  flex-wrap">
                 @foreach($footer->categorias as $item)
                 <div class="contenido col-md-4 col-sm-12" style="margin-top: 20px">
-                    <h5 class="column-title" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">{{$item->texto}}</h5>
+                    <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">{{$item->texto}}</h5>
                     <aside class="">
                         <ul id="menu-menu4" class="menu">
                             @foreach($item->enlaces as $enlace)
-                            <li id="" class="" style="list-style: none; margin-top: 10px;"><a style="color: {{$footer->color}}; font-size: 14px;" href="{{$enlace->enlace}}" target="_blank"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
+                            <li id="" class="footer-font" style="list-style: none; margin-top: 10px;"><a class="footer-font" style="color: {{$footer->color}}; font-size: 14px;" href="{{$enlace->enlace}}" target="_blank"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                 </a>
                             </li>
                             @endforeach
@@ -242,9 +246,9 @@
             </div>
             <div class="col-md-3 col-sm-12 d-flex justify-content-between flex-wrap">
                 <div class="contenido col-md-12 col-sm-12" style="margin:20px 0;">
-                    <h5 class="column-title" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
+                    <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
                         ENCUENTRANOS</h5>
-                    <aside class="">
+                    <aside class="footer-font">
                         {!! str_replace('width="300"','width="200"',$footer->ubicacion)!!}
                     </aside>
                 </div>
@@ -254,11 +258,11 @@
             <div class="col-md-6 col-sm-12 d-flex justify-content-between flex-wrap">
                 @foreach($footer->categorias as $item)
                 <div class="contenido col-md-6 col-sm-12" style="margin-top: 20px">
-                    <h5 class="column-title" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">{{$item->texto}}</h5>
+                    <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">{{$item->texto}}</h5>
                     <aside class="">
                         <ul id="menu-menu4" class="menu">
                             @foreach($item->enlaces as $enlace)
-                            <li id="" class="" style="list-style: none; margin-top: 10px;"><a style="color: {{$footer->color}};" href="{{$enlace->enlace}}" target="_blank"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
+                            <li id="" class="footer-font" style="list-style: none; margin-top: 10px;"><a class="footer-font" style="color: {{$footer->color}};" href="{{$enlace->enlace}}" target="_blank"><i class="fa fa-{{$enlace->icono}}"></i> {{' '.$enlace->texto}}
                                 </a>
                             </li>
                             @endforeach
@@ -270,17 +274,17 @@
             </div>
             <div class="col-md-6 col-sm-12 d-flex justify-content-between flex-wrap">
                 <div class="contenido col-md-6 col-sm-12" style="margin:20px 0;">
-                    <h5 class="column-title" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
+                    <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
                         CONTACTENOS</h5>
-                    <aside class="">
+                    <aside class="footer-font">
                         {{Form::contactenos($contactenos)}}
                     </aside>
                 </div>
                 <!--end .widget-column-2-->
                 <div class="contenido col-md-6 col-sm-12" style="margin:20px 0;">
-                    <h5 class="column-title" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
+                    <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
                         ENCUENTRANOS</h5>
-                    <aside class="">
+                    <aside class="footer-font">
                         {!! str_replace('width="300"','width="200"',$footer->ubicacion)!!}
                     </aside>
                 </div>
@@ -289,15 +293,15 @@
             @endif
             @endif
         </div>
-        <div class="row" style="background-color: {{$footer->background2}};">
+        <div class="row footer-font" style="background-color: {{$footer->background2}};">
             <div id="div1" class="col-md-12 col-sm-12 d-flex justify-content-between flex-wrap" style="margin-top: 20px; float: left;">
-                <p style="font-size: 15px; color: {{$footer->color}}; width: 80%; padding-left: 20px;">
+                <p class="footer-font" style="font-size: 15px; color: {{$footer->color}}; width: 80%; padding-left: 20px;">
                     &copy; {{$footer->texto.' '.$footer->copyright}}
                 </p>
                 <ul class="d-flex justify-content-between">
                     @foreach($redes as $red)
                     <li style="list-style: none; margin-right: 10px;">
-                        <a href="{{$red->enlace}}" style="color:{{$footer->color}}; font-size: 24px;" target="_blank"><i class="fa fa-{{$red->icono}}"></i></a>
+                        <a class="footer-font" href="{{$red->enlace}}" style="color:{{$footer->color}}; font-size: 24px;" target="_blank"><i class="fa fa-{{$red->icono}}"></i></a>
                     </li>
                     @endforeach
                 </ul>
@@ -309,7 +313,7 @@
 </div>
 
 @else
-<div class="section-header">
+<div class="section-header footer-font">
     <h2 class="section-title text-center wow fadeInDown">Sección</h2>
     <p class="text-center wow fadeInDown">Sin configuración</p>
 </div>
