@@ -42,7 +42,7 @@ class TiempoNoLaborado implements Estrategia
 				continue;
 			}
 
-			$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_incapacidad( $novedad, $lapso_documento ) );
+			$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
 
 			$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
 
@@ -74,10 +74,10 @@ class TiempoNoLaborado implements Estrategia
 				
 				$valores_liquidar = $this->calcular_valores_liquidar_incapacidad( $novedad, $empleado, $cantidad_horas_a_liquidar );
 
-				$novedad->valor_a_pagar_eps = $valores_liquidar->valor_a_pagar_eps;
-				$novedad->valor_a_pagar_arl = $valores_liquidar->valor_a_pagar_arl;
-				$novedad->valor_a_pagar_afp = $valores_liquidar->valor_a_pagar_afp;
-				$novedad->valor_a_pagar_empresa = $valores_liquidar->valor_a_pagar_empresa;
+				$novedad->valor_a_pagar_eps += $valores_liquidar->valor_a_pagar_eps;
+				$novedad->valor_a_pagar_arl += $valores_liquidar->valor_a_pagar_arl;
+				$novedad->valor_a_pagar_afp += $valores_liquidar->valor_a_pagar_afp;
+				$novedad->valor_a_pagar_empresa += $valores_liquidar->valor_a_pagar_empresa;
 
 				$valor_registro = $valores_liquidar->valor_a_pagar_eps + $valores_liquidar->valor_a_pagar_arl + $valores_liquidar->valor_a_pagar_afp;
 
@@ -149,7 +149,7 @@ class TiempoNoLaborado implements Estrategia
 		// Las incapacidades de origen "comun" se pagan al 66.66%
 		// La empresa puede asumir o NO el pago del otro 33.33%
 		$porcentaje_a_pagar = 100;
-		if ( config('nomina.pago_salario_completo_en_incapacidades') == 0 && $novedad->origen != 'laboral' )
+		if ( config('nomina.pago_salario_completo_en_incapacidades') == 0 && $novedad->origen_incapacidad != 'laboral' )
 		{
 			$porcentaje_a_pagar = $porcentaje_liquidacion_legal;
 		}
@@ -164,17 +164,12 @@ class TiempoNoLaborado implements Estrategia
 
 		$valor_total_liquidar = $valor_hora * $cantidad_horas_a_liquidar;
 		
-		unset( $valor_a_pagar_eps );
-		unset( $valor_a_pagar_arl );
-		unset( $valor_a_pagar_afp );
-		unset( $valor_a_pagar_empresa );
-
 		$valor_a_pagar_eps = 0;
 		$valor_a_pagar_arl = 0;
 		$valor_a_pagar_afp = 0;
 		$valor_a_pagar_empresa = 0;
 
-		if ( $novedad->origen == 'laboral' )
+		if ( $novedad->origen_incapacidad == 'laboral' )
 		{
 			$valor_a_pagar_arl = $valor_total_liquidar;
 		}else{
@@ -207,7 +202,7 @@ class TiempoNoLaborado implements Estrategia
 						];
 	}
 
-	public function calcular_cantidad_horas_liquidar_incapacidad( $novedad, $lapso_documento )
+	public function calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento )
 	{
 
 		$fecha_ini_novedad = strtotime( $novedad->fecha_inicial_tnl );
@@ -269,18 +264,30 @@ class TiempoNoLaborado implements Estrategia
 			dd( [ 'TiempoNoLaborado Contrato NULL', $registro] );
 		}
 
+		$lapso_documento = $registro->encabezado_documento->lapso();
+		$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
+
 		if ( $registro->nom_concepto_id != (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades') )
 		{
-			$lapso_documento = $registro->encabezado_documento->lapso();
-			$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_incapacidad( $novedad, $lapso_documento ) );
 			$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
 			$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
 		}
 
-		$novedad->valor_a_pagar_eps = 0;
-		$novedad->valor_a_pagar_arl = 0;
-		$novedad->valor_a_pagar_afp = 0;
-		$novedad->valor_a_pagar_empresa = 0;
+		if ( $novedad->tipo_novedad_tnl == 'incapacidad' )
+		{
+			$valores_liquidar = $this->calcular_valores_liquidar_incapacidad( $novedad, $registro->contrato, $cantidad_horas_a_liquidar );
+
+			$novedad->valor_a_pagar_eps -= $valores_liquidar->valor_a_pagar_eps;
+			$novedad->valor_a_pagar_arl -= $valores_liquidar->valor_a_pagar_arl;
+			$novedad->valor_a_pagar_afp -= $valores_liquidar->valor_a_pagar_afp;
+			$novedad->valor_a_pagar_empresa -= $valores_liquidar->valor_a_pagar_empresa;
+			
+		}else{
+			$novedad->valor_a_pagar_eps = 0;
+			$novedad->valor_a_pagar_arl = 0;
+			$novedad->valor_a_pagar_afp = 0;
+			$novedad->valor_a_pagar_empresa = 0;
+		}
 
 		$novedad->save();
 
