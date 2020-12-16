@@ -16,6 +16,7 @@
 										],
 										[
 											'tipo' => 'personalizado',
+											'name' => 'mi_campo1',
 											'descripcion' => '',
 											'value' => '<br/><br/>',
                                             'atributos' => [],
@@ -31,6 +32,7 @@
 										],
 										[
 											'tipo' => 'personalizado',
+											'name' => 'mi_campo2',
 											'descripcion' => '',
 											'value' => '<br/><br/>',
                                             'atributos' => [],

@@ -121,6 +121,34 @@
 
 				</div>
 
+				<br>
+				<h4> Miscelanea  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_password_en_ficha_matricula = 0;
+								if( isset($parametros['mostrar_password_en_ficha_matricula'] ) )
+								{
+									$mostrar_password_en_ficha_matricula = $parametros['mostrar_password_en_ficha_matricula'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_password_en_ficha_matricula', $mostrar_password_en_ficha_matricula, 'Mostrar contraseña del estudiante en la Ficha de matrícula', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

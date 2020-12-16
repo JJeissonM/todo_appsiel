@@ -8,58 +8,38 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 
-			<?php
-				//$nombre_completo=$nombres." ".$estudiante->apellido1." ".$estudiante->apellido2;
-			?>
-			
-			<h2>{{ $estudiante->nombre_completo }}</h2>
-			<h4>Matrícula: {{ $codigo_matricula }} /  Curso: {{ $curso->descripcion }}</h4>
+			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', ['estudiante' => $estudiante ])
 
-			<h3>Libreta de pagos</h3>
-			<div class="table-responsive">
-				<table class="table table-bordered table-striped">
-					{{ Form::bsTableHeader(['Vlr. matrícula','Fecha inicio','Vlr. pensión anual','Núm. periodos','Vlr. pensión mensual','Estado']) }}
-					<tbody>
-						<tr class="info">
-							<td><?php echo number_format($libreta->valor_matricula, 0, ',', '.')?></td>
-							<td>{{$libreta->fecha_inicio}}</td>
-							<td><?php echo number_format($libreta->valor_pension_anual, 0, ',', '.')?></td>
-							<td>{{$libreta->numero_periodos}}</td>
-							<td><?php echo number_format($libreta->valor_pension_mensual, 0, ',', '.')?></td>
-							<td>{{$libreta->estado}}</td>
-						</tr>
-					</tbody>
-
-				</table>
-			</div>
+			@include('tesoreria.libretas_pagos.tabla_resumen_libreta_pagos', ['libreta' => $libreta ])
 			
 			<h3>Recaudos realizados </h3>
 			<div class="table-responsive">
 				<table class="table table-bordered table-striped">
 
-					{{ Form::bsTableHeader(['Fecha recaudo','Concepto','Mes','Vlr. recaudo','Acción','Creado por']) }}
+					{{ Form::bsTableHeader(['Fecha recaudo','Documento','Concepto','Mes','Vlr. recaudo','Acción','Creado por']) }}
 
 					<tbody>
-						@foreach($recaudos as $fila)
+						@foreach($recaudos as $recaudo)
 							<?php 
-								$cartera = App\Tesoreria\TesoPlanPagosEstudiante::find($fila->id_cartera);
+								$cartera = $recaudo->registro_cartera_estudiante;
 								$fecha = explode("-",$cartera->fecha_vencimiento);
 								$nombre_mes = nombre_mes($fecha[1]);
 							?>
 							<tr>
-								<td>{{$fila->fecha_recaudo}}</td>
-								<td>{{$fila->concepto}}</td>
-								<td>{{$nombre_mes}}</td>
-								<td><?php echo number_format($fila->valor_recaudo, 0, ',', '.')?></td>
+								<td> {{$recaudo->fecha_recaudo}}</td>
+								<td> {{ $recaudo->tipo_documento_app->prefijo }} {{ $recaudo->consecutivo }}</td>
+								<td> {{$recaudo->concepto}}</td>
+								<td> {{$nombre_mes}}</td>
+								<td> {{ number_format($recaudo->valor_recaudo, 0, ',', '.') }} </td>
 								<td>
-									<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$fila->id_cartera) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
+									<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$recaudo->id_cartera) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
 
 									@can('eliminar_recaudo_libreta')
 										&nbsp;&nbsp;&nbsp;
-										<a class="btn btn-danger btn-xs btn-detail" href="{{ url( 'tesoreria/eliminar_recaudo_libreta/'.$fila->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}" title="Eliminar"><i class="fa fa-btn fa-trash"></i>&nbsp;</a>
+										<a class="btn btn-danger btn-xs btn-detail" href="{{ url( 'tesoreria/eliminar_recaudo_libreta/'.$recaudo->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}" title="Eliminar"><i class="fa fa-btn fa-trash"></i>&nbsp;</a>
 									@endcan
 								</td>
-								<td>{{$fila->creado_por}} : {{$fila->created_at}}</td>
+								<td>{{$recaudo->creado_por}} : {{$recaudo->created_at}}</td>
 							</tr>
 						@endforeach
 					</tbody>

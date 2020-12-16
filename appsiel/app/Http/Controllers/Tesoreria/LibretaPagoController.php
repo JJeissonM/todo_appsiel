@@ -207,7 +207,6 @@ class LibretaPagoController extends ModeloController
 
         $this->almacenar_linea_registro_cartera( $datos );
 
-
         // 2. Se agregan los registros de pensiones por pagar
         $fecha = explode("-",$request->fecha_inicio);
         $num_mes = $fecha[1];
@@ -218,11 +217,41 @@ class LibretaPagoController extends ModeloController
             $datos['saldo_pendiente'] = $request->valor_pension_mensual;
             $datos['fecha_vencimiento'] = $fecha[0].'-'.$num_mes.'-' . $fecha[2];
             $this->almacenar_linea_registro_cartera( $datos );
-
             $num_mes++;
+            if ($num_mes>12)
+            {
+                $num_mes = 1;
+            }
         }
 
+        // Datos del concepto de Pensión (por cada mes)
+        $this->almacenar_registros_pension( $datos, $request );
+
         return redirect( 'tesoreria/ver_plan_pagos/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Libreta creada correctamente.');
+    }
+
+    public function almacenar_registros_pension( $datos, $request )
+    {
+        // Datos del concepto de Pensión (por cada mes)
+        $fecha = explode( "-", $request->fecha_inicio);
+        $num_mes = $fecha[1];
+        $num_anio = $fecha[0];
+        for($i=0;$i<$request->numero_periodos;$i++)
+        {
+            $datos['inv_producto_id'] = config('matriculas.inv_producto_id_default_pension');
+            $datos['valor_cartera'] = $request->valor_pension_mensual;
+            $datos['saldo_pendiente'] = $request->valor_pension_mensual;
+            $datos['fecha_vencimiento'] = $num_anio . '-' . $num_mes . '-' . $fecha[2];
+
+            $this->almacenar_linea_registro_cartera( $datos );
+
+            $num_mes++;
+            if ($num_mes>12)
+            {
+                $num_mes = 1;
+                $num_anio++;
+            }
+        }
     }
 
     /**
@@ -306,19 +335,7 @@ class LibretaPagoController extends ModeloController
         $this->almacenar_linea_registro_cartera( $datos );
 
         // Datos del concepto de Pensión (por cada mes)
-        $fecha = explode( "-", $request->fecha_inicio);
-        $num_mes = $fecha[1];
-        for($i=0;$i<$request->numero_periodos;$i++)
-        {
-            $datos['inv_producto_id'] = config('matriculas.inv_producto_id_default_pension');
-            $datos['valor_cartera'] = $request->valor_pension_mensual;
-            $datos['saldo_pendiente'] = $request->valor_pension_mensual;
-            $datos['fecha_vencimiento'] = $fecha[0] . '-' . $num_mes . '-' . $fecha[2];
-
-            $this->almacenar_linea_registro_cartera( $datos );
-
-            $num_mes++;
-        }
+        $this->almacenar_registros_pension( $datos, $request );
 
         $registro->fill( $request->all() );
         $registro->id_estudiante = $matricula_estudiante->id_estudiante;
@@ -378,7 +395,14 @@ class LibretaPagoController extends ModeloController
 
         $factura = VtasDocEncabezado::find( Input::get('vtas_doc_encabezado_id') );
 
-        $id_doc = CxcMovimiento::where( [ 'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id, 'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id, 'consecutivo' => $factura->consecutivo, ] )->get()->first()->id;
+        $registro_cxc = CxcMovimiento::where( [ 'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id, 'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id, 'consecutivo' => $factura->consecutivo, ] )->get()->first();
+
+        if ( is_null($registro_cxc) )
+        {
+            return redirect( 'tesoreria/ver_plan_pagos/' . $cartera->id_libreta . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )->with( 'mensaje_error', 'Factura <b>' . $factura->tipo_documento_app->prefijo . ' ' . $factura->consecutivo . '</b> no tiene registros de CxC.' );
+        }
+        
+        $id_doc = $registro_cxc->id;
 
         $matricula = Matricula::find( $libreta->matricula_id );
 
@@ -550,7 +574,8 @@ class LibretaPagoController extends ModeloController
         return view('layouts.edit',compact('form_create','miga_pan','registro', 'url_action'));
     }
 
-    public function imprimir_comprobante_recaudo($id_cartera){
+    public function imprimir_comprobante_recaudo($id_cartera)
+    {
         //echo $id;
         $cartera = TesoPlanPagosEstudiante::find($id_cartera);
         $recaudos = TesoRecaudosLibreta::where('id_cartera',$id_cartera)->get();

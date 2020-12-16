@@ -1,9 +1,5 @@
 <?php  
 	$variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
-
-	//dd( $encabezado_documento->tercero );
-	//dd( [ $encabezado_documento->tercero->direccion1, $encabezado_documento->tercero->ciudad->descripcion, $encabezado_documento->tercero->ciudad->departamento->descripcion ] );
-
 ?>
 
 @extends('transaccion.show')

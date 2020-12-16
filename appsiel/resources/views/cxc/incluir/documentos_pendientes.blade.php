@@ -30,9 +30,23 @@
                     
                 
             @if($movimiento[$i]['id'] != 0)
+
+                <?php
+
+                    $lbl_estudiante = '';
+                    // Para colegios
+                    $reponsable_estudiante = App\Matriculas\Responsableestudiante::where('tercero_id',$movimiento[$i]['core_tercero_id'])
+                                                                                ->get()
+                                                                                ->first();
+
+                    if( !is_null( $reponsable_estudiante ) )
+                    {
+                        $lbl_estudiante = '<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Estudiante: </b>' . $reponsable_estudiante->estudiante->tercero->descripcion;
+                    }
+                ?>
                 <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}">
                     <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
-                    <td> {{ $movimiento[$i]['tercero'] }} </td>
+                    <td> {{ $movimiento[$i]['tercero'] }} {!! $lbl_estudiante !!} </td>
                     <td> {{ $movimiento[$i]['documento'] }} </td>
                     <td> {{ $movimiento[$i]['fecha'] }} </td>
                     <td> {{ $movimiento[$i]['fecha_vencimiento'] }} </td>

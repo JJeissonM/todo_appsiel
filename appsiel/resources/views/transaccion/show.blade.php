@@ -1,5 +1,19 @@
 @extends('layouts.principal')
 
+<?php
+	if ( is_null( $doc_encabezado->tercero ) )
+	{
+		dd('Hay un Error con el tercero del documento. ');
+	}
+
+	if ( is_null( $doc_encabezado->tercero->ciudad ) )
+	{
+		dd('Error en ciudad. El tercero no tiene una ciudad asignada correctamente. Tercero: ' . $doc_encabezado->tercero->descripcion );
+	}
+
+?>
+
+
 @section('content')
 	
 	{{ Form::bsMigaPan($miga_pan) }}

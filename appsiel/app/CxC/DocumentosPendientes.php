@@ -16,6 +16,11 @@ class DocumentosPendientes extends Model
 
     public $encabezado_tabla = ['Proveedor', 'Documento prov.', 'Fecha', 'Valor documento', 'Valor pagado', 'Saldo pendiente', 'Estado', 'Acción'];
 
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
     public static function consultar_registros() {
         return DocumentosPendientes::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')

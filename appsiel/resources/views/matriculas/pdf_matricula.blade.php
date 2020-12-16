@@ -152,10 +152,18 @@
             &nbsp; {{ $matricula->nombre_curso }}
         </td>
         <td  width="{{$ancho_col2}}" align="right">
-            <span class="etiqueta">E-mail:</span> 
+            <span class="etiqueta">E-mail:</span>
+            <?php 
+                $password = App\Core\PasswordReset::where('email',$estudiante->email)->get()->first();
+            ?>
         </td>
         <td> 
-            &nbsp; {{ $estudiante->email }} 
+            &nbsp; {{ $estudiante->email }}
+            @if( !is_null( $password) )
+                @if( config('matriculas.mostrar_password_en_ficha_matricula') )
+                    <span style="color: #ddd;"> &nbsp; &nbsp; &nbsp;  <b> Contraseña: </b>{{ $password->token }} </span>
+                @endif
+            @endif
         </td>
     </tr>
 </table>

@@ -10,6 +10,13 @@ class TesoRecaudosLibreta extends Model
 {
     public $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','id_libreta', 'id_cartera', 'concepto', 'fecha_recaudo', 'teso_medio_recaudo_id', 'cantidad_cuotas','valor_recaudo','mi_token','creado_por','modificado_por'];
 
+    public $urls_acciones = '{"show":"no"}';
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+    }
+
     public function libreta()
     {
         return $this->belongsTo( TesoLibretasPago::class, 'id_libreta' );
@@ -35,7 +42,7 @@ class TesoRecaudosLibreta extends Model
                                 'core_terceros.numero_identificacion AS campo4',
                                 'teso_recaudos_libretas.concepto AS campo5',
                                 'teso_recaudos_libretas.valor_recaudo AS campo6',
-                                'teso_cartera_estudiantes.id AS campo7')
+                                'teso_cartera_estudiantes.id AS campo7')  // OJO, no es el ID del modelo
                     ->get()
                     ->toArray();
     }

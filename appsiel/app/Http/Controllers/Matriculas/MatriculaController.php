@@ -40,9 +40,12 @@ use App\Contabilidad\ContabMovimiento;
 use App\Core\TipoDocumentoId;
 use App\Matriculas\Responsableestudiante;
 use App\Matriculas\Tiporesponsable;
+
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+
+use App\Core\PasswordReset;
 
 class MatriculaController extends ModeloController
 {
@@ -218,7 +221,13 @@ class MatriculaController extends ModeloController
             /**/
             $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
             $email = $request->email;
-            $user = User::crear_y_asignar_role($name, $email, 4); // 4 = Role Estudiante
+            $password = str_random(7);
+            $user = User::crear_y_asignar_role($name, $email, 4, $password); // 4 = Role Estudiante
+
+            // Se almacena la contraseña temporalmente; cuando el usuario la cambie, se eliminará
+            PasswordReset::insert([
+                                    'email' => $email,
+                                    'token' => $password ]);
 
             $datos = array_merge(
                                     $request->all(),

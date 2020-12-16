@@ -54,8 +54,6 @@ class Tercero extends Model
         return Cliente::where( 'core_tercero_id', $this->id )->get()->first();
     }
 
-
-
     public static function consultar_registros()
     {
         $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo2';

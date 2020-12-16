@@ -621,8 +621,16 @@ class ModeloController extends Controller
     {
         // Se obtiene el registro del modelo indicado y el anterior y siguiente registro
         $registro = app($this->modelo->name_space)->find($id);
+        
+        if( is_null( $registro ) )
+        {
+            dd('No existe el registro con ID: ' . $id . ' para el modelo: ' . $this->modelo->modelo );
+        }
+
         $reg_anterior = app($this->modelo->name_space)->where('id', '<', $registro->id)->max('id');
         $reg_siguiente = app($this->modelo->name_space)->where('id', '>', $registro->id)->min('id');
+
+        
 
         // Se obtienen los campos asociados a ese modelo
         $lista_campos1 = $this->modelo->campos()->orderBy('orden')->get();

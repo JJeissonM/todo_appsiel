@@ -23,23 +23,7 @@
 
 			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', ['estudiante' => $matricula_estudiante->estudiante ])
 
-			<h3>Libreta de pagos</h3> {{ Form::bsBtnPrint( url('tesoreria/imprimir_libreta/'.$libreta->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))  ) }}
-			<div class="table-responsive">
-				<table class="table table-bordered table-striped">
-					{{ Form::bsTableHeader(['Vlr. matrícula','Fecha inicio','Vlr. pensión anual','Núm. periodos','Vlr. pensión mensual','Estado']) }}
-					<tbody>
-							<tr class="info">
-								<td><?php echo number_format($libreta->valor_matricula, 0, ',', '.')?></td>
-								<td>{{$libreta->fecha_inicio}}</td>
-								<td><?php echo number_format($libreta->valor_pension_anual, 0, ',', '.')?></td>
-								<td>{{$libreta->numero_periodos}}</td>
-								<td><?php echo number_format($libreta->valor_pension_mensual, 0, ',', '.')?></td>
-								<td>{{$libreta->estado}}</td>
-							</tr>
-					</tbody>
-
-				</table>
-			</div>
+			@include('tesoreria.libretas_pagos.tabla_resumen_libreta_pagos', ['libreta' => $libreta ])
 			
 			<h3>
 				Plan de pagos
@@ -95,9 +79,14 @@
 
 										<a class="btn btn-success btn-xs btn-detail" href="{{ url('facturas_estudiantes/create?id='.Input::get('id').'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion.'&estudiante_id='.$fila->id_estudiante) . '&inv_producto_id=' . $fila->inv_producto_id  . '&libreta_id=' . $libreta->id  . '&cartera_id=' . $cartera_id  . '&valor_cartera='.$fila->valor_cartera }}" title="Facturar"><i class="fa fa-file"></i>&nbsp;Facturar</a>
 									@else
-										<?php 
-											$vtas_doc_encabezado_id = $fila->facturas_estudiantes->where('cartera_estudiante_id', $cartera_id)->first()->vtas_doc_encabezado_id;
+										<?php
+											$factura = $fila->facturas_estudiantes->where('cartera_estudiante_id', $cartera_id)->first();
+
+											$vtas_doc_encabezado_id = $factura->vtas_doc_encabezado_id;
 										?>
+
+										{{ 'Factura ' . $factura->encabezado_factura->tipo_documento_app->prefijo . ' ' . $factura->encabezado_factura->consecutivo }} <br>
+										
 										<a class="btn btn-success btn-xs btn-detail" href="{{ url( 'vtas_imprimir/' . $vtas_doc_encabezado_id . '?id=13&id_modelo=139&id_transaccion=' . $id_transaccion . '&formato_impresion_id=estandar' ) }}" title="Imprimir Factura" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir Factura</a>
 
 										@if( $fila->estado != 'Pagada' )

@@ -163,8 +163,14 @@ class TiempoNoLaborado implements Estrategia
 			$porcentaje_a_pagar = $porcentaje_liquidacion_legal;
 		}
 
+		$horas_laborales = config('nomina.horas_laborales');
+		if ( $empleado->horas_laborales != 0 )
+		{
+			$horas_laborales = $empleado->horas_laborales;
+		}
+
 		// El IBC almacenado es el del mes anterior; si no existe, se toma el sueldo
-		$valor_hora = $empleado->valor_ibc() / $empleado->horas_laborales;
+		$valor_hora = $empleado->valor_ibc() / $horas_laborales;
 		// Se debe respetar al salario mínimo
 		if( $valor_hora < (float)config('nomina.SMMLV') / (float)config('nomina.horas_laborales') )
 		{

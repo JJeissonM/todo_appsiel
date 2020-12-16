@@ -56,6 +56,7 @@ class TiempoLaborado implements Estrategia
 											->sum('nom_doc_registros.cantidad_horas');
 
 		$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
+		
 		$tiempo_a_liquidar = $liquidacion['documento_nomina']->tiempo_a_liquidar - $horas_liquidadas_empleado;
 		
 		//dd( [$liquidacion['documento_nomina']->tiempo_a_liquidar, $horas_liquidadas_empleado] );
