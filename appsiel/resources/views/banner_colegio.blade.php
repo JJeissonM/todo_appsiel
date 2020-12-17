@@ -25,7 +25,7 @@
                 <br/> <b>{{ $colegio->slogan }}</b>
             @endif
 
-            <br/> Resolución No. {{ $colegio->resolucion }}
+            <br/> Resolución {{ $colegio->resolucion }}
 
             @if( $config['banner_colegio_mostrar_nit'] )
                 , NIT: {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }} - {{ $empresa->digito_verificacion }}
