@@ -31,7 +31,11 @@ if($pregunta!=null){
     }
 
     .pregunta-font {
-        font-family: <?php echo $pregunta->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($pregunta) )
+            @if( !is_null($pregunta->configuracionfuente ) )
+                font-family: <?php echo $pregunta->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
     }
 
     #faq-area .section-heading p {

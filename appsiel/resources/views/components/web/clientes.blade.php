@@ -16,7 +16,11 @@
     }
 
     .clientes-font {
-        font-family: <?php echo $clientes->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($clientes ) )
+            @if( !is_null($clientes->configuracionfuente ) )
+                font-family: <?php echo $clientes->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
     }
     
     #clientes2 {

@@ -16,7 +16,11 @@
     }
 
     .servicios-font {
-        font-family: <?php echo $servicios->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($servicios) )
+            @if( !is_null($servicios->configuracionfuente ) )
+                font-family: <?php echo $servicios->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
     }
 
 

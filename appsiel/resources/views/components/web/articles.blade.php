@@ -18,7 +18,13 @@
     }
 
     .article-font {
-        font-family: <?php echo $setup->configuracionfuente->fuente->font; ?> !important;
+
+        @if( !is_null($setup ) )
+            @if( !is_null($setup->configuracionfuente ) )
+                font-family: <?php echo $setup->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
+        
     }
 
     .article {

@@ -17,7 +17,11 @@
     }
 
     .team-font {
-        font-family: <?php echo $team->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($team) )
+            @if( !is_null($team->configuracionfuente ) )
+                font-family: <?php echo $team->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
     }
 
     .image-flip:hover .backside,

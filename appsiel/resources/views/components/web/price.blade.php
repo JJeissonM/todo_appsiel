@@ -17,7 +17,11 @@
     }
 
     .price-font {
-        font-family: <?php echo $Price->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($Price) )
+            @if( !is_null($Price->configuracionfuente ) )
+                font-family: <?php echo $Price->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
     }
 
 

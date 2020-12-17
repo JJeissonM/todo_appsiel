@@ -15,7 +15,11 @@
 
 
     .testimonial-font {
-        font-family: <?php echo $testimonial->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($testimonial) )
+            @if( !is_null($testimonial->configuracionfuente ) )
+                font-family: <?php echo $testimonial->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
     }
 
     #testimonial-area .section-heading h2 {

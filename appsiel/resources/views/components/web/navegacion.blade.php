@@ -34,7 +34,11 @@ if ($nav->fixed) {
     }
 
     .navegacion-font{
-        font-family: <?php echo $nav->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($nav) )
+            @if( !is_null($nav->configuracionfuente ) )
+                font-family: <?php echo $nav->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
     }
 
     header {

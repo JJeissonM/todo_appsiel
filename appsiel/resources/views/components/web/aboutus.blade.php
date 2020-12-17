@@ -17,7 +17,11 @@
     }
 
     .about-font {
-        font-family: <?php echo $aboutus->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($aboutus ) )
+            @if( !is_null($aboutus->configuracionfuente ) )
+                font-family: <?php echo $aboutus->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
     }
 
     @keyframes rotate {

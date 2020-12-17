@@ -45,7 +45,7 @@
                                 <td><input type="checkbox" name="requisito4"> Registro calificaciones</td>
                             </tr>
                             <tr>
-                                <td><input type="checkbox" name="requisito5"> Carnet EPS</td>
+                                <td><input type="checkbox" name="requisito5"> Certificación E.P.S.</td>
                                 <td><input type="checkbox" name="requisito6"> Registro de vacunación</td>
                             </tr>
                         </table>

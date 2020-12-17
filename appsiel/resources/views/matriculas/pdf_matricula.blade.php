@@ -146,25 +146,27 @@
     </tr>
     <tr>
         <td width="{{$ancho_col}}" align="right">
-            <span class="etiqueta">Curso: </span> 
+            <span class="etiqueta">Grado: </span> 
         </td>
         <td width="{{$ancho_col3}}"> 
             &nbsp; {{ $matricula->nombre_curso }}
         </td>
-        <td  width="{{$ancho_col2}}" align="right">
-            <span class="etiqueta">E-mail:</span>
-            <?php 
-                $password = App\Core\PasswordReset::where('email',$estudiante->email)->get()->first();
-            ?>
-        </td>
-        <td> 
-            &nbsp; {{ $estudiante->email }}
-            @if( !is_null( $password) )
-                @if( config('matriculas.mostrar_password_en_ficha_matricula') )
-                    <span style="color: #ddd;"> &nbsp; &nbsp; &nbsp;  <b> Contraseña: </b>{{ $password->token }} </span>
+        @if( config('matriculas.mostrar_password_en_ficha_matricula') )
+            <td  width="{{$ancho_col2}}" align="right">
+                <span class="etiqueta">E-mail:</span>
+                <?php 
+                    $password = App\Core\PasswordReset::where('email',$estudiante->email)->get()->first();
+                ?>
+            </td>
+            <td> 
+                &nbsp; {{ $estudiante->email }}
+                @if( !is_null( $password) )
+                        <span style="color: #ddd;"> &nbsp; &nbsp; &nbsp;  <b> Contraseña: </b>{{ $password->token }} </span>
                 @endif
-            @endif
-        </td>
+            </td>
+        @else
+            <td colspan="2">&nbsp;</td>
+        @endif
     </tr>
 </table>
 
@@ -258,14 +260,14 @@
     </tr>
     <tr>
         <td width="15px"><input type="checkbox" {{$requisitos[3]}}></td><td>Registro calificaciones</td>
-        <td width="15px"><input type="checkbox" {{$requisitos[4]}}></td><td>Carnet EPS</td>
+        <td width="15px"><input type="checkbox" {{$requisitos[4]}}></td><td>Certificación E.P.S.</td>
         <td width="15px"><input type="checkbox" {{$requisitos[5]}}></td><td>Registro de vacunación</td>
     </tr>
 </table>
 
 <table>
     <tr>
-        <td align="center" height="40px"> <h2>Aceptamos todos los programas y reglamentos del colegio</h2></td>
+        <td align="center" height="40px"> <h2>Aceptamos todos los reglamentos del colegio.</h2></td>
     </tr>
 </table>
 

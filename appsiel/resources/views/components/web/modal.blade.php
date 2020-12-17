@@ -12,7 +12,11 @@
 }
 
 .modal-font {
-    font-family: <?php echo $modal->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($modal ) )
+            @if( !is_null($modal->configuracionfuente ) )
+                font-family: <?php echo $modal->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
 }
 
 </style>

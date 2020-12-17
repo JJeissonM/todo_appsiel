@@ -1,6 +1,10 @@
 <style>
     .slider-font {
-        font-family: <?php echo $slider->configuracionfuente->fuente->font; ?> !important;
+        @if( !is_null($slider) )
+            @if( !is_null($slider->configuracionfuente ) )
+                font-family: <?php echo $slider->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
     }
 </style>
 <section id="main-slider" class="slider-font">
