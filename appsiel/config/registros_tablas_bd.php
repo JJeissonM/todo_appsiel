@@ -6917,6 +6917,21 @@
       'created_at' => '2020-12-14 03:38:43',
       'updated_at' => '2020-12-14 03:38:59',
     ),
+    461 => 
+    array (
+      'id' => 487,
+      'core_app_id' => 2,
+      'modelo_id' => 262,
+      'name' => 'cali_notas_nivelaciones',
+      'descripcion' => 'Notas de Nivelaciones',
+      'url' => 'web',
+      'parent' => 86,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-12-17 07:16:30',
+      'updated_at' => '2020-12-17 07:19:48',
+    ),
   ),
   'roles' => 
   array (
@@ -16514,6 +16529,30 @@
       'orden' => 0,
       'permission_id' => 486,
       'role_id' => 3,
+    ),
+    1573 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 487,
+      'role_id' => 1,
+    ),
+    1574 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 487,
+      'role_id' => 3,
+    ),
+    1575 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 487,
+      'role_id' => 9,
+    ),
+    1576 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 487,
+      'role_id' => 12,
     ),
   ),
   'sys_campos' => 
