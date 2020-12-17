@@ -7,7 +7,7 @@
 	    {{ Form::hidden('id_libreta',$libreta->id) }}
 	    {{ Form::hidden('id_cartera',$cartera->id) }}
 	    {{ Form::hidden('id_estudiante',$libreta->id_estudiante) }}
-	    {{ Form::hidden('concepto',$cartera->concepto) }}
+	    {{ Form::hidden('concepto',$cartera->concepto->id) }}
 	    {{ Form::hidden('core_tercero_id', $estudiante->responsable_financiero()->tercero->id) }}
 	    {{ Form::hidden('cliente_id', $factura->cliente_id) }}
 

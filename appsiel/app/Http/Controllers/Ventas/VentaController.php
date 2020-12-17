@@ -66,6 +66,8 @@ use App\Tesoreria\RegistrosMediosPago;
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Impuesto;
 
+use App\Matriculas\FacturaAuxEstudiante;
+
 
 class VentaController extends TransaccionController
 {
@@ -841,6 +843,13 @@ class VentaController extends TransaccionController
 
         // 6to. Se marca como anulado el documento
         $factura->update(['estado'=>'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
+
+        // 7mo. Si es una factura de Estudiante
+        $factura_estudiante = FacturaAuxEstudiante::where('vtas_doc_encabezado_id',$factura->id)->get()->first();
+        if (!is_null($factura_estudiante))
+        {
+            $factura_estudiante->delete();
+        }
 
         return redirect( 'ventas/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Factura de ventas ANULADA correctamente.');
         

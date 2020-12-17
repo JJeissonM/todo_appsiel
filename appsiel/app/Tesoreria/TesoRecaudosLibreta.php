@@ -22,6 +22,11 @@ class TesoRecaudosLibreta extends Model
         return $this->belongsTo( TesoLibretasPago::class, 'id_libreta' );
     }
 
+    public function elconcepto()
+    {
+        return $this->belongsTo( 'App\Inventarios\InvProducto', 'concepto');
+    }
+
     public function registro_cartera_estudiante()
     {
         return $this->belongsTo( TesoPlanPagosEstudiante::class, 'id_cartera');

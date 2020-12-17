@@ -9,7 +9,15 @@
 
 	    @for($i=0; $i < $cant; $i++)
 			<li>
-				<a href="{{ url( $urls[$i]['link'] ) }}"> 
+				<?php 
+					$target = '_self';
+					if ( isset($urls[$i]['target']))
+					{
+						$target = $urls[$i]['target'];
+					}
+				?>
+
+				<a href="{{ url( $urls[$i]['link'] ) }}" target="{{$target}}"> 
 					{!! $urls[$i]['etiqueta'] !!} 
 				</a>
 			</li>

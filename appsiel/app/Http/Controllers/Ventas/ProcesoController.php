@@ -84,7 +84,11 @@ class ProcesoController extends Controller
         $forma_pago = $documento->forma_pago;
         
         $datos = $documento->toArray();
-        $datos['registros_medio_pago'] = ProcesoController::get_lineas_medios_recaudos( $documento );
+        $datos['registros_medio_pago'] = [];
+        if ( $forma_pago == 'contado')
+        {
+            $datos['registros_medio_pago'] = ProcesoController::get_lineas_medios_recaudos( $documento );
+        }
 
         VentaController::contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion );/**/
     }

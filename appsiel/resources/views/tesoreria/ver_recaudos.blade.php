@@ -28,7 +28,7 @@
 							<tr>
 								<td> {{$recaudo->fecha_recaudo}}</td>
 								<td> {{ $recaudo->tipo_documento_app->prefijo }} {{ $recaudo->consecutivo }}</td>
-								<td> {{$recaudo->concepto}}</td>
+								<td> {{$recaudo->elconcepto->descripcion}}</td>
 								<td> {{$nombre_mes}}</td>
 								<td> {{ number_format($recaudo->valor_recaudo, 0, ',', '.') }} </td>
 								<td>
