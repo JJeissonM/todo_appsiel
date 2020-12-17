@@ -20,6 +20,11 @@ class TesoDocEncabezado extends Model
 
     public $encabezado_tabla = ['Documento','Fecha','Tercero','Detalle','Acción'];
 
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+    }
+
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');

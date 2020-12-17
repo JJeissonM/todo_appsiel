@@ -43,7 +43,7 @@
     										&nbsp;&nbsp;&nbsp;
     										<!-- <a class="btn btn-danger btn-xs btn-detail" href="{ { url( 'tesoreria/eliminar_recaudo_libreta/'.$recaudo->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}" title="Eliminar"><i class="fa fa-btn fa-trash"></i>&nbsp;</a> -->
 
-                                            <a class="btn btn-danger btn-xs btn-detail" href="{{ url( 'teso_anular_recaudo_cxc/' .  $recaudo_tesoreria->id . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') '&id_transaccion=32' ) }}" title="Eliminar"><i class="fa fa-btn fa-trash"></i>&nbsp;</a>
+                                            <a class="btn btn-danger btn-xs btn-detail" href="{{ url( 'teso_anular_recaudo_cxc/' .  $recaudo_tesoreria->id . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion=32' ) }}" title="Eliminar"><i class="fa fa-btn fa-trash"></i>&nbsp;</a>
     									@endcan
     								</td>
     								<td>{{$recaudo_tesoreria->creado_por}} : {{$recaudo_tesoreria->created_at}}</td>

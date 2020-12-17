@@ -35,13 +35,11 @@ class TesoRecaudosLibreta extends Model
 
     public function recaudo_tesoreria()
     {
-        $recaudo_tesoreria = TesoDocEncabezado::where('core_tipo_transaccion_id',$this->core_tipo_transaccion_id)
-                                                ->where('core_tipo_doc_app_id',$this->core_tipo_doc_app_id)
-                                                ->where('consecutivo',$this->consecutivo)
-                                                ->get()
-                                                ->first();
-
-        return $recaudo_tesoreria;
+        return TesoDocEncabezado::where('core_tipo_transaccion_id',$this->core_tipo_transaccion_id)
+                                ->where('core_tipo_doc_app_id',$this->core_tipo_doc_app_id)
+                                ->where('consecutivo',$this->consecutivo)
+                                ->get()
+                                ->first();
     }
 
     public $encabezado_tabla = ['Fecha','Documento','Estudiante','No. Identificacion','Detalle','Valor','Acción'];

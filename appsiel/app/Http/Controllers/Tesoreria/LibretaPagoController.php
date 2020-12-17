@@ -581,8 +581,6 @@ class LibretaPagoController extends ModeloController
         $cartera = TesoPlanPagosEstudiante::find($id_cartera);
         $recaudos = TesoRecaudosLibreta::where('id_cartera',$id_cartera)->get();
 
-        dd( $recaudos );
-
         //$empresa = Empresa::find(Auth::user()->empresa_id);
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get();
         $colegio = $colegio[0]; 

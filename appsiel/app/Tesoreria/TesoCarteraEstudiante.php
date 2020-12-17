@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 
+use App\Tesoreria\TesoRecaudosLibreta;
+
 // PLAN DE PAGOS del estudiante
+
 class TesoCarteraEstudiante extends Model
 {
     // NOTA: el campo "concepto" debe cambiar por uno tipo ID, que es el que se usa en la facturas.
@@ -26,6 +29,11 @@ class TesoCarteraEstudiante extends Model
     public function facturas_estudiantes()
     {
         return $this->hasMany( 'App\Matriculas\FacturaAuxEstudiante', 'cartera_estudiante_id');
+    }
+
+    public function recaudo_tesoreria()
+    {
+        return TesoRecaudosLibreta::where( 'id_cartera', $this->id )->get()->first()->recaudo_tesoreria();
     }
 
     public static function get_cartera_estudiantes_curso( $curso_id, $fecha_vencimiento, $concepto)

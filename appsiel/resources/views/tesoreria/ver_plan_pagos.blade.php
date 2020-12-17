@@ -92,7 +92,14 @@
 										@if( $fila->estado != 'Pagada' )
 											<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/hacer_recaudo_cartera/'.$cartera_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&vtas_doc_encabezado_id=' . $vtas_doc_encabezado_id ) }}" title="Recaudar"><i class="fa fa-btn fa-money"></i>&nbsp;Recaudar</a>
 										@else
-											<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$cartera_id) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir recaudo</a>
+											<?php 
+												//dd($fila);
+												$recaudo_tesoreria = $fila->recaudo_tesoreria();
+
+											?>
+											@if( !is_null($recaudo_tesoreria) )
+												<a class="btn btn-info btn-xs btn-detail" href="{{ url( 'tesoreria_recaudos_cxc_imprimir/' . $recaudo_tesoreria->id . '?id=3&id_modelo=153&id_transaccion=32' ) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir recaudo</a>
+											@endif
 										@endif
 									@endif
 								</td>
