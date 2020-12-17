@@ -536,7 +536,7 @@ class VentaController extends TransaccionController
         $registro->save();
 
         // Actualiza Registro de CxC
-        $remision = DocumentosPendientes::where('core_tipo_transaccion_id',$registro->core_tipo_transaccion_id)
+        DocumentosPendientes::where('core_tipo_transaccion_id',$registro->core_tipo_transaccion_id)
                         ->where('core_tipo_doc_app_id',$registro->core_tipo_doc_app_id)
                         ->where('consecutivo',$registro->consecutivo)
                         ->update( [ 
@@ -546,16 +546,27 @@ class VentaController extends TransaccionController
 
         // Actualiza documento de inventario
         $remision = InvDocEncabezado::find($registro->remision_doc_encabezado_id);
-        $remision->fill( $request->all() );
-        $remision->save();
+        if ( !is_null( $remision ) )
+        {
+            $remision->fill( $request->all() );
+            $remision->save();
 
-        // Actualiza MOVIMIENTO de inventario
-        InvMovimiento::where('core_tipo_transaccion_id',$remision->core_tipo_transaccion_id)
-                        ->where('core_tipo_doc_app_id',$remision->core_tipo_doc_app_id)
-                        ->where('consecutivo',$remision->consecutivo)
-                        ->update( [ 
-                                    'fecha' => $request->fecha
-                                ] );
+            // Actualiza MOVIMIENTO de inventario
+            InvMovimiento::where('core_tipo_transaccion_id',$remision->core_tipo_transaccion_id)
+                            ->where('core_tipo_doc_app_id',$remision->core_tipo_doc_app_id)
+                            ->where('consecutivo',$remision->consecutivo)
+                            ->update( [ 
+                                        'fecha' => $request->fecha
+                                    ] );
+            ContabMovimiento::where('core_tipo_transaccion_id',$remision->core_tipo_transaccion_id)
+                            ->where('core_tipo_doc_app_id',$remision->core_tipo_doc_app_id)
+                            ->where('consecutivo',$remision->consecutivo)
+                            ->update( [ 
+                                        'fecha' => $request->fecha,
+                                        'detalle_operacion' => $request->descripcion
+                                    ] );
+        }
+            
 
         // Actualiza MOVIMIENTO de VENTAS
         VtasMovimiento::where('core_tipo_transaccion_id',$registro->core_tipo_transaccion_id)
@@ -568,8 +579,7 @@ class VentaController extends TransaccionController
                                     'orden_compras' => $request->orden_compras
                                 ] );
 
-        // Actualiza MOVIMIENTO de CONTABILIDAD para la factura y para la remisión
-
+        // Actualiza MOVIMIENTO de CONTABILIDAD para la factura
         ContabMovimiento::where('core_tipo_transaccion_id',$registro->core_tipo_transaccion_id)
                         ->where('core_tipo_doc_app_id',$registro->core_tipo_doc_app_id)
                         ->where('consecutivo',$registro->consecutivo)
@@ -579,13 +589,6 @@ class VentaController extends TransaccionController
                                     'detalle_operacion' => $request->descripcion
                                 ] );
 
-        ContabMovimiento::where('core_tipo_transaccion_id',$remision->core_tipo_transaccion_id)
-                        ->where('core_tipo_doc_app_id',$remision->core_tipo_doc_app_id)
-                        ->where('consecutivo',$remision->consecutivo)
-                        ->update( [ 
-                                    'fecha' => $request->fecha,
-                                    'detalle_operacion' => $request->descripcion
-                                ] );
 
         return redirect( 'ventas/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
