@@ -113,6 +113,14 @@ class RecaudoCxcController extends Controller
      */
     public function store(Request $request)
     {
+        $doc_encabezado = $this->almacenar( $request );
+
+        // se llama la vista de RecaudoCxcController@show
+        return redirect( 'tesoreria/recaudos_cxc/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+    }
+
+    public function almacenar( Request $request )
+    {
         // Crear Documento de tesorería (PAGO)
         $doc_encabezado = RecaudoCxcController::crear_encabezado_documento($request, $request->url_id_modelo);
 
@@ -213,18 +221,17 @@ class RecaudoCxcController extends Controller
         $teso_motivo_id = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
         
         TesoMovimiento::create( $datos + 
-                        [ 'teso_motivo_id' => $teso_motivo_id] + 
-                        [ 'teso_caja_id' => $teso_caja_id] + 
-                        [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id] + 
-                        [ 'valor_movimiento' => $valor_movimiento] +
-                        [ 'estado' => 'Activo' ]
-                    );
+                                    [ 'teso_motivo_id' => $teso_motivo_id] + 
+                                    [ 'teso_caja_id' => $teso_caja_id] + 
+                                    [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id] + 
+                                    [ 'valor_movimiento' => $valor_movimiento] +
+                                    [ 'estado' => 'Activo' ]
+                                );
 
         // MOVIMIENTO CREDITO (CAJA/BANCO)
         ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $valor_total, 0);
 
-        // se llama la vista de RecaudoCxcController@show
-        return redirect( 'tesoreria/recaudos_cxc/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+        return $doc_encabezado;
     }
 
 

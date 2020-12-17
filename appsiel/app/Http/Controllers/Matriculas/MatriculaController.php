@@ -377,10 +377,10 @@ class MatriculaController extends ModeloController
         $modelo = Modelo::find(Input::get('id_modelo'));
 
         // Se obtiene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id);
+        $matricula = app($modelo->name_space)->find($id);
 
-        if ($registro->periodo_lectivo_id != 0) {
-            if (PeriodoLectivo::find($registro->periodo_lectivo_id)->cerrado) {
+        if ($matricula->periodo_lectivo_id != 0) {
+            if (PeriodoLectivo::find($matricula->periodo_lectivo_id)->cerrado) {
                 return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Matrícula no puede ser MODIFICADA. El Periodo Lectivo está cerrado.');
             }
         }
@@ -390,14 +390,14 @@ class MatriculaController extends ModeloController
         $cant_calificaciones = 0;
 
         // Verificar si el estudiante ya tiene calificaciones con esta matrícula, entonces no se podrá cambiar el Grado
-        $cant_calificaciones = Calificacion::get_cantidad_x_matricula($registro->id_colegio, $registro->codigo);
+        $cant_calificaciones = Calificacion::get_cantidad_x_matricula($matricula->id_colegio, $matricula->codigo);
 
         // Si no tiene calificaciones, tambien se validan las observaciones
         if ($cant_calificaciones == 0) {
-            $cant_calificaciones = ObservacionesBoletin::get_cantidad_x_matricula($registro->id_colegio, $registro->codigo);
+            $cant_calificaciones = ObservacionesBoletin::get_cantidad_x_matricula($matricula->id_colegio, $matricula->codigo);
         }
 
-        $lista_campos = ModeloController::get_campos_modelo($modelo, $registro, 'edit');
+        $lista_campos = ModeloController::get_campos_modelo($modelo, $matricula, 'edit');
 
         //eliminamos los campos de acudiente por defecto en el modelo
         if (count($lista_campos) > 0) {
@@ -411,7 +411,7 @@ class MatriculaController extends ModeloController
         //Algunas personalizaciones
         $cantidad_campos = count($lista_campos);
 
-        $curso = Curso::find($registro->curso_id);
+        $curso = Curso::find($matricula->curso_id);
         $grado = Grado::find($curso->sga_grado_id);
 
         for ($i = 0; $i < $cantidad_campos; $i++) {
@@ -463,11 +463,11 @@ class MatriculaController extends ModeloController
             'campos' => $lista_campos
         ];
 
-        $miga_pan = $this->get_miga_pan($modelo, $registro->codigo);
+        $miga_pan = $this->get_miga_pan($modelo, $matricula->codigo);
 
-        $estudiante = Estudiante::find($registro->id_estudiante);
+        $estudiante = Estudiante::find($matricula->id_estudiante);
 
-        return view('matriculas.edit', compact('registro', 'cant_calificaciones', 'miga_pan', 'estudiante', 'form_create'));
+        return view('matriculas.edit', compact('matricula', 'cant_calificaciones', 'miga_pan', 'estudiante', 'form_create'));
     }
 
     /**

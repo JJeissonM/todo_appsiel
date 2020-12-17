@@ -34,9 +34,15 @@ class TesoPlanPagosEstudiante extends Model
         return $this->hasMany( 'App\Matriculas\FacturaAuxEstudiante', 'cartera_estudiante_id');
     }
 
-    public function recaudo_tesoreria()
+    public function teso_doc_encabezado()
     {
-        return TesoRecaudosLibreta::where( 'id_cartera', $this->id )->get()->first()->recaudo_tesoreria();
+        $recaudo_libreta = TesoRecaudosLibreta::where( 'id_cartera', $this->id )->get()->first();
+        if ( $this->id == 2083)
+        {
+            //dd( $recaudo_libreta );
+        }
+        
+        return $recaudo_libreta->recaudo_tesoreria();
     }
 
     public function get_registros_pendientes_o_vencidos_a_la_fecha( $fecha, $inv_producto_id = null )

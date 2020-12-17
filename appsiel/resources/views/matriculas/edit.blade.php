@@ -13,9 +13,9 @@
         <div class="marco_formulario">
             <br/><br/>
 
-            {{ Form::model($registro, ['url' => ['matriculas/'.$registro->id], 'method' => 'PUT', 'id' => 'form_create']) }}
+            {{ Form::model($matricula, ['url' => ['matriculas/'.$matricula->id], 'method' => 'PUT', 'id' => 'form_create']) }}
 
-				@include('matriculas.incluir.datos_inscripcion')
+				@include('matriculas.incluir.datos_inscripcion', [ 'tercero' => $matricula->estudiante->tercero ])
 
                 <div class="panel panel-primary">
                     <div class="panel-heading">DATOS DE LA MATRÍCULA</div>
@@ -30,7 +30,7 @@
                             <div class="panel-heading">Requisitos de matrícula</div>
                             <div class="panel-body">
                                 <?php
-                                    $requisitos = explode("-",str_replace("on","checked",$registro->requisitos));
+                                    $requisitos = explode("-",str_replace("on","checked",$matricula->requisitos));
                                     //print_r($requisitos);
                                 ?>
                                 <table class="fluid">

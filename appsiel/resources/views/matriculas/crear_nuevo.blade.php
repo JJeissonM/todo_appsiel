@@ -24,7 +24,7 @@
             <input type="hidden" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ $inscripcion->fecha_nacimiento }}">
             <input type="hidden" name="estudiante_existe" id="estudiante_existe" value="{{ $estudiante_existe }}">
 
-            @include('matriculas.incluir.datos_inscripcion')
+            @include('matriculas.incluir.datos_inscripcion', [ 'tercero' => $inscripcion->tercero ])
 
             <div class="panel panel-primary">
                 <div class="panel-heading">DATOS DE LA MATRÍCULA</div>

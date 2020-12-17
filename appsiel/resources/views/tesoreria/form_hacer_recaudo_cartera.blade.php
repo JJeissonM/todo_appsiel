@@ -70,7 +70,7 @@
 
 		{{ Form::hidden('valor_pendiente',$valor_pendiente,['id'=>'valor_pendiente']) }}
 
-		{{ Form::hidden('creado_por',explode('@',Auth::user()->email)[0] ) }}	
+		{{ Form::hidden( 'creado_por', Auth::user()->email ) }}	
 
 	    {{ Form::bsButtonsForm('tesoreria/ver_plan_pagos/'.$cartera->id_libreta.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}
 

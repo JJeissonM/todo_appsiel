@@ -37,6 +37,7 @@ use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\TesoDocEncabezado;
 
 use App\Contabilidad\ContabMovimiento;
 
@@ -423,17 +424,19 @@ class LibretaPagoController extends ModeloController
     // Almacenar documentos de RECAUDO DE CARTERA DE ESTUDANTE
     public function guardar_recaudo_cartera(Request $request)
     {
+        //dd( $request->all() );
+
         $url_id_modelo = $request->url_id_modelo;
 
         $fecha = $request->fecha_recaudo;
 
-        $consecutivo_doc_recaudo = $this->get_consecutivo($request->core_empresa_id, $request->core_tipo_doc_app_id);
+        //$consecutivo_doc_recaudo = $this->get_consecutivo($request->core_empresa_id, $request->core_tipo_doc_app_id);
 
-        // Se REEMPLAZA el conscutivo en los datos del request
-        $datos = array_merge($request->all(),['consecutivo' => $consecutivo_doc_recaudo,'fecha' => $fecha, 'mi_token'=>'']);
+        // Se REEMPLAZA la fecha en los datos del request
+        $datos = array_merge($request->all(),[ 'fecha' => $fecha, 'mi_token'=>'']);
 
         // Se guarda el recaudo de la libreta
-        TesoRecaudosLibreta::create( $datos );
+        $recaudo_libreta = TesoRecaudosLibreta::create( $datos );
 
         $this->actualizar_registro_cartera_estudiante( $request->id_cartera, $request->valor_recaudo );
 
@@ -451,11 +454,14 @@ class LibretaPagoController extends ModeloController
         //$request['cliente_id'] = Cliente::where( 'core_tercero_id', $request->core_tercero_id )->get()->first()->id;
         $request['tipo_recaudo_aux'] = '';
         
-        $request['lineas_registros'] = '[{"id_doc":"'. $request->id_doc .'","Cliente":"","Documento interno":"","Fecha":"2020-10-23","Fecha vencimiento":"","Valor Documento":"$0,00","Valor pagado":"$0,00","Saldo pendiente":"$00,00","abono":"' . $request->valor_recaudo . '"},{"id_doc":"","Cliente":"","Documento interno":"$0.00","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';
+        $request['lineas_registros'] = '[{"id_doc":"'. $request->id_doc .'","Cliente":"","Documento interno":"","Fecha":"","Fecha vencimiento":"","Valor Documento":"$0,00","Valor pagado":"$0,00","Saldo pendiente":"$00,00","abono":"' . $request->valor_recaudo . '"},{"id_doc":"","Cliente":"","Documento interno":"$0.00","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';
 
         $request['url_id_modelo'] = 153; // Recaudo de CxC
         $recaudo_cxc = new RecaudoCxcController;
-        $aux = $recaudo_cxc->store( $request );
+        $registro_recaudo_cxc = $recaudo_cxc->almacenar( $request );
+
+        $recaudo_libreta->consecutivo = $registro_recaudo_cxc->consecutivo;
+        $recaudo_libreta->save();
 
         return redirect( 'tesoreria/ver_plan_pagos/' . $request->id_libreta . '?id=' . $request->url_id . '&id_modelo=' . $url_id_modelo )->with( 'flash_message', 'Recaudo realizado correctamente.' );
     }

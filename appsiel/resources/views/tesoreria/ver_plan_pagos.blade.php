@@ -31,7 +31,7 @@
 			</h3>
 			<div class="table-responsive">
 				<table class="table table-bordered table-striped">
-					{{ Form::bsTableHeader(['Concepto','Mes','Vlr. a pagar','Vlr. pagado','Saldo pendiente','Fecha vencimiento','Estado','Acción']) }}
+					{{ Form::bsTableHeader(['ID','Concepto','Mes','Vlr. a pagar','Vlr. pagado','Saldo pendiente','Fecha vencimiento','Estado','Acción']) }}
 					<tbody>
 						@foreach($plan_pagos as $fila)
 							<?php
@@ -62,8 +62,13 @@
 								$cartera_id = $fila->id;
 
 								$vtas_doc_encabezado_id = 0;
+								if ( $fila->id == 2083)
+								{
+									//dd( $fila->teso_doc_encabezado() );
+								}
 							?>
 							<tr class="{{$clase_tr}}">
+								<td>{{ $fila->id }}</td>
 								<td>{{ $fila->concepto->descripcion }}</td>
 								<td>{{$nombre_mes}}</td>
 								<td><?php echo number_format($fila->valor_cartera, 0, ',', '.')?></td>
@@ -91,15 +96,6 @@
 
 										@if( $fila->estado != 'Pagada' )
 											<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/hacer_recaudo_cartera/'.$cartera_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&vtas_doc_encabezado_id=' . $vtas_doc_encabezado_id ) }}" title="Recaudar"><i class="fa fa-btn fa-money"></i>&nbsp;Recaudar</a>
-										@else
-											<?php 
-												//dd($fila);
-												$recaudo_tesoreria = $fila->recaudo_tesoreria();
-
-											?>
-											@if( !is_null($recaudo_tesoreria) )
-												<a class="btn btn-info btn-xs btn-detail" href="{{ url( 'tesoreria_recaudos_cxc_imprimir/' . $recaudo_tesoreria->id . '?id=3&id_modelo=153&id_transaccion=32' ) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir recaudo</a>
-											@endif
 										@endif
 									@endif
 								</td>
