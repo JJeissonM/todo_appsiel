@@ -5,6 +5,7 @@ namespace App\Tesoreria;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
+use App\Tesoreria\TesoDocEncabezado;
 
 class TesoRecaudosLibreta extends Model
 {
@@ -30,6 +31,17 @@ class TesoRecaudosLibreta extends Model
     public function registro_cartera_estudiante()
     {
         return $this->belongsTo( TesoPlanPagosEstudiante::class, 'id_cartera');
+    }
+
+    public function recaudo_tesoreria()
+    {
+        $recaudo_tesoreria = TesoDocEncabezado::where('core_tipo_transaccion_id',$this->core_tipo_transaccion_id)
+                                                ->where('core_tipo_doc_app_id',$this->core_tipo_doc_app_id)
+                                                ->where('consecutivo',$this->consecutivo)
+                                                ->get()
+                                                ->first();
+
+        return $recaudo_tesoreria;
     }
 
     public $encabezado_tabla = ['Fecha','Documento','Estudiante','No. Identificacion','Detalle','Valor','Acción'];

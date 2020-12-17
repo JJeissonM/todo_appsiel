@@ -448,6 +448,17 @@ class VentaController extends TransaccionController
 
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion( $id );
 
+        // Verificar si la factura tiene abonos, si tiene no se puede eliminar
+        $cantidad = CxcAbono::where('doc_cxc_transacc_id',$doc_encabezado->core_tipo_transaccion_id)
+                            ->where('doc_cxc_tipo_doc_id',$doc_encabezado->core_tipo_doc_app_id)
+                            ->where('doc_cxc_consecutivo',$doc_encabezado->consecutivo)
+                            ->count();
+
+        if($cantidad != 0)
+        {
+            return redirect( 'ventas/'.$id.'?id='. Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion')  )->with('mensaje_error','Factura NO puede ser modificada. Se le han hecho Recaudos de CXC (Tesorería).');
+        }
+
         $cantidad = count( $lista_campos );
 
         // Agregar al comienzo del documento
@@ -543,6 +554,14 @@ class VentaController extends TransaccionController
                                     'fecha' => $request->fecha,
                                     'fecha_vencimiento' => $request->fecha_vencimiento
                                 ] );
+
+        // Actualiza movimiento de Tesorería
+        TesoMovimiento::where('core_tipo_transaccion_id',$registro->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id',$registro->core_tipo_doc_app_id)
+                        ->where('consecutivo',$registro->consecutivo)
+                        ->update( [ 
+                                    'fecha' => $request->fecha
+                                ] );;
 
         // Actualiza documento de inventario
         $remision = InvDocEncabezado::find($registro->remision_doc_encabezado_id);

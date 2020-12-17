@@ -4,15 +4,17 @@ namespace App\Calificaciones;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Calificaciones\EscalaValoracion;
+
 class NotaNivelacion extends Model
 {
     protected $table = 'sga_notas_nivelaciones';
 	
 	protected $fillable = [ 'colegio_id', 'matricula_id', 'periodo_id', 'curso_id', 'asignatura_id', 'estudiante_id', 'calificacion', 'observacion', 'creado_por', 'modificado_por' ];	
 
-	public $encabezado_tabla = [ 'Estudiante', 'Año lectivo', 'Curso', 'Periodo', 'Asignatura', 'Calificación de nivelación', 'Observaciones', 'Acción'];
+	public $encabezado_tabla = [ 'Estudiante', 'Año lectivo', 'Curso', 'Periodo', 'Asignatura', 'Calificación de nivelación', 'Observaciones', 'Creada por', 'Acción'];
 
-	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
+	public $urls_acciones = '{"show":"no"}';
 
 	public function periodo()
 	{
@@ -34,6 +36,15 @@ class NotaNivelacion extends Model
 		return $this->belongsTo( 'App\Matriculas\Estudiante', 'estudiante_id' );
 	}
 
+	public function escala_valoracion()
+	{
+		return EscalaValoracion::where('calificacion_minima','<=',$this->calificacion)
+                                        ->where('calificacion_maxima','>=',$this->calificacion)
+                                        ->where('periodo_lectivo_id','=',$this->periodo->periodo_lectivo_id)
+                                        ->get()
+                                        ->first();
+	}
+
 	public static function consultar_registros()
 	{
 	    return NotaNivelacion::leftJoin('sga_estudiantes','sga_estudiantes.id','=','sga_notas_nivelaciones.estudiante_id')
@@ -50,7 +61,8 @@ class NotaNivelacion extends Model
 	    						'sga_asignaturas.descripcion AS campo5',
 	    						'sga_notas_nivelaciones.calificacion AS campo6',
 	    						'sga_notas_nivelaciones.observacion AS campo7',
-	    						'sga_notas_nivelaciones.id AS campo8')
+	    						'sga_notas_nivelaciones.creado_por AS campo8',
+	    						'sga_notas_nivelaciones.id AS campo9')
 					    ->get()
 					    ->toArray();
 	}

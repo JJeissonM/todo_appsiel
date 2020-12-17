@@ -9,6 +9,7 @@ use DB;
 
 use App\Calificaciones\EscalaValoracion;
 use App\Calificaciones\Periodo;
+use App\Calificaciones\NotaNivelacion;
 
 class Calificacion extends Model
 {
@@ -16,6 +17,16 @@ class Calificacion extends Model
 
     // logros es un string donde se almacenan códigos de logros separados por coma (usado para logros adicionales)
 	protected $fillable = [ 'codigo_matricula', 'id_colegio', 'anio', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros', 'creado_por', 'modificado_por'];
+
+    public function nota_nivelacion()
+    {
+        return NotaNivelacion::where( 'periodo_id', $this->id_periodo )
+                            ->where( 'curso_id', $this->curso_id )
+                            ->where( 'asignatura_id', $this->id_asignatura )
+                            ->where( 'estudiante_id', $this->id_estudiante )
+                            ->get()
+                            ->first();
+    }
 
     /**
      * Obtener todas las calificaciones con sus datos relacionados

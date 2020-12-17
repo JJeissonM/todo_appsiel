@@ -155,6 +155,7 @@ class BoletinController extends Controller
         $mostrar_escala_valoracion = $request->mostrar_escala_valoracion;
         $mostrar_usuarios_estudiantes = $request->mostrar_usuarios_estudiantes;
         $mostrar_etiqueta_final = $request->mostrar_etiqueta_final;
+        $mostrar_nota_nivelacion = $request->mostrar_nota_nivelacion; 
         $tam_letra = $request->tam_letra;
         
         $margenes = (object)[ 
@@ -168,8 +169,9 @@ class BoletinController extends Controller
 
         $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
 
-		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas','mostrar_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes') )->render();
+		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas','mostrar_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion') )->render();
         
+        //echo $view;
         // Se prepara el PDF
         $orientacion='portrait';
         $pdf = \App::make('dompdf.wrapper');			

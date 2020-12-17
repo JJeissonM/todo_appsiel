@@ -440,7 +440,7 @@ class LibretaPagoController extends ModeloController
         // Se verifica si la libreta no tiene cartera pendiente y se inactiva
         $this->actualizar_estado_libreta_pago( $request->id_libreta );
 
-        // Crear documento de recaudo de Tesorería (teso_doc_encabezados, teso_doc_registros, teso_movimientos, cxc_abonos, cxc_movimientos, contab_movimientos)
+        // Crear documento de recaudo de Tesorería, con todos sus procesos: teso_doc_encabezados, teso_doc_registros, teso_movimientos, cxc_abonos, cxc_movimientos, contab_movimientos
         $request['fecha'] = $request->fecha_recaudo;
         $request['referencia_tercero_id'] = $request->core_tercero_id;
         $request['consecutivo'] = '';
@@ -490,7 +490,8 @@ class LibretaPagoController extends ModeloController
         }
     }
 
-    public function ver_recaudos($id_libreta){
+    public function ver_recaudos($id_libreta)
+    {
         $libreta = TesoLibretasPago::find($id_libreta);
         $estudiante = Estudiante::get_datos_basicos( $libreta->id_estudiante );
 
@@ -579,6 +580,9 @@ class LibretaPagoController extends ModeloController
         //echo $id;
         $cartera = TesoPlanPagosEstudiante::find($id_cartera);
         $recaudos = TesoRecaudosLibreta::where('id_cartera',$id_cartera)->get();
+
+        dd( $recaudos );
+
         //$empresa = Empresa::find(Auth::user()->empresa_id);
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get();
         $colegio = $colegio[0]; 

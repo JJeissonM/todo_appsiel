@@ -24,23 +24,37 @@
 								$cartera = $recaudo->registro_cartera_estudiante;
 								$fecha = explode("-",$cartera->fecha_vencimiento);
 								$nombre_mes = nombre_mes($fecha[1]);
-							?>
-							<tr>
-								<td> {{$recaudo->fecha_recaudo}}</td>
-								<td> {{ $recaudo->tipo_documento_app->prefijo }} {{ $recaudo->consecutivo }}</td>
-								<td> {{$recaudo->elconcepto->descripcion}}</td>
-								<td> {{$nombre_mes}}</td>
-								<td> {{ number_format($recaudo->valor_recaudo, 0, ',', '.') }} </td>
-								<td>
-									<a class="btn btn-info btn-xs btn-detail" href="{{ url('tesoreria/imprimir_comprobante_recaudo/'.$recaudo->id_cartera) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
 
-									@can('eliminar_recaudo_libreta')
-										&nbsp;&nbsp;&nbsp;
-										<a class="btn btn-danger btn-xs btn-detail" href="{{ url( 'tesoreria/eliminar_recaudo_libreta/'.$recaudo->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}" title="Eliminar"><i class="fa fa-btn fa-trash"></i>&nbsp;</a>
-									@endcan
-								</td>
-								<td>{{$recaudo->creado_por}} : {{$recaudo->created_at}}</td>
-							</tr>
+                                $recaudo_tesoreria = $recaudo->recaudo_tesoreria();
+							?>
+                            @if( !is_null($recaudo_tesoreria) )
+    							<tr>
+    								<td> {{ $recaudo_tesoreria->fecha }}</td>
+    								<td> {{ $recaudo_tesoreria->tipo_documento_app->prefijo }} {{ $recaudo_tesoreria->consecutivo }}</td>
+    								<td> {{ $recaudo->elconcepto->descripcion }}</td>
+    								<td> {{ $nombre_mes }}</td>
+    								<td> {{ number_format( $recaudo_tesoreria->valor_total, 0, ',', '.') }} </td>
+    								<td>
+    									<!-- <a class="btn btn-info btn-xs btn-detail" href="{ { url('tesoreria/imprimir_comprobante_recaudo/'.$recaudo->id_cartera) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a> -->
+                                        
+                                        <a class="btn btn-info btn-xs btn-detail" href="{{ url( 'tesoreria_recaudos_cxc_imprimir/' . $recaudo_tesoreria->id . '?id=3&id_modelo=153&id_transaccion=32' ) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
+
+    									@can('eliminar_recaudo_libreta')
+    										&nbsp;&nbsp;&nbsp;
+    										<!-- <a class="btn btn-danger btn-xs btn-detail" href="{ { url( 'tesoreria/eliminar_recaudo_libreta/'.$recaudo->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}" title="Eliminar"><i class="fa fa-btn fa-trash"></i>&nbsp;</a> -->
+
+                                            <a class="btn btn-danger btn-xs btn-detail" href="{{ url( 'teso_anular_recaudo_cxc/' .  $recaudo_tesoreria->id . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') '&id_transaccion=32' ) }}" title="Eliminar"><i class="fa fa-btn fa-trash"></i>&nbsp;</a>
+    									@endcan
+    								</td>
+    								<td>{{$recaudo_tesoreria->creado_por}} : {{$recaudo_tesoreria->created_at}}</td>
+    							</tr>
+                            @else
+                                <tr>
+                                    <td> {{ $recaudo->fecha_recaudo }} </td>
+                                    <td> {{ $recaudo->tipo_documento_app->prefijo }} {{ $recaudo->consecutivo }} </td>
+                                    <td colspan="5"> <span style="color: red;"> No existe un Recaudo de CxC asociado a este Recaudo de Libreta. </span> </td>
+                                </tr>
+                            @endif
 						@endforeach
 					</tbody>
 

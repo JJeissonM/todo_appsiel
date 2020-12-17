@@ -27,7 +27,7 @@
 		</div>
 
 		<div class="row" style="padding:5px;">
-			<br><br><br>
+			{{ Form::bsSelect('mostrar_nota_nivelacion',null,'Mostrar nota nivelación',[ '' => 'No', 'solo_nota_nivelacion_con_etiqueta'=>'Solo nota nivelación (con etiqueta)', 'solo_nota_nivelacion_sin_etiqueta'=>'Solo nota nivelación (sin etiqueta)','ambas_notas'=>'Ambas notas'],[]) }}
 		</div>
 
 		<?php 
