@@ -26,28 +26,24 @@ class TesoLibretasPago extends Model
 
     public static function consultar_registros()
     {       
-        $select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS campo1';
-
-        $registros = TesoLibretasPago::leftJoin('sga_estudiantes','sga_estudiantes.id','=','teso_libretas_pagos.id_estudiante')
-                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
-                    ->leftJoin('sga_matriculas','sga_matriculas.id','=','teso_libretas_pagos.matricula_id')
-                    ->leftJoin('sga_cursos','sga_cursos.id','=','sga_matriculas.curso_id')
-                    ->select(
-                                'teso_libretas_pagos.id AS campo1',
-                                DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo2' ),
-                                'sga_cursos.descripcion AS campo3',
-                                'sga_matriculas.codigo AS campo4',
-                                'teso_libretas_pagos.fecha_inicio AS campo5',
-                                'teso_libretas_pagos.valor_matricula AS campo6',
-                                'teso_libretas_pagos.valor_pension_anual AS campo7',
-                                'teso_libretas_pagos.numero_periodos AS campo8',
-                                'teso_libretas_pagos.valor_pension_mensual AS campo9',
-                                'teso_libretas_pagos.estado AS campo10',
-                                'teso_libretas_pagos.id AS campo11')
-                    ->get()
-                    ->toArray();
-
-        return $registros;
+        return TesoLibretasPago::leftJoin('sga_estudiantes','sga_estudiantes.id','=','teso_libretas_pagos.id_estudiante')
+                                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+                                    ->leftJoin('sga_matriculas','sga_matriculas.id','=','teso_libretas_pagos.matricula_id')
+                                    ->leftJoin('sga_cursos','sga_cursos.id','=','sga_matriculas.curso_id')
+                                    ->select(
+                                                'teso_libretas_pagos.id AS campo1',
+                                                DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo2' ),
+                                                'sga_cursos.descripcion AS campo3',
+                                                'sga_matriculas.codigo AS campo4',
+                                                'teso_libretas_pagos.fecha_inicio AS campo5',
+                                                'teso_libretas_pagos.valor_matricula AS campo6',
+                                                'teso_libretas_pagos.valor_pension_anual AS campo7',
+                                                'teso_libretas_pagos.numero_periodos AS campo8',
+                                                'teso_libretas_pagos.valor_pension_mensual AS campo9',
+                                                'teso_libretas_pagos.estado AS campo10',
+                                                'teso_libretas_pagos.id AS campo11')
+                                    ->get()
+                                    ->toArray();
     }
 
     public static function consultar_un_registro($id)

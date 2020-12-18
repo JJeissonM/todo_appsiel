@@ -188,7 +188,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
     /**
      * PETICIÓN AJAX
-     * Almacena la Generación de CxC.
+     * Almacena los registros generados.
      */
     public function store(Request $request)
     {
@@ -209,8 +209,8 @@ class FacturaMasivaEstudianteController extends TransaccionController
             }
 
             $registro_plan_pagos = TesoPlanPagosEstudiante::find( $linea->linea_plan_pago_id );
-
-            $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $request->fecha );
+            
+            $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos );
 
             $tbody .= '<tr>
                         <td>' . $registro_plan_pagos->estudiante->tercero->descripcion . '</td>
@@ -257,9 +257,9 @@ class FacturaMasivaEstudianteController extends TransaccionController
         dd( VtasDocEncabezado::find( 105 )->tipo_documento_app );
     }
 
-    public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $fecha_factura )
+    public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos )
     {
-        $request = $this->preparar_datos_factura_estudiante( $registro_plan_pagos, $fecha_factura );
+        $request = $this->preparar_datos_factura_estudiante( $registro_plan_pagos );
 
         $request['remision_doc_encabezado_id'] = 0;
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
@@ -279,7 +279,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
     }
 
 
-    public function preparar_datos_factura_estudiante( $registro_plan_pagos, $fecha_factura )
+    public function preparar_datos_factura_estudiante( $registro_plan_pagos )
     {
         $id_modelo = config('matriculas.modelo_id_factura_estudiante'); // Factura de Estudiantes
         $id_transaccion = config('matriculas.transaccion_id_factura_estudiante'); // Factura de Ventas
@@ -289,13 +289,13 @@ class FacturaMasivaEstudianteController extends TransaccionController
         $datos = new Request;
         $datos["core_empresa_id"] = Auth::user()->empresa_id;
         $datos["core_tipo_doc_app_id"] = $tipo_transaccion->tipos_documentos->first()->id; // FV - Factura de venta
-        $datos["fecha"] = $fecha_factura;
+        $datos["fecha"] = $registro_plan_pagos->fecha_vencimiento;
         $datos["cliente_input"] = "";
 
         $cliente = $registro_plan_pagos->estudiante->responsable_financiero()->tercero->cliente();
         $datos["vendedor_id"] = $cliente->vendedor_id;
         $datos["forma_pago"] = "credito";
-        $datos["fecha_vencimiento"] = $fecha_factura;
+        $datos["fecha_vencimiento"] = $registro_plan_pagos->fecha_vencimiento;
         $datos["inv_bodega_id"] = $cliente->inv_bodega_id;
         $datos["cliente_id"] = $cliente->id;
         $datos["inv_bodega_id_aux"] = "";

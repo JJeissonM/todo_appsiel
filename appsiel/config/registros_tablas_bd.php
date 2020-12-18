@@ -6932,6 +6932,21 @@
       'created_at' => '2020-12-17 07:16:30',
       'updated_at' => '2020-12-17 07:19:48',
     ),
+    462 => 
+    array (
+      'id' => 488,
+      'core_app_id' => 1,
+      'modelo_id' => 263,
+      'name' => 'sga_familiares_estudiantes',
+      'descripcion' => 'Familiares de estudiantes',
+      'url' => 'web',
+      'parent' => 74,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2020-12-18 06:13:59',
+      'updated_at' => '2020-12-18 06:13:59',
+    ),
   ),
   'roles' => 
   array (
@@ -16552,6 +16567,30 @@
     array (
       'orden' => 0,
       'permission_id' => 487,
+      'role_id' => 12,
+    ),
+    1577 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 488,
+      'role_id' => 1,
+    ),
+    1578 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 488,
+      'role_id' => 3,
+    ),
+    1579 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 488,
+      'role_id' => 9,
+    ),
+    1580 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 488,
       'role_id' => 12,
     ),
   ),
@@ -38473,6 +38512,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2020-12-12 07:37:13',
       'updated_at' => '2020-12-12 07:37:13',
+    ),
+    252 => 
+    array (
+      'id' => 263,
+      'descripcion' => 'Familiares de estudiantes',
+      'modelo' => 'Responsableestudiante',
+      'name_space' => 'App\\Matriculas\\Responsableestudiante',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2020-12-18 06:13:30',
+      'updated_at' => '2020-12-18 06:13:30',
     ),
   ),
   'sys_modelo_tiene_campos' => 
