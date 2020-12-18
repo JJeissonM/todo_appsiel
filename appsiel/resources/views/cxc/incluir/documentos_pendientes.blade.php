@@ -33,16 +33,39 @@
 
                 <?php
 
+                    $factura_ventas = App\Ventas\VtasDocEncabezado::where('consecutivo',(int)explode(" ", $movimiento[$i]['documento'])[1] )
+                                                        ->where('core_tipo_transaccion_id','23')
+                                                        ->where('core_tipo_doc_app_id','18')
+                                                        ->get()
+                                                        ->first();
+
                     $lbl_estudiante = '';
                     // Para colegios
-                    $reponsable_estudiante = App\Matriculas\Responsableestudiante::where('tercero_id',$movimiento[$i]['core_tercero_id'])
-                                                                                ->get()
-                                                                                ->first();
-
-                    if( !is_null( $reponsable_estudiante ) )
+                    if ( !is_null($factura_ventas) )
                     {
-                        $lbl_estudiante = '<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Estudiante: </b>' . $reponsable_estudiante->estudiante->tercero->descripcion;
+                        $factura_estudiante = App\Matriculas\FacturaAuxEstudiante::where('vtas_doc_encabezado_id',$factura_ventas->id)->get()->first();
+
+                        if ( !is_null( $factura_estudiante) )
+                        {
+                            
+                            if ( !is_null($factura_estudiante->matricula) )
+                            {
+                                $reponsable_estudiante = App\Matriculas\Responsableestudiante::where('tercero_id',$movimiento[$i]['core_tercero_id'])
+                                                                                            ->where('estudiante_id', $factura_estudiante->matricula->id_estudiante)
+                                                                                            ->get()
+                                                                                            ->first();
+
+                                if( !is_null( $reponsable_estudiante ) )
+                                {
+                                    $lbl_estudiante = '<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Estudiante: </b>' . $reponsable_estudiante->estudiante->tercero->descripcion;
+                                }
+                            }
+
+                                
+                        }
+                            
                     }
+                        
                 ?>
                 <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}">
                     <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>

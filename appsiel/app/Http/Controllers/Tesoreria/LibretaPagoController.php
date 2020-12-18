@@ -496,6 +496,7 @@ class LibretaPagoController extends ModeloController
         }
     }
 
+    // consultar_recaudos
     public function ver_recaudos($id_libreta)
     {
         $libreta = TesoLibretasPago::find($id_libreta);

@@ -36,6 +36,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\TesoRecaudosLibreta;
 
 use App\Contabilidad\ContabMovimiento;
 
@@ -475,7 +476,13 @@ class RecaudoCxcController extends Controller
         // Borrar movimiento contable generado por el documento de pago ( DB: Caja/Banco, CR: CxC )
         ContabMovimiento::where('core_tipo_transaccion_id',$recaudo->core_tipo_transaccion_id)->where('core_tipo_doc_app_id',$recaudo->core_tipo_doc_app_id)->where('consecutivo',$recaudo->consecutivo)->delete();
 
-        // Este tipo de documento no afecta teso_doc_registros
+        // Si es el recaudo de una factura asociada a un registro de Plan de Pagos libreta de pagos
+        $recaudo_libreta = TesoRecaudosLibreta::where([
+                                                    ['core_tipo_transaccion_id','=',$recaudo->core_tipo_transaccion_id],
+                                                    ['core_tipo_doc_app_id','=',$recaudo->core_tipo_doc_app_id],
+                                                    ['consecutivo','=',$recaudo->consecutivo]
+                                                ])->get()->first();
+        $recaudo_libreta->anular();/*dd(*/
 
         // Marcar como anulado el encabezado
         $recaudo->update(['estado'=>'Anulado']);
