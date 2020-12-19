@@ -11,9 +11,9 @@
 
     // MEJORA: HACER UN ARRAY CON LOS IF DE LA CONFIGURACIÓN, AGREGAR CAMPOS DE ORDEN PARA CADA CAMPO A LA CONFIGURACIÓN, LUEGO ORDENAR EL ARRAY POR ESE ORDEN
 ?>
-<table class="table banner" >
+<table class="table banner">
     <tr>
-        <td width="250px">
+        <td width="200px">
             <img src="{{ $url }}" width="{{ config('configuracion.ancho_logo_formatos') }}" height="{{ config('configuracion.alto_logo_formatos') }}" />
         </td>
 

@@ -9,7 +9,7 @@ class TiempoLaborado implements Estrategia
 {
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
-		$horas_liquidadas_empleado = $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado'] );
+		$horas_liquidadas_empleado = $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado']->core_tercero_id );
 
 		// NO se puede liquidar más tiempo del que tiene el documento
 		if ( $horas_liquidadas_empleado >= $liquidacion['documento_nomina']->tiempo_a_liquidar )

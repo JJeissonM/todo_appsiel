@@ -60,6 +60,16 @@ class Estudiante extends Model
         return Responsableestudiante::where( 'estudiante_id', $this->id )->where('tiporesponsable_id',3)->first();
     }
 
+    public function mama()
+    {
+        return Responsableestudiante::where( 'estudiante_id', $this->id )->where('tiporesponsable_id',2)->first();
+    }
+
+    public function papa()
+    {
+        return Responsableestudiante::where( 'estudiante_id', $this->id )->where('tiporesponsable_id',1)->first();
+    }
+
     public function getTercero($id)
     {
         $e = Estudiante::find($id);

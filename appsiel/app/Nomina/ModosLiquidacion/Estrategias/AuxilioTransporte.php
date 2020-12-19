@@ -19,13 +19,13 @@ class AuxilioTransporte implements Estrategia
 			case '1': // Si liquida, si Salario <= 2 SMMLV
 				if ( $liquidacion['empleado']->sueldo <= ( (float)config('nomina.SMMLV') * 2 ) )
 				{
-					$cantidad_horas = $liquidacion['documento_nomina']->horas_liquidadas_tiempo_laborado_empleado( $liquidacion['empleado'] );
+					$cantidad_horas = $liquidacion['documento_nomina']->horas_liquidadas_tiempo_laborado_empleado( $liquidacion['empleado']->core_tercero_id );
 					$valor_auxilio_empleado =  $valor_auxilio_x_hora * $cantidad_horas;
 				}
 				break;
 
 			case '2': // Siempre
-				$cantidad_horas = $liquidacion['documento_nomina']->horas_liquidadas_tiempo_laborado_empleado( $liquidacion['empleado'] );
+				$cantidad_horas = $liquidacion['documento_nomina']->horas_liquidadas_tiempo_laborado_empleado( $liquidacion['empleado']->core_tercero_id );
 				$valor_auxilio_empleado =  $valor_auxilio_x_hora * $cantidad_horas;
 				break;
 			
@@ -52,7 +52,5 @@ class AuxilioTransporte implements Estrategia
 	public function retirar(NomDocRegistro $registro)
 	{
         $registro->delete();
-
-        return 0;
 	}
 }

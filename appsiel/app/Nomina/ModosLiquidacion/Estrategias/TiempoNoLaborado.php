@@ -42,7 +42,7 @@ class TiempoNoLaborado implements Estrategia
         foreach( $novedades as $novedad )
         {			
 			// NO se puede liquidar más tiempo del que tiene el documento
-			if ( $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado'] ) >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
+			if ( $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado']->core_tercero_id ) >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
 			{
 				continue;
 			}

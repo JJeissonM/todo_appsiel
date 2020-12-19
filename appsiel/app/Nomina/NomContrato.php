@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Core\Tercero;
 use App\Nomina\MovimientoIbcEmpleado;
+use App\Nomina\NomDocRegistro;
 
 class NomContrato extends Model
 {
@@ -54,6 +55,11 @@ class NomContrato extends Model
         return $this->belongsTo(NomEntidad::class,'planilla_pila_id');
     }
 
+    public function registros_documentos_nomina()
+    {
+        return $this->hasMany( NomDocRegistro::class, 'core_tercero_id', 'core_tercero_id' );
+    }
+
     public function salario_x_hora()
     {
         return $this->sueldo / config('nomina.horas_laborales');
@@ -69,6 +75,21 @@ class NomContrato extends Model
         }
         
         return $valor_ibc;
+    }
+
+    public function get_registros_documentos_nomina_entre_fechas( $fecha_inicial, $fecha_final)
+    {
+        $todos_los_registros = $this->registros_documentos_nomina;
+        $coleccion = collect();
+        foreach ($todos_los_registros as $registro)
+        {
+            if ( $registro->fecha >= $fecha_inicial && $registro->fecha <= $fecha_final )
+            {
+                $coleccion[] = $registro;
+            }
+        }
+        
+        return $coleccion;
     }
 
 	public static function consultar_registros()

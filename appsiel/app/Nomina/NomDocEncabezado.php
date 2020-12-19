@@ -43,9 +43,9 @@ class NomDocEncabezado extends Model
         return $this->hasMany( NomDocRegistro::class, 'nom_doc_encabezado_id' );
     }
 
-    public function horas_liquidadas_empleado( $contrato )
+    public function horas_liquidadas_empleado( $core_tercero_id )
     {
-        $registros_documento = $this->registros_liquidacion->where( 'core_tercero_id', $contrato->core_tercero_id )->all();
+        $registros_documento = $this->registros_liquidacion->where( 'core_tercero_id', $core_tercero_id )->all();
 
         $horas_liquidadas = 0;
         foreach ($registros_documento as $registro )
@@ -63,9 +63,9 @@ class NomDocEncabezado extends Model
         return $horas_liquidadas;
     }
 
-    public function horas_liquidadas_tiempo_laborado_empleado( $contrato )
+    public function horas_liquidadas_tiempo_laborado_empleado( $core_tercero_id )
     {
-        $registros_documento = $this->registros_liquidacion->where( 'core_tercero_id', $contrato->core_tercero_id )->all();
+        $registros_documento = $this->registros_liquidacion->where( 'core_tercero_id', $core_tercero_id )->all();
 
         $horas_liquidadas = 0;
         foreach ($registros_documento as $registro )
@@ -83,6 +83,22 @@ class NomDocEncabezado extends Model
         return $horas_liquidadas;
     }
 
+    public function get_valor_neto_empleado_segun_grupo_conceptos( array $conceptos, $core_tercero_id )
+    {
+        $total_devengos = $this->registros_liquidacion->where( 'core_tercero_id', $core_tercero_id )
+                                                    ->whereIn( 'nom_concepto_id', $conceptos )
+                                                    ->sum( 'valor_devengo' );
+
+        $total_deducciones = $this->registros_liquidacion->where( 'core_tercero_id', $core_tercero_id )
+                                                    ->whereIn( 'nom_concepto_id', $conceptos )
+                                                    ->sum( 'valor_deduccion' );
+
+        return ( $total_devengos - $total_deducciones );
+    }
+
+
+
+    // Se asume liquidaciones quincenales
     public function lapso()
     {
         $array_fecha = explode( '-', $this->fecha );

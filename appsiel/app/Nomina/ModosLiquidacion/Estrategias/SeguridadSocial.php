@@ -11,8 +11,8 @@ class SeguridadSocial implements Estrategia
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
 
-        // Para empleados con tipo contrato labor_contratada
-        if ( $liquidacion['empleado']->clase_contrato == 'labor_contratada' )
+        // Para empleados con tipo contrato labor_contratada o pasantes SENA
+        if ( $liquidacion['empleado']->clase_contrato == 'labor_contratada' || $liquidacion['empleado']->es_pasante_sena )
         {
             return [ 
                         [
@@ -33,7 +33,7 @@ class SeguridadSocial implements Estrategia
         $total_ibc_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
                                             ->where( 'core_tercero_id', $liquidacion['empleado']->core_tercero_id )
-                                            ->sum('valor_devengo');
+                                            ->sum( 'valor_devengo' );
 
         $total_ibc_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )

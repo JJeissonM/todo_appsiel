@@ -3,6 +3,10 @@
 <head>
     <title>Matrícula</title>
 <style>
+
+    body{
+        font-size: 0.8em;
+    }
     img {
         padding-left:30px;
     }
@@ -21,7 +25,7 @@
     table.banner{
         font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
         font-style: italic;
-        font-size: larger;
+        font-size: 1.2em;
     }
 
     table.contenido td {
@@ -108,7 +112,7 @@
                     <td class="titulo3">Nombre: </td> <td class="campo" style="overflow: hidden;">'.$nombre.'</td>
                 </tr>
                 <tr>
-                    <td class="titulo3">Cédula: </td> <td class="campo" style="overflow: hidden;">'.$cedula.'</td>
+                    <td class="titulo3">Cédula: </td> <td class="campo" style="overflow: hidden;">'. number_format( $cedula, '0',',','.' ).'</td>
                 </tr>
                 <tr>
                     <td class="titulo3"> Ocupación: </td><td class="campo" style="overflow: hidden;">'.$ocupacion.'</td>
@@ -117,9 +121,22 @@
                     <td class="titulo3"> Teléfono: </td><td class="campo" style="overflow: hidden;"> '.$telefono.' </td>
                 </tr>
                 <tr>
-                    <td class="titulo3"> E-mail: </td><td class="campo" style="overflow: hidden;"> '.$email.' </td>
+                    <td class="titulo3"> E-mail: </td><td class="campo" style="overflow: hidden;"> <a href="mailto:'.$email.'" target="_blank">'.$email.' </a></td>
                 </tr>
             </table>';
+    }
+
+    $papa = (object)['nombre'=>'--','cedula'=>'--','ocupacion'=>'--','telefono'=>'--','email'=>'--'];
+    $mama = (object)['nombre'=>'--','cedula'=>'--','ocupacion'=>'--','telefono'=>'--','email'=>'--'];
+
+    if( !is_null( $matricula->estudiante->papa() ) )
+    {
+        $papa = $matricula->estudiante->papa();
+    }
+
+    if( !is_null( $matricula->estudiante->mama() ) )
+    {
+        $mama = $matricula->estudiante->mama();
     }
 ?>
 
@@ -204,8 +221,8 @@
     <tr>
         <td class="titulo">Datos Acudiente </td>
         <td class="campo" colspan="3"> 
-            <b>Cédula: </b>{{ $matricula->cedula_acudiente }} <br/>
-            <b>Nombre: </b>{{ $matricula->acudiente }} 
+            <b>Cédula: </b>{{ number_format( $matricula->estudiante->responsable_financiero()->tercero->numero_identificacion, '0',',','.') }} <br/>
+            <b>Nombre: </b>{{ $matricula->estudiante->responsable_financiero()->tercero->descripcion }} 
         </td>
     </tr>
 </table>
@@ -220,12 +237,12 @@
     <tr>
         <td>
             <?php 
-                echo tabla_datos('Datos del padre', $estudiante->papa, $estudiante->cedula_papa, $estudiante->ocupacion_papa, $estudiante->telefono_papa, $estudiante->email_papa);
+                echo tabla_datos('Datos del padre', $papa->tercero->descripcion, $papa->tercero->numero_identificacion, $papa->ocupacion, $papa->tercero->telefono1, $papa->tercero->email);
             ?>
         </td>
         <td>
             <?php 
-                echo tabla_datos('Datos de la madre', $estudiante->mama, $estudiante->cedula_mama, $estudiante->ocupacion_mama, $estudiante->telefono_mama, $estudiante->email_mama);
+                echo tabla_datos('Datos del padre', $mama->tercero->descripcion, $mama->tercero->numero_identificacion, $mama->ocupacion, $mama->tercero->telefono1, $mama->tercero->email);
             ?>
         </td>
     </tr>

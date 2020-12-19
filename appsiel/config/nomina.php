@@ -7,5 +7,7 @@
   'concepto_salario_integral' => '2',
   'pago_salario_completo_en_incapacidades' => '1',
   'id_concepto_pagar_empresa_en_incapacidades' => '72',
+  'calcular_valor_proyectado_fondo_solidaridad' => '0',
+  'calcular_valor_proyectado_retefuente' => '0',
   'url_id_modelo' => '0',
 ) ;

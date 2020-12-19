@@ -8,6 +8,7 @@ use App\Nomina\ModosLiquidacion\Estrategias\AuxilioTransporte; // Lo está dejan
 use App\Nomina\ModosLiquidacion\Estrategias\Cuota;
 use App\Nomina\ModosLiquidacion\Estrategias\Prestamo;
 use App\Nomina\ModosLiquidacion\Estrategias\SeguridadSocial;
+use App\Nomina\ModosLiquidacion\Estrategias\FondoSolidaridadPensional;
 
 use App\Nomina\NomDocRegistro;
 
@@ -20,7 +21,8 @@ class ModoLiquidacion
 													6 => AuxilioTransporte::class,
 													3 => Cuota::class,
 													4 => Prestamo::class,
-													8 => SeguridadSocial::class
+													8 => SeguridadSocial::class,
+													10 => FondoSolidaridadPensional::class
 												];
 
 
