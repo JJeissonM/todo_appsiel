@@ -126,8 +126,9 @@
             </table>';
     }
 
-    $papa = (object)['nombre'=>'--','cedula'=>'--','ocupacion'=>'--','telefono'=>'--','email'=>'--'];
-    $mama = (object)['nombre'=>'--','cedula'=>'--','ocupacion'=>'--','telefono'=>'--','email'=>'--'];
+    $papa = (object)[ 'tercero' => (object) [ 'descripcion'=> '--', 'numero_identificacion'=> 0, 'telefono1'=>'--', 'email'=>'--' ], 'ocupacion'=>'--' ];
+    $mama = (object)[ 'tercero' => (object) [ 'descripcion'=> '--', 'numero_identificacion'=> 0, 'telefono1'=>'--', 'email'=>'--' ], 'ocupacion'=>'--' ];
+    
 
     if( !is_null( $matricula->estudiante->papa() ) )
     {
