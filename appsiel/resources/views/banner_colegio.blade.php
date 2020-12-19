@@ -19,7 +19,7 @@
 
         <td align="center">
             <br/>
-            <b>{{ $colegio->descripcion }}</b>
+            <span style="font-size: 1.4em;"><b>{{ $colegio->descripcion }}</b> </span>
 
             @if( $config['banner_colegio_mostrar_slogan'] )
                 <br/> <b>{{ $colegio->slogan }}</b>
@@ -28,7 +28,7 @@
             <br/> Resolución {{ $colegio->resolucion }}
 
             @if( $config['banner_colegio_mostrar_nit'] )
-                , NIT: {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }} - {{ $empresa->digito_verificacion }}
+                <br>NIT: {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }} - {{ $empresa->digito_verificacion }}
             @endif
 
             @if( $config['banner_colegio_mostrar_direccion'] )
