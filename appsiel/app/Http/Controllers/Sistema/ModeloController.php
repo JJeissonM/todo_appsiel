@@ -624,7 +624,9 @@ class ModeloController extends Controller
         
         if( is_null( $registro ) )
         {
-            dd('No existe el registro con ID: ' . $id . ' para el modelo: ' . $this->modelo->modelo );
+            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )->with('mensaje_error', 'ModeloController@show() > El registro que quiere consultar ha sido eliminado.');
+            //echo 'No existe el registro con ID: ' . $id . ' para el modelo: ' . $this->modelo->modelo;
+            //die();
         }
 
         $reg_anterior = app($this->modelo->name_space)->where('id', '<', $registro->id)->max('id');

@@ -17,6 +17,7 @@ class TiempoNoLaborado implements Estrategia
 	protected $valor_a_pagar_arl;
 	protected $valor_a_pagar_afp;
 	protected $valor_a_pagar_empresa;
+	
 	/*
 		tipo_novedad_tnl: { incapacidad | permiso_remunerado | permiso_no_remunerado | suspencion }
 		origen_incapacidad: { comun | laboral }

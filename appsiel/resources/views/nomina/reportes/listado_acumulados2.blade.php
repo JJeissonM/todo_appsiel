@@ -29,7 +29,9 @@
                 @foreach( $conceptos as $concepto )
                 	<th> <i title="{{ $concepto->descripcion }}">{{$concepto->abreviatura}}</i> </th>
                 @endforeach
-                <th> Totales </th>
+                <th> Devengos </th>
+                <th> Deducciones </th>
+                <th> Neto </th>
             </tr>
         </thead>
         <tbody>
@@ -72,6 +74,10 @@
 
 	                }
 
+	                $fila .= '<td> ' . dibuja_contenido_celda( $total_fila_devengos, 0, $total_fila_cantidad_horas, $valores_a_mostrar ) . '</td>';
+
+	                $fila .= '<td> ' . dibuja_contenido_celda( 0, $total_fila_deducciones, $total_fila_cantidad_horas, $valores_a_mostrar ) . '</td>';
+
 	                $fila .= '<td> ' . dibuja_contenido_celda( $total_fila_devengos, $total_fila_deducciones, $total_fila_cantidad_horas, $valores_a_mostrar ) . '</td>';
 	                
 	                $fila .= '</tr>';
@@ -108,8 +114,12 @@
 							$total_deduccion_concepto += $totales_deducciones[$i];
 							$total_cantidad_horas_concepto += $totales_cantidad_horas[$i];
 		        		?>
-		        	@endfor        	
+		        	@endfor
         		<td>
+        			<?php echo dibuja_contenido_celda( $total_devengo_concepto, 0, $total_cantidad_horas_concepto, $valores_a_mostrar ); ?>
+        		</td>
+        			<?php echo dibuja_contenido_celda( 0, $total_deduccion_concepto, $total_cantidad_horas_concepto, $valores_a_mostrar ); ?>
+        		</td>
         			<?php echo dibuja_contenido_celda( $total_devengo_concepto, $total_deduccion_concepto, $total_cantidad_horas_concepto, $valores_a_mostrar ); ?>
         		</td>
         	</tr>        	

@@ -88,7 +88,6 @@
 
 				if ( codigo_tecla_presionada == 13 && $(this).val() == '' )
 			    {
-			    	console.log('enter');
 			    	$(this).parent().next().find(':input').focus();
 			    }
 			});

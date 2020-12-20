@@ -47,17 +47,17 @@ class TiempoLaborado implements Estrategia
 					];
 		}
 
-		//$horas_liquidadas_empleado = $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado'] );
-
-		$horas_liquidadas_empleado = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
+		/*$horas_liquidadas_empleado2 = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
 											->whereIn( 'nom_conceptos.modo_liquidacion_id', [1,7] )
 											->where('nom_doc_registros.nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
 											->where( 'nom_doc_registros.core_tercero_id', $liquidacion['empleado']->core_tercero_id )
 											->sum('nom_doc_registros.cantidad_horas');
 
+											dd([$horas_liquidadas_empleado,$horas_liquidadas_empleado2]);*/
+
 		$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
 		
-		$tiempo_a_liquidar = $liquidacion['documento_nomina']->tiempo_a_liquidar - $horas_liquidadas_empleado;
+		$tiempo_a_liquidar = $this->get_tiempo_a_liquidar( $liquidacion['empleado'], $liquidacion['documento_nomina'], $horas_liquidadas_empleado );
 		
 		//dd( [$liquidacion['documento_nomina']->tiempo_a_liquidar, $horas_liquidadas_empleado] );
 
@@ -71,6 +71,16 @@ class TiempoLaborado implements Estrategia
 					]
 				];
 	}
+
+	public function get_tiempo_a_liquidar( $empleado, $documento_nomina, $horas_liquidadas_empleado )
+	{
+        // tener en cuenta fecha de ingreso y terminación del contrato
+
+
+        $tiempo_a_liquidar = $documento_nomina->tiempo_a_liquidar - $horas_liquidadas_empleado;
+
+        return $tiempo_a_liquidar;
+	}	
 
 	public function retirar( NomDocRegistro $registro )
 	{

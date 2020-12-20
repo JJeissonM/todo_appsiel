@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 	origen_incapacidad: { comun | laboral }
 	clase_incapacidad: { enfermedad_general | licencia_maternidad | licencia_paternidad | accidente_trabajo | enfermedad_profesional}
 */
+
+use DB;
+
 class NovedadTnl extends Model
 {
 	protected $table = 'nom_novedades_tnl';
@@ -17,7 +20,7 @@ class NovedadTnl extends Model
 	
 	public $encabezado_tabla = ['Concepto', 'Empleado', 'Tipo novedad', 'Origen', 'Inicio TNL',  'Fin TNL', 'Cant. días TNL', 'Cant. días amortizados', 'Cant. días pend.', 'Observaciones', 'Estado', 'Acción'];
 
-	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
+	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
 	public $archivo_js = 'assets/js/nomina/novedades_tnl.js';
 
@@ -68,34 +71,32 @@ class NovedadTnl extends Model
         return $vec;
     }
 
-        /*
-    public static function get_campos_adicionales_edit( $lista_campos, $registro )
+
+    public function validar_eliminacion($id)
     {
-    	//dd( $lista_campos );
-        if( $registro->cantidad_dias_amortizados != 0 ) 
+        if( NovedadTnl::find($id)->cantidad_dias_amortizados != 0 )
         {
-         	return [[
-         	                        "id" => 999,
-         	                        "descripcion" => "",
-         	                        "tipo" => "personalizado",
-         	                        "name" => "lbl_planilla",
-         	                        "opciones" => "",
-         	                        "value" => '<div class="form-group">                    
-         	                                        <div class="alert alert-danger">
-         											  <strong>¡Advertencia!</strong>
-         											  <br>
-         											  Novedad de TNL no puede ser modifcada: ya tienes registros de tiempo amortizado.
-         											</div>
-         	                                    </div>',
-         	                        "atributos" => [],
-         	                        "definicion" => "",
-         	                        "requerido" => 0,
-         	                        "editable" => 1,
-         	                        "unico" => 0
-         	                    ]];       
+            return 'Ya tiene días amortizados.';
         }
-        
-        return $lista_campos;
+
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"nom_doc_registros",
+                                    "llave_foranea":"novedad_tnl_id",
+                                    "mensaje":"Ya tiene movimientos amortizados en registros de documentos de nómina."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
     }
-    */
 }

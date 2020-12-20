@@ -307,6 +307,36 @@ class Tercero extends Model
                                     "tabla":"vtas_vendedores",
                                     "llave_foranea":"core_tercero_id",
                                     "mensaje":"Está relacionado en tabla de Vendedores."
+                                },
+                            "37":{
+                                    "tabla":"sga_responsableestudiantes",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en tabla de Responsables de Estudiantes."
+                                },
+                            "38":{
+                                    "tabla":"vtas_pos_doc_encabezados",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Está relacionado en tabla de Encabezado de facturas de ventas POS."
+                                },
+                            "39":{
+                                    "tabla":"vtas_pos_movimientos",
+                                    "llave_foranea":"core_tercero_id",
+                                    "mensaje":"Tiene movimientos de ventas POS."
+                                },
+                            "40":{
+                                    "tabla":"cte_conductors",
+                                    "llave_foranea":"tercero_id",
+                                    "mensaje":"Está asociado a un Conductor en la aplicación Contratos de transporte."
+                                },
+                            "41":{
+                                    "tabla":"cte_contratantes",
+                                    "llave_foranea":"tercero_id",
+                                    "mensaje":"Está asociado un Contratante en la aplicación Contratos de transporte."
+                                },
+                            "42":{
+                                    "tabla":"cte_propietarios",
+                                    "llave_foranea":"tercero_id",
+                                    "mensaje":"Está asociado un Propietario en la aplicación Contratos de transporte."
                                 }
                         }';
         $tablas = json_decode($tablas_relacionadas);

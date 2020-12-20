@@ -140,4 +140,15 @@ class NomContrato extends Model
 
         return $vec;
     }
+
+
+    public function store_adicional( $datos, $registro )
+    {
+        if ( $registro->contrato_hasta == '' )
+        {
+            $registro->contrato_hasta = date('2099-12-31');
+            $registro->save();
+        }
+            
+    }
 }

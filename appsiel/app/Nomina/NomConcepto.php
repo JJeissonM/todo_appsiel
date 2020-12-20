@@ -4,6 +4,8 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
+use DB;
+
 class NomConcepto extends Model
 {
     //protected $table = 'nom_conceptos';
@@ -14,6 +16,8 @@ class NomConcepto extends Model
 	protected $fillable = ['modo_liquidacion_id','naturaleza', 'porcentaje_sobre_basico', 'valor_fijo', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'estado'];
 
 	public $encabezado_tabla = [ 'ID', 'Modo Liquidación', 'Descripción', 'Abreviatura', '% del básico', 'Vlr. Fijo', 'Naturaleza', 'Agrupación', 'Estado', 'Acción'];
+
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
     public function modo_liquidacion()
     {
@@ -81,5 +85,59 @@ class NomConcepto extends Model
                             ->distinct('nom_doc_registros.nom_concepto_id')
                             ->orderBy('nom_conceptos.id','ASC')
                             ->get();
+    }
+
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"nom_agrupacion_tiene_conceptos",
+                                    "llave_foranea":"nom_concepto_id",
+                                    "mensaje":"Está asociado a una agrupación de conceptos."
+                                },
+                            "1":{
+                                    "tabla":"nom_cuotas",
+                                    "llave_foranea":"nom_concepto_id",
+                                    "mensaje":"Está asociado al registro de una Cuota de un empleado."
+                                },
+                            "2":{
+                                    "tabla":"nom_doc_registros",
+                                    "llave_foranea":"nom_concepto_id",
+                                    "mensaje":"Tienes registros en documentos de nómina ."
+                                },
+                            "3":{
+                                    "tabla":"nom_equivalencias_contables",
+                                    "llave_foranea":"nom_concepto_id",
+                                    "mensaje":"Está asociado a una equivalencia contable."
+                                },
+                            "4":{
+                                    "tabla":"nom_movimientos",
+                                    "llave_foranea":"nom_concepto_id",
+                                    "mensaje":"Tiene registros en movimientos de nómina."
+                                },
+                            "5":{
+                                    "tabla":"nom_novedades_tnl",
+                                    "llave_foranea":"nom_concepto_id",
+                                    "mensaje":"Está asociado a una Novedad de Tiempo No laborado (TNL)."
+                                },
+                            "6":{
+                                    "tabla":"nom_prestamos",
+                                    "llave_foranea":"nom_concepto_id",
+                                    "mensaje":"Está asociado al registro de un Prestamo de un empleado."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
     }
 }

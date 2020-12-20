@@ -7,32 +7,46 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-use NumerosEnLetras;
-
-
-// Modelos
-use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Core\Empresa;
-
-use App\Nomina\NomConcepto;
-use App\Nomina\NomDocEncabezado;
-use App\Nomina\NomDocRegistro;
-use App\Nomina\NomContrato;
-use App\Nomina\NomCuota;
-use App\Nomina\NomPrestamo;
-use App\Nomina\AgrupacionConcepto;
-
-use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
-use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
+use App\Nomina\NovedadTnl;
 
 class NovedadesTnlController extends Controller
 {
-    
+
+    public function validar_fecha_otras_novedades( $fecha_inicial_nueva, $fecha_final_nueva, $contrato_id, $novedad_id )
+    {
+    	$novedades_empleado = NovedadTnl::where('nom_contrato_id',$contrato_id)->get();
+    	foreach ($novedades_empleado as $novedad)
+    	{
+    		if ( $novedad_id == $novedad->id )
+    		{
+    			continue;
+    		}
+    		
+    		// Fecha inicial de la NUEVA NOVEDAD está entre las fechas de alguna NOVEDAD CREADA
+    		if ( ($fecha_inicial_nueva >= $novedad->fecha_inicial_tnl) && ($fecha_inicial_nueva <= $novedad->fecha_final_tnl) )
+    		{
+    			return 1;
+    		}
+
+    		// Fecha final de la NUEVA NOVEDAD está entre las fechas de alguna NOVEDAD CREADA
+    		if ( ($fecha_final_nueva >= $novedad->fecha_inicial_tnl) && ($fecha_final_nueva <= $novedad->fecha_final_tnl) )
+    		{
+    			return 1;
+    		}
+
+    		// Fecha inicial de alguna NOVEDAD CREADA está entre las fechas de la NUEVA NOVEDAD
+    		if ( ($novedad->fecha_inicial_tnl >= $fecha_inicial_nueva) && ($novedad->fecha_inicial_tnl <= $fecha_final_nueva) )
+    		{
+    			return 1;
+    		}
+
+    		// Fecha final de la NUEVA NOVEDAD está entre las fechas de alguna NOVEDAD CREADA
+    		if ( ($novedad->fecha_final_tnl >= $fecha_inicial_nueva) && ($novedad->fecha_final_tnl <= $fecha_final_nueva) )
+    		{
+    			return 1;
+    		}
+    	}
+
+    	return 0;
+    }
 }

@@ -13,6 +13,11 @@ Route::get('nomina/retirar_liquidacion/{id}', 'Nomina\NominaController@retirar_l
 Route::get('nomina_print/{id}', 'Nomina\NominaController@nomina_print');
 
 
+Route::get('get_datos_contrato/{contrato_id}', 'Nomina\NominaController@get_datos_contrato');
+
+Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/{contrato_id}/{novedad_id}', 'Nomina\NovedadesTnlController@validar_fecha_otras_novedades');
+
+
 
 // INFORMES Y LISTADOS
 Route::post('nom_listado_acumulados','Nomina\ReporteController@listado_acumulados');

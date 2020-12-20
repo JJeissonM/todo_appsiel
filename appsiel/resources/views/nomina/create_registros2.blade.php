@@ -26,22 +26,23 @@ table td {
 			{{Form::open(array('route'=>array('nom_registros_documentos.store'),'method'=>'POST','class'=>'form-horizontal','id'=>'formulario'))}}
 				<div class="row">
 					<div class="col-sm-12">
-						<b>Documento de nómina:</b><code>{{ $documento->descripcion }}</code>
-						<b>Concepto:</b>	<code>{{ $concepto->descripcion }}</code>
-						<b>Porc. del Básico:</b>	<code>{{ $concepto->porcentaje_sobre_basico }}%</code>
-						
-						{{ Form::hidden('nom_doc_encabezado_id', $documento->id, ['id' =>'nom_doc_encabezado_id']) }}
-						
-						{{ Form::hidden('nom_concepto_id', $concepto->id, ['id' =>'nom_concepto_id']) }}
+						<p>
+							<b>Documento de nómina:</b><code>{{ $documento->descripcion }}</code>
+							<b>Concepto:</b>	<code>{{ $concepto->descripcion }}</code>
+							<b>Porc. del Básico:</b>	<code>{{ $concepto->porcentaje_sobre_basico }}%</code>
+							
+							{{ Form::hidden('nom_doc_encabezado_id', $documento->id, ['id' =>'nom_doc_encabezado_id']) }}
+							
+							{{ Form::hidden('nom_concepto_id', $concepto->id, ['id' =>'nom_concepto_id']) }}
 
-						{{ Form::hidden('cantidad_empleados', $cantidad_empleados, ['id' =>'cantidad_empleados']) }}
-
+							{{ Form::hidden('cantidad_empleados', $cantidad_empleados, ['id' =>'cantidad_empleados']) }}
+						</p>
 					</div>							
 				</div>
 				<div class="row">
 					<div class="col-sm-12">
 
-						<table class="table table-responsive" id="tabla">
+						<table class="table table-responsive" id="myTable2">
 							<?php 
 								$lbl_encabezado = 'Valor concepto';
 								if ( (float)$concepto->porcentaje_sobre_basico != 0 )
@@ -110,6 +111,16 @@ table td {
 				$( this ).off( event );
 
 				$('#formulario').submit();
+			});
+
+			$('#myTable2').DataTable({
+				dom: 'Bfrtip',
+				"paging": false,
+				"searching": false,
+				buttons: [],
+				order: [
+					[0, 'asc']
+				]
 			});
 
 		});

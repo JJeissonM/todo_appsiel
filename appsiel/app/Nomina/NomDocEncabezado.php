@@ -61,6 +61,22 @@ class NomDocEncabezado extends Model
         }
 
         return $horas_liquidadas;
+
+    }
+
+    public function get_valor_neto_empleado_concepto( $core_tercero_id, $nom_concepto_id )
+    {
+        $registros_documento = $this->registros_liquidacion->where( 'core_tercero_id', $core_tercero_id )
+                                                            ->where( 'core_tercero_id', $core_tercero_id )
+                                                            ->get()
+                                                            ->first();
+
+        if ( is_null($registros_documento) )
+        {
+            return 0;
+        }
+        
+        return ( $registros_documento->valor_devengo - $registros_documento->valor_deduccion );
     }
 
     public function horas_liquidadas_tiempo_laborado_empleado( $core_tercero_id )

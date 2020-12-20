@@ -46,8 +46,8 @@ class NominaController extends TransaccionController
 
     // 7: Tiempo NO Laborado, 1: tiempo laborado, 6: aux. transporte, 3: cuotas, 4: prestamos, 8: seguridad social, 10: Fondo de solidaridad pensional, 11: Retefuente
     // Nota: el orden de líquidación para 7,1 8, 10 7 11 es muy importante
-    //protected $array_ids_modos_liquidacion_automaticos = [ 7, 1, 6, 3, 4, 8, 10, 11];
-    protected $array_ids_modos_liquidacion_automaticos = [ 10 ];
+    protected $array_ids_modos_liquidacion_automaticos = [ 7, 1, 6, 3, 4, 8, 10, 11];
+    //protected $array_ids_modos_liquidacion_automaticos = [ 10 ];
 
     /**
      * Display a listing of the resource.
@@ -118,7 +118,7 @@ class NominaController extends TransaccionController
         foreach ( $conceptos_automaticos as $concepto )
         {
             $cant = 0;
-            if ( $modo_liquidacion_id != 7 ) // Si no es TNL, de esta pueden haber varias en el mismo Doc.
+            if ( $modo_liquidacion_id != 7 ) // Si no es TNL. Pueden haber varios registros de estos conceptos en el mismo Doc.
             {
                 // Se valida si ya hay una liquidación previa del concepto en ese documento
                 $cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
@@ -140,7 +140,7 @@ class NominaController extends TransaccionController
 
             foreach( $valores as $registro )
             {
-                if( ($registro['valor_devengo'] + $registro['valor_deduccion']) > 0 )
+                if( ($registro['valor_devengo'] + $registro['valor_deduccion']) != 0 )
                 {
                     $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $registro, $usuario);
 
@@ -379,6 +379,11 @@ class NominaController extends TransaccionController
         $documento->total_devengos = NomDocRegistro::where('nom_doc_encabezado_id',$nom_doc_encabezado_id)->sum('valor_devengo');
         $documento->total_deducciones = NomDocRegistro::where('nom_doc_encabezado_id',$nom_doc_encabezado_id)->sum('valor_deduccion');
         $documento->save();
+    }
+
+    public function get_datos_contrato( $contrato_id )
+    {
+        return NomContrato::find( $contrato_id );
     }
     
 }

@@ -9,6 +9,7 @@ use App\Nomina\ModosLiquidacion\Estrategias\Cuota;
 use App\Nomina\ModosLiquidacion\Estrategias\Prestamo;
 use App\Nomina\ModosLiquidacion\Estrategias\SeguridadSocial;
 use App\Nomina\ModosLiquidacion\Estrategias\FondoSolidaridadPensional;
+use App\Nomina\ModosLiquidacion\Estrategias\Retefuente;
 
 use App\Nomina\NomDocRegistro;
 
@@ -22,7 +23,8 @@ class ModoLiquidacion
 													3 => Cuota::class,
 													4 => Prestamo::class,
 													8 => SeguridadSocial::class,
-													10 => FondoSolidaridadPensional::class
+													10 => FondoSolidaridadPensional::class,
+													11 => Retefuente::class
 												];
 
 

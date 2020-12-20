@@ -94,7 +94,7 @@ class NomDocRegistro extends Model
 	}
 
 
-    public static function get_campos_adicionales_edit( $lista_campos, $registro )
+    public function get_campos_adicionales_edit( $lista_campos, $registro )
     {
 
     	/*
@@ -108,7 +108,7 @@ class NomDocRegistro extends Model
          	                        "id" => 999,
          	                        "descripcion" => "",
          	                        "tipo" => "personalizado",
-         	                        "name" => "lbl_planilla",
+         	                        "name" => "name_1",
          	                        "opciones" => "",
          	                        "value" => '<p>Concepto: <b>' . $registro->concepto->descripcion . '</b> </p> <div class="form-group">                    
          	                                        <div class="alert alert-danger">
@@ -124,7 +124,105 @@ class NomDocRegistro extends Model
          	                        "unico" => 0
          	                    ]];       
         }
+
+        $empleado = NomContrato::where('core_tercero_id',$registro->core_tercero_id)
+        							->where('estado','Activo')
+        							->get()
+        							->first();
+        if (!is_null($empleado) ) 
+        {
+			array_unshift($lista_campos, [
+                                            "id" => 999,
+                                            "descripcion" => "nombre_empleado",
+                                            "tipo" => "personalizado",
+                                            "name" => "name_2",
+                                            "opciones" => "",
+                                            "value" => '<div class="container-fluid"><h4> Empleado: <small>' . $empleado->tercero->descripcion . '</small></h4><hr></div>',
+                                            "atributos" => [],
+                                            "definicion" => "",
+                                            "requerido" => 0,
+                                            "editable" => 1,
+                                            "unico" => 0
+                                        ] );
+		}
+
+        
+        // Encabezado del documento
+
+        if ( $registro->encabezado_documento->estado == 'Cerrado' )
+        {
+        	return [[
+         	                        "id" => 999,
+         	                        "descripcion" => "",
+         	                        "tipo" => "personalizado",
+         	                        "name" => "name_1",
+         	                        "opciones" => "",
+         	                        "value" => '<p>Documento: <b>' . $registro->encabezado_documento->descripcion . '</b> </p> <div class="form-group">                    
+         	                                        <div class="alert alert-danger">
+         											  <strong>¡Advertencia!</strong>
+         											  <br>
+         											  Documento de nómina está <b>Cerrado</b>. No se pueden modificar sus registros.
+         											</div>
+         	                                    </div>',
+         	                        "atributos" => [],
+         	                        "definicion" => "",
+         	                        "requerido" => 0,
+         	                        "editable" => 1,
+         	                        "unico" => 0
+         	                    ]]; 
+        }
+		
+		array_unshift($lista_campos, [
+                                        "id" => 999,
+                                        "descripcion" => "descripcion_documento",
+                                        "tipo" => "personalizado",
+                                        "name" => "name_3",
+                                        "opciones" => "",
+                                        "value" => '<div class="container-fluid"><h4> Documento nómina: <small>' . $registro->encabezado_documento->descripcion . '</small></h4><hr></div>',
+                                        "atributos" => [],
+                                        "definicion" => "",
+                                        "requerido" => 0,
+                                        "editable" => 1,
+                                        "unico" => 0
+                                    ] );
+
+        // Nota
+		array_unshift($lista_campos, [
+                                        "id" => 999,
+                                        "descripcion" => "separador",
+                                        "tipo" => "personalizado",
+                                        "name" => "name_4",
+                                        "opciones" => "",
+                                        "value" => '&nbsp;',
+                                        "atributos" => [],
+                                        "definicion" => "",
+                                        "requerido" => 0,
+                                        "editable" => 1,
+                                        "unico" => 0
+                                    ] );
+		array_unshift($lista_campos, [
+                                        "id" => 999,
+                                        "descripcion" => "nota",
+                                        "tipo" => "personalizado",
+                                        "name" => "name_5",
+                                        "opciones" => "",
+                                        "value" => '<div class="container-fluid"> <span style="color:red;"> (Puede ingresar cero en todos los campos para eliminar el registro) </span> </div>',
+                                        "atributos" => [],
+                                        "definicion" => "",
+                                        "requerido" => 0,
+                                        "editable" => 1,
+                                        "unico" => 0
+                                    ] );				
+        	
         
         return $lista_campos;
+    }
+
+    public function update_adicional( $datos, $id )
+    {
+    	if ( ( $datos['valor_devengo'] + $datos['valor_deduccion'] + $datos['cantidad_horas'] ) == 0 ) 
+    	{
+    		NomDocRegistro::find( $id )->delete();
+    	}
     }
 }
