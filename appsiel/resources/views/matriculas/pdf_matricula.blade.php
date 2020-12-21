@@ -5,7 +5,7 @@
 <style>
 
     body{
-        font-size: 0.8em;
+        font-size: 1em;
     }
     img {
         padding-left:30px;
