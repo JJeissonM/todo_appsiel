@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use App\Nomina\NovedadTnl;
 use App\Nomina\NomDocRegistro;
 
-class TiempoNoLaborado implements Estrategia
+class PrestacionSocial implements Estrategia
 {
 
 	protected $valor_a_pagar_eps;
@@ -35,6 +35,7 @@ class TiempoNoLaborado implements Estrategia
 											[ 'nom_contrato_id', '=', $liquidacion['empleado']->id ],
 											[ 'cantidad_dias_pendientes_amortizar', '>', 0 ],
 											[ 'fecha_inicial_tnl', '<=', $lapso_documento->fecha_final ],
+											[ 'tipo_novedad_tnl', '=', 'vacaciones' ],
 											[ 'estado', '=', 'Activo' ] 
 										] )
 								->get();
@@ -50,21 +51,14 @@ class TiempoNoLaborado implements Estrategia
 
 			$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
 
-			$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
-
-        	$valor_real_novedad = $this->calcular_valores_liquidar_novedad( $novedad, $liquidacion['empleado'], $liquidacion['documento_nomina'], $cantidad_horas_a_liquidar, $salario_x_hora );
-
-        	if ( $novedad->tipo_novedad_tnl == 'incapacidad' )
-        	{
-        		$this->crear_registro_concepto_pagado_por_la_empresa( $novedad, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
-        	}        		
+        	$valor_real_novedad = 0;    		
 
 			$novedad->cantidad_dias_amortizados += ($cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL);
 			$novedad->cantidad_dias_pendientes_amortizar -= ($cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL);
         	$novedad->save();
 
             $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_novedad );
-            
+
             $valores_novedades[] = [
 	                                    'cantidad_horas' => $cantidad_horas_a_liquidar,
 										'valor_devengo' => $valores->devengo,
@@ -109,10 +103,6 @@ class TiempoNoLaborado implements Estrategia
 				break;
 			
 			case 'suspencion':
-				$valor_novedad = 0.0001;
-				break;
-			
-			case 'vacaciones':
 				$valor_novedad = 0.0001;
 				break;
 			

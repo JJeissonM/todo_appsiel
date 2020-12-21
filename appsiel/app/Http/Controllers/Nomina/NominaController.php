@@ -150,7 +150,13 @@ class NominaController extends TransaccionController
 
             foreach( $valores as $registro )
             {
-                if( ($registro['valor_devengo'] + $registro['valor_deduccion']) != 0 )
+                $cantidad_horas = 0;
+                if( isset($registro['cantidad_horas'] ) )
+                {
+                    $cantidad_horas = $registro['cantidad_horas'];
+                }
+
+                if( ( $registro['valor_devengo'] + $registro['valor_deduccion']  + $cantidad_horas ) != 0 )
                 {
                     $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $registro, $usuario);
 

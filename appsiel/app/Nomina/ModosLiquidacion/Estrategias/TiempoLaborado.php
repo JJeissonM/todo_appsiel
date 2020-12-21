@@ -14,7 +14,22 @@ class TiempoLaborado implements Estrategia
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
-		$horas_liquidadas_empleado = $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado']->core_tercero_id );
+		$registros_documento = NomDocRegistro::where( 'nom_doc_registros.nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
+													->where( 'nom_doc_registros.core_tercero_id', $liquidacion['empleado']->core_tercero_id )
+													->get();
+
+		$horas_liquidadas_empleado = 0;
+        foreach ($registros_documento as $registro )
+        {   
+            if ( !is_null($registro->concepto) )
+            {
+                // 7: Tiempo NO Laborado, 1: tiempo laborado
+                if ( in_array($registro->concepto->modo_liquidacion_id, [1,7] ) )
+                {
+                    $horas_liquidadas_empleado += $registro->cantidad_horas;
+                }
+            }                
+        }
 
 		// NO se puede liquidar más tiempo del que tiene el documento
 		if ( $horas_liquidadas_empleado >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
@@ -95,15 +110,6 @@ class TiempoLaborado implements Estrategia
 
 	public function get_tiempo_a_liquidar( $empleado, $documento_nomina, $horas_liquidadas_empleado )
 	{
-        // tener en cuenta fecha de ingreso y terminación del contrato
-
-		/*
-				Comfasucre EPS-CCF de Sucre EMPIEZA contrato el 2020-11-13   (contrato_id = 2 )
-
-				Comfacundi - CCF de Cundinamarca TIENE contrato hasta 2020-11-24   (contrato_id = 3 )
-
-		*/
-
 		// Caso 1: el contrato empieza dentro del lapso del documento
 		$tiempo_a_descontar_1 = 0;
 		if ( $empleado->fecha_ingreso >= $documento_nomina->lapso()->fecha_inicial && $empleado->fecha_ingreso <= $documento_nomina->lapso()->fecha_final )

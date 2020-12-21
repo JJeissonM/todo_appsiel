@@ -39,6 +39,7 @@ class NovedadTnl extends Model
 	    return NovedadTnl::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_novedades_tnl.nom_concepto_id')
 	    				->leftJoin('nom_contratos','nom_contratos.id','=','nom_novedades_tnl.nom_contrato_id')
 	    				->leftJoin('core_terceros','core_terceros.id','=','nom_contratos.core_tercero_id')
+                        ->where([['nom_novedades_tnl.tipo_novedad_tnl','<>','vacaciones']])
 	    				->select(
 	    						'nom_conceptos.descripcion AS campo1',
 	    						'core_terceros.descripcion AS campo2',
