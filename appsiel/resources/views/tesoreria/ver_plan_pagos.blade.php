@@ -80,7 +80,7 @@
 								<td>
 
 									@if( empty( $fila->facturas_estudiantes->toArray() ) )
-										<a class="btn btn-info btn-xs btn-detail" href="{{ url('facturas_estudiantes/create?id='.Input::get('id').'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion.'&estudiante_id='.$fila->id_estudiante) . '&inv_producto_id=' . $fila->inv_producto_id  . '&libreta_id=' . $libreta->id  . '&cartera_id=' . $cartera_id  . '&valor_cartera='.$fila->valor_cartera }}" title="Facturar">- <i class="fa fa-dollar"></i>&nbsp;Aplicar Dcto.</a>
+										<a class="btn btn-warning btn-xs btn-detail" href="{{ url( 'web/' . $fila->id . '/edit?id='.Input::get('id') . '&id_modelo=264' ) }}" title="Modificar"><i class="fa fa-edit"></i>&nbsp; </a>
 
 										<a class="btn btn-success btn-xs btn-detail" href="{{ url('facturas_estudiantes/create?id='.Input::get('id').'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion.'&estudiante_id='.$fila->id_estudiante) . '&inv_producto_id=' . $fila->inv_producto_id  . '&libreta_id=' . $libreta->id  . '&cartera_id=' . $cartera_id  . '&valor_cartera='.$fila->valor_cartera }}" title="Facturar"><i class="fa fa-file"></i>&nbsp;Facturar</a>
 									@else

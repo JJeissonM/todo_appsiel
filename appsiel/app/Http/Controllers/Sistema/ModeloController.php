@@ -506,14 +506,17 @@ class ModeloController extends Controller
             $lista_campos = app($this->modelo->name_space)->get_campos_adicionales_edit($lista_campos, $registro);
         }
 
-        if ( is_null($lista_campos[0]) )
-        {
-            $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
-        
-            $url_index = str_replace('id_fila', $registro->id, $acciones->index );
+        if ( isset($lista_campos[0]) ) {
+            if ( is_null($lista_campos[0]) )
+            {
+                $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
+            
+                $url_index = str_replace('id_fila', $registro->id, $acciones->index );
 
-            return redirect( $url_index . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') )->with('mensaje_error', $lista_campos[1]);
+                return redirect( $url_index . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') )->with('mensaje_error', $lista_campos[1]);
+            }
         }
+            
         
         $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
 

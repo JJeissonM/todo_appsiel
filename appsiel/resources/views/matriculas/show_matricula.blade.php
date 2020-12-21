@@ -23,7 +23,7 @@
 	<div class="marco_formulario">
 
 		<?php
-		echo $view_pdf;
+			echo $view_pdf;
 		?>
 
 	</div>

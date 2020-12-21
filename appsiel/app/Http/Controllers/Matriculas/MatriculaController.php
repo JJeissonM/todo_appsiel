@@ -577,27 +577,3 @@ class MatriculaController extends ModeloController
         return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Matrícula ELIMINADA correctamente. Código: ' . $registro->codigo);
     }
 }
-
-
-/*
-    array:17 [▼
-  "_token" => "r9JxNq41ZMNyUzgcDsZJVxKMlITeOqXjXKSpd3fs"
-  "id_colegio" => "1"
-  "codigo" => "19018-02"
-  "fecha_matricula" => "2020-10-22"
-  "sga_grado_id" => "6-02"
-  "curso_id" => "5"
-  "periodo_lectivo_id" => "2"
-  "numero_docp" => array:1 [▶]
-  "tiporesponsable_idp" => ""
-  "grupo_sanguineo" => ""
-  "medicamentos" => ""
-  "alergias" => ""
-  "eps" => ""
-  "lineas_registros" => "[{"tercero_id":"198","tipo_responsable_id":"3","Tercero":"1.065.567.198 - Adalberto  Pérez Oliveros","Dirección":"CL 7 22 39","Teléfono":"314 656 1062","Correo":"ing.adalbertoperez@gmail.com","Tipo de responsable":"RESPONSABLE-FINANCIERO"},{"tercero_id":"","tipo_responsable_id":"","Tercero":":\n\t\n\t\tPAPAMAMA","Dirección":""}]"
-  "responsable_agregado" => "1"
-  "url_id" => "1"
-  "url_id_modelo" => "19"
-]
-
-*/

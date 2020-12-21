@@ -14,6 +14,8 @@ class TesoPlanPagosEstudiante extends Model
     // NOTA: el campo inv_producto_id corresponde al "concepto" que se usa en la facturas.
     protected $fillable = [ 'id_libreta', 'id_estudiante', 'inv_producto_id', 'valor_cartera', 'valor_pagado', 'saldo_pendiente', 'fecha_vencimiento', 'estado' ];
 
+    public $urls_acciones = '{"edit":"web/id_fila/edit"}';
+
     public function libreta()
     {
         return $this->belongsTo( TesoLibretasPago::class, 'id_libreta');
@@ -66,8 +68,6 @@ class TesoPlanPagosEstudiante extends Model
         }
     }
 
-
-
     public static function get_total_valor_pagado_concepto( $libreta_id, $inv_producto_id )
     {
         return TesoPlanPagosEstudiante::where('id_libreta',$libreta_id)
@@ -108,5 +108,83 @@ class TesoPlanPagosEstudiante extends Model
                         ->orderBy('sga_cursos.codigo','ASC')
                         ->orderBy('core_terceros.apellido1','ASC')
                         ->get();
+    }
+
+    public function get_campos_adicionales_edit( $lista_campos, $registro )
+    {
+        
+
+
+        array_unshift($lista_campos, [
+                                        "id" => 999,
+                                        "descripcion" => "separador",
+                                        "tipo" => "personalizado",
+                                        "name" => "name_4",
+                                        "opciones" => "",
+                                        "value" => '&nbsp;',
+                                        "atributos" => [],
+                                        "definicion" => "",
+                                        "requerido" => 0,
+                                        "editable" => 1,
+                                        "unico" => 0
+                                    ] );
+
+        if ( !is_null($registro->concepto) ) 
+        {
+            array_unshift($lista_campos, [
+                                            "id" => 999,
+                                            "descripcion" => "nombre_concepto",
+                                            "tipo" => "personalizado",
+                                            "name" => "name_3",
+                                            "opciones" => "",
+                                            "value" => '<div class="container-fluid"><h4> Concepto: <small>' . $registro->concepto->descripcion . '</small></h4><hr></div> <input type="hidden" value="' . $registro->id_libreta . '" name="id_libreta">',
+                                            "atributos" => [],
+                                            "definicion" => "",
+                                            "requerido" => 0,
+                                            "editable" => 1,
+                                            "unico" => 0
+                                        ] );
+        }
+        
+        array_unshift($lista_campos, [
+                                        "id" => 999,
+                                        "descripcion" => "separador",
+                                        "tipo" => "personalizado",
+                                        "name" => "name_4",
+                                        "opciones" => "",
+                                        "value" => '&nbsp;',
+                                        "atributos" => [],
+                                        "definicion" => "",
+                                        "requerido" => 0,
+                                        "editable" => 1,
+                                        "unico" => 0
+                                    ] );    
+
+        $estudiante = $registro->estudiante;
+        if ( !is_null($estudiante) ) 
+        {
+            array_unshift($lista_campos, [
+                                            "id" => 999,
+                                            "descripcion" => "nombre_estudiante",
+                                            "tipo" => "personalizado",
+                                            "name" => "name_2",
+                                            "opciones" => "",
+                                            "value" => '<div class="container-fluid"><h4> Estudiante: <small>' . $estudiante->tercero->descripcion . '</small></h4><hr></div>',
+                                            "atributos" => [],
+                                            "definicion" => "",
+                                            "requerido" => 0,
+                                            "editable" => 1,
+                                            "unico" => 0
+                                        ] );
+        }
+        
+        return $lista_campos;
+    }
+
+    public function update_adicional( $datos, $id )
+    {
+        TesoPlanPagosEstudiante::find( $id )->update( [ 'saldo_pendiente' => $datos['valor_cartera'] ] );
+
+        return 'tesoreria/ver_plan_pagos/' . $datos['id_libreta'] . '?id=3&id_modelo=31&id_transaccion=';
     }
 }
