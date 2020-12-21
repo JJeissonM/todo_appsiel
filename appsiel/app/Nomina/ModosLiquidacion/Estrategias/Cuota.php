@@ -11,10 +11,10 @@ class Cuota implements Estrategia
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
 		$cuotas = NomCuota::where('estado', 'Activo')
-                        ->where('core_tercero_id', $liquidacion['empleado']->core_tercero_id)
-                        ->where('nom_concepto_id', $liquidacion['concepto']->id)
-                        ->where('fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha)
-                        ->get();
+                            ->where('core_tercero_id', $liquidacion['empleado']->core_tercero_id)
+                            ->where('nom_concepto_id', $liquidacion['concepto']->id)
+                            ->where('fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha)
+                            ->get();
 
         $valores_cuotas = [];
         foreach( $cuotas as $cuota )

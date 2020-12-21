@@ -44,7 +44,17 @@ class NominaController extends TransaccionController
     protected $registros_procesados = 0;
     protected $vec_campos;
 
-    // 7: Tiempo NO Laborado, 1: tiempo laborado, 6: aux. transporte, 3: cuotas, 4: prestamos, 8: seguridad social, 10: Fondo de solidaridad pensional, 11: Retefuente
+    /* 
+        7: Tiempo NO Laborado
+        1: tiempo laborado
+        6: Aux. transporte
+        3: cuotas
+        4: prestamos
+        8: seguridad social
+        10: Fondo de solidaridad pensional
+        11: Retefuente
+    */
+        
     // Nota: el orden de líquidación para 7,1 8, 10 7 11 es muy importante
     protected $array_ids_modos_liquidacion_automaticos = [ 7, 1, 6, 3, 4, 8, 10, 11];
     //protected $array_ids_modos_liquidacion_automaticos = [ 10 ];

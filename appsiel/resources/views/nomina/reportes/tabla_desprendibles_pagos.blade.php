@@ -1,20 +1,30 @@
 @foreach ( $empleados as $empleado)
 
     <div class="cuadro">
-        <p style="text-align: center; font-size: 13px; font-weight: bold;">
+        <div style="text-align: center; font-size: 13px; font-weight: bold;">
             <span style="font-size:14px;">{{ $documento->empresa->descripcion }}</span>
             <br/> 
             Documento: {{ $documento->descripcion }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fecha: {{ $documento->fecha }}
-        </p>
-        <p style="text-align: center; font-size: 13px; font-weight: bold; width: 100%;"> 
-                Desprendible de pago 
-        </p>
+        </div>
+        <div style="text-align: center; font-size: 13px; font-weight: bold; width: 100%;"> 
+                Volante de nómina
+        </div>
 
-        <table style="border: 1px solid; border-collapse: collapse; width:100%;">
+        <table style="border: 1px solid; border-collapse: collapse; width:100%; font-size: 12px;">
             <tr>
-                <td style="border: 1px solid;"><b> Empleado: </b></td>
-                <td style="border: 1px solid;">{{ $empleado->tercero->descripcion }}</td>
+                <td style="border: 1px solid;"> <b> Empleado: </b> {{ $empleado->tercero->descripcion }}</td>
+                <td style="border: 1px solid;"> <b> Cargo: </b> {{ $empleado->cargo->descripcion }}</td>
                 <td style="border: 1px solid;"> {{ Form::TextoMoneda( $empleado->sueldo, 'Sueldo: ') }} </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid;"><b> Fecha ingreso: </b> {{ $empleado->fecha_ingreso }}</td>
+                <td style="border: 1px solid;" colspan="2">
+                    <b> E.P.S.: </b> {{ $empleado->entidad_salud->descripcion }}
+                    &nbsp;&nbsp; | &nbsp;&nbsp;
+                    <b> A.F.P.: </b> {{ $empleado->entidad_pension->descripcion }}
+                    &nbsp;&nbsp; | &nbsp;&nbsp;
+                    <b> A.R.L.: </b> {{ $empleado->entidad_arl->descripcion }}
+                </td>
             </tr>
         </table>
 
@@ -73,7 +83,7 @@
 
                     <tr>
                         <td> {{ $descripcion_concepto }} </td>
-                        <td> {{ $cantidad_horas }} </td>
+                        <td style="text-align: center;"> {{ $cantidad_horas }} </td>
                         <td> {{ $devengo }} </td>
                         <td> {{ $deduccion }} </td>
                     </tr>
@@ -115,8 +125,11 @@
         <br/> 
         
         @include( 'nomina.reportes.firma_desprendibles_pagos' )
-
-    </div> 
+        
+        <div style="width: 100%;text-align: right; font-size: 10px; color: #aaa;">
+            <i>Impreso por <a href="https://appsiel.com.co" target="_blank">Appsiel</a></i>
+        </div>
+    </div>
 
     <div class="page-break"></div>
 @endforeach

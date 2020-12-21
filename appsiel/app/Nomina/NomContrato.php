@@ -62,7 +62,7 @@ class NomContrato extends Model
 
     public function salario_x_hora()
     {
-        return $this->sueldo / config('nomina.horas_laborales');
+        return $this->sueldo / (int)config('nomina.horas_laborales');
     }
 
     public function valor_ibc()

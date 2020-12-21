@@ -31,6 +31,8 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo']) }}
 
+				<h4> Parámetros generales  </h4>
+				<hr>
 				<div class="row">
 
 					<div class="col-md-6">
@@ -78,6 +80,16 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
 							<?php 
 								$concepto_salario_integral = 2;
 								if( isset($parametros['concepto_salario_integral'] ) )
@@ -86,6 +98,19 @@
 								}
 							?>
 							{{ Form::bsSelect('concepto_salario_integral', $concepto_salario_integral, 'Concepto de salario integral', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$concepto_salud_obligatoria = 64;
+								if( isset($parametros['concepto_salud_obligatoria'] ) )
+								{
+									$concepto_salud_obligatoria = $parametros['concepto_salud_obligatoria'];
+								}
+							?>
+							{{ Form::bsSelect('concepto_salud_obligatoria', $concepto_salud_obligatoria, 'Concepto Salud Obligatoria', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -116,6 +141,38 @@
 								}
 							?>
 							{{ Form::bsSelect('id_concepto_pagar_empresa_en_incapacidades', $id_concepto_pagar_empresa_en_incapacidades, 'Concepto incapacidad asumida por la empresa', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<h4> Parámetros liquidación de aprendices  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$concepto_a_pagar_pasante_sena = 75;
+								if( isset($parametros['concepto_a_pagar_pasante_sena'] ) )
+								{
+									$concepto_a_pagar_pasante_sena = $parametros['concepto_a_pagar_pasante_sena'];
+								}
+							?>
+							{{ Form::bsSelect('concepto_a_pagar_pasante_sena', $concepto_a_pagar_pasante_sena, 'Concepto a pagar', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$porcentaje_liquidacon_pasante_sena = 75; 
+								if( isset($parametros['porcentaje_liquidacon_pasante_sena'] ) )
+								{
+									$porcentaje_liquidacon_pasante_sena = $parametros['porcentaje_liquidacon_pasante_sena'];
+								}
+							?>
+							{{ Form::bsText('porcentaje_liquidacon_pasante_sena', $porcentaje_liquidacon_pasante_sena, 'Porcentaje del sueldo básico a pagar', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

@@ -10,11 +10,13 @@ class Prestamo implements Estrategia
 {
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
-		$prestamos = NomPrestamo::where('estado', 'Activo')
-                                ->where('core_tercero_id', $liquidacion['empleado']->core_tercero_id)
-                                ->where('nom_concepto_id', $liquidacion['concepto']->id)
-                                ->where('fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha)
-                                ->get();
+		$prestamos = NomPrestamo::where( [
+                                                ['estado', '=', 'Activo'],
+                                                ['core_tercero_id','=', $liquidacion['empleado']->core_tercero_id],
+                                                ['nom_concepto_id','=', $liquidacion['concepto']->id],
+                                                ['fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha]
+                                               ] )
+                                    ->get();
 
         $valores_prestamos = [];
         foreach( $prestamos as $prestamo )

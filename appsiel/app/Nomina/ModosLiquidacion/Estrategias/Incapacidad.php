@@ -29,16 +29,16 @@ class Incapacidad implements Estrategia
 		switch ( $liquidacion['empleado']->liquida_subsidio_transporte )
 		{
 			case '1': // Si liquida, si Salario < 2 SMMLV
-				if ( $liquidacion['empleado']->sueldo < config('nomina.SMMLV') )
+				if ( $liquidacion['empleado']->sueldo < (float)config('nomina.SMMLV') )
 				{
 					$cantidad_horas = $liquidacion['documento_nomina']->tiempo_a_liquidar;
-					$valor_auxilio = $liquidacion['concepto']->valor_fijo / ( config('nomina.horas_laborales') / $liquidacion['documento_nomina']->tiempo_a_liquidar );
+					$valor_auxilio = $liquidacion['concepto']->valor_fijo / ( (int)config('nomina.horas_laborales') / $liquidacion['documento_nomina']->tiempo_a_liquidar );
 				}
 				break;
 
 			case '2': // Siempre
 				$cantidad_horas = $liquidacion['documento_nomina']->tiempo_a_liquidar;
-				$valor_auxilio = $liquidacion['concepto']->valor_fijo / ( config('nomina.horas_laborales') / $liquidacion['documento_nomina']->tiempo_a_liquidar );
+				$valor_auxilio = $liquidacion['concepto']->valor_fijo / ( (int)config('nomina.horas_laborales') / $liquidacion['documento_nomina']->tiempo_a_liquidar );
 				break;
 			
 			case '3': // No liquida

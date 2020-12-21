@@ -12,7 +12,7 @@ class AuxilioTransporte implements Estrategia
 		$cantidad_horas = 0;
 		$valor_auxilio_empleado = 0;
 
-		$valor_auxilio_x_hora = $liquidacion['concepto']->valor_fijo / config('nomina.horas_laborales');
+		$valor_auxilio_x_hora = $liquidacion['concepto']->valor_fijo / (int)config('nomina.horas_laborales');
 
 		switch ( $liquidacion['empleado']->liquida_subsidio_transporte )
 		{

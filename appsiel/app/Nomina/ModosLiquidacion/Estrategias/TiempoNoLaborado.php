@@ -159,12 +159,12 @@ class TiempoNoLaborado implements Estrategia
 		// Las incapacidades de origen "comun" se pagan al 66.66%
 		// La empresa puede asumir o NO el pago del otro 33.33%
 		$porcentaje_a_pagar = 100;
-		if ( config('nomina.pago_salario_completo_en_incapacidades') == 0 && $novedad->origen_incapacidad != 'laboral' )
+		if ( (int)config('nomina.pago_salario_completo_en_incapacidades') == 0 && $novedad->origen_incapacidad != 'laboral' )
 		{
 			$porcentaje_a_pagar = $porcentaje_liquidacion_legal;
 		}
 
-		$horas_laborales = config('nomina.horas_laborales');
+		$horas_laborales = (int)config('nomina.horas_laborales');
 		if ( $empleado->horas_laborales != 0 )
 		{
 			$horas_laborales = $empleado->horas_laborales;
