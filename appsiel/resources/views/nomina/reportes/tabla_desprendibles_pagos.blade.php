@@ -126,9 +126,7 @@
         
         @include( 'nomina.reportes.firma_desprendibles_pagos' )
         
-        <div style="width: 100%;text-align: right; font-size: 10px; color: #aaa;">
-            <i>Impreso por <a href="https://appsiel.com.co" target="_blank">Appsiel</a></i>
-        </div>
+        {!! generado_por_appsiel() !!}
     </div>
 
     <div class="page-break"></div>

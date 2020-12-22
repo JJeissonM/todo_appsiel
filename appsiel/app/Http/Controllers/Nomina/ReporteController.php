@@ -27,12 +27,12 @@ use App\Core\Empresa;
 
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomConcepto;
+use App\Nomina\NomEntidad;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
-use App\Nomina\NomMovimiento;
 
 class ReporteController extends Controller
 {
@@ -131,127 +131,6 @@ class ReporteController extends Controller
         return $vista;
     }
 
-    /**
-     * generar_reporte_desprendibles_de_pago
-     *
-     
-    public function generar_reporte_desprendibles_de_pago($nom_doc_encabezado_id, $core_tercero_id )
-    {        
-        $documento = NomDocEncabezado::find($nom_doc_encabezado_id);
-
-        $empresa = Empresa::find($documento->core_empresa_id);
-
-        if ( $core_tercero_id == 'Todos') 
-        {
-            $empleados = $documento->empleados;
-        }else{
-            $empleados = NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
-                                    ->leftJoin('nom_cargos', 'nom_cargos.id', '=', 'nom_contratos.cargo_id')
-                                    ->where('nom_contratos.core_tercero_id', $core_tercero_id)
-                                    ->select('core_terceros.descripcion AS empleado', 'core_terceros.id AS core_tercero_id', 'nom_cargos.descripcion AS cargo', 'nom_contratos.sueldo AS salario', 'core_terceros.numero_identificacion AS cedula')
-                                    ->get();
-        }
-
-        $tabla = '';
-
-        foreach ($empleados as $una_persona) 
-        {
-
-            $tabla .= '<div class="cuadro">
-                            <p style="text-align: center; font-size: 13px; font-weight: bold;">
-                                <span style="font-size:14px;">'.$empresa->descripcion.'</span>
-                                <br/> 
-                                Documento: '.$documento->descripcion.' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Fecha: '.$documento->fecha.'</p>
-                            <div style="text-align: center; font-size: 13px; font-weight: bold; width: 100%;"> 
-                            Desprendible de pago </div> <br> ';
-
-            $tabla .= '<table style="border: 1px solid; border-collapse: collapse; width:100%;">
-                        <tr>
-                            <td style="border: 1px solid;"><b>Empleado: </b></td>
-                            <td style="border: 1px solid;">'.$una_persona->tercero->descripcion.'</td>
-                            <td style="border: 1px solid;">'.Form::TextoMoneda($una_persona->sueldo, 'Sueldo: ').'</td>
-                        </tr>
-                    </table>
-            <table style="width:100%; font-size: 12px;" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th style="border: 1px solid; text-align:center;"> Conceptos </th>
-                            <th style="border: 1px solid; text-align:center;"> Devengo </th>
-                            <th style="border: 1px solid; text-align:center;"> Deducción </th>
-                        </tr>
-                    </thead>
-                    <tbody>';
-
-            $registros = NomDocRegistro::where('nom_doc_encabezado_id',$nom_doc_encabezado_id)->where('core_tercero_id',$una_persona->core_tercero_id)->orderBy('nom_concepto_id','ASC')->get();
-
-
-            $total_devengos = 0;
-            $total_deducciones = 0;
-            foreach ($registros as $un_registro) 
-            {
-                $concepto = NomConcepto::find($un_registro->nom_concepto_id);
-
-                if ( $un_registro->valor_devengo != 0) 
-                {
-                    $devengo = Form::TextoMoneda($un_registro->valor_devengo);
-                    $deduccion = '';
-                }
-
-                if ( $un_registro->valor_deduccion != 0) 
-                {
-                    $devengo = '';
-                    $deduccion = Form::TextoMoneda($un_registro->valor_deduccion);
-                }
-
-                $tabla .= '<tr>
-                            <td>'.$concepto->descripcion.'</td>
-                            <td>'.$devengo.'</td>
-                            <td>'.$deduccion.'</td>
-                        </tr>';
-
-                $total_devengos += $un_registro->valor_devengo;
-                $total_deducciones += $un_registro->valor_deduccion;
-            }
-
-            $total_a_pagar = $total_devengos - $total_deducciones;
-
-            $firmas = '<table style="width:100%; font-size: 10px;">
-            <tr>
-                <td width="20%"> &nbsp; </td>
-                <td align="center"> _____________________________ </td>
-                <td align="center"> &nbsp;  </td>
-                <td align="center"> _____________________________ </td>
-                <td width="20%">&nbsp;</td>
-            </tr>
-            <tr>
-                <td width="20%"> &nbsp; </td>
-                <td align="center"> Generado por: '.explode("@", $documento->creado_por)[0].' </td>
-                <td align="center"> &nbsp;  </td>
-                <td align="center"> Recibí conforme <br>
-                CC. </td>
-                <td width="20%">&nbsp;</td>
-            </tr>
-        </table>';
-
-            $tabla .='<tr>
-                        <td>Totales</td>
-                        <td><hr>'.Form::TextoMoneda($total_devengos).'</td>
-                        <td><hr>'.Form::TextoMoneda($total_deducciones).'</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">&nbsp;</td>
-                    </tr>
-                <tr>
-                        <td colspan="3"><b>Saldo a pagar: </b> $'.number_format($total_a_pagar, 0, ',', '.').' ('.NumerosEnLetras::convertir($total_a_pagar,'pesos',false).')</td>
-                    </tr>
-                </tbody>
-            </table> <br/> '.$firmas.'</div> <div class="page-break"></div>';
-        }
-        return $tabla;
-    }    
-    */
-
-
     public function listado_acumulados(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -297,18 +176,79 @@ class ReporteController extends Controller
     }
 
 
+    public function resumen_x_entidad_empleado(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $entidades = NomEntidad::where('tipo_entidad','EPS')->get()->pluck('id')->toArray();
+        $movimientos_entidades_salud = NomDocRegistro::movimientos_entidades_salud( $fecha_desde, $fecha_hasta, $entidades);
+        $entidades_con_movimiento = $movimientos_entidades_salud->groupBy('entidad_salud_id')->toArray();
+        $coleccion_movimientos_salud = $this->crear_coleccion_movimientos_entidades( $entidades_con_movimiento );
+
+        $entidades = NomEntidad::where('tipo_entidad','AFP')->get()->pluck('id')->toArray();
+        $movimientos_entidades_afp = NomDocRegistro::movimientos_entidades_afp( $fecha_desde, $fecha_hasta, $entidades);
+        $entidades_con_movimiento = $movimientos_entidades_afp->groupBy('entidad_pension_id')->toArray();
+        $coleccion_movimientos_afp = $this->crear_coleccion_movimientos_entidades( $entidades_con_movimiento );
+
+        $gran_total = $movimientos_entidades_salud->sum('valor_deduccion') + $movimientos_entidades_afp->sum('valor_deduccion');
+
+        switch ( $request->tipo_reporte )
+        {
+            case 'total_x_entidad':
+                    $vista = View::make('nomina.reportes.resumen_entidades', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
+                break;
+
+            case 'detallar_empleados':
+                    $vista = View::make('nomina.reportes.resumen_entidades_detallar_empleados', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
+                break;
+
+            default:
+                # code...
+                break;
+        }
+
+                
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function crear_coleccion_movimientos_entidades( $entidades_con_movimiento )
+    {
+        $movimientos = collect([]);
+
+        foreach ($entidades_con_movimiento as $entidad_id => $registro)
+        {
+            $entidad = NomEntidad::find($entidad_id);
+            $movimientos[] = (object)[ 'entidad'=> '<b>' . $entidad->descripcion . '</b> / NIT. ' . number_format($entidad->tercero->numero_identificacion,'0',',','.') . ')', 'movimiento'=>$registro ];
+        }
+
+        $sorted = $movimientos->sortBy('entidad');
+
+        return $sorted->values()->all();
+    }
+
     public function provisiones_x_entidad_empleado(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
-        $vista = '<h3 style="width: 100%; text-align: center;">
-                        PROVISIONES X ENTIDAD/EMPLEADO
-                    </h3>
-                    <p style="width: 100%; text-align: center;">
-                        Desde: ' . $fecha_desde . ' - Hasta: ' . $fecha_hasta . '
-                    </p>
-                    <hr>';
+        $tipos_entidades = [ 12 => "EPS", 13 => "AFP", "ARL", "CCF", 18 => "PARAFISCALES"];
+
+        foreach ($tipos_entidades as $modo_liquidacion_id => $tipo_entidad)
+        {
+            $entidades = NomEntidad::where('tipo_entidad',$value)->get()->toArray();
+            foreach ($entidades as $entidad )
+            {
+                $movimiento_entidad = 3;
+            }
+        }
+
+        $movimientos = [];
+
+        $vista = View::make('nomina.reportes.resumen_entidades', compact( 'tipos_entidades', 'movimientos', 'fecha_desde', 'fecha_hasta') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

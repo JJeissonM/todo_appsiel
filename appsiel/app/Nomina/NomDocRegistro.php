@@ -76,22 +76,44 @@ class NomDocRegistro extends Model
 	}
 
 
-	public static function listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id)
-	{
-		if ( $nom_agrupacion_id == '' )
-		{
-			return NomDocRegistro::where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
-					            ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
-					            ->get();
-		}
+    public static function listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id)
+    {
+        if ( $nom_agrupacion_id == '' )
+        {
+            return NomDocRegistro::where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
+                                ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
+                                ->get();
+        }
 
-		return NomDocRegistro::leftJoin('nom_agrupacion_tiene_conceptos','nom_agrupacion_tiene_conceptos.nom_concepto_id','=','nom_doc_registros.nom_concepto_id')
-							->where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
-				            ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
-				            ->where('nom_agrupacion_tiene_conceptos.nom_agrupacion_id', $nom_agrupacion_id)
-				            ->get();
-							
-	}
+        return NomDocRegistro::leftJoin('nom_agrupacion_tiene_conceptos','nom_agrupacion_tiene_conceptos.nom_concepto_id','=','nom_doc_registros.nom_concepto_id')
+                            ->where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
+                            ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
+                            ->where('nom_agrupacion_tiene_conceptos.nom_agrupacion_id', $nom_agrupacion_id)
+                            ->get();
+                            
+    }
+
+    public static function movimientos_entidades_salud( $fecha_desde, $fecha_hasta, array $entidades)
+    {
+        return NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
+                                                ->leftJoin('nom_contratos','nom_contratos.id','=','nom_doc_registros.nom_contrato_id')
+                                                ->where('nom_conceptos.modo_liquidacion_id',12)
+                                                ->whereIn('nom_contratos.entidad_salud_id',$entidades)
+                                                ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
+                                                ->orderBy('nom_contratos.id')
+                                                ->get();                            
+    }
+
+    public static function movimientos_entidades_afp( $fecha_desde, $fecha_hasta, array $entidades)
+    {
+        return NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
+                                                ->leftJoin('nom_contratos','nom_contratos.id','=','nom_doc_registros.nom_contrato_id')
+                                                ->where('nom_conceptos.modo_liquidacion_id',13)
+                                                ->whereIn('nom_contratos.entidad_pension_id',$entidades)
+                                                ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
+                                                ->orderBy('nom_contratos.id')
+                                                ->get();                            
+    }
 
 
     public function get_campos_adicionales_edit( $lista_campos, $registro )

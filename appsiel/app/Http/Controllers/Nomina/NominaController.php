@@ -50,13 +50,13 @@ class NominaController extends TransaccionController
         6: Aux. transporte
         3: cuotas
         4: prestamos
-        8: seguridad social
         10: Fondo de solidaridad pensional
-        11: Retefuente
+        12: Salud Obligatoria
+        13: Pensión Obligatoria
     */
         
     // Nota: el orden de líquidación para 7,1 8, 10 7 11 es muy importante
-    protected $array_ids_modos_liquidacion_automaticos = [ 7, 1, 6, 3, 4, 8, 10, 11];
+    protected $array_ids_modos_liquidacion_automaticos = [ 7, 1, 6, 3, 4, 10, 12, 13];
     //protected $array_ids_modos_liquidacion_automaticos = [ 10 ];
 
     /**

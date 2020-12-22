@@ -7,9 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class NomEntidad extends Model
 {
     protected $table = 'nom_entidades';
+
 	protected $fillable = ['core_tercero_id', 'descripcion', 'codigo_nacional', 'tipo_entidad', 'estado'];
-	public $encabezado_tabla = [ 'NIT', 'Razón Social', 'Nombre Entidad', 'Código nacional', 'Tipo Entidad', 'Estado', 'Acción'];
-	public static function consultar_registros()
+	
+    public $encabezado_tabla = [ 'NIT', 'Razón Social', 'Nombre Entidad', 'Código nacional', 'Tipo Entidad', 'Estado', 'Acción'];
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+	
+    public static function consultar_registros()
 	{
         return NomEntidad::leftJoin('core_terceros','core_terceros.id','=','nom_entidades.core_tercero_id')
                                 ->select(

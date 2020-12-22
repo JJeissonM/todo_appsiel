@@ -22,6 +22,7 @@ Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/
 // INFORMES Y LISTADOS
 Route::post('nom_listado_acumulados','Nomina\ReporteController@listado_acumulados');
 Route::post('nom_libro_fiscal_vacaciones','Nomina\ReporteController@libro_fiscal_vacaciones');
+Route::post('nom_resumen_x_entidad_empleado','Nomina\ReporteController@resumen_x_entidad_empleado');
 Route::post('nom_provisiones_x_entidad_empleado','Nomina\ReporteController@provisiones_x_entidad_empleado');
 Route::post('nom_listado_aportes_parafiscales','Nomina\ReporteController@listado_aportes_parafiscales');
 

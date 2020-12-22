@@ -1,6 +1,16 @@
 <?php
 
 
+if (! function_exists('generado_por_appsiel'))
+{
+    function generado_por_appsiel()
+    {
+        return '<div style="width: 100%;text-align: right; font-size: 10px; color: #aaa;">
+                    <i>Generado por <a href="https://appsiel.com.co" target="_blank">Appsiel</a></i>&nbsp;&nbsp;&nbsp;
+                </div>';
+    }
+}
+
 
 // NÓMINA
 if (! function_exists('get_valores_devengo_deduccion'))

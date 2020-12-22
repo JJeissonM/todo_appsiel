@@ -10,6 +10,8 @@ use App\Nomina\ModosLiquidacion\Estrategias\Prestamo;
 use App\Nomina\ModosLiquidacion\Estrategias\SeguridadSocial;
 use App\Nomina\ModosLiquidacion\Estrategias\FondoSolidaridadPensional;
 use App\Nomina\ModosLiquidacion\Estrategias\Retefuente;
+use App\Nomina\ModosLiquidacion\Estrategias\SaludObligatoria;
+use App\Nomina\ModosLiquidacion\Estrategias\PensionObligatoria;
 
 use App\Nomina\NomDocRegistro;
 
@@ -24,7 +26,9 @@ class ModoLiquidacion
 													4 => Prestamo::class,
 													8 => SeguridadSocial::class,
 													10 => FondoSolidaridadPensional::class,
-													11 => Retefuente::class
+													11 => Retefuente::class,
+													12 => SaludObligatoria::class,
+													13 => PensionObligatoria::class
 												];
 
 
