@@ -307,7 +307,7 @@ class TiempoNoLaborado implements Estrategia
 		$lapso_documento = $registro->encabezado_documento->lapso();
 		$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
 
-		if ( $registro->nom_concepto_id != (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades') )
+		if ( $registro->nom_concepto_id != (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades')  )
 		{
 			$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
 			$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
@@ -317,6 +317,17 @@ class TiempoNoLaborado implements Estrategia
 		{
 			$this->calcular_valores_liquidar_incapacidad( $novedad, $registro->contrato, $cantidad_horas_a_liquidar );
 
+			/*
+				Refactorizar este procedimiento del valor pagado por la empresa 
+			*/
+			// Cuando todo lo paga la empresa ( 2 primeros días )
+			$valor_registro = $this->valor_a_pagar_eps + $this->valor_a_pagar_arl + $this->valor_a_pagar_afp;
+			if ( ($this->valor_a_pagar_empresa > 0) && ($valor_registro == 0) )
+			{
+				$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
+				$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
+			}
+		
 			$novedad->valor_a_pagar_eps -= $this->valor_a_pagar_eps;
 			$novedad->valor_a_pagar_arl -= $this->valor_a_pagar_arl;
 			$novedad->valor_a_pagar_afp -= $this->valor_a_pagar_afp;

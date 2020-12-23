@@ -157,4 +157,32 @@ class NomContrato extends Model
         }
             
     }
+
+    public function get_campos_adicionales_edit( $lista_campos, $registro )
+    {
+
+        if( $registro->estado == 'Retirado' ) 
+        {
+            return [[
+                                    "id" => 999,
+                                    "descripcion" => "",
+                                    "tipo" => "personalizado",
+                                    "name" => "name_1",
+                                    "opciones" => "",
+                                    "value" => '<div class="container-fluid">                    
+                                                    <div class="alert alert-danger">
+                                                      <strong>¡Advertencia!</strong>
+                                                      <br>
+                                                      El empleado <b>' . $registro->tercero->descripcion . '</b> está Retirado. Los datos del contrato no pueden ser modifcado.
+                                                    </div>
+                                                </div>',
+                                    "atributos" => [],
+                                    "definicion" => "",
+                                    "requerido" => 0,
+                                    "editable" => 1,
+                                    "unico" => 0
+                                ]];       
+        }
+
+    }
 }
