@@ -86,7 +86,15 @@ $(document).ready(function(){
 	function get_datos_contrato()
 	{
 		$('#div_cargando').show();
-		var url = '../../get_datos_contrato/' + $('#nom_contrato_id').val();
+
+		var url = '../get_datos_contrato/' + $('#nom_contrato_id').val();
+
+		if( direccion.search("edit") != -1)
+		{
+			// Editando
+			var url = '../../get_datos_contrato/' + $('#nom_contrato_id').val();
+		}
+		
 
 		$.get( url )
 			.done(function( data ) {

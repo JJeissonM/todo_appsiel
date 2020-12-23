@@ -56,20 +56,31 @@ class TiempoNoLaborado implements Estrategia
 
         	if ( $novedad->tipo_novedad_tnl == 'incapacidad' )
         	{
-        		$this->crear_registro_concepto_pagado_por_la_empresa( $novedad, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+        		$this->crear_registro_concepto_pagado_por_la_empresa( $novedad, $liquidacion['documento_nomina'], $liquidacion['empleado'], $cantidad_horas_a_liquidar );
         	}        		
 
 			$novedad->cantidad_dias_amortizados += ($cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL);
 			$novedad->cantidad_dias_pendientes_amortizar -= ($cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL);
         	$novedad->save();
-
-            $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_novedad );
             
+            $novedad_id = $novedad->id;
+
+            // Cuando todo lo paga la empresa ( 2 primeros días ), no se crea registro, pues ya se creó uno de INCAPACIDAD PAGADA POR LA EMPRESA
+            $valor_registro = $this->valor_a_pagar_eps + $this->valor_a_pagar_arl + $this->valor_a_pagar_afp;
+			if ( ($novedad->tipo_novedad_tnl == 'incapacidad') && ($this->valor_a_pagar_empresa > 0) && ($valor_registro == 0) )
+			{
+				$valor_real_novedad = 0;
+				$cantidad_horas_a_liquidar = 0;
+				$novedad_id = 0;
+			}
+
+			$valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_novedad );
+
             $valores_novedades[] = [
 	                                    'cantidad_horas' => $cantidad_horas_a_liquidar,
 										'valor_devengo' => $valores->devengo,
 										'valor_deduccion' => $valores->deduccion,
-										'novedad_tnl_id' => $novedad->id
+										'novedad_tnl_id' => $novedad_id
                                 	];
         }
         return $valores_novedades;
@@ -91,7 +102,7 @@ class TiempoNoLaborado implements Estrategia
 				$valor_registro = $this->valor_a_pagar_eps + $this->valor_a_pagar_arl + $this->valor_a_pagar_afp;
 
 				// Cuando todo lo paga la empresa ( 2 primeros días )
-				if ( $this->valor_a_pagar_empresa > 0 && $valor_registro == 0)
+				if ( ($this->valor_a_pagar_empresa > 0) && ($valor_registro == 0) )
 				{
 					$valor_registro = $this->valor_a_pagar_empresa;
 				}
@@ -124,13 +135,17 @@ class TiempoNoLaborado implements Estrategia
 		return $valor_novedad;
 	}
 
-	public function crear_registro_concepto_pagado_por_la_empresa( $novedad, $documento_nomina, $empleado)
+	public function crear_registro_concepto_pagado_por_la_empresa( $novedad, $documento_nomina, $empleado, $cantidad_horas_a_liquidar)
 	{
 
 		// Crear registro adicional en el documento (GASTO EMPRESA)
 		if ( $this->valor_a_pagar_empresa > 0 )
 		{
 			$cantidad_horas = 0;
+			if ( ($this->valor_a_pagar_eps+$this->valor_a_pagar_afp) == 0 )
+			{
+				$cantidad_horas = $cantidad_horas_a_liquidar;
+			}	
 
 			$registro = NomDocRegistro::create(
                             [ 'nom_doc_encabezado_id' => $documento_nomina->id ] + 
@@ -216,7 +231,7 @@ class TiempoNoLaborado implements Estrategia
 			}
 		}
 
-		if ( $empleado->id == 16 )
+		if ( $empleado->id == 73 )
 		{
 			//dd( $valor_a_pagar_eps, $valor_a_pagar_arl, $valor_a_pagar_afp, $valor_a_pagar_empresa);
 		}
