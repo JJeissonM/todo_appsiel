@@ -13,7 +13,7 @@ class NomContrato extends Model
     //protected $table = 'nom_contratos';
 	protected $fillable = [ 'core_tercero_id', 'clase_contrato', 'cargo_id', 'horas_laborales', 'sueldo', 'salario_integral', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado', 'liquida_subsidio_transporte', 'planilla_pila_id', 'es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id', 'grupo_empleado_id'];
 
-	public $encabezado_tabla = [ 'Núm. identificación', 'Empleado', 'Cargo', 'Sueldo', 'Fecha ingreso', 'Contrato hasta', 'Estado', 'Acción'];
+	public $encabezado_tabla = [ 'Núm. identificación', 'Empleado', 'Cargo', 'Sueldo', 'Fecha ingreso', 'Contrato hasta', 'Estado', 'ID', 'Acción'];
 
     public function tercero()
     {
@@ -104,7 +104,8 @@ class NomContrato extends Model
                                     'nom_contratos.fecha_ingreso AS campo5',
                                     'nom_contratos.contrato_hasta AS campo6',
                                     'nom_contratos.estado AS campo7',
-                                    'nom_contratos.id AS campo8')
+                                    'nom_contratos.id AS campo8',
+                                    'nom_contratos.id AS campo9')
             		    ->get()
             		    ->toArray();
 	}

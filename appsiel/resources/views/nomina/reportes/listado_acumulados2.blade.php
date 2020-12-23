@@ -118,8 +118,10 @@
         		<td>
         			<?php echo dibuja_contenido_celda( $total_devengo_concepto, 0, $total_cantidad_horas_concepto, $valores_a_mostrar ); ?>
         		</td>
+        		<td>
         			<?php echo dibuja_contenido_celda( 0, $total_deduccion_concepto, $total_cantidad_horas_concepto, $valores_a_mostrar ); ?>
         		</td>
+        		<td>
         			<?php echo dibuja_contenido_celda( $total_devengo_concepto, $total_deduccion_concepto, $total_cantidad_horas_concepto, $valores_a_mostrar ); ?>
         		</td>
         	</tr>        	

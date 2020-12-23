@@ -199,19 +199,26 @@ class TiempoNoLaborado implements Estrategia
 
 			$valor_porcentual = $valor_total_liquidar * ($porcentaje_a_pagar / 100);
 
-			// Periodo de incapacidad de 3 a 180 día a cargo de la EPS (en el porcentaje legal) (Artículo 3.2.1.10 decreto 780)
+			// Periodo de incapacidad de 3 a 180 día a cargo de la EPS (en el porcentaje legal) 
+			// (Artículo 3.2.1.10 decreto 780)
 			if ( $novedad->cantidad_dias_tnl > 2 )
 			{
 				$valor_a_pagar_eps = $valor_total_liquidar * ($porcentaje_liquidacion_legal / 100);
 				$valor_a_pagar_empresa = $valor_porcentual - $valor_a_pagar_eps;
 			}
 
-			// Periodo de incapacidad mayor a 180 día a cargo del Fondo de pensiones (AFP) (en el porcentaje legal) (Artículo 41 ley 100 de 1993)
+			// Periodo de incapacidad mayor a 180 día a cargo del Fondo de pensiones (AFP) (en el porcentaje legal) 
+			// (Artículo 41 ley 100 de 1993)
 			if ( $novedad->cantidad_dias_amortizados > 180 )
 			{
 				$valor_a_pagar_afp = $valor_total_liquidar * ($porcentaje_liquidacion_legal / 100);
 				$valor_a_pagar_empresa = $valor_porcentual - $valor_a_pagar_eps;
 			}
+		}
+
+		if ( $empleado->id == 16 )
+		{
+			//dd( $valor_a_pagar_eps, $valor_a_pagar_arl, $valor_a_pagar_afp, $valor_a_pagar_empresa);
 		}
 
 		$this->valor_a_pagar_eps = $valor_a_pagar_eps;
@@ -310,7 +317,5 @@ class TiempoNoLaborado implements Estrategia
 		$novedad->save();
 
         $registro->delete();
-
-        return 0;
 	}
 }

@@ -183,23 +183,34 @@ class ReporteController extends Controller
 
         $entidades = NomEntidad::where('tipo_entidad','EPS')->get()->pluck('id')->toArray();
         $movimientos_entidades_salud = NomDocRegistro::movimientos_entidades_salud( $fecha_desde, $fecha_hasta, $entidades);
-        $entidades_con_movimiento = $movimientos_entidades_salud->groupBy('entidad_salud_id')->toArray();
-        $coleccion_movimientos_salud = $this->crear_coleccion_movimientos_entidades( $entidades_con_movimiento );
+        
 
         $entidades = NomEntidad::where('tipo_entidad','AFP')->get()->pluck('id')->toArray();
         $movimientos_entidades_afp = NomDocRegistro::movimientos_entidades_afp( $fecha_desde, $fecha_hasta, $entidades);
-        $entidades_con_movimiento = $movimientos_entidades_afp->groupBy('entidad_pension_id')->toArray();
-        $coleccion_movimientos_afp = $this->crear_coleccion_movimientos_entidades( $entidades_con_movimiento );
 
         $gran_total = $movimientos_entidades_salud->sum('valor_deduccion') + $movimientos_entidades_afp->sum('valor_deduccion');
 
         switch ( $request->tipo_reporte )
         {
             case 'total_x_entidad':
+                    
+                    $entidades_con_movimiento = $movimientos_entidades_salud->groupBy('entidad_salud_id')->toArray();
+                    $coleccion_movimientos_salud = $this->crear_coleccion_movimientos_entidades( $entidades_con_movimiento );
+
+                    $entidades_con_movimiento = $movimientos_entidades_afp->groupBy('entidad_pension_id')->toArray();
+                    $coleccion_movimientos_afp = $this->crear_coleccion_movimientos_entidades( $entidades_con_movimiento );
+
                     $vista = View::make('nomina.reportes.resumen_entidades', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
                 break;
 
             case 'detallar_empleados':
+
+                    $entidades_con_movimiento = $movimientos_entidades_salud->groupBy('entidad_salud_id');                
+                    $coleccion_movimientos_salud = $this->crear_coleccion_movimientos_entidades_terceros( $entidades_con_movimiento );
+
+                    $entidades_con_movimiento = $movimientos_entidades_afp->groupBy('entidad_pension_id');
+                    $coleccion_movimientos_afp = $this->crear_coleccion_movimientos_entidades_terceros( $entidades_con_movimiento );
+                    
                     $vista = View::make('nomina.reportes.resumen_entidades_detallar_empleados', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
                 break;
 
@@ -222,7 +233,49 @@ class ReporteController extends Controller
         foreach ($entidades_con_movimiento as $entidad_id => $registro)
         {
             $entidad = NomEntidad::find($entidad_id);
-            $movimientos[] = (object)[ 'entidad'=> '<b>' . $entidad->descripcion . '</b> / NIT. ' . number_format($entidad->tercero->numero_identificacion,'0',',','.') . ')', 'movimiento'=>$registro ];
+            $movimientos[] = (object)[ 'entidad_id'=> $entidad_id, 'entidad'=> '<b>' . $entidad->descripcion . '</b> / NIT. ' . number_format($entidad->tercero->numero_identificacion,'0',',','.') . ')', 'movimiento'=>$registro ];
+        }
+
+        $sorted = $movimientos->sortBy('entidad');
+
+        return $sorted->values()->all();
+    }
+
+    public function crear_coleccion_movimientos_entidades_terceros( $entidades_con_movimiento )
+    {
+        $movimientos = collect([]);
+
+        foreach ($entidades_con_movimiento as $entidad_id => $movimiento_entidad)
+        {
+            
+            $entidad = NomEntidad::find($entidad_id);
+
+            $agrupado_por_terceros = $movimiento_entidad->groupBy('core_tercero_id');
+            $mov_terceros = [];
+            $total_deduccion_entidad = 0;
+            foreach ( $agrupado_por_terceros as $registros_tercero )
+            {
+                $valor_deduccion = 0;
+                foreach ($registros_tercero as $registro_tercero)
+                {
+                    $nom_contrato_id = $registro_tercero->nom_contrato_id;
+                    $valor_deduccion += $registro_tercero->valor_deduccion;
+                    $total_deduccion_entidad += $registro_tercero->valor_deduccion;
+                }
+
+                $empleado = NomContrato::find( $nom_contrato_id );
+
+                $mov_terceros[] = (object)[
+                                            'descripcion_tercero' => '<b>' . $empleado->tercero->descripcion . '</b> / CC. ' . number_format($empleado->tercero->numero_identificacion,'0',',','.') . ')',
+                                            'total_deduccion' => $valor_deduccion
+                                            ];
+            }
+
+            $movimientos[] = (object)[ 
+                                        'entidad_id' => $entidad_id,
+                                        'entidad' => '<b>' . $entidad->descripcion . '</b> / NIT. ' . number_format($entidad->tercero->numero_identificacion,'0',',','.') . ')',
+                                        'total_deduccion_entidad' => $total_deduccion_entidad,
+                                        'movimiento' => $mov_terceros ];
         }
 
         $sorted = $movimientos->sortBy('entidad');

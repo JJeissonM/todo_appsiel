@@ -1,28 +1,17 @@
 <table class="table table-bordered">
 	<tbody>
 		<?php $gran_total = 0; ?>
-		@foreach($movimiento AS $registro)
-			<?php
-				$total_deducciones_entidad = 0;
-			?>
+		@foreach($movimiento AS $registro_entidad)
+		
 			<tr>
-				<td> {!! $registro->entidad !!} </td>
+				<td> {!! $registro_entidad->entidad !!} </td>
 
-				<?php 
-					foreach ($registro->movimiento as $key => $value)
-					{
-						$total_deducciones_entidad += $value['valor_deduccion'];
-						$gran_total += $value['valor_deduccion'];
-					}
-				?>
-				<td> {{ Form::TextoMoneda( $total_deducciones_entidad ) }} </td>
+				<td> {{ Form::TextoMoneda( $registro_entidad->total_deduccion_entidad ) }} </td>
 			</tr>
-
-
 
 			<tr>
 				<td colspan="2"> 
-					@include('nomina.reportes.tabla_detalle_empleados',['movimiento_entidad'=>$registro->movimiento])
+					@include('nomina.reportes.tabla_detalle_empleados',['movimiento_entidad'=>$registro_entidad->movimiento,'entidad_id'=>$registro_entidad->entidad_id])
 				</td>
 			</tr>
 

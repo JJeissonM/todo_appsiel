@@ -11,11 +11,11 @@ class Prestamo implements Estrategia
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
 		$prestamos = NomPrestamo::where( [
-                                                ['estado', '=', 'Activo'],
-                                                ['core_tercero_id','=', $liquidacion['empleado']->core_tercero_id],
-                                                ['nom_concepto_id','=', $liquidacion['concepto']->id],
-                                                ['fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha]
-                                               ] )
+                                            ['estado', '=', 'Activo'],
+                                            ['core_tercero_id','=', $liquidacion['empleado']->core_tercero_id],
+                                            ['nom_concepto_id','=', $liquidacion['concepto']->id],
+                                            ['fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha]
+                                        ] )
                                     ->get();
 
         $valores_prestamos = [];
@@ -72,7 +72,5 @@ class Prestamo implements Estrategia
         $prestamo->save();
 
         $registro->delete();
-
-        return 0;
     }
 }
