@@ -26,6 +26,10 @@
         <thead>
             <tr>
                 <th> {{ $lbl_encabezado }} </th>
+                @if( $detalla_empleados )
+                	<th> Grupo empleado </th>
+                	<th> Cargo </th>
+                @endif
                 @foreach( $conceptos as $concepto )
                 	<th> <i title="{{ $concepto->descripcion }}">{{$concepto->abreviatura}}</i> </th>
                 @endforeach
@@ -49,6 +53,8 @@
 			        $k = 0;
 
 	                $fila .= '<td> ' . $empleado->tercero->numero_identificacion . ' - ' . $empleado->tercero->descripcion . '</td>';
+	                $fila .= '<td> ' . $empleado->grupo_empleado->descripcion . '</td>';
+	                $fila .= '<td> ' . $empleado->cargo->descripcion . ' - ' . $empleado->tercero->descripcion . '</td>';
 
 	                $total_fila_devengos = 0;
 	                $total_fila_deducciones = 0;

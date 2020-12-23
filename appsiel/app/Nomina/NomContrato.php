@@ -25,6 +25,11 @@ class NomContrato extends Model
         return $this->belongsTo(NomCargo::class,'cargo_id');
     }
 
+    public function grupo_empleado()
+    {
+        return $this->belongsTo(GrupoEmpleado::class,'grupo_empleado_id');
+    }
+
     public function entidad_salud()
     {
         return $this->belongsTo(NomEntidad::class,'entidad_salud_id');

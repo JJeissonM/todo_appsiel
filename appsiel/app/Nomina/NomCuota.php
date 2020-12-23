@@ -4,6 +4,8 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
+use DB;
+
 class NomCuota extends Model
 {
     //protected $table = 'nom_cuotas';
@@ -11,10 +13,10 @@ class NomCuota extends Model
 	
 	public $encabezado_tabla = ['Empleado', 'Concepto', 'Fecha inicio', 'Valor cuota', 'Tope Máximo', 'Valor acumulado', 'Estado', 'Detalle', 'ID', 'Acción'];
 
+	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","cambiar_estado":"a_i/id_fila","eliminar":"web_eliminar/id_fila"}';
+
 	// El archivo js debe estar en la carpeta public
 	public $archivo_js = 'assets/js/nom_cuotas.js';
-
-	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","cambiar_estado":"a_i/id_fila"}';
 	
 	public static function consultar_registros()
 	{
@@ -34,4 +36,28 @@ class NomCuota extends Model
 						    ->get()
 						    ->toArray();
 	}
+
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"nom_doc_registros",
+                                    "llave_foranea":"nom_cuota_id",
+                                    "mensaje":"Tienes registros en documentos de nómina."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
+    }
 }
