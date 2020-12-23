@@ -105,6 +105,9 @@
 				<td>
 					Total x concepto
 				</td>
+				@if( $detalla_empleados )
+	            	<td colspan="2">&nbsp;</td>
+		        @endif
 				<?php
 					$total_devengo_concepto = 0;
 					$total_deduccion_concepto = 0;

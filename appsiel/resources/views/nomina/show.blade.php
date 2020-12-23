@@ -27,7 +27,7 @@
 		            ['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'etiqueta' => 'Retirar registros automáticos' ]
 		          ] ) }}
 	@else
-		<small>(Documento no está <b>{{ $encabezado_doc->estado }}</b>)</small>
+		<small>(Documento está <b>{{ $encabezado_doc->estado }}</b>)</small>
 	@endif
 
 	<!-- @ include('nomina.incluir.btn_liquidacion') -->
