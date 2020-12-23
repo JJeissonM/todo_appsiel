@@ -19,12 +19,16 @@
 
 	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEmail( 'nomina_enviar_por_email/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
 
-	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Acciones', 'success', 'money', 
+	@if ( $encabezado_doc->estado == 'Activo' )
+		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Acciones', 'success', 'money', 
 		          [ 
 		            ['link' => 'nomina/liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 
 		            'etiqueta' => 'Liquidación automática'], 
 		            ['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'etiqueta' => 'Retirar registros automáticos' ]
 		          ] ) }}
+	@else
+		<small>(Documento no está <b>{{ $encabezado_doc->estado }}</b>)</small>
+	@endif
 
 	<!-- @ include('nomina.incluir.btn_liquidacion') -->
 

@@ -1,3 +1,11 @@
+<?php
+    $color = 'red';
+
+    if ( $encabezado_doc->estado == 'Activo' )
+    {
+        $color = 'green';
+    }
+?>
 <table class="table table-bordered">
     <tr>
         <td style="border: solid 1px #ddd; margin-top: -40px;" width="70%">
@@ -15,6 +23,10 @@
                 @endphp
 
                 <b>Fecha: </b> &nbsp; {{ $fecha[2] }} de {{ Form::NombreMes([$fecha[1]]) }} de {{ $fecha[0] }}
+
+                <div>
+                    <b> Estado: </b> <i class="fa fa-circle" style="color: {{$color}}"> </i> {{ $encabezado_doc->estado }}
+                </div>
 
         </td>
     </tr>

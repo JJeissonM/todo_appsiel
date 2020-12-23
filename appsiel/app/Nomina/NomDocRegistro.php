@@ -126,25 +126,48 @@ class NomDocRegistro extends Model
     	*/
         if( in_array( $registro->concepto->modo_liquidacion_id, [3,4,7]) ) 
         {
-         	return [[
-         	                        "id" => 999,
-         	                        "descripcion" => "",
-         	                        "tipo" => "personalizado",
-         	                        "name" => "name_1",
-         	                        "opciones" => "",
-         	                        "value" => '<p>Concepto: <b>' . $registro->concepto->descripcion . '</b> </p> <div class="form-group">                    
-         	                                        <div class="alert alert-danger">
-         											  <strong>¡Advertencia!</strong>
-         											  <br>
-         											  Por esta opción No puede modificar conceptos con modo de liquidación tipo <b>' . $registro->concepto->modo_liquidacion->descripcion . '</b>. <br> Debe reliquidar las transacciones automáticas.
-         											</div>
-         	                                    </div>',
-         	                        "atributos" => [],
-         	                        "definicion" => "",
-         	                        "requerido" => 0,
-         	                        "editable" => 1,
-         	                        "unico" => 0
-         	                    ]];       
+            return [[
+                                    "id" => 999,
+                                    "descripcion" => "",
+                                    "tipo" => "personalizado",
+                                    "name" => "name_1",
+                                    "opciones" => "",
+                                    "value" => '<p>Concepto: <b>' . $registro->concepto->descripcion . '</b> </p> <div class="form-group">                    
+                                                    <div class="alert alert-danger">
+                                                      <strong>¡Advertencia!</strong>
+                                                      <br>
+                                                      Por esta opción No puede modificar conceptos con modo de liquidación tipo <b>' . $registro->concepto->modo_liquidacion->descripcion . '</b>. <br> Debe reliquidar las transacciones automáticas.
+                                                    </div>
+                                                </div>',
+                                    "atributos" => [],
+                                    "definicion" => "",
+                                    "requerido" => 0,
+                                    "editable" => 1,
+                                    "unico" => 0
+                                ]];       
+        }
+
+        if( $registro->encabezado_documento->estado != 'Activo' ) 
+        {
+            return [[
+                                    "id" => 999,
+                                    "descripcion" => "",
+                                    "tipo" => "personalizado",
+                                    "name" => "name_1",
+                                    "opciones" => "",
+                                    "value" => '<div class="container-fluid"> <p>Documento de nómina: <b>' . $registro->encabezado_documento->descripcion . '</b> </p> <div class="form-group">                    
+                                                    <div class="alert alert-danger">
+                                                      <strong>¡Advertencia!</strong>
+                                                      <br>
+                                                      El documento de nómina no esta Activo. Sus registros no pueden ser modificados.
+                                                    </div>
+                                                </div> </div>',
+                                    "atributos" => [],
+                                    "definicion" => "",
+                                    "requerido" => 0,
+                                    "editable" => 1,
+                                    "unico" => 0
+                                ]];       
         }
 
         $empleado = NomContrato::where('core_tercero_id',$registro->core_tercero_id)

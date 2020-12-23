@@ -193,6 +193,8 @@ class NominaController extends TransaccionController
         $reg_siguiente = NomDocEncabezado::where('id', '>', $id)->min('id');
 
         $view_pdf = $this->vista_preliminar($id,'show');
+        
+        $encabezado_doc = $this->encabezado_doc;
 
         $miga_pan = [
                   ['url'=>'nomina?id='.Input::get('id'),'etiqueta'=>'Nómina'],
@@ -200,7 +202,7 @@ class NominaController extends TransaccionController
                   ['url'=>'NO','etiqueta' => 'Consulta' ]
               ];
 
-        return view( 'nomina.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') ); 
+        return view( 'nomina.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id','encabezado_doc') ); 
 
     }
 

@@ -184,6 +184,7 @@ class NomDocEncabezado extends Model
                             'nom_doc_encabezados.consecutivo',
                             'nom_doc_encabezados.total_devengos',
                             'nom_doc_encabezados.total_deducciones',
+                            'nom_doc_encabezados.estado',
                             'nom_doc_encabezados.creado_por')
                         ->get()
                         ->first();
