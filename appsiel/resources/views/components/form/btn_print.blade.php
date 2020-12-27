@@ -1,0 +1,1 @@
+<a class="btn-gmail" href="{{ url($url) }}" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i></a>

@@ -1,0 +1,55 @@
+.sm-icon-bar {
+  position: fixed;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.sm-icon-bar a {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 20px;
+}
+
+.sm-icon-bar a:hover {
+    background-color: #000;
+}
+
+.sm-facebook {
+  background: #3B5998;
+  color: white;
+}
+
+.sm-whatsapp {
+  background: #70e777;
+  color: white;
+}
+
+.sm-twitter {
+  background: #55ACEE;
+  color: white;
+}
+
+.sm-google {
+  background: #dd4b39;
+  color: white;
+}
+
+.sm-linkedin {
+  background: #007bb5;
+  color: white;
+}
+
+.sm-youtube {
+  background: #bb0000;
+  color: white;
+}
+
+.content {
+  margin-left: 75px;
+  font-size: 30px;
+}

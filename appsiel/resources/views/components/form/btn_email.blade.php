@@ -1,0 +1,1 @@
+<a class="btn-gmail" href="{{ url($url) }}" title="Enviar por correo" id="btn_email"><i class="fa fa-btn fa-envelope"></i></a>

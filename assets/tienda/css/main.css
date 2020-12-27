@@ -1,0 +1,31 @@
+@import './top-link.css';
+@import './header.css';
+@import './products.css';
+@import './filters.css';
+@import './footer.css';
+
+* {
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+ul li {
+    list-style: none !important;
+    font-size: 10px;
+}
+
+.container-fluid {
+   padding-left: 0;
+   padding-right: 0;
+}
+
+.product-image:hover {
+    transform: scale(1.2);
+    box-shadow: 0px 0px 5px 1px #3d6983;
+    cursor: pointer;
+}
+
+
+
+

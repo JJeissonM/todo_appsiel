@@ -1,0 +1,1 @@
+<a class="btn-gmail" href="{{ url($url) }}" title="Activar/Inactivar"><b>A/I</b></a>

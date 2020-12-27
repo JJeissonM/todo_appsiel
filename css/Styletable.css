@@ -1,0 +1,81 @@
+.botones-gmail{
+    padding: 15px;
+    -webkit-box-shadow: 3px 3px 5px -5px rgba(0,0,0,0.75);
+    -moz-box-shadow: 3px 3px 5px -5px rgba(0,0,0,0.75);
+    box-shadow: 3px 3px 5px -5px rgba(0,0,0,0.75);
+    margin-bottom: 30px;
+}
+
+.btn-gmail{
+    color: #574696;
+    font-size: 20px;
+    background-color: #ececec;
+    padding: 10px;
+    border-radius: 50%;
+    text-align: center;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.btn-gmail > i{
+    width: 25px;
+    height: 25px;
+    text-align: center;
+}
+
+.btn-gmail:hover{
+    background-color: #574696;
+    color: #ffffff;
+
+}
+
+.btn-gmail-check{
+    width: 100% !important;
+    height: 16px !important;
+    font-size: 14px !important;
+}
+
+.nav > li:hover{
+    background-color:#42A3DC !important;
+    color: #ffffff !important;
+    font-size: 16px !important;
+}
+
+.search {
+    padding: 5px 0;
+    width: 230px;
+    height: 30px;
+    position: relative;
+    float: right;
+    line-height: 22px;
+}
+
+.search input {
+    position: absolute;
+    width: 0px;
+    float: Left;
+    margin-left: 210px;
+    -webkit-transition: all 0.7s ease-in-out;
+    -moz-transition: all 0.7s ease-in-out;
+    -o-transition: all 0.7s ease-in-out;
+    transition: all 0.7s ease-in-out;
+    height: 30px;
+    line-height: 18px;
+    padding: 0 2px 0 2px;
+    border-radius:2px;
+}
+
+.search:hover input, .search input:focus {
+    width: 200px;
+    margin-left: 0px;
+}
+
+.dropdown-menu>li>a:focus, 
+.dropdown-menu>li>a:hover{
+    background-color: #42A3DC !important;
+    color: #000000 !important;
+    background-image: linear-gradient(to bottom,#42A3DC 0,#92cbec 100%) !important;
+    -webkit-background-image: linear-gradient(to bottom,#42A3DC 0,#92cbec 100%) !important;
+    -moz-background-image: linear-gradient(to bottom,#42A3DC 0,#92cbec 100%) !important;
+    -o-background-image: linear-gradient(to bottom,#42A3DC 0,#92cbec 100%) !important;
+}

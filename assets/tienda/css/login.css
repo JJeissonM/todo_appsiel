@@ -1,0 +1,51 @@
+.col2-set {
+    display: flex;
+}
+
+.new-users {
+    display: flex;
+    align-items: center;
+    width: 48%;
+    margin-right: 10px;
+}
+.registered-users{
+    width: 48%;
+    margin-right: 10px;
+}
+
+.account-login .content {
+    min-height: 345px;
+    padding: 14px 21px;
+    border: 1px solid #f2f2f2;
+    margin-bottom: 10px;
+}
+
+button.button {
+    background-color: #000;
+    color: #fff;
+}
+
+.form-list input.input-text {
+    width: 254px;
+    padding: 7px 0 7px 7px;
+}
+
+.account-login {
+    background-color: #fff;
+    padding: 20px;
+}
+
+.page-title h1, .page-title h2 {
+    margin: 0;
+    font-size: 16px;
+    color: #e98388;
+    text-transform: uppercase;
+}
+
+.page-title {
+    width: 100%;
+    overflow: hidden;
+    border-bottom: 1px solid #eee;
+    margin: 0 0 15px;
+    padding-bottom: 15px;
+}

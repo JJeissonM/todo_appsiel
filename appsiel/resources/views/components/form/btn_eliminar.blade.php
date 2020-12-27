@@ -1,0 +1,1 @@
+<a class="btn-gmail" href="{{ url($url) }}" title="Eliminar"><i class="fa fa-trash"></i></a>

@@ -1,0 +1,1 @@
+<a class="btn-gmail" href="{{ url($url) }}" title="Consultar"><i class="fa fa-btn fa-eye"></i></a>
