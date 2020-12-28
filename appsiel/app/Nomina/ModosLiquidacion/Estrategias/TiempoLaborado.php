@@ -110,6 +110,11 @@ class TiempoLaborado implements Estrategia
 
 	public function get_tiempo_a_liquidar( $empleado, $documento_nomina, $horas_liquidadas_empleado )
 	{
+		if ( $empleado->contrato_hasta < $documento_nomina->lapso()->fecha_inicial )
+		{
+			return 0;
+		}
+
 		// Caso 1: el contrato empieza dentro del lapso del documento
 		$tiempo_a_descontar_1 = 0;
 		if ( $empleado->fecha_ingreso >= $documento_nomina->lapso()->fecha_inicial && $empleado->fecha_ingreso <= $documento_nomina->lapso()->fecha_final )

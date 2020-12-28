@@ -184,5 +184,7 @@ class NomContrato extends Model
                                 ]];       
         }
 
+        return $lista_campos;
+
     }
 }

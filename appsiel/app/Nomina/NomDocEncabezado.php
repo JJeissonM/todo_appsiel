@@ -193,10 +193,17 @@ class NomDocEncabezado extends Model
 
     public function store_adicional( $datos, $registro )
     {
+        $fecha_inicial_documento = $documento_nomina->lapso()->fecha_inicial;
+
         // Se agregan todos los contratos al documento
         if ( $registro->tipo_liquidacion == 'normal' )
         {
-            $empleados = NomContrato::where( 'estado', 'Activo' )->get();
+            $empleados = NomContrato::where( [
+                                                [ 'estado', '=', 'Activo'],
+                                                [ 'contrato_hasta', '<', $fecha_inicial_documento ]
+                                            ] )
+                                    ->get();
+
             foreach ($empleados as $contrato)
             {
                 DB::table('nom_empleados_del_documento')->insert( [

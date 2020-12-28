@@ -14,23 +14,54 @@
 
 @section('formulario')
 	<div class="row" id="div_formulario">
-		{{ Form::open(['url'=>'nom_procesar_archivo_plano','id'=>'formulario_inicial','files' => true]) }}
-			<div class="row" style="padding:5px;">					
-				<label class="control-label col-sm-4" > <b> *Documento de liquidación: </b> </label>
 
-				<div class="col-sm-8">
-					{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
-				</div>					 
-			</div>
+		<div class="row">
+			<div class="col-md-6">
 
-			<div class="row" style="padding:5px;">
-				&nbsp;				 
-			</div>
+				<div class="marco_formulario">
+					<div class="container-fluid">
+						<h4>
+							Parámetros de selección
+						</h4>
+						<hr>
+						{{ Form::open(['url'=>'nom_procesar_archivo_plano','id'=>'formulario_inicial','files' => true]) }}
+							<div class="row" style="padding:5px;">
+								<label class="control-label col-sm-4" > <b> *Documento de liquidación: </b> </label>
 
-			<div class="col-md-4">
-				<button class="btn btn-success" id="btn_cargar"> <i class="fa fa-calculator"></i> Liquidar </button>
+								<div class="col-sm-8">
+									{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
+								</div>					 
+							</div>
+
+							<div class="row" style="padding:5px;">
+								<h5>Prestaciones a liquidar</h5>
+								<hr>
+								<label class="checkbox-inline"><input type="checkbox" value="">Vacaciones</label>
+								<label class="checkbox-inline"><input type="checkbox" value="">Prima de servicios</label>
+								<label class="checkbox-inline"><input type="checkbox" value="">Cesantías</label>
+								<label class="checkbox-inline"><input type="checkbox" value="">Intereses de cesantías</label>
+							</div>
+
+							<div class="col-md-4">
+								<button class="btn btn-success" id="btn_cargar"> <i class="fa fa-calculator"></i> Liquidar </button>
+							</div>
+						{{ Form::close() }}
+					</div>
+						
+				</div>
+					
 			</div>
-		{{ Form::close() }}
+			<div class="col-md-6">
+				<h4>
+					Empleados del documento
+				</h4>
+				<hr>
+				<div class="div_lista_empleados_del_documento">
+					
+				</div>
+			</div>
+		</div>
+				
 	</div>
 
 	<div class="row" id="div_resultado">

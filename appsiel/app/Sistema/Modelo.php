@@ -18,7 +18,7 @@ class Modelo extends Model
     // El campo ruta_storage_imagen almacenará todos los archivos tipo file que maneje el modelo (cambiar nombre del campo)
 	protected $fillable = ['descripcion', 'modelo','name_space','modelo_relacionado','url_crear','url_edit','url_print','url_ver','enlaces','url_estado','controller_complementario','url_form_create','url_eliminar','home_miga_pan','ruta_storage_imagen'];
 
-    public $encabezado_tabla = ['ID','Descripción','Ubicación','Modelo relacionado','Directorio Imágenes','Create','Edit','Show','Print','Eliminar','Acción'];
+    public $encabezado_tabla = ['ID','Descripción','Ubicación','Modelo relacionado','Directorio Imágenes','Create','Edit','Show','Print','Eliminar','Otros Enlaces','Acción'];
 
     public function campos()
     {
@@ -38,7 +38,8 @@ class Modelo extends Model
                                 'sys_modelos.url_ver AS campo8',
                                 'sys_modelos.url_print AS campo9',
                                 'sys_modelos.url_eliminar AS campo10',
-                                'sys_modelos.id AS campo11')
+                                'sys_modelos.enlaces AS campo11',
+                                'sys_modelos.id AS campo12')
                     ->get()
                     ->toArray();
 

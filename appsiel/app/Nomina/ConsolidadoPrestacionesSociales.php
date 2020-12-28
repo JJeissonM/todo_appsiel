@@ -10,9 +10,9 @@ class ConsolidadoPrestacionesSociales extends Model
 {
 	protected $table = 'nom_consolidados_prestaciones_sociales';
 	
-	protected $fillable = [ 'nom_contrato_id', 'tipo_prestacion', 'fecha_fin_mes', 'valor_consolidado_mes_anterior', 'valor_pagado_mes', 'valor_consolidado_mes', 'observacion', 'estado'  ];
+	protected $fillable = [ 'nom_contrato_id', 'tipo_prestacion', 'fecha_fin_mes', 'valor_consolidado_mes_anterior', 'valor_pagado_mes', 'valor_consolidado_mes', 'dias_consolidado_mes', 'valor_acumulado', 'dias_acumulados', 'observacion', 'estado'  ];
 	
-	public $encabezado_tabla = ['Empleado', 'Prestación',  'Mes', 'Consolidado mes anterior', 'Vlr. pagado mes', 'Vlr. consolidado mes', 'Acción'];
+	public $encabezado_tabla = ['Empleado', 'Prestación',  'Mes', 'Consolidado mes anterior', 'Vlr. pagado mes', 'Vlr. consolidado mes', 'Días consol. mes', 'Días acumulados', 'Vlr. acumulado', 'Acción'];
 
 	//public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
     public $urls_acciones = '{"show":"no"}';
@@ -35,7 +35,10 @@ class ConsolidadoPrestacionesSociales extends Model
                 	    						'nom_consolidados_prestaciones_sociales.valor_consolidado_mes_anterior AS campo4',
                 	    						'nom_consolidados_prestaciones_sociales.valor_pagado_mes AS campo5',
                                                 'nom_consolidados_prestaciones_sociales.valor_consolidado_mes AS campo6',
-                	    						'nom_consolidados_prestaciones_sociales.id AS campo7')
+                	    						'nom_consolidados_prestaciones_sociales.dias_consolidado_mes AS campo7',
+                	    						'nom_consolidados_prestaciones_sociales.dias_acumulados AS campo8',
+                	    						'nom_consolidados_prestaciones_sociales.valor_acumulado AS campo9',
+                	    						'nom_consolidados_prestaciones_sociales.id AS campo10')
                 					    ->get()
                 					    ->toArray();
 	}
