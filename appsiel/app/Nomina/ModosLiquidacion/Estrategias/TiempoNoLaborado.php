@@ -210,7 +210,7 @@ class TiempoNoLaborado implements Estrategia
 		}else{
 
 			// Los dos primeros días a cargo de la empresa (Artículo 3.2.1.10 decreto 780)
-			$valor_a_pagar_empresa = $valor_total_liquidar;
+			$valor_a_pagar_empresa = $valor_total_liquidar * ($porcentaje_a_pagar / 100);
 
 			$valor_porcentual = $valor_total_liquidar * ($porcentaje_a_pagar / 100);
 
@@ -229,11 +229,6 @@ class TiempoNoLaborado implements Estrategia
 				$valor_a_pagar_afp = $valor_total_liquidar * ($porcentaje_liquidacion_legal / 100);
 				$valor_a_pagar_empresa = $valor_porcentual - $valor_a_pagar_eps;
 			}
-		}
-
-		if ( $empleado->id == 73 )
-		{
-			//dd( $valor_a_pagar_eps, $valor_a_pagar_arl, $valor_a_pagar_afp, $valor_a_pagar_empresa);
 		}
 
 		$this->valor_a_pagar_eps = $valor_a_pagar_eps;
