@@ -35,7 +35,7 @@ class TiempoNoLaborado implements Estrategia
 											[ 'nom_contrato_id', '=', $liquidacion['empleado']->id ],
 											[ 'cantidad_dias_pendientes_amortizar', '>', 0 ],
 											[ 'fecha_inicial_tnl', '<=', $lapso_documento->fecha_final ],
-											[ 'estado', '=', 'Activo' ] 
+											[ 'estado', '=', 'Activo' ]
 										] )
 								->get();
 

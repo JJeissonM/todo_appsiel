@@ -12,7 +12,7 @@ class ParametroLiquidacionPrestacionesSociales extends Model
 	
 	public $encabezado_tabla = ['Prestación', 'Grupo empleados', 'Agrupación de conceptos', 'Base liquidación', 'Cantidad meses a promediar', 'Días a liquidar', 'Acción'];
 	
-	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
+	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
 	public static function consultar_registros()
 	{
@@ -43,5 +43,23 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         }
 
         return $vec;
+    }
+
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{}';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
     }
 }

@@ -8,6 +8,7 @@ use App\Nomina\NomContrato;
 use App\Nomina\NomDocRegistro;
 
 use DB;
+use Input;
 
 class NomDocEncabezado extends Model
 {
@@ -193,14 +194,14 @@ class NomDocEncabezado extends Model
 
     public function store_adicional( $datos, $registro )
     {
-        $fecha_inicial_documento = $documento_nomina->lapso()->fecha_inicial;
+        $fecha_inicial_documento = $registro->lapso()->fecha_inicial;
 
         // Se agregan todos los contratos al documento
         if ( $registro->tipo_liquidacion == 'normal' )
         {
             $empleados = NomContrato::where( [
                                                 [ 'estado', '=', 'Activo'],
-                                                [ 'contrato_hasta', '<', $fecha_inicial_documento ]
+                                                [ 'contrato_hasta', '>=', $fecha_inicial_documento ]
                                             ] )
                                     ->get();
 
@@ -226,5 +227,70 @@ class NomDocEncabezado extends Model
         }
 
         return $lista_campos;
+    }
+
+
+
+    /*
+        FUNCIONES relativas al modelo relacionado a este modelo, en este caso Tipo de Documento
+    */
+    public static function get_tabla($registro_modelo_padre,$registros_asignados)
+    {
+        $tabla = '<div class="table-responsive">
+                <table class="table table-bordered table-striped" id="myTable">
+                    <thead>';
+                        $encabezado_tabla = ['Orden','Cédula','Empleado','Acción'];
+                        for($i=0;$i<count($encabezado_tabla);$i++){
+                            $tabla.='<th>'.$encabezado_tabla[$i].'</th>';
+                        }
+                $tabla.='</thead>
+                    <tbody>';
+//                    dd($registros_asignados);
+                        foreach($registros_asignados as $fila)
+                        {
+                            $orden = DB::table('nom_empleados_del_documento')
+                                        ->where('nom_doc_encabezado_id', '=', $registro_modelo_padre->id)
+                                        ->where('nom_contrato_id', '=', $fila['id'])
+                                        ->value('orden');
+
+                            $empleado = NomContrato::where('core_tercero_id',$fila['core_tercero_id'])->get()->first();
+                            $tabla.='<tr>';
+                                $tabla.='<td>'.$orden.'</td>';
+                                $tabla.='<td>'. $empleado->tercero->numero_identificacion .'</td>';
+                                $tabla.='<td>'. $empleado->tercero->descripcion .'</td>';
+                                $tabla.='<td>
+                                        <a class="btn btn-danger btn-sm" href="'.url('nom_eliminar_asignacion/registro_modelo_hijo_id/'.$fila['id'].'/registro_modelo_padre_id/'.$registro_modelo_padre->id.'/id_app/'.Input::get('id').'/id_modelo_padre/'.Input::get('id_modelo')).'"><i class="fa fa-btn fa-trash"></i> </a>
+                                        </td>
+                            </tr>';
+                        }
+                    $tabla.='</tbody>
+                </table>
+            </div>';
+        return $tabla;
+    }
+
+    public static function get_opciones_modelo_relacionado($nom_doc_encabezado_id)
+    {
+        $vec['']='';
+        $opciones = NomContrato::where('estado','Activo')->get();
+        foreach ($opciones as $opcion){
+            $esta = DB::table('nom_empleados_del_documento')->where('nom_doc_encabezado_id',$nom_doc_encabezado_id)->where('nom_contrato_id',$opcion->id)->get();
+            if ( empty($esta) )
+            {
+                $vec[$opcion->id] = $opcion->tercero->numero_identificacion.' '.$opcion->tercero->descripcion;
+            }
+        }
+
+        return $vec;
+    }
+
+    public static function get_datos_asignacion()
+    {
+        $nombre_tabla = 'nom_empleados_del_documento';
+        $nombre_columna1 = 'orden';
+        $registro_modelo_padre_id = 'nom_doc_encabezado_id';
+        $registro_modelo_hijo_id = 'nom_contrato_id';
+
+        return compact('nombre_tabla','nombre_columna1','registro_modelo_padre_id','registro_modelo_hijo_id');
     }
 }

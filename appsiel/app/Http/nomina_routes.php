@@ -7,6 +7,10 @@ Route::post('nomina/crear_registros2', 'Nomina\RegistrosDocumentosController@cre
 Route::resource('nom_registros_documentos', 'Nomina\RegistrosDocumentosController');
 
 
+Route::get('nom_eliminar_asignacion/registro_modelo_hijo_id/{registro_modelo_hijo_id}/registro_modelo_padre_id/{registro_modelo_padre_id}/id_app/{id_app}/id_modelo_padre/{id_modelo_padre}', 'Nomina\NominaController@eliminar_asignacion');
+Route::post('nom_guardar_asignacion', 'Nomina\NominaController@guardar_asignacion');
+
+
 // Documentos de nómina
 Route::get('nomina/liquidacion/{id}', 'Nomina\NominaController@liquidacion');
 Route::get('nomina/retirar_liquidacion/{id}', 'Nomina\NominaController@retirar_liquidacion');
@@ -17,6 +21,9 @@ Route::get('get_datos_contrato/{contrato_id}', 'Nomina\NominaController@get_dato
 
 Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/{contrato_id}/{novedad_id}', 'Nomina\NovedadesTnlController@validar_fecha_otras_novedades');
 
+
+// LIQUIDACION DE PRESTACIONES SOCIALES
+Route::post('nom_liquidar_prestaciones_sociales', 'Nomina\PrestacionesSocialesController@liquidacion');
 
 
 // INFORMES Y LISTADOS

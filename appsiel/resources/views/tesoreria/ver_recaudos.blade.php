@@ -35,14 +35,11 @@
     								<td> {{ $nombre_mes }}</td>
     								<td> {{ number_format( $recaudo_tesoreria->valor_total, 0, ',', '.') }} </td>
     								<td>
-    									<!-- <a class="btn btn-info btn-xs btn-detail" href="{ { url('tesoreria/imprimir_comprobante_recaudo/'.$recaudo->id_cartera) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a> -->
                                         
                                         <a class="btn btn-info btn-xs btn-detail" href="{{ url( 'tesoreria_recaudos_cxc_imprimir/' . $recaudo_tesoreria->id . '?id=3&id_modelo=153&id_transaccion=32' ) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
 
     									@can('eliminar_recaudo_libreta')
     										&nbsp;&nbsp;&nbsp;
-    										<!-- <a class="btn btn-danger btn-xs btn-detail" href="{ { url( 'tesoreria/eliminar_recaudo_libreta/'.$recaudo->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}" title="Eliminar"><i class="fa fa-btn fa-trash"></i>&nbsp;</a> -->
-
                                             <a class="btn btn-danger btn-xs btn-detail" href="{{ url( 'teso_anular_recaudo_cxc/' .  $recaudo_tesoreria->id . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion=32' ) }}" title="Eliminar" target="_blank"><i class="fa fa-btn fa-trash"></i>&nbsp;</a>
     									@endcan
     								</td>

@@ -32,10 +32,9 @@ use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
 use App\Nomina\AgrupacionConcepto;
 
-use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
-use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
+use App\Nomina\ModosLiquidacion\LiquidacionPrestacionSocial;
 
-class NominaController extends TransaccionController
+class PrestacionesSocialesController extends TransaccionController
 {
     protected $total_devengos_empleado = 0;
     protected $total_deducciones_empleado = 0;
@@ -59,59 +58,36 @@ class NominaController extends TransaccionController
     protected $array_ids_modos_liquidacion_automaticos = [ 7, 1, 6, 3, 4, 10, 12, 13];
     //protected $array_ids_modos_liquidacion_automaticos = [ 10 ];
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $miga_pan = [
-                ['url'=>'NO','etiqueta'=>'Nómina']
-            ];
-
-        return view( 'nomina.index', compact( 'miga_pan' ) );
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $this->set_variables_globales();
-
-        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'layouts.create', '' );
-    }
 
     /*
         Por cada empleado activo liquida los conceptos automáticos, las cuotas y préstamos
         Además actualiza el total de devengos y deducciones en el documento de nómina
     */
-    public function liquidacion($id)
+    public function liquidacion( Request $request )
     {
+
+        $documento_nomina = NomDocEncabezado::find( (int)$request->nom_doc_encabezado_id );
+
+        // Se obtienen los Empleados del documento de nómina
+        $empleados_documento = $documento_nomina->empleados;
+
+        foreach ($request->prestaciones as $key => $prestacion)
+        {
+
+            foreach ($empleados_documento as $empleado) 
+            {
+                // Se llama al subsistema de liquidación
+                $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $empleado, $documento_nomina);
+
+                $valores = $liquidacion->calcular( $prestacion );
+            }
+        }
+
         $this->registros_procesados = 0;
 
         $usuario = Auth::user();
 
         $core_empresa_id = $usuario->empresa_id;
-
-        $documento = NomDocEncabezado::find($id);
-
-        // Se obtienen los Empleados del documento
-        $empleados_documento = $documento->empleados;
-
-        // Guardar los valores para cada empleado      
-        foreach ($empleados_documento as $empleado) 
-        {
-            $cant = count( $this->array_ids_modos_liquidacion_automaticos );
-
-            for ($i=0; $i < $cant; $i++) 
-            { 
-                $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
-            }
-        }
 
         $this->actualizar_totales_documento($id);
 
@@ -143,10 +119,7 @@ class NominaController extends TransaccionController
                 continue;
             }
 
-            // Se llama al subsistema de liquidación
-            $liquidacion = new LiquidacionConcepto( $concepto->id, $empleado, $documento_nomina);
-
-            $valores = $liquidacion->calcular( $concepto->modo_liquidacion_id );
+            
 
             foreach( $valores as $registro )
             {
@@ -202,16 +175,7 @@ class NominaController extends TransaccionController
                   ['url'=>'NO','etiqueta' => 'Consulta' ]
               ];
 
-        // Para el modelo relacionado: Empleados
-        $modelo_crud = new ModeloController;
-        $respuesta = $modelo_crud->get_tabla_relacionada($modelo, $encabezado_doc);
-
-        $tabla = $respuesta['tabla'];
-        $opciones = $respuesta['opciones'];
-        $registro_modelo_padre_id = $respuesta['registro_modelo_padre_id'];
-        $titulo_tab = $respuesta['titulo_tab'];
-
-        return view( 'nomina.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id','encabezado_doc','tabla','opciones','registro_modelo_padre_id','titulo_tab') ); 
+        return view( 'nomina.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id','encabezado_doc') ); 
 
     }
 
@@ -389,7 +353,7 @@ class NominaController extends TransaccionController
                 if ( in_array( $registro->concepto->modo_liquidacion_id, $this->array_ids_modos_liquidacion_automaticos) )
                 {
                     // Se llama al subsistema de liquidación
-                    $liquidacion = new LiquidacionConcepto( $registro->concepto->id, $registro->contrato, $documento_nomina);
+                    $liquidacion = new LiquidacionPrestacionSocial( $registro->concepto->id, $registro->contrato, $documento_nomina);
                     $liquidacion->retirar( $registro->concepto->modo_liquidacion_id, $registro );
                 }
             }   
@@ -411,63 +375,6 @@ class NominaController extends TransaccionController
     public function get_datos_contrato( $contrato_id )
     {
         return NomContrato::find( $contrato_id );
-    }
-
-
-    // ASIGNACIÓN DE UN CAMPO A UN MODELO
-    public function guardar_asignacion(Request $request)
-    {
-        // Se obtiene el modelo "Padre"
-        $modelo = Modelo::find($request->url_id_modelo);
-
-        $datos = app($modelo->name_space)->get_datos_asignacion();
-
-        $this->validate($request, ['registro_modelo_hijo_id' => 'required']);
-
-        DB::table($datos['nombre_tabla'])
-            ->insert([
-                $datos['nombre_columna1'] => $request->nombre_columna1,
-                $datos['registro_modelo_padre_id'] => $request->registro_modelo_padre_id,
-                $datos['registro_modelo_hijo_id'] => $request->registro_modelo_hijo_id
-            ]);
-
-        $documento_nomina = NomDocEncabezado::find( (int)$request->registro_modelo_padre_id );
-        if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' )
-        {
-            $empleado = NomContrato::find( (int)$request->registro_modelo_hijo_id );
-            $empleado->estado = 'Retirado';
-            $empleado->save();
-        }            
-
-        return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Empleado AGREGADO correctamente al documento.');
-    }
-
-    // ELIMINACIÓN DE UN CAMPO A UN MODELO
-    public function eliminar_asignacion($nom_contrato_id, $nom_doc_encabezado_id, $id_app, $id_modelo_padre)
-    {
-        $documento_nomina = NomDocEncabezado::find( (int)$nom_doc_encabezado_id );
-
-        if( !empty( $documento_nomina->registros_liquidacion->where('nom_contrato_id',(int)$nom_contrato_id)->all() ) )
-        {
-            return redirect( 'nomina/' . $nom_doc_encabezado_id . '?id=' . $id_app . '&id_modelo=' . $id_modelo_padre)->with('mensaje_error', 'El empleado no puede ser RETIRADO del documento. Ya tiene registros de conceptos.');
-        }
-
-        if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' )
-        {
-            $empleado = NomContrato::find( (int)$nom_contrato_id );
-            $empleado->estado = 'Activo';
-            $empleado->save();
-        }
-
-        // Se obtiene el modelo "Padre"
-        $modelo = Modelo::find($id_modelo_padre);
-        $datos = app($modelo->name_space)->get_datos_asignacion();
-
-        DB::table($datos['nombre_tabla'])->where($datos['registro_modelo_hijo_id'], '=', $nom_contrato_id)
-            ->where($datos['registro_modelo_padre_id'], '=', $nom_doc_encabezado_id)
-            ->delete();
-
-        return redirect( 'nomina/' . $nom_doc_encabezado_id . '?id=' . $id_app . '&id_modelo=' . $id_modelo_padre)->with('flash_message', 'Empleado RETIRADO correctamente del documento.');
     }
     
 }

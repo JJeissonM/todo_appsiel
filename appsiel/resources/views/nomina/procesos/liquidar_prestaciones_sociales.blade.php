@@ -24,7 +24,7 @@
 							Parámetros de selección
 						</h4>
 						<hr>
-						{{ Form::open(['url'=>'nom_procesar_archivo_plano','id'=>'formulario_inicial','files' => true]) }}
+						{{ Form::open(['url'=>'nom_liquidar_prestaciones_sociales','id'=>'formulario_inicial','files' => true]) }}
 							<div class="row" style="padding:5px;">
 								<label class="control-label col-sm-4" > <b> *Documento de liquidación: </b> </label>
 
@@ -36,15 +36,19 @@
 							<div class="row" style="padding:5px;">
 								<h5>Prestaciones a liquidar</h5>
 								<hr>
-								<label class="checkbox-inline"><input type="checkbox" value="">Vacaciones</label>
-								<label class="checkbox-inline"><input type="checkbox" value="">Prima de servicios</label>
-								<label class="checkbox-inline"><input type="checkbox" value="">Cesantías</label>
-								<label class="checkbox-inline"><input type="checkbox" value="">Intereses de cesantías</label>
+								<label class="checkbox-inline"><input name="prestaciones[]" type="checkbox" value="vacaciones" class="check_prestacion">Vacaciones</label>
+								<label class="checkbox-inline"><input name="prestaciones[]" type="checkbox" value="prima_legal" class="check_prestacion">Prima de servicios</label>
+								<label class="checkbox-inline"><input name="prestaciones[]" type="checkbox" value="cesantias" class="check_prestacion">Cesantías</label>
+								<label class="checkbox-inline"><input name="prestaciones[]" type="checkbox" value="intereses_cesantias" class="check_prestacion">Intereses de cesantías</label>
 							</div>
 
-							<div class="col-md-4">
-								<button class="btn btn-success" id="btn_cargar"> <i class="fa fa-calculator"></i> Liquidar </button>
+							<br><br>
+
+							<div style="width: 100%; text-align: center;">
+								<button class="btn btn-success" id="btn_liquidar"> <i class="fa fa-calculator"></i> Liquidar </button>
+								{{ Form::Spin(48) }}
 							</div>
+							<input type="submit" name="Enviar">
 						{{ Form::close() }}
 					</div>
 						
@@ -75,13 +79,28 @@
 
 		$(document).ready(function(){
 
-			$("#btn_cargar").on('click',function(event){
+			var opcion_seleccionada = 0;
+
+			$(".check_prestacion").change(function(){
+				if ( $(this).is(':checked') )
+				{
+					opcion_seleccionada++;
+				}else{
+					opcion_seleccionada--;
+				}
+			  });
+
+			$("#btn_liquidar").on('click',function(event){
 		    	event.preventDefault();
+
 
 		    	if ( !validar_requeridos() )
 		    	{
 		    		return false;
 		    	}
+
+		    	if ( opcion_seleccionada == 0) { alert('Debe seleccionar al menos una prestación.'); return false; }
+
 
 		 		$("#div_spin").show();
 		 		$("#div_cargando").show();
@@ -107,54 +126,6 @@
         			$("#div_resultado").fadeIn( 1000 );
 			    });
 		    });
-
-			$(document).on('click', '.btn_eliminar', function(event) {
-				event.preventDefault();
-				var fila = $(this).closest("tr");
-				if ( confirm('¿Esta seguro de eliminar esta fila de los registros a almacenar?') )
-				{
-					fila.remove();
-				}
-			});
-
-			$(document).on('click', '#btn_almacenar_registros', function(event) {
-				event.preventDefault();
-
-				var table = $( '#ingreso_registros' ).tableToJSON();
-				$('#lineas_registros').val(JSON.stringify(table));
-
-				$('#form_almacenar_registros').submit();
-				
-				/*
-				$("#div_resultado").fadeOut( 1000 );
-
-				$("#div_spin").show();
-		 		$("#div_cargando").show();
-				
-				var form = $('#form_almacenar_registros');
-				var url = form.attr('action');
-				var datos = new FormData(document.getElementById("form_almacenar_registros"));
-
-				$("#div_resultado").html( '' );
-
-				$.ajax({
-				    url: url,
-				    type: "post",
-				    dataType: "html",
-				    data: datos,
-				    cache: false,
-				    contentType: false,
-				    processData: false
-				})
-			    .done(function( respuesta ){
-			        $('#div_cargando').hide();
-        			$("#div_spin").hide();
-
-        			$("#div_resultado").html( respuesta );
-        			$("#div_resultado").fadeIn( 1000 );
-			    });
-			    */
-			});
 
 		});
 	</script>
