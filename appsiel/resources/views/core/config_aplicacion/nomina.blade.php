@@ -80,7 +80,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php
+								$calcular_valor_proyectado_fondo_solidaridad = 1; 
+								if( isset($parametros['calcular_valor_proyectado_fondo_solidaridad'] ) )
+								{
+									$calcular_valor_proyectado_fondo_solidaridad = $parametros['calcular_valor_proyectado_fondo_solidaridad'];
+								}
+							?>
+							{{ Form::bsSelect('calcular_valor_proyectado_fondo_solidaridad', $calcular_valor_proyectado_fondo_solidaridad, 'Calcula valor proyectado para fondo de solidaridad pensional', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
