@@ -50,14 +50,22 @@ class Retefuente implements Estrategia
 			
 			
 			case '2': // Porcentaje fijo mensual, ya calculado semestralmente 
-				$valor_base_depurada = $this->get_valor_base_depurada( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+				$valor_base_depurada = $this->get_valor_base_depurada( $liquidacion['documento_nomina'], $liquidacion['empleado'] ); // subtotal
+
+				// X	Renta de trabajo exenta del 25% numeral 10 del artículo 206 ET (W X 25%)
+				$renta_trabajo_exenta = $valor_base_depurada * 25 / 100;
+				$this->tabla_resumen['renta_trabajo_exenta'] = $renta_trabajo_exenta;
+
+				// Y	Base de retención que se multiplica por el porcentaje fijo de retención
+				$base_retencion = $valor_base_depurada - $renta_trabajo_exenta;
+				$this->tabla_resumen['base_retencion'] = $base_retencion;
 
 				$porcentaje_aplicado = $parametros_retefuente_empleado->porcentaje_fijo;
 				$this->tabla_resumen['porcentaje_aplicado'] = $porcentaje_aplicado;
 
-				$valor_liquidacion = $valor_base_depurada * $porcentaje_aplicado / 100;
+				$valor_liquidacion = $base_retencion * $porcentaje_aplicado / 100;
 				$this->tabla_resumen['valor_liquidacion'] = $valor_liquidacion;
-				
+
 				break;
 			
 			default:
@@ -96,15 +104,7 @@ class Retefuente implements Estrategia
 		$subtotal = $total_pagos - $total_deducciones;
 		$this->tabla_resumen['subtotal'] = $subtotal;
 
-		// X	Renta de trabajo exenta del 25% numeral 10 del artículo 206 ET (W X 25%)
-		$renta_trabajo_exenta = $registros_liquidados_empleado->sum( 'valor_devengo' ) * 25 / 100;
-		$this->tabla_resumen['renta_trabajo_exenta'] = $renta_trabajo_exenta;
-
-		// Y	Base de retención que se multiplica por el porcentaje fijo de retención
-		$base_retencion = $subtotal - $renta_trabajo_exenta;
-		$this->tabla_resumen['base_retencion'] = $base_retencion;
-
-		return $base_retencion;
+		return $subtotal;
 	}
 
 	public function get_total_pagos_empleado( $pagos_empleado )

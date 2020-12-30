@@ -36,6 +36,12 @@
 					<td><strong>Valores</strong></td>
 				</tr>
 				<tr>
+					<td colspan="2" style="text-align: center;"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align: center; background-color: #ddd;"><strong>PAGOS EFECTUADOS</strong></td>
+				</tr>
+				<tr>
 					<td>Sumatoria de los salarios básicos</td>
 					<td>${{ number_format( $tabla_resumen['salario_basico'], '0', ',', '.') }}</td>
 				</tr>
@@ -58,6 +64,12 @@
 				<tr>
 					<td><strong>Total pagos efectuados</strong></td>
 					<td><strong>${{ number_format( $tabla_resumen['total_pagos'], '0', ',', '.') }}</strong></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align: center;"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="text-align: center; background-color: #ddd;"><strong>DEDUCCIONES</strong></td>
 				</tr>
 				<tr>
 					<td colspan="2" style="text-align: center;"><strong>Deducciones por ingresos no constitutivos de renta</strong></td>
@@ -125,19 +137,26 @@
 					<td>${{ number_format( $tabla_resumen['salud_prepagada'], '0', ',', '.') }}</td>
 				</tr>
 				<tr>
-					<td>Deducción por dependientes (artículo 387-1 ET)</td>
+					<td>Deducción por dependientes (Art. 387-1 ET)</td>
 					<td>${{ number_format( $tabla_resumen['deduccion_por_dependientes'], '0', ',', '.') }}</td>
 				</tr>
 				<tr>
 					<td><strong>Total deducciones particulares</strong></td>
+					<td><strong>${{ number_format( $tabla_resumen['total_deducciones_particulares'], '0', ',', '.') }}</strong></td>
+				</tr>
+				<tr>
+					<td><strong>Total Deducciones</strong></td>
 					<td><strong>${{ number_format( $tabla_resumen['total_deducciones'], '0', ',', '.') }}</strong></td>
+				</tr>
+				<tr>
+					<td colspan="2">&nbsp;</td>
 				</tr>
 				<tr>
 					<td><strong>Subtotal</strong></td>
 					<td><strong>${{ number_format( $tabla_resumen['subtotal'], '0', ',', '.') }}</strong></td>
 				</tr>
 				<tr>
-					<td>Renta de trabajo exenta del 25% numeral 10 del artículo 206 ET (W X 25%)</td>
+					<td>Renta de trabajo exenta del 25% (Numeral 10 del artículo 206 ET)</td>
 					<td>${{ number_format( $tabla_resumen['renta_trabajo_exenta'], '0', ',', '.') }}</td>
 				</tr>
 				<tr>
@@ -148,7 +167,7 @@
 					<td><strong>Porcentaje fijo de retención </strong></td>
 					<td><strong>{{ number_format( $tabla_resumen['porcentaje_aplicado'], '2', ',', '.') }}%</strong></td>
 				</tr>
-				<tr>
+				<tr class="success">
 					<td><strong>Valor total retención</strong></td>
 					<td><strong>${{ number_format( $tabla_resumen['valor_liquidacion'], '0', ',', '.') }}</strong></td>
 				</tr>
