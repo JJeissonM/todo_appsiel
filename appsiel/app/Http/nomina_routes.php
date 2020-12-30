@@ -26,6 +26,11 @@ Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/
 Route::post('nom_liquidar_prestaciones_sociales', 'Nomina\PrestacionesSocialesController@liquidacion');
 
 
+// RETEFUENTE
+Route::post('nom_liquidar_retefuente', 'Nomina\RetefuenteController@liquidacion');
+Route::get('nom_retirar_retefuente/{doc_encabezado_id}', 'Nomina\RetefuenteController@retirar_liquidacion');
+
+
 // INFORMES Y LISTADOS
 Route::post('nom_listado_acumulados','Nomina\ReporteController@listado_acumulados');
 Route::post('nom_libro_fiscal_vacaciones','Nomina\ReporteController@libro_fiscal_vacaciones');
