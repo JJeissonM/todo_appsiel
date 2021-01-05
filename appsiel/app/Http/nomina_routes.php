@@ -18,12 +18,14 @@ Route::get('nomina_print/{id}', 'Nomina\NominaController@nomina_print');
 
 
 Route::get('get_datos_contrato/{contrato_id}', 'Nomina\NominaController@get_datos_contrato');
+Route::get('get_fecha_final_vacaciones/{grupo_empleado_id}/{fecha_inicial_tnl}/{cantidad_dias_tomados}/{dias_compensados}', 'Nomina\PrestacionesSocialesController@get_fecha_final_vacaciones');
 
 Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/{contrato_id}/{novedad_id}', 'Nomina\NovedadesTnlController@validar_fecha_otras_novedades');
 
 
 // LIQUIDACION DE PRESTACIONES SOCIALES
 Route::post('nom_liquidar_prestaciones_sociales', 'Nomina\PrestacionesSocialesController@liquidacion');
+Route::get('nom_retirar_prestaciones_sociales/{doc_encabezado_id}/{prestaciones}', 'Nomina\PrestacionesSocialesController@retirar_liquidacion');
 
 
 // RETEFUENTE
@@ -51,5 +53,8 @@ Route::post('nom_almacenar_registros_via_interface','Nomina\ProcesosController@a
 Route::post('nom_calcular_acumulados_seguridad_social_parafiscales','Nomina\ProcesosController@calcular_acumulados_seguridad_social_parafiscales');
 Route::post('nom_almacenar_acumulados_seguridad_social_parafiscales','Nomina\ProcesosController@almacenar_acumulados_seguridad_social_parafiscales');
 
+
+// PLANILLA INTEGRADA
+Route::post('nom_generar_planilla_integrada','Nomina\PlanillaIntegradaController@procesar_archivo_plano');
 
 Route::resource('nomina', 'Nomina\NominaController');

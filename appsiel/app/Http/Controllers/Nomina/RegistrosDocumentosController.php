@@ -247,8 +247,7 @@ class RegistrosDocumentosController extends TransaccionController
             }else{
                 // Valor completo Salario + Adicional
                 $valor_a_liquidar = $salario_x_hora * ( 1 + $concepto->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
-            }
-            
+            }            
 
             $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor_a_liquidar );
 

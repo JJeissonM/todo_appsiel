@@ -12,6 +12,9 @@ class NomConcepto extends Model
 
     /*
         naturaleza: devengo, deduccion, provision
+
+        forma_parte_basico: Los conceptos que forman parte integral del básico son aquellas que sustituyen el sueldo y afectan la continuidad de este. Ejemplo: permisos remunerados, licencias remuneradas, vacaciones, incapacidades y otros los cuales en su pago disminuyen el valor del sueldo o jornal a pagar.
+
     */
 	protected $fillable = ['modo_liquidacion_id','naturaleza', 'porcentaje_sobre_basico', 'valor_fijo', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'estado'];
 
@@ -66,7 +69,7 @@ class NomConcepto extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = NomConcepto::where('estado','Activo')->get();
+        $opciones = NomConcepto::where('estado','Activo')->orderBy('descripcion')->get();
 
         $vec['']='';
         foreach ($opciones as $opcion)

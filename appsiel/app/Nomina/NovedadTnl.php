@@ -5,7 +5,7 @@ namespace App\Nomina;
 use Illuminate\Database\Eloquent\Model;
 
 /*
-	tipo_novedad_tnl: { incapacidad | permiso_remunerado | permiso_no_remunerado | suspencion }
+	tipo_novedad_tnl: { incapacidad | permiso_remunerado | permiso_no_remunerado | suspencion | vacaciones }
 	origen_incapacidad: { comun | laboral }
 	clase_incapacidad: { enfermedad_general | licencia_maternidad | licencia_paternidad | accidente_trabajo | enfermedad_profesional}
 */

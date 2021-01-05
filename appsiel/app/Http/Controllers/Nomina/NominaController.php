@@ -413,7 +413,6 @@ class NominaController extends TransaccionController
         return NomContrato::find( $contrato_id );
     }
 
-
     // ASIGNACIÓN DE UN CAMPO A UN MODELO
     public function guardar_asignacion(Request $request)
     {

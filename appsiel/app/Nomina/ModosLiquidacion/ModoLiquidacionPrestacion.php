@@ -3,6 +3,9 @@
 namespace App\Nomina\ModosLiquidacion;
 
 use App\Nomina\ModosLiquidacion\PrestacionesSociales\Vacaciones;
+use App\Nomina\ModosLiquidacion\PrestacionesSociales\PrimaServicios;
+use App\Nomina\ModosLiquidacion\PrestacionesSociales\Cesantias;
+use App\Nomina\ModosLiquidacion\PrestacionesSociales\InteresesCesantias;
 
 use App\Nomina\NomDocRegistro;
 
@@ -11,6 +14,9 @@ class ModoLiquidacionPrestacion
 {
 	protected $modos_liquidacion = [
 										'vacaciones' => Vacaciones::class,
+										'prima_legal' => PrimaServicios::class,
+										'cesantias' => Cesantias::class,
+										'intereses_cesantias' => InteresesCesantias::class,
 									];
 
 

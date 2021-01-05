@@ -51,13 +51,35 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$horas_laborales = 8; 
+								$horas_laborales = 240; 
 								if( isset($parametros['horas_laborales'] ) )
 								{
 									$horas_laborales = $parametros['horas_laborales'];
 								}
 							?>
-							{{ Form::bsText('horas_laborales', $horas_laborales, 'Cantidad horas laborales', ['class'=>'form-control']) }}
+							{{ Form::bsText('horas_laborales', $horas_laborales, 'Cantidad horas laborales mes', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$horas_dia_laboral = 8; 
+								if( isset($parametros['horas_dia_laboral'] ) )
+								{
+									$horas_dia_laboral = $parametros['horas_dia_laboral'];
+								}
+							?>
+							{{ Form::bsText('horas_dia_laboral', $horas_dia_laboral, 'Horas días laboral', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
 						</div>
 					</div>
 
@@ -148,6 +170,31 @@
 								}
 							?>
 							{{ Form::bsSelect('id_concepto_pagar_empresa_en_incapacidades', $id_concepto_pagar_empresa_en_incapacidades, 'Concepto incapacidad asumida por la empresa', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<h4> Parámetros liquidación de prestaciones sociales  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$concepto_vacaciones_dias_no_habiles = 83;
+								if( isset($parametros['concepto_vacaciones_dias_no_habiles'] ) )
+								{
+									$concepto_vacaciones_dias_no_habiles = $parametros['concepto_vacaciones_dias_no_habiles'];
+								}
+							?>
+							{{ Form::bsSelect('concepto_vacaciones_dias_no_habiles', $concepto_vacaciones_dias_no_habiles, 'Concepto a pagar', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
 						</div>
 					</div>
 

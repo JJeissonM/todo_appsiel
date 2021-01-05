@@ -4,9 +4,12 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Auth;
+
 use App\Core\Tercero;
 use App\Nomina\MovimientoIbcEmpleado;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\CambioSalario;
 
 class NomContrato extends Model
 {
@@ -14,6 +17,8 @@ class NomContrato extends Model
 	protected $fillable = [ 'core_tercero_id', 'clase_contrato', 'cargo_id', 'horas_laborales', 'sueldo', 'salario_integral', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado', 'liquida_subsidio_transporte', 'planilla_pila_id', 'es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id', 'grupo_empleado_id'];
 
 	public $encabezado_tabla = [ 'Núm. identificación', 'Empleado', 'Cargo', 'Sueldo', 'Fecha ingreso', 'Contrato hasta', 'Estado', 'ID', 'Acción'];
+
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 
     public function tercero()
     {
@@ -68,6 +73,11 @@ class NomContrato extends Model
     public function salario_x_hora()
     {
         return $this->sueldo / (int)config('nomina.horas_laborales');
+    }
+
+    public function salario_x_dia()
+    {
+        return ( $this->sueldo / (int)config('nomina.horas_laborales') ) * (int)config('nomina.horas_dia_laboral');
     }
 
     public function valor_ibc()
@@ -150,12 +160,22 @@ class NomContrato extends Model
 
     public function store_adicional( $datos, $registro )
     {
+        CambioSalario::create(
+                                ['nom_contrato_id' => $registro->id ] + 
+                                ['salario_anterior' => 0] + 
+                                ['nuevo_salario' => $registro->sueldo] +  
+                                ['fecha_modificacion' => date('Y-m-d') ] + 
+                                ['tipo_modificacion' => 'creacion_contrato' ] + 
+                                ['observacion' => '' ] +
+                                ['creado_por' => Auth::user()->email] + 
+                                ['modificado_por' => '']
+                            );
+
         if ( $registro->contrato_hasta == '' )
         {
             $registro->contrato_hasta = date('2099-12-31');
             $registro->save();
         }
-            
     }
 
     public function get_campos_adicionales_edit( $lista_campos, $registro )

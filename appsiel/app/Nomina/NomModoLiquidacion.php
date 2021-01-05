@@ -8,6 +8,15 @@ class NomModoLiquidacion extends Model
 {
     /*
             ID  Descripción
+            18  Parafiscales    Provisiones hechas por la empresa: SENA, ICBF y Caja de compesanción.     
+            17  Cesantías pagadas   Las que se pagan al empleado en la terminación de contrato.
+            16  Intereses de cesantías 
+            15  Cesantías consignadas   Cesantías que se consignan anualmente al fondo.
+            14  Prima Legal Pagada semestralmente     
+            13  Pensión obligatoria AFP. Administradoras Fondos de Pensión 
+            12  Salud obligatoria   Descuentos EPS. Entidades promotoras de Salud
+            11  Retefuente
+            10  FondoSolidaridadPensional       
             9   Prestaciones sociales
             8   Seguridad social
             7   Tiempo NO Laborado

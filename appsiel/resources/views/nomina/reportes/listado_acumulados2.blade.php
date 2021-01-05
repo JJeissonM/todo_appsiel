@@ -54,7 +54,7 @@
 
 	                $fila .= '<td> ' . $empleado->tercero->numero_identificacion . ' - ' . $empleado->tercero->descripcion . '</td>';
 	                $fila .= '<td> ' . $empleado->grupo_empleado->descripcion . '</td>';
-	                $fila .= '<td> ' . $empleado->cargo->descripcion . ' - ' . $empleado->tercero->descripcion . '</td>';
+	                $fila .= '<td> ' . $empleado->cargo->descripcion . '</td>';
 
 	                $total_fila_devengos = 0;
 	                $total_fila_deducciones = 0;

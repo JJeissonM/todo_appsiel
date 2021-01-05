@@ -6,18 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 
+use App\Nomina\ParametroLiquidacionPrestacionesSociales;
+use App\Nomina\LibroVacacion;
+
 class ProgramacionVacacion extends Model
 {
 	protected $table = 'nom_novedades_tnl';
 	
 	protected $fillable = ['nom_concepto_id', 'nom_contrato_id', 'fecha_inicial_tnl', 'fecha_final_tnl', 'cantidad_dias_tnl', 'cantidad_horas_tnl', 'tipo_novedad_tnl', 'codigo_diagnostico_incapacidad', 'numero_incapacidad', 'fecha_expedicion_incapacidad', 'origen_incapacidad', 'clase_incapacidad', 'fecha_incapacidad', 'valor_a_pagar_eps', 'valor_a_pagar_arl', 'valor_a_pagar_afp', 'valor_a_pagar_empresa', 'observaciones', 'estado', 'cantidad_dias_amortizados', 'cantidad_dias_pendientes_amortizar', 'es_prorroga', 'novedad_tnl_anterior_id'];
 	
-	public $encabezado_tabla = ['Empleado', 'Inicio',  'Fin', 'Cant. días TNL', 'Observaciones', 'Estado', 'Acción'];
+	public $encabezado_tabla = ['Empleado', 'Inicio',  'Fin', 'Cant. días', 'Observaciones', 'Estado', 'Acción'];
 
-	//public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
-    public $urls_acciones = '{"show":"no"}';
+	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
+    //public $urls_acciones = '{"show":"no"}';
 
-	//public $archivo_js = 'assets/js/nomina/novedades_tnl.js';
+	public $archivo_js = 'assets/js/nomina/programacion_vacaciones.js';
 
 	public function concepto()
 	{
@@ -62,6 +65,74 @@ class ProgramacionVacacion extends Model
         return $vec;
     }
 
+    public function store_adicional( $datos, $registro )
+    {
+
+        $dias_disfrutados = (int)$datos['cantidad_dias_tomados'] - (int)$datos['dias_compensados'];
+        LibroVacacion::create(
+                                ['nom_contrato_id' => $registro->nom_contrato_id ] + 
+                                ['novedad_tnl_id' => $registro->id ] + 
+                                ['periodo_disfrute_vacacion_desde' => $datos['fecha_inicial_tnl'] ] + 
+                                ['periodo_disfrute_vacacion_hasta' => $datos['fecha_final_tnl'] ] +  
+                                ['dias_pagados' => $datos['cantidad_dias_tomados'] ] + 
+                                ['dias_compensados' => $datos['dias_compensados'] ] +  
+                                ['dias_no_habiles' => $datos['dias_no_habiles'] ] + 
+                                ['dias_disfrutados' => $dias_disfrutados ]
+                            );
+
+        $empleado = NomContrato::find( $registro->nom_contrato_id );
+
+        $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion','vacaciones')
+                                                                        ->where('grupo_empleado_id',$empleado->grupo_empleado_id)
+                                                                        ->get()->first();
+        $concepto = NomConcepto::find( $parametros_prestacion->nom_concepto_id );
+
+        $registro->tipo_novedad_tnl = 'vacaciones';
+        $registro->cantidad_dias_pendientes_amortizar = $datos['cantidad_dias_tnl'];
+        $registro->nom_concepto_id = $concepto->id;
+        $registro->estado = 'Activo';
+        $registro->save();
+
+    }
+
+    public function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+        $libro_vacaciones = LibroVacacion::where( 'novedad_tnl_id', $registro->id )->get()->first();
+
+        // Personalizar campos
+        $cantida_campos = count($lista_campos);
+        for ($i = 0; $i <  $cantida_campos; $i++) {
+            switch ($lista_campos[$i]['name']) {
+                case 'cantidad_dias_tomados':
+                    $lista_campos[$i]['value'] = $libro_vacaciones->dias_pagados;
+                    break;
+                case 'dias_compensados':
+                    $lista_campos[$i]['value'] = $libro_vacaciones->dias_compensados;
+                    break;
+                case 'dias_no_habiles':
+                    $lista_campos[$i]['value'] = $libro_vacaciones->dias_no_habiles;
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
+
+        return $lista_campos;
+    }
+
+    public function update_adicional( $datos, $id )
+    {
+        $dias_disfrutados = (int)$datos['cantidad_dias_tomados'] - (int)$datos['dias_compensados'];
+        $libro_vacaciones = LibroVacacion::where( 'novedad_tnl_id', $id )->get()->first();
+        $libro_vacaciones->periodo_disfrute_vacacion_desde = $datos['fecha_inicial_tnl'];
+        $libro_vacaciones->periodo_disfrute_vacacion_hasta = $datos['fecha_final_tnl'];
+        $libro_vacaciones->dias_pagados = $datos['cantidad_dias_tomados'];
+        $libro_vacaciones->dias_compensados = $datos['dias_compensados'];
+        $libro_vacaciones->dias_no_habiles = $datos['dias_no_habiles'];
+        $libro_vacaciones->dias_disfrutados = $dias_disfrutados;
+        $libro_vacaciones->save();
+    }
 
     public function validar_eliminacion($id)
     {
