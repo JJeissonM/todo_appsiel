@@ -27,7 +27,7 @@ class NomDocEncabezado extends Model
 	
 	public $encabezado_tabla = [ 'Fecha', 'Documento', 'Descripción', 'Total devengos', 'Total deducciones', 'Estado', 'Acción'];
 
-    public $urls_acciones = '{"cambiar_estado":"a_i/id_fila"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"nomina/id_fila","cambiar_estado":"a_i/id_fila"}';
 
     public function empresa()
     {

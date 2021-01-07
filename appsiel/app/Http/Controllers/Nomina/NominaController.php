@@ -435,6 +435,7 @@ class NominaController extends TransaccionController
         {
             $empleado = NomContrato::find( (int)$request->registro_modelo_hijo_id );
             $empleado->estado = 'Retirado';
+            $empleado->contrato_hasta = $documento_nomina->fecha;
             $empleado->save();
         }            
 

@@ -151,33 +151,37 @@ class VistaController extends Controller
         switch ($campo['tipo']) {
             case 'bsLabel':
 
-                $valor = '';
+                $texto_lbl = '';
                 switch ($campo['name']) {
                     case 'id_colegio':
                         $empresa = Empresa::find(Auth::user()->empresa_id);
                         $colegio = Colegio::where('empresa_id',$empresa->id)->get();
-                        $valor = $colegio[0]->id;
+                        $texto_lbl = $colegio[0]->id;
                         break;
                     case 'empresa_id':
-                        $valor = Auth::user()->empresa_id;
+                        $texto_lbl = Auth::user()->empresa_id;
                         break;
                     case 'core_empresa_id':
-                        $empresa_id = Auth::user()->empresa_id;
-                        $empresa = Empresa::find($empresa_id);
-                        $valor = $empresa->razon_social.$empresa->nombre1." ".$empresa->otros_nombres." ".$empresa->apellido1." ".$empresa->apellido2;
+                        $valor_campo = Auth::user()->empresa_id;
+                        $empresa = Empresa::find($valor_campo);
+                        $texto_lbl = $empresa->razon_social.$empresa->nombre1." ".$empresa->otros_nombres." ".$empresa->apellido1." ".$empresa->apellido2;
                         break;
                     case 'asignatura_id':
-                        $valor = $campo['value'];
-                        $empresa_id = Auth::user()->empresa_id;
+                        $texto_lbl = $campo['value'];
+                        $valor_campo = Auth::user()->empresa_id;
+                        break;
+                    case 'planilla_generada_id':
+                        $texto_lbl = \App\Nomina\PlanillaGenerada::find($campo['value'])->descripcion;
+                        $valor_campo = $campo['value'];
                         break;
                     
                     default:
-                        $valor = $campo['value'];
-                        $empresa_id = Auth::user()->empresa_id;
+                        $texto_lbl = $campo['value'];
+                        $valor_campo = Auth::user()->empresa_id;
                         break;
                 }
 
-                $control = Form::bsLabel($campo['name'],[$valor,$empresa_id],$campo['descripcion'], $campo['atributos']);
+                $control = Form::bsLabel($campo['name'],[$texto_lbl,$valor_campo],$campo['descripcion'], $campo['atributos']);
 
                 break;
             case 'bsText':

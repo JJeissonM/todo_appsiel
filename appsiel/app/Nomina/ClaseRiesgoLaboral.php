@@ -19,13 +19,13 @@ class ClaseRiesgoLaboral extends Model
     public static function opciones_campo_select()
     {
         $opciones = ClaseRiesgoLaboral::where('nom_clases_riesgos_laborales.estado','Activo')
-                    ->select('nom_clases_riesgos_laborales.id','nom_clases_riesgos_laborales.descripcion')
+                    ->select('nom_clases_riesgos_laborales.id','nom_clases_riesgos_laborales.descripcion','nom_clases_riesgos_laborales.porcentaje_liquidacion')
                     ->get();
 
         $vec['']='';
         foreach ($opciones as $opcion)
         {
-            $vec[$opcion->id] = $opcion->descripcion;
+            $vec[$opcion->id] = $opcion->descripcion . ' (' . $opcion->porcentaje_liquidacion . '%)';
         }
 
         return $vec;

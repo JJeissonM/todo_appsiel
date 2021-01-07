@@ -200,6 +200,38 @@
 
 				</div>
 
+				<h4> Parámetros generación Plaanilla integrada Autoliquidación de Aportes (PILA)  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$agrupacion_calculo_ibc_salud = 1;
+								if( isset($parametros['agrupacion_calculo_ibc_salud'] ) )
+								{
+									$agrupacion_calculo_ibc_salud = $parametros['agrupacion_calculo_ibc_salud'];
+								}
+							?>
+							{{ Form::bsSelect('agrupacion_calculo_ibc_salud', $agrupacion_calculo_ibc_salud, 'Agrupación para calcular IBC Salud, Pensión y Riesgos laborales', App\Nomina\AgrupacionConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$agrupacion_calculo_ibc_parafiscales = 7;
+								if( isset($parametros['agrupacion_calculo_ibc_parafiscales'] ) )
+								{
+									$agrupacion_calculo_ibc_parafiscales = $parametros['agrupacion_calculo_ibc_parafiscales'];
+								}
+							?>
+							{{ Form::bsSelect('agrupacion_calculo_ibc_parafiscales', $agrupacion_calculo_ibc_parafiscales, 'Agrupación para calcular IBC Parafiscales', App\Nomina\AgrupacionConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros liquidación de aprendices  </h4>
 				<hr>
 				<div class="row">
