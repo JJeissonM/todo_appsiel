@@ -15,9 +15,18 @@ class PilaNovedades extends Model
     
 	public static function consultar_registros()
 	{
-	    return PilaNovedades::select('nom_pila_liquidacion_novedades.planilla_generada_id AS campo1', 'nom_pila_liquidacion_novedades.nom_contrato_id AS campo2', 'nom_pila_liquidacion_novedades.fecha_final_mes AS campo3', 'nom_pila_liquidacion_novedades.ing AS campo4', 'nom_pila_liquidacion_novedades.salario_basico AS campo5', 'nom_pila_liquidacion_novedades.tipo_de_salario AS campo6', 'nom_pila_liquidacion_novedades.id AS campo8')
-	    ->get()
-	    ->toArray();
+	    return PilaNovedades::leftJoin('nom_contratos','nom_contratos.id','=','nom_pila_liquidacion_novedades.nom_contrato_id')
+                                ->leftJoin('core_terceros','core_terceros.id','=','nom_contratos.core_tercero_id')
+                                ->select(
+                                    'nom_pila_liquidacion_novedades.planilla_generada_id AS campo1',
+                                    'core_terceros.descripcion AS campo2',
+                                    'nom_pila_liquidacion_novedades.fecha_final_mes AS campo3',
+                                    'nom_pila_liquidacion_novedades.ing AS campo4',
+                                    'nom_pila_liquidacion_novedades.salario_basico AS campo5',
+                                    'nom_pila_liquidacion_novedades.tipo_de_salario AS campo6',
+                                    'nom_pila_liquidacion_novedades.id AS campo7')
+                        	    ->get()
+                        	    ->toArray();
 	}
 
     public static function opciones_campo_select()
