@@ -430,7 +430,22 @@ class PlanillaIntegradaController extends Controller
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'valor_deduccion' );
 
-        return ( $total_devengos - $total_deducciones );
+        return abs( $total_devengos - $total_deducciones );
+    }
+
+    public function get_valor_acumulado_concepto_entre_meses( $empleado, $nom_concepto_id, $fecha_inicial, $fecha_final )
+    {
+        $total_devengos = NomDocRegistro::where( 'nom_concepto_id', $nom_concepto_id )
+                                            ->where( 'nom_contrato_id', $empleado->id )
+                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
+                                            ->sum( 'valor_devengo' );
+
+        $total_deducciones = NomDocRegistro::where( 'nom_concepto_id', $nom_concepto_id )
+                                            ->where( 'nom_contrato_id', $empleado->id )
+                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
+                                            ->sum( 'valor_deduccion' );
+
+        return abs( $total_devengos - $total_deducciones );
     }
 
     public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
@@ -554,7 +569,6 @@ class PlanillaIntegradaController extends Controller
             }
         }
 
-
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
@@ -655,6 +669,28 @@ class PlanillaIntegradaController extends Controller
         $tarifa_pension = $this->formatear_campo( $porcentaje_pension,'0','derecha',7);
         $cotizacion_pension = $this->formatear_campo( $valor_cotizacion_pension,'0','izquierda',9);
 
+        $valor_cotizacion_fsp = 0;
+        $subcuenta_solidaridad_fsp = '000000000';
+        $subcuenta_subsistencia_fsp = '000000000';
+        $conceptos_liquidados_mes = $this->conceptos_liquidados_mes( $empleado, $this->fecha_inicial, $this->fecha_final );
+        $concepto_fsp = 75;
+        
+        if ( in_array($concepto_fsp, $conceptos_liquidados_mes) )
+        {
+            $valor_cotizacion_fsp = number_format( $this->get_valor_acumulado_concepto_entre_meses( $empleado, $concepto_fsp, $this->fecha_inicial, $this->fecha_final ), 0,'','');
+            $mitad = number_format( $valor_cotizacion_fsp / 2, 0,'','');
+            $subcuenta_solidaridad_fsp = $this->formatear_campo( $mitad,'0','izquierda',9);
+            $subcuenta_subsistencia_fsp = $this->formatear_campo( $mitad,'0','izquierda',9);
+        }
+
+        $valor_total_cotizacion_pension = $valor_cotizacion_pension + $valor_cotizacion_fsp;
+        $total_cotizacion_pension = $this->formatear_campo( number_format( $valor_total_cotizacion_pension, 0,'',''),'0','izquierda',9);
+
+            if ( $empleado->id == 43 )
+            {
+                //dd( [$this->ibc_salud,$porcentaje_pension,$valor_cotizacion_pension,$cotizacion_pension,$valor_cotizacion_fsp, $mitad,$subcuenta_solidaridad_fsp,$subcuenta_subsistencia_fsp] );
+            }
+
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
@@ -665,10 +701,10 @@ class PlanillaIntegradaController extends Controller
                     [ 'cotizacion_pension' => $cotizacion_pension ] +
                     [ 'afp_voluntario_rais_empleado' => '000000000' ] +
                     [ 'afp_voluntatio_rais_empresa' => '000000000' ] +
-                    [ 'subcuenta_solidaridad_fsp' => '000000000' ] +
-                    [ 'subcuenta_subsistencia_fsp' => '000000000' ] +
-                    [ 'total_cotizacion_pension' => '000000000' ] +
-                    [ 'valor_cotizacion_pension' => $cotizacion_pension ];/**/
+                    [ 'subcuenta_solidaridad_fsp' => $subcuenta_solidaridad_fsp ] +
+                    [ 'subcuenta_subsistencia_fsp' => $subcuenta_subsistencia_fsp ] +
+                    [ 'total_cotizacion_pension' => $total_cotizacion_pension ] +
+                    [ 'valor_cotizacion_pension' => '000000000' ];/**/
 
         PilaPension::create($datos);
     }
@@ -728,8 +764,6 @@ class PlanillaIntegradaController extends Controller
             $cotizante_exonerado_de_aportes_parafiscales = 'S';
         }
 
-
-
         $porcentaje_caja_compensacion = $planilla->datos_empresa->porcentaje_caja_compensacion / 100;
         $valor_cotizacion_ccf = number_format( $this->ibc_parafiscales * $porcentaje_caja_compensacion, 0,'','');
         $tarifa_ccf = $this->formatear_campo( $porcentaje_caja_compensacion,'0','derecha',7);
@@ -764,7 +798,6 @@ class PlanillaIntegradaController extends Controller
         }
 
         $valor_total_cotizacion = number_format( $valor_cotizacion_ccf + $valor_cotizacion_sena + $valor_cotizacion_icbf, 0,'','');
-        //dd([(float)config('nomina.SMMLV'),$valor_cotizacion_ccf,$valor_cotizacion_sena,$valor_cotizacion_icbf,$valor_total_cotizacion]);
         $total_cotizacion = $this->formatear_campo( $valor_total_cotizacion,'0','izquierda',9);
 
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
