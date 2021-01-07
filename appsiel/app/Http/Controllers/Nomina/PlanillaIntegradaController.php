@@ -686,11 +686,6 @@ class PlanillaIntegradaController extends Controller
         $valor_total_cotizacion_pension = $valor_cotizacion_pension + $valor_cotizacion_fsp;
         $total_cotizacion_pension = $this->formatear_campo( number_format( $valor_total_cotizacion_pension, 0,'',''),'0','izquierda',9);
 
-            if ( $empleado->id == 43 )
-            {
-                //dd( [$this->ibc_salud,$porcentaje_pension,$valor_cotizacion_pension,$cotizacion_pension,$valor_cotizacion_fsp, $mitad,$subcuenta_solidaridad_fsp,$subcuenta_subsistencia_fsp] );
-            }
-
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
