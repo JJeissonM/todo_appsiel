@@ -1102,7 +1102,7 @@ class PlanillaIntegradaController extends Controller
                         Datos básicos del empleado
             */
             $datos_columnas .= '02';
-            $datos_columnas .= $this->formatear_campo($secuencia,'0','izquierda',8);
+            $datos_columnas .= $this->formatear_campo($secuencia,'0','izquierda',5);
 
             $tercero = $empleado->tercero;
             $datos_columnas .= $this->get_tipo_identificacion( $tercero->id_tipo_documento_id );
@@ -1234,9 +1234,9 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas .= $datos_parafiscales->cotizacion_sena;
             $datos_columnas .= $datos_parafiscales->tarifa_icbf;
             $datos_columnas .= $datos_parafiscales->cotizacion_icbf;
-            $datos_columnas .= '0000000'; // Tarifa aportes ESAP
+            $datos_columnas .= '0.00000'; // Tarifa aportes ESAP
             $datos_columnas .= '000000000'; // Valor aporte ESAP
-            $datos_columnas .= '0000000'; // Tarifa aportes MEN
+            $datos_columnas .= '0.00000'; // Tarifa aportes MEN
             $datos_columnas .= '000000000'; // Valor aporte MEN
 
             $datos_columnas .= '  '; // Tipo de documento del cotizante principal
