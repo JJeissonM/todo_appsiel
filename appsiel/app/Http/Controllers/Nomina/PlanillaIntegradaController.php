@@ -22,21 +22,25 @@ use App\Nomina\NomConcepto;
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomContrato;
 use App\Nomina\PlanillaGenerada;
+use App\Nomina\NovedadTnl;
 
 use App\Nomina\PilaNovedades;
 use App\Nomina\PilaSalud;
 use App\Nomina\PilaPension;
 use App\Nomina\PilaRiesgoLaboral;
 use App\Nomina\PilaParafiscales;
+use App\Nomina\EmpleadoPlanilla;
 
 class PlanillaIntegradaController extends Controller
 {
     protected $ibc_salud; // Se usa para Salud, Pensión y Riesgos laborales
-    protected $ibc_parafiscales;
+    protected $valor_ibc_un_dia;
     protected $cantidad_dias_laborados;
+    protected $ibc_parafiscales;
     protected $cantidad_dias_parafiscales;
     protected $fecha_inicial;
     protected $fecha_final;
+    protected $empleado_planilla_id;
 
     public function show($planilla_generada_id)
     {
@@ -51,21 +55,9 @@ class PlanillaIntegradaController extends Controller
 
         $miga_pan = [
                   ['url'=>'nomina?id='.Input::get('id'),'etiqueta'=>'Nómina'],
-                  ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta' => $planilla_generada->descripcion ],
-                  ['url'=>'NO','etiqueta' => 'Consulta' ]
+                  ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta' => 'Planillas generadas' ],
+                  ['url'=>'NO','etiqueta' => $planilla_generada->descripcion ]
               ];
-
-        // Para el modelo relacionado: Empleados
-        /*$modelo_crud = new ModeloController;
-        $respuesta = $modelo_crud->get_tabla_relacionada($modelo, $encabezado_doc);
-
-        $tabla = $respuesta['tabla'];
-        $opciones = $respuesta['opciones'];
-        $registro_modelo_padre_id = $respuesta['registro_modelo_padre_id'];
-        $titulo_tab = $respuesta['titulo_tab'];
-
-        return view( 'nomina.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id','encabezado_doc','tabla','opciones','registro_modelo_padre_id','titulo_tab') ); 
-        */
 
         return view( 'nomina.planilla_integrada.show',compact('miga_pan','view_pdf','planilla_generada','tabla_planilla') );
     }
@@ -73,12 +65,14 @@ class PlanillaIntegradaController extends Controller
     // Obtiene los datos almacenados en las tablas de liquidacion PILA
     public function get_datos_planilla( $planilla )
     {
-        $empleados = $planilla->empleados;
+        //$empleados = $planilla->empleados;
+        $empleados_planilla = EmpleadoPlanilla::where('planilla_generada_id',$planilla->id)->get();
 
         $datos_filas = [];
         $secuencia = 1;
-        foreach ($empleados as $key => $empleado)
+        foreach ($empleados_planilla as $key => $linea )
         {
+            $empleado = NomContrato::find( (int)$linea->nom_contrato_id );
             $datos_columnas = [];
 
             /*
@@ -114,7 +108,7 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE NOVEDADES
             */
-            $datos_novedades = $this->get_campos_novedades($planilla->id, $empleado->id);
+            $datos_novedades = $this->get_campos_novedades($planilla->id, $empleado->id, $linea->id);
             foreach ($datos_novedades as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -125,7 +119,7 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE SALUD
             */
-            $datos_salud = $this->get_campos_salud($planilla->id, $empleado->id);
+            $datos_salud = $this->get_campos_salud($planilla->id, $empleado->id, $linea->id);
             foreach ($datos_salud as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -136,7 +130,7 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE PENSION
             */
-            $datos_pension = $this->get_campos_pension($planilla->id, $empleado->id);
+            $datos_pension = $this->get_campos_pension($planilla->id, $empleado->id, $linea->id);
             foreach ($datos_pension as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -147,7 +141,7 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE RIESGOS LABORALES
             */
-            $datos_riesgos_laborales = $this->get_campos_riesgos_laborales($planilla->id, $empleado->id);
+            $datos_riesgos_laborales = $this->get_campos_riesgos_laborales($planilla->id, $empleado->id, $linea->id);
             foreach ($datos_riesgos_laborales as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -158,7 +152,7 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE PARAFISCALES
             */
-            $datos_parafiscales = $this->get_campos_parafiscales($planilla->id, $empleado->id);
+            $datos_parafiscales = $this->get_campos_parafiscales($planilla->id, $empleado->id, $linea->id);
             foreach ($datos_parafiscales as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -172,10 +166,11 @@ class PlanillaIntegradaController extends Controller
 
     }
 
-    public function get_campos_novedades($planilla_id, $empleado_id)
+    public function get_campos_novedades($planilla_id, $empleado_id,$empleado_planilla_id)
     {
         $nodevades_empleado = PilaNovedades::where('planilla_generada_id',$planilla_id)
                                                 ->where('nom_contrato_id',$empleado_id)
+                                                ->where('empleado_planilla_id',$empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -194,13 +189,17 @@ class PlanillaIntegradaController extends Controller
             }                
         }
 
+        array_pop($vector);
+        array_pop($vector);
+        array_pop($vector);
         return $vector;
     }
 
-    public function get_campos_salud($planilla_id, $empleado_id)
+    public function get_campos_salud($planilla_id, $empleado_id,$empleado_planilla_id)
     {
         $nodevades_empleado = PilaSalud::where('planilla_generada_id',$planilla_id)
                                                 ->where('nom_contrato_id',$empleado_id)
+                                                ->where('empleado_planilla_id',$empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -219,13 +218,15 @@ class PlanillaIntegradaController extends Controller
             }                
         }
 
+        array_pop($vector);
         return $vector;
     }
 
-    public function get_campos_pension($planilla_id, $empleado_id)
+    public function get_campos_pension($planilla_id, $empleado_id,$empleado_planilla_id)
     {
         $nodevades_empleado = PilaPension::where('planilla_generada_id',$planilla_id)
                                                 ->where('nom_contrato_id',$empleado_id)
+                                                ->where('empleado_planilla_id',$empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -244,13 +245,15 @@ class PlanillaIntegradaController extends Controller
             }                
         }
 
+        array_pop($vector);
         return $vector;
     }
 
-    public function get_campos_riesgos_laborales($planilla_id, $empleado_id)
+    public function get_campos_riesgos_laborales($planilla_id, $empleado_id,$empleado_planilla_id)
     {
         $nodevades_empleado = PilaRiesgoLaboral::where('planilla_generada_id',$planilla_id)
                                                 ->where('nom_contrato_id',$empleado_id)
+                                                ->where('empleado_planilla_id',$empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -269,13 +272,15 @@ class PlanillaIntegradaController extends Controller
             }                
         }
 
+        array_pop($vector);
         return $vector;
     }
 
-    public function get_campos_parafiscales($planilla_id, $empleado_id)
+    public function get_campos_parafiscales($planilla_id, $empleado_id,$empleado_planilla_id)
     {
         $nodevades_empleado = PilaParafiscales::where('planilla_generada_id',$planilla_id)
                                                 ->where('nom_contrato_id',$empleado_id)
+                                                ->where('empleado_planilla_id',$empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -294,6 +299,7 @@ class PlanillaIntegradaController extends Controller
             }                
         }
 
+        array_pop($vector);
         return $vector;
     }
 
@@ -373,8 +379,6 @@ class PlanillaIntegradaController extends Controller
                                 ->get()
                                 ->toArray();
 
-                                //dd($permisos);
-
         $miga_pan = [
                         ['url' => $app->app.'?id='.$app->id, 'etiqueta' => $app->descripcion],
                         ['url' => 'NO', 'etiqueta' => 'Planilla integrada']
@@ -383,22 +387,25 @@ class PlanillaIntegradaController extends Controller
         return view( 'layouts.catalogos', compact('permisos', 'miga_pan') );
     }
 
+
+    /*
+            LIQUIDACION PILA
+    */
     public function liquidar_planilla( $planilla_id )
     {
         $planilla = PlanillaGenerada::find( $planilla_id );
         $this->fecha_inicial = $planilla->lapso()->fecha_inicial;
         $this->fecha_final = $planilla->lapso()->fecha_final;
 
-        $empleados = $planilla->empleados;
+        $empleados_planilla = EmpleadoPlanilla::where( 'planilla_generada_id', $planilla_id )->get();
 
-        foreach ($empleados as $empleado)
-        {
+        foreach ( $empleados_planilla as $linea )
+        {   
+            $empleado = NomContrato::find( (int)$linea->nom_contrato_id );
+
+            $this->empleado_planilla_id = $linea->id;
             $this->calcular_ibc( $planilla, $empleado );
-            $this->almacenar_datos_novedades( $planilla, $empleado );
-            $this->almacenar_datos_salud( $planilla, $empleado );
-            $this->almacenar_datos_pension( $planilla, $empleado );
-            $this->almacenar_datos_riesgos_laborales( $planilla, $empleado );
-            $this->almacenar_datos_parafiscales( $planilla, $empleado );
+            $this->almacenar_datos_novedades( $planilla, $empleado, $linea->tipo_linea );
         }
 
         return redirect( 'nom_pila_show/' . $planilla_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' )->with('flash_message', 'Registros de Planilla actualizados correctamente.');
@@ -409,6 +416,20 @@ class PlanillaIntegradaController extends Controller
         $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final );
 
         $this->cantidad_dias_laborados = $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') );
+
+        // No se puede tener un IBC por debajo del salario mínimo legal
+        $this->valor_ibc_un_dia = 0;
+        if ( $this->cantidad_dias_laborados != 0 )
+        {
+            $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
+        }        
+            
+        $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (int)config('nomina.horas_laborales') * (int)config('nomina.horas_dia_laboral');
+        if ( $this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal )
+        {
+            $this->ibc_salud = (float)config('nomina.SMMLV');
+            $this->valor_ibc_un_dia = $valor_ibc_un_dia_minimo_legal;
+        }
 
         $this->ibc_parafiscales = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_parafiscales'), $this->fecha_inicial, $this->fecha_final );
 
@@ -472,7 +493,6 @@ class PlanillaIntegradaController extends Controller
 
     public function conceptos_liquidados_mes( $empleado, $fecha_inicial, $fecha_final )
     {
-        
         return NomDocRegistro::where( 'nom_contrato_id', $empleado->id )
                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                             ->distinct( 'nom_concepto_id' )
@@ -481,10 +501,11 @@ class PlanillaIntegradaController extends Controller
                             ->toArray();
     }
 
-    public function almacenar_datos_novedades($planilla, $empleado)
+    public function almacenar_datos_novedades($planilla, $empleado, $tipo_linea)
     {
         $registro_anterior = PilaNovedades::where('planilla_generada_id',$planilla->id)
                                                 ->where('nom_contrato_id',$empleado->id)
+                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -517,56 +538,165 @@ class PlanillaIntegradaController extends Controller
             $vst = 'X';
         }
 
-        $conceptos_liquidados_mes = $this->conceptos_liquidados_mes( $empleado, $this->fecha_inicial, $this->fecha_final );
-        
+
         $sln = ' ';
-        $conceptos_suspencion = [61,62,63];
-        foreach ($conceptos_suspencion as $key => $value)
-        {
-            if ( in_array($value, $conceptos_liquidados_mes) )
-            {
-                $sln = 'X';
-            }
-        }
-        
+        $fecha_inicial_suspension_temporal_del_contrato_sln = '          ';
+        $fecha_final_suspension_temporal_del_contrato_sln = '          ';
         $ige = ' ';
-        $conceptos_incapacidad_enfermedad_general = [58];
-        foreach ($conceptos_incapacidad_enfermedad_general as $key => $value)
-        {
-            if ( in_array($value, $conceptos_liquidados_mes) )
-            {
-                $ige = 'X';
-            }
-        }
-        
+        $fecha_inicial_incapacidad_enfermedad_general_ige = '          ';
+        $fecha_final_incapacidad_enfermedad_general_ige = '          ';
         $lma = ' ';
-        $conceptos_licencia_maternidad = [59];
-        foreach ($conceptos_licencia_maternidad as $key => $value)
-        {
-            if ( in_array($value, $conceptos_liquidados_mes) )
-            {
-                $lma = 'X';
-            }
-        }
-        
+        $fecha_inicial_licencia_por_maternidad_lma = '          ';
+        $fecha_final_licencia_por_maternidad_lma = '          ';
         $vac = ' ';
-        $conceptos_vacaciones = [66];
-        foreach ($conceptos_vacaciones as $key => $value)
-        {
-            if ( in_array($value, $conceptos_liquidados_mes) )
-            {
-                $vac = 'X';
-            }
-        }
-        
+        $fecha_inicial_vacaciones_licencias_remuneradas_vac = '          ';
+        $fecha_final_vacaciones_licencias_remuneradas_vac = '          ';
         $irl = ' ';
-        $conceptos_accidente_laboral = [60];
-        foreach ($conceptos_accidente_laboral as $key => $value)
-        {
-            if ( in_array($value, $conceptos_liquidados_mes) )
+        $fecha_inicial_incapacidad_riesgos_laborales_irl = '          ';
+        $fecha_final_incapacidad_riesgos_laborales_irl = '          ';
+
+        if ( $tipo_linea == 'adicional' )
+        {        
+            $conceptos_liquidados_mes = $this->conceptos_liquidados_mes( $empleado, $this->fecha_inicial, $this->fecha_final );
+            
+            $conceptos_suspencion = [61,62,63];
+            foreach ($conceptos_suspencion as $key => $value)
             {
-                $irl = 'X';
+                if ( in_array($value, $conceptos_liquidados_mes) )
+                {
+                    $sln = 'X';
+                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
+                                                    ->where('nom_concepto_id',$value)
+                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
+                                                    ->get()
+                                                    ->first(); // Aquí deberían se todos, no usar first()
+
+                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    if ( !is_null($novedad_tnl) )
+                    {
+                        $fecha_inicial_suspension_temporal_del_contrato_sln = $novedad_tnl->fecha_inicial_tnl;
+                        $fecha_final_suspension_temporal_del_contrato_sln = $novedad_tnl->fecha_final_tnl;
+                        if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
+                        {
+                            $fecha_final_suspension_temporal_del_contrato_sln = $this->fecha_final;
+                        }
+                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+                        $es_linea_principal = false;
+                    } 
+                }
             }
+            
+            $conceptos_incapacidad_enfermedad_general = [58];
+            foreach ($conceptos_incapacidad_enfermedad_general as $key => $value)
+            {
+                if ( in_array($value, $conceptos_liquidados_mes) )
+                {
+                    $ige = 'X';
+                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
+                                                    ->where('nom_concepto_id',$value)
+                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
+                                                    ->get()
+                                                    ->first(); // Aquí deberían se todos, no usar first()
+
+                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    if ( !is_null($novedad_tnl) )
+                    {
+                        $fecha_inicial_incapacidad_enfermedad_general_ige = $novedad_tnl->fecha_inicial_tnl;
+                        $fecha_final_incapacidad_enfermedad_general_ige = $novedad_tnl->fecha_final_tnl;
+                        if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
+                        {
+                            $fecha_final_incapacidad_enfermedad_general_ige = $this->fecha_final;
+                        }
+                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+                        $es_linea_principal = false;
+                    }                    
+                }
+            }
+            
+            $conceptos_licencia_maternidad = [59, 33]; // O Paternidad
+            foreach ($conceptos_licencia_maternidad as $key => $value)
+            {
+                if ( in_array($value, $conceptos_liquidados_mes) )
+                {
+                    $lma = 'X';
+                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
+                                                    ->where('nom_concepto_id',$value)
+                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
+                                                    ->get()
+                                                    ->first(); // Aquí deberían se todos, no usar first()
+
+                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    if ( !is_null($novedad_tnl) )
+                    {
+                        $fecha_inicial_licencia_por_maternidad_lma = $novedad_tnl->fecha_inicial_tnl;
+                        $fecha_final_licencia_por_maternidad_lma = $novedad_tnl->fecha_final_tnl;
+                        if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
+                        {
+                            $fecha_final_licencia_por_maternidad_lma = $this->fecha_final;
+                        }
+                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+                        $es_linea_principal = false;
+                    } 
+                }
+            }
+            
+            $conceptos_vacaciones = [66]; // Disfrutadas
+            foreach ($conceptos_vacaciones as $key => $value)
+            {
+                if ( in_array($value, $conceptos_liquidados_mes) )
+                {
+                    $vac = 'X';
+                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
+                                                    ->where('nom_concepto_id',$value)
+                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
+                                                    ->get()
+                                                    ->first(); // Aquí deberían se todos, no usar first()
+
+                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    if ( !is_null($novedad_tnl) )
+                    {
+                        $fecha_inicial_vacaciones_licencias_remuneradas_vac = $novedad_tnl->fecha_inicial_tnl;
+                        $fecha_final_vacaciones_licencias_remuneradas_vac = $novedad_tnl->fecha_final_tnl;
+                        if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
+                        {
+                            $fecha_final_vacaciones_licencias_remuneradas_vac = $this->fecha_final;
+                        }
+                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+                        $es_linea_principal = false;
+                    } 
+                }
+            }
+            
+            $conceptos_accidente_laboral = [60];
+            foreach ($conceptos_accidente_laboral as $key => $value)
+            {
+                if ( in_array($value, $conceptos_liquidados_mes) )
+                {
+                    $irl = 'X';
+                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
+                                                    ->where('nom_concepto_id',$value)
+                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
+                                                    ->get()
+                                                    ->first(); // Aquí deberían se todos, no usar first()
+
+                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    if ( !is_null($novedad_tnl) )
+                    {
+                        $fecha_inicial_incapacidad_riesgos_laborales_irl = $novedad_tnl->fecha_inicial_tnl;
+                        $fecha_final_incapacidad_riesgos_laborales_irl = $novedad_tnl->fecha_final_tnl;
+                        if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
+                        {
+                            $fecha_final_incapacidad_riesgos_laborales_irl = $this->fecha_final;
+                        }
+                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+                        $es_linea_principal = false;
+                    } 
+                }
+            }
+
+        }else // $es_linea_principal 
+        {
+            $this->cambiar_ibc_salud_linea_principal( $planilla, $empleado );
         }
 
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
@@ -594,27 +724,64 @@ class PlanillaIntegradaController extends Controller
                     [ 'fecha_de_ingreso' => $fecha_de_ingreso ] +
                     [ 'fecha_de_retiro' => $fecha_de_retiro ] +
                     [ 'fecha_inicial_variacion_permanente_de_salario_vsp' => '          ' ] +
-                    [ 'fecha_inicial_suspension_temporal_del_contrato_sln' => '          ' ] +
-                    [ 'fecha_final_suspension_temporal_del_contrato_sln' => '          ' ] +
-                    [ 'fecha_inicial_incapacidad_enfermedad_general_ige' => '          ' ] +
-                    [ 'fecha_final_incapacidad_enfermedad_general_ige' => '          ' ] +
-                    [ 'fecha_inicial_licencia_por_maternidad_lma' => '          ' ] +
-                    [ 'fecha_final_licencia_por_maternidad_lma' => '          ' ] +
-                    [ 'fecha_inicial_vacaciones_licencias_remuneradas_vac' => '          ' ] +
-                    [ 'fecha_final_vacaciones_licencias_remuneradas_vac' => '          ' ] +
+                    [ 'fecha_inicial_suspension_temporal_del_contrato_sln' => $fecha_inicial_suspension_temporal_del_contrato_sln ] +
+                    [ 'fecha_final_suspension_temporal_del_contrato_sln' => $fecha_final_suspension_temporal_del_contrato_sln ] +
+                    [ 'fecha_inicial_incapacidad_enfermedad_general_ige' => $fecha_inicial_incapacidad_enfermedad_general_ige ] +
+                    [ 'fecha_final_incapacidad_enfermedad_general_ige' => $fecha_final_incapacidad_enfermedad_general_ige ] +
+                    [ 'fecha_inicial_licencia_por_maternidad_lma' => $fecha_inicial_licencia_por_maternidad_lma ] +
+                    [ 'fecha_final_licencia_por_maternidad_lma' => $fecha_final_licencia_por_maternidad_lma ] +
+                    [ 'fecha_inicial_vacaciones_licencias_remuneradas_vac' => $fecha_inicial_vacaciones_licencias_remuneradas_vac ] +
+                    [ 'fecha_final_vacaciones_licencias_remuneradas_vac' => $fecha_final_vacaciones_licencias_remuneradas_vac ] +
                     [ 'fecha_inicial_variacion_centro_de_trabajo_vct' => '          ' ] +
                     [ 'fecha_final_variacion_centro_de_trabajo_vct' => '          ' ] +
-                    [ 'fecha_inicial_incapacidad_riesgos_laborales_irl' => '          ' ] +
-                    [ 'fecha_final_incapacidad_riesgos_laborales_irl' => '          ' ] +
+                    [ 'fecha_inicial_incapacidad_riesgos_laborales_irl' => $fecha_inicial_incapacidad_riesgos_laborales_irl ] +
+                    [ 'fecha_final_incapacidad_riesgos_laborales_irl' => $fecha_final_incapacidad_riesgos_laborales_irl ] +
+                    [ 'aux_ibc_salud' => $this->ibc_salud ] +
+                    [ 'aux_cantidad_dias_laborados' => $this->cantidad_dias_laborados ] +
+                    [ 'empleado_planilla_id' => $this->empleado_planilla_id ] +
                     [ 'estado' => 'Activo' ];/**/
 
         PilaNovedades::create($datos);
+
+        $this->almacenar_datos_salud( $planilla, $empleado );
+        $this->almacenar_datos_pension( $planilla, $empleado );
+        $this->almacenar_datos_riesgos_laborales( $planilla, $empleado );
+        $this->almacenar_datos_parafiscales( $planilla, $empleado );
+
     }
+
+    public function cambiar_ibc_salud( $registro_novedad_tnl )
+    {
+        $this->cantidad_dias_laborados = $registro_novedad_tnl->cantidad_horas / (int)config('nomina.horas_dia_laboral');
+        // sumar devengos/deducciones asociados a la novedad
+        $registros_asociados_novedad = NomDocRegistro::where('novedad_tnl_id',$registro_novedad_tnl->novedad_tnl_id)->get();
+        $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion');
+
+        $this->ibc_parafiscales = $this->ibc_salud;
+        $this->cantidad_dias_parafiscales = $this->cantidad_dias_laborados;
+    }
+
+    
+    public function cambiar_ibc_salud_linea_principal( $planilla, $empleado )
+    {
+        $datos_lineas_adicionales = PilaNovedades::where('planilla_generada_id',$planilla->id)
+                                                    ->where('nom_contrato_id',$empleado->id)
+                                                    ->get();
+
+        $this->ibc_salud -= $datos_lineas_adicionales->sum('aux_ibc_salud');
+        $this->cantidad_dias_laborados -= $datos_lineas_adicionales->sum('aux_cantidad_dias_laborados');
+
+        $this->ibc_parafiscales -= $datos_lineas_adicionales->sum('aux_ibc_salud');
+        $this->cantidad_dias_parafiscales -= $datos_lineas_adicionales->sum('aux_cantidad_dias_laborados');
+    }
+
+
 
     public function almacenar_datos_salud($planilla, $empleado)
     {
         $registro_anterior = PilaSalud::where('planilla_generada_id',$planilla->id)
                                                 ->where('nom_contrato_id',$empleado->id)
+                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -643,7 +810,8 @@ class PlanillaIntegradaController extends Controller
                     [ 'tarifa_salud' => $tarifa_salud ] +
                     [ 'cotizacion_salud' => $cotizacion_salud ] +
                     [ 'valor_upc_adicional_salud' => '000000000' ] +
-                    [ 'total_cotizacion_salud' => $cotizacion_salud ];/**/
+                    [ 'total_cotizacion_salud' => $cotizacion_salud ] +
+                    [ 'empleado_planilla_id' => $this->empleado_planilla_id ];/**/
 
         PilaSalud::create($datos);
     }
@@ -652,6 +820,7 @@ class PlanillaIntegradaController extends Controller
     {
         $registro_anterior = PilaPension::where('planilla_generada_id',$planilla->id)
                                                 ->where('nom_contrato_id',$empleado->id)
+                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -699,7 +868,8 @@ class PlanillaIntegradaController extends Controller
                     [ 'subcuenta_solidaridad_fsp' => $subcuenta_solidaridad_fsp ] +
                     [ 'subcuenta_subsistencia_fsp' => $subcuenta_subsistencia_fsp ] +
                     [ 'total_cotizacion_pension' => $total_cotizacion_pension ] +
-                    [ 'valor_cotizacion_pension' => '000000000' ];/**/
+                    [ 'valor_cotizacion_pension' => '000000000' ] +
+                    [ 'empleado_planilla_id' => $this->empleado_planilla_id ];/**/
 
         PilaPension::create($datos);
     }
@@ -708,6 +878,7 @@ class PlanillaIntegradaController extends Controller
     {
         $registro_anterior = PilaRiesgoLaboral::where('planilla_generada_id',$planilla->id)
                                                 ->where('nom_contrato_id',$empleado->id)
+                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -736,7 +907,8 @@ class PlanillaIntegradaController extends Controller
                     [ 'ibc_riesgos_laborales' => $this->formatear_campo( number_format( $this->ibc_salud,0,'',''),'0','izquierda',9) ] +
                     [ 'tarifa_riesgos_laborales' => $tarifa_riesgo_laboral ] +
                     [ 'total_cotizacion_riesgos_laborales' => $cotizacion_riesgo_laboral ] +
-                    [ 'clase_de_riesgo' => $clase_de_riesgo ];/**/
+                    [ 'clase_de_riesgo' => $clase_de_riesgo ] +
+                    [ 'empleado_planilla_id' => $this->empleado_planilla_id ];/**/
 
         PilaRiesgoLaboral::create($datos);
     }
@@ -745,6 +917,7 @@ class PlanillaIntegradaController extends Controller
     {
         $registro_anterior = PilaParafiscales::where('planilla_generada_id',$planilla->id)
                                                 ->where('nom_contrato_id',$empleado->id)
+                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
                                                 ->get()
                                                 ->first();
 
@@ -808,9 +981,23 @@ class PlanillaIntegradaController extends Controller
                     [ 'cotizacion_sena' => $cotizacion_sena ] +
                     [ 'tarifa_icbf' => $tarifa_icbf ] +
                     [ 'cotizacion_icbf' => $cotizacion_icbf ] +
-                    [ 'total_cotizacion' => $total_cotizacion ];/**/
+                    [ 'total_cotizacion' => $total_cotizacion ] +
+                    [ 'empleado_planilla_id' => $this->empleado_planilla_id ];/**/
 
         PilaParafiscales::create($datos);
+    }
+
+    public function eliminar_planilla( $planilla_id )
+    {
+        PilaNovedades::where('planilla_generada_id',$planilla_id)->delete();
+        PilaSalud::where('planilla_generada_id',$planilla_id)->delete();
+        PilaPension::where('planilla_generada_id',$planilla_id)->delete();
+        PilaRiesgoLaboral::where('planilla_generada_id',$planilla_id)->delete();
+        PilaParafiscales::where('planilla_generada_id',$planilla_id)->delete();
+        EmpleadoPlanilla::where('planilla_generada_id',$planilla_id)->delete();
+        PlanillaGenerada::find($planilla_id)->delete();
+
+        return redirect('web?id=17&id_modelo=271')->with('flash_message','Planilla eliminada correctamente.');
     }
 
 }

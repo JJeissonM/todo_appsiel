@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PilaSalud extends Model
 {
     protected $table = 'nom_pila_liquidacion_salud';
-	protected $fillable = ['planilla_generada_id', 'nom_contrato_id', 'fecha_final_mes', 'codigo_entidad_salud', 'dias_cotizados_salud', 'ibc_salud', 'tarifa_salud', 'cotizacion_salud', 'valor_upc_adicional_salud', 'total_cotizacion_salud'];
+	protected $fillable = ['planilla_generada_id', 'nom_contrato_id', 'fecha_final_mes', 'codigo_entidad_salud', 'dias_cotizados_salud', 'ibc_salud', 'tarifa_salud', 'cotizacion_salud', 'valor_upc_adicional_salud', 'total_cotizacion_salud','empleado_planilla_id'];
 	public $encabezado_tabla = ['Planilla generada', 'Empleado', 'Fecha PILA', 'Codigo Entidad', 'Dias cotizados', 'IBC', 'Tarifa', 'Cotizacion', 'Valor UPC Adicional', 'Total Cotizacion', 'Acción'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';

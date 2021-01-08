@@ -35,12 +35,14 @@
 	{{ Form::bsMigaPan($miga_pan) }}
 
 	<?php 
+		$variables_url = '?id=17&id_modelo=271&id_transaccion=';
         $color = 'green'; 
     ?>
 
 	@if ( $planilla_generada->estado == 'Activo' )
 		&nbsp;&nbsp;&nbsp; 
-		<a class="btn btn-primary" id="btn_generar" href="{{ url('nom_pila_liquidar_planilla') . '/' . $planilla_generada->id . '?id=17&id_modelo=271&id_transaccion=' }}"> <i class="fa fa-calculator"></i> Generar </a>
+		<a class="btn btn-primary" id="btn_generar" href="{{ url('nom_pila_liquidar_planilla') . '/' . $planilla_generada->id . $variables_url }}"> <i class="fa fa-calculator"></i> Generar </a>
+		<button class="btn btn-danger" id="btn_anular" title="Eliminar"><i class="fa fa-close"></i> </button>
 	@else
 		<small>(Documento está <b>{{ $planilla_generada->estado }}</b>)</small>
 		<?php 
@@ -48,12 +50,21 @@
 	    ?>
 	@endif
 
-	<button class="btn btn-default" id="btn_descargar_plano" disabled="disabled"> <i class="fa fa-file-text-o"></i> </button>
+	<button class="btn btn-default" id="btn_descargar_plano" disabled="disabled" title="Descargar archivo plano"> <i class="fa fa-file-text-o"></i> </button>
 
-	<button class="btn btn-success" id="btn_excel"> <i class="fa fa-file-excel-o"></i> <span style="display: none;">{{ $planilla_generada->descripcion }}</span> </button>
+	<button class="btn btn-success" id="btn_excel" title="Descargar Excel"> <i class="fa fa-file-excel-o"></i> <span style="display: none;">{{ $planilla_generada->descripcion }}</span> </button>
 
 	{{ Form::Spin(48) }}
 	<hr>
+
+	<div class="alert alert-warning" style="display: none;">
+        <a href="#" id="close" class="close">&times;</a>
+        <strong>Advertencia!</strong>
+        <br>
+        Al eliminar la planilla, se borrarán todos los registros de Novedades, Salud, Pensión, Riesgos laborales y Parafiscales asociados. La eliminación no se puede revertir.
+        <br>
+        Si realmente quiere eliminar la planilla, haga click en el siguiente enlace: <small> <a href="{{ url( 'nom_pila_eliminar_planilla/' . $planilla_generada->id . $variables_url ) }}"> Eliminar </a> </small>
+    </div>
 
 	@include('layouts.mensajes')
 
@@ -103,26 +114,40 @@
 
 @section('scripts')
 	<script type="text/javascript">
-		$('#btn_excel').click(function(event){
-			event.preventDefault();
-			var nombre_listado = $(this).children('span').text();
-			var tT = new XMLSerializer().serializeToString(document.querySelector('.table-planilla')); //Serialised table
-			var tF = nombre_listado + '.xls'; //Filename
-			var tB = new Blob([tT]); //Blub
+		$(document).ready(function(){
+			$('#btn_excel').click(function(event){
+				event.preventDefault();
+				var nombre_listado = $(this).children('span').text();
+				var tT = new XMLSerializer().serializeToString(document.querySelector('.table-planilla')); //Serialised table
+				var tF = nombre_listado + '.xls'; //Filename
+				var tB = new Blob([tT]); //Blub
 
-			if(window.navigator.msSaveOrOpenBlob){
-			    //Store Blob in IE
-			    window.navigator.msSaveOrOpenBlob(tB, tF)
-			}
-			else{
-			    //Store Blob in others
-			    var tA = document.body.appendChild(document.createElement('a'));
-			    tA.href = URL.createObjectURL(tB);
-			    tA.download = tF;
-			    tA.style.display = 'none';
-			    tA.click();
-			    tA.parentNode.removeChild(tA)
-			}
+				if(window.navigator.msSaveOrOpenBlob){
+				    //Store Blob in IE
+				    window.navigator.msSaveOrOpenBlob(tB, tF)
+				}
+				else{
+				    //Store Blob in others
+				    var tA = document.body.appendChild(document.createElement('a'));
+				    tA.href = URL.createObjectURL(tB);
+				    tA.download = tF;
+				    tA.style.display = 'none';
+				    tA.click();
+				    tA.parentNode.removeChild(tA)
+				}
+			});
+
+
+
+			$('#btn_anular').on('click',function(e){
+				e.preventDefault();
+				$('.alert.alert-warning').show(1000);
+			});
+
+			$('#close').on('click',function(e){
+				e.preventDefault();
+				$('.alert.alert-warning').hide(1000);
+			});
 		});
 	</script>
 @endsection

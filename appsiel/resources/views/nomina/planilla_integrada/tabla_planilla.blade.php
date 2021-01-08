@@ -51,7 +51,7 @@
 		<th class="celda_novedades">IRP</th>
 		<th class="celda_novedades">salario</th>
 		<th class="celda_novedades">Tipo salario</th>
-		<th class="celda_novedades">No. Horas laboradas</th>
+		<th class="celda_novedades">No. días laborados</th>
 		<th class="celda_novedades">Fecha de Ingreso</th>
 		<th class="celda_novedades">Fecha de Retiro</th>
 		<th class="celda_novedades">Fecha Inicial Variacion Permanente de Salario (VSP)</th>

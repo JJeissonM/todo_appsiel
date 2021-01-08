@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PilaParafiscales extends Model
 {
     protected $table = 'nom_pila_liquidacion_parafiscales';
-	protected $fillable = ['planilla_generada_id', 'nom_contrato_id', 'fecha_final_mes', 'cotizante_exonerado_de_aportes_parafiscales', 'codigo_entidad_ccf', 'dias_cotizados', 'ibc_parafiscales', 'tarifa_ccf', 'cotizacion_ccf', 'tarifa_sena', 'cotizacion_sena', 'tarifa_icbf', 'cotizacion_icbf', 'total_cotizacion'];
+	protected $fillable = ['planilla_generada_id', 'nom_contrato_id', 'fecha_final_mes', 'cotizante_exonerado_de_aportes_parafiscales', 'codigo_entidad_ccf', 'dias_cotizados', 'ibc_parafiscales', 'tarifa_ccf', 'cotizacion_ccf', 'tarifa_sena', 'cotizacion_sena', 'tarifa_icbf', 'cotizacion_icbf', 'total_cotizacion','empleado_planilla_id'];
 	
     public $encabezado_tabla = ['Planilla generada', 'Empleado', 'Fecha PILA', 'Cotizante Exonerado de aportes Parafiscales', 'Codigo Entidad CCF', 'Dias cotizados', 'IBC Parafiscales', 'Tarifa CCF', 'Cotizacion CCF', 'Tarifa SENA', 'Cotizacion SENA', 'Tarifa ICBF', 'Cotizacion ICBF', 'Total Cotizacion', 'Acción'];
 

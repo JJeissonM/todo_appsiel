@@ -8,7 +8,7 @@ class EmpleadoPlanilla extends Model
 {
     protected $table = 'nom_pila_empleados_planilla';
 	
-	protected $fillable = ['orden', 'planilla_generada_id', 'nom_contrato_id'];
+	protected $fillable = ['orden', 'planilla_generada_id', 'nom_contrato_id', 'tipo_linea'];
 	
 	public $encabezado_tabla = ['Orden', 'Planilla generada', 'Empleado', 'Acción'];
 	
