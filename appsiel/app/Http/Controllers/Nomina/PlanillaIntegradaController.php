@@ -1022,7 +1022,7 @@ class PlanillaIntegradaController extends Controller
         $fila .= '0001'; // Secuencia
 
         $fila .= $this->formatear_campo( $planilla->datos_empresa->empresa->razon_social, ' ', 'derecha', 200);
-        $fila .= $this->get_tipo_identificacion( $planilla->datos_empresa->id_tipo_documento_id );
+        $fila .= $this->get_tipo_identificacion( $planilla->datos_empresa->empresa->id_tipo_documento_id );
         $fila .= $this->formatear_campo( $planilla->datos_empresa->empresa->numero_identificacion, ' ', 'derecha', 16);
         $fila .= $planilla->datos_empresa->empresa->digito_verificacion;
         $fila .= 'E';
