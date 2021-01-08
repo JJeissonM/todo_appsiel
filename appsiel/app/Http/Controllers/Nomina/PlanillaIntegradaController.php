@@ -352,6 +352,9 @@ class PlanillaIntegradaController extends Controller
             case '13': // Cédula de ciudadanía
                 return 'CC';
                 break;
+            case '31': // Cédula de ciudadanía
+                return 'NI';
+                break;
             case '22': // Cédula de extranjería
                 return 'CE';
                 break;
