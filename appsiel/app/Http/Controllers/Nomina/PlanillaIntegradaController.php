@@ -716,6 +716,8 @@ class PlanillaIntegradaController extends Controller
             $this->cambiar_ibc_salud_linea_principal( $planilla, $empleado );
         }
 
+        $tipo_de_salario = 'F'; // Los valores permitidos son, Salario fijo (F), Salario variable (V), Salario integral (X)
+
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
@@ -736,7 +738,7 @@ class PlanillaIntegradaController extends Controller
                     [ 'vct' => ' ' ] +
                     [ 'irl' => $irl ] +
                     [ 'salario_basico' => $this->formatear_campo($empleado->sueldo,'0','izquierda',9) ] +
-                    [ 'tipo_de_salario' => ' ' ] +
+                    [ 'tipo_de_salario' => $tipo_de_salario ] +
                     [ 'cantidad_dias_laborados' => $this->formatear_campo($this->cantidad_dias_laborados,'0','izquierda',2) ] +
                     [ 'fecha_de_ingreso' => $fecha_de_ingreso ] +
                     [ 'fecha_de_retiro' => $fecha_de_retiro ] +
