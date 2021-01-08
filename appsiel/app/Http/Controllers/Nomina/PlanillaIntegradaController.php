@@ -48,6 +48,7 @@ class PlanillaIntegradaController extends Controller
     protected $fecha_final;
     protected $empleado_planilla_id;
     protected $dias_incapacidad_accidente_trabajo;
+    protected $novedad_de_ausentismo;
 
     public function show($planilla_generada_id)
     {
@@ -562,6 +563,7 @@ class PlanillaIntegradaController extends Controller
         $fecha_final_incapacidad_riesgos_laborales_irl = '          ';
 
         $this->dias_incapacidad_accidente_trabajo = 0;
+        $this->novedad_de_ausentismo = false;
 
         if ( $tipo_linea == 'adicional' )
         {        
@@ -573,6 +575,7 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $sln = 'X';
+                    $this->novedad_de_ausentismo = true;
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
                                                     ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
@@ -600,6 +603,7 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $ige = 'X';
+                    $this->novedad_de_ausentismo = true;
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
                                                     ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
@@ -627,6 +631,7 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $lma = 'X';
+                    $this->novedad_de_ausentismo = true;
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
                                                     ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
@@ -654,6 +659,7 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $vac = 'X';
+                    $this->novedad_de_ausentismo = true;
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
                                                     ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
@@ -681,6 +687,7 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $irl = 'X';
+                    $this->novedad_de_ausentismo = true;
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
                                                     ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
@@ -912,7 +919,14 @@ class PlanillaIntegradaController extends Controller
         {
             $porcentaje_riesgo_laboral = $empleado->clase_riesgo_laboral->porcentaje_liquidacion / 100;
             $clase_de_riesgo = $this->formatear_campo( $empleado->clase_riesgo_laboral->id,'0','izquierda',9);
-        }        
+        }
+
+        // Cuando se presenta novedad de ausentismo la tarifa de ARL debe de ser cero.
+        if ( $this->novedad_de_ausentismo )
+        {
+            $porcentaje_riesgo_laboral = 0;
+        }
+
         $valor_cotizacion_riesgo_laboral = number_format( $this->ibc_salud * $porcentaje_riesgo_laboral, 0,'','');
         $tarifa_riesgo_laboral = $this->formatear_campo( $porcentaje_riesgo_laboral,'0','derecha',9);
         $cotizacion_riesgo_laboral = $this->formatear_campo( $valor_cotizacion_riesgo_laboral,'0','izquierda',9);
