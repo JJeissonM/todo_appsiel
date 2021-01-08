@@ -50,9 +50,9 @@
 	    ?>
 	@endif
 
-	<button class="btn btn-default" id="btn_descargar_plano" disabled="disabled" title="Descargar archivo plano"> <i class="fa fa-file-text-o"></i> </button>
+	<a class="btn btn-default" id="btn_descargar_plano" title="Descargar archivo plano" href="{{ url( 'nom_pila_descargar_archivo_plano/' . $planilla_generada->id . $variables_url ) }}"> <i class="fa fa-file-text-o"></i> </a>
 
-	<button class="btn btn-success" id="btn_excel" title="Descargar Excel"> <i class="fa fa-file-excel-o"></i> <span style="display: none;">{{ $planilla_generada->descripcion }}</span> </button>
+	<button class="btn btn-success" id="btn_excel_2" title="Descargar Excel"> <i class="fa fa-file-excel-o"></i> <span style="display: none;">{{ $planilla_generada->descripcion }}</span> </button>
 
 	{{ Form::Spin(48) }}
 	<hr>
@@ -115,7 +115,7 @@
 @section('scripts')
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$('#btn_excel').click(function(event){
+			$('#btn_excel_2').click(function(event){
 				event.preventDefault();
 				var nombre_listado = $(this).children('span').text();
 				var tT = new XMLSerializer().serializeToString(document.querySelector('.table-planilla')); //Serialised table

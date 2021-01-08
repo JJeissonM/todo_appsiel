@@ -26,7 +26,7 @@ class PilaDatosEmpresa extends Model
 
 	public $encabezado_tabla = ['Empresa', 'Tipo de aportante', 'Clase de aportante', 'Forma de presentación', 'Tipo de persona', 'Naturaleza jurídica', 'Tipo pagador pensiones', 'Tipo de acción', 'Administradora de riesgos laborales', 'Actividad económica (CIIU)', 'Representante Legal', '% SENA', '% ICBF', '% CCF', 'Estado', 'Acción'];
 
-	public $urls_acciones = '{"create":"web/create"}';
+	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 
 	
 	public static function consultar_registros()

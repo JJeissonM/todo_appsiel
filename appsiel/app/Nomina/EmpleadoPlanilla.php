@@ -11,6 +11,11 @@ class EmpleadoPlanilla extends Model
 	protected $fillable = ['orden', 'planilla_generada_id', 'nom_contrato_id', 'tipo_linea'];
 	
 	public $encabezado_tabla = ['Orden', 'Planilla generada', 'Empleado', 'Acción'];
+
+	public function empleado()
+	{
+		return $this->belongsTo(NomContrato::class,'nom_contrato_id');
+	}
 	
 	public static function consultar_registros()
 	{

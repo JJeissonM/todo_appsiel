@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use View;
 use Auth;
 use Input;
+
 use Spatie\Permission\Models\Permission;
 
 use App\Sistema\Aplicacion;
@@ -31,6 +32,10 @@ use App\Nomina\PilaRiesgoLaboral;
 use App\Nomina\PilaParafiscales;
 use App\Nomina\EmpleadoPlanilla;
 
+
+/*
+    Los campos tipo numérico “N”, se reportarán justificados a la derecha y rellenados con ceros a la izquierda. Los campos tipo alfa-numérico “A”, se reportarán justificados a la izquierda y se rellenarán con espacios a la derecha”.
+*/
 class PlanillaIntegradaController extends Controller
 {
     protected $ibc_salud; // Se usa para Salud, Pensión y Riesgos laborales
@@ -85,12 +90,7 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas[] = $this->get_tipo_identificacion( $tercero->id_tipo_documento_id );
             $datos_columnas[] = $this->formatear_campo($tercero->numero_identificacion,' ','derecha',16);
 
-            $tipo_cotizante = '01';
-            if ( $empleado->es_pasante_sena)
-            {
-                $tipo_cotizante = '19';
-            }
-            $datos_columnas[] = $tipo_cotizante;
+            $datos_columnas[] = $this->get_tipo_cotizante( $empleado );
             $datos_columnas[] = '00'; // $subtipo_cotizante
 
             $datos_columnas[] = ' '; // Extranjero no obligado a cotizar a pensiones
@@ -100,10 +100,10 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas[] = substr($tercero->ciudad->id, 5);
 
 
-            $datos_columnas[] = $this->formatear_campo($tercero->apellido1,' ','derecha',20);
-            $datos_columnas[] = $this->formatear_campo($tercero->apellido2,' ','derecha',20);
-            $datos_columnas[] = $this->formatear_campo($tercero->nombre1,' ','derecha',20);
-            $datos_columnas[] = $this->formatear_campo($tercero->otros_nombres,' ','derecha',30);
+            $datos_columnas[] = $this->formatear_campo( $this->formatear_acentos( $tercero->apellido1 ),' ','derecha',20);
+            $datos_columnas[] = $this->formatear_campo( $this->formatear_acentos( $tercero->apellido2 ),' ','derecha',20);
+            $datos_columnas[] = $this->formatear_campo( $this->formatear_acentos( $tercero->nombre1 ),' ','derecha',20);
+            $datos_columnas[] = $this->formatear_campo( $this->formatear_acentos( $tercero->otros_nombres ),' ','derecha',30);
 
             /*
                         DATOS DE NOVEDADES
@@ -889,11 +889,11 @@ class PlanillaIntegradaController extends Controller
 
 
         $porcentaje_riesgo_laboral = 0;
-        $clase_de_riesgo = 0;
+        $clase_de_riesgo = '000000000';
         if( !is_null($empleado->clase_riesgo_laboral) )
         {
             $porcentaje_riesgo_laboral = $empleado->clase_riesgo_laboral->porcentaje_liquidacion / 100;
-            $clase_de_riesgo = $empleado->clase_riesgo_laboral->id;
+            $clase_de_riesgo = $this->formatear_campo( $empleado->clase_riesgo_laboral->id,'0','izquierda',9);
         }        
         $valor_cotizacion_riesgo_laboral = number_format( $this->ibc_salud * $porcentaje_riesgo_laboral, 0,'','');
         $tarifa_riesgo_laboral = $this->formatear_campo( $porcentaje_riesgo_laboral,'0','derecha',7);
@@ -985,6 +985,311 @@ class PlanillaIntegradaController extends Controller
                     [ 'empleado_planilla_id' => $this->empleado_planilla_id ];/**/
 
         PilaParafiscales::create($datos);
+    }
+
+    public function descargar_archivo_plano( $planilla_id )
+    {
+        $planilla = PlanillaGenerada::find($planilla_id);
+
+        $namefile = str_slug( $planilla->descripcion ) . '.txt';
+
+        $content = $this->get_datos_encabezado_para_plano( $planilla ) . $this->get_datos_planilla_para_plano( $planilla ) . $this->get_datos_ultima_linea_para_plano( $planilla );
+
+        //save file
+        $file = fopen($namefile, "w") or die("No se pudo generar el archivo. Problemas con el Internet. Por favor, intente nuevamente!");
+        fwrite($file, $content);
+        fclose($file);
+
+        //header download
+        header("Content-Disposition: attachment; filename=\"" . $namefile . "\"");
+        header("Content-Type: application/force-download");
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+        header("Content-Type: text/plain");
+
+        echo $content;
+    }
+
+    public function get_datos_encabezado_para_plano( $planilla )
+    {
+
+        $fila = '01'; // Tipo de registro
+        $fila .= '0';
+        $fila .= '0001'; // Secuencia
+
+        $fila .= $this->formatear_campo( $planilla->datos_empresa->empresa->razon_social, ' ', 'derecha', 200);
+        $fila .= $this->get_tipo_identificacion( $planilla->datos_empresa->id_tipo_documento_id );
+        $fila .= $this->formatear_campo( $planilla->datos_empresa->empresa->numero_identificacion, ' ', 'derecha', 16);
+        $fila .= $planilla->datos_empresa->empresa->digito_verificacion;
+        $fila .= 'E';
+        $fila .= '          '; // Número de la planilla asociada a esta planilla
+        $fila .= '          '; // Fecha de pago de la planilla asociada a esta planilla
+
+        $fila .= $planilla->datos_empresa->forma_presentacion;
+        $fila .= '          '; // Código de la sucursal del aportante
+        $fila .= '                                        '; // Nombre de la Sucursal
+        $fila .= $this->formatear_campo( $planilla->datos_empresa->entidad_arl->codigo_nacional, ' ', 'derecha', 6);
+
+        $anio = substr($planilla->fecha_final_mes, 0, 4);
+        $mes_salud = (int)substr($planilla->fecha_final_mes, 5, 2);
+        if ( $mes_salud == 12 )
+        {
+            $mes_salud = $anio + 1 . '-01';
+        }else{
+            $mes_salud = $anio . '-' . $this->formatear_campo( $mes_salud + 1, '0', 'izquierda', 2);
+        }
+
+        $fila .= substr($planilla->fecha_final_mes, 0, 7); // Período de pago para los sistemas diferentes al de salud (Pensión - mes vencido)
+        $fila .= $mes_salud; // Período de pago para el sistema de salud. (Mes del reporte)
+
+        $fila .= '0000000000'; // Número de radicación o de la Planilla Integrada de Liquidación de Aportes.
+
+        $fila .= '          '; // Fecha de pago
+
+        $cantidad_cotizantes_1 = EmpleadoPlanilla::where('planilla_generada_id', $planilla->id)->get();
+        $cantidad_cotizantes = $cantidad_cotizantes_1->unique('nom_contrato_id')->count();
+        $fila .= $this->formatear_campo( $cantidad_cotizantes, '0', 'izquierda', 5);  // Número total de cotizantes reportados en esta planilla.
+
+        $suma_ibc_parafiscales = PilaParafiscales::where('planilla_generada_id',$planilla->id)->sum('ibc_parafiscales');
+        $fila .= $this->formatear_campo( $suma_ibc_parafiscales, '0', 'izquierda', 12);  // Valor total de la nómina. Ccorresponde a la sumatoria de los IBC para el pago de los aportes de parafiscales de la totalidad de los empleados.
+
+        $fila .= $planilla->datos_empresa->tipo_aportante;
+
+        $fila .= "00\n"; // Código del operador de información.
+
+        return $fila;
+    }
+
+    public function get_datos_ultima_linea_para_plano( $planilla )
+    {
+
+        $fila = '06'; // Tipo de registro
+        $fila .= '0001'; // Secuencia
+
+        $fila .= $this->formatear_campo( $planilla->datos_empresa->entidad_arl->codigo_nacional, ' ', 'derecha', 6);
+
+        $fila .= $this->formatear_campo( $planilla->datos_empresa->entidad_arl->tercero->numero_identificacion, '0', 'izquierda', 16);
+
+        $fila .= $planilla->datos_empresa->entidad_arl->tercero->digito_verificacion;
+
+        //$total_cotizacion_riesgos_laborales = PilaRiesgoLaboral::where('planilla_generada_id',$planilla->id)->sum('total_cotizacion_riesgos_laborales');
+        //$fila .= $this->formatear_campo( $total_cotizacion_riesgos_laborales, '0', 'izquierda', 13);
+
+        $fila .= '0000000000000               000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000';
+
+        return $fila;
+    }
+
+
+    // Obtiene los datos almacenados en las tablas de liquidacion PILA
+    public function get_datos_planilla_para_plano( $planilla )
+    {
+        //$empleados = $planilla->empleados;
+        $empleados_planilla = EmpleadoPlanilla::where('planilla_generada_id',$planilla->id)->get();
+
+        $datos_filas = '';
+        $secuencia = 1;
+        foreach ($empleados_planilla as $key => $linea )
+        {
+            $empleado = NomContrato::find( (int)$linea->nom_contrato_id );
+            $datos_columnas = '';
+
+            /*
+                        Datos básicos del empleado
+            */
+            $datos_columnas .= '02';
+            $datos_columnas .= $this->formatear_campo($secuencia,'0','izquierda',8);
+
+            $tercero = $empleado->tercero;
+            $datos_columnas .= $this->get_tipo_identificacion( $tercero->id_tipo_documento_id );
+            $datos_columnas .= $this->formatear_campo($tercero->numero_identificacion,' ','derecha',16);
+
+            
+            $datos_columnas .= $this->get_tipo_cotizante( $empleado );
+            $datos_columnas .= '00'; // $subtipo_cotizante
+
+            $datos_columnas .= ' '; // Extranjero no obligado a cotizar a pensiones
+            $datos_columnas .= ' '; // Colombiano en el exterior
+
+            $datos_columnas .= substr($tercero->ciudad->id, 3,2); // Departamento
+            $datos_columnas .= substr($tercero->ciudad->id, 5);
+
+
+            $datos_columnas .= $this->formatear_campo( $this->formatear_acentos( $tercero->apellido1 ),' ','derecha',20);
+            $datos_columnas .= $this->formatear_campo( $this->formatear_acentos( $tercero->apellido2 ),' ','derecha',20);
+            $datos_columnas .= $this->formatear_campo( $this->formatear_acentos( $tercero->nombre1 ),' ','derecha',20);
+            $datos_columnas .= $this->formatear_campo( $this->formatear_acentos( $tercero->otros_nombres ),' ','derecha',30);
+
+            $datos_novedades = PilaNovedades::where( 'planilla_generada_id', $planilla->id)
+                                            ->where( 'nom_contrato_id', $empleado->id)
+                                            ->where( 'empleado_planilla_id', $linea->id)
+                                            ->get()
+                                            ->first();
+
+            if( is_null($datos_novedades) )
+            {
+                dd( 'No se han generado Novedades para el empleado ' . $empleado->tercero->descripcion . ' en la planilla ' . $planilla->descripcion );
+            }
+
+            $datos_salud = PilaSalud::where('planilla_generada_id',$planilla->id)
+                                    ->where('nom_contrato_id',$empleado->id)
+                                    ->where('empleado_planilla_id',$linea->id)
+                                    ->get()
+                                    ->first();
+            if( is_null($datos_salud) )
+            {
+                dd( 'No se han generado datos de Salud para el empleado ' . $empleado->tercero->descripcion . ' en la planilla ' . $planilla->descripcion );
+            }
+
+            $datos_pension = PilaPension::where('planilla_generada_id',$planilla->id)
+                                    ->where('nom_contrato_id',$empleado->id)
+                                    ->where('empleado_planilla_id',$linea->id)
+                                    ->get()
+                                    ->first();
+            if( is_null($datos_pension) )
+            {
+                dd( 'No se han generado datos de Pension para el empleado ' . $empleado->tercero->descripcion . ' en la planilla ' . $planilla->descripcion );
+            }
+
+            $datos_riesgos_laborales = PilaRiesgoLaboral::where('planilla_generada_id',$planilla->id)
+                                    ->where('nom_contrato_id',$empleado->id)
+                                    ->where('empleado_planilla_id',$linea->id)
+                                    ->get()
+                                    ->first();
+            if( is_null($datos_riesgos_laborales) )
+            {
+                dd( 'No se han generado datos de Riesgos laborales para el empleado ' . $empleado->tercero->descripcion . ' en la planilla ' . $planilla->descripcion );
+            }
+
+            $datos_parafiscales = PilaParafiscales::where('planilla_generada_id',$planilla->id)
+                                    ->where('nom_contrato_id',$empleado->id)
+                                    ->where('empleado_planilla_id',$linea->id)
+                                    ->get()
+                                    ->first();
+            if( is_null($datos_parafiscales) )
+            {
+                dd( 'No se han generado datos de Parafiscales para el empleado ' . $empleado->tercero->descripcion . ' en la planilla ' . $planilla->descripcion );
+            }
+
+            $datos_columnas .= $datos_novedades->ing;
+            $datos_columnas .= $datos_novedades->ret;
+            $datos_columnas .= $datos_novedades->tde;
+            $datos_columnas .= $datos_novedades->tae;
+            $datos_columnas .= $datos_novedades->tdp;
+            $datos_columnas .= $datos_novedades->tap;
+            $datos_columnas .= $datos_novedades->vsp;
+            $datos_columnas .= $datos_novedades->sln;
+            $datos_columnas .= $datos_novedades->ige;
+            $datos_columnas .= $datos_novedades->lma;
+            $datos_columnas .= $datos_novedades->vac;
+            $datos_columnas .= $datos_novedades->avp;
+            $datos_columnas .= $datos_novedades->vct;
+            $datos_columnas .= $datos_novedades->irl;
+            $datos_columnas .= $datos_novedades->vac;
+            $datos_columnas .= $datos_novedades->vac;
+
+            $datos_columnas .= $datos_pension->codigo_entidad_pension;
+            $datos_columnas .= '      '; // Código de la administradora de fondos de pensiones a la cual se traslada el afiliado
+            $datos_columnas .= $datos_salud->codigo_entidad_salud;
+            $datos_columnas .= '      '; // Código EPS o EOC a la cual se traslada el afiliado
+            $datos_columnas .= $datos_parafiscales->codigo_entidad_ccf;
+            $datos_columnas .= $datos_pension->dias_cotizados_pension;
+            $datos_columnas .= $datos_salud->dias_cotizados_salud;
+            $datos_columnas .= $datos_riesgos_laborales->dias_cotizados_riesgos_laborales;
+            $datos_columnas .= $datos_parafiscales->dias_cotizados;
+
+            $datos_columnas .= $datos_novedades->salario_basico;
+            $datos_columnas .= $datos_novedades->tipo_de_salario;
+            $datos_columnas .= $datos_pension->ibc_pension;
+            $datos_columnas .= $datos_salud->ibc_salud;
+            $datos_columnas .= $datos_riesgos_laborales->ibc_riesgos_laborales;
+            $datos_columnas .= $datos_parafiscales->ibc_parafiscales;
+
+            $datos_columnas .= $datos_pension->tarifa_pension;
+            $datos_columnas .= $datos_pension->cotizacion_pension;
+            $datos_columnas .= $datos_pension->afp_voluntario_rais_empleado;
+            $datos_columnas .= $datos_pension->afp_voluntatio_rais_empresa;
+            $datos_columnas .= $datos_pension->total_cotizacion_pension;
+            $datos_columnas .= $datos_pension->subcuenta_solidaridad_fsp;
+            $datos_columnas .= $datos_pension->subcuenta_subsistencia_fsp;
+            $datos_columnas .= '000000000'; // Valor no retenido por aportes voluntarios.
+
+            $datos_columnas .= $datos_salud->tarifa_salud;
+            $datos_columnas .= $datos_salud->cotizacion_salud;
+            $datos_columnas .= $datos_salud->valor_upc_adicional_salud;
+            $datos_columnas .= '               '; // No. autorización de la incapacidad por enfermedad general
+            $datos_columnas .= '000000000'; // Valor de la incapacidad por enfermedad general
+            $datos_columnas .= '               '; // No. de autorización de la licencia de maternidad o paternidad
+            $datos_columnas .= '000000000'; // Valor de la licencia de maternidad
+            $datos_columnas .= $datos_riesgos_laborales->tarifa_riesgos_laborales;
+            $datos_columnas .= $datos_riesgos_laborales->clase_de_riesgo;
+            $datos_columnas .= $datos_riesgos_laborales->total_cotizacion_riesgos_laborales;
+            $datos_columnas .= $datos_parafiscales->tarifa_ccf;
+            $datos_columnas .= $datos_parafiscales->cotizacion_ccf;
+            $datos_columnas .= $datos_parafiscales->tarifa_sena;
+            $datos_columnas .= $datos_parafiscales->cotizacion_sena;
+            $datos_columnas .= $datos_parafiscales->tarifa_icbf;
+            $datos_columnas .= $datos_parafiscales->cotizacion_icbf;
+            $datos_columnas .= '0000000'; // Tarifa aportes ESAP
+            $datos_columnas .= '000000000'; // Valor aporte ESAP
+            $datos_columnas .= '0000000'; // Tarifa aportes MEN
+            $datos_columnas .= '000000000'; // Valor aporte MEN
+
+            $datos_columnas .= '  '; // Tipo de documento del cotizante principal
+            $datos_columnas .= '                '; // Número de identificación del cotizante principal
+            $datos_columnas .= $datos_parafiscales->cotizante_exonerado_de_aportes_parafiscales;
+            $datos_columnas .= $datos_riesgos_laborales->codigo_arl;
+            
+            $clase_riesgo_laboral_id = 0;
+            if( !is_null( $linea->empleado->clase_riesgo_laboral ) )
+            {
+                $clase_riesgo_laboral_id = $linea->empleado->clase_riesgo_laboral->id;
+            }
+            $datos_columnas .= $clase_riesgo_laboral_id;
+            $datos_columnas .= ' '; // Indicador tarifa especial pensiones                
+
+            $datos_columnas .= $datos_novedades->fecha_de_ingreso;
+            $datos_columnas .= $datos_novedades->fecha_de_retiro;
+            $datos_columnas .= $datos_novedades->fecha_inicial_variacion_permanente_de_salario_vsp;
+            $datos_columnas .= $datos_novedades->fecha_inicial_suspension_temporal_del_contrato_sln;
+            $datos_columnas .= $datos_novedades->fecha_final_suspension_temporal_del_contrato_sln;
+            $datos_columnas .= $datos_novedades->fecha_inicial_incapacidad_enfermedad_general_ige;
+            $datos_columnas .= $datos_novedades->fecha_final_incapacidad_enfermedad_general_ige;
+            $datos_columnas .= $datos_novedades->fecha_inicial_licencia_por_maternidad_lma;
+            $datos_columnas .= $datos_novedades->fecha_final_licencia_por_maternidad_lma;
+            $datos_columnas .= $datos_novedades->fecha_inicial_vacaciones_licencias_remuneradas_vac;
+            $datos_columnas .= $datos_novedades->fecha_final_vacaciones_licencias_remuneradas_vac;
+            $datos_columnas .= $datos_novedades->fecha_inicial_variacion_centro_de_trabajo_vct;
+            $datos_columnas .= $datos_novedades->fecha_final_variacion_centro_de_trabajo_vct;
+            $datos_columnas .= $datos_novedades->fecha_inicial_incapacidad_riesgos_laborales_irl;
+            $datos_columnas .= $datos_novedades->fecha_final_incapacidad_riesgos_laborales_irl;
+
+            $datos_columnas .= '000000000';
+            $datos_columnas .= $this->formatear_campo($datos_novedades->aux_cantidad_dias_laborados * (int)config('nomina.horas_dia_laboral'),'0','izquierda',3);
+            $datos_columnas .= '          '; // Fecha radicación en el exterior
+
+            $datos_filas .= $datos_columnas . "\n";
+            $secuencia++;
+        }
+
+        return $datos_filas;
+    }
+
+    public function formatear_acentos( $texto )
+    {
+        return strtoupper( str_slug( $texto ) );
+    }
+
+    public function get_tipo_cotizante( $empleado )
+    {
+        $tipo_cotizante = '01';
+        if ( $empleado->es_pasante_sena)
+        {
+            $tipo_cotizante = '19';
+        }
+
+        return $tipo_cotizante;
     }
 
     public function eliminar_planilla( $planilla_id )

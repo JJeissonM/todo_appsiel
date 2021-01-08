@@ -59,6 +59,7 @@ Route::post('nom_almacenar_acumulados_seguridad_social_parafiscales','Nomina\Pro
 Route::get('nom_pila_liquidar_planilla/{planilla_id}', 'Nomina\PlanillaIntegradaController@liquidar_planilla');
 Route::get('nom_pila_show/{planilla_generada_id}', 'Nomina\PlanillaIntegradaController@show');
 Route::get('nom_pila_catalogos/{permiso_padre_id}', 'Nomina\PlanillaIntegradaController@catalogos');
+Route::get('nom_pila_descargar_archivo_plano/{planilla_id}', 'Nomina\PlanillaIntegradaController@descargar_archivo_plano');
 Route::get('nom_pila_eliminar_planilla/{planilla_id}', 'Nomina\PlanillaIntegradaController@eliminar_planilla');
 
 
