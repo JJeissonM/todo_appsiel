@@ -3,8 +3,8 @@
 namespace App\Matriculas;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
-use DB;
 use Auth;
 
 use App\Core\Tercero;
@@ -29,16 +29,14 @@ class Inscripcion extends Model
         return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
     }
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
-        $select_raw = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1';
-        $select_raw2 = 'CONCAT(core_tipos_docs_id.abreviatura," ", core_terceros.numero_identificacion ) AS campo2';
-        $registros = Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
+        return Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
             ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_inscripciones.sga_grado_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
             ->select(
-                DB::raw($select_raw),
-                DB::raw($select_raw2),
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ", core_terceros.numero_identificacion ) AS campo2'),
                 'sga_inscripciones.codigo AS campo3',
                 'sga_inscripciones.fecha AS campo4',
                 'sga_grados.descripcion AS campo5',
@@ -46,19 +44,47 @@ class Inscripcion extends Model
                 'sga_inscripciones.estado AS campo7',
                 'sga_inscripciones.id AS campo8'
             )
+            ->where("sga_inscripciones.codigo", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ', core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.fecha", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.origen", "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.estado", "LIKE", "%$search%")
             ->orderBy('sga_inscripciones.created_at', 'DESC')
             ->paginate($nro_registros);
-        return $registros;
     }
 
-    public function scopeCampo1($query, $search)
+    public static function sqlString($search)
     {
-        dd($search);
-        if ($search != null) {
-            if (trim($search) != "") {
-                $query->where('campo1', 'LIKE', "%$search%");
-            }
-        }
+        $string = Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
+            ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_inscripciones.sga_grado_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ASPIRANTE'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ", core_terceros.numero_identificacion ) AS IDENTIFICACIÓN'),
+                'sga_inscripciones.codigo AS CÓDIGO INSCRIPCIÓN',
+                'sga_inscripciones.fecha AS FECHA',
+                'sga_grados.descripcion AS GRADO',
+                'sga_inscripciones.origen AS ORIGEN',
+                'sga_inscripciones.estado AS ESTADO'
+            )
+            ->where("sga_inscripciones.codigo", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ', core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.fecha", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.origen", "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.estado", "LIKE", "%$search%")
+            ->orderBy('sga_inscripciones.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE INSCRIPCIONES";
     }
 
     public static function get_opciones_select_inscritos()

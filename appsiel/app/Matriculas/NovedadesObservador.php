@@ -14,7 +14,7 @@ class NovedadesObservador extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Estudiante', 'Periodo', 'Fecha novedad', 'Tipo novedad', 'Descripción', 'Creado por'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return NovedadesObservador::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_novedades_observador.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
@@ -29,7 +29,13 @@ class NovedadesObservador extends Model
                 'sga_novedades_observador.descripcion AS campo5',
                 'users.name AS campo6',
                 'sga_novedades_observador.id AS campo7'
-            )->orderBy('sga_novedades_observador.created_at', 'DESC')
+            )->where("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_novedades_observador.fecha_novedad", "LIKE", "%$search%")
+            ->orWhere("sga_tipos_novedades.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere("sga_novedades_observador.descripcion", "LIKE", "%$search%")
+            ->orWhere("users.name", "LIKE", "%$search%")
+            ->orderBy('sga_novedades_observador.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 

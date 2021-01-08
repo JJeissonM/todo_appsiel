@@ -111,23 +111,27 @@ class ModeloController extends Controller
         if ($temp != null) {
             $nro_registros = $temp;
         }
+        $sqlString = "";
+        $tituloExport = "";
         //determinar la busqueda
-        $search = null;
+        $search = "";
         $temp2 = Input::get('search');
         if ($temp2 != null) {
-            $search = $temp2;
+            $search = trim($temp2);
         }
-
         if (method_exists(app($this->modelo->name_space), 'consultar_registros')) {
-            $registros = app($this->modelo->name_space)->consultar_registros($nro_registros);
+            $registros = app($this->modelo->name_space)->consultar_registros($nro_registros, $search);
+            $sqlString = app($this->modelo->name_space)->sqlString($search);
+            $tituloExport = app($this->modelo->name_space)->tituloExport();
         }
         $vista = 'layouts.index';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
         if (!is_null($vistas)) {
             if (isset($vistas->index)) {
                 $vista = $vistas->index;
-                $registros = app($this->modelo->name_space)->consultar_registros2($nro_registros);
-                $registros->setPath('?id=' . $id_app . '&id_modelo=' . $id_modelo . '&id_transaccion=' . $id_transaccion);
+                $registros = app($this->modelo->name_space)->consultar_registros2($nro_registros, $search);
+                $sqlString = app($this->modelo->name_space)->sqlString($search);
+                $tituloExport = app($this->modelo->name_space)->tituloExport();
             }
         }
 
@@ -135,7 +139,7 @@ class ModeloController extends Controller
 
         // ¿Cómo saber qué métodos estan llamando a la vista layouts.index?
         // Si modifico esa vista, cómo se qué partes del software se verán afectadas???
-        return view($vista, compact('id_app', 'search', 'source', 'nro_registros', 'id_modelo', 'id_transaccion', 'registros', 'miga_pan', 'url_crear', 'encabezado_tabla', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar', 'archivo_js', 'botones'));
+        return view($vista, compact('id_app', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_modelo', 'id_transaccion', 'registros', 'miga_pan', 'url_crear', 'encabezado_tabla', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar', 'archivo_js', 'botones'));
     }
 
 
@@ -477,19 +481,18 @@ class ModeloController extends Controller
             $lista_campos = app($this->modelo->name_space)->get_campos_adicionales_edit($lista_campos, $registro);
         }
 
-        if ( isset($lista_campos[0]) ) {
-            if ( is_null($lista_campos[0]) )
-            {
-                $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
-            
-                $url_index = str_replace('id_fila', $registro->id, $acciones->index );
+        if (isset($lista_campos[0])) {
+            if (is_null($lista_campos[0])) {
+                $acciones = $this->acciones_basicas_modelo($this->modelo, '');
 
-                return redirect( $url_index . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') )->with('mensaje_error', $lista_campos[1]);
+                $url_index = str_replace('id_fila', $registro->id, $acciones->index);
+
+                return redirect($url_index . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', $lista_campos[1]);
             }
         }
-            
-        
-        $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
+
+
+        $acciones = $this->acciones_basicas_modelo($this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'));
 
         $url_action = str_replace('id_fila', $registro->id, $acciones->update);
 
@@ -591,10 +594,9 @@ class ModeloController extends Controller
     {
         // Se obtiene el registro del modelo indicado y el anterior y siguiente registro
         $registro = app($this->modelo->name_space)->find($id);
-        
-        if( is_null( $registro ) )
-        {
-            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )->with('mensaje_error', 'ModeloController@show() > El registro que quiere consultar ha sido eliminado.');
+
+        if (is_null($registro)) {
+            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'ModeloController@show() > El registro que quiere consultar ha sido eliminado.');
             //echo 'No existe el registro con ID: ' . $id . ' para el modelo: ' . $this->modelo->modelo;
             //die();
         }

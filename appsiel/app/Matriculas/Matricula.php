@@ -41,7 +41,7 @@ class Matricula extends Model
         return $this->hasMany('App\Tesoreria\TesoLibretasPago', 'matricula_id');
     }
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return Matricula::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
@@ -59,7 +59,17 @@ class Matricula extends Model
                 'sga_cursos.descripcion AS campo9',
                 'sga_matriculas.estado AS campo10',
                 'sga_matriculas.id AS campo11'
-            )->orderBy('sga_matriculas.created_at', 'DESC')
+            )->where("sga_matriculas.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_matriculas.fecha_matricula", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2)"), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.email", "LIKE", "%$search%")
+            ->orWhere("sga_matriculas.acudiente", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_matriculas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_matriculas.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 

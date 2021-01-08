@@ -23,14 +23,16 @@ class Grado extends Model
         return $this->hasMany(Curso::class, 'sga_grado_id');
     }
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $registros = Grado::select(
             'sga_grados.descripcion AS campo1',
             'sga_grados.codigo AS campo2',
             'sga_grados.estado AS campo3',
             'sga_grados.id AS campo4'
-        )
+        )->where("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_grados.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_grados.estado", "LIKE", "%$search%")
             ->orderBy('sga_grados.created_at', 'DESC')
             ->paginate($nro_registros);
 

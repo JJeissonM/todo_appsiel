@@ -57,14 +57,19 @@
 		<a class="btn-gmail" id="{{$boton->url}}" onclick="botonElement(this.id)" title="{{$boton->title}}"><i class="fa fa-{{$boton->faicon}}"></i></a>
 		@endforeach
 		@endif
-		<a class="btn-gmail" id="btnPdf" onclick="exportPdf()" title="Exportar en PDF"><i class="fa fa-file-pdf-o"></i></a>
-		<a class="btn-gmail" id="btnExcel" onclick="exportExcel()" title="Exportar en Excel"><i class="fa fa-file-excel-o"></i></a>
 
+		<form action="{{route('export.table')}}" method="POST" id="exportForm" style="display: inline;" target='_blank'>
+			<input type="hidden" name="sqlString" value="{{$sqlString}}" />
+			<input type="hidden" name="tituloExport" value="{{$tituloExport}}" />
+			{{ csrf_field() }}
+			<a class="btn-gmail btn-pdf" id="btnPdf" onclick="exportPdf()" title="Exportar en PDF"><i class="fa fa-file-pdf-o"></i></a>
+			<a class="btn-gmail btn-excel" id="btnExcel" onclick="exportExcel()" title="Exportar en Excel"><i class="fa fa-file-excel-o"></i></a>
+		</form>
 		<div class="search">
 			<form class="form-horizontal" role="search" method="get" action="{{route('web.index')}}">
 				<input type="hidden" name="id" value="{{$id_app}}" />
 				<input type="hidden" name="id_modelo" value="{{$id_modelo}}" />
-				<input type="text" name="search" style="color: #000 !important; font-size: 16px;" class="form-control input-sm" placeholder="Escriba aquí para buscar..." />
+				<input type="text" value="{{$search}}" name="search" style="color: #000 !important; font-size: 16px;" class="form-control input-sm" placeholder="Escriba aquí para buscar..." />
 				<button style="position: absolute; height: 30px; right: 0; top: 5px; border-radius:2px;" class="btn btn-primary btn-xl" title="Consultar" type="submit"><i class="fa fa-search"></i></button>
 			</form>
 		</div>
@@ -118,12 +123,12 @@
 		var nro = $("#mostrar").val();
 		var source = "{{$source}}";
 		if (source == 'INDEX2') {
-			location.href = "{{url('')}}/calificaciones/index2?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro;
+			location.href = "{{url('')}}/calificaciones/index2?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";
 		} else if (source == 'BOLETIN') {
-			location.href = "{{url('')}}/calificaciones/observaciones_boletin?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro;
+			location.href = "{{url('')}}/calificaciones/observaciones_boletin?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";
 		} else {
 			//INDEX1
-			location.href = "{{url('')}}/web?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro;
+			location.href = "{{url('')}}/web?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";
 		}
 	}
 
@@ -260,6 +265,16 @@
 			elementos.push($(this).val());
 		});
 		return elementos;
+	}
+
+	function exportPdf() {
+		$("#exportForm").append("<input type='hidden' name='tipo' value='PDF' />");
+		$("#exportForm").submit();
+	}
+
+	function exportExcel() {
+		$("#exportForm").append("<input type='hidden' name='tipo' value='EXCEL' />");
+		$("#exportForm").submit();
 	}
 
 	function consultar() {

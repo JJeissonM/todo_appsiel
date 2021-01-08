@@ -48,7 +48,7 @@ class Curso extends Model
     }
 
     /**/
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $registros = Curso::leftJoin('sga_niveles', 'sga_niveles.id', '=', 'sga_cursos.nivel_grado')
             ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_cursos.sga_grado_id')
@@ -61,7 +61,12 @@ class Curso extends Model
                 'sga_cursos.maneja_calificacion AS campo5',
                 'sga_cursos.estado AS campo6',
                 'sga_cursos.id AS campo7'
-            )
+            )->where("sga_niveles.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->where("sga_cursos.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.maneja_calificacion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.estado", "LIKE", "%$search%")
             ->orderBy('sga_cursos.created_at', 'DESC')
             ->paginate($nro_registros);
 

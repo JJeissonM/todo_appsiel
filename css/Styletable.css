@@ -17,6 +17,14 @@
     margin-left: 10px;
 }
 
+.btn-pdf{
+    color: #ff0101 !important;
+}
+
+.btn-excel{
+    color: #326d3c !important;
+}
+
 .btn-gmail > i{
     width: 25px;
     height: 25px;
@@ -27,6 +35,16 @@
     background-color: #574696;
     color: #ffffff;
 
+}
+
+.btn-pdf:hover{
+    background-color: #ff0101 !important;
+    color: #ffffff !important;
+}
+
+.btn-excel:hover{
+    background-color: #326d3c !important;
+    color: #ffffff !important;
 }
 
 .btn-gmail-check{

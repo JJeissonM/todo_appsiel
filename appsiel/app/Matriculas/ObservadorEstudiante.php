@@ -16,7 +16,7 @@ class ObservadorEstudiante extends Estudiante
 {
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Estudiante', 'Documento', 'Género', 'Fecha nacimiento', 'Dirección', 'Teléfono', 'Email'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
@@ -29,7 +29,14 @@ class ObservadorEstudiante extends Estudiante
                 'core_terceros.telefono1 AS campo6',
                 'core_terceros.email AS campo7',
                 'sga_estudiantes.id AS campo8'
-            )->orderBy('sga_estudiantes.id', 'desc')
+            )->where("sga_estudiantes.genero", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.email", "LIKE", "%$search%")
+            ->orderBy('sga_estudiantes.id', 'desc')
             ->paginate($nro_registros);
     }
 }

@@ -12,9 +12,14 @@ class TipoNovedad extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Estado'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
-        $registros = TipoNovedad::select('sga_tipos_novedades.descripcion AS campo1', 'sga_tipos_novedades.estado AS campo2', 'sga_tipos_novedades.id AS campo3')
+        $registros = TipoNovedad::select(
+            'sga_tipos_novedades.descripcion AS campo1',
+            'sga_tipos_novedades.estado AS campo2',
+            'sga_tipos_novedades.id AS campo3'
+        )->where("sga_tipos_novedades.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_tipos_novedades.estado", "LIKE", "%$search%")
             ->orderBy('sga_tipos_novedades.created_at', 'DESC')
             ->paginate($nro_registros);
 
