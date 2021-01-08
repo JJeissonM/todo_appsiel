@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PilaRiesgoLaboral extends Model
 {
     protected $table = 'nom_pila_liquidacion_riesgos_laborales';
-	protected $fillable = ['planilla_generada_id', 'nom_contrato_id', 'fecha_final_mes', 'codigo_arl', 'dias_cotizados_riesgos_laborales', 'ibc_riesgos_laborales', 'tarifa_riesgos_laborales', 'total_cotizacion_riesgos_laborales', 'clase_de_riesgo','empleado_planilla_id'];
+	protected $fillable = ['planilla_generada_id', 'nom_contrato_id', 'fecha_final_mes', 'codigo_arl', 'dias_cotizados_riesgos_laborales', 'ibc_riesgos_laborales', 'tarifa_riesgos_laborales', 'total_cotizacion_riesgos_laborales', 'clase_de_riesgo','empleado_planilla_id','dias_incapacidad_accidente_trabajo'];
 	public $encabezado_tabla = ['Planilla generada', 'Empleado', 'Fecha PILA', 'Codigo ARL', 'Dias cotizados Riesgos laborales', 'IBC Riesgos laborales', 'Tarifa Riesgos laborales', 'Total Cotizacion Riesgos laborales', 'Clase de Riesgo', 'Acción'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';

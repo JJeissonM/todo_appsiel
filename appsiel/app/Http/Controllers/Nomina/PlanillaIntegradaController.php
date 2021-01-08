@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use View;
 use Auth;
 use Input;
+use Carbon\Carbon;
 
 use Spatie\Permission\Models\Permission;
 
@@ -46,6 +47,7 @@ class PlanillaIntegradaController extends Controller
     protected $fecha_inicial;
     protected $fecha_final;
     protected $empleado_planilla_id;
+    protected $dias_incapacidad_accidente_trabajo;
 
     public function show($planilla_generada_id)
     {
@@ -272,6 +274,7 @@ class PlanillaIntegradaController extends Controller
             }                
         }
 
+        array_pop($vector);
         array_pop($vector);
         return $vector;
     }
@@ -558,6 +561,8 @@ class PlanillaIntegradaController extends Controller
         $fecha_inicial_incapacidad_riesgos_laborales_irl = '          ';
         $fecha_final_incapacidad_riesgos_laborales_irl = '          ';
 
+        $this->dias_incapacidad_accidente_trabajo = 0;
+
         if ( $tipo_linea == 'adicional' )
         {        
             $conceptos_liquidados_mes = $this->conceptos_liquidados_mes( $empleado, $this->fecha_inicial, $this->fecha_final );
@@ -691,8 +696,10 @@ class PlanillaIntegradaController extends Controller
                         {
                             $fecha_final_incapacidad_riesgos_laborales_irl = $this->fecha_final;
                         }
+                        
+                        $this->dias_incapacidad_accidente_trabajo = $this->diferencia_en_dias_entre_fechas( $fecha_inicial_incapacidad_riesgos_laborales_irl, $fecha_final_incapacidad_riesgos_laborales_irl );
+
                         $this->cambiar_ibc_salud( $registro_novedad_tnl );
-                        $es_linea_principal = false;
                     } 
                 }
             }
@@ -751,6 +758,14 @@ class PlanillaIntegradaController extends Controller
         $this->almacenar_datos_riesgos_laborales( $planilla, $empleado );
         $this->almacenar_datos_parafiscales( $planilla, $empleado );
 
+    }
+
+    public function diferencia_en_dias_entre_fechas( string $fecha_inicial, string $fecha_final )
+    {
+        $fecha_ini = Carbon::createFromFormat('Y-m-d', $fecha_inicial);
+        $fecha_fin = Carbon::createFromFormat('Y-m-d', $fecha_final );
+
+        return abs( $fecha_ini->diffInDays($fecha_fin) );
     }
 
     public function cambiar_ibc_salud( $registro_novedad_tnl )
@@ -899,7 +914,7 @@ class PlanillaIntegradaController extends Controller
             $clase_de_riesgo = $this->formatear_campo( $empleado->clase_riesgo_laboral->id,'0','izquierda',9);
         }        
         $valor_cotizacion_riesgo_laboral = number_format( $this->ibc_salud * $porcentaje_riesgo_laboral, 0,'','');
-        $tarifa_riesgo_laboral = $this->formatear_campo( $porcentaje_riesgo_laboral,'0','derecha',7);
+        $tarifa_riesgo_laboral = $this->formatear_campo( $porcentaje_riesgo_laboral,'0','derecha',9);
         $cotizacion_riesgo_laboral = $this->formatear_campo( $valor_cotizacion_riesgo_laboral,'0','izquierda',9);
 
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
@@ -911,7 +926,8 @@ class PlanillaIntegradaController extends Controller
                     [ 'tarifa_riesgos_laborales' => $tarifa_riesgo_laboral ] +
                     [ 'total_cotizacion_riesgos_laborales' => $cotizacion_riesgo_laboral ] +
                     [ 'clase_de_riesgo' => $clase_de_riesgo ] +
-                    [ 'empleado_planilla_id' => $this->empleado_planilla_id ];/**/
+                    [ 'empleado_planilla_id' => $this->empleado_planilla_id ] +
+                    [ 'dias_incapacidad_accidente_trabajo' => $this->formatear_campo( $this->dias_incapacidad_accidente_trabajo,'0', 'izquierda', 2 ) ];/**/
 
         PilaRiesgoLaboral::create($datos);
     }
@@ -1174,7 +1190,7 @@ class PlanillaIntegradaController extends Controller
             {
                 dd( 'No se han generado datos de Parafiscales para el empleado ' . $empleado->tercero->descripcion . ' en la planilla ' . $planilla->descripcion );
             }
-            
+
             $datos_columnas .= $datos_novedades->ing;
             $datos_columnas .= $datos_novedades->ret;
             $datos_columnas .= $datos_novedades->tde;
@@ -1190,7 +1206,8 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas .= $datos_novedades->vac;
             $datos_columnas .= $datos_novedades->avp;
             $datos_columnas .= $datos_novedades->vct;
-            $datos_columnas .= $datos_novedades->irl;
+
+            $datos_columnas .= $datos_riesgos_laborales->dias_incapacidad_accidente_trabajo;
 
             $datos_columnas .= $datos_pension->codigo_entidad_pension;
             $datos_columnas .= '      '; // Código de la administradora de fondos de pensiones a la cual se traslada el afiliado
@@ -1213,7 +1230,7 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas .= $datos_pension->cotizacion_pension;
             $datos_columnas .= $datos_pension->afp_voluntario_rais_empleado;
             $datos_columnas .= $datos_pension->afp_voluntatio_rais_empresa;
-            $datos_columnas .= $datos_pension->total_cotizacion_pension;
+            $datos_columnas .= $datos_pension->total_cotizacion_pension;        // Posicion inicial: 272
             $datos_columnas .= $datos_pension->subcuenta_solidaridad_fsp;
             $datos_columnas .= $datos_pension->subcuenta_subsistencia_fsp;
             $datos_columnas .= '000000000'; // Valor no retenido por aportes voluntarios.
