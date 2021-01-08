@@ -1120,7 +1120,7 @@ class PlanillaIntegradaController extends Controller
 
 
             $datos_columnas .= $this->formatear_campo( $this->formatear_acentos( $tercero->apellido1 ),' ','derecha',20);
-            $datos_columnas .= $this->formatear_campo( $this->formatear_acentos( $tercero->apellido2 ),' ','derecha',20);
+            $datos_columnas .= $this->formatear_campo( $this->formatear_acentos( $tercero->apellido2 ),' ','derecha',30);
             $datos_columnas .= $this->formatear_campo( $this->formatear_acentos( $tercero->nombre1 ),' ','derecha',20);
             $datos_columnas .= $this->formatear_campo( $this->formatear_acentos( $tercero->otros_nombres ),' ','derecha',30);
 
@@ -1174,7 +1174,7 @@ class PlanillaIntegradaController extends Controller
             {
                 dd( 'No se han generado datos de Parafiscales para el empleado ' . $empleado->tercero->descripcion . ' en la planilla ' . $planilla->descripcion );
             }
-
+            
             $datos_columnas .= $datos_novedades->ing;
             $datos_columnas .= $datos_novedades->ret;
             $datos_columnas .= $datos_novedades->tde;
@@ -1182,6 +1182,8 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas .= $datos_novedades->tdp;
             $datos_columnas .= $datos_novedades->tap;
             $datos_columnas .= $datos_novedades->vsp;
+            $datos_columnas .= $datos_novedades->cor;
+            $datos_columnas .= $datos_novedades->vst;
             $datos_columnas .= $datos_novedades->sln;
             $datos_columnas .= $datos_novedades->ige;
             $datos_columnas .= $datos_novedades->lma;
@@ -1189,8 +1191,6 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas .= $datos_novedades->avp;
             $datos_columnas .= $datos_novedades->vct;
             $datos_columnas .= $datos_novedades->irl;
-            $datos_columnas .= $datos_novedades->vac;
-            $datos_columnas .= $datos_novedades->vac;
 
             $datos_columnas .= $datos_pension->codigo_entidad_pension;
             $datos_columnas .= '      '; // Código de la administradora de fondos de pensiones a la cual se traslada el afiliado
