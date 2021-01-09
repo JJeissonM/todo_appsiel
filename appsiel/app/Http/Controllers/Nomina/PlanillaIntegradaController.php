@@ -400,6 +400,8 @@ class PlanillaIntegradaController extends Controller
     */
     public function liquidar_planilla( $planilla_id )
     {
+        $this->eliminar_registros_tablas_auxiliares_planilla( $planilla_id );
+
         $planilla = PlanillaGenerada::find( $planilla_id );
         $this->fecha_inicial = $planilla->lapso()->fecha_inicial;
         $this->fecha_final = $planilla->lapso()->fecha_final;
@@ -417,6 +419,7 @@ class PlanillaIntegradaController extends Controller
 
         return redirect( 'nom_pila_show/' . $planilla_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' )->with('flash_message', 'Registros de Planilla actualizados correctamente.');
     }
+
 
     public function calcular_ibc( $planilla, $empleado )
     {
@@ -447,6 +450,8 @@ class PlanillaIntegradaController extends Controller
     {
 
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
+
+
 
         $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'nom_contrato_id', $empleado->id )
@@ -489,7 +494,7 @@ class PlanillaIntegradaController extends Controller
                 $vec_conceptos[] = $concepto->id;
             }
         }
-
+        
         $cantidad_horas_laboradas = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
                                             ->where( 'nom_contrato_id', $empleado->id )
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
@@ -510,16 +515,6 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_novedades($planilla, $empleado, $tipo_linea)
     {
-        $registro_anterior = PilaNovedades::where('planilla_generada_id',$planilla->id)
-                                                ->where('nom_contrato_id',$empleado->id)
-                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
-                                                ->get()
-                                                ->first();
-
-        if ( !is_null($registro_anterior) )
-        {
-            $registro_anterior->delete();
-        }
 
         $ing = ' ';
         $vsp = ' ';
@@ -575,6 +570,9 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $sln = 'X';
+                    $vst = ' ';
+                    $ret = ' ';
+                    $fecha_de_retiro = '          ';
                     $this->novedad_de_ausentismo = true;
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
@@ -586,6 +584,11 @@ class PlanillaIntegradaController extends Controller
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_suspension_temporal_del_contrato_sln = $novedad_tnl->fecha_inicial_tnl;
+                        if ( $novedad_tnl->fecha_inicial_tnl < $this->fecha_inicial )
+                        {
+                            $fecha_inicial_suspension_temporal_del_contrato_sln = $this->fecha_inicial;
+                        }
+
                         $fecha_final_suspension_temporal_del_contrato_sln = $novedad_tnl->fecha_final_tnl;
                         if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
                         {
@@ -603,6 +606,9 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $ige = 'X';
+                    $vst = ' ';
+                    $ret = ' ';
+                    $fecha_de_retiro = '          ';
                     $this->novedad_de_ausentismo = true;
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
@@ -614,6 +620,11 @@ class PlanillaIntegradaController extends Controller
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_incapacidad_enfermedad_general_ige = $novedad_tnl->fecha_inicial_tnl;
+                        if ( $novedad_tnl->fecha_inicial_tnl < $this->fecha_inicial )
+                        {
+                            $fecha_inicial_incapacidad_enfermedad_general_ige = $this->fecha_inicial;
+                        }
+
                         $fecha_final_incapacidad_enfermedad_general_ige = $novedad_tnl->fecha_final_tnl;
                         if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
                         {
@@ -631,6 +642,9 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $lma = 'X';
+                    $vst = ' ';
+                    $ret = ' ';
+                    $fecha_de_retiro = '          ';
                     $this->novedad_de_ausentismo = true;
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
@@ -642,6 +656,11 @@ class PlanillaIntegradaController extends Controller
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_licencia_por_maternidad_lma = $novedad_tnl->fecha_inicial_tnl;
+                        if ( $novedad_tnl->fecha_inicial_tnl < $this->fecha_inicial )
+                        {
+                            $fecha_inicial_licencia_por_maternidad_lma = $this->fecha_inicial;
+                        }
+
                         $fecha_final_licencia_por_maternidad_lma = $novedad_tnl->fecha_final_tnl;
                         if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
                         {
@@ -659,7 +678,9 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $vac = 'X';
-                    $this->novedad_de_ausentismo = true;
+                    $vst = ' ';
+                    $ret = ' ';
+                    $fecha_de_retiro = '          ';
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
                                                     ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
@@ -670,6 +691,11 @@ class PlanillaIntegradaController extends Controller
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_vacaciones_licencias_remuneradas_vac = $novedad_tnl->fecha_inicial_tnl;
+                        if ( $novedad_tnl->fecha_inicial_tnl < $this->fecha_inicial )
+                        {
+                            $fecha_inicial_vacaciones_licencias_remuneradas_vac = $this->fecha_inicial;
+                        }
+
                         $fecha_final_vacaciones_licencias_remuneradas_vac = $novedad_tnl->fecha_final_tnl;
                         if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
                         {
@@ -687,6 +713,9 @@ class PlanillaIntegradaController extends Controller
                 if ( in_array($value, $conceptos_liquidados_mes) )
                 {
                     $irl = 'X';
+                    $vst = ' ';
+                    $ret = ' ';
+                    $fecha_de_retiro = '          ';
                     $this->novedad_de_ausentismo = true;
                     $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
                                                     ->where('nom_concepto_id',$value)
@@ -698,6 +727,11 @@ class PlanillaIntegradaController extends Controller
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_incapacidad_riesgos_laborales_irl = $novedad_tnl->fecha_inicial_tnl;
+                        if ( $novedad_tnl->fecha_inicial_tnl < $this->fecha_inicial )
+                        {
+                            $fecha_inicial_incapacidad_riesgos_laborales_irl = $this->fecha_inicial;
+                        }
+
                         $fecha_final_incapacidad_riesgos_laborales_irl = $novedad_tnl->fecha_final_tnl;
                         if ($novedad_tnl->fecha_final_tnl > $this->fecha_final)
                         {
@@ -777,15 +811,24 @@ class PlanillaIntegradaController extends Controller
         return abs( $fecha_ini->diffInDays($fecha_fin) );
     }
 
+    // PARA LÍNEAS ADICIONALES
     public function cambiar_ibc_salud( $registro_novedad_tnl )
     {
         $this->cantidad_dias_laborados = $registro_novedad_tnl->cantidad_horas / (int)config('nomina.horas_dia_laboral');
         // sumar devengos/deducciones asociados a la novedad
         $registros_asociados_novedad = NomDocRegistro::where('novedad_tnl_id',$registro_novedad_tnl->novedad_tnl_id)->get();
         $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion');
-
         $this->ibc_parafiscales = $this->ibc_salud;
         $this->cantidad_dias_parafiscales = $this->cantidad_dias_laborados;
+        
+
+        // Debe haber algun pago de Parafiscales. El operador de la PILLA dice: 
+        // El tipo de cotizante 01 por ausentismo no está obligado aportar a todos los sistemas pero debe por lo menos realizar aportes a uno.
+        if ( $this->ibc_salud <= 0 )
+        {
+            // No se puede asignar un valor por defecto a $this->ibc_salud porque hace calculos para otras cotizaciones
+            $this->ibc_parafiscales = (float)config('nomina.SMMLV');
+        }
     }
 
     
@@ -793,32 +836,21 @@ class PlanillaIntegradaController extends Controller
     {
         $datos_lineas_adicionales = PilaNovedades::where('planilla_generada_id',$planilla->id)
                                                     ->where('nom_contrato_id',$empleado->id)
+                                                    ->where('sln',' ')// Validación para conceptos de suspención pues sus dias no se tienen en cuenta en el tiempo de días laborados de SALUD; entonces no se deben restar de la cantidad de dias laborados 
                                                     ->get();
-
+        
+        
         $this->ibc_salud -= $datos_lineas_adicionales->sum('aux_ibc_salud');
         $this->cantidad_dias_laborados -= $datos_lineas_adicionales->sum('aux_cantidad_dias_laborados');
 
         $this->ibc_parafiscales -= $datos_lineas_adicionales->sum('aux_ibc_salud');
-        $this->cantidad_dias_parafiscales -= $datos_lineas_adicionales->sum('aux_cantidad_dias_laborados');
+        $this->cantidad_dias_parafiscales -= $datos_lineas_adicionales->sum('aux_cantidad_dias_laborados');            
     }
 
 
 
     public function almacenar_datos_salud($planilla, $empleado)
     {
-        $registro_anterior = PilaSalud::where('planilla_generada_id',$planilla->id)
-                                                ->where('nom_contrato_id',$empleado->id)
-                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
-                                                ->get()
-                                                ->first();
-
-        if ( !is_null($registro_anterior) )
-        {
-            $registro_anterior->delete();
-        }
-
-        // $this->formatear_campo( number_format( $this->ibc_parafiscales,0,'',''),'0','izquierda',9)
-
         $porcentaje_salud = 4 / 100;
         if ( $empleado->es_pasante_sena )
         {
@@ -826,7 +858,7 @@ class PlanillaIntegradaController extends Controller
         }
         $valor_cotizacion_salud = number_format( $this->ibc_salud * $porcentaje_salud, 0,'','');
         $tarifa_salud = $this->formatear_campo( $porcentaje_salud,'0','derecha',7);
-        $cotizacion_salud = $this->formatear_campo( $valor_cotizacion_salud,'0','izquierda',9);
+        $cotizacion_salud = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_salud, 100, 'superior'),'0','izquierda',9);
 
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
@@ -845,25 +877,16 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_pension($planilla, $empleado)
     {
-        $registro_anterior = PilaPension::where('planilla_generada_id',$planilla->id)
-                                                ->where('nom_contrato_id',$empleado->id)
-                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
-                                                ->get()
-                                                ->first();
-
-        if ( !is_null($registro_anterior) )
-        {
-            $registro_anterior->delete();
-        }
-
+        $codigo_entidad_pension = $this->formatear_campo( $empleado->entidad_pension->codigo_nacional,' ','derecha',6);
         $porcentaje_pension = 16 / 100;
         if ( $empleado->es_pasante_sena )
         {
-            $porcentaje_pension = 0;
+            $porcentaje_pension = '0.0';
+            $codigo_entidad_pension = '      ';
         }
         $valor_cotizacion_pension = number_format( $this->ibc_salud * $porcentaje_pension, 0,'','');
         $tarifa_pension = $this->formatear_campo( $porcentaje_pension,'0','derecha',7);
-        $cotizacion_pension = $this->formatear_campo( $valor_cotizacion_pension,'0','izquierda',9);
+        $cotizacion_pension = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_pension, 100, 'superior'),'0','izquierda',9);
 
         $valor_cotizacion_fsp = 0;
         $subcuenta_solidaridad_fsp = '000000000';
@@ -875,17 +898,17 @@ class PlanillaIntegradaController extends Controller
         {
             $valor_cotizacion_fsp = number_format( $this->get_valor_acumulado_concepto_entre_meses( $empleado, $concepto_fsp, $this->fecha_inicial, $this->fecha_final ), 0,'','');
             $mitad = number_format( $valor_cotizacion_fsp / 2, 0,'','');
-            $subcuenta_solidaridad_fsp = $this->formatear_campo( $mitad,'0','izquierda',9);
-            $subcuenta_subsistencia_fsp = $this->formatear_campo( $mitad,'0','izquierda',9);
+            $subcuenta_solidaridad_fsp = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $mitad, 100, 'superior'),'0','izquierda',9);
+            $subcuenta_subsistencia_fsp = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $mitad, 100, 'superior'),'0','izquierda',9);
         }
 
         $valor_total_cotizacion_pension = $valor_cotizacion_pension + $valor_cotizacion_fsp;
-        $total_cotizacion_pension = $this->formatear_campo( number_format( $valor_total_cotizacion_pension, 0,'',''),'0','izquierda',9);
+        $total_cotizacion_pension = $this->formatear_campo( number_format( $this->redondear_a_unidad_seguida_ceros( $valor_total_cotizacion_pension, 100, 'superior'), 0,'',''),'0','izquierda',9);
 
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
-                    [ 'codigo_entidad_pension' => $this->formatear_campo( $empleado->entidad_pension->codigo_nacional,' ','derecha',6) ] +
+                    [ 'codigo_entidad_pension' => $codigo_entidad_pension ] +
                     [ 'dias_cotizados_pension' => $this->formatear_campo( $this->cantidad_dias_laborados,'0','izquierda',2) ] +
                     [ 'ibc_pension' => $this->formatear_campo( number_format( $this->ibc_salud,0,'',''),'0','izquierda',9) ] +
                     [ 'tarifa_pension' => $tarifa_pension ] +
@@ -903,19 +926,8 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_riesgos_laborales($planilla, $empleado)
     {
-        $registro_anterior = PilaRiesgoLaboral::where('planilla_generada_id',$planilla->id)
-                                                ->where('nom_contrato_id',$empleado->id)
-                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
-                                                ->get()
-                                                ->first();
 
-        if ( !is_null($registro_anterior) )
-        {
-            $registro_anterior->delete();
-        }
-
-
-        $porcentaje_riesgo_laboral = 0;
+        $porcentaje_riesgo_laboral = '0.0';
         $clase_de_riesgo = '000000000';
         if( !is_null($empleado->clase_riesgo_laboral) )
         {
@@ -926,12 +938,12 @@ class PlanillaIntegradaController extends Controller
         // Cuando se presenta novedad de ausentismo la tarifa de ARL debe de ser cero.
         if ( $this->novedad_de_ausentismo )
         {
-            $porcentaje_riesgo_laboral = 0;
+            $porcentaje_riesgo_laboral = '0.0';
         }
 
         $valor_cotizacion_riesgo_laboral = number_format( $this->ibc_salud * $porcentaje_riesgo_laboral, 0,'','');
         $tarifa_riesgo_laboral = $this->formatear_campo( $porcentaje_riesgo_laboral,'0','derecha',9);
-        $cotizacion_riesgo_laboral = $this->formatear_campo( $valor_cotizacion_riesgo_laboral,'0','izquierda',9);
+        $cotizacion_riesgo_laboral = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_riesgo_laboral, 100, 'superior'),'0','izquierda',9);
 
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
@@ -950,28 +962,19 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_parafiscales($planilla, $empleado)
     {
-        $registro_anterior = PilaParafiscales::where('planilla_generada_id',$planilla->id)
-                                                ->where('nom_contrato_id',$empleado->id)
-                                                ->where('empleado_planilla_id', $this->empleado_planilla_id)
-                                                ->get()
-                                                ->first();
-
-        if ( !is_null($registro_anterior) )
-        {
-            $registro_anterior->delete();
-        }
-
-        $cotizante_exonerado_de_aportes_parafiscales = 'N';
+        $codigo_entidad_ccf = $this->formatear_campo($empleado->entidad_caja_compensacion->codigo_nacional,' ','derecha',6);
+        $cotizante_exonerado_de_aportes_parafiscales = 'S';
         if ( $empleado->es_pasante_sena )
         {
-            $cotizante_exonerado_de_aportes_parafiscales = 'S';
+            $cotizante_exonerado_de_aportes_parafiscales = 'N';
+            $codigo_entidad_ccf = '      ';
         }
 
         $porcentaje_caja_compensacion = $planilla->datos_empresa->porcentaje_caja_compensacion / 100;
         $valor_cotizacion_ccf = number_format( $this->ibc_parafiscales * $porcentaje_caja_compensacion, 0,'','');
         $tarifa_ccf = $this->formatear_campo( $porcentaje_caja_compensacion,'0','derecha',7);
-        $cotizacion_ccf = $this->formatear_campo( $valor_cotizacion_ccf,'0','izquierda',9);
-        if ( $empleado->es_pasante_sena )
+        $cotizacion_ccf = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_ccf, 100, 'superior'),'0','izquierda',9);
+        if ( $empleado->es_pasante_sena || $this->novedad_de_ausentismo && ($this->ibc_salud > 0) )
         {
             $tarifa_ccf = '0.00000';
             $valor_cotizacion_ccf = 0;
@@ -981,8 +984,8 @@ class PlanillaIntegradaController extends Controller
         $porcentaje_sena = $planilla->datos_empresa->porcentaje_sena / 100;
         $valor_cotizacion_sena = number_format( $this->ibc_parafiscales * $porcentaje_sena, 0,'','');
         $tarifa_sena = $this->formatear_campo( $porcentaje_sena,'0','derecha',7);
-        $cotizacion_sena = $this->formatear_campo( $valor_cotizacion_sena,'0','izquierda',9);
-        if ( $empleado->es_pasante_sena || ( $this->ibc_parafiscales < 10 * (float)config('nomina.SMMLV') ) )
+        $cotizacion_sena = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_sena, 100, 'superior'),'0','izquierda',9);
+        if ( $empleado->es_pasante_sena || ( $this->ibc_parafiscales < 10 * (float)config('nomina.SMMLV') ) || $this->novedad_de_ausentismo )
         {
             $tarifa_sena = '0.00000';
             $valor_cotizacion_sena = 0;
@@ -992,8 +995,8 @@ class PlanillaIntegradaController extends Controller
         $porcentaje_icbf = $planilla->datos_empresa->porcentaje_icbf / 100;
         $valor_cotizacion_icbf = number_format( $this->ibc_parafiscales * $porcentaje_icbf, 0,'','');
         $tarifa_icbf = $this->formatear_campo( $porcentaje_icbf,'0','derecha',7);
-        $cotizacion_icbf = $this->formatear_campo( $valor_cotizacion_icbf,'0','izquierda',9);
-        if ( $empleado->es_pasante_icbf || ( $this->ibc_parafiscales < 10 * (float)config('nomina.SMMLV') ) )
+        $cotizacion_icbf = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_icbf, 100, 'superior'),'0','izquierda',9);
+        if ( $empleado->es_pasante_icbf || ( $this->ibc_parafiscales < 10 * (float)config('nomina.SMMLV') ) || $this->novedad_de_ausentismo )
         {
             $tarifa_icbf = '0.00000';
             $valor_cotizacion_icbf = 0;
@@ -1001,13 +1004,13 @@ class PlanillaIntegradaController extends Controller
         }
 
         $valor_total_cotizacion = number_format( $valor_cotizacion_ccf + $valor_cotizacion_sena + $valor_cotizacion_icbf, 0,'','');
-        $total_cotizacion = $this->formatear_campo( $valor_total_cotizacion,'0','izquierda',9);
+        $total_cotizacion = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_total_cotizacion, 100, 'superior'),'0','izquierda',9);
 
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
                     [ 'cotizante_exonerado_de_aportes_parafiscales' => $cotizante_exonerado_de_aportes_parafiscales ] +
-                    [ 'codigo_entidad_ccf' => $this->formatear_campo($empleado->entidad_caja_compensacion->codigo_nacional,' ','derecha',6) ] +
+                    [ 'codigo_entidad_ccf' => $codigo_entidad_ccf ] +
                     [ 'dias_cotizados' => $this->formatear_campo($this->cantidad_dias_parafiscales,'0','izquierda',2) ] +
                     [ 'ibc_parafiscales' => $this->formatear_campo( number_format( $this->ibc_parafiscales,0,'',''),'0','izquierda',9) ] +
                     [ 'tarifa_ccf' => $tarifa_ccf ] +
@@ -1028,7 +1031,7 @@ class PlanillaIntegradaController extends Controller
 
         $namefile = str_slug( $planilla->descripcion ) . '.txt';
 
-        $content = $this->get_datos_encabezado_para_plano( $planilla ) . $this->get_datos_planilla_para_plano( $planilla ) . $this->get_datos_ultima_linea_para_plano( $planilla );
+        $content = $this->get_datos_encabezado_para_plano( $planilla ) . $this->get_datos_planilla_para_plano( $planilla ) . $this->get_datos_archivo_plano_registro_tipo_6( $planilla );
 
         //save file
         $file = fopen($namefile, "w") or die("No se pudo generar el archivo. Problemas con el Internet. Por favor, intente nuevamente!");
@@ -1096,11 +1099,12 @@ class PlanillaIntegradaController extends Controller
         return $fila;
     }
 
-    public function get_datos_ultima_linea_para_plano( $planilla )
+    // REGISTRO TIPO 6. TOTAL APORTES DEL PERIODO A CAJAS DE COMPENSACIÓN FAMILIAR
+    public function get_datos_archivo_plano_registro_tipo_6( $planilla )
     {
 
         $fila = '06'; // Tipo de registro
-        $fila .= '0001'; // Secuencia
+        $fila .= '00001'; // Secuencia
 
         $fila .= $this->formatear_campo( $planilla->datos_empresa->entidad_arl->codigo_nacional, ' ', 'derecha', 6);
 
@@ -1328,17 +1332,67 @@ class PlanillaIntegradaController extends Controller
         return $tipo_cotizante;
     }
 
+    /*
+            PARA REDONDEAR A LA UNIDAD, DECENA, CENTENA... MÁS CERCANA
+    */
+    public function redondear_a_unidad_seguida_ceros( $numero, $valor_unidad_seguida_ceros, $tipo_redondeo)
+    {
+        if ( $numero == 0 )
+        {
+            return 0;
+        }
+        
+        $valor_redondeado = $numero;
+
+        if ( $valor_unidad_seguida_ceros != 0 )
+        {
+            $decimal = $numero / $valor_unidad_seguida_ceros;
+            
+            // Extraer la parte decimal
+            $aux = (string) $decimal;
+            $residuo = substr( $aux, strpos( $aux, "." ) );
+
+            $valor_residuo_tipo_unidad = $residuo * $valor_unidad_seguida_ceros;
+
+            switch ( $tipo_redondeo )
+            {
+                case 'superior':
+                    $diferecia = $valor_unidad_seguida_ceros - $valor_residuo_tipo_unidad;
+                    $valor_redondeado = $numero + $diferecia;
+                    break;
+                
+                case 'inferior':
+                    $valor_redondeado = $numero - $valor_residuo_tipo_unidad;
+                    break;
+                
+                default:
+                    $valor_redondeado = $numero;
+                    break;
+            }
+                    
+        }
+
+        return $valor_redondeado;
+    }
+
     public function eliminar_planilla( $planilla_id )
+    {
+        $this->eliminar_registros_tablas_auxiliares_planilla( $planilla_id );
+
+        EmpleadoPlanilla::where('planilla_generada_id',$planilla_id)->delete();
+        
+        PlanillaGenerada::find($planilla_id)->delete();
+
+        return redirect('web?id=17&id_modelo=271')->with('flash_message','Planilla eliminada correctamente.');
+    }
+
+    public function eliminar_registros_tablas_auxiliares_planilla( $planilla_id )
     {
         PilaNovedades::where('planilla_generada_id',$planilla_id)->delete();
         PilaSalud::where('planilla_generada_id',$planilla_id)->delete();
         PilaPension::where('planilla_generada_id',$planilla_id)->delete();
         PilaRiesgoLaboral::where('planilla_generada_id',$planilla_id)->delete();
         PilaParafiscales::where('planilla_generada_id',$planilla_id)->delete();
-        EmpleadoPlanilla::where('planilla_generada_id',$planilla_id)->delete();
-        PlanillaGenerada::find($planilla_id)->delete();
-
-        return redirect('web?id=17&id_modelo=271')->with('flash_message','Planilla eliminada correctamente.');
     }
 
 }

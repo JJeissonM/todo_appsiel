@@ -115,6 +115,13 @@
 @section('scripts')
 	<script type="text/javascript">
 		$(document).ready(function(){
+
+
+			$('#btn_generar').click(function(event){
+				$(this).children('.fa-calculator').attr('class','fa fa-spinner fa-spin');
+				$('.alert.alert-success.alert-dismissible').fadeOut(1500);
+			});
+			
 			$('#btn_excel_2').click(function(event){
 				event.preventDefault();
 				var nombre_listado = $(this).children('span').text();

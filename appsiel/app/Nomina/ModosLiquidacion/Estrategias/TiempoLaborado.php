@@ -172,7 +172,8 @@ class TiempoLaborado implements Estrategia
                                     ['nom_contrato_id' => $empleado->id ] + 
                                     ['estado' => 'Activo'] + 
                                     ['creado_por' => Auth::user()->email] + 
-                                    ['valor_devengo' => $valor_devengo ]+ 
+                                    ['valor_devengo' => $valor_devengo ]+  
+                                    ['cantidad_horas' => $documento_nomina->tiempo_a_liquidar ]+ 
                                     ['modificado_por' => '']
                                 );
 	}
