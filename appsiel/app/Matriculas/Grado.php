@@ -39,6 +39,26 @@ class Grado extends Model
         return $registros;
     }
 
+    public static function sqlString($search)
+    {
+        $string = Grado::select(
+            'sga_grados.descripcion AS DESCRIPCIÓN',
+            'sga_grados.codigo AS CODIGO',
+            'sga_grados.estado AS ESTADO'
+        )->where("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_grados.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_grados.estado", "LIKE", "%$search%")
+            ->orderBy('sga_grados.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CATALOGO GRADOS";
+    }
+
     public static function opciones_campo_select()
     {
         $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];

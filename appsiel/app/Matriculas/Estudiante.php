@@ -101,6 +101,36 @@ class Estudiante extends Model
             ->paginate($nro_registros);
     }
 
+    public static function sqlString($search)
+    {
+        $string = Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS NOMBRE'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS DOCUMENTO'),
+                'sga_estudiantes.genero AS GENERO',
+                'sga_estudiantes.fecha_nacimiento AS FECHA_DE_NACIMIENTO',
+                'core_terceros.telefono1 AS TELEFONO',
+                'sga_estudiantes.email_papa AS EMAIL_PAPÁ',
+                'sga_estudiantes.email_mama AS EMAIL_MAMÁ'
+            )->where("sga_estudiantes.genero", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.email_papa", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.email_mama", "LIKE", "%$search%")
+            ->orderBy('sga_estudiantes.id', 'desc')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO CATALOGO ESTUDIANTES";
+    }
+
     public static function opciones_campo_select()
     {
         $opciones = Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')

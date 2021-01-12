@@ -23,7 +23,7 @@ class PeriodoLectivo extends Model
         return $this->hasMany('App\Calificaciones\Periodo', 'periodo_lectivo_id');
     }
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $select_raw = 'IF(sga_periodos_lectivos.cerrado=0,REPLACE(sga_periodos_lectivos.cerrado,0,"No"),REPLACE(sga_periodos_lectivos.cerrado,1,"Si")) AS campo4';
 
@@ -34,11 +34,41 @@ class PeriodoLectivo extends Model
             DB::raw($select_raw),
             'sga_periodos_lectivos.estado AS campo5',
             'sga_periodos_lectivos.id AS campo6'
-        )
+        )->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.fecha_desde", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.fecha_hasta", "LIKE", "%$search%")
+            ->orWhere("CERRADO", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.estado", "LIKE", "%$search%")
             ->orderBy('sga_periodos_lectivos.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $select_raw = 'IF(sga_periodos_lectivos.cerrado=0,REPLACE(sga_periodos_lectivos.cerrado,0,"No"),REPLACE(sga_periodos_lectivos.cerrado,1,"Si")) AS CERRADO';
+
+        $string = PeriodoLectivo::select(
+            'sga_periodos_lectivos.descripcion AS DESCRIPCIÓN',
+            'sga_periodos_lectivos.fecha_desde AS FECHA DESDE',
+            'sga_periodos_lectivos.fecha_hasta AS FECHA HASTA',
+            DB::raw($select_raw),
+            'sga_periodos_lectivos.estado AS ESTADO'
+        )->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.fecha_desde", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.fecha_hasta", "LIKE", "%$search%")
+            ->orWhere("CERRADO", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.estado", "LIKE", "%$search%")
+            ->orderBy('sga_periodos_lectivos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE PERDIODOS LECTIVO";
     }
 
     // El archivo js debe estar en la carpeta public

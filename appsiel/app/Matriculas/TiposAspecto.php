@@ -27,4 +27,22 @@ class TiposAspecto extends Model
 
         return $registros;
     }
+
+    public static function sqlString($search)
+    {
+        $string = TiposAspecto::select(
+            'sga_tipos_aspectos.descripcion AS DESCRIPCIÓN',
+            'sga_tipos_aspectos.estado AS ESTADO'
+        )->where("sga_tipos_aspectos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_tipos_aspectos.estado", "LIKE", "%$search%")
+            ->orderBy('sga_tipos_aspectos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE TIPOS DE ASPECTOS DE OBSERVADOR";
+    }
 }

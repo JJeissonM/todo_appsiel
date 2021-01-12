@@ -73,6 +73,44 @@ class Matricula extends Model
             ->paginate($nro_registros);
     }
 
+    public static function sqlString($search)
+    {
+        $string = Matricula::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
+            ->leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_matriculas.periodo_lectivo_id')
+            ->select(
+                'sga_matriculas.codigo AS CODIGO',
+                'sga_matriculas.fecha_matricula AS FECHA_DE_MATRICULA',
+                'sga_periodos_lectivos.descripcion AS DESCRIPCIÓN',
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres) AS NOMBRES'),
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2) AS APELLIDOS'),
+                'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
+                'core_terceros.email AS EMAIL',
+                'sga_matriculas.acudiente AS ACUDIENTE',
+                'sga_cursos.descripcion AS DESCRIPCIÓN',
+                'sga_matriculas.estado AS ESTADO'
+            )->where("sga_matriculas.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_matriculas.fecha_matricula", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2)"), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.email", "LIKE", "%$search%")
+            ->orWhere("sga_matriculas.acudiente", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_matriculas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_matriculas.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ESTUIANTES MATRICULADOS";
+    }
+
     public function get_segun_periodo_lectivo_y_curso($periodo_lectivo_id, $curso_id)
     {
         return Matricula::where('periodo_lectivo_id', $periodo_lectivo_id)

@@ -39,4 +39,34 @@ class ObservadorEstudiante extends Estudiante
             ->orderBy('sga_estudiantes.id', 'desc')
             ->paginate($nro_registros);
     }
+
+    public static function sqlString($search)
+    {
+        $string = Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS NÚMERO_DE_IDENTIFICACIÓN'),
+                'sga_estudiantes.genero AS GENERO',
+                'sga_estudiantes.fecha_nacimiento AS FECHA_DE_NACIMIENTO',
+                'core_terceros.direccion1 AS DIRECCIÓN',
+                'core_terceros.telefono1 AS TELEFONO',
+                'core_terceros.email AS EMAIL'
+            )->where("sga_estudiantes.genero", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.email", "LIKE", "%$search%")
+            ->orderBy('sga_estudiantes.id', 'desc')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ESTUDIANTES EN OBSERVADOR";
+    }
 }

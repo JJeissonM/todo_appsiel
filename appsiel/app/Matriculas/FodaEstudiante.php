@@ -32,6 +32,30 @@ class FodaEstudiante extends Model
             ->paginate($nro_registros);
     }
 
+    public static function sqlString($search)
+    {
+        $string = FodaEstudiante::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_foda_estudiantes.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTES'),
+                'sga_foda_estudiantes.fecha_novedad AS FECHA',
+                'sga_foda_estudiantes.tipo_caracteristica AS TIPO_CARACTERISTICA',
+                'sga_foda_estudiantes.descripcion AS DESCRIPCIÓN'
+            )->where("sga_foda_estudiantes.fecha_novedad", "LIKE", "%$search%")
+            ->orWhere("sga_foda_estudiantes.tipo_caracteristica", "LIKE", "%$search%")
+            ->orWhere("sga_foda_estudiantes.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orderBy('sga_foda_estudiantes.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO ANALISIS FODA - OBSERVADOR";
+    }
+
     public static function get_foda_un_estudiante($estudiante_id)
     {
         return FodaEstudiante::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_foda_estudiantes.id_estudiante')

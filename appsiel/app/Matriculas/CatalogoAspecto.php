@@ -34,4 +34,28 @@ class CatalogoAspecto extends Model
 
         return $registros;
     }
+
+    public static function sqlString($search)
+    {
+        $string = CatalogoAspecto::join('sga_tipos_aspectos', 'sga_tipos_aspectos.id', '=', 'sga_catalogo_aspectos.id_tipo_aspecto')
+            ->select(
+                'sga_catalogo_aspectos.orden AS ORDEN',
+                'sga_tipos_aspectos.descripcion AS TIPO_DE_ASPECTO',
+                'sga_catalogo_aspectos.descripcion AS DESCRIPCION',
+                'sga_catalogo_aspectos.estado AS ESTADO'
+            )
+            ->where("sga_catalogo_aspectos.orden", "LIKE", "%$search%")
+            ->orWhere("sga_tipos_aspectos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_catalogo_aspectos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_catalogo_aspectos.estado", "LIKE", "%$search%")
+            ->orderBy('sga_catalogo_aspectos.orden', 'ASC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO CATALOGO ASPECTO ESTUDIANTES";
+    }
 }

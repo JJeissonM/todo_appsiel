@@ -26,6 +26,24 @@ class TipoNovedad extends Model
         return $registros;
     }
 
+    public static function sqlString($search)
+    {
+        $string = TipoNovedad::select(
+            'sga_tipos_novedades.descripcion AS DESCRIPCIÓN',
+            'sga_tipos_novedades.estado AS ESTADO'
+        )->where("sga_tipos_novedades.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_tipos_novedades.estado", "LIKE", "%$search%")
+            ->orderBy('sga_tipos_novedades.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE TIPOS DE NOVEDADES";
+    }
+
     public static function opciones_campo_select()
     {
         $opciones = TipoNovedad::where('estado', 'Activo')->get();
