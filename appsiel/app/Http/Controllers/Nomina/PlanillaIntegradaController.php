@@ -758,6 +758,12 @@ class PlanillaIntegradaController extends Controller
 
         $tipo_de_salario = 'F'; // Los valores permitidos son, Salario fijo (F), Salario variable (V), Salario integral (X)
 
+        if ( $empleado->es_pasante_sena )
+        {
+            $tipo_de_salario = ' ';
+            $vst = ' ';
+        }
+
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
