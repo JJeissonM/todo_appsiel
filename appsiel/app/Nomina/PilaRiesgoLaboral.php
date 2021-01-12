@@ -11,6 +11,11 @@ class PilaRiesgoLaboral extends Model
 	public $encabezado_tabla = ['Planilla generada', 'Empleado', 'Fecha PILA', 'Codigo ARL', 'Dias cotizados Riesgos laborales', 'IBC Riesgos laborales', 'Tarifa Riesgos laborales', 'Total Cotizacion Riesgos laborales', 'Clase de Riesgo', 'Acción'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
+
+    public function entidad()
+    {
+        return NomEntidad::where( 'codigo_nacional', $this->codigo_arl )->get()->first();
+    }   
     
 	public static function consultar_registros()
 	{

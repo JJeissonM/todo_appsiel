@@ -11,7 +11,11 @@ class PilaPension extends Model
 	public $encabezado_tabla = ['Planilla generada', 'Empleado', 'Fecha PILA', 'Codigo Entidad Pension', 'Dias cotizados Pension', 'IBC Pension', 'Tarifa Pension', 'Cotizacion Pension', 'AFP. Voluntario RAIS Empleado', 'AFP. Voluntatio RAIS Empresa', 'Subcuenta Solidaridad FSP', 'Subcuenta Subsistencia FSP', 'Total Cotizacion Pension', 'Valor Cotizacion Pension', 'Acción'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
-    
+
+    public function entidad()
+    {
+        return NomEntidad::where( 'codigo_nacional', $this->codigo_entidad_pension )->get()->first();
+    }    
     
 	public static function consultar_registros()
 	{

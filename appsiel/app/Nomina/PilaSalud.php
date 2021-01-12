@@ -11,7 +11,12 @@ class PilaSalud extends Model
 	public $encabezado_tabla = ['Planilla generada', 'Empleado', 'Fecha PILA', 'Codigo Entidad', 'Dias cotizados', 'IBC', 'Tarifa', 'Cotizacion', 'Valor UPC Adicional', 'Total Cotizacion', 'Acción'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
-    
+
+    public function entidad()
+    {
+        return NomEntidad::where( 'codigo_nacional', $this->codigo_entidad_salud )->get()->first();
+    }
+
 	public static function consultar_registros()
 	{
 	    return PilaSalud::leftJoin('nom_contratos','nom_contratos.id','=','nom_pila_liquidacion_salud.nom_contrato_id')

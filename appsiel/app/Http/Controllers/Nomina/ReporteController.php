@@ -34,6 +34,13 @@ use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
 
+use App\Nomina\PilaNovedades;
+use App\Nomina\PilaSalud;
+use App\Nomina\PilaPension;
+use App\Nomina\PilaRiesgoLaboral;
+use App\Nomina\PilaParafiscales;
+use App\Nomina\EmpleadoPlanilla;
+
 class ReporteController extends Controller
 {
    public function reportes()
@@ -299,7 +306,7 @@ class ReporteController extends Controller
 
         foreach ($tipos_entidades as $modo_liquidacion_id => $tipo_entidad)
         {
-            $entidades = NomEntidad::where('tipo_entidad',$value)->get()->toArray();
+            $entidades = NomEntidad::where('tipo_entidad',$tipo_entidad)->get()->toArray();
             foreach ($entidades as $entidad )
             {
                 $movimiento_entidad = 3;
@@ -315,18 +322,29 @@ class ReporteController extends Controller
         return $vista;
     }
 
-    public function listado_aportes_parafiscales(Request $request)
+    public function listado_aportes_pila(Request $request)
     {
-        $fecha_desde = $request->fecha_desde;
-        $fecha_hasta  = $request->fecha_hasta;
+        $fecha_final_mes = $request->fecha_final_mes;
 
-        $vista = '<h3 style="width: 100%; text-align: center;">
-                        LISTADO DE APORTES PARAFISCALES
-                    </h3>
-                    <p style="width: 100%; text-align: center;">
-                        Desde: ' . $fecha_desde . ' - Hasta: ' . $fecha_hasta . '
-                    </p>
-                    <hr>';
+        $coleccion_movimientos_salud = PilaSalud::where('fecha_final_mes',$fecha_final_mes)
+                                    ->orderBy('codigo_entidad_salud')
+                                    ->get();
+
+        $coleccion_movimientos_pension = PilaPension::where('fecha_final_mes',$fecha_final_mes)
+                                    ->orderBy('codigo_entidad_pension')
+                                    ->get();
+
+        $coleccion_movimientos_riesgos_laborales = PilaRiesgoLaboral::where('fecha_final_mes',$fecha_final_mes)
+                                    ->orderBy('codigo_arl')
+                                    ->get();
+
+        $coleccion_movimientos_parafiscales = PilaParafiscales::where('fecha_final_mes',$fecha_final_mes)
+                                    ->get();
+
+        //dd($coleccion_movimientos_riesgos_laborales);
+        $vista = View::make('nomina.reportes.aportes_pila', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_pension', 'coleccion_movimientos_riesgos_laborales', 'coleccion_movimientos_parafiscales', 'fecha_final_mes' ) )->render();
+
+        //dd($coleccion_movimientos_salud);
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

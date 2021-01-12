@@ -38,7 +38,7 @@ Route::post('nom_listado_acumulados','Nomina\ReporteController@listado_acumulado
 Route::post('nom_libro_fiscal_vacaciones','Nomina\ReporteController@libro_fiscal_vacaciones');
 Route::post('nom_resumen_x_entidad_empleado','Nomina\ReporteController@resumen_x_entidad_empleado');
 Route::post('nom_provisiones_x_entidad_empleado','Nomina\ReporteController@provisiones_x_entidad_empleado');
-Route::post('nom_listado_aportes_parafiscales','Nomina\ReporteController@listado_aportes_parafiscales');
+Route::post('nom_listado_aportes_pila','Nomina\ReporteController@listado_aportes_pila');
 
 Route::get('nomina/reportes','Nomina\ReporteController@reportes');
 
