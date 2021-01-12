@@ -49,6 +49,7 @@ class PlanillaIntegradaController extends Controller
     protected $empleado_planilla_id;
     protected $dias_incapacidad_accidente_trabajo;
     protected $novedad_de_ausentismo;
+    protected $el_empleado_id;
 
     public function show($planilla_generada_id)
     {
@@ -437,8 +438,8 @@ class PlanillaIntegradaController extends Controller
         $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (int)config('nomina.horas_laborales') * (int)config('nomina.horas_dia_laboral');
         if ( $this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal )
         {
-            $this->ibc_salud = (float)config('nomina.SMMLV');
-            $this->valor_ibc_un_dia = $valor_ibc_un_dia_minimo_legal;
+            $this->ibc_salud = (float)config('nomina.SMMLV') + 1000; // $1.000 de tolerancia por las aproximaciones decimales
+            $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
         }
 
         $this->ibc_parafiscales = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_parafiscales'), $this->fecha_inicial, $this->fecha_final );
@@ -877,6 +878,8 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_pension($planilla, $empleado)
     {
+        $this->el_empleado_id = $empleado->id;
+
         $codigo_entidad_pension = $this->formatear_campo( $empleado->entidad_pension->codigo_nacional,' ','derecha',6);
         $porcentaje_pension = 16 / 100;
         if ( $empleado->es_pasante_sena )
@@ -886,7 +889,7 @@ class PlanillaIntegradaController extends Controller
         }
         $valor_cotizacion_pension = number_format( $this->ibc_salud * $porcentaje_pension, 0,'','');
         $tarifa_pension = $this->formatear_campo( $porcentaje_pension,'0','derecha',7);
-        $cotizacion_pension = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_pension, 100, 'superior'),'0','izquierda',9);
+        $cotizacion_pension = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( (float)$valor_cotizacion_pension, 100, 'superior'),'0','izquierda',9);
 
         $valor_cotizacion_fsp = 0;
         $subcuenta_solidaridad_fsp = '000000000';
@@ -904,7 +907,7 @@ class PlanillaIntegradaController extends Controller
 
         $valor_total_cotizacion_pension = $valor_cotizacion_pension + $valor_cotizacion_fsp;
         $total_cotizacion_pension = $this->formatear_campo( number_format( $this->redondear_a_unidad_seguida_ceros( $valor_total_cotizacion_pension, 100, 'superior'), 0,'',''),'0','izquierda',9);
-
+        
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
@@ -1347,9 +1350,14 @@ class PlanillaIntegradaController extends Controller
         if ( $valor_unidad_seguida_ceros != 0 )
         {
             $decimal = $numero / $valor_unidad_seguida_ceros;
-            
-            // Extraer la parte decimal
             $aux = (string) $decimal;
+            // Si, no existe el punto en el string $aux, $numero no necesita ser redondeado
+            if ( (int)strpos( $aux, "." ) == 0 )
+            {
+                return $numero;
+            }
+
+            // Extraer la parte decimal
             $residuo = substr( $aux, strpos( $aux, "." ) );
 
             $valor_residuo_tipo_unidad = $residuo * $valor_unidad_seguida_ceros;
