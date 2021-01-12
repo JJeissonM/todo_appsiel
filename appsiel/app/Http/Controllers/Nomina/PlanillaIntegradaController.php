@@ -424,10 +424,19 @@ class PlanillaIntegradaController extends Controller
 
     public function calcular_ibc( $planilla, $empleado )
     {
-        $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final );
+        $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final ) + 10;
 
         $this->cantidad_dias_laborados = $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') );
 
+        $this->validar_ibc_mayor_al_minimino_legal();
+
+        $this->ibc_parafiscales = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_parafiscales'), $this->fecha_inicial, $this->fecha_final );
+
+        $this->cantidad_dias_parafiscales = $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_parafiscales') );
+    }
+
+    public function validar_ibc_mayor_al_minimino_legal()
+    {
         // No se puede tener un IBC por debajo del salario mínimo legal
         $this->valor_ibc_un_dia = 0;
         if ( $this->cantidad_dias_laborados != 0 )
@@ -438,13 +447,9 @@ class PlanillaIntegradaController extends Controller
         $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (int)config('nomina.horas_laborales') * (int)config('nomina.horas_dia_laboral');
         if ( $this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal )
         {
-            $this->ibc_salud = (float)config('nomina.SMMLV') + 1000; // $1.000 de tolerancia por las aproximaciones decimales
+            $this->ibc_salud = (float)config('nomina.SMMLV') + 10; // $10 de tolerancia por las aproximaciones decimales
             $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
         }
-
-        $this->ibc_parafiscales = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_parafiscales'), $this->fecha_inicial, $this->fecha_final );
-
-        $this->cantidad_dias_parafiscales = $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_parafiscales') );
     }
 
     public function get_valor_acumulado_agrupacion_entre_meses( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
@@ -818,10 +823,12 @@ class PlanillaIntegradaController extends Controller
         $this->cantidad_dias_laborados = $registro_novedad_tnl->cantidad_horas / (int)config('nomina.horas_dia_laboral');
         // sumar devengos/deducciones asociados a la novedad
         $registros_asociados_novedad = NomDocRegistro::where('novedad_tnl_id',$registro_novedad_tnl->novedad_tnl_id)->get();
-        $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion');
+        $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion') + 10;
+        
+        $this->validar_ibc_mayor_al_minimino_legal();
+
         $this->ibc_parafiscales = $this->ibc_salud;
         $this->cantidad_dias_parafiscales = $this->cantidad_dias_laborados;
-        
 
         // Debe haber algun pago de Parafiscales. El operador de la PILLA dice: 
         // El tipo de cotizante 01 por ausentismo no está obligado aportar a todos los sistemas pero debe por lo menos realizar aportes a uno.
