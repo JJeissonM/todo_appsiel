@@ -54,16 +54,50 @@ class Tercero extends Model
         return Cliente::where('core_tercero_id', $this->id)->get()->first();
     }
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
-        $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo1';
-
         $registros = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
-            ->select(DB::raw($select_raw), 'core_terceros.numero_identificacion AS campo2', 'core_terceros.descripcion AS campo3', 'core_terceros.direccion1 AS campo4', 'core_terceros.telefono1 AS campo5', 'core_terceros.id AS campo6')
+            ->select(
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo1'),
+                'core_terceros.numero_identificacion AS campo2',
+                'core_terceros.descripcion AS campo3',
+                'core_terceros.direccion1 AS campo4',
+                'core_terceros.telefono1 AS campo5',
+                'core_terceros.id AS campo6'
+            )->where(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
             ->orderBy('core_terceros.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO'),
+                'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
+                'core_terceros.descripcion AS DESCRIPCIÓN',
+                'core_terceros.direccion1 AS DIRECCIÓN',
+                'core_terceros.telefono1 AS TELÉFONO'
+            )->where(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orderBy('core_terceros.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE TERCEROS";
     }
 
     public static function datos_completos($core_tercero_id)

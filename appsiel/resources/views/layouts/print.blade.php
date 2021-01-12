@@ -98,7 +98,7 @@
             ?>
                 <div class="row" style="font-size: 12px;">
                     <?php
-                    if ($nivel === 1) {
+                    if ($nivel == 1) {
                         //nivel 1
                         $html = "<table style='width: 100%;'><thead><tr>";
                         $i = $total = $van = 0;
@@ -107,11 +107,11 @@
                             $i = $i + 1;
                             $van = $van + 1;
                             $html = $html . "<th style='width: 20% !important; background-color:#50B794; color:#000000;'>" . $c . "</th>";
-                            if ($i === 5) {
+                            if ($i === 5 && $van != $total) {
                                 $i = 0;
                                 $html = $html . "</tr><tr>";
                             } else {
-                                if ($van === $total) {
+                                if ($van == $total) {
                                     $html = $html . "</tr>";
                                 }
                             }
@@ -134,7 +134,7 @@
                                 $i2 = $i2 + 1;
                                 $van2 = $van2 + 1;
                                 $html = $html . "<td>" . strtoupper($t) . "</td>";
-                                if ($i2 === 5) {
+                                if ($i2 === 5 && $van2 != $total2) {
                                     $i2 = 0;
                                     if ($parastilo % 2 == 0) {
                                         $html = $html . "</tr><tr style='width: 20% !important; background-color: #ecf0f1;'>";

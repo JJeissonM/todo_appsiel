@@ -25,16 +25,38 @@ class Anio extends Model
     }
 
 
-    public static function consultar_registros2($nro_registros)
+    public static function consultar_registros2($nro_registros, $search)
     {
         return Anio::select(
             'cte_anios.anio AS campo1',
             'cte_anios.created_at AS campo2',
             'cte_anios.updated_at AS campo3',
             'cte_anios.id AS campo4'
-        )
+        )->where("cte_anios.anio", "LIKE", "%$search%")
+            ->orWhere("cte_anios.created_at", "LIKE", "%$search%")
+            ->orWhere("cte_anios.updated_at", "LIKE", "%$search%")
             ->orderBy('cte_anios.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Anio::select(
+            'cte_anios.anio AS AÑO',
+            'cte_anios.created_at AS CREADO',
+            'cte_anios.updated_at AS ACTUALIZADO'
+        )->where("cte_anios.anio", "LIKE", "%$search%")
+            ->orWhere("cte_anios.created_at", "LIKE", "%$search%")
+            ->orWhere("cte_anios.updated_at", "LIKE", "%$search%")
+            ->orderBy('cte_anios.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE AÑOS PARA MANTENIMIENTOS";
     }
 
     public function anioperiodos()

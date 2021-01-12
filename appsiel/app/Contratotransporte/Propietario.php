@@ -31,7 +31,7 @@ class Propietario extends Model
         return $vec;
     }
 
-    public static function consultar_registros2($nro_registros)
+    public static function consultar_registros2($nro_registros, $search)
     {
         return Propietario::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_propietarios.tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
@@ -43,9 +43,40 @@ class Propietario extends Model
                 'cte_propietarios.tipo AS campo4',
                 'cte_propietarios.estado AS campo5',
                 'cte_propietarios.id AS campo6'
-            )
+            )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("cte_propietarios.tipo", "LIKE", "%$search%")
+            ->orWhere("cte_propietarios.estado", "LIKE", "%$search%")
             ->orderBy('cte_propietarios.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Propietario::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_propietarios.tercero_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->leftJoin('users', 'users.id', '=', 'core_terceros.user_id')
+            ->select(
+                'core_tipos_docs_id.abreviatura AS TIPO_DOCUMENTO',
+                'core_terceros.numero_identificacion AS IDENTIDAD',
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS PROPIETARIO_TENEDOR'),
+                'cte_propietarios.tipo AS TIPO',
+                'cte_propietarios.estado AS ESTADO'
+            )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("cte_propietarios.tipo", "LIKE", "%$search%")
+            ->orWhere("cte_propietarios.estado", "LIKE", "%$search%")
+            ->orderBy('cte_propietarios.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE PROPIETARIOS/TENEDORES";
     }
 
     public function vehiculos()

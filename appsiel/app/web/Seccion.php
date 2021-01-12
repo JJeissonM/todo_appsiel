@@ -20,15 +20,37 @@ class Seccion extends Model
 
 
   // METODO PARA LA VISTA INDEX
-  public static function consultar_registros($nro_registros)
+  public static function consultar_registros($nro_registros, $search)
   {
     return Seccion::select(
       'nombre AS campo1',
       'descripcion AS campo2',
       'preview AS campo3',
       'id AS campo4'
-    )
+    )->where("nombre", "LIKE", "%$search%")
+      ->orWhere("descripcion", "LIKE", "%$search%")
+      ->orWhere("preview", "LIKE", "%$search%")
       ->orderBy('created_at', 'DESC')
       ->paginate($nro_registros);
+  }
+
+  public static function sqlString($search)
+  {
+    $string = Seccion::select(
+      'nombre AS NOMBRE',
+      'descripcion AS DESCRIPCIÓN',
+      'preview AS URL_IMAGEN'
+    )->where("nombre", "LIKE", "%$search%")
+      ->orWhere("descripcion", "LIKE", "%$search%")
+      ->orWhere("preview", "LIKE", "%$search%")
+      ->orderBy('created_at', 'DESC')
+      ->toSql();
+    return str_replace('?', '"%' . $search . '%"', $string);
+  }
+
+  //Titulo para la exportación en PDF y EXCEL
+  public static function tituloExport()
+  {
+    return "LISTADO DE SECCIONES";
   }
 }

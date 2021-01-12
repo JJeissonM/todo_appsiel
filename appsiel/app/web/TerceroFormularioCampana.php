@@ -16,7 +16,7 @@ class TerceroFormularioCampana extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Teléfono', 'Email', 'Fecha registro'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return Tercero::where('creado_por', 'formulario_campana')
             ->select(
@@ -25,8 +25,34 @@ class TerceroFormularioCampana extends Model
                 'core_terceros.email AS campo3',
                 'core_terceros.created_at AS campo4',
                 'core_terceros.id AS campo5'
-            )
+            )->where(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.email", "LIKE", "%$search%")
+            ->orWhere("core_terceros.created_at", "LIKE", "%$search%")
             ->orderBy('core_terceros.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Tercero::where('creado_por', 'formulario_campana')
+            ->select(
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS CLIENTE'),
+                'core_terceros.telefono1 AS TELÉFONO',
+                'core_terceros.email AS CORREO',
+                'core_terceros.created_at AS CREADO'
+            )->where(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.email", "LIKE", "%$search%")
+            ->orWhere("core_terceros.created_at", "LIKE", "%$search%")
+            ->orderBy('core_terceros.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CLIENTES PARA CAMPAÑA WEB";
     }
 }
