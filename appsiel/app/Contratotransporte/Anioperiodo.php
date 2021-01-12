@@ -28,7 +28,7 @@ class Anioperiodo extends Model
         return $vec;
     }
 
-    public static function consultar_registros2($nro_registros)
+    public static function consultar_registros2($nro_registros, $search)
     {
         return Anioperiodo::leftJoin('cte_anios', 'cte_anios.id', '=', 'cte_anioperiodos.anio_id')
             ->select(
@@ -37,9 +37,35 @@ class Anioperiodo extends Model
                 'cte_anioperiodos.created_at AS campo3',
                 'cte_anioperiodos.updated_at AS campo4',
                 'cte_anioperiodos.id AS campo5'
-            )
+            )->where("cte_anios.anio", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(cte_anioperiodos.inicio," - ",cte_anioperiodos.fin)'), "LIKE", "%$search%")
+            ->orWhere("cte_anioperiodos.created_at", "LIKE", "%$search%")
+            ->orWhere("cte_anioperiodos.updated_at", "LIKE", "%$search%")
             ->orderBy('cte_anioperiodos.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Anioperiodo::leftJoin('cte_anios', 'cte_anios.id', '=', 'cte_anioperiodos.anio_id')
+            ->select(
+                'cte_anios.anio AS AÑO',
+                DB::raw('CONCAT(cte_anioperiodos.inicio," - ",cte_anioperiodos.fin) AS INICIO_FIN'),
+                'cte_anioperiodos.created_at AS CREADO',
+                'cte_anioperiodos.updated_at AS ACTUALIZADO'
+            )->where("cte_anios.anio", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(cte_anioperiodos.inicio," - ",cte_anioperiodos.fin)'), "LIKE", "%$search%")
+            ->orWhere("cte_anioperiodos.created_at", "LIKE", "%$search%")
+            ->orWhere("cte_anioperiodos.updated_at", "LIKE", "%$search%")
+            ->orderBy('cte_anioperiodos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE PERÍODOS PARA MANTENIMIENTOS";
     }
 
     public function anio()

@@ -16,7 +16,7 @@ class PasswordReset extends Model
 
     public $urls_acciones = '{"show":"no"}';
 
-    public static function consultar_registros($nor_registros)
+    public static function consultar_registros($nor_registros, $search)
     {
         return PasswordReset::leftJoin('users', 'users.email', '=', 'password_resets.email')
             ->leftJoin('user_has_roles', 'user_has_roles.user_id', '=', 'users.id')
@@ -28,7 +28,39 @@ class PasswordReset extends Model
                 'password_resets.token AS campo4',
                 'password_resets.created_at AS campo5',
                 'users.id AS campo6'
-            )->orderBy('users.created_at', 'DESC')
+            )->where("roles.name", "LIKE", "%$search%")
+            ->orWhere("users.name", "LIKE", "%$search%")
+            ->orWhere("users.email", "LIKE", "%$search%")
+            ->orWhere("password_resets.token", "LIKE", "%$search%")
+            ->orWhere("password_resets.created_at", "LIKE", "%$search%")
+            ->orderBy('password_resets.created_at', 'DESC')
             ->paginate($nor_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = PasswordReset::leftJoin('users', 'users.email', '=', 'password_resets.email')
+            ->leftJoin('user_has_roles', 'user_has_roles.user_id', '=', 'users.id')
+            ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
+            ->select(
+                'roles.name AS ROL',
+                'users.name AS USUARIO',
+                'users.email As CORREO',
+                'password_resets.token AS CONTRASEÑA',
+                'password_resets.created_at AS CREADO'
+            )->where("roles.name", "LIKE", "%$search%")
+            ->orWhere("users.name", "LIKE", "%$search%")
+            ->orWhere("users.email", "LIKE", "%$search%")
+            ->orWhere("password_resets.token", "LIKE", "%$search%")
+            ->orWhere("password_resets.created_at", "LIKE", "%$search%")
+            ->orderBy('password_resets.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE USUARIOS";
     }
 }

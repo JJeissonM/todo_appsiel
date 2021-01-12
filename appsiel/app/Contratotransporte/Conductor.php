@@ -33,7 +33,7 @@ class Conductor extends Model
         return $vec;
     }
 
-    public static function consultar_registros2($nro_registros)
+    public static function consultar_registros2($nro_registros, $search)
     {
         return Conductor::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_conductors.tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
@@ -44,9 +44,37 @@ class Conductor extends Model
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
                 'cte_conductors.estado AS campo4',
                 'cte_conductors.id AS campo5'
-            )
+            )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("cte_conductors.estado", "LIKE", "%$search%")
             ->orderBy('cte_conductors.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Conductor::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_conductors.tercero_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->leftJoin('users', 'users.id', '=', 'core_terceros.user_id')
+            ->select(
+                'core_tipos_docs_id.abreviatura AS TIPO_DOCUMENTO',
+                'core_terceros.numero_identificacion AS NÚMERO_DOCUMENTO',
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS CONDUCTOR'),
+                'cte_conductors.estado AS ESTADO'
+            )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("cte_conductors.estado", "LIKE", "%$search%")
+            ->orderBy('cte_conductors.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CONDUCTORES";
     }
 
     public function documentosconductors()

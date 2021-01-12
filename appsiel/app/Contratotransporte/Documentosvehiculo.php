@@ -14,7 +14,7 @@ class Documentosvehiculo extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
-    public static function consultar_registros2($nro_registros)
+    public static function consultar_registros2($nro_registros, $search)
     {
         return Documentosvehiculo::leftJoin('cte_vehiculos', 'cte_vehiculos.id', '=', 'cte_documentosvehiculos.vehiculo_id')
             ->leftJoin('cte_propietarios', 'cte_propietarios.id', '=', 'cte_vehiculos.propietario_id')
@@ -28,9 +28,46 @@ class Documentosvehiculo extends Model
                 'core_terceros.numero_identificacion AS campo6',
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo7'),
                 'cte_documentosvehiculos.id AS campo8'
-            )
+            )->where("cte_documentosvehiculos.nro_documento", "LIKE", "%$search%")
+            ->orWhere("cte_documentosvehiculos.documento", "LIKE", "%$search%")
+            ->orWhere("cte_documentosvehiculos.vigencia_inicio", "LIKE", "%$search%")
+            ->orWhere("cte_documentosvehiculos.vigencia_fin", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT("INTERNO: ",cte_vehiculos.int," - PLACA: ",cte_vehiculos.placa," - MODELO: ",cte_vehiculos.modelo," - MARCA: ",cte_vehiculos.marca," - CLASE: ",cte_vehiculos.clase)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
             ->orderBy('cte_documentosvehiculos.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Documentosvehiculo::leftJoin('cte_vehiculos', 'cte_vehiculos.id', '=', 'cte_documentosvehiculos.vehiculo_id')
+            ->leftJoin('cte_propietarios', 'cte_propietarios.id', '=', 'cte_vehiculos.propietario_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_propietarios.tercero_id')
+            ->select(
+                'cte_documentosvehiculos.nro_documento AS NRO_DOCUMENTO',
+                'cte_documentosvehiculos.documento AS DOCUMENTO',
+                'cte_documentosvehiculos.vigencia_inicio AS INICIO_VIGENCIA',
+                'cte_documentosvehiculos.vigencia_fin AS FIN_VIGENCIA',
+                DB::raw('CONCAT("INTERNO: ",cte_vehiculos.int," - PLACA: ",cte_vehiculos.placa," - MODELO: ",cte_vehiculos.modelo," - MARCA: ",cte_vehiculos.marca," - CLASE: ",cte_vehiculos.clase) AS VEHÍCULO'),
+                'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS PROPIETARIO')
+            )->where("cte_documentosvehiculos.nro_documento", "LIKE", "%$search%")
+            ->orWhere("cte_documentosvehiculos.documento", "LIKE", "%$search%")
+            ->orWhere("cte_documentosvehiculos.vigencia_inicio", "LIKE", "%$search%")
+            ->orWhere("cte_documentosvehiculos.vigencia_fin", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT("INTERNO: ",cte_vehiculos.int," - PLACA: ",cte_vehiculos.placa," - MODELO: ",cte_vehiculos.modelo," - MARCA: ",cte_vehiculos.marca," - CLASE: ",cte_vehiculos.clase)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orderBy('cte_documentosvehiculos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE DOCUMENTOS DE VEHÍCULOS";
     }
 
     public function vehiculo()
