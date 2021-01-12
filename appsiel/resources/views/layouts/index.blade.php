@@ -61,6 +61,7 @@
 		<form action="{{route('export.table')}}" method="POST" id="exportForm" style="display: inline;" target='_blank'>
 			<input type="hidden" name="sqlString" value="{{$sqlString}}" />
 			<input type="hidden" name="tituloExport" value="{{$tituloExport}}" />
+			<input type="hidden" name="search" value="{{$search}}" />
 			{{ csrf_field() }}
 			<a class="btn-gmail btn-pdf" id="btnPdf" onclick="exportPdf()" title="Exportar en PDF"><i class="fa fa-file-pdf-o"></i></a>
 			<a class="btn-gmail btn-excel" id="btnExcel" onclick="exportExcel()" title="Exportar en Excel"><i class="fa fa-file-excel-o"></i></a>

@@ -16,7 +16,7 @@ class ExporttableController extends Controller
     {
         if ($request->tipo == 'PDF') {
             //pdf export
-            return $this->pdfExport($request->sqlString, $request->tituloExport);
+            return $this->pdfExport($request->sqlString, $request->tituloExport, $request->search);
         } else {
             //excel export
             $this->excelExport($request->sqlString, $request->tituloExport);
@@ -24,7 +24,7 @@ class ExporttableController extends Controller
     }
 
     //PDF format export
-    public function pdfExport($query, $tituloExport)
+    public function pdfExport($query, $tituloExport, $search)
     {
         $registros = DB::select($query);
         if (count($registros) > 0) {
@@ -33,10 +33,11 @@ class ExporttableController extends Controller
             $hoy = getdate();
             $fecha = $hoy['mday'] . " DE " . $this->month($hoy['mon']) . " DE " . $hoy['year'];
             $nivel = 1;
-            $documento_vista =  View::make('layouts.print', compact('registros', 'nivel', 'cabeceras', 'fecha', 'tituloExport'))->render();
+            $filtros = ['FILTRO DE DATOS' => $search == '' ? 'SIN FILTRO' : $search];
+            $documento_vista =  View::make('layouts.print', compact('registros', 'filtros', 'nivel', 'cabeceras', 'fecha', 'tituloExport'))->render();
             // Se prepara el PDF
             $pdf = App::make('dompdf.wrapper');
-            $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
+            $pdf->loadHTML($documento_vista);//->setPaper('Letter', 'Portrait');
             return $pdf->stream('listado.pdf');
         } else {
             //no hay registros para exportar

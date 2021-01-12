@@ -64,13 +64,43 @@ class Curso extends Model
             )->where("sga_niveles.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
-            ->where("sga_cursos.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.codigo", "LIKE", "%$search%")
             ->orWhere("sga_cursos.maneja_calificacion", "LIKE", "%$search%")
             ->orWhere("sga_cursos.estado", "LIKE", "%$search%")
             ->orderBy('sga_cursos.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Curso::leftJoin('sga_niveles', 'sga_niveles.id', '=', 'sga_cursos.nivel_grado')
+            ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_cursos.sga_grado_id')
+            ->orderBy('sga_cursos.nivel_grado', 'ASC')
+            ->select(
+                'sga_niveles.descripcion AS NIVEL',
+                'sga_grados.descripcion AS GRADO',
+                'sga_cursos.descripcion AS CURSO',
+                'sga_cursos.codigo AS CÓDIGO_CURSO',
+                'sga_cursos.maneja_calificacion AS MANEJA_CAL_(0=NO, 1=SI)',
+                'sga_cursos.estado AS ESTADO CURSO'
+            )
+            ->where("sga_niveles.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.maneja_calificacion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.estado", "LIKE", "%$search%")
+            ->orderBy('sga_cursos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CURSOS O GRUPOS ACADÉMICOS";
     }
 
     public static function get_array_to_select()

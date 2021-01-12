@@ -26,6 +26,7 @@
         body {
             font-family: 'Lato';
             background-color: #FFFFFF !important;
+            font-size: 10px;
             /*width: 98%;*/
         }
 
@@ -49,24 +50,53 @@
 
 <body id="app-layout">
     <div class="container-fluid">
-        Fecha de Generación: {{$fecha}}
-        <div class="row" style="border-top: 1px solid">
+        FECHA DE IMPRESIÓN REPORTE: {{$fecha}}
+        <div class="row" style="background-color: #574696; color: #FFFFFF; border-top: 1px solid;">
             <table style="width: 100%">
                 <tr>
-                    <td style="width: 15%;">
-                        <img src="{{asset('img/left-bg3.png')}}" />
-                    </td>
-                    <td style="width: 85%; text-align: center;">
+                    <td style="width: 100%; text-align: center;">
                         <b style="font-size:18px;">{{$tituloExport}}</b>
                     </td>
                 </tr>
             </table>
         </div>
         <?php
+        if ($filtros !== null) {
+            if (count($filtros) > 0) {
+        ?>
+                <div class="row" style="font-size: 14px;">
+                    <table style="width: 100%;">
+                        <?php
+                        $i = $total = $van = 0;
+                        $html = $row1 = $row2 = "";
+                        $total = count($filtros);
+                        foreach ($filtros as $key => $value) {
+                            $i = $i + 1;
+                            $van = $van + 1;
+                            $row1 = $row1 . "<th style='width: 33.3% !important; text-align: center; background-color: #42A3DC; color:#FFFFFF;'>" . $key . "</th>";
+                            $row2 = $row2 . "<th style='width: 33.3%; text-align: center; background-color: #42A3DC; color:#FFFFFF;'>" . $value . "</th>";
+                            if ($i === 3) {
+                                $i = 0;
+                                $html = $html . "<tr>" . $row1 . "</tr><tr>" . $row2 . "</tr>";
+                                $row1 = $row2 = "";
+                            } else {
+                                if ($van === $total) {
+                                    $html = $html . "<tr>" . $row1 . "</tr><tr>" . $row2 . "</tr>";
+                                    $row1 = $row2 = "";
+                                }
+                            }
+                        }
+                        echo $html;
+                        ?>
+                    </table>
+                </div>
+            <?php
+            }
+        }
         if ($registros !== null) {
             if (count($registros) > 0) {
-        ?>
-                <div class="row">
+            ?>
+                <div class="row" style="font-size: 12px;">
                     <?php
                     if ($nivel === 1) {
                         //nivel 1
@@ -76,7 +106,7 @@
                         foreach ($cabeceras as $c) {
                             $i = $i + 1;
                             $van = $van + 1;
-                            $html = $html . "<th style='width: 20% !important; background-color:#2196F3; color:#FFFFFF;'>" . $c . "</th>";
+                            $html = $html . "<th style='width: 20% !important; background-color:#50B794; color:#000000;'>" . $c . "</th>";
                             if ($i === 5) {
                                 $i = 0;
                                 $html = $html . "</tr><tr>";
@@ -103,7 +133,7 @@
                             foreach ($value as $t) {
                                 $i2 = $i2 + 1;
                                 $van2 = $van2 + 1;
-                                $html = $html . "<td>" . $t . "</td>";
+                                $html = $html . "<td>" . strtoupper($t) . "</td>";
                                 if ($i2 === 5) {
                                     $i2 = 0;
                                     if ($parastilo % 2 == 0) {

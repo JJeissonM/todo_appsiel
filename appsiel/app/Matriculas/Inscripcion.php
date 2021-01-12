@@ -63,7 +63,7 @@ class Inscripcion extends Model
             ->select(
                 DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ASPIRANTE'),
                 DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ", core_terceros.numero_identificacion ) AS IDENTIFICACIÓN'),
-                'sga_inscripciones.codigo AS CÓDIGO INSCRIPCIÓN',
+                'sga_inscripciones.codigo AS CÓDIGO_INSCRIPCIÓN',
                 'sga_inscripciones.fecha AS FECHA',
                 'sga_grados.descripcion AS GRADO',
                 'sga_inscripciones.origen AS ORIGEN',
