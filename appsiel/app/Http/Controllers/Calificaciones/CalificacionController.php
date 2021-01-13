@@ -138,15 +138,24 @@ class CalificacionController extends Controller
             if ($temp != null) {
                 $nro_registros = $temp;
             }
-            $registros = Calificacion::get_calificaciones($this->colegio->id, null, null, null, $nro_registros);
-
+            $sqlString = "";
+            $tituloExport = "";
+            //determinar la busqueda
+            $search = "";
+            $temp2 = Input::get('search');
+            if ($temp2 != null) {
+                $search = trim($temp2);
+            }
+            $registros = Calificacion::get_calificaciones($this->colegio->id, null, null, null, $nro_registros, $search);
+            $sqlString = Calificacion::sqlString($this->colegio->id, null, null, null, $search);
+            $tituloExport = Calificacion::tituloExport();
             $miga_pan = [
                 ['url' => 'NO', 'etiqueta' => 'Calificaciones']
             ];
 
             $titulo_tabla = '';
 
-            $encabezado_tabla = ['Año', 'Periodo', 'Curso', 'Estudiante', 'Asignatura', 'Calificación', ''];
+            $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año', 'Periodo', 'Curso', 'Estudiante', 'Asignatura', 'Calificación'];
 
             $ruta_modelo = 'calificaciones';
 
@@ -162,7 +171,7 @@ class CalificacionController extends Controller
 
             $source = "INDEX2";
 
-            return view('layouts.index', compact('registros', 'nro_registros', 'source', 'id_app', 'id_modelo', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar'));
+            return view('layouts.index', compact('registros', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_app', 'id_modelo', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar'));
         } else {
             echo "La Empresa asociada al Usuario actual no tiene ningún Colegio asociado.";
         }

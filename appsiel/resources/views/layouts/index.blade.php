@@ -67,7 +67,7 @@
 			<a class="btn-gmail btn-excel" id="btnExcel" onclick="exportExcel()" title="Exportar en Excel"><i class="fa fa-file-excel-o"></i></a>
 		</form>
 		<div class="search">
-			<form class="form-horizontal" role="search" method="get" action="{{route('web.index')}}">
+			<form class="form-horizontal" role="search" method="get" action="@if($source=='INDEX2') {{route('calificaciones.index2')}} @elseif($source=='BOLETIN') {{url('calificaciones/observaciones_boletin')}} @else {{route('web.index')}} @endif">
 				<input type="hidden" name="id" value="{{$id_app}}" />
 				<input type="hidden" name="id_modelo" value="{{$id_modelo}}" />
 				<input type="text" value="{{$search}}" name="search" style="color: #000 !important; font-size: 16px;" class="form-control input-sm" placeholder="Escriba aquí para buscar..." />

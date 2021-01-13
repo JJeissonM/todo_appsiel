@@ -1,4 +1,4 @@
-<?php 
+<?php
 //              A P P   C A L I F I C A C I O N E S
 
 //Logros
@@ -22,31 +22,31 @@ Route::resource('calificaciones/asistencia_clases', 'Calificaciones\AsistenciaCl
 
 
 // PREINFORME ACADEMICO
-Route::post('cali_preinforme_academico_almacenar_anotacion','Calificaciones\PreinformeAcademicoController@almacenar_anotacion');
+Route::post('cali_preinforme_academico_almacenar_anotacion', 'Calificaciones\PreinformeAcademicoController@almacenar_anotacion');
 Route::post('cali_preinforme_academico_crear', 'Calificaciones\PreinformeAcademicoController@crear');
 Route::resource('cali_preinforme_academico', 'Calificaciones\PreinformeAcademicoController');
 
 
 // Reportes, INFORMES Y LISTADOS
-Route::post('calificaciones/ajax_reporte_consolidado_por_curso','Calificaciones\ReporteController@ajax_reporte_consolidado_por_curso');
+Route::post('calificaciones/ajax_reporte_consolidado_por_curso', 'Calificaciones\ReporteController@ajax_reporte_consolidado_por_curso');
 Route::resource('calificaciones/informe_final', 'Calificaciones\InformeFinalController');
 
 
-Route::post('calificaciones/consolidado_periodo_por_curso','Calificaciones\ReporteController@consolidado_periodo_por_curso');
-Route::post('calificaciones/cuadro_honor_estudiantes','Calificaciones\ReporteController@cuadro_honor_estudiantes');
-Route::post('calificaciones/promedio_acumulado_periodos','Calificaciones\ReporteController@promedio_acumulado_periodos');
-Route::post('calificaciones/promedio_proyectado_asignaturas','Calificaciones\ReporteController@promedio_proyectado_asignaturas');
-Route::post('calificaciones/promedio_consolidado_asignaturas','Calificaciones\ReporteController@promedio_consolidado_asignaturas');
-Route::post('calificaciones_consulta_notas_auxiliares','Calificaciones\ReporteController@consulta_notas_auxiliares');
+Route::post('calificaciones/consolidado_periodo_por_curso', 'Calificaciones\ReporteController@consolidado_periodo_por_curso');
+Route::post('calificaciones/cuadro_honor_estudiantes', 'Calificaciones\ReporteController@cuadro_honor_estudiantes');
+Route::post('calificaciones/promedio_acumulado_periodos', 'Calificaciones\ReporteController@promedio_acumulado_periodos');
+Route::post('calificaciones/promedio_proyectado_asignaturas', 'Calificaciones\ReporteController@promedio_proyectado_asignaturas');
+Route::post('calificaciones/promedio_consolidado_asignaturas', 'Calificaciones\ReporteController@promedio_consolidado_asignaturas');
+Route::post('calificaciones_consulta_notas_auxiliares', 'Calificaciones\ReporteController@consulta_notas_auxiliares');
 
-Route::post('cali_repo_certificado_notas','Calificaciones\ReporteController@certificado_notas');
+Route::post('cali_repo_certificado_notas', 'Calificaciones\ReporteController@certificado_notas');
 
 //Boletines
 // Formulario de revisar
-Route::get('calificaciones/boletines/revisar', 'Calificaciones\BoletinController@revisar1'); 
+Route::get('calificaciones/boletines/revisar', 'Calificaciones\BoletinController@revisar1');
 
 // Resultado de revisar1
-Route::post('calificaciones/boletines/revisar2', ['as' => 'revision', 'uses' =>'Calificaciones\BoletinController@revisar2']); 
+Route::post('calificaciones/boletines/revisar2', ['as' => 'revision', 'uses' => 'Calificaciones\BoletinController@revisar2']);
 
 Route::get('/calificaciones/boletines/imprimir', 'Calificaciones\BoletinController@imprimir');
 Route::post('/calificaciones/boletines/generarPDF', 'Calificaciones\BoletinController@generarPDF');
@@ -66,8 +66,8 @@ Route::resource('calificaciones/observaciones_boletin', 'Calificaciones\Observac
 
 Route::resource('calificaciones/boletines', 'Calificaciones\BoletinController', ['except' => ['show']]);
 
-Route::get('calificaciones/index2','Calificaciones\CalificacionController@index2');
-Route::post('calificaciones/almacenar_calificacion','Calificaciones\CalificacionController@almacenar_calificacion');
+Route::get('calificaciones/index2', 'Calificaciones\CalificacionController@index2')->name('calificaciones.index2');
+Route::post('calificaciones/almacenar_calificacion', 'Calificaciones\CalificacionController@almacenar_calificacion');
 
 
 // ENCABEZADOS CALIFICACIONES

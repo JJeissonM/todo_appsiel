@@ -45,6 +45,14 @@ class ObservacionBoletinController extends Controller
         if ($temp != null) {
             $nro_registros = $temp;
         }
+        $sqlString = "";
+        $tituloExport = "LISTADO DE OBSERVACIONES AL BOLETÍN";
+        //determinar la busqueda
+        $search = "";
+        $temp2 = Input::get('search');
+        if ($temp2 != null) {
+            $search = trim($temp2);
+        }
         $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
 
         $id_colegio = $colegio->id;
@@ -54,9 +62,11 @@ class ObservacionBoletinController extends Controller
         $user = Auth::user();
 
         if ($user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector')) {
-            $registros = ObservacionesBoletin::consultar_registros($nro_registros);
+            $registros = ObservacionesBoletin::consultar_registros($nro_registros, $search);
+            $sqlString = ObservacionesBoletin::sqlString_consultar_registros($search);
         } else {
-            $registros = ObservacionesBoletin::consultar_registros_director_grupo();
+            $registros = ObservacionesBoletin::consultar_registros_director_grupo($nro_registros, $search);
+            $sqlString = ObservacionesBoletin::sqlString_registros_director_grupo($search);
         }
 
         $miga_pan = [
@@ -79,7 +89,7 @@ class ObservacionBoletinController extends Controller
 
         $source = "BOLETIN";
 
-        return view('layouts.index', compact('registros', 'nro_registros', 'source', 'id_app', 'id_modelo', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar'));
+        return view('layouts.index', compact('registros', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_app', 'id_modelo', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar'));
     }
 
     /**

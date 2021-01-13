@@ -31,7 +31,7 @@ class Calificacion extends Model
     /**
      * Obtener todas las calificaciones con sus datos relacionados
      */
-    public static function get_calificaciones($id_colegio, $curso_id, $asignatura_id, $periodo_id = null, $nro_registros)
+    public static function get_calificaciones($id_colegio, $curso_id, $asignatura_id, $periodo_id = null, $nro_registros, $search)
     {
         $array_wheres = ['sga_calificaciones.id_colegio' => $id_colegio];
 
@@ -61,9 +61,60 @@ class Calificacion extends Model
                 'sga_asignaturas.descripcion AS campo5',
                 'sga_calificaciones.calificacion AS campo6',
                 'sga_calificaciones.id AS campo8'
-            )
+            )->orWhere("sga_calificaciones.anio", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres)'), "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_calificaciones.calificacion", "LIKE", "%$search%")
             ->orderBy('sga_calificaciones.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($id_colegio, $curso_id, $asignatura_id, $periodo_id = null, $search)
+    {
+        $array_wheres = ['sga_calificaciones.id_colegio' => $id_colegio];
+
+        if ($curso_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_calificaciones.curso_id' => $curso_id]);
+        }
+
+        if ($asignatura_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_calificaciones.id_asignatura' => $asignatura_id]);
+        }
+
+        if ($periodo_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_calificaciones.id_periodo' => $periodo_id]);
+        }
+
+        $string = Calificacion::where($array_wheres)
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_calificaciones.id_periodo')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones.curso_id')
+            ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_calificaciones.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_calificaciones.id_asignatura')
+            ->select(
+                'sga_calificaciones.anio AS AÑO',
+                'sga_periodos.descripcion AS PERÍODO',
+                'sga_cursos.descripcion AS CURSO',
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                'sga_asignaturas.descripcion AS ASIGNATURA',
+                'sga_calificaciones.calificacion AS CALIFICACIÓN'
+            )->orWhere("sga_calificaciones.anio", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres)'), "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_calificaciones.calificacion", "LIKE", "%$search%")
+            ->orderBy('sga_calificaciones.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CALIFICACIONES";
     }
 
     /**
