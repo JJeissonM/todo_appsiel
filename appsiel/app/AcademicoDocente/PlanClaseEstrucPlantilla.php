@@ -19,7 +19,7 @@ class PlanClaseEstrucPlantilla extends Model
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila","eliminar":"web_eliminar/id_fila"}';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return PlanClaseEstrucPlantilla::leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_plan_clases_struc_plantillas.periodo_lectivo_id')
             ->select(
@@ -29,8 +29,36 @@ class PlanClaseEstrucPlantilla extends Model
                 'sga_plan_clases_struc_plantillas.estado AS campo4',
                 'sga_plan_clases_struc_plantillas.id AS campo5'
             )
+            ->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_struc_plantillas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_struc_plantillas.detalle", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_struc_plantillas.estado", "LIKE", "%$search%")
             ->orderBy('sga_plan_clases_struc_plantillas.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = PlanClaseEstrucPlantilla::leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_plan_clases_struc_plantillas.periodo_lectivo_id')
+            ->select(
+                'sga_periodos_lectivos.descripcion AS AÑO_LECTIVO',
+                'sga_plan_clases_struc_plantillas.descripcion AS DESCRIPCIÓN',
+                'sga_plan_clases_struc_plantillas.detalle AS DETALLE',
+                'sga_plan_clases_struc_plantillas.estado AS ESTADO'
+            )
+            ->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_struc_plantillas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_struc_plantillas.detalle", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_struc_plantillas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_plan_clases_struc_plantillas.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE PLANTILLAS DE PLANES DE CLASES";
     }
 
     public static function opciones_campo_select()

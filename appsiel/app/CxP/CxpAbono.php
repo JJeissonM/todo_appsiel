@@ -17,7 +17,7 @@ class CxpAbono extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento pago', 'Proveedor', 'Documento de CxP', 'Documento Cruce', 'Valor abono'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return CxpAbono::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_abonos.core_tipo_doc_app_id')
             ->leftJoin('core_tipos_docs_apps AS tipo_docs_cxp', 'tipo_docs_cxp.id', '=', 'cxp_abonos.doc_cxp_tipo_doc_id')
@@ -33,11 +33,48 @@ class CxpAbono extends Model
                 'cxp_abonos.abono AS campo6',
                 'cxp_abonos.id AS campo7'
             )
+            ->where("cxp_abonos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxp_abonos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(tipo_docs_cxp.prefijo," ",cxp_abonos.doc_cxp_consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(tipo_docs_cruce.prefijo," ",cxp_abonos.doc_cruce_consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("cxp_abonos.abono", "LIKE", "%$search%")
             ->orderBy('cxp_abonos.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
+    public static function sqlString($search)
+    {
+        $string = CxpAbono::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_abonos.core_tipo_doc_app_id')
+            ->leftJoin('core_tipos_docs_apps AS tipo_docs_cxp', 'tipo_docs_cxp.id', '=', 'cxp_abonos.doc_cxp_tipo_doc_id')
+            ->leftJoin('core_tipos_docs_apps AS tipo_docs_cruce', 'tipo_docs_cruce.id', '=', 'cxp_abonos.doc_cruce_tipo_doc_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_abonos.core_tercero_id')
+            ->where('cxp_abonos.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                'cxp_abonos.fecha AS campo1',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxp_abonos.consecutivo) AS campo2'),
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                DB::raw('CONCAT(tipo_docs_cxp.prefijo," ",cxp_abonos.doc_cxp_consecutivo) AS campo4'),
+                DB::raw('CONCAT(tipo_docs_cruce.prefijo," ",cxp_abonos.doc_cruce_consecutivo) AS campo5'),
+                'cxp_abonos.abono AS campo6',
+                'cxp_abonos.id AS campo7'
+            )
+            ->where("cxp_abonos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxp_abonos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(tipo_docs_cxp.prefijo," ",cxp_abonos.doc_cxp_consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(tipo_docs_cruce.prefijo," ",cxp_abonos.doc_cruce_consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("cxp_abonos.abono", "LIKE", "%$search%")
+            ->orderBy('cxp_abonos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
 
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE DOCUMENTOS ABONADOS";
+    }
 
     /*
         Obtener los registro de abonos hechos por $doc_encabezado

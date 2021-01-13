@@ -20,7 +20,7 @@ class ArqueoCaja extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Caja', 'Observaciones', 'Total saldo', 'Estado'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
             ->select(
@@ -31,8 +31,39 @@ class ArqueoCaja extends Model
                 'teso_arqueos_caja.estado AS campo5',
                 'teso_arqueos_caja.id AS campo6'
             )
+            ->where("teso_arqueos_caja.fecha", "LIKE", "%$search%")
+            ->orWhere("teso_cajas.descripcion", "LIKE", "%$search%")
+            ->orWhere("teso_arqueos_caja.observaciones", "LIKE", "%$search%")
+            ->orWhere("teso_arqueos_caja.total_saldo", "LIKE", "%$search%")
+            ->orWhere("teso_arqueos_caja.estado", "LIKE", "%$search%")
             ->orderBy('teso_arqueos_caja.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')
+            ->select(
+                'teso_arqueos_caja.fecha AS FECHA',
+                'teso_cajas.descripcion AS CAJA',
+                'teso_arqueos_caja.observaciones AS OBSERVACIONES',
+                'teso_arqueos_caja.total_saldo AS TOTAL_SALDO',
+                'teso_arqueos_caja.estado AS ESTADO'
+            )
+            ->where("teso_arqueos_caja.fecha", "LIKE", "%$search%")
+            ->orWhere("teso_cajas.descripcion", "LIKE", "%$search%")
+            ->orWhere("teso_arqueos_caja.observaciones", "LIKE", "%$search%")
+            ->orWhere("teso_arqueos_caja.total_saldo", "LIKE", "%$search%")
+            ->orWhere("teso_arqueos_caja.estado", "LIKE", "%$search%")
+            ->orderBy('teso_arqueos_caja.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ARQUEOS DE CAJA";
     }
 
     public static function opciones_campo_select()

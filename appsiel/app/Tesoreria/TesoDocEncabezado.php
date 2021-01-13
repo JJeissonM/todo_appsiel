@@ -45,7 +45,8 @@ class TesoDocEncabezado extends Model
         return $this->belongsTo(TesoMedioRecaudo::class, 'teso_medio_recaudo_id');
     }
 
-    public static function consultar_registros($nro_registros)
+
+    public static function consultar_registros($nro_registros, $search)
     {
         return TesoDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')

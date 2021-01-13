@@ -24,7 +24,7 @@ class TesoLibretasPago extends Model
         return $this->hasMany(TesoPlanPagosEstudiante::class, 'id_libreta');
     }
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return TesoLibretasPago::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'teso_libretas_pagos.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
@@ -42,8 +42,56 @@ class TesoLibretasPago extends Model
                 'teso_libretas_pagos.estado AS campo9',
                 'teso_libretas_pagos.id AS campo10'
             )
+            ->where(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_matriculas.codigo", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.fecha_inicio", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.valor_matricula", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.valor_pension_anual", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.numero_periodos", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.valor_pension_mensual", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.estado", "LIKE", "%$search%")
+
             ->orderBy('teso_libretas_pagos.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = TesoLibretasPago::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'teso_libretas_pagos.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->leftJoin('sga_matriculas', 'sga_matriculas.id', '=', 'teso_libretas_pagos.matricula_id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                'sga_cursos.descripcion AS CURSO',
+                'sga_matriculas.codigo AS CÓD._MATRICULA',
+                'teso_libretas_pagos.fecha_inicio AS FECHA_INICIO',
+                'teso_libretas_pagos.valor_matricula AS VLR._MATRÍCULA',
+                'teso_libretas_pagos.valor_pension_anual AS VLR._PENSIÓN_ANUAL',
+                'teso_libretas_pagos.numero_periodos AS NO._PERIODOS',
+                'teso_libretas_pagos.valor_pension_mensual AS VLR._PENSIÓN_MES',
+                'teso_libretas_pagos.estado AS ESTADO'
+            )
+            ->where(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_matriculas.codigo", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.fecha_inicio", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.valor_matricula", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.valor_pension_anual", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.numero_periodos", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.valor_pension_mensual", "LIKE", "%$search%")
+            ->orWhere("teso_libretas_pagos.estado", "LIKE", "%$search%")
+
+            ->orderBy('teso_libretas_pagos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE LIBRETAS DE PAGO";
     }
 
     public static function consultar_un_registro($id)

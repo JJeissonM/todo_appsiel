@@ -86,7 +86,7 @@ class TesoRecaudosLibreta extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Estudiante', 'No. Identificacion', 'Detalle', 'Valor'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return TesoRecaudosLibreta::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_recaudos_libretas.core_tipo_doc_app_id')
             ->leftJoin('teso_cartera_estudiantes', 'teso_cartera_estudiantes.id', '=', 'teso_recaudos_libretas.id_cartera')
@@ -101,7 +101,47 @@ class TesoRecaudosLibreta extends Model
                 'teso_recaudos_libretas.valor_recaudo AS campo6',
                 'teso_cartera_estudiantes.id AS campo7'
             )  // OJO, no es el ID del modelo
+
+            ->where("teso_recaudos_libretas.fecha_recaudo", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_recaudos_libretas.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("teso_recaudos_libretas.concepto", "LIKE", "%$search%")
+            ->orWhere("teso_recaudos_libretas.valor_recaudo", "LIKE", "%$search%")
             ->orderBy('teso_recaudos_libretas.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = TesoRecaudosLibreta::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_recaudos_libretas.core_tipo_doc_app_id')
+            ->leftJoin('teso_cartera_estudiantes', 'teso_cartera_estudiantes.id', '=', 'teso_recaudos_libretas.id_cartera')
+            ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'teso_cartera_estudiantes.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->select(
+                'teso_recaudos_libretas.fecha_recaudo AS FECHA',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_recaudos_libretas.consecutivo) AS DOCUMENTO'),
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTE'),
+                'core_terceros.numero_identificacion AS No. IDENTIFICACION',
+                'teso_recaudos_libretas.concepto AS DETALLE',
+                'teso_recaudos_libretas.valor_recaudo AS VALOR'
+            )  // OJO, no es el ID del modelo
+
+            ->where("teso_recaudos_libretas.fecha_recaudo", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_recaudos_libretas.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("teso_recaudos_libretas.concepto", "LIKE", "%$search%")
+            ->orWhere("teso_recaudos_libretas.valor_recaudo", "LIKE", "%$search%")
+            ->orderBy('teso_recaudos_libretas.created_at', 'DESC')
+
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE RECAUDOS DE LIBRETA";
     }
 }
