@@ -31,6 +31,7 @@ use App\Nomina\ModosLiquidacion\PrestacionesSociales\Cesantias;
 
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomConcepto;
+use App\Nomina\GrupoEmpleado;
 use App\Nomina\NomEntidad;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
@@ -471,6 +472,8 @@ class ReporteController extends Controller
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
+        $forma_visualizacion  = $request->forma_visualizacion;
+
         $nom_contrato_id = null;
         if ( $request->nom_contrato_id != '' )
         {
@@ -479,8 +482,33 @@ class ReporteController extends Controller
 
         $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, '', $nom_contrato_id);
 
-        $empleados_con_movimiento = $movimiento->unique('nom_contrato_id')->values()->all();
+        switch ($forma_visualizacion)
+        {
+            case 'empleados_conceptos':
+                $datos = $this->get_datos_empleados_conceptos( $movimiento );
+                break;
+            
+            
+            case 'grupo_empleados_conceptos':
+                $datos = $this->get_datos_grupos_empleados_conceptos( $movimiento );
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+        
 
+        $vista = View::make('nomina.reportes.resumen_liquidaciones', compact( 'datos', 'fecha_desde', 'fecha_hasta', 'forma_visualizacion') )->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function get_datos_empleados_conceptos( $movimiento )
+    {
+        $empleados_con_movimiento = $movimiento->unique('nom_contrato_id')->values()->all();
         $datos = [];
         foreach ($empleados_con_movimiento as $registro_empleado)
         {
@@ -488,7 +516,6 @@ class ReporteController extends Controller
             
             foreach ($conceptos_liquidados as $registro_concepto)
             {
-                //dd([]);
                 $datos[] = (object)[ 
                                         'empleado_numero_identificacion' => $registro_concepto->tercero->numero_identificacion,
                                         'empleado_descripcion' => $registro_concepto->tercero->descripcion,
@@ -505,19 +532,82 @@ class ReporteController extends Controller
                                                                         ->sum('valor_deduccion'),
                                     ];
             }
-            //dd( $movimiento->where('nom_contrato_id',$registro->nom_contrato_id)->sum('valor_devengo') );
         }
-        //dd($datos);
 
-        $vista = View::make('nomina.reportes.resumen_liquidaciones', compact( 'datos', 'fecha_desde', 'fecha_hasta') )->render();
-
-        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
-
-        return $vista;
+        return $datos;
     }
 
-    public function preparar_datos_resumen_contabilizacion( $movimiento )
+    public function get_datos_grupos_empleados_conceptos( $movimiento )
     {
-        
+        $empleados_con_movimiento = $movimiento->unique('nom_contrato_id')->values()->all();
+
+        $array_grupos_empleados = [];
+        $aux = [];
+        foreach ($empleados_con_movimiento as $linea)
+        {
+            if ( !in_array($linea->contrato->grupo_empleado_id, $aux) )
+            {
+                $aux[] = $linea->contrato->grupo_empleado_id;
+                $array_grupos_empleados[] = GrupoEmpleado::find( $linea->contrato->grupo_empleado_id );
+            }            
+        }
+
+        //dd( $empleados_con_movimiento->chunck('nom_contrato_id') );
+
+        $datos = [];
+        foreach ($array_grupos_empleados as $grupo_empleado)
+        {
+            $registros_grupo_empleado = [];
+            foreach ($movimiento as $registro_movimiento)
+            {
+                if ( $registro_movimiento->contrato->grupo_empleado_id == $grupo_empleado->id )
+                {
+                    $registros_grupo_empleado[] = $registro_movimiento;
+                }
+            }
+            $datos[] = (object)[ 'grupo_empleado' => $grupo_empleado, 'datos' => $registros_grupo_empleado];
+        }
+
+        $registros_grupo_empleado_2 = [];
+        foreach ($datos as $linea)
+        {
+            $array_conceptos = [];
+            $aux = [];
+            foreach ( $linea->datos as $registro_concepto )
+            {
+                if( in_array($registro_concepto->nom_concepto_id, $aux ) )
+                {
+                    $array_conceptos[$registro_concepto->nom_concepto_id]['cantidad_horas'] += $registro_concepto->cantidad_horas;
+                    $array_conceptos[$registro_concepto->nom_concepto_id]['valor_devengo'] += $registro_concepto->valor_devengo;
+                    $array_conceptos[$registro_concepto->nom_concepto_id]['valor_deduccion'] += $registro_concepto->valor_deduccion;
+                }else{
+                    $aux[] = $registro_concepto->nom_concepto_id;
+                    $array_conceptos[$registro_concepto->nom_concepto_id]['nom_registro_id'] = $registro_concepto->id;
+                    $array_conceptos[$registro_concepto->nom_concepto_id]['concepto'] = $registro_concepto->concepto;
+                    $array_conceptos[$registro_concepto->nom_concepto_id]['cantidad_horas'] = $registro_concepto->cantidad_horas;
+                    $array_conceptos[$registro_concepto->nom_concepto_id]['valor_devengo'] = $registro_concepto->valor_devengo;
+                    $array_conceptos[$registro_concepto->nom_concepto_id]['valor_deduccion'] = $registro_concepto->valor_deduccion;
+                }
+            }
+            //dd($array_conceptos);
+            ksort($array_conceptos);
+            $registros_grupo_empleado_2[] = (object)[ 'grupo_empleado' => $linea->grupo_empleado, 'datos' => $array_conceptos];  
+        }
+
+        $datos_2 = [];
+        foreach ($registros_grupo_empleado_2 as $registro_grupo_empleado)
+        {
+            foreach ($registro_grupo_empleado->datos as $registro_concepto)
+            {
+                $datos_2[] = (object)[ 
+                                        'grupo_empleado' => $registro_grupo_empleado->grupo_empleado->descripcion,
+                                        'concepto' => $registro_concepto['concepto']->id . ' - ' . $registro_concepto['concepto']->descripcion,
+                                        'cantidad_horas' => $registro_concepto['cantidad_horas'],
+                                        'valor_devengo' => $registro_concepto['valor_devengo'],
+                                        'valor_deduccion' => $registro_concepto['valor_deduccion']
+                                    ];
+            }
+        }
+        return $datos_2;
     }
 }
