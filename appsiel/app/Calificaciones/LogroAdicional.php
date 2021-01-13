@@ -100,7 +100,7 @@ class LogroAdicional extends Model
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO DE INSCRIPCIONES";
+        return "LISTADO DE LOGROS ADICIONALES";
     }
 
     public static function get_logros($id_colegio, $curso_id, $asignatura_id, $periodo_id = null)

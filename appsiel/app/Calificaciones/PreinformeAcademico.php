@@ -22,7 +22,7 @@ class PreinformeAcademico extends Model
 
     public $vistas = '{"index":"layouts.index3","create":"calificaciones.preinformes_academicos.pre-create"}';
 
-    public static function consultar_registros2($nro_registros)
+    public static function consultar_registros2($nro_registros, $search)
     {
         $user = Auth::user();
 
@@ -50,7 +50,12 @@ class PreinformeAcademico extends Model
                     'sga_asignaturas.descripcion AS campo5',
                     'sga_preinformes_academicos.anotacion AS campo6',
                     'sga_preinformes_academicos.id AS campo7'
-                )
+                )->where("sga_preinformes_academicos.codigo_matricula", "LIKE", "%$search%")
+                ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+                ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+                ->orWhere(DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres)'), "LIKE", "%$search%")
+                ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+                ->orWhere("sga_preinformes_academicos.anotacion", "LIKE", "%$search%")
                 ->orderBy('sga_preinformes_academicos.created_at', 'DESC')
                 ->paginate($nro_registros);
         }
@@ -71,9 +76,86 @@ class PreinformeAcademico extends Model
                 'sga_asignaturas.descripcion AS campo5',
                 'sga_preinformes_academicos.anotacion AS campo6',
                 'sga_preinformes_academicos.id AS campo7'
-            )
+            )->where("sga_preinformes_academicos.codigo_matricula", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres)'), "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_preinformes_academicos.anotacion", "LIKE", "%$search%")
             ->orderBy('sga_preinformes_academicos.created_at', 'DESC')
             ->paginate(100);
+    }
+
+    public static function sqlString($search)
+    {
+        $user = Auth::user();
+
+        $array_wheres = [['sga_preinformes_academicos.id', '>', 0]];
+
+        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
+            $asignaturas = AsignacionProfesor::get_asignaturas_x_curso($user->id, $periodo_lectivo_id = null);
+
+            $vec_cursos = array_column($asignaturas->toArray(), 'curso_id');
+
+            $vec_asignaturas = array_column($asignaturas->toArray(), 'id_asignatura');
+
+            $string = PreinformeAcademico::whereIn('sga_preinformes_academicos.id_asignatura', $vec_asignaturas)
+                ->whereIn('sga_preinformes_academicos.curso_id', $vec_cursos)
+                ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_preinformes_academicos.id_periodo')
+                ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_preinformes_academicos.curso_id')
+                ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_preinformes_academicos.id_estudiante')
+                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+                ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_preinformes_academicos.id_asignatura')
+                ->select(
+                    'sga_preinformes_academicos.codigo_matricula AS CÓD_MATRÍCULA',
+                    'sga_periodos.descripcion AS PERIODO',
+                    'sga_cursos.descripcion AS CURSO',
+                    DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                    'sga_asignaturas.descripcion AS ASIGNATURA',
+                    'sga_preinformes_academicos.anotacion AS ASIGNATURA',
+                    'sga_preinformes_academicos.id AS ANOTACIÓN'
+                )->where("sga_preinformes_academicos.codigo_matricula", "LIKE", "%$search%")
+                ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+                ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+                ->orWhere(DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres)'), "LIKE", "%$search%")
+                ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+                ->orWhere("sga_preinformes_academicos.anotacion", "LIKE", "%$search%")
+                ->orderBy('sga_preinformes_academicos.created_at', 'DESC')
+                ->toSql();
+            return str_replace('?', '"%' . $search . '%"', $string);
+        }
+
+
+
+        $string = PreinformeAcademico::where($array_wheres)
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_preinformes_academicos.id_periodo')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_preinformes_academicos.curso_id')
+            ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_preinformes_academicos.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_preinformes_academicos.id_asignatura')
+            ->select(
+                'sga_preinformes_academicos.codigo_matricula AS CÓD_MATRÍCULA',
+                'sga_periodos.descripcion AS PERIODO',
+                'sga_cursos.descripcion AS CURSO',
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                'sga_asignaturas.descripcion AS ASIGNATURA',
+                'sga_preinformes_academicos.anotacion AS ASIGNATURA',
+                'sga_preinformes_academicos.id AS ANOTACIÓN'
+            )->where("sga_preinformes_academicos.codigo_matricula", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres)'), "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_preinformes_academicos.anotacion", "LIKE", "%$search%")
+            ->orderBy('sga_preinformes_academicos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE PREINFORME ACADEMICO";
     }
 
     public static function opciones_campo_select()

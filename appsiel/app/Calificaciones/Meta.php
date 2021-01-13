@@ -15,16 +15,56 @@ class Meta extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Periodo', 'Curso', 'Asignatura', 'Descripción', 'Estado'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $registros = Meta::leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_metas.periodo_id')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_metas.curso_id')
             ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_metas.asignatura_id')
-            ->select('sga_periodos.descripcion AS campo1', 'sga_cursos.descripcion AS campo2', 'sga_asignaturas.descripcion AS campo3', 'sga_metas.descripcion AS campo4', 'sga_metas.estado AS campo5', 'sga_metas.id AS campo6')
+            ->select(
+                'sga_periodos.descripcion AS campo1',
+                'sga_cursos.descripcion AS campo2',
+                'sga_asignaturas.descripcion AS campo3',
+                'sga_metas.descripcion AS campo4',
+                'sga_metas.estado AS campo5',
+                'sga_metas.id AS campo6'
+            )
+            ->where("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_metas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_metas.estado", "LIKE", "%$search%")
             ->orderBy('sga_metas.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Meta::leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_metas.periodo_id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_metas.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_metas.asignatura_id')
+            ->select(
+                'sga_periodos.descripcion AS PERIODO',
+                'sga_cursos.descripcion AS CURSO',
+                'sga_asignaturas.descripcion AS ASIGNATURA',
+                'sga_metas.descripcion AS DESCRIPCIÓN',
+                'sga_metas.estado AS ESTADO'
+            )
+            ->where("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_metas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_metas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_metas.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE METAS/PROPOSITOS";
     }
 
 

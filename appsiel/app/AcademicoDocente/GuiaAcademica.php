@@ -30,7 +30,7 @@ class GuiaAcademica extends Model
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/academico_docente/planes_clases.js';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $user = Auth::user();
 
@@ -57,7 +57,59 @@ class GuiaAcademica extends Model
                 'sga_plan_clases_encabezados.estado AS campo8',
                 'sga_plan_clases_encabezados.id AS campo9'
             )
+            ->where("sga_plan_clases_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_semanas_calendario.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("users.name", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_encabezados.estado", "LIKE", "%$search%")
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $user = Auth::user();
+
+        $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999]];
+
+        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
+            $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);
+        }
+
+        $string = GuiaAcademica::leftJoin('sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
+            ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
+            ->where($array_wheres)
+            ->select(
+                'sga_plan_clases_encabezados.fecha AS FECHA',
+                'sga_plan_clases_encabezados.descripcion AS DESCRIPCIÓN',
+                'sga_semanas_calendario.descripcion AS SEMANA_ACADÉMICA',
+                'sga_periodos.descripcion AS PERIODO',
+                'sga_cursos.descripcion AS CURSO',
+                'sga_asignaturas.descripcion AS ASIGNATURA',
+                'users.name AS PROFESOR',
+                'sga_plan_clases_encabezados.estado AS ESTADO'
+            )
+            ->where("sga_plan_clases_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_semanas_calendario.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("users.name", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_encabezados.estado", "LIKE", "%$search%")
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE GUIAS ACADEMICAS";
     }
 
     public static function opciones_campo_select()

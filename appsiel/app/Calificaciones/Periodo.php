@@ -19,7 +19,7 @@ class Periodo extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Número', 'Descripcion', 'Fecha desde', 'Fecha hasta', 'Cerrado', 'Periodo de promedios', 'Estado'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $select_raw = 'IF(sga_periodos.cerrado=0,REPLACE(sga_periodos.cerrado,0,"No"),REPLACE(sga_periodos.cerrado,1,"Si")) AS campo6';
 
@@ -34,11 +34,51 @@ class Periodo extends Model
                 DB::raw('IF(sga_periodos.periodo_de_promedios=0,REPLACE(sga_periodos.periodo_de_promedios,0,"No"),REPLACE(sga_periodos.periodo_de_promedios,1,"Si")) AS campo7'),
                 'sga_periodos.estado AS campo8',
                 'sga_periodos.id AS campo9'
-            )
+            )->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.numero", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.fecha_desde", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.fecha_hasta", "LIKE", "%$search%")
+            ->orWhere(DB::raw('IF(sga_periodos.cerrado=0,REPLACE(sga_periodos.cerrado,0,"No"),REPLACE(sga_periodos.cerrado,1,"Si"))'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('IF(sga_periodos.periodo_de_promedios=0,REPLACE(sga_periodos.periodo_de_promedios,0,"No"),REPLACE(sga_periodos.periodo_de_promedios,1,"Si"))'), "LIKE", "%$search%")
+            ->orWhere("sga_periodos.estado", "LIKE", "%$search%")
             ->orderBy('sga_periodos.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $select_raw = 'IF(sga_periodos.cerrado=0,REPLACE(sga_periodos.cerrado,0,"No"),REPLACE(sga_periodos.cerrado,1,"Si")) AS CERRADO';
+
+        $string = Periodo::leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_periodos.periodo_lectivo_id')
+            ->select(
+                'sga_periodos_lectivos.descripcion AS AÑO_LECTIVO',
+                'sga_periodos.numero AS NÚMERO',
+                'sga_periodos.descripcion AS DESCRIPCION',
+                'sga_periodos.fecha_desde AS FECHA_DESDE',
+                'sga_periodos.fecha_hasta AS FECHA_HASTA',
+                DB::raw($select_raw),
+                DB::raw('IF(sga_periodos.periodo_de_promedios=0,REPLACE(sga_periodos.periodo_de_promedios,0,"No"),REPLACE(sga_periodos.periodo_de_promedios,1,"Si")) AS PERIODO_DE_PROMEDIOS'),
+                'sga_periodos.estado AS ESTADO'
+            )->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.numero", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.fecha_desde", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.fecha_hasta", "LIKE", "%$search%")
+            ->orWhere(DB::raw('IF(sga_periodos.cerrado=0,REPLACE(sga_periodos.cerrado,0,"No"),REPLACE(sga_periodos.cerrado,1,"Si"))'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('IF(sga_periodos.periodo_de_promedios=0,REPLACE(sga_periodos.periodo_de_promedios,0,"No"),REPLACE(sga_periodos.periodo_de_promedios,1,"Si"))'), "LIKE", "%$search%")
+            ->orWhere("sga_periodos.estado", "LIKE", "%$search%")
+            ->orderBy('sga_periodos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE PERIODO";
     }
 
     // El archivo js debe estar en la carpeta public

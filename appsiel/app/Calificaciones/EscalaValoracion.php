@@ -16,7 +16,7 @@ class EscalaValoracion extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Escala nacional', 'Nombre escala', 'Sigla', 'Calificación mínima', 'Calificación máxima'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $registros = EscalaValoracion::leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_escala_valoracion.periodo_lectivo_id')
             ->select(
@@ -27,11 +27,43 @@ class EscalaValoracion extends Model
                 'sga_escala_valoracion.calificacion_minima AS campo5',
                 'sga_escala_valoracion.calificacion_maxima AS campo6',
                 'sga_escala_valoracion.id AS campo7'
-            )
+            )->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.escala_nacional", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.nombre_escala", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.sigla", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.calificacion_minima", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.calificacion_maxima", "LIKE", "%$search%")
             ->orderBy('sga_escala_valoracion.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = EscalaValoracion::leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_escala_valoracion.periodo_lectivo_id')
+            ->select(
+                'sga_periodos_lectivos.descripcion AS AÑO_LECTIVO',
+                'sga_escala_valoracion.escala_nacional AS ESCALA_NACIONAL',
+                'sga_escala_valoracion.nombre_escala AS NOMBRE_ESCALA',
+                'sga_escala_valoracion.sigla AS SIGLA',
+                'sga_escala_valoracion.calificacion_minima AS CALIFICACIÓN_MÍNIMA',
+                'sga_escala_valoracion.calificacion_maxima AS CALIFICACIÓN_MÁXIMA'
+            )->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.escala_nacional", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.nombre_escala", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.sigla", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.calificacion_minima", "LIKE", "%$search%")
+            ->orWhere("sga_escala_valoracion.calificacion_maxima", "LIKE", "%$search%")
+            ->orderBy('sga_escala_valoracion.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ESCALA VALORACIÓN";
     }
 
     public static function opciones_campo_select()
