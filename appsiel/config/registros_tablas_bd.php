@@ -36099,6 +36099,22 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-01-12 11:03:35',
       'updated_at' => '2021-01-12 11:05:02',
     ),
+    1131 => 
+    array (
+      'id' => 1137,
+      'descripcion' => 'Forma de visualiación',
+      'tipo' => 'select',
+      'name' => 'forma_visualizacion',
+      'opciones' => '{"empleados_conceptos":"Empleados > Conceptos","grupo_empleados_conceptos":"Grupo de empleados > Conceptos"}',
+      'value' => 'null',
+      'atributos' => '{"class":"form-control"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-01-13 08:41:01',
+      'updated_at' => '2021-01-13 08:42:24',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -58884,6 +58900,12 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 2,
       'core_reporte_id' => 41,
       'core_campo_id' => 1136,
+    ),
+    132 => 
+    array (
+      'orden' => 5,
+      'core_reporte_id' => 43,
+      'core_campo_id' => 1137,
     ),
   ),
   'sys_tipos_transacciones' => 
