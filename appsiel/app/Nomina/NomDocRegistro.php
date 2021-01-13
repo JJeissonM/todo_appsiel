@@ -78,14 +78,26 @@ class NomDocRegistro extends Model
 	}
 
 
-    public static function listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id)
+    /*
+        No se usan filtros por Agrupación y Contaro al mismom tiempo 
+    */
+    public static function listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id = null)
     {
+        if ( !is_null($nom_contrato_id) )
+        {
+            return NomDocRegistro::where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('nom_doc_registros.nom_contrato_id', $nom_contrato_id )
+                                ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
+                                ->get();
+        }
+
         if ( $nom_agrupacion_id == '' )
         {
             return NomDocRegistro::where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
                                 ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
                                 ->get();
         }
+        dd($nom_contrato_id);
 
         return NomDocRegistro::leftJoin('nom_agrupacion_tiene_conceptos','nom_agrupacion_tiene_conceptos.nom_concepto_id','=','nom_doc_registros.nom_concepto_id')
                             ->where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)

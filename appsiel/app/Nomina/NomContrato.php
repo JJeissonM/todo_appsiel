@@ -97,7 +97,7 @@ class NomContrato extends Model
         return $valor_ibc;
     }
 
-    public function get_registros_documentos_nomina_entre_fechas( $fecha_inicial, $fecha_final)
+    public function get_registros_documentos_nomina_entre_fechas( $fecha_inicial, $fecha_final )
     {
         $todos_los_registros = $this->registros_documentos_nomina;
         $coleccion = collect();

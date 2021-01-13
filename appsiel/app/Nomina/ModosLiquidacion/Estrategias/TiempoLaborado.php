@@ -28,7 +28,7 @@ class TiempoLaborado implements Estrategia
                 {
                     $horas_liquidadas_empleado += $registro->cantidad_horas;
                 }
-            }                
+            }
         }
 
 		// NO se puede liquidar más tiempo del que tiene el documento

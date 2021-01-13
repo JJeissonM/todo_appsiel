@@ -293,6 +293,11 @@ class TiempoNoLaborado implements Estrategia
 		{
 			dd( [ 'TiempoNoLaborado Novedad NULL', $registro] );
 		}
+		
+		if( $novedad->tipo_novedad_tnl == 'vacaciones' )
+		{
+			return 0;
+		}
 
 		if( is_null( $registro->contrato ) )
 		{

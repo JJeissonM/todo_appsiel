@@ -25,6 +25,10 @@ use App\Http\Controllers\Sistema\ModeloController;
 use App\Sistema\Aplicacion;
 use App\Core\Empresa;
 
+use App\Nomina\ModosLiquidacion\PrestacionesSociales\Vacaciones;
+use App\Nomina\ModosLiquidacion\PrestacionesSociales\PrimaServicios;
+use App\Nomina\ModosLiquidacion\PrestacionesSociales\Cesantias;
+
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomConcepto;
 use App\Nomina\NomEntidad;
@@ -33,6 +37,7 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
+use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 
 use App\Nomina\PilaNovedades;
 use App\Nomina\PilaSalud;
@@ -297,29 +302,137 @@ class ReporteController extends Controller
         return $sorted->values()->all();
     }
 
-    public function provisiones_x_entidad_empleado(Request $request)
+    public function consolidado_prestaciones_sociales(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
-        $tipos_entidades = [ 12 => "EPS", 13 => "AFP", "ARL", "CCF", 18 => "PARAFISCALES"];
-
-        foreach ($tipos_entidades as $modo_liquidacion_id => $tipo_entidad)
+        $nom_contrato_id = null;
+        if ( $request->nom_contrato_id != '' )
         {
-            $entidades = NomEntidad::where('tipo_entidad',$tipo_entidad)->get()->toArray();
-            foreach ($entidades as $entidad )
+            $nom_contrato_id = (int)$request->nom_contrato_id;
+        }
+        
+        $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, '', $nom_contrato_id);
+
+        $empleados_con_movimiento = $movimiento->unique('nom_contrato_id')->values()->all();
+
+        $dias_calendario = $this->calcular_dias_laborados_calendario_30_dias( $fecha_desde, $fecha_hasta );
+        $cantidad_meses_a_promediar = round( $dias_calendario / 30, 0);
+        
+        $prestaciones = ['vacaciones','prima_legal','cesantias','intereses_cesantias'];
+        $datos = [];
+        foreach ($empleados_con_movimiento as $registro_empleado)
+        {
+            foreach ($prestaciones as $key => $prestacion)
             {
-                $movimiento_entidad = 3;
+                $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion',$prestacion )
+                                                                        ->where('grupo_empleado_id',$registro_empleado->contrato->grupo_empleado_id)
+                                                                        ->get()->first();
+                if ( is_null( $parametros_prestacion) )
+                {
+                    continue;
+                }
+
+                $parametros_prestacion->cantidad_meses_a_promediar = $cantidad_meses_a_promediar;
+
+                $dias_laborados = $this->calcular_dias_reales_laborados( $registro_empleado->contrato, $fecha_desde, $fecha_hasta, $parametros_prestacion->nom_agrupacion_id );
+                
+                switch ( $prestacion )
+                {
+                    case 'vacaciones':
+                        $descripcion_prestacion = 'Vacaciones';
+                        $dias_derecho = $dias_laborados * 15 / 360;
+                        $liquidacion_prestacion = new Vacaciones;
+                        $base_diaria = $liquidacion_prestacion->get_valor_base_diaria( $registro_empleado->contrato, $fecha_hasta, 'normal', $parametros_prestacion );
+                        break;
+                    
+                    case 'prima_legal':
+                        $descripcion_prestacion = 'Prima de servicios';
+                        $dias_derecho = $dias_laborados * 15 / 180;
+                        $liquidacion_prestacion = new PrimaServicios;
+                        $base_diaria = $liquidacion_prestacion->get_valor_base_diaria( $registro_empleado->contrato, $fecha_hasta, 'normal', $parametros_prestacion );
+                        break;
+                    
+                    case 'cesantias':
+                        $descripcion_prestacion = 'Cesantías';
+                        $dias_derecho = $dias_laborados * 30 / 360;
+                        $liquidacion_prestacion = new Cesantias;
+                        $base_diaria = $liquidacion_prestacion->get_valor_base_diaria( $registro_empleado->contrato, $fecha_hasta, 'normal', $parametros_prestacion );
+                        break;
+                    
+                    case 'intereses_cesantias':
+                        $descripcion_prestacion = 'Intereses de cesantías';
+                        $dias_derecho = $dias_laborados * 30 / 360;
+                        $liquidacion_prestacion = new Cesantias;
+                        $base_diaria = $liquidacion_prestacion->get_valor_base_diaria( $registro_empleado->contrato, $fecha_hasta, 'normal', $parametros_prestacion ) * ( 12 / 100 );
+                        break;
+                    
+                    default:
+                        # code...
+                        break;
+                }
+
+                $valor_provision = $dias_derecho * $base_diaria;
+
+                $datos[] = (object)[ 
+                                        'empleado_numero_identificacion' => $registro_empleado->tercero->numero_identificacion,
+                                        'empleado_descripcion' => $registro_empleado->tercero->descripcion,
+                                        'concepto' => $descripcion_prestacion,
+                                        'dias_laborados' => $dias_laborados,
+                                        'dias_derecho' => $dias_derecho,
+                                        'base_diaria' => $base_diaria,
+                                        'valor_provision' => $valor_provision
+                                    ];
             }
         }
+        //dd($datos);
 
-        $movimientos = [];
-
-        $vista = View::make('nomina.reportes.resumen_entidades', compact( 'tipos_entidades', 'movimientos', 'fecha_desde', 'fecha_hasta') )->render();
+        $vista = View::make('nomina.reportes.consolidado_prestaciones_sociales', compact( 'datos', 'fecha_desde', 'fecha_hasta','cantidad_meses_a_promediar') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
+    }
+
+    public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
+    {
+        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
+
+        // El tiempo se calcula para los concepto que forman parte del básico
+        $vec_conceptos = [];
+        foreach ($conceptos_de_la_agrupacion as $concepto)
+        {
+            if ($concepto->forma_parte_basico)
+            {
+                $vec_conceptos[] = $concepto->id;
+            }
+        }
+
+        $cantidad_horas_laboradas = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
+                                            ->where( 'nom_contrato_id', $empleado->id )
+                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
+                                            ->sum( 'cantidad_horas' );
+
+        return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
+    }
+
+
+
+    public function calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final )
+    {
+        $vec_fecha_inicial = explode("-", $fecha_inicial);
+        $vec_fecha_final = explode("-", $fecha_final);
+
+        // Días iniciales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
+        $dias_iniciales = ( (int)$vec_fecha_inicial[0] * 360 ) + ( ( (int)$vec_fecha_inicial[1] - 1 ) * 30) + (int)$vec_fecha_inicial[2];
+
+        // Días finales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
+        $dias_finales = ( (int)$vec_fecha_final[0] * 360 ) + ( ( (int)$vec_fecha_final[1] - 1 ) * 30) + (int)$vec_fecha_final[2];
+
+        $dias_totales_laborados = ($dias_finales - $dias_iniciales) + 1;
+
+        return $dias_totales_laborados;
     }
 
     public function listado_aportes_pila(Request $request)
@@ -349,5 +462,62 @@ class ReporteController extends Controller
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
+    }
+
+
+
+    public function resumen_liquidaciones(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $nom_contrato_id = null;
+        if ( $request->nom_contrato_id != '' )
+        {
+            $nom_contrato_id = (int)$request->nom_contrato_id;
+        }
+
+        $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, '', $nom_contrato_id);
+
+        $empleados_con_movimiento = $movimiento->unique('nom_contrato_id')->values()->all();
+
+        $datos = [];
+        foreach ($empleados_con_movimiento as $registro_empleado)
+        {
+            $conceptos_liquidados = $movimiento->where('nom_contrato_id',$registro_empleado->nom_contrato_id)->unique('nom_concepto_id')->sortByDesc('valor_devengo')->values()->all();
+            
+            foreach ($conceptos_liquidados as $registro_concepto)
+            {
+                //dd([]);
+                $datos[] = (object)[ 
+                                        'empleado_numero_identificacion' => $registro_concepto->tercero->numero_identificacion,
+                                        'empleado_descripcion' => $registro_concepto->tercero->descripcion,
+                                        'concepto' => $registro_concepto->nom_concepto_id . ' - ' . $registro_concepto->concepto->descripcion,
+                                        'cantidad_horas' => $movimiento->where('nom_contrato_id',$registro_concepto
+                                                                    ->nom_contrato_id)
+                                                                        ->where('nom_concepto_id',$registro_concepto->nom_concepto_id)
+                                                                        ->sum('cantidad_horas'),
+                                        'valor_devengo' => $movimiento->where('nom_contrato_id',$registro_concepto->nom_contrato_id)
+                                                                        ->where('nom_concepto_id',$registro_concepto->nom_concepto_id)
+                                                                        ->sum('valor_devengo'),
+                                        'valor_deduccion' => $movimiento->where('nom_contrato_id',$registro_concepto->nom_contrato_id)
+                                                                        ->where('nom_concepto_id',$registro_concepto->nom_concepto_id)
+                                                                        ->sum('valor_deduccion'),
+                                    ];
+            }
+            //dd( $movimiento->where('nom_contrato_id',$registro->nom_contrato_id)->sum('valor_devengo') );
+        }
+        //dd($datos);
+
+        $vista = View::make('nomina.reportes.resumen_liquidaciones', compact( 'datos', 'fecha_desde', 'fecha_hasta') )->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function preparar_datos_resumen_contabilizacion( $movimiento )
+    {
+        
     }
 }

@@ -11,6 +11,7 @@ class ParametroLiquidacionPrestacionesSociales extends Model
     protected $table = 'nom_parametros_liquidacion_prestaciones_sociales';
 
     /*
+        concepto_prestacion = { vacaciones | prima_legal | cesantias | intereses_cesantias }
         base_liquidacion= { 
                             sueldo: solo el sueldo del contrato 
                             sueldo_mas_promedio_agrupacion: sueldo del contrato + promedios de la agrupación

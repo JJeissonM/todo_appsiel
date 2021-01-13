@@ -48,7 +48,8 @@ class PrimaServicios implements Estrategia
 
         $dias_totales_liquidacion = $this->get_dias_liquidacion( $liquidacion['empleado'], $liquidacion['documento_nomina'], $parametros_prestacion );
 
-        $valor_base_diaria =  $this->get_valor_base_diaria( $liquidacion['empleado'], $liquidacion['documento_nomina'], $parametros_prestacion );
+        $valor_base_diaria =  $this->get_valor_base_diaria( $liquidacion['empleado'], $liquidacion['documento_nomina']->fecha, $liquidacion['documento_nomina']->tipo_liquidacion, $parametros_prestacion );
+
         $this->tabla_resumen['valor_base_diaria'] = $valor_base_diaria;
 
         $this->tabla_resumen['valor_total_liquidacion'] = $dias_totales_liquidacion * $valor_base_diaria;
@@ -65,29 +66,7 @@ class PrimaServicios implements Estrategia
                 ];
 	}
 
-    public function crear_registro_concepto_vacaciones_dias_no_habiles( $novedad_tnl_id, $documento_nomina, $empleado, $cantidad_horas_a_liquidar)
-    {
-        if ( $this->tabla_resumen['vlr_dias_no_habiles'] > 0 )
-        {
-            $registro = NomDocRegistro::create(
-                            [ 'nom_doc_encabezado_id' => $documento_nomina->id ] + 
-                            [ 'fecha' => $documento_nomina->fecha] + 
-                            [ 'core_empresa_id' => $documento_nomina->core_empresa_id] +  
-                            [ 'nom_concepto_id' => (int)config('nomina.concepto_vacaciones_dias_no_habiles') ] + 
-                            [ 'core_tercero_id' => $empleado->core_tercero_id ] + 
-                            [ 'nom_contrato_id' => $empleado->id ] +
-                            [ 'estado' => 'Activo' ] + 
-                            [ 'creado_por' => Auth::user()->email ] + 
-                            [ 'modificado_por' => '' ] +
-                            [ 'cantidad_horas' => $cantidad_horas_a_liquidar ] +
-                            [ 'valor_devengo' => $this->tabla_resumen['vlr_dias_no_habiles'] ] +
-                            [ 'valor_deduccion' => 0 ] +
-                            [ 'novedad_tnl_id' => $novedad_tnl_id ]
-                        );
-        }
-    }
-
-    public function get_valor_base_diaria( $empleado, $documento_nomina, $parametros_prestacion )
+    public function get_valor_base_diaria( $empleado, $fecha_final, $tipo_liquidacion, $parametros_prestacion )
     {
 
         if( is_null( $parametros_prestacion ) )
@@ -98,12 +77,12 @@ class PrimaServicios implements Estrategia
         $valor_base_diaria = 0;
         $valor_base_diaria_sueldo = 0;
 
-        $fecha_inicial = $this->get_fecha_inicial_promedios( $documento_nomina->fecha, $parametros_prestacion->cantidad_meses_a_promediar );
+        $fecha_inicial = $this->get_fecha_inicial_promedios( $fecha_final, $parametros_prestacion->cantidad_meses_a_promediar );
         if ( $fecha_inicial < $empleado->fecha_ingreso)
         {
             $fecha_inicial = $empleado->fecha_ingreso;
         }
-        $fecha_final = $documento_nomina->fecha;
+
         $this->tabla_resumen['fecha_inicial_promedios'] = $fecha_inicial;
         $this->tabla_resumen['fecha_final_promedios'] = $fecha_final;
 
@@ -307,7 +286,7 @@ class PrimaServicios implements Estrategia
         }
 
         $cantidad_horas_laboradas = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
+                                            ->where( 'nom_contrato_id', $empleado->id )
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'cantidad_horas' );
 

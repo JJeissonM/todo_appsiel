@@ -18,7 +18,7 @@
 </style>
 
 <h3 style="width: 100%; text-align: center;">
-    RESUMÉN POR ENTIDADES
+    RESUMEN POR ENTIDADES
 </h3>
 
 <p style="width: 100%; text-align: center;">

@@ -101,12 +101,12 @@ class PrestacionesSocialesController extends TransaccionController
                     $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion',$prestacion)
                                                                         ->where('grupo_empleado_id',$empleado->grupo_empleado_id)
                                                                         ->get()->first();
+
                     $concepto = NomConcepto::find( $parametros_prestacion->nom_concepto_id );
 
-                    $deduccion = $valores[0]['valor_deduccion'];
                     if ( $request->almacenar_registros )
                     {
-                        $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $deduccion, $usuario);
+                        $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $valores[0], $usuario);
                     }
 
                     $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen') )->render();
@@ -125,7 +125,7 @@ class PrestacionesSocialesController extends TransaccionController
         return $vista;
     }
 
-    public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $deduccion, $usuario)
+    public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $valores, $usuario)
     {
         NomDocRegistro::create(
                                     ['nom_doc_encabezado_id' => $documento_nomina->id ] + 
@@ -136,8 +136,8 @@ class PrestacionesSocialesController extends TransaccionController
                                     ['nom_contrato_id' => $empleado->id ] + 
                                     ['estado' => 'Activo'] + 
                                     ['creado_por' => $usuario->email] + 
-                                    ['modificado_por' => '']+ 
-                                    ['valor_deduccion' => $deduccion]
+                                    ['modificado_por' => ''] +
+                                    $valores
                                 );
     }
 
@@ -158,7 +158,7 @@ class PrestacionesSocialesController extends TransaccionController
                 if ( !is_null( $registro->concepto ) && !is_null($registro->contrato) )
                 {
                     // Se llama al subsistema de liquidación
-                    $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $registro->contrato, $documento_nomina);
+                    $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $registro->contrato, $documento_nomina, null);
                     $liquidacion->retirar( $prestacion, $registro );
                 }
             }                   

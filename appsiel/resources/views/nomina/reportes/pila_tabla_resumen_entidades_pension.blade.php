@@ -4,6 +4,8 @@
 			<th> NIT </th>
 			<th> Entidad </th>
 			<th> Cod. Nacional </th>
+			<!-- <th> Vlr. aportado empleado </th>
+			<th> Vlr. aportado empresa </th> -->
 			<th> Valor aportado </th>
 		</tr>
 	</thead>
