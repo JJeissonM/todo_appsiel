@@ -20,7 +20,7 @@ class TesoMotivo extends Model
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return TesoMotivo::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_motivos.contab_cuenta_id')
             ->where('teso_motivos.core_empresa_id', Auth::user()->empresa_id)
@@ -32,8 +32,40 @@ class TesoMotivo extends Model
                 'teso_motivos.estado AS campo5',
                 'teso_motivos.id AS campo6'
             )
+            ->where("teso_motivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("teso_motivos.teso_tipo_motivo", "LIKE", "%$search%")
+            ->orWhere("teso_motivos.movimiento", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("teso_motivos.estado", "LIKE", "%$search%")
             ->orderBy('teso_motivos.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = TesoMotivo::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_motivos.contab_cuenta_id')
+            ->where('teso_motivos.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                'teso_motivos.descripcion AS DESCRIPCIÓN',
+                'teso_motivos.teso_tipo_motivo AS TIPO_DE_TRANSACCIÓN',
+                'teso_motivos.movimiento AS MOVIMIENTO',
+                DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS CUENTA_CONTRAPARTIDA'),
+                'teso_motivos.estado AS ESTADO'
+            )
+            ->where("teso_motivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("teso_motivos.teso_tipo_motivo", "LIKE", "%$search%")
+            ->orWhere("teso_motivos.movimiento", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("teso_motivos.estado", "LIKE", "%$search%")
+            ->orderBy('teso_motivos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE MOTIVOS TESORERIA";
     }
 
     public static function opciones_campo_select()

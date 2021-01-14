@@ -45,7 +45,7 @@ class InvDocEncabezado extends Model
     }
 
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         /*
             Tipos de transacciones de inventarios
@@ -73,8 +73,48 @@ class InvDocEncabezado extends Model
                 'inv_doc_encabezados.estado AS campo6',
                 'inv_doc_encabezados.id AS campo7'
             )
+            ->where("inv_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'), "LIKE", "%$search%")
+            ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere("inv_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('inv_doc_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $core_tipos_transacciones_ids = [1, 2, 3, 4, 28, 10];
+        $string = InvDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')
+            ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_doc_encabezados.inv_bodega_id')
+            ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->whereIn('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipos_transacciones_ids)
+            ->select(
+                'inv_doc_encabezados.fecha AS campo1',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
+                'inv_bodegas.descripcion AS campo3',
+                DB::raw('core_terceros.descripcion AS campo4'),
+                'inv_doc_encabezados.descripcion AS campo5',
+                'inv_doc_encabezados.estado AS campo6',
+                'inv_doc_encabezados.id AS campo7'
+            )
+            ->where("inv_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'), "LIKE", "%$search%")
+            ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere("inv_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_doc_encabezados.estado", "LIKE", "%$search%")
+            ->orderBy('inv_doc_encabezados.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ENCABEZADO INVENTARIOS";
     }
 
     public function crear_encabezado($modelo_id, $datos)

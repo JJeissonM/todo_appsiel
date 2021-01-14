@@ -14,7 +14,7 @@ class TesoCaja extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Cuenta Contable', 'Controla usuarios', 'Estado'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return TesoCaja::leftJoin('core_empresas', 'core_empresas.id', '=', 'teso_cajas.core_empresa_id')
             ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cajas.contab_cuenta_id')
@@ -26,8 +26,38 @@ class TesoCaja extends Model
                 'teso_cajas.estado AS campo4',
                 'teso_cajas.id AS campo5'
             )
+            ->where("teso_cajas.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("teso_cajas.controla_usuarios", "LIKE", "%$search%")
+            ->orWhere("teso_cajas.estado", "LIKE", "%$search%")
             ->orderBy('teso_cajas.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = TesoCaja::leftJoin('core_empresas', 'core_empresas.id', '=', 'teso_cajas.core_empresa_id')
+            ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cajas.contab_cuenta_id')
+            ->where('teso_cajas.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                'teso_cajas.descripcion AS DESCRIPCIÓN',
+                DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS CUENTA_CONTABLE'),
+                'teso_cajas.controla_usuarios AS CONTROLA_USUARIOS',
+                'teso_cajas.estado AS ESTADO'
+            )
+            ->where("teso_cajas.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("teso_cajas.controla_usuarios", "LIKE", "%$search%")
+            ->orWhere("teso_cajas.estado", "LIKE", "%$search%")
+            ->orderBy('teso_cajas.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CAJAS";
     }
 
     public static function opciones_campo_select()
