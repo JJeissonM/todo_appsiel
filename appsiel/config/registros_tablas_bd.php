@@ -7232,6 +7232,21 @@
       'created_at' => '2021-01-07 16:24:30',
       'updated_at' => '2021-01-07 06:13:18',
     ),
+    482 => 
+    array (
+      'id' => 508,
+      'core_app_id' => 18,
+      'modelo_id' => 167,
+      'name' => 'salud_nota_credito_directa',
+      'descripcion' => 'Notas crédito de ventas',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 5,
+      'enabled' => 0,
+      'fa_icon' => 'list',
+      'created_at' => '2021-01-13 11:36:12',
+      'updated_at' => '2021-01-13 11:41:44',
+    ),
   ),
   'roles' => 
   array (
@@ -17885,6 +17900,24 @@
       'orden' => 0,
       'permission_id' => 507,
       'role_id' => 17,
+    ),
+    1749 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 508,
+      'role_id' => 1,
+    ),
+    1750 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 508,
+      'role_id' => 3,
+    ),
+    1751 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 508,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -59438,9 +59471,9 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'modelo_registros_documentos' => 'App\\Ventas\\VtasDocRegistro',
       'modelo_movimientos' => 'App\\Ventas\\VtasMovimiento',
       'orden' => 3,
-      'estado' => 'Inactivo',
+      'estado' => 'Activo',
       'created_at' => '2019-11-05 22:47:55',
-      'updated_at' => '2019-11-06 17:41:28',
+      'updated_at' => '2021-01-14 07:50:32',
     ),
     38 => 
     array (

@@ -64,7 +64,7 @@ class NotaCreditoController extends TransaccionController
 
         if ( is_null( Input::get('factura_id') ) )
         {
-            return redirect('web?id=13&id_modelo=167')->with('mensaje_error','No puede hacer notas crédito desde esta opción. Debe ir al Botón Crear Nota crédito directa');
+            return redirect('web?id=13&id_modelo=167')->with('mensaje_error','No puede hacer notas crédito desde esta opción. Debe ir al Botón Crear Nota crédito directa o hacer la Nota desde una Factura.');
         }
 
         $factura = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
