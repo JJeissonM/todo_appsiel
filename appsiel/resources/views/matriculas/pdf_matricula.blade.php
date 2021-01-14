@@ -130,6 +130,13 @@
     $mama = (object)[ 'tercero' => (object) [ 'descripcion'=> '--', 'numero_identificacion'=> 0, 'telefono1'=>'--', 'email'=>'--' ], 'ocupacion'=>'--' ];
     
 
+    $responsable_financiero = $matricula->estudiante->responsable_financiero();
+
+    if( is_null( $responsable_financiero->tercero ) )
+    {
+        $responsable_financiero->tercero = (object)['numero_identificacion'=>0,'descripcion'=>' ------ Verificar Tercero'];
+    }
+
     if( !is_null( $matricula->estudiante->papa() ) )
     {
         $papa = $matricula->estudiante->papa();
@@ -195,7 +202,8 @@
     <tr>
         <?php
 
-        function calcular_edad($fecha_nacimiento){
+        function calcular_edad($fecha_nacimiento)
+        {
             $datetime1 = new DateTime($fecha_nacimiento);
             $datetime2 = new DateTime('now');
             $interval = $datetime1->diff($datetime2);
@@ -222,8 +230,8 @@
     <tr>
         <td class="titulo">Datos Acudiente </td>
         <td class="campo" colspan="3"> 
-            <b>Cédula: </b>{{ number_format( $matricula->estudiante->responsable_financiero()->tercero->numero_identificacion, '0',',','.') }} <br/>
-            <b>Nombre: </b>{{ $matricula->estudiante->responsable_financiero()->tercero->descripcion }} 
+            <b>Cédula: </b>{{ number_format( $responsable_financiero->tercero->numero_identificacion, '0',',','.') }} <br/>
+            <b>Nombre: </b>{{ $responsable_financiero->tercero->descripcion }} 
         </td>
     </tr>
 </table>
@@ -308,8 +316,11 @@
     </tr>
 </table>
 
-<footer>
-    <i>Formato generado por appsiel</i>
-</footer>
+
+    <div style="width: 100%; position: fixed; bottom: 0;">
+        <hr>
+        {!! generado_por_appsiel() !!}
+    </div>
+
 </body>
 </html>

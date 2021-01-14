@@ -14,7 +14,13 @@ class TiempoLaborado implements Estrategia
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
-		$registros_documento = NomDocRegistro::where( 'nom_doc_registros.nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
+
+		/*$registros_documento = NomDocRegistro::where( 'nom_doc_registros.nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
+													->where( 'nom_doc_registros.core_tercero_id', $liquidacion['empleado']->core_tercero_id )
+													->get();*/
+
+		$lapso = $liquidacion['documento_nomina']->lapso();
+		$registros_documento = NomDocRegistro::whereBetween( 'nom_doc_registros.fecha', [$lapso->fecha_inicial,$lapso->fecha_final] )
 													->where( 'nom_doc_registros.core_tercero_id', $liquidacion['empleado']->core_tercero_id )
 													->get();
 

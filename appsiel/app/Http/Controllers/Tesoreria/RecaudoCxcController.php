@@ -482,7 +482,10 @@ class RecaudoCxcController extends Controller
                                                     ['core_tipo_doc_app_id','=',$recaudo->core_tipo_doc_app_id],
                                                     ['consecutivo','=',$recaudo->consecutivo]
                                                 ])->get()->first();
-        $recaudo_libreta->anular();/*dd(*/
+        if ( !is_null($recaudo_libreta) )
+        {
+            $recaudo_libreta->anular();
+        }            
 
         // Marcar como anulado el encabezado
         $recaudo->update(['estado'=>'Anulado']);

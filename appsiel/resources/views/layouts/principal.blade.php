@@ -273,7 +273,8 @@
 		function validar_requeridos() {
 			control_requeridos = true;
 			$("*[required]").each(function() {
-				if ($(this).val() == "") {
+				if ($(this).val() == "")
+				{
 					$(this).focus();
 					alert('Este campo es requerido: ' + $(this).attr('name'));
 					control_requeridos = false;
@@ -372,8 +373,6 @@
 				var email = $("#email").val();
 
 				url_2 = "{{ url('/core/validar_email/') }}" + "/" + email;
-
-				console.log( url_2 );
 
 				$.get( url_2 , function( datos ) 
 				{

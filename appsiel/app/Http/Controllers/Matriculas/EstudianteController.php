@@ -385,7 +385,8 @@ class EstudianteController extends ModeloController
         $lista = $estudiante->responsableestudiantes;
         $lista2 = null;
         if (count($lista) > 0) {
-            foreach ($lista as $ll) {
+            foreach ($lista as $ll)
+            {
                 $o = null;
                 $o['tdid'] = $ll->tercero->id_tipo_documento_id;
                 $o['trid'] = $ll->tiporesponsable_id;

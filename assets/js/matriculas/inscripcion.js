@@ -9,6 +9,7 @@ $(document).ready(function(){
 
 	$("#id_tipo_documento_id").val('');
 	$("#numero_identificacion2").focus();
+	$("#creado_por").attr('type','text');
 
 	$(document).on('blur, keyup','#numero_identificacion2',function(){
 
@@ -86,7 +87,7 @@ $(document).ready(function(){
 		for (dataItem in data)
 		{
 		  inputs.map(function (inputItem) {
-		  	if ( inputItem.name != 'fecha' )
+		  	if ( inputItem.name != 'fecha' && inputItem.name != 'creado_por' && inputItem.name != 'modificado_por' )
 			{
 				return ( inputItem.name === dataItem ) ? ( inputItem.value = data[dataItem] ) : false;
 			}		    
