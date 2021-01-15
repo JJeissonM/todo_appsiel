@@ -49,14 +49,14 @@ class RemisionVentas extends InvDocEncabezado
             ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->select(
-                'inv_doc_encabezados.fecha AS Fecha',
-                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS Documento'),
-                'inv_bodegas.descripcion AS Bodega',
-                'core_terceros.descripcion AS Tercero',
-                'inv_doc_encabezados.descripcion AS Detalle',
-                'inv_doc_encabezados.estado AS Estado'
+                'inv_doc_encabezados.fecha AS FECHA',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS DOCUMENTO'),
+                'inv_bodegas.descripcion AS BODEGA',
+                'core_terceros.descripcion AS TERCERO',
+                'inv_doc_encabezados.descripcion AS DETALLE',
+                'inv_doc_encabezados.estado AS ESTADO'
             )
-            ->where("inv_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere("inv_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")

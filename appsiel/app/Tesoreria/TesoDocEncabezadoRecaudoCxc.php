@@ -68,6 +68,6 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO DE ";
+        return "LISTADO DE RECAUDOS DE CXC";
     }
 }

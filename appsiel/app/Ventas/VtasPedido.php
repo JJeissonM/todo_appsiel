@@ -25,7 +25,7 @@ class VtasPedido extends VtasDocEncabezado
 
     public $archivo_js = 'assets/js/ventas/pedidos.js';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 42;
         return VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
@@ -41,11 +41,49 @@ class VtasPedido extends VtasDocEncabezado
                 'vtas_doc_encabezados.estado AS campo6',
                 'vtas_doc_encabezados.id AS campo7'
             )
+            ->orWhere("vtas_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.fecha_entrega", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
-    public static function consultar_registros2($nro_registros)
+    public static function sqlString($search)
+    {
+        $core_tipo_transaccion_id = 42;
+        $string = VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
+            ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            ->select(
+                'vtas_doc_encabezados.fecha AS FECHA',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS DOCUMENTO'),
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS CLIENTE'),
+                'vtas_doc_encabezados.fecha_entrega AS FECHA_ENTREGA',
+                'vtas_doc_encabezados.descripcion AS DETALLE',
+                'vtas_doc_encabezados.estado AS ESTADO'
+            )
+            ->orWhere("vtas_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.fecha_entrega", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
+            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE PEDIDO DE VENTAS";
+    }
+
+    public static function consultar_registros2($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 42;
         return VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
@@ -61,6 +99,13 @@ class VtasPedido extends VtasDocEncabezado
                 'vtas_doc_encabezados.estado AS campo6',
                 'vtas_doc_encabezados.id AS campo7'
             )
+            ->orWhere("vtas_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.fecha_entrega", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
+            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
     }

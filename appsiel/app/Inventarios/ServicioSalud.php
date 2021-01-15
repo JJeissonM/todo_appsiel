@@ -25,7 +25,7 @@ class ServicioSalud extends InvProducto
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return ServicioSalud::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
             ->select(
@@ -36,10 +36,40 @@ class ServicioSalud extends InvProducto
                 'inv_productos.estado AS campo5',
                 'inv_productos.id AS campo6'
             )
+            ->where("inv_productos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.referencia", "LIKE", "%$search%")
+            ->orWhere("inv_productos.codigo_barras", "LIKE", "%$search%")
+            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.estado", "LIKE", "%$search%")
             ->orderBy('inv_productos.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
+    public static function sqlString($search)
+    {
+        $string = ServicioSalud::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+            ->select(
+                'inv_productos.descripcion AS DESCRIPCIÓN',
+                'inv_productos.referencia AS CÓDIGO_CUPS',
+                'inv_productos.codigo_barras AS CÓDIGO_SOAT',
+                'inv_grupos.descripcion AS Grupo SERVICIO',
+                'inv_productos.estado AS ESTADO'
+            )
+            ->where("inv_productos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.referencia", "LIKE", "%$search%")
+            ->orWhere("inv_productos.codigo_barras", "LIKE", "%$search%")
+            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.estado", "LIKE", "%$search%")
+            ->orderBy('inv_productos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE SERVICIOS DE SALUD";
+    }
 
     public static function opciones_campo_select()
     {

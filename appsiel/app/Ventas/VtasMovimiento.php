@@ -35,7 +35,7 @@ class VtasMovimiento extends Model
         return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
     }
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",vtas_movimientos.consecutivo) AS campo2';
 
@@ -55,13 +55,61 @@ class VtasMovimiento extends Model
                 'vtas_movimientos.base_impuesto_total AS campo9',
                 'vtas_movimientos.id AS campo10'
             )
+            ->where("vtas_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" )'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.precio_unitario", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.cantidad", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.precio_total", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.tasa_impuesto", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.base_impuesto_total", "LIKE", "%$search%")
             ->orderBy('vtas_movimientos.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
     }
 
-    public static function consultar_registros2($nro_registros)
+    public static function sqlString($search)
+    {
+        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",vtas_movimientos.consecutivo) AS DOCUMENTO';
+
+        $string = VtasMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
+            ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                'vtas_movimientos.fecha AS FECHA',
+                DB::raw($select_raw),
+                DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS PRODUCTO'),
+                'core_terceros.descripcion AS CLIENTE',
+                'vtas_movimientos.precio_unitario AS PRECIO_UNIT',
+                'vtas_movimientos.cantidad AS CANTIDAD',
+                'vtas_movimientos.precio_total AS PRECIO_TOTAL',
+                'vtas_movimientos.tasa_impuesto AS IVA',
+                'vtas_movimientos.base_impuesto_total AS BASE_IVA_TOTAL'
+            )
+            ->orWhere("vtas_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" )'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.precio_unitario", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.cantidad", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.precio_total", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.tasa_impuesto", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.base_impuesto_total", "LIKE", "%$search%")
+            ->orderBy('vtas_movimientos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE MOVIMIENTOS DE VENTA";
+    }
+
+    public static function consultar_registros2($nro_registros, $search)
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",vtas_movimientos.consecutivo) AS campo2';
 
@@ -69,12 +117,33 @@ class VtasMovimiento extends Model
             ->leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
             ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
-            ->select('vtas_movimientos.fecha AS campo1', DB::raw($select_raw), DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS campo3'), 'core_terceros.descripcion AS campo4', 'vtas_movimientos.precio_unitario AS campo5', 'vtas_movimientos.cantidad AS campo6', 'vtas_movimientos.precio_total AS campo7', 'vtas_movimientos.tasa_impuesto AS campo8', 'vtas_movimientos.base_impuesto_total AS campo9', 'vtas_movimientos.id AS campo10')
+            ->select(
+                'vtas_movimientos.fecha AS campo1',
+                DB::raw($select_raw),
+                DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS campo3'),
+                'core_terceros.descripcion AS campo4',
+                'vtas_movimientos.precio_unitario AS campo5',
+                'vtas_movimientos.cantidad AS campo6',
+                'vtas_movimientos.precio_total AS campo7',
+                'vtas_movimientos.tasa_impuesto AS campo8',
+                'vtas_movimientos.base_impuesto_total AS campo9',
+                'vtas_movimientos.id AS campo10'
+            )
+            ->orWhere("vtas_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" )'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.precio_unitario", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.cantidad", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.precio_total", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.tasa_impuesto", "LIKE", "%$search%")
+            ->orWhere("vtas_movimientos.base_impuesto_total", "LIKE", "%$search%")
             ->orderBy('vtas_movimientos.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
     }
+
 
     public static function get_precios_ventas($fecha_desde, $fecha_hasta, $producto_id, $operador1, $cliente_id, $operador2)
     {

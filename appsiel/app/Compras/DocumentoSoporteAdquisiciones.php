@@ -15,7 +15,7 @@ class DocumentoSoporteAdquisiciones extends ComprasDocEncabezado
 
     public $urls_acciones = '{"create":"compras/create","show":"compras/id_fila","store":"compras"}';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 48;
         return DocumentoSoporteAdquisiciones::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
@@ -32,7 +32,47 @@ class DocumentoSoporteAdquisiciones extends ComprasDocEncabezado
                 'compras_doc_encabezados.estado AS campo7',
                 'compras_doc_encabezados.id AS campo8'
             )
+            ->orWhere("compras_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("compras_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("compras_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere("compras_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('compras_doc_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+    public static function sqlString($search)
+    {
+        $core_tipo_transaccion_id = 48;
+        $string = DocumentoSoporteAdquisiciones::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_doc_encabezados.core_tercero_id')
+            ->where('compras_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->where('compras_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            ->select(
+                'compras_doc_encabezados.fecha AS FECHA',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS DOCUMENTO_COMPRA'),
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS PROVEEDOR'),
+                DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo) AS FACTURA'),
+                'compras_doc_encabezados.descripcion AS DETALLE',
+                'compras_doc_encabezados.valor_total AS VALOR_TOTAL',
+                'compras_doc_encabezados.estado AS ESTADO'
+            )
+            ->orWhere("compras_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("compras_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("compras_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere("compras_doc_encabezados.estado", "LIKE", "%$search%")
+            ->orderBy('compras_doc_encabezados.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE DOCUMENTO SOPRTE EN ADQUISICIONES";
     }
 }

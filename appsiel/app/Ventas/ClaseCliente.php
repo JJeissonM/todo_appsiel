@@ -16,12 +16,53 @@ class ClaseCliente extends Model
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
-        $registros = ClaseCliente::leftJoin('contab_cuentas as cta_x_cobrar', 'cta_x_cobrar.id', '=', 'vtas_clases_clientes.cta_x_cobrar_id')->leftJoin('contab_cuentas as cta_anticipo', 'cta_anticipo.id', '=', 'vtas_clases_clientes.cta_anticipo_id')->select('vtas_clases_clientes.descripcion AS campo1', 'cta_x_cobrar.descripcion AS campo2', 'cta_anticipo.descripcion AS campo3', 'vtas_clases_clientes.clase_padre_id AS campo4', 'vtas_clases_clientes.estado AS campo5', 'vtas_clases_clientes.id AS campo6')
+        $registros = ClaseCliente::leftJoin('contab_cuentas as cta_x_cobrar', 'cta_x_cobrar.id', '=', 'vtas_clases_clientes.cta_x_cobrar_id')
+            ->leftJoin('contab_cuentas as cta_anticipo', 'cta_anticipo.id', '=', 'vtas_clases_clientes.cta_anticipo_id')
+            ->select(
+                'vtas_clases_clientes.descripcion AS campo1',
+                'cta_x_cobrar.descripcion AS campo2',
+                'cta_anticipo.descripcion AS campo3',
+                'vtas_clases_clientes.clase_padre_id AS campo4',
+                'vtas_clases_clientes.estado AS campo5',
+                'vtas_clases_clientes.id AS campo6'
+            )
+            ->where("vtas_clases_clientes.descripcion", "LIKE", "%$search%")
+            ->orWhere("cta_x_cobrar.descripcion", "LIKE", "%$search%")
+            ->orWhere("cta_anticipo.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_clases_clientes.clase_padre_id", "LIKE", "%$search%")
+            ->orWhere("vtas_clases_clientes.estado", "LIKE", "%$search%")
             ->orderBy('vtas_clases_clientes.created_at', 'DESC')
             ->paginate($nro_registros);
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = ClaseCliente::leftJoin('contab_cuentas as cta_x_cobrar', 'cta_x_cobrar.id', '=', 'vtas_clases_clientes.cta_x_cobrar_id')
+            ->leftJoin('contab_cuentas as cta_anticipo', 'cta_anticipo.id', '=', 'vtas_clases_clientes.cta_anticipo_id')
+            ->select(
+                'vtas_clases_clientes.descripcion AS TERCERO',
+                'cta_x_cobrar.descripcion AS CTA_X_COBRAR_DEFAULT',
+                'cta_anticipo.descripcion AS CTA_ANTICIPO_DEFAULT',
+                'vtas_clases_clientes.clase_padre_id AS CLASE_PADRE',
+                'vtas_clases_clientes.estado AS ESTADO'
+            )
+            ->where("vtas_clases_clientes.descripcion", "LIKE", "%$search%")
+            ->orWhere("cta_x_cobrar.descripcion", "LIKE", "%$search%")
+            ->orWhere("cta_anticipo.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_clases_clientes.clase_padre_id", "LIKE", "%$search%")
+            ->orWhere("vtas_clases_clientes.estado", "LIKE", "%$search%")
+            ->orderBy('vtas_clases_clientes.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CLASES DE CLIENTES";
     }
 
     public static function opciones_campo_select()

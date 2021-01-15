@@ -57,7 +57,7 @@ class Cliente extends Model
         return $this->belongsTo(Vendedor::class, 'vendedor_id');
     }
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $array = Cliente::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_clientes.core_tercero_id')
             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_clientes.clase_cliente_id')
@@ -75,8 +75,17 @@ class Cliente extends Model
                 'vtas_zonas.descripcion AS campo8',
                 'vtas_clientes.id AS campo9'
             )
+            ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere("vtas_clases_clientes.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_listas_precios_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_listas_dctos_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_zonas.descripcion", "LIKE", "%$search%")
             ->orderBy('vtas_clientes.created_at', 'DESC')
             ->paginate($nro_registros);
+
         if (count($array) > 0) {
             foreach ($array as $value) {
                 //arreglamos la presentacion del telefono
@@ -85,6 +94,42 @@ class Cliente extends Model
         }
 
         return $array;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Cliente::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_clientes.core_tercero_id')
+            ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_clientes.clase_cliente_id')
+            ->leftJoin('vtas_listas_precios_encabezados', 'vtas_listas_precios_encabezados.id', '=', 'vtas_clientes.lista_precios_id')
+            ->leftJoin('vtas_listas_dctos_encabezados', 'vtas_listas_dctos_encabezados.id', '=', 'vtas_clientes.lista_descuentos_id')
+            ->leftJoin('vtas_zonas', 'vtas_zonas.id', '=', 'vtas_clientes.zona_id')
+            ->select(
+                'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
+                'core_terceros.descripcion AS TERCERO',
+                'core_terceros.direccion1 AS DIRECCIÓN',
+                'core_terceros.telefono1 AS TELÉFONO',
+                'vtas_clases_clientes.descripcion AS CLASE_DE_CLIENTE',
+                'vtas_listas_precios_encabezados.descripcion AS LISTA_DE_PRECIOS',
+                'vtas_listas_dctos_encabezados.descripcion AS LISTA_DE_DESCUENTOS',
+                'vtas_zonas.descripcion AS ZONA'
+            )
+            ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere("vtas_clases_clientes.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_listas_precios_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_listas_dctos_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_zonas.descripcion", "LIKE", "%$search%")
+            ->orderBy('vtas_clientes.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ";
     }
 
     public static function opciones_campo_select()

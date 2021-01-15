@@ -17,7 +17,7 @@ class CxcDocCruceEncabezado extends CxcDocEncabezado
 
 
     // Se consultan los documentos para la empresa que tiene asignada el usuario
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 16;
 
@@ -33,7 +33,43 @@ class CxcDocCruceEncabezado extends CxcDocEncabezado
                 'cxc_doc_encabezados.descripcion AS campo5',
                 'cxc_doc_encabezados.id AS campo6'
             )
+            ->orWhere("cxc_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("cxc_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("cxc_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orderBy('cxc_doc_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $core_tipo_transaccion_id = 16;
+
+        $string = CxcDocCruceEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_doc_encabezados.core_tercero_id')
+            ->where('cxc_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->where('cxc_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            ->select(
+                'cxc_doc_encabezados.fecha AS FECHA',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo) AS DOCUMENTO'),
+                'cxc_doc_encabezados.valor_total AS VALOR_TOTAL',
+                'core_terceros.descripcion as TERCERO',
+                'cxc_doc_encabezados.descripcion AS DETALLE'
+            )
+            ->orWhere("cxc_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("cxc_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("cxc_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orderBy('cxc_doc_encabezados.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE DOCUMENTOS CRUCE";
     }
 }

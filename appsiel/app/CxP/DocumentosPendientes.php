@@ -22,7 +22,7 @@ class DocumentosPendientes extends Model
                                 "update":"compras_registro_cxp/id_fila"
                             }';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return DocumentosPendientes::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_movimientos.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_movimientos.core_tercero_id')
@@ -37,8 +37,47 @@ class DocumentosPendientes extends Model
                 'cxp_movimientos.estado AS campo7',
                 'cxp_movimientos.id AS campo8'
             )
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(cxp_movimientos.doc_proveedor_prefijo," ",cxp_movimientos.doc_proveedor_consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.valor_documento", "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.valor_pagado", "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.saldo_pendiente", "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.estado", "LIKE", "%$search%")
             ->orderBy('cxp_movimientos.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = DocumentosPendientes::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_movimientos.core_tercero_id')
+            ->where('cxp_movimientos.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS Proveedor'),
+                DB::raw('CONCAT(cxp_movimientos.doc_proveedor_prefijo," ",cxp_movimientos.doc_proveedor_consecutivo) AS DOCUMENTO'),
+                'cxp_movimientos.fecha AS FECHA',
+                'cxp_movimientos.valor_documento AS VALOR_DOCUMENTO',
+                'cxp_movimientos.valor_pagado AS VALOR_PAGADO',
+                'cxp_movimientos.saldo_pendiente AS SALDO_PENDIENTE',
+                'cxp_movimientos.estado AS ESTADO'
+            )
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(cxp_movimientos.doc_proveedor_prefijo," ",cxp_movimientos.doc_proveedor_consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.valor_documento", "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.valor_pagado", "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.saldo_pendiente", "LIKE", "%$search%")
+            ->orWhere("cxp_movimientos.estado", "LIKE", "%$search%")
+            ->orderBy('cxp_movimientos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE REGISTROS DE CXP";
     }
 
     // El archivo js debe estar en la carpeta public
