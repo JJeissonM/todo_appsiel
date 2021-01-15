@@ -83,7 +83,7 @@ class TesoMovimiento extends Model
             ->select(
                 'teso_movimientos.fecha AS FECHA',
                 DB::raw($select_raw),
-                DB::raw('CONCAT( teso_cajas.descripcion, " ", teso_cuentas_bancarias.descripcion ) AS CAJA/BANCO'),
+                DB::raw('CONCAT( teso_cajas.descripcion, " ", teso_cuentas_bancarias.descripcion ) AS CAJA_BANCO'),
                 'core_terceros.descripcion AS TERCERO',
                 'teso_motivos.descripcion AS MOTIVO',
                 'teso_movimientos.valor_movimiento AS VALOR_MOVIMIENTO',
@@ -107,7 +107,7 @@ class TesoMovimiento extends Model
         return "LISTADO DE MOVIMIENTOS DE TESORERIA";
     }
 
-    public static function consultar_registros2($nro_registros)
+    public static function consultar_registros2($nro_registros, $search)
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS campo2';
 
@@ -117,7 +117,23 @@ class TesoMovimiento extends Model
             ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
             ->where('teso_movimientos.core_empresa_id', Auth::user()->empresa_id)
-            ->select('teso_movimientos.fecha AS campo1', DB::raw($select_raw), DB::raw('CONCAT( teso_cajas.descripcion, " ", teso_cuentas_bancarias.descripcion ) AS campo3'), 'core_terceros.descripcion AS campo4', 'teso_motivos.descripcion AS campo5', 'teso_movimientos.valor_movimiento AS campo6', 'teso_movimientos.descripcion AS campo7', 'teso_movimientos.id AS campo8')
+            ->select(
+                'teso_movimientos.fecha AS campo1',
+                DB::raw($select_raw),
+                DB::raw('CONCAT( teso_cajas.descripcion, " ", teso_cuentas_bancarias.descripcion ) AS campo3'),
+                'core_terceros.descripcion AS campo4',
+                'teso_motivos.descripcion AS campo5',
+                'teso_movimientos.valor_movimiento AS campo6',
+                'teso_movimientos.descripcion AS campo7',
+                'teso_movimientos.id AS campo8'
+            )
+            ->where("teso_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT( teso_cajas.descripcion, " ", teso_cuentas_bancarias.descripcion )'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("teso_motivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("teso_movimientos.valor_movimiento", "LIKE", "%$search%")
+            ->orWhere("teso_movimientos.descripcion", "LIKE", "%$search%")
             ->orderBy('teso_movimientos.created_at', 'DESC')
             ->paginate($nro_registros);
 

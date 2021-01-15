@@ -46,7 +46,7 @@ class FacturaPos extends Model
         return $this->hasMany(DocRegistro::class, 'vtas_pos_doc_encabezado_id');
     }
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 47; // Facturas POS
         return FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
@@ -65,11 +65,56 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.estado AS campo8',
                 'vtas_pos_doc_encabezados.id AS campo9'
             )
+            ->where("vtas_pos_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.forma_pago", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
-    public static function consultar_registros2($nro_registros)
+    public static function sqlString($search)
+    {
+        $core_tipo_transaccion_id = 47; // Facturas POS
+        $string = FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
+            ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
+            ->where('vtas_pos_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->where('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            ->select(
+                'vtas_pos_doc_encabezados.fecha AS FECHA',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo) AS DOCUMENTO'),
+                DB::raw('core_terceros.descripcion AS CLIENTE'),
+                'vtas_pos_doc_encabezados.forma_pago AS COND._PAGO',
+                'vtas_pos_doc_encabezados.descripcion AS DETALLE',
+                'vtas_pos_doc_encabezados.valor_total AS VALOR_TOTAL',
+                'vtas_pos_puntos_de_ventas.descripcion AS PDV',
+                'vtas_pos_doc_encabezados.estado AS ESTADO'
+            )
+            ->where("vtas_pos_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.forma_pago", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.estado", "LIKE", "%$search%")
+            ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE FACTURAS POS";
+    }
+
+    public static function consultar_registros2($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 47; // Facturas POS
         return FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
@@ -88,6 +133,14 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.estado AS campo8',
                 'vtas_pos_doc_encabezados.id AS campo9'
             )
+            ->where("vtas_pos_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.forma_pago", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_pos_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
     }

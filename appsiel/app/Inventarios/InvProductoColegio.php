@@ -24,7 +24,7 @@ class InvProductoColegio extends Model
     // categoria_id = Grado
     // referencia = Cantidad. Se ejecutar proceso de entrada incial automática: crear documento EA y dejar en cero este campo.
     // precio_compra: usado para indicar que es un Elemento de biblioteca
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $array_wheres = [
             ['inv_productos.precio_compra', '=', 77.77],
@@ -45,12 +45,57 @@ class InvProductoColegio extends Model
                 'inv_productos.estado AS campo8',
                 'inv_productos.id AS campo9'
             )
+            ->where("inv_productos.id", "LIKE", "%$search%")
+            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.unidad_medida2", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.codigo_barras", "LIKE", "%$search%")
+            ->orWhere("inv_productos.referencia", "LIKE", "%$search%")
+            ->orWhere("inv_productos.estado", "LIKE", "%$search%")
             ->orderBy('inv_productos.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
     }
 
+    public static function sqlString($search)
+    {
+        $array_wheres = [
+            ['inv_productos.precio_compra', '=', 77.77],
+            ['inv_productos.core_empresa_id', Auth::user()->empresa_id]
+        ];
+        $string = InvProductoColegio::leftJoin('sga_grados', 'sga_grados.id', '=', 'inv_productos.categoria_id')
+            ->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+            ->where($array_wheres)
+            ->select(
+                'inv_productos.id AS CÓDIGO',
+                'inv_grupos.descripcion AS GRUPO_INVENTARIO',
+                'inv_productos.descripcion AS DESCRIPCIÓN',
+                'inv_productos.unidad_medida2 AS EDITORIAL',
+                'sga_grados.descripcion AS GRADO',
+                'inv_productos.codigo_barras AS CÓDIGO_BARRAS',
+                'inv_productos.referencia AS CANTIDAD',
+                'inv_productos.estado AS ESTADO'
+            )
+            ->where("inv_productos.id", "LIKE", "%$search%")
+            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.unidad_medida2", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.codigo_barras", "LIKE", "%$search%")
+            ->orWhere("inv_productos.referencia", "LIKE", "%$search%")
+            ->orWhere("inv_productos.estado", "LIKE", "%$search%")
+            ->orderBy('inv_productos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ELEMENTOS BIBLIOTECA";
+    }
 
     public static function opciones_campo_select()
     {

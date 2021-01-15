@@ -24,7 +24,7 @@ class InvProductoCalzado extends Model
 
 
     // unidad_medida2 = Talla
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $array_wheres = [
             ['inv_productos.core_empresa_id', Auth::user()->empresa_id]
@@ -41,8 +41,47 @@ class InvProductoCalzado extends Model
                 'inv_productos.estado AS campo6',
                 'inv_productos.id AS campo7'
             )
+            ->where("inv_productos.id", "LIKE", "%$search%")
+            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.unidad_medida2", "LIKE", "%$search%")
+            ->orWhere("inv_productos.referencia", "LIKE", "%$search%")
+            ->orWhere("inv_productos.estado", "LIKE", "%$search%")
             ->orderBy('inv_productos.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $array_wheres = [
+            ['inv_productos.core_empresa_id', Auth::user()->empresa_id]
+        ];
+
+        $string = InvProductoCalzado::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+            ->where($array_wheres)
+            ->select(
+                'inv_productos.id AS CÓDIGO',
+                'inv_grupos.descripcion AS GRUPO_INVENTARIO',
+                'inv_productos.descripcion AS DESCRIPCIÓN',
+                'inv_productos.unidad_medida2 AS TALLA',
+                'inv_productos.referencia AS REFERENCIA',
+                'inv_productos.estado AS ESTADO'
+            )
+            ->where("inv_productos.id", "LIKE", "%$search%")
+            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.unidad_medida2", "LIKE", "%$search%")
+            ->orWhere("inv_productos.referencia", "LIKE", "%$search%")
+            ->orWhere("inv_productos.estado", "LIKE", "%$search%")
+            ->orderBy('inv_productos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE PRODUCTOS";
     }
 
 

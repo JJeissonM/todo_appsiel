@@ -41,7 +41,7 @@ class InvMovimiento extends Model
     }
 
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo) AS campo2';
 
@@ -50,14 +50,80 @@ class InvMovimiento extends Model
             ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_movimientos.inv_bodega_id')
             ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
             ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-            ->select('inv_movimientos.fecha AS campo1', DB::raw($select_raw), DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'), 'inv_bodegas.descripcion AS campo4', 'inv_motivos.descripcion AS campo5', 'inv_motivos.movimiento AS campo6', 'inv_movimientos.costo_unitario AS campo7', 'inv_movimientos.cantidad AS campo8', 'inv_movimientos.costo_total AS campo9', 'inv_movimientos.id AS campo10', 'inv_movimientos.id AS campo11')
+            ->select(
+                'inv_movimientos.fecha AS campo1',
+                DB::raw($select_raw),
+                DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'),
+                'inv_bodegas.descripcion AS campo4',
+                'inv_motivos.descripcion AS campo5',
+                'inv_motivos.movimiento AS campo6',
+                'inv_movimientos.costo_unitario AS campo7',
+                'inv_movimientos.cantidad AS campo8',
+                'inv_movimientos.costo_total AS campo9',
+                'inv_movimientos.id AS campo10',
+                'inv_movimientos.id AS campo11'
+            )
+
+            ->where("inv_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_motivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_motivos.movimiento", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.costo_unitario", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.cantidad", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.costo_total", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.id", "LIKE", "%$search%")
             ->orderBy('inv_movimientos.created_at', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;
     }
 
-    public static function consultar_registros2($nro_registros)
+    public static function sqlString($search)
+    {
+        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo) AS DOCUMENTO';
+
+        $string = InvMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_movimientos.inv_producto_id')
+            ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_movimientos.inv_bodega_id')
+            ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
+            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                'inv_movimientos.fecha AS FECHA',
+                DB::raw($select_raw),
+                DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS PRODUCTO'),
+                'inv_bodegas.descripcion AS BODEGA',
+                'inv_motivos.descripcion AS MOTIVO',
+                'inv_motivos.movimiento AS MOVIMIENTO',
+                'inv_movimientos.costo_unitario AS COSTO_UNIT.',
+                'inv_movimientos.cantidad AS CANTIDAD',
+                'inv_movimientos.costo_total AS COSTO_TOTAL',
+                'inv_movimientos.id AS &nbsp;'
+            )
+
+            ->where("inv_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_motivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_motivos.movimiento", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.costo_unitario", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.cantidad", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.costo_total", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.id", "LIKE", "%$search%")
+            ->orderBy('inv_movimientos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE MOVIMIENTOS DE INVENTARIO";
+    }
+
+    public static function consultar_registros2($nro_registros, $search)
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo) AS campo2';
 
@@ -66,7 +132,29 @@ class InvMovimiento extends Model
             ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_movimientos.inv_bodega_id')
             ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
             ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-            ->select('inv_movimientos.fecha AS campo1', DB::raw($select_raw), DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'), 'inv_bodegas.descripcion AS campo4', 'inv_motivos.descripcion AS campo5', 'inv_motivos.movimiento AS campo6', 'inv_movimientos.costo_unitario AS campo7', 'inv_movimientos.cantidad AS campo8', 'inv_movimientos.costo_total AS campo9', 'inv_movimientos.id AS campo10', 'inv_movimientos.id AS campo11')
+            ->select(
+                'inv_movimientos.fecha AS campo1',
+                DB::raw($select_raw),
+                DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'),
+                'inv_bodegas.descripcion AS campo4',
+                'inv_motivos.descripcion AS campo5',
+                'inv_motivos.movimiento AS campo6',
+                'inv_movimientos.costo_unitario AS campo7',
+                'inv_movimientos.cantidad AS campo8',
+                'inv_movimientos.costo_total AS campo9',
+                'inv_movimientos.id AS campo10',
+                'inv_movimientos.id AS campo11'
+            )
+            ->where("inv_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_motivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_motivos.movimiento", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.costo_unitario", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.cantidad", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.costo_total", "LIKE", "%$search%")
+            ->orWhere("inv_movimientos.id", "LIKE", "%$search%")
             ->orderBy('inv_movimientos.created_at', 'DESC')
             ->paginate($nro_registros);
 
