@@ -21,7 +21,7 @@ class InvBodega extends Model
                 'inv_bodegas.estado AS campo2',
                 'inv_bodegas.id AS campo3'
             )
-            ->where("inv_bodegas.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_bodegas.estado", "LIKE", "%$search%")
             ->orderBy('inv_bodegas.created_at', 'DESC')
             ->paginate($nro_registros);
@@ -36,7 +36,7 @@ class InvBodega extends Model
                 'inv_bodegas.descripcion AS DESCRIPCIÓN',
                 'inv_bodegas.estado AS ESTADO'
             )
-            ->where("inv_bodegas.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_bodegas.estado", "LIKE", "%$search%")
             ->orderBy('inv_bodegas.created_at', 'DESC')
             ->toSql();

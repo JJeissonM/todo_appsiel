@@ -27,7 +27,7 @@ class Cajero extends Model
                 'users.id AS campo3'
             )
 
-            ->where("users.name", "LIKE", "%$search%")
+            ->orWhere("users.name", "LIKE", "%$search%")
             ->orWhere("users.email", "LIKE", "%$search%")
             ->orderBy('users.created_at', 'DESC')
             ->paginate($nro_registros);
@@ -43,7 +43,7 @@ class Cajero extends Model
                 'users.email AS ´Usuario / Email´'
             )
 
-            ->where("users.name", "LIKE", "%$search%")
+            ->orWhere("users.name", "LIKE", "%$search%")
             ->orWhere("users.email", "LIKE", "%$search%")
             ->orderBy('users.created_at', 'DESC')
             ->toSql();

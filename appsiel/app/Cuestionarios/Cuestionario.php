@@ -28,7 +28,7 @@ class Cuestionario extends Model
                 'sga_cuestionarios.estado AS campo2',
                 'sga_cuestionarios.id AS campo3'
             )
-            ->where("sga_cuestionarios.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cuestionarios.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_cuestionarios.estado", "LIKE", "%$search%")
             ->orderBy('sga_cuestionarios.created_at', 'DESC')
             ->paginate($nro_registros);
@@ -41,7 +41,7 @@ class Cuestionario extends Model
                 'sga_cuestionarios.descripcion AS NOMBRE',
                 'sga_cuestionarios.estado AS ESTADO'
             )
-            ->where("sga_cuestionarios.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cuestionarios.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_cuestionarios.estado", "LIKE", "%$search%")
             ->orderBy('sga_cuestionarios.created_at', 'DESC')
             ->toSql();

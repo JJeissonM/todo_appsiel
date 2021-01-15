@@ -28,7 +28,7 @@ class Pregunta extends Model
                 'sga_preguntas.id AS campo5'
 
             )
-            ->where("sga_preguntas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_preguntas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_preguntas.tipo", "LIKE", "%$search%")
             ->orWhere("sga_preguntas.opciones", "LIKE", "%$search%")
             ->orWhere("sga_preguntas.estado", "LIKE", "%$search%")
@@ -46,7 +46,7 @@ class Pregunta extends Model
                 'sga_preguntas.opciones AS Opciones',
                 'sga_preguntas.estado AS Estado'
             )
-            ->where("sga_preguntas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_preguntas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_preguntas.tipo", "LIKE", "%$search%")
             ->orWhere("sga_preguntas.opciones", "LIKE", "%$search%")
             ->orWhere("sga_preguntas.estado", "LIKE", "%$search%")
