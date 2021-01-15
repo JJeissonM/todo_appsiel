@@ -21,32 +21,35 @@ class Prestamo implements Estrategia
         $valores_prestamos = [];
         foreach( $prestamos as $prestamo )
         {
-            // El valor_acumulado no se puede pasar del valor_prestamo
-            $saldo_pendiente = $prestamo->valor_prestamo - $prestamo->valor_acumulado;
+            if( $prestamo->estado == 'Activo' )
+            {
+                // El valor_acumulado no puede ser mayor que valor_prestamo
+                $saldo_pendiente = $prestamo->valor_prestamo - $prestamo->valor_acumulado;
+                    
+                if ( $saldo_pendiente < $prestamo->valor_cuota )
+                {
+                    $prestamo->valor_acumulado += $saldo_pendiente;
+                    $valor_real_prestamo = $saldo_pendiente;
+                }else{
+                    $prestamo->valor_acumulado += $prestamo->valor_cuota;
+                    $valor_real_prestamo = $prestamo->valor_cuota;
+                }
+
+                if ( $prestamo->valor_acumulado >= $prestamo->valor_prestamo ) 
+                {
+                    $prestamo->estado = "Inactivo";
+                }
                 
-            if ( $saldo_pendiente < $prestamo->valor_cuota )
-            {
-                $prestamo->valor_acumulado += $saldo_pendiente;
-                $valor_real_prestamo = $saldo_pendiente;
-            }else{
-                $prestamo->valor_acumulado += $prestamo->valor_cuota;
-                $valor_real_prestamo = $prestamo->valor_cuota;
-            }
+                $prestamo->save();
 
-            if ( $prestamo->valor_acumulado >= $prestamo->valor_prestamo ) 
-            {
-                $prestamo->estado = "Inactivo";
+                $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_prestamo );
+                
+                $valores_prestamos[] = [
+                                        'valor_devengo' => $valores->devengo,
+                                        'valor_deduccion' => $valores->deduccion,
+                                        'nom_prestamo_id' => $prestamo->id 
+                                    ];
             }
-            
-            $prestamo->save();
-
-            $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_prestamo );
-            
-            $valores_prestamos[] = [
-                                    'valor_devengo' => $valores->devengo,
-                                    'valor_deduccion' => $valores->deduccion,
-                                    'nom_prestamo_id' => $prestamo->id 
-                                ];
         }
 
         return $valores_prestamos;

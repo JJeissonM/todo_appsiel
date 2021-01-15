@@ -251,7 +251,7 @@
         </td>
         <td>
             <?php 
-                echo tabla_datos('Datos del padre', $mama->tercero->descripcion, $mama->tercero->numero_identificacion, $mama->ocupacion, $mama->tercero->telefono1, $mama->tercero->email);
+                echo tabla_datos('Datos de la madre', $mama->tercero->descripcion, $mama->tercero->numero_identificacion, $mama->ocupacion, $mama->tercero->telefono1, $mama->tercero->email);
             ?>
         </td>
     </tr>

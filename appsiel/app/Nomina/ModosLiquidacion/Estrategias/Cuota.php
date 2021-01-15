@@ -10,55 +10,52 @@ class Cuota implements Estrategia
 {
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
-		/*$cuotas = NomCuota::where('estado', 'Activo')
-                            ->where('core_tercero_id', $liquidacion['empleado']->core_tercero_id)
-                            ->where('nom_concepto_id', $liquidacion['concepto']->id)
-                            ->where('fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha)
-                            ->get();*/
-
         $cuotas = NomCuota::where( [
-                                            ['estado', '=', 'Activo'],
-                                            ['core_tercero_id','=', $liquidacion['empleado']->core_tercero_id],
-                                            ['nom_concepto_id','=', $liquidacion['concepto']->id],
-                                            ['fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha]
-                                        ] )
-                                    ->get();
+                                    ['estado', '=', 'Activo'],
+                                    ['core_tercero_id','=', $liquidacion['empleado']->core_tercero_id],
+                                    ['nom_concepto_id','=', $liquidacion['concepto']->id],
+                                    ['fecha_inicio', '<=', $liquidacion['documento_nomina']->fecha]
+                                ] )
+                            ->get();
 
         $valores_cuotas = [];
         foreach( $cuotas as $cuota )
         {
-            if ( $cuota->tope_maximo != '' ) // si la cuota maneja tope máximo 
+            if( $cuota->estado == 'Activo' )
             {
-                // El valor_acumulado no se puede pasar del tope_maximo
-                $saldo_pendiente = $cuota->tope_maximo - $cuota->valor_acumulado;
-                
-                if ( $saldo_pendiente < $cuota->valor_cuota )
+                if ( $cuota->tope_maximo != '' ) // si la cuota maneja tope máximo 
                 {
-                    $cuota->valor_acumulado += $saldo_pendiente;
-                    $valor_real_cuota = $saldo_pendiente;
+                    // El valor_acumulado no se puede pasar del tope_maximo
+                    $saldo_pendiente = $cuota->tope_maximo - $cuota->valor_acumulado;
+                    
+                    if ( $saldo_pendiente < $cuota->valor_cuota )
+                    {
+                        $cuota->valor_acumulado += $saldo_pendiente;
+                        $valor_real_cuota = $saldo_pendiente;
+                    }else{
+                        $cuota->valor_acumulado += $cuota->valor_cuota;
+                        $valor_real_cuota = $cuota->valor_cuota;
+                    }
+
+                    if ( $cuota->valor_acumulado >= $cuota->tope_maximo ) 
+                    {
+                        $cuota->estado = "Inactivo";
+                    }
                 }else{
                     $cuota->valor_acumulado += $cuota->valor_cuota;
                     $valor_real_cuota = $cuota->valor_cuota;
                 }
+                
+                $cuota->save();
 
-                if ( $cuota->valor_acumulado >= $cuota->tope_maximo ) 
-                {
-                    $cuota->estado = "Inactivo";
-                }
-            }else{
-                $cuota->valor_acumulado += $cuota->valor_cuota;
-                $valor_real_cuota = $cuota->valor_cuota;
+                $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_cuota );
+                
+                $valores_cuotas[] = [
+                                        'valor_devengo' => $valores->devengo,
+                                        'valor_deduccion' => $valores->deduccion,
+                                        'nom_cuota_id' => $cuota->id 
+                                    ];
             }
-            
-            $cuota->save();
-
-            $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza, $valor_real_cuota );
-            
-            $valores_cuotas[] = [
-                                    'valor_devengo' => $valores->devengo,
-                                    'valor_deduccion' => $valores->deduccion,
-                                    'nom_cuota_id' => $cuota->id 
-                                ];
         }
 
         return $valores_cuotas;

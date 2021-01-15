@@ -46,6 +46,7 @@ Route::get('nomina/reportes','Nomina\ReporteController@reportes');
 Route::get('nomina/reporte_desprendibles_de_pago','Nomina\ReporteController@reporte_desprendibles_de_pago');
 Route::post('nomina/ajax_reporte_desprendibles_de_pago','Nomina\ReporteController@ajax_reporte_desprendibles_de_pago');
 Route::get('nomina_pdf_reporte_desprendibles_de_pago','Nomina\ReporteController@nomina_pdf_reporte_desprendibles_de_pago');
+Route::post( 'nom_enviar_por_email_desprendibles_de_pago','Nomina\ReporteController@enviar_por_email_desprendibles_de_pago');
 
 //PROCESOS
 Route::post('nom_procesar_archivo_plano','Nomina\ProcesosController@procesar_archivo_plano');

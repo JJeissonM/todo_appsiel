@@ -18,7 +18,7 @@ use NumerosEnLetras;
 
 use App\Http\Controllers\Core\ConfiguracionController;
 use App\Http\Controllers\Sistema\ModeloController;
-
+use App\Http\Controllers\Sistema\EmailController;
 
 // Modelos
 
@@ -139,9 +139,52 @@ class ReporteController extends Controller
             $empleados = NomContrato::where('nom_contratos.core_tercero_id', $core_tercero_id)->get();
         }
 
-        $vista = View::make('nomina.reportes.tabla_desprendibles_pagos', compact('documento', 'empleados') )->render();
+        $vista = '';
+        foreach ($empleados as $empleado)
+        {
+            $vista .= View::make('nomina.reportes.tabla_desprendibles_pagos', compact('documento', 'empleado') )->render();
+        }
 
         return $vista;
+    }
+
+    /*
+        Enviar por email
+    */
+    public function enviar_por_email_desprendibles_de_pago(Request $request)
+    {
+        $empresa = Empresa::find( Auth::user()->empresa_id );
+        $documento = NomDocEncabezado::find( $request->nom_doc_encabezado_id2 );
+
+        if ( $request->core_tercero_id2 == 'Todos' ) 
+        {
+            $empleados = $documento->empleados;
+        }else{
+            $empleados = NomContrato::where('nom_contratos.core_tercero_id', $request->core_tercero_id2)->get();
+        }
+
+        $enviados = 0;
+        foreach ($empleados as $empleado)
+        {
+            $vista = View::make('nomina.reportes.tabla_desprendibles_pagos', compact('documento', 'empleado') )->render();
+
+            $tercero = $empleado->tercero;
+            if ( $tercero->email != '' )
+            {
+                $asunto = 'Desprendible de pago de nómina. '.$documento->descripcion;
+
+                $cuerpo_mensaje = 'Hola ' . $tercero->nombre1 . ' ' .  $tercero->otros_nombres . ', <br> Le hacemos llegar su volante de nómina. <br><br> <b>Documento:</b> '. $documento->descripcion . ' <br> <b>Fecha:</b> ' . $documento->fecha . ' <br> Cualquier duda o inquietud, favor remitirla al área de talento humano. <br><br> Atentamente, <br><br> ANALISTA DE NÓMINA <br> ' . $empresa->descripcion . ' <br> Tel. ' . $empresa->telefono1 . ' <br> Email: ' . $empresa->email;
+
+                $vec = EmailController::enviar_por_email_documento( $empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $vista );                
+
+                if ($vec['tipo_mensaje'] == 'flash_message' )
+                {
+                    $enviados++;
+                }
+            }
+        }            
+
+        return 'Se envío el desprendible a cada empleado con email registrado. Total envíos: ' . $enviados;
     }
 
     public function listado_acumulados(Request $request)

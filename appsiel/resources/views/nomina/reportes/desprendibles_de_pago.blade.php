@@ -47,6 +47,16 @@
 			{{ Form::bsBtnExcel('reporte_cartera_por_curso') }}
 			{{ Form::bsBtnPdf('reporte_cartera_por_curso') }}
 
+			<div style="display: none;">
+				{{ Form::open(['url'=>'nom_enviar_por_email_desprendibles_de_pago','id'=>'form_enviar_email']) }}
+					<input type="hidden" name="nom_doc_encabezado_id2" id="nom_doc_encabezado_id2">
+					<input type="hidden" name="core_tercero_id2" id="core_tercero_id2">
+				{{ Form::close() }}
+			</div>
+
+			<button class="btn btn-info btn-sm" id="btn_email" style="display: none;" title="Enviar por correo"> <i class="fa fa-envelope"></i> </button>
+			<label id="mensaje_email" style="color: red; font-weight: bold;"></label>
+
 			{{ Form::Spin(48) }}
 
 			<div id="resultado_consulta">
@@ -79,6 +89,14 @@
 				$('#div_spin').show();
 				$('#div_cargando').show();
 
+
+				$('#mensaje_email').html('');
+				$('#btn_email').children('.fa.fa-spinner.fa-spin').attr('class','fa fa-envelope');
+				$('#btn_email').removeAttr('disabled');
+				$('#btn_excel').hide();
+				$('#btn_pdf').hide();
+				$('#btn_email').hide();
+
 				// Preparar datos de los controles para enviar formulario
 				var form_consulta = $('#form_consulta');
 				var url = form_consulta.attr('action');
@@ -90,6 +108,7 @@
 					$('#resultado_consulta').html(respuesta);
 					$('#btn_excel').show(500);
 					$('#btn_pdf').show(500);
+					$('#btn_email').show(500);
 
 					var url_pdf = $('#btn_pdf').attr('href');
 					var n = url_pdf.search('a3p0');
@@ -104,6 +123,32 @@
 					
 					$('#btn_pdf').attr('href', new_url);
 				});
+			});
+
+			$('#btn_email').click(function(event){
+				$(this).children('.fa-envelope').attr('class','fa fa-spinner fa-spin');
+
+				$(this).attr('disabled','disabled');
+				$('#mensaje_email').html('');
+
+				$('#nom_doc_encabezado_id2').val( $('#nom_doc_encabezado_id').val() );
+				$('#core_tercero_id2').val( $('#core_tercero_id').val() );
+
+				// Preparar datos de los controles para enviar formulario
+				var form_consulta = $('#form_enviar_email');
+				var url = form_consulta.attr('action');
+				var datos = form_consulta.serialize();
+				// Enviar formulario de ingreso de productos vía POST
+				$.post(url,datos,function(respuesta){
+					$('#btn_email').children('.fa.fa-spinner.fa-spin').attr('class','fa fa-envelope');
+					$('#btn_email').removeAttr('disabled');
+					$('#mensaje_email').html(respuesta);
+				});
+
+			});
+
+			$('#btn_excel,#btn_pdf').click(function(event){
+				$('#mensaje_email').html('');
 			});
 
 			function valida_campos(){

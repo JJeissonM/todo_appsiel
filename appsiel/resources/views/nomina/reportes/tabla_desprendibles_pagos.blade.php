@@ -1,4 +1,4 @@
-@foreach ( $empleados as $empleado)
+<!-- @ foreach ( $empleados as $empleado ) -->
 
     <div class="cuadro">
         <div style="text-align: center; font-size: 13px; font-weight: bold;">
@@ -130,4 +130,4 @@
     </div>
 
     <div class="page-break"></div>
-@endforeach
+<!--  @ endforeach -->
