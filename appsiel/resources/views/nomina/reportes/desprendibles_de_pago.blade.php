@@ -126,6 +126,12 @@
 			});
 
 			$('#btn_email').click(function(event){
+
+				if ( !confirm('¿Quiere enviar por correo electrónico todos los desprendibles generados?') )
+				{
+					return false;
+				}
+
 				$(this).children('.fa-envelope').attr('class','fa fa-spinner fa-spin');
 
 				$(this).attr('disabled','disabled');
