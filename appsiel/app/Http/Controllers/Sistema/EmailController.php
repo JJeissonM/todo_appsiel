@@ -156,7 +156,8 @@ class EmailController extends Controller
   {
 
     // Email interno. Debe estar creado en Hostinger
-    $email_interno = 'info@'.substr( url('/'), 7);
+    //$email_interno = 'info@'.substr( url('/'), 7);
+    $email_interno = 'info@appsiel.com.co';//.substr( url('/'), 7);
     
     $from = $nombre_remitente." <".$email_interno."> \r\n";
     $headers = "From:" . $from." \r\n";
