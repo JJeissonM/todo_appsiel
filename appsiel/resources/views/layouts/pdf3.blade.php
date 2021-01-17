@@ -47,24 +47,24 @@
 
 		    table.encabezado{
 		        padding:5px;
-		        border: 1px solid;
+		        border: 1px solid #ddd;
 		    }
 
 		    table.banner{
 		        font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
 		        font-style: italic;
 		        font-size: larger;
-		        border: 1px solid;
+		        border: 1px solid #ddd;
 		        padding: 0px;
 		    }
 
 		    table.contenido td {
-		        border: 1px solid;
+		        border: 1px solid #ddd;
 		    }
 
 		    th {
 		        background-color: #E0E0E0;
-		        border: 1px solid;
+		        border: 1px solid #ddd;
 		    }
 
 		    ul{
@@ -97,11 +97,11 @@
 
 
 		    .table-bordered {
-			    border: 1px solid #333333;
+			    border: 1px solid #ddd;
 			}
 
 			.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
-			    border: 1px solid #333333;
+			    border: 1px solid #ddd;
 			}
 
 		    table tr.grupo_abuelo {

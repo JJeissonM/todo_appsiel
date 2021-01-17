@@ -21,6 +21,11 @@ class Empresa extends Model
         return $this->hasOne('App\Core\Colegio');
     }
 
+    public function ciudad()
+    {
+        return $this->belongsTo('App\Core\Ciudad', 'codigo_ciudad');
+    }
+
     public static function consultar_registros()
     {
     	

@@ -29,6 +29,11 @@ class Tercero extends Model
         return $this->belongsTo('App\Core\Ciudad', 'codigo_ciudad');
     }
 
+    public function tipo_doc_identidad()
+    {
+        return $this->belongsTo('App\Core\TipoDocumentoId', 'id_tipo_documento_id');
+    }
+
     public function departamento()
     {
         return Departamento::find( $this->ciudad->core_departamento_id )->get()->first();

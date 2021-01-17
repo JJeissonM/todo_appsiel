@@ -8,7 +8,9 @@
                 <th>Fecha</th>
                 <th>Documento</th>
                 <th>Tercero</th>
+                <th>Caja/Banco</th>
                 <th>Concepto</th>
+                <th>Motivo</th>
                 <th>Entradas</th>
                 <th>Salidas</th>
                 <th>Saldo</th>
@@ -17,6 +19,8 @@
         <tbody>
             <tr>
                 <td>{{ $fecha_desde }}</td>
+                <td> &nbsp; </td>
+                <td> &nbsp; </td>
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
@@ -56,12 +60,25 @@
                     }
 
                     $saldo += $fila->valor_movimiento;
-                        
+                    
+                    $caja = '';
+                    if( !is_null( $fila->caja ) )
+                    {
+                        $caja = $fila->caja->descripcion;
+                    }
+                    
+                    $cuenta_bancaria = '';
+                    if( !is_null( $fila->cuenta_bancaria ) )
+                    {
+                        $cuenta_bancaria = 'Cuenta ' . $fila->cuenta_bancaria->tipo_cuenta . $fila->cuenta_bancaria->entidad_financiera->descripcion . 'No.' . $fila->cuenta_bancaria->descripcion;
+                    }
             ?>
                 <tr>
                     <td> {{ $fila->fecha }}</td>
                     <td> {{ $fila->documento_transaccion_prefijo_consecutivo }} </td>
                     <td> {{ $fila->tercero_descripcion }} </td>
+                    <td> {{ $caja }} {{ $cuenta_bancaria }} </td>
+                    <td> {{ $fila->descripcion }} </td>
                     <td> {{ $fila->motivo_descripcion }} </td>
                     <td> {{ $entrada }} </td>
                     <td> {{ $salida}} </td>
@@ -71,7 +88,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="4"> &nbsp; </td>
+                <td colspan="6"> &nbsp; </td>
                 <td> ${{ number_format( $total_entradas, 0, ',','.') }} </td>
                 <td> ${{ number_format( $total_salidas, 0, ',','.') }} </td>
                 <td></td>
