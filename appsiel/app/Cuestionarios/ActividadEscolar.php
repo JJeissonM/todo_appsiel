@@ -20,49 +20,111 @@ class ActividadEscolar extends Model
 
     protected $fillable = ['descripcion','tematica','instrucciones','tipo_recurso','url_recurso','cuestionario_id','fecha_entrega','fecha_desde','fecha_hasta','periodo_id','curso_id','asignatura_id','estado','created_by'];
 
-    public $encabezado_tabla = ['Título','Temática','Fecha de entrega','Periodo','Curso','Asignatura','Estado','Acción'];
-    
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Título', 'Temática', 'Fecha de entrega', 'Periodo', 'Curso', 'Asignatura', 'Estado'];
+
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/calificaciones/actividades_escolares/actividades.js';
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
         // Filtro año lectivo actual
         $periodo_lectivo_actual = PeriodoLectivo::get_actual();
 
-        $periodos = Periodo::where( 'periodo_lectivo_id', $periodo_lectivo_actual->id )->select('id')->get()->pluck('id');
+        $periodos = Periodo::where('periodo_lectivo_id', $periodo_lectivo_actual->id)->select('id')->get()->pluck('id');
 
         // Filtros por Perfil de usuario
         $user = Auth::user();
-        $array_wheres = [ 
-                            ['sga_actividades_escolares.id' ,'>', 0]
-                        ];
-        
-        if ( $user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector') || $user->hasRole('Administrador') ) 
-        {
+        $array_wheres = [
+            ['sga_actividades_escolares.id', '>', 0]
+        ];
+
+        if ($user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector') || $user->hasRole('Administrador')) {
             //$array_wheres = array_merge($array_wheres, [['core_acl.user_id', '>', 0]]);          
-        }else{
+        } else {
             $array_wheres = array_merge($array_wheres, ['core_acl.user_id' => $user->id]);
         }
 
-        return ActividadEscolar::leftJoin('core_acl','core_acl.recurso_id','=','sga_actividades_escolares.id')
-                                ->leftJoin('sga_cursos','sga_cursos.id','=','sga_actividades_escolares.curso_id')
-                                ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_actividades_escolares.asignatura_id')
-                                ->leftJoin('sga_periodos','sga_periodos.id','=','sga_actividades_escolares.periodo_id')
-                                ->where( $array_wheres )
-                                ->whereIn( 'sga_actividades_escolares.periodo_id', $periodos )
-                                ->select(
-                                            'sga_actividades_escolares.descripcion AS campo1',
-                                            'sga_actividades_escolares.tematica AS campo2',
-                                            'sga_actividades_escolares.fecha_entrega AS campo3',
-                                            'sga_periodos.descripcion AS campo4',
-                                            'sga_cursos.descripcion AS campo5',
-                                            'sga_asignaturas.descripcion AS campo6',
-                                            'sga_actividades_escolares.estado AS campo7',
-                                            'sga_actividades_escolares.id AS campo8')
-                                ->distinct('core_acl.user_id')
-                                ->get()
-                                ->toArray();
+        return ActividadEscolar::leftJoin('core_acl', 'core_acl.recurso_id', '=', 'sga_actividades_escolares.id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_actividades_escolares.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_actividades_escolares.asignatura_id')
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_actividades_escolares.periodo_id')
+            ->where($array_wheres)
+            ->whereIn('sga_actividades_escolares.periodo_id', $periodos)
+            ->select(
+                'sga_actividades_escolares.descripcion AS campo1',
+                'sga_actividades_escolares.tematica AS campo2',
+                'sga_actividades_escolares.fecha_entrega AS campo3',
+                'sga_periodos.descripcion AS campo4',
+                'sga_cursos.descripcion AS campo5',
+                'sga_asignaturas.descripcion AS campo6',
+                'sga_actividades_escolares.estado AS campo7',
+                'sga_actividades_escolares.id AS campo8'
+            )
+            ->where("sga_actividades_escolares.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_actividades_escolares.tematica", "LIKE", "%$search%")
+            ->orWhere("sga_actividades_escolares.fecha_entrega", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_actividades_escolares.estado", "LIKE", "%$search%")
+            ->distinct('core_acl.user_id')
+            ->orderBy('sga_actividades_escolares.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        // Filtro año lectivo actual
+        $periodo_lectivo_actual = PeriodoLectivo::get_actual();
+
+        $periodos = Periodo::where('periodo_lectivo_id', $periodo_lectivo_actual->id)->select('id')->get()->pluck('id');
+
+        // Filtros por Perfil de usuario
+        $user = Auth::user();
+        $array_wheres = [
+            ['sga_actividades_escolares.id', '>', 0]
+        ];
+
+        if ($user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector') || $user->hasRole('Administrador')) {
+            //$array_wheres = array_merge($array_wheres, [['core_acl.user_id', '>', 0]]);          
+        } else {
+            $array_wheres = array_merge($array_wheres, ['core_acl.user_id' => $user->id]);
+        }
+
+        $string = ActividadEscolar::leftJoin('core_acl', 'core_acl.recurso_id', '=', 'sga_actividades_escolares.id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_actividades_escolares.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_actividades_escolares.asignatura_id')
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_actividades_escolares.periodo_id')
+            ->where($array_wheres)
+            ->whereIn('sga_actividades_escolares.periodo_id', $periodos)
+            ->select(
+                'sga_actividades_escolares.descripcion AS TÍTULO',
+                'sga_actividades_escolares.tematica AS TEMÁTICA',
+                'sga_actividades_escolares.fecha_entrega AS FECHA_DE_ENTREGA',
+                'sga_periodos.descripcion AS PERIODO',
+                'sga_cursos.descripcion AS CURSO',
+                'sga_asignaturas.descripcion AS ASIGNATURA',
+                'sga_actividades_escolares.estado AS ESTADO'
+            )
+            ->where("sga_actividades_escolares.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_actividades_escolares.tematica", "LIKE", "%$search%")
+            ->orWhere("sga_actividades_escolares.fecha_entrega", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_actividades_escolares.estado", "LIKE", "%$search%")
+            ->distinct('core_acl.user_id')
+            ->orderBy('sga_actividades_escolares.created_at', 'DESC')
+            ->distinct('core_acl.user_id')
+            ->orderBy('sga_actividades_escolares.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ACTIVIDADES ESCOLARES";
     }
 
 

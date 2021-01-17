@@ -16,35 +16,34 @@ class Cliente2 extends Model
 	
 	protected $fillable = ['core_tercero_id', 'encabezado_dcto_pp_id', 'clase_cliente_id', 'lista_precios_id', 'lista_descuentos_id', 'vendedor_id','inv_bodega_id', 'zona_id', 'liquida_impuestos', 'condicion_pago_id', 'cupo_credito', 'bloquea_por_cupo', 'bloquea_por_mora', 'estado'];
 
-	public $encabezado_tabla = ['ID','Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Lista de precios', 'Lista de descuentos', 'Zona', 'Acción'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Lista de precios', 'Lista de descuentos', 'Zona'];
 
     // Las acciones tienen valores predeterminados, si el modelo no va a tener una acción, se debe asignar la palabra "no" a la acción.
     public $urls_acciones = '{"index":"web","create":"web/create","edit":"vtas_clientes/id_fila/edit","store":"vtas_clientes","update":"vtas_clientes/id_fila","imprimir":"no","show":"vtas_clientes/id_fila","eliminar":"no","cambiar_estado":"no","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
 // 
     public $vistas = '{"create":"ventas.clientes.create2"}';
 
-	public static function consultar_registros()
-	{
+	public static function consultar_registros($nro_registros)
+    {
 
-        $array_wheres = [ [ 'vtas_clientes.id' ,'>', 0] ];
+        $array_wheres = [['vtas_clientes.id', '>', 0]];
 
-        $vendedor = Vendedor::where( 'user_id', Auth::user()->id )->get()->first();
+        $vendedor = Vendedor::where('user_id', Auth::user()->id)->get()->first();
 
-        if ( !is_null( $vendedor) )
-        {
-            $array_wheres = array_merge( $array_wheres, [ 'vtas_clientes.vendedor_id' => $vendedor->id ] );
+        if (!is_null($vendedor)) {
+            $array_wheres = array_merge($array_wheres, ['vtas_clientes.vendedor_id' => $vendedor->id]);
         }
 
-	    return Cliente::leftJoin('core_terceros','core_terceros.id','=','vtas_clientes.core_tercero_id')
-                    ->leftJoin('vtas_clases_clientes','vtas_clases_clientes.id','=','vtas_clientes.clase_cliente_id')
-                    ->leftJoin('vtas_listas_precios_encabezados','vtas_listas_precios_encabezados.id','=','vtas_clientes.lista_precios_id')
-                    ->leftJoin('vtas_listas_dctos_encabezados','vtas_listas_dctos_encabezados.id','=','vtas_clientes.lista_descuentos_id')
-                    ->leftJoin('vtas_zonas','vtas_zonas.id','=','vtas_clientes.zona_id')
-                    ->where($array_wheres)
-                    ->select('vtas_clientes.id AS campo1','core_terceros.numero_identificacion AS campo2', 'core_terceros.descripcion AS campo3', 'core_terceros.direccion1 AS campo4', 'core_terceros.telefono1 AS campo5', 'vtas_listas_precios_encabezados.descripcion AS campo6', 'vtas_listas_dctos_encabezados.descripcion AS campo7', 'vtas_zonas.descripcion AS campo8', 'vtas_clientes.id AS campo9')
-                    ->get()
-                    ->toArray();
-	}
+        return Cliente::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_clientes.core_tercero_id')
+            ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_clientes.clase_cliente_id')
+            ->leftJoin('vtas_listas_precios_encabezados', 'vtas_listas_precios_encabezados.id', '=', 'vtas_clientes.lista_precios_id')
+            ->leftJoin('vtas_listas_dctos_encabezados', 'vtas_listas_dctos_encabezados.id', '=', 'vtas_clientes.lista_descuentos_id')
+            ->leftJoin('vtas_zonas', 'vtas_zonas.id', '=', 'vtas_clientes.zona_id')
+            ->where($array_wheres)
+            ->select('core_terceros.numero_identificacion AS campo1', 'core_terceros.descripcion AS campo2', 'core_terceros.direccion1 AS campo3', 'core_terceros.telefono1 AS campo4', 'vtas_listas_precios_encabezados.descripcion AS campo5', 'vtas_listas_dctos_encabezados.descripcion AS campo6', 'vtas_zonas.descripcion AS campo7', 'vtas_clientes.id AS campo8')
+            ->orderBy('vtas_clientes.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
 
     public static function opciones_campo_select()
     {

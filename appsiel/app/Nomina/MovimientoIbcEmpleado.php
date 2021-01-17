@@ -11,14 +11,14 @@ class MovimientoIbcEmpleado extends Model
 	
     protected $fillable = ['nom_contrato_id', 'fecha_final_mes', 'valor_ibc_mes', 'observaciones', 'creado_por', 'modificado_por', 'estado'];
 
-	public $encabezado_tabla = ['Empleado', 'Mes', 'IBC', 'Observaciones', 'Estado', 'Acción'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empleado', 'Mes', 'IBC', 'Observaciones', 'Estado'];
 
-	public static function consultar_registros()
-	{
-	    return MovimientoIbcEmpleado::select('nom_movimientos_ibc_empleados.nom_contrato_id AS campo1', 'nom_movimientos_ibc_empleados.fecha_final_mes AS campo2', 'nom_movimientos_ibc_empleados.valor_ibc_mes AS campo3', 'nom_movimientos_ibc_empleados.observaciones AS campo4', 'nom_movimientos_ibc_empleados.estado AS campo5', 'nom_movimientos_ibc_empleados.id AS campo6')
-	    ->get()
-	    ->toArray();
-	}
+    public static function consultar_registros($nro_registros)
+    {
+        return MovimientoIbcEmpleado::select('nom_movimientos_ibc_empleados.nom_contrato_id AS campo1', 'nom_movimientos_ibc_empleados.fecha_final_mes AS campo2', 'nom_movimientos_ibc_empleados.valor_ibc_mes AS campo3', 'nom_movimientos_ibc_empleados.observaciones AS campo4', 'nom_movimientos_ibc_empleados.estado AS campo5', 'nom_movimientos_ibc_empleados.id AS campo6')
+            ->orderBy('nom_movimientos_ibc_empleados.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
 
     public static function opciones_campo_select()
     {

@@ -15,17 +15,51 @@ class Area extends Model
 
     protected $fillable = ['colegio_id', 'orden_listados', 'descripcion', 'abreviatura', 'estado'];
 
-    public $encabezado_tabla = ['Orden listados','Descripción', 'Abreviatura','Estado','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Orden listados', 'Descripción', 'Abreviatura', 'Estado'];
 
     protected $crud_model_id = 122; // Areas
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
-        $registros = Area::select('sga_areas.orden_listados AS campo1','sga_areas.descripcion AS campo2', 'sga_areas.abreviatura AS campo3','sga_areas.estado AS campo4','sga_areas.id AS campo5')
-            ->get()
-            ->toArray();
+        $registros = Area::select(
+            'sga_areas.orden_listados AS campo1',
+            'sga_areas.descripcion AS campo2',
+            'sga_areas.abreviatura AS campo3',
+            'sga_areas.estado AS campo4',
+            'sga_areas.id AS campo5'
+        )
+            ->where("sga_areas.orden_listados", "LIKE", "%$search%")
+            ->orWhere("sga_areas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_areas.abreviatura", "LIKE", "%$search%")
+            ->orWhere("sga_areas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_areas.created_at', 'DESC')
+            ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Area::select(
+            'sga_areas.orden_listados AS ORDEN_LISTADOS',
+            'sga_areas.descripcion AS DESCRIPCIÓN',
+            'sga_areas.abreviatura AS ABREVIATURA',
+            'sga_areas.estado AS ESTADO'
+        )
+
+            ->where("sga_areas.orden_listados", "LIKE", "%$search%")
+            ->orWhere("sga_areas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_areas.abreviatura", "LIKE", "%$search%")
+            ->orWhere("sga_areas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_areas.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE AREAS";
     }
 
     public function store_adicional( $datos, $registro )

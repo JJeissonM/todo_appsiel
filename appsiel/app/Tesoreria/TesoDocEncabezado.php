@@ -18,7 +18,7 @@ class TesoDocEncabezado extends Model
     // teso_tipo_motivo debe desaparecer, pues se una segun el motivo de cada registro del documento, en un mismom documento pueden haber varios teso_tipo_motivo
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_empresa_id','core_tercero_id','codigo_referencia_tercero','teso_tipo_motivo','documento_soporte','descripcion','teso_medio_recaudo_id','teso_caja_id','teso_cuenta_bancaria_id','valor_total','estado','creado_por','modificado_por'];
 
-    public $encabezado_tabla = ['Documento','Fecha','Tercero','Detalle','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Fecha', 'Tercero', 'Detalle'];
 
     public function tipo_documento_app()
     {
@@ -45,19 +45,51 @@ class TesoDocEncabezado extends Model
         return $this->belongsTo(TesoMedioRecaudo::class, 'teso_medio_recaudo_id');
     }
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
-    	return TesoDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
-                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
-                    ->where('teso_doc_encabezados.core_empresa_id',Auth::user()->empresa_id)
-                    ->select( DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo1'),
-                                'teso_doc_encabezados.fecha AS campo2',
-                                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                                'teso_doc_encabezados.descripcion AS campo4',
-                                'teso_doc_encabezados.id AS campo5')
-                    ->get()
-                    ->toArray();
+        return TesoDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
+            ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo1'),
+                'teso_doc_encabezados.fecha AS campo2',
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                'teso_doc_encabezados.descripcion AS campo4',
+                'teso_doc_encabezados.id AS campo5'
+            )
+            ->where(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo1'), "LIKE", "%$search%")
+            ->orWhere("teso_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'), "LIKE", "%$search%")
+            ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orderBy('teso_doc_encabezados.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
 
+    public static function sqlString($search)
+    {
+        $string = TesoDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
+            ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo1'),
+                'teso_doc_encabezados.fecha AS campo2',
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                'teso_doc_encabezados.descripcion AS campo4',
+                'teso_doc_encabezados.id AS campo5'
+            )
+            ->where(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo1'), "LIKE", "%$search%")
+            ->orWhere("teso_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'), "LIKE", "%$search%")
+            ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orderBy('teso_doc_encabezados.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ";
     }
 
 

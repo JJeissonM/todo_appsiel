@@ -29,7 +29,7 @@ function comprueba_extension(formulario, archivo) {
          return 1;
        }
    }
-   //si estoy aqui es que no se ha podido submitir
+   //si estoy aqui es que no se ha podido submitir 
    alert (mierror);
    return 0;
 } 

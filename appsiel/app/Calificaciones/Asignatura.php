@@ -17,7 +17,7 @@ class Asignatura extends Model
 
     protected $fillable = ['id_colegio', 'descripcion', 'abreviatura', 'estado', 'area_id'];
 
-    public $encabezado_tabla = ['ID', 'Área', 'Descripción', 'Abreviatura', 'Estado', 'Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Área', 'Descripción', 'Abreviatura', 'Estado'];
 
     public function area()
     {
@@ -29,22 +29,48 @@ class Asignatura extends Model
         return $this->hasMany(Foro::class);
     }
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
         /*$select_raw = 'IF(sga_asignaturas.maneja_calificacion=0,REPLACE(sga_asignaturas.maneja_calificacion,0,"No"),REPLACE(sga_asignaturas.maneja_calificacion,1,"Si")) AS campo5';*/
 
-        $registros = Asignatura::leftJoin('sga_areas', 'sga_areas.id', '=', 'sga_asignaturas.area_id')->select(
-            'sga_asignaturas.id AS campo1',
-            'sga_areas.descripcion AS campo2',
-            'sga_asignaturas.descripcion AS campo3',
-            'sga_asignaturas.abreviatura AS campo4',
-            'sga_asignaturas.estado AS campo5',
-            'sga_asignaturas.id AS campo6'
-        )
-            ->get()
-            ->toArray();
+        $registros = Asignatura::leftJoin('sga_areas', 'sga_areas.id', '=', 'sga_asignaturas.area_id')
+            ->select(
+                'sga_areas.descripcion AS campo1',
+                'sga_asignaturas.descripcion AS campo2',
+                'sga_asignaturas.abreviatura AS campo3',
+                'sga_asignaturas.estado AS campo4',
+                'sga_asignaturas.id AS campo5'
+            )->where("sga_areas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.abreviatura", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_asignaturas.created_at', 'DESC')
+            ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Asignatura::leftJoin('sga_areas', 'sga_areas.id', '=', 'sga_asignaturas.area_id')
+            ->select(
+                'sga_areas.descripcion AS ÁREA',
+                'sga_asignaturas.descripcion AS DESCRIPCIÓN',
+                'sga_asignaturas.abreviatura AS ABREVIATURA',
+                'sga_asignaturas.estado AS ESTADO'
+            )->where("sga_areas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.abreviatura", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_asignaturas.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ASIGNATURAS";
     }
 
     public static function get_array_to_select()

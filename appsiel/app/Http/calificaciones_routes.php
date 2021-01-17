@@ -66,7 +66,7 @@ Route::resource('calificaciones/observaciones_boletin', 'Calificaciones\Observac
 
 Route::resource('calificaciones/boletines', 'Calificaciones\BoletinController', ['except' => ['show']]);
 
-Route::get('calificaciones/index2','Calificaciones\CalificacionController@index2');
+Route::get('calificaciones/index2', 'Calificaciones\CalificacionController@index2')->name('calificaciones.index2');
 Route::post('calificaciones/almacenar_calificacion','Calificaciones\CalificacionController@almacenar_calificacion');
 
 

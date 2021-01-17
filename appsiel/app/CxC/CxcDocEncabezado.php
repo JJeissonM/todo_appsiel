@@ -13,7 +13,7 @@ class CxcDocEncabezado extends Model
 
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','fecha_vencimiento','core_empresa_id','core_tercero_id','tipo_documento','documento_soporte','descripcion','valor_total','estado','creado_por','modificado_por','codigo_referencia_tercero'];
 
-    public $encabezado_tabla = ['Documento','Fecha','Tercero','Detalle','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Fecha', 'Tercero', 'Detalle'];
 
     // Este array se puede usar para automatizar los campos que se muestran en la vista idex, permitiendo agregar o quitar campos a la tabla
     public $campos_vista_index = [
@@ -37,24 +37,56 @@ class CxcDocEncabezado extends Model
 
     
     // Se consultan los documentos para la empresa que tiene asignada el usuario
-    public static function consultar_registros()
-    {        
+    public static function consultar_registros($nro_registros, $search)
+    {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo) AS campo1';
 
-        $registros = CxcDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_doc_encabezados.core_tipo_doc_app_id')
-                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_doc_encabezados.core_tercero_id')
-                    ->where('cxc_doc_encabezados.core_empresa_id', Auth::user()->empresa_id )
-                    ->whereIn('cxc_doc_encabezados.core_tipo_transaccion_id', [5, 15, 7, 9, 10, 12] )
-                    ->select(
-                                DB::raw($select_raw),
-                                'cxc_doc_encabezados.fecha AS campo2',
-                                'core_terceros.descripcion as campo3',
-                                'cxc_doc_encabezados.descripcion AS campo4',
-                                'cxc_doc_encabezados.id AS campo5')
-                    ->get()
-                    ->toArray();
+        return CxcDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_doc_encabezados.core_tercero_id')
+            ->where('cxc_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->whereIn('cxc_doc_encabezados.core_tipo_transaccion_id', [5, 15, 7, 9, 10, 12])
+            ->select(
+                DB::raw($select_raw),
+                'cxc_doc_encabezados.fecha AS campo2',
+                'core_terceros.descripcion as campo3',
+                'cxc_doc_encabezados.descripcion AS campo4',
+                'cxc_doc_encabezados.id AS campo5'
+            )
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("cxc_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("cxc_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orderBy('cxc_doc_encabezados.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
 
-        return $registros;
+    public static function sqlString($search)
+    {
+        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo) AS DOCUMENTO';
+
+        $string = CxcDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_doc_encabezados.core_tercero_id')
+            ->where('cxc_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->whereIn('cxc_doc_encabezados.core_tipo_transaccion_id', [5, 15, 7, 9, 10, 12])
+            ->select(
+                DB::raw($select_raw),
+                'cxc_doc_encabezados.fecha AS FECHA',
+                'core_terceros.descripcion as TERCERO',
+                'cxc_doc_encabezados.descripcion AS DETALLE'
+            )
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("cxc_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("cxc_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orderBy('cxc_doc_encabezados.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE ENCABEZADOS";
     }
     
     public function tercero()

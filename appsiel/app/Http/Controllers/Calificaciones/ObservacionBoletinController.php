@@ -39,37 +39,57 @@ class ObservacionBoletinController extends Controller
      */
     public function index()
     {
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+        //determinar la cantidad de registros a mostrar
+        $nro_registros = 10;
+        $temp = Input::get('nro_registros');
+        if ($temp != null) {
+            $nro_registros = $temp;
+        }
+        $sqlString = "";
+        $tituloExport = "LISTADO DE OBSERVACIONES AL BOLETÍN";
+        //determinar la busqueda
+        $search = "";
+        $temp2 = Input::get('search');
+        if ($temp2 != null) {
+            $search = trim($temp2);
+        }
+        $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
 
-        $id_colegio=$colegio->id;
+        $id_colegio = $colegio->id;
 
         $select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS campo4';
 
         $user = Auth::user();
 
-        if ( $user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector')  ) 
-        {
-            $registros = ObservacionesBoletin::consultar_registros();
-        }else{
-            $registros = ObservacionesBoletin::consultar_registros_director_grupo();
-        }        
+        if ($user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector')) {
+            $registros = ObservacionesBoletin::consultar_registros($nro_registros, $search);
+            $sqlString = ObservacionesBoletin::sqlString_consultar_registros($search);
+        } else {
+            $registros = ObservacionesBoletin::consultar_registros_director_grupo($nro_registros, $search);
+            $sqlString = ObservacionesBoletin::sqlString_registros_director_grupo($search);
+        }
 
         $miga_pan = [
-                       ['url'=>'NO','etiqueta'=>'Observaciones boletín']
-                    ];
-        
-        $titulo_tabla='';
+            ['url' => 'NO', 'etiqueta' => 'Observaciones boletín']
+        ];
 
-        $encabezado_tabla=['Año','Periodo','Curso','Estudiante','Puesto','Observación',''];
+        $titulo_tabla = '';
 
-        $url_crear = 'calificaciones/observaciones_boletin/create?id='.Input::get('id');
+        $id_app = Input::get('id');
+        $id_modelo = Input::get('id_modelo');
+
+        $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año', 'Periodo', 'Curso', 'Estudiante', 'Puesto', 'Observación'];
+
+        $url_crear = 'calificaciones/observaciones_boletin/create?id=' . Input::get('id');
         $url_edit = '';
         $url_print = '';
         $url_ver = '';
         $url_estado = '';
         $url_eliminar = '';
 
-        return view('layouts.index', compact('registros','miga_pan','url_crear','titulo_tabla','encabezado_tabla','url_crear','url_edit','url_print','url_ver','url_estado','url_eliminar'));
+        $source = "BOLETIN";
+
+        return view('layouts.index', compact('registros', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_app', 'id_modelo', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar'));
     }
 
     /**
@@ -79,33 +99,30 @@ class ObservacionBoletinController extends Controller
      */
     public function create()
     {
-        
+
         $user = Auth::user();
-        $colegio = Colegio::where('empresa_id',$user->empresa_id)->get()->first();
+        $colegio = Colegio::where('empresa_id', $user->empresa_id)->get()->first();
 
         // SELECT DE CURSOS
-        $opciones1 = Curso::where(['id_colegio'=>$colegio->id,'estado'=>'Activo'])
-                        ->OrderBy('nivel_grado')->get();
+        $opciones1 = Curso::where(['id_colegio' => $colegio->id, 'estado' => 'Activo'])
+            ->OrderBy('nivel_grado')->get();
 
-        $vec1['']='';
-        
-        if ( $user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector')  ) 
-        {
-            foreach ($opciones1 as $opcion){
-                $vec1[$opcion->id]=$opcion->descripcion;
-            }            
-        }else{
-            foreach ($opciones1 as $opcion)
-            {
-                $esta = CursoTieneDirectorGrupo::where('curso_id',$opcion->id)->where('user_id',$user->id)->get()->first();
-                
-                if ( !is_null($esta) ) 
-                {
-                    $vec1[$opcion->id]=$opcion->descripcion;               
+        $vec1[''] = '';
+
+        if ($user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector')) {
+            foreach ($opciones1 as $opcion) {
+                $vec1[$opcion->id] = $opcion->descripcion;
+            }
+        } else {
+            foreach ($opciones1 as $opcion) {
+                $esta = CursoTieneDirectorGrupo::where('curso_id', $opcion->id)->where('user_id', $user->id)->get()->first();
+
+                if (!is_null($esta)) {
+                    $vec1[$opcion->id] = $opcion->descripcion;
                 }
             }
         }
-        
+
         $cursos = $vec1;
 
 
@@ -113,11 +130,11 @@ class ObservacionBoletinController extends Controller
         $periodos = Periodo::opciones_campo_select();
 
         $miga_pan = [
-                        ['url'=>'calificaciones/observaciones_boletin?id='.Input::get('id'),'etiqueta'=>'Observaciones boletín'],
-                        ['url'=>'NO','etiqueta'=>'Ingresar']
-                    ];
+            ['url' => 'calificaciones/observaciones_boletin?id=' . Input::get('id'), 'etiqueta' => 'Observaciones boletín'],
+            ['url' => 'NO', 'etiqueta' => 'Ingresar']
+        ];
 
-        return view('calificaciones.boletines.observaciones_create',compact('cursos','periodos','miga_pan'));
+        return view('calificaciones.boletines.observaciones_create', compact('cursos', 'periodos', 'miga_pan'));
 
         // Lo datos del formulario observaciones_create se envía vía post al método observaciones_create2
     }
@@ -131,42 +148,40 @@ class ObservacionBoletinController extends Controller
     {
         // Se obtienen los estudiantes con matriculas activas en el curso y año indicado
         $periodo = Periodo::find($request->id_periodo);
-        $anio = explode("-",$periodo->fecha_desde)[0];
+        $anio = explode("-", $periodo->fecha_desde)[0];
 
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo' );
-            
+        $estudiantes = Matricula::estudiantes_matriculados($request->curso_id, $periodo->periodo_lectivo_id, 'Activo');
+
         // Se obtienen las descripciones del curso y el perioro
-        $nom_curso = Curso::find( $request->curso_id )->descripcion;
+        $nom_curso = Curso::find($request->curso_id)->descripcion;
 
         $nom_periodo = $periodo->descripcion;
 
 
         $miga_pan = [
-            [ 'url' =>'calificaciones/observaciones_boletin?id='.Input::get('id'),'etiqueta'=>'Observaciones boletín'],
-            [ 'url' =>'calificaciones/observaciones_boletin/create?id='.Input::get('id'),'etiqueta'=>'Ingresar'],
-            [ 'url' =>'NO','etiqueta'=> 'Periodo: '.$nom_periodo]
+            ['url' => 'calificaciones/observaciones_boletin?id=' . Input::get('id'), 'etiqueta' => 'Observaciones boletín'],
+            ['url' => 'calificaciones/observaciones_boletin/create?id=' . Input::get('id'), 'etiqueta' => 'Ingresar'],
+            ['url' => 'NO', 'etiqueta' => 'Periodo: ' . $nom_periodo]
         ];
-        
+
         // Verificar si ya tiene observaciones para los datos seleccionados (anio-periodo-curso-asignatura)
-        $observaciones = ObservacionIngresada::cantidad_x_periodo_curso( $request->id_periodo, $request->curso_id );
-                
-        if( $observaciones > 0 ){
+        $observaciones = ObservacionIngresada::cantidad_x_periodo_curso($request->id_periodo, $request->curso_id);
+
+        if ($observaciones > 0) {
             // SI ya tienen observaciones, se modifican
             $vec_estudiantes = array();
-            $i=0;
-            foreach($estudiantes as $estudiante)
-            {
+            $i = 0;
+            foreach ($estudiantes as $estudiante) {
                 $vec_estudiantes[$i]['id_estudiante'] = $estudiante->id_estudiante;
                 $vec_estudiantes[$i]['nombre'] = $estudiante->nombre_completo;
-                
-                $observacion_est = ObservacionesBoletin::get_x_estudiante( $request->id_periodo, $request->curso_id, $estudiante->id_estudiante);
-                
+
+                $observacion_est = ObservacionesBoletin::get_x_estudiante($request->id_periodo, $request->curso_id, $estudiante->id_estudiante);
+
                 $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
                 $vec_estudiantes[$i]['id_observacion'] = "no";
                 $vec_estudiantes[$i]['observacion'] = "";
 
-                if( !is_null($observacion_est) )
-                {
+                if (!is_null($observacion_est)) {
                     $vec_estudiantes[$i]['id_observacion'] = $observacion_est->id;
                     $vec_estudiantes[$i]['observacion'] = $observacion_est->observacion;
                 }
@@ -174,23 +189,27 @@ class ObservacionBoletinController extends Controller
                 $i++;
             }
 
-            return view('calificaciones.boletines.observaciones_editar1',['vec_estudiantes'=>$vec_estudiantes,
-                'cantidad_estudiantes'=>count($estudiantes),
-                'anio'=>$anio,
-                'curso_id'=>$request->curso_id,
-                'nom_curso'=>$nom_curso,
-                'id_periodo'=>$request->id_periodo,
-                'nom_periodo'=>$nom_periodo,
-                'miga_pan'=>$miga_pan]);
-        }else{
+            return view('calificaciones.boletines.observaciones_editar1', [
+                'vec_estudiantes' => $vec_estudiantes,
+                'cantidad_estudiantes' => count($estudiantes),
+                'anio' => $anio,
+                'curso_id' => $request->curso_id,
+                'nom_curso' => $nom_curso,
+                'id_periodo' => $request->id_periodo,
+                'nom_periodo' => $nom_periodo,
+                'miga_pan' => $miga_pan
+            ]);
+        } else {
             // Si no tienen observaciones, se crean por primera vez
-            return view('calificaciones.boletines.observaciones_hacer2',['estudiantes'=>$estudiantes,
-                'anio'=>$anio,
-                'curso_id'=>$request->curso_id,
-                'nom_curso'=>$nom_curso,
-                'id_periodo'=>$request->id_periodo,
-                'nom_periodo'=>$nom_periodo,
-                'miga_pan'=>$miga_pan]);
+            return view('calificaciones.boletines.observaciones_hacer2', [
+                'estudiantes' => $estudiantes,
+                'anio' => $anio,
+                'curso_id' => $request->curso_id,
+                'nom_curso' => $nom_curso,
+                'id_periodo' => $request->id_periodo,
+                'nom_periodo' => $nom_periodo,
+                'miga_pan' => $miga_pan
+            ]);
         }
     }
 
@@ -204,50 +223,48 @@ class ObservacionBoletinController extends Controller
      */
     public function store(Request $request)
     {
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
+        $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()->first();
 
-        $datos = ['id_colegio'=> $colegio->id] +
-                ['anio'=> $request->anio] +
-                ['id_periodo'=> $request->id_periodo] +
-                ['curso_id' => $request->curso_id];
+        $datos = ['id_colegio' => $colegio->id] +
+            ['anio' => $request->anio] +
+            ['id_periodo' => $request->id_periodo] +
+            ['curso_id' => $request->curso_id];
 
         // Guardar en tabla auxiliar para indicar que ya se ingresaron observaciones o puestos
         // del curso en de ese año-periodo. 
         // Esta tabla es para saber si se están creando los registros por primera vez 
         // de observaciones o puesto; para determinar si se van a INSERTAR o ACTUALIZAR
-        ObservacionIngresada::create( $datos );
-                    
+        ObservacionIngresada::create($datos);
+
         // Guardar las observaciones para cada estudiante
-        for($i=0;$i<$request->cantidad_estudiantes;$i++)
-        {
-            ObservacionesBoletin::create( 
-                                            $datos + 
-                                            [ 'codigo_matricula'=> $request->input('codigo_matricula.'.$i) ] +
-                                            [ 'id_estudiante'=> $request->input('estudiante.'.$i) ] +
-                                            [ 'observacion'=> $request->input('observacion.'.$i) ]  
-                                        );
+        for ($i = 0; $i < $request->cantidad_estudiantes; $i++) {
+            ObservacionesBoletin::create(
+                $datos +
+                    ['codigo_matricula' => $request->input('codigo_matricula.' . $i)] +
+                    ['id_estudiante' => $request->input('estudiante.' . $i)] +
+                    ['observacion' => $request->input('observacion.' . $i)]
+            );
         }
-        
+
         $curso = Curso::find($request->curso_id);
 
-        return redirect('/calificaciones/observaciones_boletin/create?id='.$request->id_app)->with('flash_message','Observaciones ingresadas correctamente. Curso: '.$curso->descripcion);
+        return redirect('/calificaciones/observaciones_boletin/create?id=' . $request->id_app)->with('flash_message', 'Observaciones ingresadas correctamente. Curso: ' . $curso->descripcion);
     }
 
     // AJAX para guardar una sola observación
     public function guardar_observacion(Request $request)
     {
-        $observacion = ObservacionesBoletin::find( $request->observacion_id );
+        $observacion = ObservacionesBoletin::find($request->observacion_id);
 
-        if ( is_null($observacion) ) 
-        {
+        if (is_null($observacion)) {
             // Crear nueva
-            $observacion = ObservacionesBoletin::create( $request->all() );
-        }else{
+            $observacion = ObservacionesBoletin::create($request->all());
+        } else {
             // Actualizar
-            $observacion->fill( $request->all() );
+            $observacion->fill($request->all());
             $observacion->save();
-        }        
-        
+        }
+
         return [$observacion->id];
     }
 
@@ -260,34 +277,31 @@ class ObservacionBoletinController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
+        $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()->first();
 
-        for($i=0;$i<$request->cantidad_estudiantes;$i++)
-        {
-            if($request->input('id_observacion.'.$i)!="no")
-            {
-                ObservacionesBoletin::where(['id'=>$request->input('id_observacion.'.$i)])
-                                    ->update(['observacion'=>$request->input('observacion.'.$i)]);
-            }else{
+        for ($i = 0; $i < $request->cantidad_estudiantes; $i++) {
+            if ($request->input('id_observacion.' . $i) != "no") {
+                ObservacionesBoletin::where(['id' => $request->input('id_observacion.' . $i)])
+                    ->update(['observacion' => $request->input('observacion.' . $i)]);
+            } else {
 
-                $datos = ['id_colegio'=> $colegio->id] +
-                            ['anio'=> $request->anio] +
-                            ['id_periodo'=> $request->id_periodo] +
-                            ['curso_id' => $request->curso_id];
+                $datos = ['id_colegio' => $colegio->id] +
+                    ['anio' => $request->anio] +
+                    ['id_periodo' => $request->id_periodo] +
+                    ['curso_id' => $request->curso_id];
 
 
-                ObservacionesBoletin::create( 
-                                            $datos + 
-                                            [ 'codigo_matricula'=> $request->input('codigo_matricula.'.$i) ] +
-                                            [ 'id_estudiante'=> $request->input('estudiante.'.$i) ] +
-                                            [ 'observacion'=> $request->input('observacion.'.$i) ]  
-                                        );
+                ObservacionesBoletin::create(
+                    $datos +
+                        ['codigo_matricula' => $request->input('codigo_matricula.' . $i)] +
+                        ['id_estudiante' => $request->input('estudiante.' . $i)] +
+                        ['observacion' => $request->input('observacion.' . $i)]
+                );
             }
-            
         }
-        
+
         $curso = Curso::find($request->curso_id);
 
-        return redirect('/calificaciones/observaciones_boletin/create?id='.$request->id_app)->with('flash_message','Observaciones ingresadas correctamente. Curso: '.$curso->descripcion);
+        return redirect('/calificaciones/observaciones_boletin/create?id=' . $request->id_app)->with('flash_message', 'Observaciones ingresadas correctamente. Curso: ' . $curso->descripcion);
     }
 }

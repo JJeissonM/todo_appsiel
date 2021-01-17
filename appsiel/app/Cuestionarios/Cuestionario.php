@@ -18,14 +18,40 @@ class Cuestionario extends Model
 
     protected $fillable = ['colegio_id','descripcion','detalle','activar_resultados','estado','created_by'];
 
-    public $encabezado_tabla = ['Nombre','Estado','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Estado'];
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
-        return Cuestionario::where( 'created_by', Auth::user()->id )
-                    ->select('sga_cuestionarios.descripcion AS campo1', 'sga_cuestionarios.estado AS campo2', 'sga_cuestionarios.id AS campo3')
-                    ->get()
-                    ->toArray();
+        return Cuestionario::where('created_by', Auth::user()->id)
+            ->select(
+                'sga_cuestionarios.descripcion AS campo1',
+                'sga_cuestionarios.estado AS campo2',
+                'sga_cuestionarios.id AS campo3'
+            )
+            ->orWhere("sga_cuestionarios.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cuestionarios.estado", "LIKE", "%$search%")
+            ->orderBy('sga_cuestionarios.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Cuestionario::where('created_by', Auth::user()->id)
+            ->select(
+                'sga_cuestionarios.descripcion AS NOMBRE',
+                'sga_cuestionarios.estado AS ESTADO'
+            )
+            ->orWhere("sga_cuestionarios.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cuestionarios.estado", "LIKE", "%$search%")
+            ->orderBy('sga_cuestionarios.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CUESTIONARIOS";
     }
 
     // El archivo js debe estar en la carpeta public

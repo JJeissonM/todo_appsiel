@@ -22,7 +22,7 @@ class Tercero extends Model
 
     protected $fillable = ['core_empresa_id', 'imagen', 'tipo', 'razon_social', 'nombre1', 'otros_nombres', 'apellido1', 'apellido2', 'descripcion', 'id_tipo_documento_id', 'numero_identificacion', 'digito_verificacion', 'ciudad_expedicion', 'direccion1', 'direccion2', 'barrio', 'codigo_ciudad', 'codigo_postal', 'telefono1', 'telefono2', 'email', 'pagina_web', 'estado', 'user_id', 'contab_anticipo_cta_id', 'contab_cartera_cta_id', 'contab_cxp_cta_id', 'creado_por', 'modificado_por'];
 
-    public $encabezado_tabla = ['ID', 'Nombre/Razón Social', 'Identificación', 'Establecimiento', 'Dirección', 'Teléfono', 'Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre/Razón Social', 'Identificación', 'Establecimiento', 'Dirección', 'Teléfono'];
 
     public function ciudad()
     {
@@ -36,7 +36,7 @@ class Tercero extends Model
 
     public function departamento()
     {
-        return Departamento::find( $this->ciudad->core_departamento_id )->get()->first();
+        return Departamento::find($this->ciudad->core_departamento_id)->get()->first();
     }
 
     public function cuenta_anticipos()
@@ -56,19 +56,53 @@ class Tercero extends Model
 
     public function cliente()
     {
-        return Cliente::where( 'core_tercero_id', $this->id )->get()->first();
+        return Cliente::where('core_tercero_id', $this->id)->get()->first();
     }
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
-        $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo2';
-
         $registros = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
-            ->select('core_terceros.id AS campo1', DB::raw($select_raw), 'core_terceros.numero_identificacion AS campo3', 'core_terceros.descripcion AS campo4', 'core_terceros.direccion1 AS campo5', 'core_terceros.telefono1 AS campo6', 'core_terceros.id AS campo7')
-            ->get()
-            ->toArray();
+            ->select(
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo1'),
+                'core_terceros.numero_identificacion AS campo2',
+                'core_terceros.descripcion AS campo3',
+                'core_terceros.direccion1 AS campo4',
+                'core_terceros.telefono1 AS campo5',
+                'core_terceros.id AS campo6'
+            )->where(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orderBy('core_terceros.created_at', 'DESC')
+            ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO'),
+                'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
+                'core_terceros.descripcion AS DESCRIPCIÓN',
+                'core_terceros.direccion1 AS DIRECCIÓN',
+                'core_terceros.telefono1 AS TELÉFONO'
+            )->where(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orderBy('core_terceros.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE TERCEROS";
     }
 
     public static function datos_completos($core_tercero_id)
@@ -112,10 +146,10 @@ class Tercero extends Model
     public static function opciones_campo_select()
     {
         $opciones = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
-                            ->where('core_terceros.estado', 'Activo')
-                            ->select('core_terceros.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
-                            ->orderBy('core_terceros.descripcion')
-                            ->get();
+            ->where('core_terceros.estado', 'Activo')
+            ->select('core_terceros.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
+            ->orderBy('core_terceros.descripcion')
+            ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {

@@ -20,14 +20,16 @@ class Curso extends Model
     
     protected $fillable = [ 'id_colegio', 'nivel_grado', 'sga_grado_id', 'codigo', 'descripcion', 'maneja_calificacion', 'imagen', 'estado'];
 
-    public $encabezado_tabla = ['ID','Nivel','Grado','Descripcion','Código','Maneja Calificacion (0=No, 1=Si)','Estado','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nivel', 'Grado', 'Descripcion', 'Código', 'Maneja Calificacion (0=No, 1=Si)', 'Estado'];
 
-    public function grado(){
-        return $this->belongsTo(Grado::class,'sga_grado_id');
+    public function grado()
+    {
+        return $this->belongsTo(Grado::class, 'sga_grado_id');
     }
 
-    public function nivel(){
-        return $this->belongsTo(NivelAcademico::class,'nivel_grado');
+    public function nivel()
+    {
+        return $this->belongsTo(NivelAcademico::class, 'nivel_grado');
     }
 
     public function foros()
@@ -37,33 +39,68 @@ class Curso extends Model
 
     public function asignaturas_asignadas()
     {
-        return $this->hasMany( CursoTieneAsignatura::class, 'curso_id' )->orderBy('orden_boletin');
+        return $this->hasMany(CursoTieneAsignatura::class, 'curso_id')->orderBy('orden_boletin');
     }
 
     public function director_grupo()
     {
-        return $this->belongsToMany('App\User','sga_curso_tiene_director_grupo','curso_id','user_id');
+        return $this->belongsToMany('App\User', 'sga_curso_tiene_director_grupo', 'curso_id', 'user_id');
     }
-    
+
     /**/
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
-    	$registros = Curso::leftJoin('sga_niveles', 'sga_niveles.id', '=', 'sga_cursos.nivel_grado')
-                    ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_cursos.sga_grado_id')
-                    ->orderBy('sga_cursos.nivel_grado','ASC')
-                    ->select(
-                            'sga_cursos.id AS campo1',
-                            'sga_niveles.descripcion AS campo2',
-                            'sga_grados.descripcion AS campo3',
-                            'sga_cursos.descripcion AS campo4',
-                            'sga_cursos.codigo AS campo5',
-                            'sga_cursos.maneja_calificacion AS campo6',
-                            'sga_cursos.estado AS campo7',
-                            'sga_cursos.id AS campo8')
-                    ->get()
-                    ->toArray();
+        $registros = Curso::leftJoin('sga_niveles', 'sga_niveles.id', '=', 'sga_cursos.nivel_grado')
+            ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_cursos.sga_grado_id')
+            ->orderBy('sga_cursos.nivel_grado', 'ASC')
+            ->select(
+                'sga_niveles.descripcion AS campo1',
+                'sga_grados.descripcion AS campo2',
+                'sga_cursos.descripcion AS campo3',
+                'sga_cursos.codigo AS campo4',
+                'sga_cursos.maneja_calificacion AS campo5',
+                'sga_cursos.estado AS campo6',
+                'sga_cursos.id AS campo7'
+            )->where("sga_niveles.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.maneja_calificacion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.estado", "LIKE", "%$search%")
+            ->orderBy('sga_cursos.created_at', 'DESC')
+            ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Curso::leftJoin('sga_niveles', 'sga_niveles.id', '=', 'sga_cursos.nivel_grado')
+            ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_cursos.sga_grado_id')
+            ->orderBy('sga_cursos.nivel_grado', 'ASC')
+            ->select(
+                'sga_niveles.descripcion AS NIVEL',
+                'sga_grados.descripcion AS GRADO',
+                'sga_cursos.descripcion AS CURSO',
+                'sga_cursos.codigo AS CÓDIGO_CURSO',
+                'sga_cursos.maneja_calificacion AS MANEJA_CAL_(0=NO, 1=SI)',
+                'sga_cursos.estado AS ESTADO CURSO'
+            )
+            ->where("sga_niveles.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.maneja_calificacion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.estado", "LIKE", "%$search%")
+            ->orderBy('sga_cursos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CURSOS O GRUPOS ACADÉMICOS";
     }
 
     public static function get_array_to_select()

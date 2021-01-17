@@ -15,11 +15,11 @@ class TesoCuentaBancaria extends Model
 
     protected $fillable = ['core_empresa_id','entidad_financiera_id','tipo_cuenta','descripcion','por_defecto','estado','contab_cuenta_id'];
 
-    public $encabezado_tabla = ['ID','Entidad financiera','Tipo cuenta','Número','Cta. contable','Por defecto','Estado','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Entidad financiera', 'Tipo cuenta', 'Número', 'Cta. contable', 'Por defecto', 'Estado'];
 
     public function entidad_financiera()
     {
-        return $this->belongsTo( TesoEntidadFinanciera::class, 'entidad_financiera_id');
+        return $this->belongsTo(TesoEntidadFinanciera::class, 'entidad_financiera_id');
     }
 
     /*public $vistas = [ 
@@ -27,22 +27,56 @@ class TesoCuentaBancaria extends Model
                         'edit' => ''
                         ];*/
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
         return TesoCuentaBancaria::leftJoin('teso_entidades_financieras', 'teso_entidades_financieras.id', '=', 'teso_cuentas_bancarias.entidad_financiera_id')
-                    ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
-                    ->select(
-                                'teso_cuentas_bancarias.id AS campo1',
-                                'teso_entidades_financieras.descripcion AS campo2',
-                                'teso_cuentas_bancarias.tipo_cuenta AS campo3',
-                                'teso_cuentas_bancarias.descripcion AS campo4',
-                                DB::raw( 'CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS campo5' ),
-                                'teso_cuentas_bancarias.por_defecto AS campo6',
-                                'teso_cuentas_bancarias.estado AS campo7',
-                                'teso_cuentas_bancarias.id AS campo8'
-                            )
-                    ->get()
-                    ->toArray();
+            ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
+            ->select(
+                'teso_entidades_financieras.descripcion AS campo1',
+                'teso_cuentas_bancarias.tipo_cuenta AS campo2',
+                'teso_cuentas_bancarias.descripcion AS campo3',
+                DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS campo4'),
+                'teso_cuentas_bancarias.por_defecto AS campo5',
+                'teso_cuentas_bancarias.estado AS campo6',
+                'teso_cuentas_bancarias.id AS campo7'
+            )
+            ->where("teso_entidades_financieras.descripcion", "LIKE", "%$search%")
+            ->orWhere("teso_cuentas_bancarias.tipo_cuenta", "LIKE", "%$search%")
+            ->orWhere("teso_cuentas_bancarias.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("teso_cuentas_bancarias.por_defecto", "LIKE", "%$search%")
+            ->orWhere("teso_cuentas_bancarias.estado", "LIKE", "%$search%")
+            ->orderBy('teso_cuentas_bancarias.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = TesoCuentaBancaria::leftJoin('teso_entidades_financieras', 'teso_entidades_financieras.id', '=', 'teso_cuentas_bancarias.entidad_financiera_id')
+            ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
+            ->select(
+                'teso_entidades_financieras.descripcion AS ENTIDAD_FINANCIERA',
+                'teso_cuentas_bancarias.tipo_cuenta AS TIPO_CUENTA',
+                'teso_cuentas_bancarias.descripcion AS NÚMERO',
+                DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS CTA._CONTABLE'),
+                'teso_cuentas_bancarias.por_defecto AS POR_DEFECTO',
+                'teso_cuentas_bancarias.estado AS ESTADO'
+            )
+            ->where("teso_entidades_financieras.descripcion", "LIKE", "%$search%")
+            ->orWhere("teso_cuentas_bancarias.tipo_cuenta", "LIKE", "%$search%")
+            ->orWhere("teso_cuentas_bancarias.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("teso_cuentas_bancarias.por_defecto", "LIKE", "%$search%")
+            ->orWhere("teso_cuentas_bancarias.estado", "LIKE", "%$search%")
+            ->orderBy('teso_cuentas_bancarias.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CUENTAS BANCARIAS";
     }
 
     public static function opciones_campo_select()

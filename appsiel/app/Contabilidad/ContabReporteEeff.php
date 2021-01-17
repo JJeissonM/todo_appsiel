@@ -16,14 +16,14 @@ class ContabReporteEeff extends Model
 
     protected $fillable = ['core_empresa_id','descripcion', 'factor_expresion_valores'];
 
-    public $encabezado_tabla = ['ID','Descripción','Expresión de valores','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Expresión de valores'];
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros)
     {
-        $registros = ContabReporteEeff::where('contab_reportes_eeff.core_empresa_id',Auth::user()->empresa_id)
-                    ->select('contab_reportes_eeff.id AS campo1','contab_reportes_eeff.descripcion AS campo2','contab_reportes_eeff.factor_expresion_valores AS campo3','contab_reportes_eeff.id AS campo4')
-                    ->get()
-                    ->toArray();
+        $registros = ContabReporteEeff::where('contab_reportes_eeff.core_empresa_id', Auth::user()->empresa_id)
+            ->select('contab_reportes_eeff.descripcion AS campo1', 'contab_reportes_eeff.factor_expresion_valores AS campo2', 'contab_reportes_eeff.id AS campo3')
+            ->orderBy('contab_reportes_eeff.created_at', 'DESC')
+            ->paginate($nro_registros);
 
         return $registros;
     }
