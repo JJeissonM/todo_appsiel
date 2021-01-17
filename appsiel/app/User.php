@@ -57,7 +57,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Fororespuesta::class);
     }
-
+ 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empresa', 'Nombre', 'Email', 'Fecha creación', 'Perfil'];
 
     public static function consultar_registros($nro_registros)
