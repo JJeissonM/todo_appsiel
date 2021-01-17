@@ -12,7 +12,7 @@ class NomDocRegistro extends Model
     //protected $table = 'nom_doc_registros';
 	protected $fillable = [ 'nom_doc_encabezado_id', 'core_tercero_id', 'nom_contrato_id', 'fecha', 'core_empresa_id', 'porcentaje', 'detalle', 'nom_concepto_id', 'nom_cuota_id', 'nom_prestamo_id', 'novedad_tnl_id', 'cantidad_horas', 'valor_devengo', 'valor_deduccion', 'estado', 'creado_por', 'modificado_por'];
 
-	public $encabezado_tabla = ['Documento', 'Empleado', 'Fecha', 'Detalle', 'Concepto', 'Cant. horas', 'Devengo', 'Deducción', 'Estado', 'ID', 'Acción'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Empleado', 'Fecha', 'Detalle', 'Concepto', 'Devengo', 'Deducción', 'Estado', 'ID'];
 
 	public $rutas = [
 						'create' => 'web',
@@ -56,25 +56,25 @@ class NomDocRegistro extends Model
 		return $this->belongsTo(NovedadTnl::class, 'novedad_tnl_id');
 	}
 						
-	public static function consultar_registros()
+	public static function consultar_registros($nro_registros)
 	{
-	    return NomDocRegistro::leftJoin('nom_doc_encabezados', 'nom_doc_encabezados.id', '=', 'nom_doc_registros.nom_doc_encabezado_id')
-						            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_doc_registros.core_tercero_id')
-						            ->leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
-						            ->select(
-						            			'nom_doc_encabezados.descripcion AS campo1',
-                                                DB::raw('CONCAT(core_terceros.numero_identificacion, " - ", core_terceros.descripcion) AS campo2'),
-						            			'nom_doc_registros.fecha AS campo3',
-						            			'nom_doc_registros.detalle AS campo4',
-						            			DB::raw('CONCAT(nom_conceptos.id, " - ", nom_conceptos.descripcion) AS campo5'),
-                                                'nom_doc_registros.cantidad_horas AS campo6',
-                                                'nom_doc_registros.valor_devengo AS campo7',
-						            			'nom_doc_registros.valor_deduccion AS campo8',
-						            			'nom_doc_registros.estado AS campo9',
-						            			'nom_doc_registros.id AS campo10',
-						            			'nom_doc_registros.id AS campo11')
-								    ->get()
-								    ->toArray();
+		return NomDocRegistro::leftJoin('nom_doc_encabezados', 'nom_doc_encabezados.id', '=', 'nom_doc_registros.nom_doc_encabezado_id')
+			->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_doc_registros.core_tercero_id')
+			->leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
+			->select(
+				'nom_doc_encabezados.descripcion AS campo1',
+				'core_terceros.descripcion AS campo2',
+				'nom_doc_registros.fecha AS campo3',
+				'nom_doc_registros.detalle AS campo4',
+				'nom_conceptos.descripcion AS campo5',
+				'nom_doc_registros.valor_devengo AS campo6',
+				'nom_doc_registros.valor_deduccion AS campo7',
+				'nom_doc_registros.estado AS campo8',
+				'nom_doc_registros.id AS campo9',
+				'nom_doc_registros.id AS campo10'
+			)
+			->orderBy('nom_doc_registros.created_at', 'DESC')
+			->paginate($nro_registros);
 	}
 
 

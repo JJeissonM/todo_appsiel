@@ -11,20 +11,14 @@ class NomCargo extends Model
     //protected $table = 'nom_cargos';
 	protected $fillable = ['descripcion', 'estado', 'cargo_padre_id', 'rango_salarial_id'];
 
-	public $encabezado_tabla = [ 'ID', 'Descripción', 'Estado', 'Acción'];
-
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
-
-	public static function consultar_registros()
-	{
-	    return NomCargo::select(
-                                        'nom_cargos.id AS campo1',
-                                        'nom_cargos.descripcion AS campo2',
-                                        'nom_cargos.estado AS campo3',
-                                        'nom_cargos.id AS campo4')
-                	    ->get()
-                	    ->toArray();
-	}
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Estado'];
+    public static function consultar_registros($nro_registros)
+    {
+        $registros = NomCargo::select('nom_cargos.descripcion AS campo1', 'nom_cargos.estado AS campo2', 'nom_cargos.id AS campo3')
+            ->orderBy('nom_cargos.created_at', 'DESC')
+            ->paginate($nro_registros);
+        return $registros;
+    }
 
     public static function opciones_campo_select()
     {

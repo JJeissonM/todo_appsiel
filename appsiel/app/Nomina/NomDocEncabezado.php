@@ -25,7 +25,7 @@ class NomDocEncabezado extends Model
     */
 	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'descripcion','tiempo_a_liquidar', 'total_devengos', 'total_deducciones', 'estado', 'creado_por', 'modificado_por','tipo_liquidacion'];
 	
-	public $encabezado_tabla = [ 'Fecha', 'Documento', 'Descripción', 'Total devengos', 'Total deducciones', 'Estado', 'Acción'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Descripción', 'Total devengos', 'Total deducciones', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"nomina/id_fila","cambiar_estado":"a_i/id_fila"}';
 
@@ -140,22 +140,21 @@ class NomDocEncabezado extends Model
                     ];
     }
 
-	public static function consultar_registros()
-	{
-	    return NomDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_doc_encabezados.core_tipo_doc_app_id')
-                            ->select(
-                                'nom_doc_encabezados.fecha AS campo1',
-                                DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",nom_doc_encabezados.consecutivo) AS campo2' ),
-                                'nom_doc_encabezados.descripcion AS campo3',
-                                'nom_doc_encabezados.total_devengos AS campo4',
-                                'nom_doc_encabezados.total_deducciones AS campo5',
-                                'nom_doc_encabezados.estado AS campo6',
-                                'nom_doc_encabezados.id AS campo7')
-                    	    ->get()
-                    	    ->toArray();
-	}
-
-
+	public static function consultar_registros($nro_registros)
+    {
+        return NomDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_doc_encabezados.core_tipo_doc_app_id')
+            ->select(
+                'nom_doc_encabezados.fecha AS campo1',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_doc_encabezados.consecutivo) AS campo2'),
+                'nom_doc_encabezados.descripcion AS campo3',
+                'nom_doc_encabezados.total_devengos AS campo4',
+                'nom_doc_encabezados.total_deducciones AS campo5',
+                'nom_doc_encabezados.estado AS campo6',
+                'nom_doc_encabezados.id AS campo7'
+            )
+            ->orderBy('nom_doc_encabezados.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
 
     public static function opciones_campo_select()
     {

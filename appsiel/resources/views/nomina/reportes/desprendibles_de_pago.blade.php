@@ -54,7 +54,7 @@
 				{{ Form::close() }}
 			</div>
 
-			<button class="btn btn-info btn-sm" id="btn_email" style="display: none;" title="Enviar por correo"> <i class="fa fa-envelope"></i> </button>
+			<a class="btn-gmail" id="btn_email" style="display: none;" title="Enviar por correo"> <i class="fa fa-envelope"></i> </a>
 			<label id="mensaje_email" style="color: red; font-weight: bold;"></label>
 
 			{{ Form::Spin(48) }}

@@ -11,14 +11,14 @@ class AgrupacionConcepto extends Model
 {
     protected $table = 'nom_agrupaciones_conceptos';
 	protected $fillable = ['core_empresa_id', 'descripcion', 'nombre_corto', 'estado'];
-	public $encabezado_tabla = ['Descripción', 'Nombre corto', 'Estado', 'Acción'];
-	public static function consultar_registros()
-	{
-	    $registros = AgrupacionConcepto::select('nom_agrupaciones_conceptos.descripcion AS campo1', 'nom_agrupaciones_conceptos.nombre_corto AS campo2', 'nom_agrupaciones_conceptos.estado AS campo3', 'nom_agrupaciones_conceptos.id AS campo4')
-	    ->get()
-	    ->toArray();
-	    return $registros;
-	}
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Nombre corto', 'Estado'];
+    public static function consultar_registros($nro_registros)
+    {
+        $registros = AgrupacionConcepto::select('nom_agrupaciones_conceptos.descripcion AS campo1', 'nom_agrupaciones_conceptos.nombre_corto AS campo2', 'nom_agrupaciones_conceptos.estado AS campo3', 'nom_agrupaciones_conceptos.id AS campo4')
+            ->orderBy('nom_agrupaciones_conceptos.created_at', 'DESC')
+            ->paginate($nro_registros);
+        return $registros;
+    }
 
 	public static function opciones_campo_select()
     {

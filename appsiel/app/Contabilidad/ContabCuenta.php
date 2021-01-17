@@ -11,17 +11,17 @@ class ContabCuenta extends Model
 {
     protected $fillable = ['core_empresa_id','codigo','contab_cuenta_clase_id','contab_cuenta_grupo_id','descripcion','core_app_id','estado','creado_por','modificado_por'];
 
-    public $encabezado_tabla = ['ID','Clase','Grupo','Código','Descripción','Aplicación asociada','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Clase', 'Grupo', 'Código', 'Descripción', 'Aplicación asociada'];
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros)
     {
         $registros = ContabCuenta::leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuentas.contab_cuenta_clase_id')
-                    ->leftJoin('contab_cuenta_grupos', 'contab_cuenta_grupos.id', '=', 'contab_cuentas.contab_cuenta_grupo_id')
-                    ->leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'contab_cuentas.core_app_id')
-                    ->where('contab_cuentas.core_empresa_id',Auth::user()->empresa_id)
-                    ->select('contab_cuentas.id AS campo1','contab_cuenta_clases.descripcion AS campo2','contab_cuenta_grupos.descripcion AS campo3','contab_cuentas.codigo AS campo4','contab_cuentas.descripcion AS campo5','sys_aplicaciones.descripcion AS campo6','contab_cuentas.id AS campo7')
-                    ->get()
-                    ->toArray();
+            ->leftJoin('contab_cuenta_grupos', 'contab_cuenta_grupos.id', '=', 'contab_cuentas.contab_cuenta_grupo_id')
+            ->leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'contab_cuentas.core_app_id')
+            ->where('contab_cuentas.core_empresa_id', Auth::user()->empresa_id)
+            ->select('contab_cuenta_clases.descripcion AS campo1', 'contab_cuenta_grupos.descripcion AS campo2', 'contab_cuentas.codigo AS campo3', 'contab_cuentas.descripcion AS campo4', 'sys_aplicaciones.descripcion AS campo5', 'contab_cuentas.id AS campo6')
+            ->orderBy('contab_cuentas.created_at', 'DESC')
+            ->paginate($nro_registros);
 
         return $registros;
     }

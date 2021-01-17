@@ -18,7 +18,7 @@ class NovedadTnl extends Model
 	
 	protected $fillable = ['nom_concepto_id', 'nom_contrato_id', 'fecha_inicial_tnl', 'fecha_final_tnl', 'cantidad_dias_tnl', 'cantidad_horas_tnl', 'tipo_novedad_tnl', 'codigo_diagnostico_incapacidad', 'numero_incapacidad', 'fecha_expedicion_incapacidad', 'origen_incapacidad', 'clase_incapacidad', 'fecha_incapacidad', 'valor_a_pagar_eps', 'valor_a_pagar_arl', 'valor_a_pagar_afp', 'valor_a_pagar_empresa', 'observaciones', 'estado', 'cantidad_dias_amortizados', 'cantidad_dias_pendientes_amortizar', 'es_prorroga', 'novedad_tnl_anterior_id'];
 	
-	public $encabezado_tabla = ['Concepto', 'Empleado', 'Tipo novedad', 'Origen', 'Inicio TNL',  'Fin TNL', 'Cant. días TNL', 'Cant. días amortizados', 'Cant. días pend.', 'Observaciones', 'Estado', 'ID', 'Acción'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Concepto', 'Empleado', 'Tipo novedad', 'Origen', 'Inicio TNL',  'Fin TNL', 'Cant. días TNL', 'Cant. días amortizados', 'Cant. días pend.', 'Observaciones', 'Estado'];
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
@@ -34,29 +34,29 @@ class NovedadTnl extends Model
 		return $this->belongsTo(NomContrato::class, 'nom_contrato_id');
 	}
 
-	public static function consultar_registros()
+	public static function consultar_registros($nro_registros)
 	{
-	    return NovedadTnl::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_novedades_tnl.nom_concepto_id')
-	    				->leftJoin('nom_contratos','nom_contratos.id','=','nom_novedades_tnl.nom_contrato_id')
-	    				->leftJoin('core_terceros','core_terceros.id','=','nom_contratos.core_tercero_id')
-                        ->where([['nom_novedades_tnl.tipo_novedad_tnl','<>','vacaciones']])
-	    				->select(
-	    						'nom_conceptos.descripcion AS campo1',
-	    						'core_terceros.descripcion AS campo2',
-                                'nom_novedades_tnl.tipo_novedad_tnl AS campo3',
-                                'nom_novedades_tnl.origen_incapacidad AS campo4',
-                                'nom_novedades_tnl.fecha_inicial_tnl AS campo5',
-                                'nom_novedades_tnl.fecha_final_tnl AS campo6',
-	    						'nom_novedades_tnl.cantidad_dias_tnl AS campo7',
-                                'nom_novedades_tnl.cantidad_dias_amortizados AS campo8',
-                                'nom_novedades_tnl.cantidad_dias_pendientes_amortizar AS campo9',
-	    						'nom_novedades_tnl.observaciones AS campo10',
-	    						'nom_novedades_tnl.estado AS campo11',
-                                'nom_novedades_tnl.id AS campo12',
-                                'nom_novedades_tnl.id AS campo13')
-					    ->get()
-					    ->toArray();
+		return NovedadTnl::leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_novedades_tnl.nom_concepto_id')
+			->leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_novedades_tnl.nom_contrato_id')
+			->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+			->select(
+				'nom_conceptos.descripcion AS campo1',
+				'core_terceros.descripcion AS campo2',
+				'nom_novedades_tnl.tipo_novedad_tnl AS campo3',
+				'nom_novedades_tnl.origen_incapacidad AS campo4',
+				'nom_novedades_tnl.fecha_inicial_tnl AS campo5',
+				'nom_novedades_tnl.fecha_final_tnl AS campo6',
+				'nom_novedades_tnl.cantidad_dias_tnl AS campo7',
+				'nom_novedades_tnl.cantidad_dias_amortizados AS campo8',
+				'nom_novedades_tnl.cantidad_dias_pendientes_amortizar AS campo9',
+				'nom_novedades_tnl.observaciones AS campo10',
+				'nom_novedades_tnl.estado AS campo11',
+				'nom_novedades_tnl.id AS campo12'
+			)
+			->orderBy('nom_novedades_tnl.created_at', 'DESC')
+			->paginate($nro_registros);
 	}
+
 
     public static function opciones_campo_select()
     {

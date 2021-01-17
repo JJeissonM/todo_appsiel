@@ -11,18 +11,18 @@ class ContabCuentaGrupo extends Model
 {
     protected $fillable = ['core_empresa_id','contab_cuenta_clase_id','grupo_padre_id','descripcion','mostrar_en_reporte','creado_por','modificado_por'];
 
-    public $encabezado_tabla = ['ID','Clase','Padre','Descripción','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Clase', 'Padre', 'Descripción'];
 
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/contabilidad/funciones.js';
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros)
     {
         $registros = ContabCuentaGrupo::leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuenta_grupos.contab_cuenta_clase_id')
-                    ->where('contab_cuenta_grupos.core_empresa_id',Auth::user()->empresa_id)
-                    ->select('contab_cuenta_grupos.ID AS campo1','contab_cuenta_clases.descripcion AS campo2','contab_cuenta_grupos.grupo_padre_id as campo3','contab_cuenta_grupos.descripcion AS campo4','contab_cuenta_grupos.id AS campo5')
-                    ->get()
-                    ->toArray();
+            ->where('contab_cuenta_grupos.core_empresa_id', Auth::user()->empresa_id)
+            ->select('contab_cuenta_clases.descripcion AS campo1', 'contab_cuenta_grupos.grupo_padre_id as campo2', 'contab_cuenta_grupos.descripcion AS campo3', 'contab_cuenta_grupos.id AS campo4')
+            ->orderBy('contab_cuenta_grupos.created_at', 'DESC')
+            ->paginate($nro_registros);
 
         return $registros;
     }
