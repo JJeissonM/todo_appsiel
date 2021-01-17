@@ -130,8 +130,6 @@
                             <div>
                                 <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado['titulo'] }}</b>
                                 <br/>
-                                <b>Documento:</b> {{ $doc_encabezado['documento'] }}
-                                <br/>
                                 <b>Fecha:</b> {{ $doc_encabezado['fecha'] }}
 
                                 @yield('datos_adicionales_encabezado')

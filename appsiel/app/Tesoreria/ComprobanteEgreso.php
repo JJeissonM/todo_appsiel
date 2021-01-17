@@ -58,52 +58,51 @@ class ComprobanteEgreso extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $transaccion_id = 57;
-        return ComprobanteEgreso::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
-            ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('teso_doc_encabezados.core_tipo_transaccion_id', $transaccion_id)
-            ->select(
-                'teso_doc_encabezados.fecha AS campo1',
-                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'teso_doc_encabezados.descripcion AS campo4',
-                'teso_doc_encabezados.valor_total AS campo5',
-                'teso_doc_encabezados.estado AS campo6',
-                'teso_doc_encabezados.id AS campo7'
-            )
-            ->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('teso_doc_encabezados.created_at', 'DESC')
-            ->paginate($nro_registros);
+    	return ComprobanteEgreso::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
+                    //->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
+                    //->where('teso_doc_encabezados.core_empresa_id','=',Auth::user()->empresa_id)
+                    ->select( 
+                                'teso_doc_encabezados.fecha AS campo1',
+                                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
+                                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                                'teso_doc_encabezados.descripcion AS campo4',
+                                'teso_doc_encabezados.valor_total AS campo5',
+                                'teso_doc_encabezados.estado AS campo6',
+                                'teso_doc_encabezados.id AS campo7')
+                    ->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
+                    ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+                    ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
+                    ->orderBy('teso_doc_encabezados.fecha', 'DESC')
+                    ->paginate($nro_registros);
     }
 
     public static function sqlString($search)
     {
         $transaccion_id = 57;
         $string = ComprobanteEgreso::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
-            ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('teso_doc_encabezados.core_tipo_transaccion_id', $transaccion_id)
-            ->select(
-                'teso_doc_encabezados.fecha AS FECHA',
-                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS DOCUMENTO'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO'),
-                'teso_doc_encabezados.descripcion AS DESCRIPCIÓN',
-                'teso_doc_encabezados.valor_total AS VALOR',
-                'teso_doc_encabezados.estado AS ESTADO'
-            )
-            ->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('teso_doc_encabezados.created_at', 'DESC')
-            ->toSql();
+                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
+                    //->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
+                    //->where('teso_doc_encabezados.core_empresa_id','=',Auth::user()->empresa_id)
+                    ->select(
+                                'teso_doc_encabezados.id AS ID',
+                                'teso_doc_encabezados.fecha AS FECHA',
+                                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS DOCUMENTO'),
+                                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO'),
+                                'teso_doc_encabezados.descripcion AS CONCEPTO',
+                                'teso_doc_encabezados.valor_total AS VALOR',
+                                'teso_doc_encabezados.estado AS ESTADO')
+                    ->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
+                    ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+                    ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
+                    ->orderBy('teso_doc_encabezados.fecha', 'DESC')
+                    ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 
@@ -127,8 +126,9 @@ class ComprobanteEgreso extends Model
     public static function get_campos_adicionales_create($lista_campos)
     {
         $motivo_id = (int)config('tesoreria.motivo_comprobante_egresos_id');
-        // Enviar formulario vacío. Se evita la creación, si se presiona el botón desde Académico Docente, pues no se han enviado ni el curos ni la asignatura 
-        if ($motivo_id == 0) {
+
+        if ( $motivo_id == 0 ) 
+        {
             return [
                 [
                     "id" => 999,
@@ -176,10 +176,34 @@ class ComprobanteEgreso extends Model
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
+
+        if ( $registro->estado == 'Anulado' ) 
+        {
+            return [
+                        [
+                                    "id" => 999,
+                                    "descripcion" => "Label no se puede ingresar registros desde esta opción.",
+                                    "tipo" => "personalizado",
+                                    "name" => "lbl_planilla",
+                                    "opciones" => "",
+                                    "value" => '<div class="form-group" style="width:100%;">                    
+                                                    <label class="control-label col-sm-3" style="color: red;" > <b> El documento está anulado, no se puede modificar. </b> </label>
+                                                </div>',
+                                    "atributos" => [],
+                                    "definicion" => "",
+                                    "requerido" => 0,
+                                    "editable" => 1,
+                                    "unico" => 0
+                                ]
+                    ];          
+        }
+
         // Personalizar campos
         $cantida_campos = count($lista_campos);
-        for ($i = 0; $i <  $cantida_campos; $i++) {
-            switch ($lista_campos[$i]['name']) {
+        for ($i = 0; $i <  $cantida_campos; $i++)
+        {
+            switch ($lista_campos[$i]['name'])
+            {
                 case 'teso_medio_recaudo_id':
                     $lista_campos[$i]['opciones'] = TesoMedioRecaudo::opciones_campo_select();
                     $opciones = TesoMedioRecaudo::opciones_campo_select();
