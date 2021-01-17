@@ -204,7 +204,9 @@ Route::get('form_password_resets', 'Sistema\ProcesoController@form_password_rese
 Route::get('config_password_resets/{role_id}', 'Sistema\ProcesoController@config_password_resets');
 
 
+// RUTAS PARA LA EXPORTACIÓN DE TABLAS EN FORMATOS PDF Y EXCEL
 
+Route::post('table/export', 'Sistema\ExporttableController@export')->name('export.table');
 
 // Aplicación MATRICULAS
 include __DIR__ . '/matriculas_routes.php';

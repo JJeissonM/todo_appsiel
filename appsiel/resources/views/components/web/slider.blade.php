@@ -14,18 +14,14 @@
             @endif
         @endif
     }
-    /*
+
     .owl-carousel img {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
+        height: 554px;
     }
-
-    .owl-item{
-        height: 20rem !important;
-    }
-    */
 </style>
 <section id="main-slider" class="slider-font">
     @if($slider != null && $slider->items->count() > 0)
@@ -68,9 +64,10 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="carousel-content">
-                                <h2><span>Bienvenido</span> este es nuestro sitio web.</h2>
-                                <p>Siempre buscamos ofrecer una experiencia extraordinaira con nuestros productos y servicios.</p>
-                                <a class="btn btn-primary btn-lg" href="#">Leer más</a>
+                                <h2><span>Multi</span> is the best Onepage html template</h2>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                                    incididunt ut labore et dolore magna incididunt ut labore aliqua. </p>
+                                <a class="btn btn-primary btn-lg" href="#">Read More</a>
                             </div>
                         </div>
                     </div>
@@ -84,9 +81,10 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="carousel-content">
-                                <h2>La belleza es una <span>virtud</span> del ser humano.</h2>
-                                <p>Queremos aporar valor y belleza a nuestro mundo. </p>
-                                <a class="btn btn-primary btn-lg" href="#">Leer más</a>
+                                <h2>Beautifully designed <span>free</span> one page template</h2>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
+                                    incididunt ut labore et dolore magna incididunt ut labore aliqua. </p>
+                                <a class="btn btn-primary btn-lg" href="#">Read More</a>
                             </div>
                         </div>
                     </div>
@@ -98,15 +96,4 @@
     <!--/.owl-carousel-->
     @endif
 </section>
-
-<script type="text/javascript">
-    
-    $(document).ready(function() {
-        console.log('ingresa');
-        $('.owl-carousel').owlCarousel({
-            autoHeight:true
-        });
-    });
-
-</script>
 <!--/#main-slider-->

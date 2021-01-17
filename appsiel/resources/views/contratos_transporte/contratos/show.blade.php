@@ -29,7 +29,7 @@
 		<div class="row" style="padding: 20px;">
 			<div class="col-md-12">
 				<div class="panel panel-primary">
-					<div class="panel-heading">Ver Contrato y Gestionar Grupo de Usuarios</div>
+					<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Ver Contrato</h4>
 					<div class="panel-body">
 						<div class="col-md-12" style="padding: 50px;">
 						<a href="{{route('cte_contratos.planillaindex',[$c->id,'CONTRATOS']).$variables_url}}" class="btn btn-primary"><i class="fa fa-arrow-right"></i> GENERAR E IMPRIMIR PLANILLAS FUEC PARA ESTE CONTRATO</a>

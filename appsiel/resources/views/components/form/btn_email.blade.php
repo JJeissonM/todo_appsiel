@@ -1,1 +1,1 @@
-<a class="btn btn-primary btn-xs btn-detail" href="{{ url($url) }}" title="Enviar por correo" id="btn_email"><i class="fa fa-btn fa-envelope"></i>&nbsp;</a>
+<a class="btn-gmail" href="{{ url($url) }}" title="Enviar por correo" id="btn_email"><i class="fa fa-btn fa-envelope"></i></a>

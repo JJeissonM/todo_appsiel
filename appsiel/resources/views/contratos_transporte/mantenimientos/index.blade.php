@@ -19,9 +19,9 @@
 			</div>
 			<div class="col-md-12">
 				<div class="table-responsive" id="table_content">
-					<table class="table table-bordered table-striped" id="myTable">
+					<table class="table table-bordered table-striped">
 						<thead>
-							<tr>
+							<tr style="background-color: #50B794; vertical-align: middle !important;">
 								<th>Interno</th>
 								<th>Vinculación</th>
 								<th>Placa</th>
@@ -43,7 +43,7 @@
 								<td>{{$v->modelo}}</td>
 								<td>{{$v->propietario->tercero->numero_identificacion." - ".$v->propietario->tercero->descripcion." ".$v->propietario->tercero->razon_social}}</td>
 								<td>
-									<a href="{{route('mantenimiento.continuar',$v->id).$variables_url}}" class="btn btn-xs btn-primary" title="Gestionar Mantenimientos del Vehículo"><i class="fa fa-arrow-right"></i></a>
+									<a href="{{route('mantenimiento.continuar',$v->id).$variables_url}}" class="btn-gmail" title="Gestionar Mantenimientos del Vehículo"><i class="fa fa-arrow-right"></i></a>
 								</td>
 							</tr>
 							@endforeach

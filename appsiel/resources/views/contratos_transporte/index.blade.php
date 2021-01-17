@@ -12,12 +12,12 @@
 			<div class="col-md-12" style="padding-top: 30px;">
 				<div class="col-md-6">
 					<div class="panel panel-primary">
-						<div class="panel-heading">Contratos Este Mes ({{$mes_actual}})</div>
+						<h4 style="padding: 15px;">Contratos Este Mes ({{$mes_actual}})</h4>
 						<div class="panel-body">
 							<div class="table-responsive">
-								<table id="myTable" class="table table-striped table-responsive">
+								<table class="table table-striped table-responsive">
 									<thead>
-										<tr>
+										<tr style="background-color: #50B794; vertical-align: middle !important;">
 											<th>Nro.</th>
 											<th>Origen - Destino</th>
 											<th>Vigencia</th>
@@ -37,7 +37,7 @@
 												@if($c->estado=='ANULADO')
 												<p>ANULADO</p>
 												@else
-												<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn btn-primary btn-xs"><i class="fa fa-print"></i></a>
+												<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn-gmail" title="Imprimir"><i class="fa fa-print"></i></a>
 												@endif
 											</td>
 										</tr>
@@ -51,12 +51,12 @@
 				</div>
 				<div class="col-md-6">
 					<div class="panel panel-primary">
-						<div class="panel-heading">Documentos Vencidos</div>
+						<h4 style="padding: 15px;">Documentos Vencidos</h4>
 						<div class="panel-body">
 							<div class="table-responsive">
 								<table class="table table-striped table-responsive">
 									<thead>
-										<tr>
+										<tr style="background-color: #50B794; vertical-align: middle !important;">
 											<th>Nro. Documento</th>
 											<th>Documento - Categoría</th>
 											<th>Vigencia</th>

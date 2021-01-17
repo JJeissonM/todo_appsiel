@@ -14,10 +14,10 @@ class Inscripcion extends Model
 {
     protected $table = 'sga_inscripciones';
 
-    protected $fillable = [ 'codigo', 'fecha', 'sga_grado_id', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'origen', 'enterado_por', 'observacion', 'acudiente', 'colegio_anterior', 'estado', 'creado_por', 'modificado_por'];
+    protected $fillable = ['codigo', 'fecha', 'sga_grado_id', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'origen', 'enterado_por', 'observacion', 'acudiente', 'colegio_anterior', 'estado', 'creado_por', 'modificado_por'];
 
-    public $encabezado_tabla = [ 'Candidato', 'Identificación', 'Código inscripción', 'Fecha', 'Grado', 'Origen', 'Estado', 'Acción'];
- 
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Candidato', 'Identificación', 'Código inscripción', 'Fecha', 'Grado', 'Origen', 'Estado'];
+
     public $urls_acciones = '{"create":"web/create","store":"matriculas/inscripcion","update":"matriculas/inscripcion/id_fila","edit":"web/id_fila/edit","show":"matriculas/inscripcion/id_fila","imprimir":"matriculas/inscripcion_print/id_fila","eliminar":"matriculas/inscripciones/eliminar/id_fila"}';
 
     // El archivo js debe estar en la carpeta public
@@ -25,53 +25,88 @@ class Inscripcion extends Model
 
     public function tercero()
     {
-        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+        return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
     }
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
-    	$select_raw = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1';
+        return Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
+            ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_inscripciones.sga_grado_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ", core_terceros.numero_identificacion ) AS campo2'),
+                'sga_inscripciones.codigo AS campo3',
+                'sga_inscripciones.fecha AS campo4',
+                'sga_grados.descripcion AS campo5',
+                'sga_inscripciones.origen AS campo6',
+                'sga_inscripciones.estado AS campo7',
+                'sga_inscripciones.id AS campo8'
+            )
+            ->where("sga_inscripciones.codigo", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ', core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.fecha", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.origen", "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.estado", "LIKE", "%$search%")
+            ->orderBy('sga_inscripciones.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
 
-    	$select_raw2 = 'CONCAT(core_tipos_docs_id.abreviatura," ", core_terceros.numero_identificacion ) AS campo2';
+    public static function sqlString($search)
+    {
+        $string = Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
+            ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_inscripciones.sga_grado_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ASPIRANTE'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ", core_terceros.numero_identificacion ) AS IDENTIFICACIÓN'),
+                'sga_inscripciones.codigo AS CÓDIGO_INSCRIPCIÓN',
+                'sga_inscripciones.fecha AS FECHA',
+                'sga_grados.descripcion AS GRADO',
+                'sga_inscripciones.origen AS ORIGEN',
+                'sga_inscripciones.estado AS ESTADO'
+            )
+            ->where("sga_inscripciones.codigo", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ', core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.fecha", "LIKE", "%$search%")
+            ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.origen", "LIKE", "%$search%")
+            ->orWhere("sga_inscripciones.estado", "LIKE", "%$search%")
+            ->orderBy('sga_inscripciones.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
 
-        $registros = Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
-                    ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_inscripciones.sga_grado_id')
-                    ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
-                    ->select(DB::raw($select_raw), 
-                            DB::raw($select_raw2),
-                            'sga_inscripciones.codigo AS campo3',
-                            'sga_inscripciones.fecha AS campo4',
-                            'sga_grados.descripcion AS campo5',
-                            'sga_inscripciones.origen AS campo6',
-                            'sga_inscripciones.estado AS campo7',
-                            'sga_inscripciones.id AS campo8')
-                    ->get()
-                    ->toArray();
-
-        return $registros;
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE INSCRIPCIONES";
     }
 
     public static function get_opciones_select_inscritos()
     {
         $registros = Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
-                                ->where( 'sga_inscripciones.estado', 'Pendiente' )
-                                ->select(
-                                            'sga_inscripciones.id AS id_inscripcion',
-                                            'core_terceros.numero_identificacion',
-                                            DB::raw( 'core_terceros.descripcion AS tercero' ) 
-                                        )
-                                ->distinct( 'core_terceros.id' )
-                                ->get();
+            ->where('sga_inscripciones.estado', 'Pendiente')
+            ->select(
+                'sga_inscripciones.id AS id_inscripcion',
+                'core_terceros.numero_identificacion',
+                DB::raw('core_terceros.descripcion AS tercero')
+            )
+            ->distinct('core_terceros.id')
+            ->get();
 
-        $candidatos['']='';
-        foreach ($registros as $opcion){
+        $candidatos[''] = '';
+        foreach ($registros as $opcion) {
             $candidatos[$opcion->id_inscripcion] = $opcion->numero_identificacion . ' ' . $opcion->tercero;
         }
 
         return $candidatos;
     }
 
-    public function store_adicional( $datos, $registro )
+    public function store_adicional($datos, $registro)
     {
         // cambiar nombre de campo email
         $registro->tercero->email = $datos['email2'];
@@ -82,15 +117,14 @@ class Inscripcion extends Model
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
-        if ( $registro->estado == 'Activo' )
-        {
-            return [ null,'La incripción ya tiene matrículas asociadas. No puede ser modificada. Estudiante: '. $registro->tercero->descripcion ];
+        if ($registro->estado == 'Activo') {
+            return [null, 'La incripción ya tiene matrículas asociadas. No puede ser modificada. Estudiante: ' . $registro->tercero->descripcion];
         }
-        
+
         $cantida_campos = count($lista_campos);
 
         //Personalización de la lista de campos
-        for ($i=0; $i < $cantida_campos ; $i++) { 
+        for ($i = 0; $i < $cantida_campos; $i++) {
 
             switch ($lista_campos[$i]['name']) {
                 case 'nombre1':
@@ -129,12 +163,11 @@ class Inscripcion extends Model
                 case 'codigo_ciudad':
                     $lista_campos[$i]['value'] = $registro->tercero->codigo_ciudad;
                     break;
-                
+
                 default:
                     # code...
                     break;
-            }      
-            
+            }
         }
 
         // Agregar NUEVO campo con el core_tercero_id
@@ -151,39 +184,41 @@ class Inscripcion extends Model
 
 
     public static function get_registro_impresion($id)
-    {  
+    {
         return Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
-                    ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
-                    ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_inscripciones.sga_grado_id')
-                    ->where('sga_inscripciones.id',$id)
-                    ->select( 'sga_inscripciones.id',
-                            'sga_inscripciones.codigo',
-                            'sga_inscripciones.core_tercero_id',
-                            'sga_inscripciones.fecha',
-                            DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo' ),
-                            DB::raw( 'CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS tipo_y_numero_documento_identidad' ),
-                            'sga_inscripciones.acudiente',
-                            'sga_grados.descripcion AS nombre_grado',
-                            'sga_inscripciones.enterado_por',
-                            'sga_inscripciones.genero',
-                            'sga_inscripciones.ciudad_nacimiento',
-                            'sga_inscripciones.fecha_nacimiento',
-                            'sga_inscripciones.origen',
-                            'sga_inscripciones.observacion',
-                            'sga_inscripciones.creado_por',
-                            'sga_inscripciones.created_at',
-                            'sga_inscripciones.colegio_anterior',
-                            'core_terceros.nombre1',
-                            'core_terceros.otros_nombres',
-                            'core_terceros.apellido1',
-                            'core_terceros.apellido2',
-                            'core_terceros.telefono1',
-                            'core_terceros.id_tipo_documento_id',
-                            'core_terceros.numero_identificacion',
-                            'core_terceros.direccion1',
-                            'core_terceros.barrio',
-                            'core_terceros.email')
-                    ->get()
-                    ->first();
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_inscripciones.sga_grado_id')
+            ->where('sga_inscripciones.id', $id)
+            ->select(
+                'sga_inscripciones.id',
+                'sga_inscripciones.codigo',
+                'sga_inscripciones.core_tercero_id',
+                'sga_inscripciones.fecha',
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS tipo_y_numero_documento_identidad'),
+                'sga_inscripciones.acudiente',
+                'sga_grados.descripcion AS nombre_grado',
+                'sga_inscripciones.enterado_por',
+                'sga_inscripciones.genero',
+                'sga_inscripciones.ciudad_nacimiento',
+                'sga_inscripciones.fecha_nacimiento',
+                'sga_inscripciones.origen',
+                'sga_inscripciones.observacion',
+                'sga_inscripciones.creado_por',
+                'sga_inscripciones.created_at',
+                'sga_inscripciones.colegio_anterior',
+                'core_terceros.nombre1',
+                'core_terceros.otros_nombres',
+                'core_terceros.apellido1',
+                'core_terceros.apellido2',
+                'core_terceros.telefono1',
+                'core_terceros.id_tipo_documento_id',
+                'core_terceros.numero_identificacion',
+                'core_terceros.direccion1',
+                'core_terceros.barrio',
+                'core_terceros.email'
+            )
+            ->get()
+            ->first();
     }
 }

@@ -46,7 +46,8 @@
 
 	<!-- Styles -->
 	<!-- Latest compiled and minified CSS -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">-->
+	<link rel="stylesheet" href="{{asset('assets/bootswatch-3.3.7/paper/bootstrap.min.css')}}">
 	<!-- Glyphicons -->
 	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
 
@@ -59,6 +60,10 @@
 	<link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
 	<!-- Select2 -->
 	<link rel="stylesheet" href="{{ asset('assets/bower_components/select2/dist/css/select2.min.css')}}">
+
+	<!-- Estilos de las tablas tipo GMAIL -->
+	<link rel="stylesheet" href="{{ asset('css/Styletable.css')}}">
+		
 
 	@if( app()->environment() == 'demo' )
 		<!-- Global site tag (gtag.js) - Google Analytics -->
@@ -273,8 +278,7 @@
 		function validar_requeridos() {
 			control_requeridos = true;
 			$("*[required]").each(function() {
-				if ($(this).val() == "")
-				{
+				if ($(this).val() == "") {
 					$(this).focus();
 					alert('Este campo es requerido: ' + $(this).attr('name'));
 					control_requeridos = false;
@@ -373,6 +377,8 @@
 				var email = $("#email").val();
 
 				url_2 = "{{ url('/core/validar_email/') }}" + "/" + email;
+
+				console.log( url_2 );
 
 				$.get( url_2 , function( datos ) 
 				{

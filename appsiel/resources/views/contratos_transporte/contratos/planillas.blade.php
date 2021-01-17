@@ -28,9 +28,9 @@
 		&nbsp;
 		<div class="row" style="padding: 20px;">
 			<div class="col-md-12">
-				<div class="col-md-12" style="margin-bottom: 40px;">
+				<!--<div class="col-md-12" style="margin-bottom: 40px;">
 					<a href="{{route('cte_contratos.planillacreate',[$c->id,$source]).$variables_url}}" class="btn btn-primary"><i class="fa fa-arrow-right"></i> GENERAR FUEC PARA ESTE CONTRATO</a>
-				</div>
+				</div>-->
 				<div class="col-md-6">
 					<div class="list-group">
 						<a href="#" class="list-group-item list-group-item-action">Nro. Contrato: {{$c->numero_contrato}}</a>
@@ -48,10 +48,10 @@
 					</div>
 				</div>
 				<div class="table-responsive col-md-12" id="table_content">
-					<h3>Planillas Generadas al Contrato</h3>
-					<table class="table table-bordered table-striped" id="myTable">
+					<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Planillas Generadas al Contrato</h4>
+					<table class="table table-bordered table-striped">
 						<thead>
-							<tr>
+							<tr style="background-color: #50B794; vertical-align: middle !important;">
 								<th>Id Planilla</th>
 								<th>Título Plantilla</th>
 								<th>Fecha Generada</th>
@@ -66,8 +66,10 @@
 								<td>{{$p->plantilla->titulo}}</td>
 								<td>{{$p->created_at}}</td>
 								<td>
-									<a target="_blank" href="{{route('cte_contratos.planillaimprimir',$p->id)}}" class="btn btn-xs btn-success"><i class="fa fa-print"></i> IMPRIMIR FUEC</a>
+									<!--<a target="_blank" href="{{route('cte_contratos.planillaimprimir',$p->id)}}" class="btn btn-xs btn-success"><i class="fa fa-print"></i> IMPRIMIR FUEC</a>
 									<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn btn-xs btn-primary"><i class="fa fa-print"></i> IMPRIMIR CONTRATO</a>
+-->
+									<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
 								</td>
 							</tr>
 							@endforeach

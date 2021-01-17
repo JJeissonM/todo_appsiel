@@ -25,11 +25,11 @@ class Estudiante extends Model
 
     protected $fillable = ['imagen', 'id_colegio', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'grupo_sanguineo', 'alergias', 'medicamentos', 'eps', 'user_id'];
 
-    public $encabezado_tabla = ['ID', 'Nombre', 'Documento', 'Género', 'Fecha nacimiento', 'Teléfono', 'Email papá', 'Email mamá', 'Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Documento', 'Género', 'Fecha nacimiento', 'Teléfono', 'Email papá', 'Email mamá'];
 
     public function tercero()
     {
-        return $this->belongsTo( Tercero::class,'core_tercero_id');
+        return $this->belongsTo(Tercero::class, 'core_tercero_id');
     }
 
     /**
@@ -37,12 +37,12 @@ class Estudiante extends Model
      */
     public function matriculas()
     {
-        return $this->hasMany(Matricula::class,'id_estudiante');
+        return $this->hasMany(Matricula::class, 'id_estudiante');
     }
 
     public function matricula_activa()
     {
-        return Matricula::where( 'id_estudiante', $this->id )->where( 'estado', 'Activo' )->first();
+        return Matricula::where('id_estudiante', $this->id)->where('estado', 'Activo')->first();
     }
 
     public function registros_cartera()
@@ -57,17 +57,17 @@ class Estudiante extends Model
 
     public function responsable_financiero()
     {
-        return Responsableestudiante::where( 'estudiante_id', $this->id )->where('tiporesponsable_id',3)->first();
+        return Responsableestudiante::where('estudiante_id', $this->id)->where('tiporesponsable_id', 3)->first();
     }
 
     public function mama()
     {
-        return Responsableestudiante::where( 'estudiante_id', $this->id )->where('tiporesponsable_id',2)->first();
+        return Responsableestudiante::where('estudiante_id', $this->id)->where('tiporesponsable_id', 2)->first();
     }
 
     public function papa()
     {
-        return Responsableestudiante::where( 'estudiante_id', $this->id )->where('tiporesponsable_id',1)->first();
+        return Responsableestudiante::where('estudiante_id', $this->id)->where('tiporesponsable_id', 1)->first();
     }
 
     public function getTercero($id)
@@ -77,24 +77,58 @@ class Estudiante extends Model
     }
 
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
         return Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
             ->select(
-                'sga_estudiantes.id AS campo1',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo2'),
-                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS campo3'),
-                'sga_estudiantes.genero AS campo4',
-                'sga_estudiantes.fecha_nacimiento AS campo5',
-                'core_terceros.telefono1 AS campo6',
-                'sga_estudiantes.email_papa AS campo7',
-                'sga_estudiantes.email_mama AS campo8',
-                'sga_estudiantes.id AS campo9'
-            )
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS campo2'),
+                'sga_estudiantes.genero AS campo3',
+                'sga_estudiantes.fecha_nacimiento AS campo4',
+                'core_terceros.telefono1 AS campo5',
+                'sga_estudiantes.email_papa AS campo6',
+                'sga_estudiantes.email_mama AS campo7',
+                'sga_estudiantes.id AS campo8'
+            )->where("sga_estudiantes.genero", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.email_papa", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.email_mama", "LIKE", "%$search%")
             ->orderBy('sga_estudiantes.id', 'desc')
-            ->get()
-            ->toArray();
+            ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS NOMBRE'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS DOCUMENTO'),
+                'sga_estudiantes.genero AS GENERO',
+                'sga_estudiantes.fecha_nacimiento AS FECHA_DE_NACIMIENTO',
+                'core_terceros.telefono1 AS TELEFONO',
+                'sga_estudiantes.email_papa AS EMAIL_PAPÁ',
+                'sga_estudiantes.email_mama AS EMAIL_MAMÁ'
+            )->where("sga_estudiantes.genero", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.email_papa", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.email_mama", "LIKE", "%$search%")
+            ->orderBy('sga_estudiantes.id', 'desc')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO CATALOGO ESTUDIANTES";
     }
 
     public static function opciones_campo_select()
@@ -112,7 +146,7 @@ class Estudiante extends Model
     }
 
 
-    
+
 
     public static function get_nombre_completo($id, $modo_ordenamiento = 1)
     {
@@ -314,13 +348,11 @@ class Estudiante extends Model
                                     "mensaje":"Tiene libretas de pago asociadas."
                                 }
                         }';
-        $tablas = json_decode( $tablas_relacionadas );
-        foreach($tablas AS $una_tabla)
-        { 
-            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+        $tablas = json_decode($tablas_relacionadas);
+        foreach ($tablas as $una_tabla) {
+            $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
 
-            if ( !empty($registro) )
-            {
+            if (!empty($registro)) {
                 return $una_tabla->mensaje;
             }
         }
