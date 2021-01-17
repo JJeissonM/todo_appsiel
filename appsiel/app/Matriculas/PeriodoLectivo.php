@@ -16,27 +16,59 @@ class PeriodoLectivo extends Model
 
     protected $fillable = ['id_colegio','descripcion','fecha_desde','fecha_hasta','estado','cerrado'];
 
-    public $encabezado_tabla = ['Descripcion','Fecha desde','Fecha hasta','Cerrado','Estado','Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripcion', 'Fecha desde', 'Fecha hasta', 'Cerrado', 'Estado'];
 
     public function periodos()
     {
-        return $this->hasMany( 'App\Calificaciones\Periodo', 'periodo_lectivo_id' );
+        return $this->hasMany('App\Calificaciones\Periodo', 'periodo_lectivo_id');
     }
 
-    public static function consultar_registros()
+    public static function consultar_registros($nro_registros, $search)
     {
-    	$select_raw = 'IF(sga_periodos_lectivos.cerrado=0,REPLACE(sga_periodos_lectivos.cerrado,0,"No"),REPLACE(sga_periodos_lectivos.cerrado,1,"Si")) AS campo4';
+        $select_raw = 'IF(sga_periodos_lectivos.cerrado=0,REPLACE(sga_periodos_lectivos.cerrado,0,"No"),REPLACE(sga_periodos_lectivos.cerrado,1,"Si")) AS campo4';
 
-        $registros = PeriodoLectivo::select('sga_periodos_lectivos.descripcion AS campo1',
-                            'sga_periodos_lectivos.fecha_desde AS campo2',
-                            'sga_periodos_lectivos.fecha_hasta AS campo3',
-                            DB::raw($select_raw),
-                            'sga_periodos_lectivos.estado AS campo5',
-                            'sga_periodos_lectivos.id AS campo6')
-                    ->get()
-                    ->toArray();
+        $registros = PeriodoLectivo::select(
+            'sga_periodos_lectivos.descripcion AS campo1',
+            'sga_periodos_lectivos.fecha_desde AS campo2',
+            'sga_periodos_lectivos.fecha_hasta AS campo3',
+            DB::raw($select_raw),
+            'sga_periodos_lectivos.estado AS campo5',
+            'sga_periodos_lectivos.id AS campo6'
+        )->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.fecha_desde", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.fecha_hasta", "LIKE", "%$search%")
+            ->orWhere("CERRADO", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.estado", "LIKE", "%$search%")
+            ->orderBy('sga_periodos_lectivos.created_at', 'DESC')
+            ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString($search)
+    {
+        $select_raw = 'IF(sga_periodos_lectivos.cerrado=0,REPLACE(sga_periodos_lectivos.cerrado,0,"No"),REPLACE(sga_periodos_lectivos.cerrado,1,"Si")) AS CERRADO';
+
+        $string = PeriodoLectivo::select(
+            'sga_periodos_lectivos.descripcion AS DESCRIPCIÓN',
+            'sga_periodos_lectivos.fecha_desde AS FECHA DESDE',
+            'sga_periodos_lectivos.fecha_hasta AS FECHA HASTA',
+            DB::raw($select_raw),
+            'sga_periodos_lectivos.estado AS ESTADO'
+        )->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.fecha_desde", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.fecha_hasta", "LIKE", "%$search%")
+            ->orWhere("CERRADO", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.estado", "LIKE", "%$search%")
+            ->orderBy('sga_periodos_lectivos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE PERDIODOS LECTIVO";
     }
 
     // El archivo js debe estar en la carpeta public
