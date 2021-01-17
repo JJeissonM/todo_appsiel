@@ -8,14 +8,14 @@ class Zona extends Model
 {
     protected $table = 'vtas_zonas';
 	protected $fillable = ['descripcion', 'zona_padre_id', 'estado'];
-	public $encabezado_tabla = ['Descripción', 'Zona padre', 'Estado', 'Acción'];
-	public static function consultar_registros()
-	{
-	    $registros = Zona::select('vtas_zonas.descripcion AS campo1', 'vtas_zonas.zona_padre_id AS campo2', 'vtas_zonas.estado AS campo3', 'vtas_zonas.id AS campo4')
-	    ->get()
-	    ->toArray();
-	    return $registros;
-	}
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Zona padre', 'Estado'];
+    public static function consultar_registros($nro_registros)
+    {
+        $registros = Zona::select('vtas_zonas.descripcion AS campo1', 'vtas_zonas.zona_padre_id AS campo2', 'vtas_zonas.estado AS campo3', 'vtas_zonas.id AS campo4')
+            ->orderBy('vtas_zonas.created_at', 'DESC')
+            ->paginate($nro_registros);
+        return $registros;
+    }
 
     public static function opciones_campo_select()
     {

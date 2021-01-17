@@ -13,22 +13,20 @@ class ListaPrecioDetalle extends Model
 	// LOS PRECIOS SE MANEJAN CON IVA INCLUIDO
     protected $table = 'vtas_listas_precios_detalles';
 	protected $fillable = ['lista_precios_id', 'inv_producto_id', 'fecha_activacion', 'precio'];
-	public $encabezado_tabla = ['Lista de precios', 'Producto', 'Fecha activación', 'Precio', 'Acción'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Lista de precios', 'Producto', 'Fecha activación', 'Precio'];
 
 	// Las acciones tienen valores predeterminados, si el modelo no va a tener una acción, se debe asignar la palabra "no" a la acción.
-    public $urls_acciones = '{"imprimir":"no","cambiar_estado":"no","eliminar":"web_eliminar/id_fila","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
+	public $urls_acciones = '{"imprimir":"no","cambiar_estado":"no","eliminar":"web_eliminar/id_fila","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
 
-	public static function consultar_registros()
+	public static function consultar_registros($nro_registros)
 	{
-	    $registros = ListaPrecioDetalle::leftJoin('vtas_listas_precios_encabezados','vtas_listas_precios_encabezados.id','=','vtas_listas_precios_detalles.lista_precios_id')
-	    								->leftJoin('inv_productos','inv_productos.id','=','vtas_listas_precios_detalles.inv_producto_id')
-	    								->select('vtas_listas_precios_encabezados.descripcion AS campo1', DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo2'), 'vtas_listas_precios_detalles.fecha_activacion AS campo3', 'vtas_listas_precios_detalles.precio AS campo4', 'vtas_listas_precios_detalles.id AS campo5')
-	    ->get()
-	    ->toArray();
-	    return $registros;
+		$registros = ListaPrecioDetalle::leftJoin('vtas_listas_precios_encabezados', 'vtas_listas_precios_encabezados.id', '=', 'vtas_listas_precios_detalles.lista_precios_id')
+			->leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_listas_precios_detalles.inv_producto_id')
+			->select('vtas_listas_precios_encabezados.descripcion AS campo1', DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo2'), 'vtas_listas_precios_detalles.fecha_activacion AS campo3', 'vtas_listas_precios_detalles.precio AS campo4', 'vtas_listas_precios_detalles.id AS campo5')
+			->orderBy('vtas_listas_precios_encabezados.created_at', 'DESC')
+			->paginate($nro_registros);
+		return $registros;
 	}
-
-
 	public static function get_precio_producto( $lista_precios_id, $fecha_activacion, $inv_producto_id )
 	{
 		$registro = ListaPrecioDetalle::where('lista_precios_id', $lista_precios_id)

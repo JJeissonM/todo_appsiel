@@ -8,14 +8,14 @@ class CondicionPago extends Model
 {
     protected $table = 'vtas_condiciones_pago';
 	protected $fillable = ['descripcion', 'dias_plazo', 'estado'];
-	public $encabezado_tabla = ['Tercero', 'Días de plazo', 'Estado', 'Acción'];
-	public static function consultar_registros()
-	{
-	    $registros = CondicionPago::select('vtas_condiciones_pago.descripcion AS campo1', 'vtas_condiciones_pago.dias_plazo AS campo2', 'vtas_condiciones_pago.estado AS campo3', 'vtas_condiciones_pago.id AS campo4')
-	    ->get()
-	    ->toArray();
-	    return $registros;
-	}
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tercero', 'Días de plazo', 'Estado'];
+    public static function consultar_registros($nro_registros)
+    {
+        $registros = CondicionPago::select('vtas_condiciones_pago.descripcion AS campo1', 'vtas_condiciones_pago.dias_plazo AS campo2', 'vtas_condiciones_pago.estado AS campo3', 'vtas_condiciones_pago.id AS campo4')
+            ->orderBy('vtas_condiciones_pago.created_at', 'DESC')
+            ->paginate($nro_registros);
+        return $registros;
+    }
 
     public static function opciones_campo_select()
     {

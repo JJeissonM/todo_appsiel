@@ -8,22 +8,22 @@ class ListaDctoDetalle extends Model
 {
     protected $table = 'vtas_listas_dctos_detalles';
 	protected $fillable = ['lista_descuentos_id', 'inv_producto_id', 'fecha_activacion', 'descuento1', 'descuento2'];
-	public $encabezado_tabla = ['Lista de descuentos', 'Producto', 'Fecha activación', 'Dcto. 1', 'Dcto. 2', 'Acción'];
-	public static function consultar_registros()
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Lista de descuentos', 'Producto', 'Fecha activación', 'Dcto. 1', 'Dcto. 2'];
+	public static function consultar_registros($nro_registros)
 	{
-	    return ListaDctoDetalle::leftJoin('vtas_listas_dctos_encabezados', 'vtas_listas_dctos_encabezados.id', '=', 'vtas_listas_dctos_detalles.lista_descuentos_id')
-	    							->leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_listas_dctos_detalles.inv_producto_id')
-	    							->select(
-	    									'vtas_listas_dctos_encabezados.descripcion AS campo1',
-	    									'inv_productos.descripcion AS campo2',
-	    									'vtas_listas_dctos_detalles.fecha_activacion AS campo3',
-	    									'vtas_listas_dctos_detalles.descuento1 AS campo4',
-	    									'vtas_listas_dctos_detalles.descuento2 AS campo5',
-	    									'vtas_listas_dctos_detalles.id AS campo6')
-								    ->get()
-								    ->toArray();
+		return ListaDctoDetalle::leftJoin('vtas_listas_dctos_encabezados', 'vtas_listas_dctos_encabezados.id', '=', 'vtas_listas_dctos_detalles.lista_descuentos_id')
+			->leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_listas_dctos_detalles.inv_producto_id')
+			->select(
+				'vtas_listas_dctos_encabezados.descripcion AS campo1',
+				'inv_productos.descripcion AS campo2',
+				'vtas_listas_dctos_detalles.fecha_activacion AS campo3',
+				'vtas_listas_dctos_detalles.descuento1 AS campo4',
+				'vtas_listas_dctos_detalles.descuento2 AS campo5',
+				'vtas_listas_dctos_detalles.id AS campo6'
+			)
+			->orderBy('vtas_listas_dctos_detalles.created_at', 'DESC')
+			->paginate($nro_registros);
 	}
-
 
 	public static function get_descuento_producto( $lista_descuentos_id, $fecha_activacion, $inv_producto_id )
 	{

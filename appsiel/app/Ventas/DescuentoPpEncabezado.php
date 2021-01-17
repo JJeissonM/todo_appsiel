@@ -8,15 +8,15 @@ class DescuentoPpEncabezado extends Model
 {
     protected $table = 'vtas_descuentos_pp_encabezados';
 	protected $fillable = ['descripcion', 'estado'];
-	public $encabezado_tabla = ['Descripción', 'Estado', 'Acción'];
-	
-	public static function consultar_registros()
-	{
-	    $registros = DescuentoPpEncabezado::select('vtas_descuentos_pp_encabezados.descripcion AS campo1', 'vtas_descuentos_pp_encabezados.estado AS campo2', 'vtas_descuentos_pp_encabezados.id AS campo3')
-	    ->get()
-	    ->toArray();
-	    return $registros;
-	}
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Estado'];
+
+    public static function consultar_registros($nro_registros)
+    {
+        $registros = DescuentoPpEncabezado::select('vtas_descuentos_pp_encabezados.descripcion AS campo1', 'vtas_descuentos_pp_encabezados.estado AS campo2', 'vtas_descuentos_pp_encabezados.id AS campo3')
+            ->orderBy('vtas_descuentos_pp_encabezados.created_at', 'DESC')
+            ->paginate($nro_registros);
+        return $registros;
+    }
 
 	public static function opciones_campo_select()
     {
