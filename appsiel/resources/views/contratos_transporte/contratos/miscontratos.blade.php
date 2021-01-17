@@ -19,21 +19,22 @@
 
 @section('content')
 {{ Form::bsMigaPan($miga_pan) }}
+<div class="col-md-12 botones-gmail">
+	<a href="{{route('cte_contratos.create').$variables_url.'&source=MISCONTRATOS'}}" class="btn-gmail" title="Crear Contrato Para FUEC"><i class="fa fa-plus"></i></a>
+</div>
 <hr>
 
 @include('layouts.mensajes')
-
 <div class="container-fluid">
-	<a href="{{route('cte_contratos.create').$variables_url.'&source=MISCONTRATOS'}}" class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> Crear Contrato Para FUEC</a>
 	<div class="marco_formulario" style="margin-top: 20px;">
 		&nbsp;
 		<div class="row" style="padding: 20px;">
 			<div class="col-md-12">
-				<h3>Listado de contratos celebrados sobre el vehículo {{"INTERNO: ".$v->int." - PLACA: ".$v->placa." - MODELO: ".$v->modelo." - MARCA: ".$v->marca." - CLASE: ".$v->clase}}</h3>
+				<h5 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Listado de contratos celebrados sobre el vehículo {{"INTERNO: ".$v->int." - PLACA: ".$v->placa." - MODELO: ".$v->modelo." - MARCA: ".$v->marca." - CLASE: ".$v->clase}}</h5>
 				<div class="table-responsive col-md-12" id="table_content">
-					<table class="table table-bordered table-striped" id="myTable">
+					<table class="table table-bordered table-striped">
 						<thead>
-							<tr>
+							<tr style="background-color: #50B794; vertical-align: middle !important;">
 								<th>Nro.</th>
 								<th>Objeto</th>
 								<th>Fecha Celebrado</th>
@@ -60,7 +61,7 @@
 								<td>
 									@if($c['contrato']->estado=='ACTIVO')
 									@if($c['bloqueado']=='NO')
-									<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn btn-xs btn-primary"><i class="fa fa-arrow-right"></i></a>
+									<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn-gmail" title="Continuar"><i class="fa fa-arrow-right"></i></a>
 									@else
 									-- Usted no puede generar planillas --
 									@endif

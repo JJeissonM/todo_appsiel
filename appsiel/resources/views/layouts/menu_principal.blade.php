@@ -36,7 +36,7 @@
                 </button>
 
                 <!-- Branding Image -->
-                <a class="navbar-brand" href="{{ url('/inicio') }}" style="height: 60px; padding-top: 0px;">
+                <a class="navbar-brand" href="{{ url('/inicio') }}" style="height: 60px; padding-top: 5px;">
     				<img src="{{ asset('assets/img/logo_appsiel.png') }}" height="50px">
     			</a>
             </div>

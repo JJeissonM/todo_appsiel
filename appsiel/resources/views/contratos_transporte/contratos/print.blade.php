@@ -1,3 +1,7 @@
+<?php
+
+use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -131,7 +135,10 @@
 
 		.border {
 			border: 1px solid;
-			padding: 5px;
+		}
+
+		.page-break{
+			page-break-after: always;
 		}
 	</style>
 </head>
@@ -142,146 +149,78 @@
 			<table class="table table-bordered table-striped">
 				<tbody>
 					<tr>
-						<td class="border" style="width: 120px;"><img style="width: 120px; height: 80px;" src="{{ asset('img/logos/transporcol_back_contrato.jpg') }}"></td>
-						<td class="border" style="width: 400px; text-align: center;">
-							<table style="width: 100%;">
-								<tbody>
-									<tr>
-										<td style="border-right: 1px solid;">
-											<div style="font-size: 26px; line-height: 0.9em; text-align: center;">
-												<p style="font-weight: bold; color: #000;">{{$emp->descripcion}}</p>
-												<p style="font-weight: bold; color: #000;">{{$emp->razon_social}}</p>
-												<p style="font-size: 20px; font-weight: bold; color: #000;">NIT: {{$emp->numero_identificacion."-".$emp->digito_verificacion}}</p>
-											</div>
-										</td>
-										<td>
-											<div>
-												<p style="padding-left: 10px;">Código: {{$c->codigo}}<br>
-													Versión: {{$c->version}}<br>
-													Fecha: {{$c->fecha}}<br></p>
-											</div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-							<table style="width: 100%; border-top: 1px solid;">
-								<tbody>
-									<tr>
-										<td style="text-align: center;">
-											<p style="font-size: 18px; font-weight: bold;">CONTRATO</p>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</td>
-						<td class="border" style="width: 120px;"><img style="width: 120px; height: 110px;" src="{{ asset('img/logos/transporcol_rigth.jpg') }}"></td>
+						<td class="border" style="width: 48%;"><img style="width: 380px; height: 70px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
+						<td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
+						<td class="border" style="width: 40%;"><img style="width: 220px; height: 70px;" src="{{ asset('img/logos/transporcol_back.jpg') }}"></td>
 					</tr>
 				</tbody>
 			</table>
-			<div class="row" style="margin-top: 20px;">
-				<div class="col-md-12" style="text-align: center; font-weight: bold; font-size: 20px;">
-					<p><b>CONTRATO DE PRESTACION DE SERVICIO DE TRANSPORTE N° {{$c->numero_contrato}}</b></p>
+			<div class="row">
+				<div class="col-md-12" style="text-align: center; font-weight: bold; font-size: 14px;">
+					<p><b>CONTRATO DE PRESTACION DE SERVICIO DE TRANSPORTE N° {{$c->numero_contrato}}</b><br><b>TRANSPORTE GRUPO ESPECIFICO DE USUARIOS</b></p>
 				</div>
-				<div class="col-md-12" style="margin-top: 20px; text-align: justify; font-size: 14px; padding: 40px !important;">
+				<div class="col-md-12" style="text-align: justify; font-size: 11px;">
 					<p>Entre los suscritos a saber <b>{{$c->rep_legal}}</b>
 						en representación de la empresa <b>{{$emp->descripcion}}</b> con Nit. <b>{{$emp->numero_identificacion."-".$emp->digito_verificacion}}</b>, legalmente constituida
 						y habilitada por el ministerio de transporte para la prestación del servicio transporte
-						especial, de aquí en adelante el <b>CONTRATISTA</b>, y por otro lado <b>EL CONTRATANTE @if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} identificado con cedula N° {{$c->contratante->tercero->numero_identificacion}} @endif</b>
+						especial, de aquí en adelante el <b>CONTRATISTA</b>, y por otro lado <b>EL CONTRATANTE</b>
 						en representación de <b>{{$c->representacion_de}}</b>
 					</p>
-					<h4>DESCRIPCIÓN DEL GRUPO DE USUARIOS</h4>
-					<table class="table table-bordered table-striped">
-						<thead>
-							<tr>
-								<th>Nro.</th>
-								<th>Identificación</th>
-								<th>Persona</th>
-							</tr>
-						</thead>
-						<tbody>
-							@if(count($c->contratogrupous)>0)
-							<?php $i = 1; ?>
-							@foreach($c->contratogrupous as $p)
-							<tr>
-								<td>{{$i}}</td>
-								<td>{{$p->identificacion}}</td>
-								<td>{{$p->persona}}</td>
-							</tr>
-							<?php $i = $i + 1; ?>
-							@endforeach
-							@endif
-						</tbody>
-					</table>
-					<p>
-						El presente contrato será desarrollado por el propietario del vehículo automotor de <b>PLACA {{$c->vehiculo->placa. ", MOVIL INTERNO " .$c->vehiculo->int. ", CAPACIDAD " . $c->vehiculo->capacidad}}</b>
-						quien cumplirá todas las obligaciones derivadas del mismo. Hemos convenido celebrar el contrato de
-						<b>TRANSPORTE DE GRUPO DE USUARIOS</b>, el cual se regirá por las siguientes clausula, y en lo no previsto en ellas, por lo dispuesto en la ley.
-						<b>CLAUSULA PRIMERA - OBJETO DEL CONTRATO:</b> {{$c->objeto}} <b>CLAUSULA SEGUNDA: CARACTERISTICA DEL SERVICIO.</b>
-						<b>ORIGEN </b>{{$c->origen}} <b>DESTINO </b>{{$c->destino}}
-						<b>FECHA DE INICIAL </b>{{$c->fecha_inicio}} <b>FECHA VENCIMIENTO</b> {{$c->fecha_fin}}
-						<b>CLAUSULA TERCERA. OBLIGACION DEL CONTRATANTE:</b> El <b>CONTARTANTE</b> se
-						obliga con el <b>CONTARISTA</b>, a lo siguiente: <b>A)</b> Dar aviso de los servicios de transporte
-						requerido con la suficiente anticipación, indicando claramente número de pasajeros,
-						destino y demás detalles del servicios <b>B)</b> Cumplir con lo establecido en el presente
-						contrato en forma oportuna, dentro de los términos establecidos y de conformidad con las
-						calidades pactadas. <b>C)</b> Pagar el valor de la contraprestación en los términos y condiciones
-						establecidas en este contrato. <b>D)</b> A cancelar los valores pactados para la ejecución del
-						contrato de transporte que hace referencia este documento.
-					</p>
-					<table>
+					<table style="border: 1px solid; width: 100%; border-collapse: collapse;">
 						<tbody>
 							<tr>
-								<td>Valor del Contrato </td>
-								<td>$ {{$c->valor_contrato}}</td>
+								<td style="width: 25%; border: 1px solid; padding-left: 5px; font-weight: bold;">NOMBRE/APELLIDO</td>
+								<td style="width: 75%; border: 1px solid; padding-left: 5px;">@if($contratante!=null) {{$contratante->tercero->descripcion." ".$contratante->razon_social}} @else {{$c->contratanteText}} @endif</td>
 							</tr>
 							<tr>
-								<td>Valor cancelado a la empresa </td>
-								<td>$ {{$c->valor_empresa}}</td>
+								<td style="width: 25%; border: 1px solid; padding-left: 5px; font-weight: bold;">IDENTIFICACIÓN</td>
+								<td style="width: 75%; border: 1px solid; padding-left: 5px;">@if($contratante!=null) {{$contratante->tercero->numero_identificacion}} @else {{$c->contratanteIdentificacion}} @endif</td>
 							</tr>
 							<tr>
-								<td>Valor Cancelado al Propietario </td>
-								<td>$ {{$c->valor_propietario}}</td>
+								<td style="width: 25%; border: 1px solid; padding-left: 5px; font-weight: bold;">DIRECCIÓN</td>
+								<td style="width: 75%; border: 1px solid; padding-left: 5px;">@if($contratante!=null) {{$contratante->tercero->direccion1}} @else {{$c->contratanteDireccion}} @endif</td>
+							</tr>
+							<tr>
+								<td style="width: 25%; border: 1px solid; padding-left: 5px; font-weight: bold;">TELÉFONO</td>
+								<td style="width: 75%; border: 1px solid; padding-left: 5px;">@if($contratante!=null) {{$contratante->tercero->telefono1}} @else {{$c->contratanteTelefono}} @endif</td>
 							</tr>
 						</tbody>
 					</table>
 					<p>
-						<b>CLAUSULA CUARTA. OBLIGACION DEL CONTRATISTA:</b> El <b>CONTARTISTA</b> se
-						obliga con el <b>CONTARTANTE A)</b> Cumplir con lo establecido en el presente contrato en
-						forma oportuna, dentro del término establecido y de conformidad con las calidades
-						pactadas <b>B)</b> Prestar el servicios en el vehículo arriba descrito que cumpla con todas las
-						exigencias del ministerio de transporte y cumplir con las disposiciones legales
-						contempladas en la ley 769 del 6 de agosto del 2002, el decreto 174 de 5 de febrero 2001
-						<b>C)</b> Cumplir estrictamente con idoneidad y oportunidad en la ejecución del presente
-						contrato. <b>CLAUSULA QUINTA. TERMINACION:</b> El presente contrato podrás darse por
-						terminado por mutuo acuerdo entre las partes, sin lugar a indemnización alguna; o en
-						forma unilateral por cumplimiento de las obligaciones derivadas del contrato; o bien, por
-						que desaparezca las condiciones que le dieron origen sea por parte del <b>CONTRATANTE</b>
-						o el <b>CONTARTISTA. CLAUSULA SEXTA. CESION</b> el presente contrato se celebra en
-						consideración a la calidad del <b>CONTRATISTA</b>, quien no lo podrá ceder a subcontratar
-						total o parcialmente sin consentimiento previo y por escrito del <b>CONTRATANTE.
-							CLAUSULA SEPTIMA. INDEPENDENCIA DELA CONTARTISTA:</b> para todos los efectos
-						legas, el presente contrato es de carácter civil y, en consecuencia el contratista, actuara
-						por su propia cuenta, con absoluta autonomía y no estará sometido a subordinación
-						laboral con el <b>CONTRATANTE</b>, para quien, sus derecho se limitaran, de acuerdo con la
-						naturaleza del contrato, a exigir el cumplimiento de las obligaciones del <b>CONTRATISTA</b>,
-						tendrá plena libertad y autonomía en la ejecución y cumplimiento de este contrato y en
-						ningún momento tendrá relación laboral con el <b>CONTRATANTE. CLAUSULA OCTAVA.
-							MODIFICACIONES:</b> el presente contrato podrá ser modificado por acuerdo entre las
-						partes, mediante la suscripción de documento que indique con claridad y precisión la
-						forma acordada. <b>CLAUSULA NOVENA. DOMICILIO CONTRACTUAL;</b> las notificaciones
-						serán recibidas por las partes en las siguiente direcciones <b>CONTRATANTE
-							{{$c->direccion_notificacion}} TELEFONO o CELULAR
-							{{$c->telefono_notificacion}} CONTRATISTA</b> Carrera 10 # 16B - 29 Local 2 Segundo Piso
-						<b>TELEFONO o CELULAR 572269 - 3186128754 – 3223039437.</b>
+						El presente contrato será desarrollado por el propietario del vehículo automotor de <b>PLACA {{$c->vehiculo->placa. ", INTERNO " .$c->vehiculo->int. ", CAPACIDAD " . $c->vehiculo->capacidad}}</b>
+						quien cumplirá todas las obligaciones derivadas del mismo. Han decidido celebrar el presente Contrato de Prestación de Servicios de Transporte Especial de Pasajeros bajo los lineamientos del artículo 2.2.1.6.3.1 del decreto 1079 de 2015, modificado por el artículo 6 del Decreto 431 de 2017; que se regirá por las siguientes cláusulas:
+						<b>PRIMERA: CONDICIONES DEL CONTRATO:</b> Prestación del Servicio público de Transporte Terrestre Especial de Pasajeros a un grupo específico de Usuarios desde un mismo lugar de origen a un mismo lugar de destino.
+						<b>SEGUNDA: CARACTERÍSTICAS DEL SERVICIO: El CONTRATISTA</b> se compromete a prestar el Servicio de Transporte Especial de pasajeros al <b>CONTRATANTE</b>, teniendo en cuenta las siguientes características:
+						Servicio Ida y Regreso @if($c->tipo_servicio=='IDA-REGRESO') <b style="text-decoration: underline;">X</b> @else ___ @endif Solo Ida @if($c->tipo_servicio=='IDA') <b style="text-decoration: underline;">X</b> @else ___ @endif Solo Regreso @if($c->tipo_servicio=='REGRESO') <b style="text-decoration: underline;">X</b> @else ___ @endif N° de Personas a Movilizar <b style="text-decoration: underline;">{{$c->nro_personas}}</b> Disponibilidad: SI @if($c->disponibilidad=='SI') <b style="text-decoration: underline;">X</b> @else ___ @endif @if($c->disponibilidad=='NO') NO <b style="text-decoration: underline;">X</b> @else NO ___ @endif
 					</p>
+					<table style="border: 1px solid; width: 100%; border-collapse: collapse;">
+						<tbody>
+							<tr>
+								<td colspan="2" style="text-align: center; border: 1px solid; font-weight: bold; padding-left: 5px;">DATOS DEL SERVICIO</td>
+							</tr>
+							<tr>
+								<td style="width: 30%; border: 1px solid; padding-left: 5px; font-weight: bold;">FECHA INICIO</td>
+								<td style="width: 70%; border: 1px solid; padding-left: 5px;">{{$c->fecha_inicio}}</td>
+							</tr>
+							<tr>
+								<td style="width: 30%; border: 1px solid; padding-left: 5px; font-weight: bold;">FECHA TERMINACIÓN</td>
+								<td style="width: 70%; border: 1px solid; padding-left: 5px;">{{$c->fecha_fin}}</td>
+							</tr>
+							<tr>
+								<td style="width: 30%; border: 1px solid; padding-left: 5px; font-weight: bold;">ORIGEN - DESTINO</td>
+								<td style="width: 70%; border: 1px solid; padding-left: 5px;">{{$c->origen." - ".$c->destino}}</td>
+							</tr>
+						</tbody>
+					</table>
 					<p>
-						En señal de aceptación, se firma el presente documento a los {{$c->dia_contrato}} días del mes de
-						{{$c->mes_contrato}}.
+						<b>TERCERA: PARQUE AUTOMOTOR:</b> Los vehículos relacionados a continuación son los asignados para la prestación del servicio y cuentan con las pólizas de Responsabilidad Civil Contractual y Extracontractual vigentes, así como el Seguro Obligatorio, extracto de contrato FUEC y demás documentos exigidos en el Decreto 348 de 2015 y/o normatividad legal vigente y cumpliendo demás reglamentación exigida por el Ministerio de Transporte y Superintendencia de Puerto y Transporte.
+						<b>CUARTA: PRECIO Y FORMA DE PAGO:</b> El servicio de Transporte tiene un costo acordado previamente por las partes, por valor _________________ <b>QUINTA: OBLIGACIONES DEL CONTRATANTE. EL CONTRATANTE</b> se obliga para <b>EL CONTRATISTA</b> a lo siguiente: (I) A suministrar previamente un listado con los usuarios a movilizar. (II) A suministrar oportunamente las novedades que surjan en el desarrollo del contrato y que alteren o puedan alterar de manera general o específica la marcha normal de actividades y horarios. ( III) Realizar las actividades turísticas de manera respetuosa y responsable con el medio natural, el patrimonio cultural y los valores de la comunidad; promoviendo el consumo de bienes y de servicios con intercambios económicos.
+						<b>SEXTA: OBLIGACIONES DEL CONTRATISTA: EL CONTRATISTA:</b> Se obliga para con el <b>CONTRATANTE</b> a lo siguiente (I) disponer de los vehículos determinados y contratados para la prestación del servicio. ( II) A procurar la armonía y convivencia requeridas entre los usuarios del servicio, <b>EL CONTRATANTE</b> y el personal que está a su cargo. (III) Garantizar la prestación del servicio en los términos convenidos, evitando sobre cupos, a la presencia de personas ajenas. (IV) En los eventos de fuerza mayor o en caso fortuito garantizar en cuanto sea posible la prestación del servicio. ( VIII) En <b>SÉPTIMA: CAUSALES DE TERMINACIÓN:</b> El presente contrato terminará por las siguientes causas: ( I) Por mutuo acuerdo de las partes manifestadas con una antelación de 10 días calendario. ( II) Por incumplimiento de alguna o algunas de las obligaciones que surjan del presente contrato. ( III) Por cancelación por parte del <b>CONTRATANTE</b>, en caso que, el vehículo se ubique en el lugar de origen y no se presta el servicio por causa del contratante se cobrara el 50% del valor del servicio.
 					</p>
+					<p>En constancia se firma el presente contrato el día <b>({{$c->dia_contrato}})</b> del mes <b>{{$c->mes_contrato}}</b> de <b>{{$c->anio_contrato}}</b> </p>
 				</div>
 			</div>
-			<br><br><br>
-			<table style="width: 100%; padding: 20px !important;">
+			<table style="width: 100%; font-size: 11px;">
 				<tbody>
 					<tr>
 						<td style="width: 40%; text-align: left; font-weight: bold;">EL CONTRATANTE</td>
@@ -291,7 +230,7 @@
 					<tr>
 						<td style="width: 40%; text-align: left;"><br><br><br><br></td>
 						<td style="width: 20%; text-align: left;"><br><br><br><br></td>
-						<td style="width: 40%; text-align: left;"><br><br><br><br></td>
+						<td style="width: 40%; text-align: left;"><img src="{{asset('img/logos/sello_transporcol.png')}}"></td>
 					</tr>
 					<tr>
 						<td style="width: 40%; text-align: left; border-bottom: 1px solid;"></td>
@@ -310,21 +249,292 @@
 					</tr>
 				</tbody>
 			</table>
-			<div class="col-md-12" style="margin-top: 50px; border-bottom: 10px solid; border-color: #6cf5ee;"></div>
-			<div class="row" style="margin-top: 50px;">
-				<div style="margin-top: 30px; text-align: center; width: 90%; float: left;">
-					<p>
-						<b>{{$c->pie_uno}}</b><br>
-						<b>{{$c->pie_dos}}</b><br>
-						<b>{{$c->pie_tres}}</b><br>
-						<b style="color: #265a88; text-decoration: underline #265a88;">{{$c->pie_cuatro}}</b>
-					</p>
-				</div>
-				<div style="margin-top: 50px; text-align: center; width: 10%; float: right;">
-					<img style="width: 50px;" src="{{ asset('img/logos/super_transporte.png') }}">
-				</div>
-			</div>
 		</div>
+
+
+		<div class="page-break"></div>
+
+
+		<div class="row" style="font-size: 14px; line-height: 1.5;">
+			<table class="table table-bordered table-striped">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 48%;"><img style="width: 380px; height: 70px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
+						<td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
+						<td class="border" style="width: 40%;"><img style="width: 220px; height: 70px;" src="{{ asset('img/logos/transporcol_back.jpg') }}"></td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 100%; text-align: center; font-weight: bold;">{{$v->titulo}} <br> N° {{$p->nro}}</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 20%; font-weight: bold;">RAZÓN SOCIAL</td>
+						<td class="border" style="width: 50%;">{{$p->razon_social}}</td>
+						<td class="border" style="width: 10%; font-weight: bold;">NIT</td>
+						<td class="border" style="width: 20%;">{{$p->nit}}</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 20%; font-weight: bold;">CONTRATO No.</td>
+						<td class="border" style="width: 80%;">{{$c->numero_contrato}}</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 20%; font-weight: bold;">CONTRATANTE</td>
+						<td class="border" style="width: 50%; font-weight: bold; font-size: 10px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} @endif</td>
+						<td class="border" style="width: 10%; font-weight: bold;">NIT/CC</td>
+						<td class="border" style="width: 20%; font-weight: bold;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteIdentificacion}} @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 20%; font-weight: bold; border-right: none;">OBJETO CONTRATO:</td>
+						<td class="border" style="width: 80%; font-size: 12px; border-left: none;">{{strtoupper($c->objeto)}}</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 20%; font-weight: bold;">ORIGEN - DESTINO</td>
+						<td class="border" style="width: 80%; font-weight: bold;">{{$c->origen." - ".$c->destino}}</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 100%; font-weight: bold;">CONVENIO CONSORCIO UNION TEMPORAL CON: {{$p->convenio}}</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 100%; font-weight: bold; text-align: center;">VIGENCIA DEL CONTRATO</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 30%; border-bottom: none;"></td>
+						<td class="border" style="width: 20%; font-weight: bold;">DÍA</td>
+						<td class="border" style="width: 20%; font-weight: bold;">MES</td>
+						<td class="border" style="width: 20%; font-weight: bold;">AÑO</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 30%; font-weight: bold; border-top: none;">FECHA INICIAL</td>
+						<td class="border" style="width: 20%; font-weight: bold;">{{$fi[2]}}</td>
+						<td class="border" style="width: 20%; font-weight: bold;">{{ContratoTransporteController::mes()[$fi[1]]}}</td>
+						<td class="border" style="width: 20%; font-weight: bold;">{{$fi[0]}}</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 30%; font-weight: bold;">FECHA FINAL</td>
+						<td class="border" style="width: 20%; font-weight: bold;">{{$ff[2]}}</td>
+						<td class="border" style="width: 20%; font-weight: bold;">{{ContratoTransporteController::mes()[$ff[1]]}}</td>
+						<td class="border" style="width: 20%; font-weight: bold;">{{$ff[0]}}</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 100%; font-weight: bold; text-align: center;">CARACTERÍSTICAS DEL VEHÍCULO</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 15%; font-weight: bold;">PLACA</td>
+						<td class="border" style="width: 25%; font-weight: bold;">MODELO</td>
+						<td class="border" style="width: 20%; font-weight: bold;">MARCA</td>
+						<td class="border" style="width: 40%; font-weight: bold;">CLASE</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 15%; font-weight: bold;">{{$c->vehiculo->placa}}</td>
+						<td class="border" style="width: 25%; font-weight: bold;">{{$c->vehiculo->modelo}}</td>
+						<td class="border" style="width: 20%; font-weight: bold;">{{$c->vehiculo->marca}}</td>
+						<td class="border" style="width: 40%; font-weight: bold;">{{$c->vehiculo->clase}}</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 40%; font-weight: bold;">NÚMERO INTERNO</td>
+						<td class="border" style="width: 60%; font-weight: bold;">NÚMERO TARJETA DE OPERACIÓN</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 40%; font-weight: bold;">{{$c->vehiculo->int}}</td>
+						<td class="border" style="width: 60%; font-weight: bold;">@if($to!=null) {{$to->nro_documento}} @else --- @endif</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 15%; font-weight: bold; font-size: 12px; border-bottom: none;"></td>
+						<td class="border" style="width: 32%; font-weight: bold; font-size: 12px;">NOMBRES Y APELLIDOS</td>
+						<td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">No CÉDULA</td>
+						<td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">No LICENCIA CONDUCCIÓN</td>
+						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">VIGENCIA</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center; border-top: none;">DATOS DEL CONDUCTOR 1</td>
+						<td class="border" style="width: 32%; font-weight: bold; font-size: 12px;">@if(isset($conductores[0])){{$conductores[0]->conductor->tercero->descripcion}}@endif</td>
+						<td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">@if(isset($conductores[0])){{$conductores[0]->conductor->tercero->numero_identificacion}}@endif</td>
+						<td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">@if(isset($conductores[0])) @if($conductores[0]->licencia!=null) {{$conductores[0]->licencia->nro_documento}} @endif @endif</td>
+						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">@if(isset($conductores[0])) @if($conductores[0]->licencia!=null) {{$conductores[0]->licencia->vigencia_fin}} @endif @endif</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center;">DATOS DEL CONDUCTOR 2</td>
+						<td class="border" style="width: 32%; font-weight: bold; font-size: 12px;">@if(isset($conductores[1])){{$conductores[1]->conductor->tercero->descripcion}}@endif</td>
+						<td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">@if(isset($conductores[1])){{$conductores[1]->conductor->tercero->numero_identificacion}}@endif</td>
+						<td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">@if(isset($conductores[1])) @if($conductores[1]->licencia!=null) {{$conductores[0]->licencia->nro_documento}} @endif @endif</td>
+						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">@if(isset($conductores[1])) @if($conductores[1]->licencia!=null) {{$conductores[0]->licencia->vigencia_fin}} @endif @endif</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center;">DATOS DEL CONDUCTOR 3</td>
+						<td class="border" style="width: 32%; font-weight: bold; font-size: 12px;">@if(isset($conductores[2])){{$conductores[2]->conductor->tercero->descripcion}}@endif</td>
+						<td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">@if(isset($conductores[2])){{$conductores[2]->conductor->tercero->numero_identificacion}}@endif</td>
+						<td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">@if(isset($conductores[2])) @if($conductores[2]->licencia!=null) {{$conductores[0]->licencia->nro_documento}} @endif @endif</td>
+						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">@if(isset($conductores[2])) @if($conductores[2]->licencia!=null) {{$conductores[0]->licencia->vigencia_fin}} @endif @endif</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 15%; font-weight: bold; font-size: 12px; border-bottom: none;"></td>
+						<td class="border" style="width: 32%; font-weight: bold; font-size: 12px;">NOMBRES Y APELLIDOS</td>
+						<td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">No CÉDULA</td>
+						<td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">DIRECCIÓN</td>
+						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">TELÉFONO</td>
+					</tr>
+					<tr>
+						<td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center; border-top: none;">RESPONSABLE DEL CONTRATANTE</td>
+						<td class="border" style="width: 32%; font-weight: bold; font-size: 10px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} @endif</td>
+						<td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteIdentificacion}} @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
+						<td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteDireccion}} @else {{$c->contratante->tercero->direccion1}} @endif</td>
+						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteTelefono}} @else {{$c->contratante->tercero->telefono1}} @endif</td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important;">@if($emp!=null) {{$emp->direccion1." - "}} @endif {{$v->direccion}}<br> @if($emp!=null) {{$emp->telefono1." - "}} @endif {{$v->telefono}}<br><a> @if($emp!=null) {{$emp->email." - "}} @endif {{$v->correo}}</a></td>
+						<td class="border" style="width: 20%; text-align: center; font-weight: bold; margin-top: 10px !important;"><img src="{{asset('img/logos/sello_transporcol.png')}}"><br>Sello</td>
+						<td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important; font-size: 14px;"><img src="{{asset('img/logos/firma_transporcol.png')}}"><br>FIRMA<br><i style="font-size: 9px; text-decoration: none;" valign="bottom">{{$v->firma}}</i></td>
+					</tr>
+				</tbody>
+			</table>
+			<table style="width: 100%;">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 100%; text-align: justify; font-size: 10px;">{!!$v->pie_pagina1!!}</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="page-break"></div>
+
+		<div class="row" style="font-size: 12px !important; line-height: 1.2;">
+			<table class="table table-bordered table-striped">
+				<tbody>
+					<tr>
+						<td class="border" style="width: 48%;"><img style="width: 380px; height: 70px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
+						<td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
+						<td class="border" style="width: 40%;"><img style="width: 220px; height: 70px;" src="{{ asset('img/logos/transporcol_back.jpg') }}"></td>
+					</tr>
+				</tbody>
+			</table>
+				<table style="width: 100%;">
+					<tbody>
+						<tr>
+							<td class="border" style="width: 100%; text-align: center; font-weight: bold;">{{$v->titulo}} <br> N° {{$p->nro}}</td>
+						</tr>
+					</tbody>
+				</table>
+				<table style="width: 100%; line-height: 0.9;">
+					<tbody>
+						<tr>
+							<td class="border" style="width: 100%; padding: 10px; font-size: 10px">
+								<p style=" text-align: center; font-weight: bold; font-size: 16px;">{{$v->titulo_atras}}</p>
+								@if(count($v->plantillaarticulos)>0)
+									@foreach($v->plantillaarticulos as $a)
+										<p style="text-align: justify;"><b>{{$a->titulo}}</b> {{$a->texto}}</p>
+										@if(count($a->plantillaarticulonumerals)>0)
+											@foreach($a->plantillaarticulonumerals as $pan)
+											    <p style="text-align: justify;"><b>{{$pan->numeracion}}</b> {{$pan->texto}}</p>
+												@if(count($pan->numeraltablas)>0)
+													<?php $total = count($pan->numeraltablas);
+														$mitad = 0;
+														if ($total % 2 == 0) {
+															$mitad = $total / 2;
+														} else {
+															$mitad = $total / 2;
+															$mitad = $mitad + 0.5;
+														}
+													?>
+													<table style="width: 100%;">
+														<tbody>
+															<tr>
+																<td>
+																	<table style="width: 100%;">
+																		<tbody>
+																			<?php $i = 0; ?>
+																			@foreach($pan->numeraltablas as $n)
+																				<?php $i = $i + 1; ?>
+																				@if($i<=$mitad) 
+																				<tr>
+																					<td class="border">{{$n->campo}}</td>
+																					<td class="border">{{$n->valor}}</td>
+																				</tr>
+																				@endif
+																			@endforeach
+																		</tbody>
+																	</table>
+																</td>
+																<td>
+																	<table style="width: 100%;">
+																		<tbody>
+																			<?php $i = 0; ?>
+																			@foreach($pan->numeraltablas as $n)
+																			<?php $i = $i + 1; ?>
+																			@if($i>$mitad)
+																			<tr>
+																				<td class="border">{{$n->campo}}</td>
+																				<td class="border">{{$n->valor}}</td>
+																			</tr>
+																			@endif
+																			@endforeach
+																		</tbody>
+																	</table>
+																</td>
+															</tr>
+														</tbody>
+													</table>
+													<br>
+												@endif
+											@endforeach
+										@endif
+									@endforeach
+								@else
+									<p>No hay artículos en la plantilla</p>
+								@endif
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
 	</div>
 </body>
 

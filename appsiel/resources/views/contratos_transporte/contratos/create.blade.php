@@ -29,57 +29,129 @@
 		<div class="row" style="padding: 20px;">
 			<div class="col-md-12">
 				<div class="panel panel-primary">
-					<div class="panel-heading">Crear Contrato</div>
+					<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Crear Contrato</h4>
 					<div class="panel-body">
-						<div class="col-md-12" style="padding: 50px;">
-							<div class="col-md-12 page">
-								{{ Form::open(['route'=>'cte_contratos.store','method'=>'post','class'=>'form-horizontal']) }}
-								<input type="hidden" name="variables_url" value="{{$variables_url}}" />
-								<input type="hidden" name="source" value="{{$source}}" />
-								<table style="width: 100%;">
-									<tbody>
-										<tr>
-											<td class="border" style="width: 20%;"><img style="width: 100%;" src="{{ asset('img/logos/transporcol_back_contrato.jpg') }}"></td>
-											<td class="border" style="width: 68%; text-align: center;">
-												<div class="col-md-8" style="border-right: 1px solid; font-size: 24px; line-height: 0.9em;">
-													<p style="font-weight: bold; color: #000;">{{$e->descripcion}}</p>
-													<p style="font-weight: bold; color: #000;">{{$e->razon_social}}</p>
-													<p style="font-size: 20px; font-weight: bold; color: #000;">NIT: {{$e->numero_identificacion."-".$e->digito_verificacion}}</p>
-												</div>
-												<div class="col-md-4" style="text-align: left;">
-													<input type="text" class="form-control" name="codigo" required placeholder="Código: ejemplo FR-GA-03" />
-													<input type="text" class="form-control" name="version" required placeholder="Versión: ejemplo 2.0" />
-													<input type="date" class="form-control" required name="fecha" />
-												</div>
-												<div class="col-md-12" style="border-top: 1px solid;">
-													<p style="font-size: 20px; font-weight: bold;">CONTRATO</p>
-												</div>
-											</td>
-											<td class="border" style="width: 12%;"><img style="max-height: 150px;" src="{{ asset('img/logos/transporcol_rigth.jpg') }}"></td>
-										</tr>
-									</tbody>
-								</table>
-								<div class="row" style="margin-top: 20px;">
-									<div class="col-md-12" style="text-align: center;">
-										<p><b>CONTRATO DE PRESTACION DE SERVICIO DE TRANSPORTE N° <input type="text" required name="numero_contrato" /></b></p>
-									</div>
-									<div class="col-md-12" style="margin-top: 20px;">
-										<p>Entre los suscritos a saber <input type="text" style="width: 300px !important;" name="rep_legal" required value="HUBER PARADA QUINTERO">
-											en representación de la empresa <b>{{$e->descripcion}}</b> con Nit. <b>{{$e->numero_identificacion."-".$e->digito_verificacion}}</b>, legalmente constituida
-											y habilitada por el ministerio de transporte para la prestación del servicio transporte
-											especial, de aquí en adelante el <b>CONTRATISTA</b>, y por otro lado <b>EL CONTRATANTE</b>
-											<select class="select2" id="contratante" name="contratante_id" onchange="manual()" required>
-												<option value="MANUAL">-- Seleccione una opción --</option>
-												<option value="MANUAL">INTRODUCCIÓN MANUAL</option>
-												@if($contratantes!=null)
-												@foreach($contratantes as $key=>$value)
-												<option value="{{$key}}">{!!$value!!}</option>
-												@endforeach
-												@endif
-											</select>
-											<input type="text" name="contratanteText" id="contratanteText" class="form-control" style="display: none; margin-top: 20px; margin-bottom: 20px;" placeholder="Ingrese aquí el nombre y demás información del contratísta que necesite">
-											en representación de <input type="text" required name="representacion_de" style="width: 800px !important;" value="PARA UN GRUPO ESPECIFICO DE USUARIOS DE TRANSPORTE DE PERSONAL (TRANSPORTE PARTICULAR)" />
-										</p>
+						<div class="col-md-12 page">
+							{{ Form::open(['route'=>'cte_contratos.store','method'=>'post','class'=>'form-horizontal']) }}
+							<input type="hidden" name="variables_url" value="{{$variables_url}}" />
+							<input type="hidden" name="source" value="{{$source}}" />
+							<input type="hidden" name="plantilla_id" value="{{$v->id}}" />
+							<div class="col-md-12" style="padding: 30px;">
+								<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Información del Contrato</h4>
+							</div>
+							<div class="col-md-6" style="padding: 30px;">
+								<div class="form-group">
+									<label>Representante Legal (CONTRATISTA)</label>
+									<input type="text" name="rep_legal" class="form-control" required value="HUBER PARADA QUINTERO">
+								</div>
+								<div class="form-group">
+									<label>Contratante</label>
+									<select class="form-control select2" id="contratante" name="contratante_id" onchange="manual()" required>
+										<option value="MANUAL">-- Seleccione una opción --</option>
+										<option value="MANUAL">INTRODUCCIÓN MANUAL</option>
+										@if($contratantes!=null)
+										@foreach($contratantes as $key=>$value)
+										<option value="{{$key}}">{!!$value!!}</option>
+										@endforeach
+										@endif
+									</select>
+									<input type="text" name="contratanteText" id="contratanteText" class="form-control" style="display: none; margin-top: 20px; margin-bottom: 20px;" placeholder="Nombres y apellidos del contratante">
+									<input type="text" name="contratanteIdentificacion" id="contratanteIdentificacion" class="form-control" style="display: none; margin-top: 20px; margin-bottom: 20px;" placeholder="Identificación del contratante">
+									<input type="text" name="contratanteDireccion" id="contratanteDireccion" class="form-control" style="display: none; margin-top: 20px; margin-bottom: 20px;" placeholder="Dirección del contratante">
+									<input type="text" name="contratanteTelefono" id="contratanteTelefono" class="form-control" style="display: none; margin-top: 20px; margin-bottom: 20px;" placeholder="Teléfono del contratante">
+								</div>
+								<div class="form-group">
+									<label>En Representación de...</label>
+									<input type="text" required class="form-control" name="representacion_de" value="PARA UN GRUPO ESPECIFICO DE USUARIOS DE TRANSPORTE DE PERSONAL (TRANSPORTE PARTICULAR)">
+								</div>
+								<div class="form-group">
+									<label>Objeto del Contrato</label>
+									<input type="text" class="form-control" required name="objeto" value="el objeto del contrato consiste en el transporte terrestre de pasajeros, mediante un servicio expreso al grupo específico descrito anteriormente" />
+								</div>
+								<div class="form-group">
+									<label>Vehículo</label>
+									<select class="form-control select2" name="vehiculo_id" id="vehiculo_id" required onchange="conductores()">
+										@if($vehiculos!=null)
+										<option value="0">-- Seleccione vehículo --</option>
+										@foreach($vehiculos as $key=>$value)
+										<option value="{{$key}}">{!!$value!!}</option>
+										@endforeach
+										@else
+										<option value="0">No hay vehículos con documentos en regla habilitados. Si continúa, el contrato no será guardado.</option>
+										@endif
+									</select>
+								</div>
+								<div class="form-group">
+									<label>Tipo de Servicio</label>
+									<select class="form-control" name="tipo_servicio" required>
+										<option value="IDA-REGRESO">IDA Y REGRESO</option>
+										<option value="IDA">SOLO IDA</option>
+										<option value="REGRESO">SOLO REGRESO</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label>Disponibilidad</label>
+									<select class="form-control" name="disponibilidad" required>
+										<option value="SI">SI</option>
+										<option value="NO">NO</option>
+									</select>
+								</div>
+							</div>
+							<div class="col-md-6" style="padding: 30px;">
+								<div class="form-group">
+									<label>Nro. de Personas a Movilizar</label>
+									<input type="number" class="form-control" name="nro_personas" required>
+								</div>
+								<div class="form-group">
+									<label>Origen</label>
+									<input type="text" class="form-control" name="origen" required />
+								</div>
+								<div class="form-group">
+									<label>Destino</label>
+									<input type="text" class="form-control" name="destino" required />
+								</div>
+								<div class="form-group">
+									<label>Fecha de Inicio</label>
+									<input type="date" class="form-control" name="fecha_inicio" required />
+								</div>
+								<div class="form-group">
+									<label>Fecha de Terminación</label>
+									<input onchange="validar()" class="form-control" type="date" name="fecha_fin" id="fecha_fin" required />
+								</div>
+								<div class="form-group">
+									<label>Fecha Firma</label>
+									<input type="number" class="form-control" placeholder="Día" required name="dia_contrato" />
+									<input type="text" class="form-control" placeholder="Mes" name="mes_contrato" required />
+									<input type="number" class="form-control" placeholder="Año" required name="anio_contrato" />
+								</div>
+								<div class="form-group">
+									<label>Convenio Consorcio Unión Temporarl Con</label>
+									<input type="text" class="form-control" name="convenio">
+								</div>
+							</div>
+							<div class="col-md-12" style="padding: 30px;">
+								<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Información de la Planilla FUEC</h4>
+								<div class="form-group">
+									<label>Conductor 1</label>
+									<select name="conductor_id[]" id="conductor1" class="form-control select2">
+										<option value="">-- Seleccione opción --</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label>Conductor 2</label>
+									<select name="conductor_id[]" id="conductor2" class="form-control select2">
+										<option value="">-- Seleccione opción --</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label>Conductor 3</label>
+									<select name="conductor_id[]" id="conductor3" class="form-control select2">
+										<option value="">-- Seleccione opción --</option>
+									</select>
+								</div>
+							</div>
+
+							<!--<div class="row" style="margin-top: 20px;">
 										<div class="table-responsive col-md-12" id="table_content">
 											<h4>DESCRIPCIÓN DEL GRUPO DE USUARIOS</h4>
 											<a onclick="addRow('usuarios')" class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> Agregar Usuario</a>
@@ -96,134 +168,13 @@
 												</tbody>
 											</table>
 										</div>
-										<p>
-											El presente contrato será desarrollado por el propietario del vehículo automotor de
-											<select class="select2" name="vehiculo_id" required>
-												@if($vehiculos!=null)
-												@foreach($vehiculos as $key=>$value)
-												<option value="{{$key}}">{!!$value!!}</option>
-												@endforeach
-												@else
-												<option value="0">No hay vehículos con documentos en regla habilitados. Si continúa, el contrato no será guardado.</option>
-												@endif
-											</select>
-											quien cumplirá todas las obligaciones derivadas del mismo. Hemos convenido celebrar el contrato de
-											<b>TRANSPORTE DE GRUPO DE USUARIOS</b>, el cual se regirá por las siguientes clausula, y en lo no previsto en ellas, por lo dispuesto en la ley.
-											<b>CLAUSULA PRIMERA - OBJETO DEL CONTRATO:</b> <input type="text" style="width: 100%;" required name="objeto" value="el objeto del contrato consiste en el transporte terrestre de pasajeros, mediante un servicio expreso al grupo específico descrito anteriormente" /> <b>CLAUSULA SEGUNDA: CARACTERISTICA DEL SERVICIO.</b>
-											<b>ORIGEN </b><input type="text" name="origen" required /> <b>DESTINO </b><input type="text" name="destino" required />
-											<b>FECHA DE INICIAL </b><input type="date" name="fecha_inicio" required /> <b>FECHA VENCIMIENTO</b> <input onchange="validar()" type="date" name="fecha_fin" id="fecha_fin" required />
-											<b>CLAUSULA TERCERA. OBLIGACION DEL CONTRATANTE:</b> El <b>CONTARTANTE</b> se
-											obliga con el <b>CONTARISTA</b>, a lo siguiente: <b>A)</b> Dar aviso de los servicios de transporte
-											requerido con la suficiente anticipación, indicando claramente número de pasajeros,
-											destino y demás detalles del servicios <b>B)</b> Cumplir con lo establecido en el presente
-											contrato en forma oportuna, dentro de los términos establecidos y de conformidad con las
-											calidades pactadas. <b>C)</b> Pagar el valor de la contraprestación en los términos y condiciones
-											establecidas en este contrato. <b>D)</b> A cancelar los valores pactados para la ejecución del
-											contrato de transporte que hace referencia este documento.
-										</p>
-										<table>
-											<tbody>
-												<tr>
-													<td>Valor del Contrato </td>
-													<td>$<input type="text" name="valor_contrato" required /></td>
-												</tr>
-												<tr>
-													<td>Valor cancelado a la empresa </td>
-													<td>$<input type="text" name="valor_empresa" required /></td>
-												</tr>
-												<tr>
-													<td>Valor Cancelado al Propietario </td>
-													<td>$<input type="text" name="valor_propietario" required /></td>
-												</tr>
-											</tbody>
-										</table>
-										<p>
-											<b>CLAUSULA CUARTA. OBLIGACION DEL CONTRATISTA:</b> El <b>CONTARTISTA</b> se
-											obliga con el <b>CONTARTANTE A)</b> Cumplir con lo establecido en el presente contrato en
-											forma oportuna, dentro del término establecido y de conformidad con las calidades
-											pactadas <b>B)</b> Prestar el servicios en el vehículo arriba descrito que cumpla con todas las
-											exigencias del ministerio de transporte y cumplir con las disposiciones legales
-											contempladas en la ley 769 del 6 de agosto del 2002, el decreto 174 de 5 de febrero 2001
-											<b>C)</b> Cumplir estrictamente con idoneidad y oportunidad en la ejecución del presente
-											contrato. <b>CLAUSULA QUINTA. TERMINACION:</b> El presente contrato podrás darse por
-											terminado por mutuo acuerdo entre las partes, sin lugar a indemnización alguna; o en
-											forma unilateral por cumplimiento de las obligaciones derivadas del contrato; o bien, por
-											que desaparezca las condiciones que le dieron origen sea por parte del <b>CONTRATANTE</b>
-											o el <b>CONTARTISTA. CLAUSULA SEXTA. CESION</b> el presente contrato se celebra en
-											consideración a la calidad del <b>CONTRATISTA</b>, quien no lo podrá ceder a subcontratar
-											total o parcialmente sin consentimiento previo y por escrito del <b>CONTRATANTE.
-												CLAUSULA SEPTIMA. INDEPENDENCIA DELA CONTARTISTA:</b> para todos los efectos
-											legas, el presente contrato es de carácter civil y, en consecuencia el contratista, actuara
-											por su propia cuenta, con absoluta autonomía y no estará sometido a subordinación
-											laboral con el <b>CONTRATANTE</b>, para quien, sus derecho se limitaran, de acuerdo con la
-											naturaleza del contrato, a exigir el cumplimiento de las obligaciones del <b>CONTRATISTA</b>,
-											tendrá plena libertad y autonomía en la ejecución y cumplimiento de este contrato y en
-											ningún momento tendrá relación laboral con el <b>CONTRATANTE. CLAUSULA OCTAVA.
-												MODIFICACIONES:</b> el presente contrato podrá ser modificado por acuerdo entre las
-											partes, mediante la suscripción de documento que indique con claridad y precisión la
-											forma acordada. <b>CLAUSULA NOVENA. DOMICILIO CONTRACTUAL;</b> las notificaciones
-											serán recibidas por las partes en las siguiente direcciones <b>CONTRATANTE
-												<input type="text" name="direccion_notificacion" required /> TELEFONO o CELULAR
-												<input type="text" name="telefono_notificacion" required /> CONTRATISTA</b> Carrera 10 # 16B - 29 Local 2 Segundo Piso
-											<b>TELEFONO o CELULAR 572269 - 3186128754 – 3223039437.</b>
-										</p>
-										<p>
-											En señal de aceptación, se firma el presente documento a los <input type="number" required name="dia_contrato" /> días del mes de
-											<input type="text" name="mes_contrato" placeholder="JUNIO del año 2020" required />.
-										</p>
-									</div>
+								</div>-->
+							<div class="form-group">
+								<div class="col-md-12" style="margin-top: 50px; text-align: center;">
+									<button type="submit" class="btn btn-primary" title="Guardar Contrato y FUEC"><i class="fa fa-save"></i> Guardar Contrato y FUEC</a>
 								</div>
-								<br><br><br>
-								<table style="width: 100%;">
-									<tbody>
-										<tr>
-											<td style="width: 40%; text-align: left;">EL CONTRATANTE</td>
-											<td style="width: 20%; text-align: left;"></td>
-											<td style="width: 40%; text-align: left;">EL CONTRATISTA</td>
-										</tr>
-										<tr>
-											<td style="width: 40%; text-align: left;"><br><br><br><br></td>
-											<td style="width: 20%; text-align: left;"><br><br><br><br></td>
-											<td style="width: 40%; text-align: left;"><br><br><br><br></td>
-										</tr>
-										<tr>
-											<td style="width: 40%; text-align: left; border-bottom: 1px solid;"></td>
-											<td style="width: 20%; text-align: left;"></td>
-											<td style="width: 40%; text-align: left; border-bottom: 1px solid;"></td>
-										</tr>
-										<tr>
-											<td style="width: 40%; text-align: left;">CC/NIT</td>
-											<td style="width: 20%; text-align: left;"></td>
-											<td style="width: 40%; text-align: left;">CC/NIT</td>
-										</tr>
-										<tr>
-											<td style="width: 40%; text-align: left;">Firma</td>
-											<td style="width: 20%; text-align: left;"></td>
-											<td style="width: 40%; text-align: left;">Firma</td>
-										</tr>
-									</tbody>
-								</table>
-								<div class="col-md-12" style="margin-top: 50px; border-bottom: 10px solid; border-color: #6cf5ee;"></div>
-								<div class="row" style="margin-top: 50px;">
-									<div class="col-md-11" style="margin-top: 30px; text-align: center;">
-										<p>
-											<b><input style="text-align: center;" class="form-control" type="text" required name="pie_uno" value="*Valledupar: Carrera 10 N° 16B – 29 segundo piso Local 2 Sector Centro Teléfono 5722269 - Cel. 3186128754" /></b>
-											<b><input style="text-align: center;" class="form-control" type="text" required name="pie_dos" value="*Bucaramanga: Calle 41 N° 32-59 local 203 edificio profesional el prado cel: 3168757905" /></b>
-											<b><input style="text-align: center;" class="form-control" type="text" required name="pie_tres" value="*Aguachica Calle 3 N° 14- 57 tel. 5661208" /></b>
-											<b><input style="text-align: center;" class="form-control" type="text" required name="pie_cuatro" value="www.transporcol.com* Email: transporcol2009@gmail.com" /></b>
-										</p>
-									</div>
-									<div class="col-md-1" style="margin-top: 50px; text-align: center;">
-										<img style="width: 100%;" src="{{ asset('img/logos/super_transporte.png') }}">
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-md-12" style="margin-top: 50px;">
-										<button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar Contrato</button>
-									</div>
-								</div>
-								</form>
 							</div>
+							</form>
 						</div>
 					</div>
 				</div>
@@ -253,8 +204,14 @@
 	function manual() {
 		if ($("#contratante").val() == 'MANUAL') {
 			$("#contratanteText").fadeIn();
+			$("#contratanteIdentificacion").fadeIn();
+			$("#contratanteDireccion").fadeIn();
+			$("#contratanteTelefono").fadeIn();
 		} else {
 			$("#contratanteText").fadeOut();
+			$("#contratanteIdentificacion").fadeOut();
+			$("#contratanteDireccion").fadeOut();
+			$("#contratanteTelefono").fadeOut();
 		}
 	}
 
@@ -272,6 +229,46 @@
 				footer: '<a href>¿Desea continuar?</a>'
 			});
 		}
+	}
+
+	function conductores() {
+		var id = $("#vehiculo_id").val();
+		limpiarselect();
+		$.ajax({
+			type: 'GET',
+			url: "{{url('')}}/" + "cte_contratos/" + id + "/conductores",
+			data: {},
+		}).done(function(msg) {
+			var m = JSON.parse(msg);
+			if (m.error == 'NO') {
+				$.each(m.data, function(index, item) {
+					$("#conductor1").append("<option value='" + index + "'>" + item + "</option>");
+					$("#conductor2").append("<option value='" + index + "'>" + item + "</option>");
+					$("#conductor3").append("<option value='" + index + "'>" + item + "</option>");
+				});
+			} else {
+				Swal.fire({
+					icon: 'error',
+					title: 'Alerta!',
+					text: m.mensaje
+				});
+			}
+		});
+	}
+
+	function limpiarselect() {
+		$("#conductor1 option").each(function() {
+			$(this).remove();
+		});
+		$("#conductor2 option").each(function() {
+			$(this).remove();
+		});
+		$("#conductor3 option").each(function() {
+			$(this).remove();
+		});
+		$("#conductor1").append("<option value=''>-- Seleccione opción --</option>");
+		$("#conductor2").append("<option value=''>-- Seleccione opción --</option>");
+		$("#conductor3").append("<option value=''>-- Seleccione opción --</option>");
 	}
 </script>
 @endsection

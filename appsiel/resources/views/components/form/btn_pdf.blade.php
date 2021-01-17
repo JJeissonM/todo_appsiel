@@ -1,1 +1,1 @@
-<a class="btn btn-danger btn-sm" id="btn_pdf" style="display: none;" href="{{url('/a3p0')}}"><i class="fa fa-file-pdf-o"></i> PDF<span style="display: none;">{{ $nombre_listado }}</span></a>
+<a class="btn-gmail" id="btn_pdf" style="display: none;" href="{{url('/a3p0')}}" title="{{$nombre_listado}} - PDF"><i class="fa fa-file-pdf-o"></i></a>
