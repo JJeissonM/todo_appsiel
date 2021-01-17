@@ -40,7 +40,7 @@ class ArqueoCajaController extends ModeloController
     {
         $registro = ArqueoCaja::find($id);
         $empresa = Empresa::find($registro->core_empresa_id);
-        $doc_encabezado = [ 'documento' => 'ACTA DE ARQUEO DE CAJA', 'fecha' => $registro->fecha, 'titulo' => 'ACTA DE ARQUEO DE CAJA' ];
+        $doc_encabezado = [ 'documento' => 'ACTA DE ARQUEO DE CAJA', 'fecha' => $registro->fecha, 'titulo' => 'ARQUEO DE CAJA No. ' . $registro->id ];
         $user = User::where('email', $registro->creado_por)->first();
         $registro->billetes_contados = json_decode($registro->billetes_contados);
         $registro->monedas_contadas = json_decode($registro->monedas_contadas);

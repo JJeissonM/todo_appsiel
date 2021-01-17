@@ -175,7 +175,7 @@ $(document).ready(function(){
 
 	$('#btn_excel').click(function(event){
 		event.preventDefault();
-		var nombre_listado = $(this).children('span').text();
+		var nombre_listado = $(this).attr('title');
 		var tT = new XMLSerializer().serializeToString(document.querySelector('table')); //Serialised table
 		var tF = nombre_listado + '.xls'; //Filename
 		var tB = new Blob([tT]); //Blub

@@ -37,15 +37,6 @@
 
                 foreach( $movimiento as $fila )
                 {
-
-                    /*$modelo_crud_id = 0;
-                    $url = '/';
-                    if( $productos[$i]['core_tipo_transaccion_id'] != '' )
-                    {
-                        $modelo_crud_id = App\Sistema\TipoTransaccion::find( $productos[$i]['core_tipo_transaccion_id'] )->core_modelo_id;
-                        $url = 'inventarios/'.$productos[$i]['documento_id'].'?id=8&id_modelo='.$modelo_crud_id.'&id_transaccion='.$productos[$i]['core_tipo_transaccion_id'];
-                    }*/
-
                     $entrada = 0;
                     $salida = 0;
                     if ( $fila->valor_movimiento >= 0 )
@@ -91,6 +82,11 @@
                 <td colspan="6"> &nbsp; </td>
                 <td> ${{ number_format( $total_entradas, 0, ',','.') }} </td>
                 <td> ${{ number_format( $total_salidas, 0, ',','.') }} </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="7"> Total Diferencia </td>
+                <td> ${{ number_format( $total_entradas + $total_salidas, 0, ',','.') }} </td>
                 <td></td>
             </tr>
         </tfoot>
