@@ -75,7 +75,7 @@
                             </a>
 
                             <ul class="dropdown-menu" role="menu">
-                                <!-- <li><a href="{{ url('/dashboard?id='.Input::get('id')) }}"><i class="fa fa-btn fa-dashboard"></i>DashBoard</a></li> -->
+                                <!-- <li><a href="{ { url('/dashboard?id='.Input::get('id')) }}"><i class="fa fa-btn fa-dashboard"></i>DashBoard</a></li> -->
 
                                 <li><a href="{{ url('/core/usuario/perfil/?id='.Input::get('id')) }}"><i class="fa fa-btn fa-user"></i> Perfil</a></li>
                                 

@@ -20,6 +20,38 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
+				<h4> Parámetros para transacciones </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$motivo_recibo_caja_id = 1;
+								if( isset($parametros['motivo_recibo_caja_id'] ) )
+								{
+									$motivo_recibo_caja_id = $parametros['motivo_recibo_caja_id'];
+								}
+							?>
+							{{ Form::bsSelect('motivo_recibo_caja_id', $motivo_recibo_caja_id, 'Motivo para Recibos de caja', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$motivo_comprobante_egresos_id = 5;
+								if( isset($parametros['motivo_comprobante_egresos_id'] ) )
+								{
+									$motivo_comprobante_egresos_id = $parametros['motivo_comprobante_egresos_id'];
+								}
+							?>
+							{{ Form::bsSelect('motivo_comprobante_egresos_id', $motivo_comprobante_egresos_id, 'Motivo para Comprobantes de egreso', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros por defecto de Libreta de pagos  </h4>
 				<hr>
 				<div class="row">

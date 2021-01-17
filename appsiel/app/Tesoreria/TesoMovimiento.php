@@ -16,6 +16,21 @@ class TesoMovimiento extends Model
     public $encabezado_tabla = ['Fecha', 'Documento', 'Caja/Banco', 'Tercero', 'Motivo', 'Valor movimiento', 'Detalle', 'Acción'];
 
     public $vistas = '{"index":"layouts.index3"}';
+    
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo( 'App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id' );
+    }
+    
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
 
     public function caja()
     {
@@ -163,6 +178,7 @@ class TesoMovimiento extends Model
                                         'teso_movimientos.fecha',
                                         'teso_movimientos.valor_movimiento',
                                         'teso_movimientos.teso_motivo_id',
+                                        'teso_movimientos.descripcion',
                                         'teso_movimientos.teso_caja_id',
                                         'teso_movimientos.teso_cuenta_bancaria_id',
                                         'core_terceros.descripcion as tercero_descripcion' )

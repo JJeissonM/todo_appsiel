@@ -21,6 +21,21 @@ class TesoDocEncabezadoPagoCxp extends Model
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
 
+    public function caja()
+    {
+        return $this->belongsTo( TesoCaja::class, 'teso_caja_id');
+    }
+
+    public function cuenta_bancaria()
+    {
+        return $this->belongsTo( TesoCuentaBancaria::class, 'teso_cuenta_bancaria_id');
+    }
+
+    public function medio_recaudo()
+    {
+        return $this->belongsTo(TesoMedioRecaudo::class, 'teso_medio_recaudo_id');
+    }
+
     public static function consultar_registros()
     {
         $core_tipo_transaccion_id = 33;

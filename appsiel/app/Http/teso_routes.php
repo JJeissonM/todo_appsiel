@@ -76,7 +76,6 @@ Route::resource('tesoreria/recaudos_cxc', 'Tesoreria\RecaudoCxcController');
 Route::get('tesoreria/get_documentos_pendientes_cxp', 'Tesoreria\PagoCxpController@get_documentos_pendientes_cxp');
 // Anular
 Route::get('teso_anular_pago_cxp/{id}', 'Tesoreria\PagoCxpController@anular_pago_cxp');
-
 Route::get('tesoreria_pagos_cxp_imprimir/{id}', 'Tesoreria\PagoCxpController@imprimir');
 Route::resource('tesoreria/pagos_cxp', 'Tesoreria\PagoCxpController');
 
@@ -84,10 +83,15 @@ Route::resource('tesoreria/pagos_cxp', 'Tesoreria\PagoCxpController');
 Route::resource('tesoreria', 'Tesoreria\TesoreriaController', ['except' => ['show']]);
 
 
+// RECIBOS DE CAJA Y COMPROBANTES DE EGRESO (SIN CONTABILIZACION)
+Route::get('teso_comprobante_egreso_show/{id}', 'Tesoreria\ComprobanteEgresoController@show');
+Route::get('teso_comprobante_egreso_imprimir/{id}', 'Tesoreria\ComprobanteEgresoController@imprimir');
+Route::get('teso_comprobante_egreso_anular/{id}', 'Tesoreria\ComprobanteEgresoController@anular');
+
+
+
 // CONCILIACION BANCARIA
-
 Route::post('tesoreria/procesa_archivo_plano_bancos', 'Tesoreria\ConciliacionBancariaController@procesa_archivo_plano_bancos');
-
 Route::resource('tesoreria/conciliacion_bancaria', 'Tesoreria\ConciliacionBancariaController', ['except' => ['show']]);
 
 
