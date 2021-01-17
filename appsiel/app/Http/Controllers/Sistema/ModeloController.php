@@ -41,25 +41,21 @@ class ModeloController extends Controller
     public function __construct()
     {
         // Se obtiene el modelo
-        if ( !is_null( Input::get('id_modelo') ) )
-        {
+        if (!is_null(Input::get('id_modelo'))) {
             $this->modelo = Modelo::find(Input::get('id_modelo'));
         }
 
         // No requiere autenticación para el CRUD del modelo ClienteWeb (id_modelo=218)
-        if ( !is_null( $this->modelo ) )
-        {
-            if ( $this->modelo->id != 218 )
-            {
+        if (!is_null($this->modelo)) {
+            if ($this->modelo->id != 218) {
                 $this->middleware('auth');
             }
-        }else{
+        } else {
             //$this->middleware('auth');
         }
-                    
+
 
         $this->aplicacion = Aplicacion::find(Input::get('id'));
-
     }
 
     /*
@@ -74,15 +70,18 @@ class ModeloController extends Controller
             $encabezado_tabla = [];
         }
 
-        $id_transaccion = TipoTransaccion::where( 'core_modelo_id', (int) Input::get('id_modelo') )->where('estado', 'Activo' )->value('id');
+        $id_modelo = Input::get('id_modelo');
+        $id_app = Input::get('id');
+
+        $id_transaccion = TipoTransaccion::where('core_modelo_id', (int) Input::get('id_modelo'))->where('estado', 'Activo')->value('id');
 
         //dd( $id_transaccion );
 
         // Se le asigna a cada variable url, su valor en el modelo correspondiente
         $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
 
-        $acciones = $this->acciones_basicas_modelo( $this->modelo, $variables_url );
-        
+        $acciones = $this->acciones_basicas_modelo($this->modelo, $variables_url);
+
         $url_crear = $acciones->create;
         $url_edit = $acciones->edit;
         $url_print = $acciones->imprimir;
@@ -91,13 +90,11 @@ class ModeloController extends Controller
         $url_eliminar = $acciones->eliminar;
 
         $botones = [];
-        $enlaces = json_decode( $acciones->otros_enlaces );
+        $enlaces = json_decode($acciones->otros_enlaces);
 
-        if( !is_null($enlaces) )
-        {
+        if (!is_null($enlaces)) {
             $i = 0;
-            foreach ($enlaces as $fila)
-            {
+            foreach ($enlaces as $fila) {
                 $botones[$i] = new Boton($fila);
                 $i++;
             }
@@ -108,179 +105,165 @@ class ModeloController extends Controller
 
         $registros = [];
 
-        if (method_exists(app($this->modelo->name_space), 'consultar_registros'))
-        {
-            $registros = app($this->modelo->name_space)->consultar_registros();
+        //determinar la cantidad de registros a mostrar
+        $nro_registros = 10;
+        $temp = Input::get('nro_registros');
+        if ($temp != null) {
+            $nro_registros = $temp;
         }
-
+        $sqlString = "";
+        $tituloExport = "";
+        //determinar la busqueda
+        $search = "";
+        $temp2 = Input::get('search');
+        if ($temp2 != null) {
+            $search = trim($temp2);
+        }
+        if (method_exists(app($this->modelo->name_space), 'consultar_registros')) {
+            $registros = app($this->modelo->name_space)->consultar_registros($nro_registros, $search);
+            $sqlString = app($this->modelo->name_space)->sqlString($search);
+            $tituloExport = app($this->modelo->name_space)->tituloExport();
+        }
         $vista = 'layouts.index';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if (!is_null($vistas))
-        {
-            if (isset($vistas->index))
-            {
+        if (!is_null($vistas)) {
+            if (isset($vistas->index)) {
                 $vista = $vistas->index;
-                $registros = app($this->modelo->name_space)->consultar_registros2();
-                $registros->setPath('?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion);
+                $registros = app($this->modelo->name_space)->consultar_registros2($nro_registros, $search);
+                $sqlString = app($this->modelo->name_space)->sqlString($search);
+                $tituloExport = app($this->modelo->name_space)->tituloExport();
             }
         }
 
+        $source = "INDEX1";
+
         // ¿Cómo saber qué métodos estan llamando a la vista layouts.index?
         // Si modifico esa vista, cómo se qué partes del software se verán afectadas???
-        return view($vista, compact('registros', 'miga_pan', 'url_crear', 'encabezado_tabla', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar', 'archivo_js', 'botones'));
+        return view($vista, compact('id_app', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_modelo', 'id_transaccion', 'registros', 'miga_pan', 'url_crear', 'encabezado_tabla', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar', 'archivo_js', 'botones'));
     }
 
 
     /*
         NOTA: Para evitar resultados inesperados, se debe comprobar que la variable $urls_acciones tenga un formato JSON correcto.
     */
-    public function acciones_basicas_modelo( $modelo, $parametros_url )
+    public function acciones_basicas_modelo($modelo, $parametros_url)
     {
         // Acciones predeterminadas
         $acciones = (object)[
-                                'index' => 'web' . $parametros_url,
-                                'create' => '',
-                                'edit' => '',
-                                'store' => 'web',
-                                'update' => 'web/id_fila',
-                                'show' => 'web/id_fila' . $parametros_url,
-                                'imprimir' => '',
-                                'eliminar' => '',
-                                'cambiar_estado' => '',
-                                'otros_enlaces' => ''
-                            ];
+            'index' => 'web' . $parametros_url,
+            'create' => '',
+            'edit' => '',
+            'store' => 'web',
+            'update' => 'web/id_fila',
+            'show' => 'web/id_fila' . $parametros_url,
+            'imprimir' => '',
+            'eliminar' => '',
+            'cambiar_estado' => '',
+            'otros_enlaces' => ''
+        ];
 
 
         // Se agregan los enlaces que tiene el modelo en la base de datos (ESTO DEBE DESAPARECER, PERO PRIMERO SE DEBEN MIGRAR LOS MODELOS ANTIGUOS)
-        if ($modelo->url_crear != '')
-        {
+        if ($modelo->url_crear != '') {
             $acciones->create = $modelo->url_crear . $parametros_url;
         }
 
-        if ( $modelo->url_edit != '')
-        {
+        if ($modelo->url_edit != '') {
             $acciones->edit = $modelo->url_edit . $parametros_url;
         }
 
-        if ( $modelo->url_form_create != '')
-        {
+        if ($modelo->url_form_create != '') {
             $acciones->store = $modelo->url_form_create;
             $acciones->update = $modelo->url_form_create . '/id_fila';
         }
 
-        if ($modelo->url_print != '')
-        {
+        if ($modelo->url_print != '') {
             $acciones->imprimir = $modelo->url_print . $parametros_url;
         }
 
-        if ($modelo->url_ver != '')
-        {
+        if ($modelo->url_ver != '') {
             $acciones->show = $modelo->url_ver . $parametros_url;
         }
 
-        if ($modelo->url_estado != '')
-        {
+        if ($modelo->url_estado != '') {
             $acciones->cambiar_estado = $modelo->url_estado . $parametros_url;
         }
 
-        if ($modelo->url_eliminar != '')
-        {
+        if ($modelo->url_eliminar != '') {
             $acciones->eliminar = $modelo->url_eliminar . $parametros_url;
         }
 
         // Otros enlaces en formato JSON
-        if ($modelo->enlaces != '')
-        {
+        if ($modelo->enlaces != '') {
             $acciones->otros_enlaces = $modelo->enlaces;
         }
 
         // MANEJO DE URLs DESDE EL ARCHIVO CLASS DEL PROPIO MODELO 
         // Se llaman las urls desde la class (name_space) del modelo
-        $urls_acciones = json_decode( app( $modelo->name_space )->urls_acciones );
+        $urls_acciones = json_decode(app($modelo->name_space)->urls_acciones);
 
-        if ( !is_null($urls_acciones) )
-        {
+        if (!is_null($urls_acciones)) {
 
             // Acciones particulares, si están definidas en la variable $urls_acciones de la class del modelo
-            
-            if ( isset( $urls_acciones->create ) )
-            {
-                if ( $urls_acciones->create != 'no' )
-                {
+
+            if (isset($urls_acciones->create)) {
+                if ($urls_acciones->create != 'no') {
                     $acciones->create = $urls_acciones->create . $parametros_url;
                 }
             }
 
-            if ( isset( $urls_acciones->edit ) )
-            {
-                if ( $urls_acciones->edit != 'no' )
-                {
+            if (isset($urls_acciones->edit)) {
+                if ($urls_acciones->edit != 'no') {
                     $acciones->edit = $urls_acciones->edit . $parametros_url;
                 }
             }
-            
-            if ( isset( $urls_acciones->store ) )
-            {
-                if ( $urls_acciones->store != 'no' )
-                {
+
+            if (isset($urls_acciones->store)) {
+                if ($urls_acciones->store != 'no') {
                     $acciones->store = $urls_acciones->store;
                 }
             }
-            
-            if ( isset( $urls_acciones->update ) )
-            {
-                if ( $urls_acciones->update != 'no' )
-                {
+
+            if (isset($urls_acciones->update)) {
+                if ($urls_acciones->update != 'no') {
                     $acciones->update = $urls_acciones->update;
                 }
             }
-            
-            if ( isset( $urls_acciones->show ) )
-            {
-                if ( $urls_acciones->show != 'no' )
-                {
+
+            if (isset($urls_acciones->show)) {
+                if ($urls_acciones->show != 'no') {
                     $acciones->show = $urls_acciones->show . $parametros_url;
                 }
 
-                if ( $urls_acciones->show == 'no' )
-                {
+                if ($urls_acciones->show == 'no') {
                     $acciones->show = '';
                 }
             }
-            
-            if ( isset( $urls_acciones->imprimir ) )
-            {
-                if ( $urls_acciones->imprimir != 'no' )
-                {
+
+            if (isset($urls_acciones->imprimir)) {
+                if ($urls_acciones->imprimir != 'no') {
                     $acciones->imprimir = $urls_acciones->imprimir . $parametros_url;
                 }
             }
-            
-            if ( isset( $urls_acciones->eliminar ) )
-            {
-                if ( $urls_acciones->eliminar != 'no' )
-                {
+
+            if (isset($urls_acciones->eliminar)) {
+                if ($urls_acciones->eliminar != 'no') {
                     $acciones->eliminar = $urls_acciones->eliminar . $parametros_url;
                 }
             }
-            
-            if ( isset( $urls_acciones->cambiar_estado ) )
-            {
-                if ( $urls_acciones->cambiar_estado != 'no' )
-                {
+
+            if (isset($urls_acciones->cambiar_estado)) {
+                if ($urls_acciones->cambiar_estado != 'no') {
                     $acciones->cambiar_estado = $urls_acciones->cambiar_estado . $parametros_url;
                 }
             }
-            
+
             // Otros enlaces en formato JSON
-            if ( isset( $urls_acciones->otros_enlaces ) )
-            {
-                if ( $urls_acciones->otros_enlaces != 'no' )
-                {
+            if (isset($urls_acciones->otros_enlaces)) {
+                if ($urls_acciones->otros_enlaces != 'no') {
                     $acciones->otros_enlaces = $urls_acciones->otros_enlaces;
                 }
             }
-            
         }
 
         return $acciones;
@@ -314,12 +297,12 @@ class ModeloController extends Controller
         // Este array se envía a la vista layouts.create, que carga la plantilla principal del formulario CREAR
         // La vista layouts.create incluye a la vista core.vistas.form_create que es la que usa al array form_create para generar un formulario html
 
-        $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
+        $acciones = $this->acciones_basicas_modelo($this->modelo, '');
 
         $form_create = [
-                        'url' => $acciones->store,
-                        'campos' => $lista_campos
-                        ];
+            'url' => $acciones->store,
+            'campos' => $lista_campos
+        ];
 
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, 'Crear nuevo');
 
@@ -329,16 +312,13 @@ class ModeloController extends Controller
 
         $vista = 'layouts.create';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if (!is_null($vistas))
-        {
-            if (isset($vistas->create))
-            {
+        if (!is_null($vistas)) {
+            if (isset($vistas->create)) {
                 $vista = $vistas->create;
             }
         }
-        
-        if (Input::get('vista') != null)
-        {
+
+        if (Input::get('vista') != null) {
             return view(Input::get('vista'), compact('form_create', 'miga_pan', 'archivo_js'));
         }
 
@@ -352,7 +332,7 @@ class ModeloController extends Controller
     {
         $datos = $request->all(); // Datos originales
         // Se crea un nuevo registro para el ID del modelo enviado en el request 
-        $registro = $this->crear_nuevo_registro( $request );
+        $registro = $this->crear_nuevo_registro($request);
 
         // Si se está almacenando una transacción que maneja consecutivo
         if (isset($request->consecutivo) and isset($request->core_tipo_doc_app_id)) {
@@ -369,28 +349,25 @@ class ModeloController extends Controller
         // $this->modelo se actualiza en el método de arriba crear_nuevo_registro()
         $this->almacenar_imagenes($request, $this->modelo->ruta_storage_imagen, $registro);
 
-        $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
-        
+        $acciones = $this->acciones_basicas_modelo($this->modelo, '');
+
         $url_ver = str_replace('id_fila', $registro->id, $acciones->show);
 
         /*
             Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)
         */
-        if (method_exists(app($this->modelo->name_space), 'store_adicional'))
-        {
+        if (method_exists(app($this->modelo->name_space), 'store_adicional')) {
             // Aquí mismo se puede hacer el return
             $url_respuesta = app($this->modelo->name_space)->store_adicional($datos, $registro);
-            
-            if( !is_null( $url_respuesta ) )
-            {
-                if ( gettype( $url_respuesta ) != "object" )
-                {
-                    return redirect( $url_respuesta )->with('flash_message', 'Registro CREADO correctamente.');
+
+            if (!is_null($url_respuesta)) {
+                if (gettype($url_respuesta) != "object") {
+                    return redirect($url_respuesta)->with('flash_message', 'Registro CREADO correctamente.');
                 }
             }
         }
 
-        return redirect( $url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro CREADO correctamente.');
+        return redirect($url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro CREADO correctamente.');
     }
 
     /*
@@ -454,8 +431,7 @@ class ModeloController extends Controller
         $nombre_es_el_primero = true;
         // Si se envía archivos tipo file (imagenes, adjuntos)
         $archivos_enviados = $request->file();
-        foreach ($archivos_enviados as $key => $value)
-        {
+        foreach ($archivos_enviados as $key => $value) {
             // Si se envía un nuevo archivo, se borran el archivo anterior del disco
             if ($modo == 'edit' && $request->file($key) != '') {
                 Storage::delete($ruta_storage_imagen . $registro->$key);
@@ -501,27 +477,25 @@ class ModeloController extends Controller
             Algunas Modelos necesitan campos formateados o compuestos de una manera única
             También se pueden personalizar los campos asignados al Modelo
         */
-        if (method_exists(app($this->modelo->name_space), 'get_campos_adicionales_edit'))
-        {
+        if (method_exists(app($this->modelo->name_space), 'get_campos_adicionales_edit')) {
             $lista_campos = app($this->modelo->name_space)->get_campos_adicionales_edit($lista_campos, $registro);
         }
 
-        if ( isset($lista_campos[0]) ) {
-            if ( is_null($lista_campos[0]) )
-            {
-                $acciones = $this->acciones_basicas_modelo( $this->modelo, '' );
-            
-                $url_index = str_replace('id_fila', $registro->id, $acciones->index );
+        if (isset($lista_campos[0])) {
+            if (is_null($lista_campos[0])) {
+                $acciones = $this->acciones_basicas_modelo($this->modelo, '');
 
-                return redirect( $url_index . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') )->with('mensaje_error', $lista_campos[1]);
+                $url_index = str_replace('id_fila', $registro->id, $acciones->index);
+
+                return redirect($url_index . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', $lista_campos[1]);
             }
         }
-            
-        
-        $acciones = $this->acciones_basicas_modelo( $this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
+
+
+        $acciones = $this->acciones_basicas_modelo($this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'));
 
         $url_action = str_replace('id_fila', $registro->id, $acciones->update);
-        
+
         $form_create = [
             'url' => $url_action,
             'campos' => $lista_campos
@@ -533,15 +507,13 @@ class ModeloController extends Controller
 
         $vista = 'layouts.edit';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if (!is_null($vistas))
-        {
-            if (isset($vistas->edit))
-            {
+        if (!is_null($vistas)) {
+            if (isset($vistas->edit)) {
                 $vista = $vistas->edit;
             }
         }
 
-        return view( $vista, compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action'));
+        return view($vista, compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action'));
     }
 
 
@@ -592,7 +564,7 @@ class ModeloController extends Controller
             }
         }
 
-        $registro->fill( $request->all() );
+        $registro->fill($request->all());
         $registro->save();
 
         $this->almacenar_imagenes($request, $modelo->ruta_storage_imagen, $registro2, 'edit');
@@ -600,20 +572,18 @@ class ModeloController extends Controller
         /*
             Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)
         */
-        if( method_exists(app($modelo->name_space), 'update_adicional') )
-        {
+        if (method_exists(app($modelo->name_space), 'update_adicional')) {
             $url_respuesta = app($modelo->name_space)->update_adicional($datos, $id);
 
-            if( !is_null( $url_respuesta ) )
-            {
-                return redirect( $url_respuesta )->with('flash_message', 'Registro MODIFICADO correctamente.');
+            if (!is_null($url_respuesta)) {
+                return redirect($url_respuesta)->with('flash_message', 'Registro MODIFICADO correctamente.');
             }
         }
 
-        $acciones = $this->acciones_basicas_modelo( $modelo, '' );
+        $acciones = $this->acciones_basicas_modelo($modelo, '');
         $url_ver = str_replace('id_fila', $registro->id, $acciones->show);
 
-        return redirect( $url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro MODIFICADO correctamente.');
+        return redirect($url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro MODIFICADO correctamente.');
     }
 
     /*
@@ -624,10 +594,9 @@ class ModeloController extends Controller
     {
         // Se obtiene el registro del modelo indicado y el anterior y siguiente registro
         $registro = app($this->modelo->name_space)->find($id);
-        
-        if( is_null( $registro ) )
-        {
-            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )->with('mensaje_error', 'ModeloController@show() > El registro que quiere consultar ha sido eliminado.');
+
+        if (is_null($registro)) {
+            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'ModeloController@show() > El registro que quiere consultar ha sido eliminado.');
             //echo 'No existe el registro con ID: ' . $id . ' para el modelo: ' . $this->modelo->modelo;
             //die();
         }
@@ -635,7 +604,7 @@ class ModeloController extends Controller
         $reg_anterior = app($this->modelo->name_space)->where('id', '<', $registro->id)->max('id');
         $reg_siguiente = app($this->modelo->name_space)->where('id', '>', $registro->id)->min('id');
 
-        
+
 
         // Se obtienen los campos asociados a ese modelo
         $lista_campos1 = $this->modelo->campos()->orderBy('orden')->get();
@@ -656,8 +625,8 @@ class ModeloController extends Controller
 
         // Se le asigna a cada variable url, su valor en el modelo correspondiente
         $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
-        
-        $acciones = $this->acciones_basicas_modelo( $this->modelo, $variables_url );
+
+        $acciones = $this->acciones_basicas_modelo($this->modelo, $variables_url);
 
         $url_crear = $acciones->create;
         $url_edit = $acciones->edit;
@@ -667,13 +636,11 @@ class ModeloController extends Controller
         $url_eliminar = $acciones->eliminar;
 
         $botones = [];
-        $enlaces = json_decode( $acciones->otros_enlaces );
+        $enlaces = json_decode($acciones->otros_enlaces);
 
-        if( !is_null($enlaces) )
-        {
+        if (!is_null($enlaces)) {
             $i = 0;
-            foreach ($enlaces as $fila)
-            {
+            foreach ($enlaces as $fila) {
                 $botones[$i] = new Boton($fila);
                 $i++;
             }
@@ -687,10 +654,8 @@ class ModeloController extends Controller
 
         $vista = 'layouts.show';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
-        if (!is_null($vistas))
-        {
-            if (isset($vistas->show))
-            {
+        if (!is_null($vistas)) {
+            if (isset($vistas->show)) {
                 $vista = $vistas->show;
             }
         }
@@ -703,7 +668,7 @@ class ModeloController extends Controller
         $registro_modelo_padre_id = $respuesta['registro_modelo_padre_id'];
         $titulo_tab = $respuesta['titulo_tab'];
 
-        return view( $vista , compact('form_create', 'miga_pan', 'registro', 'url_crear', 'url_edit', 'tabla', 'opciones', 'registro_modelo_padre_id', 'reg_anterior', 'reg_siguiente', 'titulo_tab', 'botones'));
+        return view($vista, compact('form_create', 'miga_pan', 'registro', 'url_crear', 'url_edit', 'tabla', 'opciones', 'registro_modelo_padre_id', 'reg_anterior', 'reg_siguiente', 'titulo_tab', 'botones'));
     }
 
 
@@ -755,18 +720,15 @@ class ModeloController extends Controller
     {
         $opciones = [];
         // Se crea un select SOLO con las opciones asignadas a la transacción
-        if ( !is_null( $tipo_transaccion ) )
-        {
+        if (!is_null($tipo_transaccion)) {
             $tipo_docs_app = $tipo_transaccion->tipos_documentos;
-            foreach ($tipo_docs_app as $fila)
-            {
+            foreach ($tipo_docs_app as $fila) {
                 $opciones[$fila->id] = $fila->prefijo . " - " . $fila->descripcion;
             }
-        } 
+        }
 
         //Personalización de la lista de campos
-        for ($i = 0; $i < $cantidad_campos; $i++)
-        {
+        for ($i = 0; $i < $cantidad_campos; $i++) {
 
             if ($lista_campos[$i]['name'] == 'core_tipo_doc_app_id') {
                 $lista_campos[$i]['opciones'] = $opciones;
@@ -799,8 +761,7 @@ class ModeloController extends Controller
                 }
             }
 
-            if ($lista_campos[$i]['name'] == 'teso_medio_recaudo_id')
-            {
+            if ($lista_campos[$i]['name'] == 'teso_medio_recaudo_id') {
                 $registros = TesoMedioRecaudo::all();
                 $vec_m[''] = '';
                 foreach ($registros as $fila) {
@@ -808,11 +769,10 @@ class ModeloController extends Controller
                 }
 
                 $lista_campos[$i]['opciones'] = $vec_m;
-                
 
-                if ($accion == 'edit')
-                {
-                    $medio_recaudo = TesoMedioRecaudo::find( $lista_campos[$i]['value'] );
+
+                if ($accion == 'edit') {
+                    $medio_recaudo = TesoMedioRecaudo::find($lista_campos[$i]['value']);
                     $lista_campos[$i]['value'] = $lista_campos[$i]['value'] . '-' . $medio_recaudo->comportamiento;
                 }
             }
@@ -911,15 +871,13 @@ class ModeloController extends Controller
             // El campo Atributos se ingresa en  formato JSON {"campo1":"valor1","campo2":"valor2"}
             // Luego se tranforma a un array para que pueda ser aceptado por el Facade Form:: de LaravelCollective
             if ($lista_campos[$i]['atributos'] != '') {
-                
-                $lista_campos[$i]['atributos'] = json_decode($lista_campos[$i]['atributos'], true);
-                
-                // Para el tipo de campo Input Lista Sugerencias
-                if( isset( $lista_campos[$i]['atributos']['data-url_busqueda'] ) )
-                {
-                    $lista_campos[$i]['atributos']['data-url_busqueda'] = url( $lista_campos[$i]['atributos']['data-url_busqueda'] );
-                }
 
+                $lista_campos[$i]['atributos'] = json_decode($lista_campos[$i]['atributos'], true);
+
+                // Para el tipo de campo Input Lista Sugerencias
+                if (isset($lista_campos[$i]['atributos']['data-url_busqueda'])) {
+                    $lista_campos[$i]['atributos']['data-url_busqueda'] = url($lista_campos[$i]['atributos']['data-url_busqueda']);
+                }
             } else {
                 $lista_campos[$i]['atributos'] = [];
             }
@@ -969,12 +927,10 @@ class ModeloController extends Controller
                         break;
                 }
 
-                if ($lista_campos[$i]['tipo'] == 'input_lista_sugerencias')
-                {
+                if ($lista_campos[$i]['tipo'] == 'input_lista_sugerencias') {
                     // value es un array con los valores para text_input y para el input hidden
-                    $lista_campos[$i]['value'] = ['',''];
+                    $lista_campos[$i]['value'] = ['', ''];
                 }
-
             } else { // Si se está editando
 
                 // asignar valor almacenado en la BD al cada campo
@@ -1029,8 +985,7 @@ class ModeloController extends Controller
                 }
 
                 // Si hay campo tipo imagen, se envía la URL de la imagen para mostrala
-                if ($lista_campos[$i]['tipo'] == 'imagen')
-                {
+                if ($lista_campos[$i]['tipo'] == 'imagen') {
                     $lista_campos[$i]['value'] = config('configuracion.url_instancia_cliente') . "/storage/app/" . $modelo->ruta_storage_imagen . $registro->$nombre_campo;
                 }
 
@@ -1041,11 +996,9 @@ class ModeloController extends Controller
                 }
 
                 // Si se está editando un checkbox
-                if ($lista_campos[$i]['tipo'] == 'bsCheckBox')
-                {
+                if ($lista_campos[$i]['tipo'] == 'bsCheckBox') {
                     // Si el name del campo enviado tiene la palabra core_campo_id-ID, se trata de un campo Atributo de EAV
-                    if (strpos($lista_campos[$i]['name'], "core_campo_id-") !== false)
-                    {
+                    if (strpos($lista_campos[$i]['name'], "core_campo_id-") !== false) {
                         $lista_campos[$i]['value'] = ModeloEavValor::where(["modelo_padre_id" => Input::get('modelo_padre_id'), "registro_modelo_padre_id" => Input::get('registro_modelo_padre_id'), "modelo_entidad_id" => Input::get('modelo_entidad_id'), "core_campo_id" => $lista_campos[$i]['id']])->value('valor');
                     } else {
                         $lista_campos[$i]['value'] = $registro->$nombre_campo;
@@ -1054,15 +1007,13 @@ class ModeloController extends Controller
 
 
 
-                if ($lista_campos[$i]['tipo'] == 'input_lista_sugerencias')
-                {
+                if ($lista_campos[$i]['tipo'] == 'input_lista_sugerencias') {
                     $campo_del_modelo = $lista_campos[$i]['name'];
-                    $registro_input = app( $lista_campos[$i]['atributos']['data-clase_modelo'] )->find( $registro->$campo_del_modelo );
+                    $registro_input = app($lista_campos[$i]['atributos']['data-clase_modelo'])->find($registro->$campo_del_modelo);
 
                     // value es un array con los valores para text_input y para el input hidden
-                    $lista_campos[$i]['value'] = [ $registro_input->descripcion.' ('.number_format($registro_input->numero_identificacion,0,',','.').')', $registro->$campo_del_modelo ];
+                    $lista_campos[$i]['value'] = [$registro_input->descripcion . ' (' . number_format($registro_input->numero_identificacion, 0, ',', '.') . ')', $registro->$campo_del_modelo];
                 }
-
             }
         }
         return $lista_campos;
@@ -1170,11 +1121,10 @@ class ModeloController extends Controller
 
         $nuevo_registro = $registro->replicate();
 
-        if ( isset( $nuevo_registro->imagen ) )
-        {
+        if (isset($nuevo_registro->imagen)) {
             $nuevo_registro->imagen = '';
         }
-        
+
         $nuevo_registro = $registro->replicate();
 
 
@@ -1211,7 +1161,7 @@ class ModeloController extends Controller
             ->addColumn('action', function ($datos_consulta) {
 
                 $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo');
-                $acciones = $this->acciones_basicas_modelo( $this->modelo, $variables_url );
+                $acciones = $this->acciones_basicas_modelo($this->modelo, $variables_url);
 
                 $url_edit = $acciones->edit;
                 $url_ver = $acciones->show;
@@ -1242,27 +1192,25 @@ class ModeloController extends Controller
 
 
 
-    public function create_registro_modelo( $modelo_id )
+    public function create_registro_modelo($modelo_id)
     {
-        $modelo = Modelo::find( $modelo_id );
+        $modelo = Modelo::find($modelo_id);
 
-        $lista_campos = $this->get_campos_modelo( $modelo, '', 'create');
+        $lista_campos = $this->get_campos_modelo($modelo, '', 'create');
 
-        if ( method_exists(app( $modelo->name_space ), 'get_campos_adicionales_create') )
-        {
-            $lista_campos = app( $modelo->name_space )->get_campos_adicionales_create($lista_campos);
+        if (method_exists(app($modelo->name_space), 'get_campos_adicionales_create')) {
+            $lista_campos = app($modelo->name_space)->get_campos_adicionales_create($lista_campos);
         }
 
         $form_create = [
-                        'url' => 'web', // Siempre se almacenará con ModeloController@store()
-                        'campos' => $lista_campos
-                        ];
+            'url' => 'web', // Siempre se almacenará con ModeloController@store()
+            'campos' => $lista_campos
+        ];
 
         $miga_pan = [];
 
         $vista = 'layouts.registro_modelo_create';
 
-        return view( $vista, compact( 'modelo', 'form_create', 'miga_pan', 'archivo_js') );
+        return view($vista, compact('modelo', 'form_create', 'miga_pan', 'archivo_js'));
     }
-
 }
