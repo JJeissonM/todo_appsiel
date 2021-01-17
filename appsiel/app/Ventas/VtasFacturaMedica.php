@@ -19,7 +19,7 @@ class VtasFacturaMedica extends VtasDocEncabezado
 
     public $urls_acciones = '{"create":"factura_medica/create","show":"factura_medica/id_fila","store":"ventas"}';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 44; // Facturas Médicas
         return VtasFacturaMedica::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')

@@ -21,22 +21,22 @@ class ExamenFisico extends ModeloEavValor
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"consultorio_medico/pacientes/id_fila"}';
 
-	public $encabezado_tabla = [ 'ID', 'Campo', 'Valor', 'Acción'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Campo', 'Valor'];
 
-	public static function consultar_registros()
-	{
-		$modelo_padre_id = 241;
-	    return ExamenFisico::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
-	    			->where('core_eav_valores.modelo_padre_id',$modelo_padre_id)
-                    ->select(
-                    			'core_eav_valores.id AS campo1',
-                                'sys_campos.descripcion AS campo2',
-                                'core_eav_valores.valor AS campo3',
-                    			'core_eav_valores.id AS campo4')
-				    ->get()
-				    ->toArray();
-	}
-
+    public static function consultar_registros($nro_registros)
+    {
+        $modelo_padre_id = 241;
+        return ExamenFisico::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
+            ->where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
+            ->select(
+                'sys_campos.descripcion AS campo1',
+                'core_eav_valores.valor AS campo2',
+                'core_eav_valores.id AS campo3'
+            )
+            ->orderBy('core_eav_valores.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
+    
     public function store_adicional( $datos, $registro )
     {
     	// Con ModeloController se almacena un solo registro en la tabla EAV
