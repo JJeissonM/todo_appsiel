@@ -120,8 +120,11 @@ class Vacaciones implements Estrategia
             // Almacenar registro para los días no hábiles
             $this->crear_registro_concepto_vacaciones_dias_no_habiles( $programacion_vacaciones->id, $liquidacion['documento_nomina'], $liquidacion['empleado'], $libro_vacaciones->dias_no_habiles * (int)config('nomina.horas_dia_laboral') );
 
-            // Actualizar libro de vacaciones---------------FALTA
-            //$libro_vacaciones->periodo_pagado_desde = 
+            // Actualizar libro de vacaciones--------------- FALTA
+            
+            // 15 días de vacaciones por cada 360 días del año 
+            $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
+            $libro_vacaciones->periodo_pagado_desde = $this->tabla_resumen['periodo_pagado_desde'];
         }
         
         $valores = get_valores_devengo_deduccion( 'devengo', $this->tabla_resumen['vlr_dias_habiles'] );
@@ -357,11 +360,14 @@ class Vacaciones implements Estrategia
         }
 
         $dias_pagados_vacaciones = 0;
-
+        $periodo_pagado_desde = $empleado->fecha_ingreso;
+        $periodo_pagado_hasta = ;
         if ( !is_null( $this->historial_vacaciones ) )
         {
             $dias_pagados_vacaciones = $this->historial_vacaciones->sum('dias_pagados');
+            $periodo_pagado_desde = $this->sumar_dias_a_fecha( $this->historial_vacaciones->periodo_pagado_hasta, 1 );
         }
+        $this->tabla_resumen['periodo_pagado_desde'] = $periodo_pagado_desde;
 
         $dias_totales_laborados = $this->calcular_dias_laborados_calendario_30_dias( $empleado->fecha_ingreso, $documento_nomina->fecha );
 
@@ -434,6 +440,13 @@ class Vacaciones implements Estrategia
         $fecha_fin = Carbon::createFromFormat('Y-m-d', $fecha_final );
 
         return abs( $fecha_ini->diffInDays($fecha_fin) );
+    }
+
+    public function sumar_dias_a_fecha( string $fecha, int $cantidad_dias )
+    {
+        $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
+
+        return $fecha_aux->addDays( $cantidad_dias );
     }
 
     public function retirar( NomDocRegistro $registro)
