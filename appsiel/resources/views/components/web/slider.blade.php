@@ -18,10 +18,10 @@
 
     .owl-carousel .image {
         position: absolute;
-        top: 0;
+        top: 66px;
         right: 0;
         width: 100%;
-        height: 554px;
+        height: 50vh;
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
@@ -56,7 +56,7 @@
                 </div>
             </div>
            <!--<img class="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">-->
-           <img class="image" style="background-image: url('{{asset($item->imagen)}}')" alt="{{$item->titulo}}">
+           <div class="image" style="background-image: url('{{asset($item->imagen)}}')" tooltip="{{$item->titulo}}"></div>
         </div>
         @endforeach
     </div>
