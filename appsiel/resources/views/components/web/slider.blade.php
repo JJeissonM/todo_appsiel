@@ -7,6 +7,7 @@
         /*height: 550px;*/
     }
 
+
     .slider-font {
         @if( !is_null($slider) )
             @if( !is_null($slider->configuracionfuente ) )
@@ -15,12 +16,15 @@
         @endif
     }
 
-    .owl-carousel img {
+    .owl-carousel .image {
         position: absolute;
         top: 0;
-        left: 0;
+        right: 0;
         width: 100%;
         height: 554px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
     }
 </style>
 <section id="main-slider" class="slider-font">
@@ -32,7 +36,7 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="carousel-content slider-font">
+                            <div class="carousel-content slider-font" >
 
                                 @if( $item->titulo != '' )
                                 <h2 class="slider-font" style="text-shadow: 1px 1px 2px black; color: {{$item->colorTitle}} !important;">{{$item->titulo}}</h2>
@@ -51,7 +55,8 @@
                     </div>
                 </div>
             </div>
-            <img class="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">
+           <!--<img class="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">-->
+           <img class="image" style="background-image: url('{{asset($item->imagen)}}')" alt="{{$item->titulo}}">
         </div>
         @endforeach
     </div>

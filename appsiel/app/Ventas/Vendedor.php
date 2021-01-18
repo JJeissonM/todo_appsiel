@@ -13,13 +13,13 @@ class Vendedor extends Model
     protected $table = 'vtas_vendedores';
 
     // El vendedor debe estar creado primero como un cliente (cliente_id)
-	protected $fillable = ['core_tercero_id', 'equipo_ventas_id', 'clase_vendedor_id', 'user_id', 'cliente_id', 'estado'];
-	
+    protected $fillable = ['core_tercero_id', 'equipo_ventas_id', 'clase_vendedor_id', 'user_id', 'cliente_id', 'estado'];
+
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tercero', 'Núm. identificación', 'Equipo de ventas', 'Clase de vendedor', 'Estado'];
 
     public $vistas = '{"create":"layouts.create"}';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return Vendedor::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_vendedores.core_tercero_id')
             ->leftJoin('vtas_equipos_ventas', 'vtas_equipos_ventas.id', '=', 'vtas_vendedores.equipo_ventas_id')
@@ -32,22 +32,54 @@ class Vendedor extends Model
                 'vtas_vendedores.estado AS campo5',
                 'vtas_vendedores.id AS campo6'
             )
+            ->where("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("vtas_equipos_ventas.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_clases_vendedores.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_vendedores.estado", "LIKE", "%$search%")
             ->orderBy('vtas_vendedores.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Vendedor::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_vendedores.core_tercero_id')
+            ->leftJoin('vtas_equipos_ventas', 'vtas_equipos_ventas.id', '=', 'vtas_vendedores.equipo_ventas_id')
+            ->leftJoin('vtas_clases_vendedores', 'vtas_clases_vendedores.id', '=', 'vtas_vendedores.clase_vendedor_id')
+            ->select(
+                'core_terceros.descripcion AS TERCERO',
+                'core_terceros.numero_identificacion AS NÚM_IDENTIFICACIÓN',
+                'vtas_equipos_ventas.descripcion AS EQUIPO_DE_VENTAS',
+                'vtas_clases_vendedores.descripcion AS CLASE_DE_VENDEDOR',
+                'vtas_vendedores.estado AS ESTADO'
+            )
+            ->where("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("vtas_equipos_ventas.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_clases_vendedores.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_vendedores.estado", "LIKE", "%$search%")
+            ->orderBy('vtas_vendedores.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE VENDEDORES";
     }
 
     public static function opciones_campo_select()
     {
         $raw = 'CONCAT(core_terceros.apellido1, " ",core_terceros.apellido2, " ",core_terceros.nombre1, " ",core_terceros.otros_nombres) AS descripcion';
 
-        $opciones = Vendedor::leftJoin('core_terceros','core_terceros.id','=','vtas_vendedores.core_tercero_id')->where('vtas_vendedores.estado','Activo')
-                    ->select('vtas_vendedores.id',DB::raw($raw))
-                    ->get();
+        $opciones = Vendedor::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_vendedores.core_tercero_id')->where('vtas_vendedores.estado', 'Activo')
+            ->select('vtas_vendedores.id', DB::raw($raw))
+            ->get();
 
         //$vec['']='';
         $vec = [];
-        foreach ($opciones as $opcion)
-        {
+        foreach ($opciones as $opcion) {
             $vec[$opcion->id] = $opcion->descripcion;
         }
 
@@ -56,6 +88,6 @@ class Vendedor extends Model
 
     public function tercero()
     {
-        return $this->belongsTo( Tercero::class,'core_tercero_id');
+        return $this->belongsTo(Tercero::class, 'core_tercero_id');
     }
 }

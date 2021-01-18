@@ -18,7 +18,7 @@ class NomCuota extends Model
 	// El archivo js debe estar en la carpeta public
 	public $archivo_js = 'assets/js/nom_cuotas.js';
 
-	public static function consultar_registros($nro_registros)
+	public static function consultar_registros($nro_registros, $search)
 	{
 
 		$registros = NomCuota::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_cuotas.core_tercero_id')
@@ -34,9 +34,50 @@ class NomCuota extends Model
 				'nom_cuotas.detalle AS campo8',
 				'nom_cuotas.id AS campo9'
 			)
+			->where("core_terceros.descripcion", "LIKE", "%$search%")
+			->orWhere("nom_conceptos.descripcion", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.fecha_inicio", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.valor_cuota", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.tope_maximo", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.valor_acumulado", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.estado", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.detalle", "LIKE", "%$search%")
 			->orderBy('nom_cuotas.created_at', 'DESC')
 			->paginate($nro_registros);
 		return $registros;
+	}
+
+	public static function sqlString($search)
+	{
+		$string = NomCuota::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_cuotas.core_tercero_id')
+			->leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_cuotas.nom_concepto_id')
+			->select(
+				'core_terceros.descripcion AS EMPLEADO',
+				'nom_conceptos.descripcion AS CONCEPTO',
+				'nom_cuotas.fecha_inicio AS FECHA_INICIO',
+				'nom_cuotas.valor_cuota AS VALOR_CUOTA',
+				'nom_cuotas.tope_maximo AS TOPE_MÁXIMO',
+				'nom_cuotas.valor_acumulado AS VALOR_ACUMULADO',
+				'nom_cuotas.estado AS ESTADO',
+				'nom_cuotas.detalle AS DETALLE'
+			)
+			->where("core_terceros.descripcion", "LIKE", "%$search%")
+			->orWhere("nom_conceptos.descripcion", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.fecha_inicio", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.valor_cuota", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.tope_maximo", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.valor_acumulado", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.estado", "LIKE", "%$search%")
+			->orWhere("nom_cuotas.detalle", "LIKE", "%$search%")
+			->orderBy('nom_cuotas.created_at', 'DESC')
+			->toSql();
+		return str_replace('?', '"%' . $search . '%"', $string);
+	}
+
+	//Titulo para la exportación en PDF y EXCEL
+	public static function tituloExport()
+	{
+		return "LISTADO DE CUOTAS";
 	}
 
 	public function validar_eliminacion($id)

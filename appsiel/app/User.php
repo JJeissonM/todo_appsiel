@@ -57,10 +57,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Fororespuesta::class);
     }
- 
+
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empresa', 'Nombre', 'Email', 'Fecha creación', 'Perfil'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
             ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
@@ -74,23 +74,56 @@ class User extends Authenticatable
                 'roles.name AS campo5',
                 'users.id AS campo6'
             )
+            ->orWhere("core_empresas.descripcion", "LIKE", "%$search%")
+            ->orWhere("users.name", "LIKE", "%$search%")
+            ->orWhere("users.email", "LIKE", "%$search%")
+            ->orWhere("users.created_at", "LIKE", "%$search%")
+            ->orWhere("roles.name", "LIKE", "%$search%")
             ->orderBy('users.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
-    public static function crear_y_asignar_role( $name, $email, $role_id, $password = null )
+    public static function sqlString($search)
     {
-        if ( is_null($password) )
-        {
+        $string = UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
+            ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
+            ->leftJoin('core_empresas', 'core_empresas.id', '=', 'users.empresa_id')
+            ->where('users.id', '<>', 1)
+            ->select(
+                'core_empresas.descripcion AS EMPRESA',
+                'users.name AS NOMBRE',
+                'users.email As EMAIL',
+                'users.created_at AS FECHA_CREACIÓN',
+                'roles.name AS PERFIL'
+            )
+            ->orWhere("core_empresas.descripcion", "LIKE", "%$search%")
+            ->orWhere("users.name", "LIKE", "%$search%")
+            ->orWhere("users.email", "LIKE", "%$search%")
+            ->orWhere("users.created_at", "LIKE", "%$search%")
+            ->orWhere("roles.name", "LIKE", "%$search%")
+            ->orderBy('users.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE USUARIOS";
+    }
+
+    public static function crear_y_asignar_role($name, $email, $role_id, $password = null)
+    {
+        if (is_null($password)) {
             $password = 'colombia1';
         }
 
         $user = User::create([
-                                'empresa_id' => Auth::user()->empresa_id,
-                                'name' => $name,
-                                'email' => $email,
-                                'password' => Hash::make( $password )
-                            ]);
+            'empresa_id' => Auth::user()->empresa_id,
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password)
+        ]);
 
         $role_r = Role::where('id', '=', $role_id)->firstOrFail();
         $user->assignRole($role_r); //Assigning role to user

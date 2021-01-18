@@ -10,9 +10,9 @@ use Auth;
 use DB;
 
 class NotaDebito extends VtasDocEncabezado
-{    
+{
     protected $table = 'vtas_doc_encabezados';
-    
+
     protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'orden_compras', 'valor_total'];
 
     public $urls_acciones = '{"store":"fe_nota_debito","show":"fe_nota_debito/id_fila"}';
@@ -35,44 +35,82 @@ class NotaDebito extends VtasDocEncabezado
                 'vtas_doc_encabezados.estado AS campo6',
                 'vtas_doc_encabezados.id AS campo7'
             )
+            ->where("vtas_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $core_tipo_transaccion_id = 54;
+        $string = NotaDebito::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
+            ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            ->select(
+                'vtas_doc_encabezados.fecha AS FECHA',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS DOCUMENTO'),
+                DB::raw('core_terceros.descripcion AS CLIENTE'),
+                'vtas_doc_encabezados.descripcion AS DETALLE',
+                'vtas_doc_encabezados.valor_total AS VALOR_TOTAL',
+                'vtas_doc_encabezados.estado AS ESTADO'
+            )
+            ->where("vtas_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
+            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE NOTAS DE DÉBITO";
     }
 
     /*
         Obtener todas las notas crédito aplicadas a la factura
     */
-    public static function get_notas_aplicadas_factura( $doc_encabezado_factura_id )
+    public static function get_notas_aplicadas_factura($doc_encabezado_factura_id)
     {
-        return NotaDebito::where('vtas_doc_encabezados.ventas_doc_relacionado_id',$doc_encabezado_factura_id)
-                    ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
-                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
-                    ->select(
-                                'vtas_doc_encabezados.id',
-                                'vtas_doc_encabezados.core_empresa_id',
-                                'vtas_doc_encabezados.remision_doc_encabezado_id',
-                                'vtas_doc_encabezados.core_tercero_id',
-                                'vtas_doc_encabezados.cliente_id',
-                                'vtas_doc_encabezados.core_tipo_transaccion_id',
-                                'vtas_doc_encabezados.core_tipo_doc_app_id',
-                                'vtas_doc_encabezados.consecutivo',
-                                'vtas_doc_encabezados.fecha',
-                                'vtas_doc_encabezados.fecha_vencimiento',
-                                'vtas_doc_encabezados.descripcion',
-                                'vtas_doc_encabezados.ventas_doc_relacionado_id',
-                                'vtas_doc_encabezados.estado',
-                                'vtas_doc_encabezados.creado_por',
-                                'vtas_doc_encabezados.modificado_por',
-                                'vtas_doc_encabezados.created_at',
-                                'vtas_doc_encabezados.valor_total',
-                                'vtas_doc_encabezados.forma_pago AS condicion_pago',
-                                'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
-                                DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS documento_prefijo_consecutivo' ),
-                                'core_terceros.descripcion AS tercero_nombre_completo',
-                                'core_terceros.numero_identificacion',
-                                'core_terceros.direccion1',
-                                'core_terceros.telefono1'
-                            )
-                    ->get();
+        return NotaDebito::where('vtas_doc_encabezados.ventas_doc_relacionado_id', $doc_encabezado_factura_id)
+            ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
+            ->select(
+                'vtas_doc_encabezados.id',
+                'vtas_doc_encabezados.core_empresa_id',
+                'vtas_doc_encabezados.remision_doc_encabezado_id',
+                'vtas_doc_encabezados.core_tercero_id',
+                'vtas_doc_encabezados.cliente_id',
+                'vtas_doc_encabezados.core_tipo_transaccion_id',
+                'vtas_doc_encabezados.core_tipo_doc_app_id',
+                'vtas_doc_encabezados.consecutivo',
+                'vtas_doc_encabezados.fecha',
+                'vtas_doc_encabezados.fecha_vencimiento',
+                'vtas_doc_encabezados.descripcion',
+                'vtas_doc_encabezados.ventas_doc_relacionado_id',
+                'vtas_doc_encabezados.estado',
+                'vtas_doc_encabezados.creado_por',
+                'vtas_doc_encabezados.modificado_por',
+                'vtas_doc_encabezados.created_at',
+                'vtas_doc_encabezados.valor_total',
+                'vtas_doc_encabezados.forma_pago AS condicion_pago',
+                'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS documento_prefijo_consecutivo'),
+                'core_terceros.descripcion AS tercero_nombre_completo',
+                'core_terceros.numero_identificacion',
+                'core_terceros.direccion1',
+                'core_terceros.telefono1'
+            )
+            ->get();
     }
 }

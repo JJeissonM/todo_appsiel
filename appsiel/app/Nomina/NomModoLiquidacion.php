@@ -29,9 +29,9 @@ class NomModoLiquidacion extends Model
     */
 
     protected $table = 'nom_modos_liquidacion';
-	protected $fillable = ['descripcion','detalle', 'estado'];
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Detalle', 'Estado'];
-    public static function consultar_registros($nro_registros)
+    protected $fillable = ['descripcion', 'detalle', 'estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Detalle', 'Estado'];
+    public static function consultar_registros($nro_registros, $search)
     {
         return NomModoLiquidacion::select(
             'nom_modos_liquidacion.descripcion AS campo1',
@@ -39,17 +39,40 @@ class NomModoLiquidacion extends Model
             'nom_modos_liquidacion.estado AS campo3',
             'nom_modos_liquidacion.id AS campo4'
         )
+            ->where("nom_modos_liquidacion.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_modos_liquidacion.detalle", "LIKE", "%$search%")
+            ->orWhere("nom_modos_liquidacion.estado", "LIKE", "%$search%")
             ->orderBy('nom_modos_liquidacion.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
+    public static function sqlString($search)
+    {
+        $string = NomModoLiquidacion::select(
+            'nom_modos_liquidacion.descripcion AS DESCRIPCIÓN',
+            'nom_modos_liquidacion.detalle AS DETALLE',
+            'nom_modos_liquidacion.estado AS ESTADO'
+        )
+            ->where("nom_modos_liquidacion.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_modos_liquidacion.detalle", "LIKE", "%$search%")
+            ->orWhere("nom_modos_liquidacion.estado", "LIKE", "%$search%")
+            ->orderBy('nom_modos_liquidacion.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE MODOS DE LIQUIDACIÓN";
+    }
+
     public static function opciones_campo_select()
     {
-        $opciones = NomModoLiquidacion::where('estado','Activo')->orderBy('descripcion')->get();
+        $opciones = NomModoLiquidacion::where('estado', 'Activo')->orderBy('descripcion')->get();
 
-        $vec['']='';
-        foreach ($opciones as $opcion)
-        {
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
             $vec[$opcion->id] = $opcion->descripcion;
         }
 
