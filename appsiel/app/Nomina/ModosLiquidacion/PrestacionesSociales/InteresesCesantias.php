@@ -48,7 +48,8 @@ class InteresesCesantias implements Estrategia
 
         $dias_totales_liquidacion = $this->get_dias_liquidacion( $liquidacion['empleado'], $liquidacion['documento_nomina'], $parametros_prestacion );
 
-        $valor_base_diaria =  $this->get_valor_base_diaria( $liquidacion['empleado'], $liquidacion['documento_nomina'], $liquidacion['documento_nomina']->tipo_liquidacion, $parametros_prestacion );
+        $valor_base_diaria =  $this->get_valor_base_diaria( $liquidacion['empleado'], $liquidacion['documento_nomina']->fecha, $liquidacion['documento_nomina']->tipo_liquidacion, $parametros_prestacion );
+
         $this->tabla_resumen['valor_base_diaria'] = $valor_base_diaria;
 
         $total_cesantias = $dias_totales_liquidacion * $valor_base_diaria;

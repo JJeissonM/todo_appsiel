@@ -46,7 +46,7 @@ class ParametroLiquidacionPrestacionesSociales extends Model
             ->orWhere("nom_parametros_liquidacion_prestaciones_sociales.base_liquidacion", "LIKE", "%$search%")
             ->orWhere("nom_parametros_liquidacion_prestaciones_sociales.cantidad_meses_a_promediar", "LIKE", "%$search%")
             ->orWhere("nom_parametros_liquidacion_prestaciones_sociales.dias_a_liquidar", "LIKE", "%$search%")
-            ->orderBy('nom_prestamos.created_at', 'DESC')
+            ->orderBy('nom_parametros_liquidacion_prestaciones_sociales.created_at', 'DESC')
             ->paginate($nro_registros);
     }
     public static function sqlString($search)
@@ -70,7 +70,7 @@ class ParametroLiquidacionPrestacionesSociales extends Model
             ->orWhere("nom_parametros_liquidacion_prestaciones_sociales.base_liquidacion", "LIKE", "%$search%")
             ->orWhere("nom_parametros_liquidacion_prestaciones_sociales.cantidad_meses_a_promediar", "LIKE", "%$search%")
             ->orWhere("nom_parametros_liquidacion_prestaciones_sociales.dias_a_liquidar", "LIKE", "%$search%")
-            ->orderBy('nom_prestamos.created_at', 'DESC')
+            ->orderBy('nom_parametros_liquidacion_prestaciones_sociales.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }

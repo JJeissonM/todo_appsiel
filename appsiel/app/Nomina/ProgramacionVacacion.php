@@ -47,13 +47,6 @@ class ProgramacionVacacion extends Model
                 'nom_novedades_tnl.estado AS campo6',
                 'nom_novedades_tnl.id AS campo7'
             )
-            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_cargos.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.sueldo", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.fecha_ingreso", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.contrato_hasta", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.estado", "LIKE", "%$search%")
-            ->orderBy('nom_contratos.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
@@ -71,13 +64,6 @@ class ProgramacionVacacion extends Model
                 'nom_novedades_tnl.observaciones AS OBSERVACIONES',
                 'nom_novedades_tnl.estado AS ESTADO'
             )
-            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_cargos.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.sueldo", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.fecha_ingreso", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.contrato_hasta", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.estado", "LIKE", "%$search%")
-            ->orderBy('nom_contratos.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
