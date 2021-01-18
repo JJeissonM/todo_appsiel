@@ -107,10 +107,13 @@
                         </div>
                         <div class="media-body about-font">
                             <h4 class="media-heading about-font">Misión</h4>
+                            @if($aboutus->mostrar_leermas=='SI')
                             <p class="about-font">{!! str_limit($aboutus->mision,110) !!}</p>
-
                             <a class="pull-right btn btn-primary about-font" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
+                            @else
+                            <p class="about-font">{!! $aboutus->mision !!}</p>
+                            @endif
                         </div>
                     </div>
 
@@ -120,10 +123,14 @@
                         </div>
                         <div class="media-body">
                             <h4 class="media-heading about-font">Visión</h4>
+                            @if($aboutus->mostrar_leermas=='SI')
                             <p class="about-font">{!! str_limit($aboutus->vision,110) !!}</p>
 
                             <a class="pull-right btn btn-primary about-font" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
+                            @else
+                            <p class="about-font">{!! $aboutus->vision !!}</p>
+                            @endif
                         </div>
                     </div>
                     @if($aboutus->valores != '')
@@ -133,10 +140,14 @@
                         </div>
                         <div class="media-body">
                             <h4 class="media-heading about-font">Valores</h4>
+                            @if($aboutus->mostrar_leermas=='SI')
                             <p class="about-font">{!! str_limit($aboutus->valores,110) !!}</p>
 
                             <a class="pull-right btn btn-primary about-font" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
+                            @else
+                            <p class="about-font">{!! $aboutus->valores !!}</p>
+                            @endif
                         </div>
                     </div>
                     @endif
@@ -147,10 +158,14 @@
                         </div>
                         <div class="media-body">
                             <h4 class="media-heading about-font">Reseña Historica</h4>
+                            @if($aboutus->mostrar_leermas=='SI')
                             <p class="about-font">{!! str_limit($aboutus->resenia,110) !!}</p>
 
                             <a class="pull-right btn btn-primary about-font" onclick="visor_contenido_aboutus({{ $aboutus->id }})" style="cursor: pointer; color: #fff;">Leer
                                 mas...</a>
+                            @else
+                            <p class="about-font">{!! $aboutus->resenia !!}</p>
+                            @endif
                         </div>
                     </div>
                     @endif
