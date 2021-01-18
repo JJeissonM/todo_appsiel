@@ -56,7 +56,7 @@
                 </div>
             </div>
            <!--<img class="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">-->
-           <img class="image" style="background-image: url('{{asset($item->imagen)}}')" alt="{{$item->titulo}}">
+           <div class="image" style="background-image: url('{{asset($item->imagen)}}')" tooltip="{{$item->titulo}}"></div>
         </div>
         @endforeach
     </div>
