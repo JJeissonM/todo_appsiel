@@ -61,8 +61,8 @@
                     <textarea name="description" class="form-control" rows="5" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Más Detalles (Parte Posterior)</label>
-                    <textarea name="more_details" class="form-control" required rows="5"></textarea>
+                    <label>Más Detalles (Parte Posterior) Máx: 250 caracteres</label>
+                    <textarea name="more_details" class="form-control contenido" required rows="5"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Color del Texto</label>

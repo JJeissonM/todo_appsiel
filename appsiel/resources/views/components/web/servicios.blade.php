@@ -98,7 +98,11 @@
                                     </div>
                                 </div>
                                 <div class="pull-right">
+                                    @if($item->url!='')
+                                    <a class="btn btn-primary animate btn-sm servicios-font" href="{{$item->url}}" style="cursor: pointer; color: #fff;">Ver <i class="fa fa-plus"></i></a>
+                                    @else
                                     <a class="btn btn-primary animate btn-sm servicios-font" onclick="visor_contenido_servicios({{ $item->id }})" style="cursor: pointer; color: #fff;">Ver <i class="fa fa-plus"></i></a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -111,7 +115,11 @@
                                     <h4 class="media-heading servicios-font" style="margin-top: 0px;">{{$item->titulo}}</h4>
                                     <p class="servicios-font">{!! str_limit($item->descripcion,90) !!} </p>
                                     <div class="pull-right">
+                                        @if($item->url!='')
+                                        <a class="btn btn-primary animate btn-sm servicios-font" href="{{$item->url}}" style="cursor: pointer; color: #fff;">Ver <i class="fa fa-plus"></i></a>
+                                        @else
                                         <a class="btn btn-primary animate btn-sm servicios-font" onclick="visor_contenido_servicios({{ $item->id }})" style="cursor: pointer; color: #fff;">Ver <i class="fa fa-plus"></i></a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

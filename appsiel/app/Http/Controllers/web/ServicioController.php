@@ -139,6 +139,10 @@ class ServicioController extends Controller
         $item = new Itemservicio();
         $item->titulo = strtoupper($request->titulo);
         $item->descripcion = $request->descripcion;
+        $item->url = null;
+        if ($request->url != "") {
+            $item->url = $request->url;
+        }
         if ($request->disposicion == 'IMAGEN') {
             //el fondo es una imagen
             $file = $request->file('icono');
@@ -209,6 +213,10 @@ class ServicioController extends Controller
         $item = Itemservicio::find($id);
         $item->titulo = strtoupper($request->titulo);
         $item->descripcion = $request->descripcion;
+        $item->url = null;
+        if ($request->url != "") {
+            $item->url = $request->url;
+        }
         if ($request->disposicion == 'IMAGEN') {
             //el fondo es una imagen
             $file = $request->file('icono');

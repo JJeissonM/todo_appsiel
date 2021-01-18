@@ -188,9 +188,9 @@
                         </div>
                         <div class="backside" style="border-radius: 20px; background-color: {{$item->background_color}} !important;">
                             <div class="cardTeam">
-                                <div class="cardTeam-body text-center mt-4">
+                                <div class="cardTeam-body mt-4">
                                     <h4 class="cardTeam-title team-font" style="color: {{$item->title_color}};">{{$item->title}}</h4>
-                                    <p class="cardTeam-text team-font" style="color: {{$item->text_color}};">{{$item->more_details}}</p>
+                                    <p class="cardTeam-text team-font" style="color: {{$item->text_color}};">{!! $item->more_details !!}</p>
                                 </div>
                             </div>
                         </div>
