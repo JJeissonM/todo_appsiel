@@ -57,6 +57,10 @@
                         <label>Descripción</label>
                         <textarea name="descripcion" class="form-control contenido" rows="5">{{$item->descripcion}}</textarea>
                     </div>
+                    <div class="form-group">
+                        <label>URL (Solo si desea redirigir botón ver más)</label>
+                        <input type="text" name="url" value="{{$item->url}}" class="form-control">
+                    </div>
                     @if($servicio->disposicion=='ICONO')
                     <div class="form-group">
                         <label>Icono</label>

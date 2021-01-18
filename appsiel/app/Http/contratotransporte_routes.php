@@ -21,6 +21,7 @@ Route::post('cte_contratos/planillas/store', 'ContratoTransporte\ContratoTranspo
 Route::get('cte_contratos/planillas/{id}/imprimir', 'ContratoTransporte\ContratoTransporteController@planillaimprimir')->name('cte_contratos.planillaimprimir');
 Route::get('cte_contratos/planillas/{id}/verificar', 'ContratoTransporte\ContratoTransporteController@verificarPlanilla')->name('cte_contratos.planillaverificar');
 Route::get('cte_contratos/{id}/eliminar', 'ContratoTransporte\ContratoTransporteController@anular')->name('cte_contratos.anular');
+Route::get('cte_contratos/{id}/conductores', 'ContratoTransporte\ContratoTransporteController@conductores')->name('cte_contratos.conductores');
 
 
 //VEHICULOS

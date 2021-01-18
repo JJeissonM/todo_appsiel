@@ -19,20 +19,20 @@ class GrupoSanguineo extends Model
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"no"}';
 
-	public $encabezado_tabla = [ 'ID', 'Descripción', 'Acción'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción'];
 
-	public static function consultar_registros()
-	{
-		$modelo_padre_id = 224; // Grupos Sanguineos
-	    return EntidadRemisora::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
-	    			->where('core_eav_valores.modelo_padre_id',$modelo_padre_id)
-                    ->select(
-                    			'core_eav_valores.id AS campo1',
-                    			'core_eav_valores.valor AS campo2',
-                    			'core_eav_valores.id AS campo3')
-				    ->get()
-				    ->toArray();
-	}
+    public static function consultar_registros($nro_registros)
+    {
+        $modelo_padre_id = 224; // Grupos Sanguineos
+        return EntidadRemisora::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
+            ->where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
+            ->select(
+                'core_eav_valores.valor AS campo1',
+                'core_eav_valores.id AS campo2'
+            )
+            ->orderBy('core_eav_valores.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
 
 
     public static function opciones_campo_select()

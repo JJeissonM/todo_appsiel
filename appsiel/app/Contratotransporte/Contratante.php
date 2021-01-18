@@ -11,7 +11,7 @@ class Contratante extends Model
     protected $table = 'cte_contratantes';
     protected $fillable = ['id', 'tercero_id', 'estado', 'created_at', 'updated_at'];
 
-    public $encabezado_tabla = ['Tipo Documento', 'Número Documento', 'Contratante', 'Estado', 'Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tipo Documento', 'Número Documento', 'Contratante', 'Estado'];
 
     public $vistas = '{"index":"layouts.index3"}';
 
@@ -29,7 +29,7 @@ class Contratante extends Model
         return $vec;
     }
 
-    public static function consultar_registros2()
+    public static function consultar_registros2($nro_registros, $search)
     {
         return Contratante::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_contratantes.tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
@@ -39,9 +39,36 @@ class Contratante extends Model
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
                 'cte_contratantes.estado AS campo4',
                 'cte_contratantes.id AS campo5'
-            )
+            )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("cte_contratantes.estado", "LIKE", "%$search%")
             ->orderBy('cte_contratantes.created_at', 'DESC')
-            ->paginate(100);
+            ->paginate($nro_registros);
+    }
+
+    public static function sqlString($search)
+    {
+        $string = Contratante::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_contratantes.tercero_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->select(
+                'core_tipos_docs_id.abreviatura AS TIPO_DOCUMENTO',
+                'core_terceros.numero_identificacion AS NÚMERO_DOCUMENTO',
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS CONTRATANTE'),
+                'cte_contratantes.estado AS ESTADO'
+            )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
+            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("cte_contratantes.estado", "LIKE", "%$search%")
+            ->orderBy('cte_contratantes.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CONTRATANTES";
     }
 
     public function tercero()

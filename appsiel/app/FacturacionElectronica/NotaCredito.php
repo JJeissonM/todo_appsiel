@@ -17,9 +17,9 @@ class NotaCredito extends VtasDocEncabezado
 
     public $urls_acciones = '{"store":"fe_nota_credito","show":"fe_nota_credito/id_fila"}';
 
-    public $encabezado_tabla = ['Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'Estado', 'Acción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'Estado'];
 
-    public static function consultar_registros2()
+    public static function consultar_registros2($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 53;
         return VtasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
@@ -36,9 +36,8 @@ class NotaCredito extends VtasDocEncabezado
                 'vtas_doc_encabezados.id AS campo7'
             )
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
-            ->paginate(500);
+            ->paginate($nro_registros);
     }
-
     /*
         Obtener todas las notas crédito aplicadas a la factura
     */

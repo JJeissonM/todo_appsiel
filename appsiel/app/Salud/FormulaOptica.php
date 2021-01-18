@@ -16,16 +16,16 @@ class FormulaOptica extends Model
 	
 	protected $fillable = ['paciente_id', 'consulta_id', 'proximo_control', 'tipo_de_lentes', 'material', 'recomendaciones','uso','diagnostico','filtro'];
 
-	public $encabezado_tabla = ['Nombre Completo', 'Control', 'Tipo de Lentes', 'Material', 'Recomendaciones', 'Acción'];
-	
-	public static function consultar_registros()
-	{
-	    $registros = FormulaOptica::select('salud_formulas_opticas.paciente_id AS campo1', 'salud_formulas_opticas.proximo_control AS campo2', 'salud_formulas_opticas.tipo_de_lentes AS campo3', 'salud_formulas_opticas.material AS campo4', 'salud_formulas_opticas.recomendaciones AS campo5', 'salud_formulas_opticas.id AS campo6')
-	    ->get()
-	    ->toArray();
-	    return $registros;
-	}
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre Completo', 'Control', 'Tipo de Lentes', 'Material', 'Recomendaciones'];
 
+	public static function consultar_registros($nro_registros)
+	{
+		$registros = FormulaOptica::select('salud_formulas_opticas.paciente_id AS campo1', 'salud_formulas_opticas.proximo_control AS campo2', 'salud_formulas_opticas.tipo_de_lentes AS campo3', 'salud_formulas_opticas.material AS campo4', 'salud_formulas_opticas.recomendaciones AS campo5', 'salud_formulas_opticas.id AS campo6')
+			->orderBy('salud_formulas_opticas.created_at', 'DESC')
+			->paginate($nro_registros);
+		return $registros;
+	}
+	
 	public static function get_formulas_del_paciente( $paciente_id )
 	{
 		return FormulaOptica::leftJoin( 'salud_consultas', 'salud_consultas.id', '=', 'salud_formulas_opticas.consulta_id' )

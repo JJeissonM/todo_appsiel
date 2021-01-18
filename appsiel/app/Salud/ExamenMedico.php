@@ -19,14 +19,14 @@ class ExamenMedico extends Model
 	
     protected $fillable = ['descripcion', 'detalle', 'orden', 'estado'];
 	
-    public $encabezado_tabla = ['Código', 'Descripción', 'Estado', 'Acción'];
-	
-    public static function consultar_registros()
-	{
-	    return ExamenMedico::select('salud_examenes.descripcion AS campo1', 'salud_examenes.detalle AS campo2', 'salud_examenes.estado AS campo3', 'salud_examenes.id AS campo4')
-	    ->get()
-	    ->toArray();
-	}
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Detalles', 'Estado'];
+
+    public static function consultar_registros($nro_registros)
+    {
+        return ExamenMedico::select('salud_examenes.descripcion AS campo1', 'salud_examenes.detalle AS campo2', 'salud_examenes.estado AS campo3', 'salud_examenes.id AS campo4')
+            ->orderBy('salud_examenes.created_at', 'DESC')
+            ->paginate($nro_registros);
+    }
 
     public static function opciones_campo_select()
     {
