@@ -20,7 +20,7 @@
 
 	@include('layouts.mensajes')
 	
-	<div class="container col-sm-8 col-sm-offset-2">
+	<div class="container col-sm-12">
 		
 		<br/><br/><br/>
 
