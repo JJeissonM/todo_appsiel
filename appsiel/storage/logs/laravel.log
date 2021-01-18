@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+=======
 [2021-01-17 11:07:52] production.ERROR: BadMethodCallException: Call to undefined method Illuminate\Database\Query\Builder::sqlString() in C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:2405
 Stack trace:
 #0 [internal function]: Illuminate\Database\Query\Builder->__call('sqlString', Array)
@@ -4307,3 +4309,4 @@ Stack trace:
 #73 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #74 C:\xampp\htdocs\todo_appsiel\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #75 {main}  
+>>>>>>> 04fd3fc4941208e7889f0d8835928648f9cd8ba6
