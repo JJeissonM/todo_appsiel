@@ -15,7 +15,7 @@ class SgaEstudianteReconocimiento extends Model
 	public function estudiante()
 	{
 		return $this->belongsTo('App\Matriculas\Estudiante', 'estudiante_id');
-	}
+	} 
 
 	public function periodo_lectivo()
 	{
