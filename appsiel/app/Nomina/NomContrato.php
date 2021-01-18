@@ -210,7 +210,8 @@ class NomContrato extends Model
                 ['modificado_por' => '']
         );
 
-        if ($registro->contrato_hasta == '') {
+        if ($registro->contrato_hasta == '')
+        {
             $registro->contrato_hasta = date('2099-12-31');
             $registro->save();
         }
@@ -242,5 +243,25 @@ class NomContrato extends Model
         }
 
         return $lista_campos;
+    }
+
+    public static function update_adicional($datos, $registro_id)
+    {
+        $contrato = NomContrato::find( $registro_id );
+
+        // ESTO NO ESTA FUNCIONANDO, ASI COMO ESTA EL CONDICIONAL NUNCA VAN A SER IGUALES
+        if ( $contrato->sueldo != $datos['sueldo'] )
+        {
+            CambioSalario::create(
+                                    [ 'nom_contrato_id' => $registro_id] +
+                                        [ 'salario_anterior' => $datos['sueldo'] ] +
+                                        [ 'nuevo_salario' => $contrato->sueldo] +
+                                        [ 'fecha_modificacion' => date('Y-m-d')] +
+                                        [ 'tipo_modificacion' => 'creacion_contrato'] +
+                                        [ 'observacion' => ''] +
+                                        [ 'creado_por' => Auth::user()->email] +
+                                        [ 'modificado_por' => '']
+                                );
+        }
     }
 }

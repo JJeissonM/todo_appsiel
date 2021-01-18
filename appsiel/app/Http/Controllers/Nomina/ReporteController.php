@@ -430,7 +430,6 @@ class ReporteController extends Controller
                                     ];
             }
         }
-        //dd($datos);
 
         $vista = View::make('nomina.reportes.consolidado_prestaciones_sociales', compact( 'datos', 'fecha_desde', 'fecha_hasta','cantidad_meses_a_promediar') )->render();
 
@@ -498,10 +497,7 @@ class ReporteController extends Controller
         $coleccion_movimientos_parafiscales = PilaParafiscales::where('fecha_final_mes',$fecha_final_mes)
                                     ->get();
 
-        //dd($coleccion_movimientos_riesgos_laborales);
         $vista = View::make('nomina.reportes.aportes_pila', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_pension', 'coleccion_movimientos_riesgos_laborales', 'coleccion_movimientos_parafiscales', 'fecha_final_mes' ) )->render();
-
-        //dd($coleccion_movimientos_salud);
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
@@ -595,8 +591,6 @@ class ReporteController extends Controller
             }            
         }
 
-        //dd( $empleados_con_movimiento->chunck('nom_contrato_id') );
-
         $datos = [];
         foreach ($array_grupos_empleados as $grupo_empleado)
         {
@@ -632,7 +626,7 @@ class ReporteController extends Controller
                     $array_conceptos[$registro_concepto->nom_concepto_id]['valor_deduccion'] = $registro_concepto->valor_deduccion;
                 }
             }
-            //dd($array_conceptos);
+            
             ksort($array_conceptos);
             $registros_grupo_empleado_2[] = (object)[ 'grupo_empleado' => $linea->grupo_empleado, 'datos' => $array_conceptos];  
         }

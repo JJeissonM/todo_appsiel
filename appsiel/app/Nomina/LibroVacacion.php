@@ -46,7 +46,7 @@ class LibroVacacion extends Model
 			->orWhere("nom_libro_vacaciones.dias_disfrutados", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.dias_no_habiles", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.valor_vacaciones", "LIKE", "%$search%")
-			->orderBy('nom_prestamos.created_at', 'DESC')
+			->orderBy('nom_libro_vacaciones.created_at', 'DESC')
 			->paginate($nro_registros);
 	}
 
@@ -80,7 +80,7 @@ class LibroVacacion extends Model
 			->orWhere("nom_libro_vacaciones.dias_disfrutados", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.dias_no_habiles", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.valor_vacaciones", "LIKE", "%$search%")
-			->orderBy('nom_prestamos.created_at', 'DESC')
+			->orderBy('nom_libro_vacaciones.created_at', 'DESC')
 			->toSql();
 		return str_replace('?', '"%' . $search . '%"', $string);
 	}

@@ -51,7 +51,7 @@
 						El nombre del permiso (permissions.name) debe coincidir con el nombre de la aplicación (sys_aplicaciones.descripcion) para poder ser mostrada.
 					*/
 					$cant_cols=4;
-					$tam_iconos = '120px';
+					$tam_iconos = '100px';
 					$i=$cant_cols;
 			      ?>
 			        @foreach($aplicaciones as $fila)
