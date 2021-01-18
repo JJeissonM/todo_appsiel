@@ -18,10 +18,10 @@
 
     .owl-carousel .image {
         position: absolute;
-        top: 66px;
+        top: 0;
         right: 0;
         width: 100%;
-        height: 50vh;
+        height: 554px;
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
