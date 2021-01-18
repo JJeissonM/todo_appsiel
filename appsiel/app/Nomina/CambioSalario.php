@@ -46,8 +46,8 @@ class CambioSalario extends Model
 			->orWhere("nom_cambios_salarios.fecha_modificacion", "LIKE", "%$search%")
 			->orWhere("nom_cambios_salarios.tipo_modificacion", "LIKE", "%$search%")
 			->orWhere("nom_cambios_salarios.observacion", "LIKE", "%$search%")
-			->orWhere(DB::raw('CONCAT(nom_cambios_salarios.creado_por,", ",nom_cambios_salarios.created_at) AS campo7'), "LIKE", "%$search%")
-			->orWhere(DB::raw('CONCAT(nom_cambios_salarios.modificado_por,", ",nom_cambios_salarios.updated_at) AS campo8'), "LIKE", "%$search%")
+			->orWhere(DB::raw('CONCAT(nom_cambios_salarios.creado_por,", ",nom_cambios_salarios.created_at)'), "LIKE", "%$search%")
+			->orWhere(DB::raw('CONCAT(nom_cambios_salarios.modificado_por,", ",nom_cambios_salarios.updated_at)'), "LIKE", "%$search%")
 			->orderBy('nom_cambios_salarios.created_at', 'DESC')
 			->paginate($nro_registros);
 	}
@@ -72,8 +72,8 @@ class CambioSalario extends Model
 			->orWhere("nom_cambios_salarios.fecha_modificacion", "LIKE", "%$search%")
 			->orWhere("nom_cambios_salarios.tipo_modificacion", "LIKE", "%$search%")
 			->orWhere("nom_cambios_salarios.observacion", "LIKE", "%$search%")
-			->orWhere(DB::raw('CONCAT(nom_cambios_salarios.creado_por,", ",nom_cambios_salarios.created_at) AS campo7'), "LIKE", "%$search%")
-			->orWhere(DB::raw('CONCAT(nom_cambios_salarios.modificado_por,", ",nom_cambios_salarios.updated_at) AS campo8'), "LIKE", "%$search%")
+			->orWhere(DB::raw('CONCAT(nom_cambios_salarios.creado_por,", ",nom_cambios_salarios.created_at)'), "LIKE", "%$search%")
+			->orWhere(DB::raw('CONCAT(nom_cambios_salarios.modificado_por,", ",nom_cambios_salarios.updated_at)'), "LIKE", "%$search%")
 			->orderBy('nom_cambios_salarios.created_at', 'DESC')
 			->toSql();
 		return str_replace('?', '"%' . $search . '%"', $string);

@@ -17,8 +17,6 @@
 
 	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnPrint( 'nomina_print/'.$id ) }}
 
-	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEmail( 'nomina_enviar_por_email/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
-
 	@if ( $encabezado_doc->estado == 'Activo' )
 		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Acciones', 'success', 'money', 
 		          [ 
