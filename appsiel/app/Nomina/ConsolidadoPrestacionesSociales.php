@@ -9,13 +9,13 @@ use DB;
 class ConsolidadoPrestacionesSociales extends Model
 {
 	protected $table = 'nom_consolidados_prestaciones_sociales';
-	
-	protected $fillable = [ 'nom_contrato_id', 'tipo_prestacion', 'fecha_fin_mes', 'valor_consolidado_mes_anterior', 'valor_pagado_mes', 'valor_consolidado_mes', 'dias_consolidado_mes', 'valor_acumulado', 'dias_acumulados', 'observacion', 'estado'  ];
-	
-	public $encabezado_tabla = ['Empleado', 'Prestación',  'Mes', 'Consolidado mes anterior', 'Vlr. pagado mes', 'Vlr. consolidado mes', 'Días consol. mes', 'Días acumulados', 'Vlr. acumulado', 'Acción'];
+
+	protected $fillable = ['nom_contrato_id', 'tipo_prestacion', 'fecha_fin_mes', 'valor_consolidado_mes_anterior', 'valor_pagado_mes', 'valor_consolidado_mes', 'dias_consolidado_mes', 'valor_acumulado', 'dias_acumulados', 'observacion', 'estado'];
+
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empleado', 'Prestación',  'Mes', 'Consolidado mes anterior', 'Vlr. pagado mes', 'Vlr. consolidado mes', 'Días consol. mes', 'Días acumulados', 'Vlr. acumulado'];
 
 	//public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
-    public $urls_acciones = '{"show":"no"}';
+	public $urls_acciones = '{"show":"no"}';
 
 	//public $archivo_js = 'assets/js/nomina/novedades_tnl.js';
 
@@ -24,22 +24,67 @@ class ConsolidadoPrestacionesSociales extends Model
 		return $this->belongsTo(NomContrato::class, 'nom_contrato_id');
 	}
 
-	public static function consultar_registros()
+	public static function consultar_registros($nro_registros, $search)
 	{
-	    return ConsolidadoPrestacionesSociales::leftJoin('nom_contratos','nom_contratos.id','=','nom_consolidados_prestaciones_sociales.nom_contrato_id')
-                	    				->leftJoin('core_terceros','core_terceros.id','=','nom_contratos.core_tercero_id')
-                	    				->select(
-                	    						'core_terceros.descripcion AS campo1',
-                                                'nom_consolidados_prestaciones_sociales.tipo_prestacion AS campo2',
-                                                'nom_consolidados_prestaciones_sociales.fecha_fin_mes AS campo3',
-                	    						'nom_consolidados_prestaciones_sociales.valor_consolidado_mes_anterior AS campo4',
-                	    						'nom_consolidados_prestaciones_sociales.valor_pagado_mes AS campo5',
-                                                'nom_consolidados_prestaciones_sociales.valor_consolidado_mes AS campo6',
-                	    						'nom_consolidados_prestaciones_sociales.dias_consolidado_mes AS campo7',
-                	    						'nom_consolidados_prestaciones_sociales.dias_acumulados AS campo8',
-                	    						'nom_consolidados_prestaciones_sociales.valor_acumulado AS campo9',
-                	    						'nom_consolidados_prestaciones_sociales.id AS campo10')
-                					    ->get()
-                					    ->toArray();
+		return ConsolidadoPrestacionesSociales::leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_consolidados_prestaciones_sociales.nom_contrato_id')
+			->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+			->select(
+				'core_terceros.descripcion AS campo1',
+				'nom_consolidados_prestaciones_sociales.tipo_prestacion AS campo2',
+				'nom_consolidados_prestaciones_sociales.fecha_fin_mes AS campo3',
+				'nom_consolidados_prestaciones_sociales.valor_consolidado_mes_anterior AS campo4',
+				'nom_consolidados_prestaciones_sociales.valor_pagado_mes AS campo5',
+				'nom_consolidados_prestaciones_sociales.valor_consolidado_mes AS campo6',
+				'nom_consolidados_prestaciones_sociales.dias_consolidado_mes AS campo7',
+				'nom_consolidados_prestaciones_sociales.dias_acumulados AS campo8',
+				'nom_consolidados_prestaciones_sociales.valor_acumulado AS campo9',
+				'nom_consolidados_prestaciones_sociales.id AS campo10'
+			)
+			->where("core_terceros.descripcion", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.tipo_prestacion", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.fecha_fin_mes", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.valor_consolidado_mes_anterior", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.valor_pagado_mes", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.valor_consolidado_mes", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.dias_consolidado_mes", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.dias_acumulados", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.valor_acumulado", "LIKE", "%$search%")
+			->orderBy('nom_consolidados_prestaciones_sociales.created_at', 'DESC')
+			->paginate($nro_registros);
+	}
+
+	public static function sqlString($search)
+	{
+		$string = ConsolidadoPrestacionesSociales::leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_consolidados_prestaciones_sociales.nom_contrato_id')
+			->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+			->select(
+				'core_terceros.descripcion AS EMPLEADO',
+				'nom_consolidados_prestaciones_sociales.tipo_prestacion AS PRESTACIÓN',
+				'nom_consolidados_prestaciones_sociales.fecha_fin_mes AS MES',
+				'nom_consolidados_prestaciones_sociales.valor_consolidado_mes_anterior AS CONSOLIDADO_MES_ANTERIOR',
+				'nom_consolidados_prestaciones_sociales.valor_pagado_mes AS VLR_PAGADO_MES',
+				'nom_consolidados_prestaciones_sociales.valor_consolidado_mes AS VLR_CONSOLIDADO_MES',
+				'nom_consolidados_prestaciones_sociales.dias_consolidado_mes AS DÍAS_CONSOL_MES',
+				'nom_consolidados_prestaciones_sociales.dias_acumulados AS DÍAS_ACUMULADOS',
+				'nom_consolidados_prestaciones_sociales.valor_acumulado AS VLR_ACUMULADO'
+			)
+			->where("core_terceros.descripcion", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.tipo_prestacion", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.fecha_fin_mes", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.valor_consolidado_mes_anterior", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.valor_pagado_mes", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.valor_consolidado_mes", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.dias_consolidado_mes", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.dias_acumulados", "LIKE", "%$search%")
+			->orWhere("nom_consolidados_prestaciones_sociales.valor_acumulado", "LIKE", "%$search%")
+			->orderBy('nom_consolidados_prestaciones_sociales.created_at', 'DESC')
+			->toSql();
+		return str_replace('?', '"%' . $search . '%"', $string);
+	}
+
+	//Titulo para la exportación en PDF y EXCEL
+	public static function tituloExport()
+	{
+		return "LISTADO DE CSOLIDADO PRESTACIONES SOCIALES";
 	}
 }
