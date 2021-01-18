@@ -16,39 +16,38 @@ class NomConcepto extends Model
         forma_parte_basico: Los conceptos que forman parte integral del básico son aquellas que sustituyen el sueldo y afectan la continuidad de este. Ejemplo: permisos remunerados, licencias remuneradas, vacaciones, incapacidades y otros los cuales en su pago disminuyen el valor del sueldo o jornal a pagar.
 
     */
-	protected $fillable = ['modo_liquidacion_id','naturaleza', 'porcentaje_sobre_basico', 'valor_fijo', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'estado'];
+    protected $fillable = ['modo_liquidacion_id', 'naturaleza', 'porcentaje_sobre_basico', 'valor_fijo', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'estado'];
 
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Modo Liquidación', 'Descripción', 'Abreviatura', '% del básico', 'Vlr. Fijo', 'Naturaleza', 'Agrupación', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Modo Liquidación', 'Descripción', 'Abreviatura', '% del básico', 'Vlr. Fijo', 'Naturaleza', 'Agrupación', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
     public function modo_liquidacion()
     {
-        return $this->belongsTo( NomModoLiquidacion::class, 'modo_liquidacion_id');
+        return $this->belongsTo(NomModoLiquidacion::class, 'modo_liquidacion_id');
     }
 
     public function agrupacion()
     {
-        return $this->belongsTo( AgrupacionConcepto::class, 'nom_agrupacion_id');
+        return $this->belongsTo(AgrupacionConcepto::class, 'nom_agrupacion_id');
     }
 
-    public function get_valor_hora_porcentaje_sobre_basico( $salario_x_hora, $cantidad_horas )
+    public function get_valor_hora_porcentaje_sobre_basico($salario_x_hora, $cantidad_horas)
     {
         //$salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
 
-        if ( $this->porcentaje_sobre_basico < 1 )
-        {
+        if ($this->porcentaje_sobre_basico < 1) {
             // Fraccion del Salario
-            $valor_a_liquidar = ( $salario_x_hora * $this->porcentaje_sobre_basico ) * $cantidad_horas;
-        }else{
+            $valor_a_liquidar = ($salario_x_hora * $this->porcentaje_sobre_basico) * $cantidad_horas;
+        } else {
             // Valor completo Salario + Adicional
-            $valor_a_liquidar = $salario_x_hora * ( 1 + $this->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
+            $valor_a_liquidar = $salario_x_hora * (1 + $this->porcentaje_sobre_basico / 100) * $cantidad_horas;
         }
-        
+
         return $valor_a_liquidar;
     }
-	
-    public static function consultar_registros($nro_registros)
+
+    public static function consultar_registros($nro_registros, $search)
     {
         return NomConcepto::leftJoin('nom_modos_liquidacion', 'nom_modos_liquidacion.id', '=', 'nom_conceptos.modo_liquidacion_id')
             ->leftJoin('nom_agrupaciones_conceptos', 'nom_agrupaciones_conceptos.id', '=', 'nom_conceptos.nom_agrupacion_id')
@@ -63,17 +62,58 @@ class NomConcepto extends Model
                 'nom_conceptos.estado AS campo8',
                 'nom_conceptos.id AS campo9'
             )
+            ->where("nom_modos_liquidacion.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.abreviatura", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.porcentaje_sobre_basico", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.valor_fijo", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.naturaleza", "LIKE", "%$search%")
+            ->orWhere("nom_agrupaciones_conceptos.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.estado", "LIKE", "%$search%")
             ->orderBy('nom_conceptos.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
+    public static function sqlString($search)
+    {
+        $string = NomConcepto::leftJoin('nom_modos_liquidacion', 'nom_modos_liquidacion.id', '=', 'nom_conceptos.modo_liquidacion_id')
+            ->leftJoin('nom_agrupaciones_conceptos', 'nom_agrupaciones_conceptos.id', '=', 'nom_conceptos.nom_agrupacion_id')
+            ->select(
+                'nom_modos_liquidacion.descripcion AS MODO_LIQUIDACIÓN',
+                'nom_conceptos.descripcion AS DESCRIPCIÓN',
+                'nom_conceptos.abreviatura AS ABREVIATURA',
+                'nom_conceptos.porcentaje_sobre_basico AS %_DEL_BÁSICO',
+                'nom_conceptos.valor_fijo AS VLR_FIJO',
+                'nom_conceptos.naturaleza AS NATURALEZA',
+                'nom_agrupaciones_conceptos.descripcion AS AGRUPACIÓN',
+                'nom_conceptos.estado AS ESTADO',
+                'nom_conceptos.id AS campo9'
+            )
+            ->where("nom_modos_liquidacion.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.abreviatura", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.porcentaje_sobre_basico", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.valor_fijo", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.naturaleza", "LIKE", "%$search%")
+            ->orWhere("nom_agrupaciones_conceptos.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_conceptos.estado", "LIKE", "%$search%")
+            ->orderBy('nom_conceptos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE CONCEPTOS";
+    }
+
     public static function opciones_campo_select()
     {
-        $opciones = NomConcepto::where('estado','Activo')->orderBy('descripcion')->get();
+        $opciones = NomConcepto::where('estado', 'Activo')->orderBy('descripcion')->get();
 
-        $vec['']='';
-        foreach ($opciones as $opcion)
-        {
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
             $vec[$opcion->id] = $opcion->descripcion;
         }
 
@@ -82,12 +122,12 @@ class NomConcepto extends Model
 
     public static function conceptos_del_documento($encabezado_doc_id)
     {
-        return NomConcepto::leftJoin('nom_doc_registros','nom_doc_registros.nom_concepto_id','=','nom_conceptos.id')
-                            ->where('nom_doc_registros.nom_doc_encabezado_id',$encabezado_doc_id)
-                            ->select('nom_doc_registros.nom_concepto_id','nom_conceptos.descripcion','nom_conceptos.abreviatura','nom_conceptos.naturaleza')
-                            ->distinct('nom_doc_registros.nom_concepto_id')
-                            ->orderBy('nom_conceptos.id','ASC')
-                            ->get();
+        return NomConcepto::leftJoin('nom_doc_registros', 'nom_doc_registros.nom_concepto_id', '=', 'nom_conceptos.id')
+            ->where('nom_doc_registros.nom_doc_encabezado_id', $encabezado_doc_id)
+            ->select('nom_doc_registros.nom_concepto_id', 'nom_conceptos.descripcion', 'nom_conceptos.abreviatura', 'nom_conceptos.naturaleza')
+            ->distinct('nom_doc_registros.nom_concepto_id')
+            ->orderBy('nom_conceptos.id', 'ASC')
+            ->get();
     }
 
 
@@ -130,13 +170,11 @@ class NomConcepto extends Model
                                     "mensaje":"Está asociado al registro de un Prestamo de un empleado."
                                 }
                         }';
-        $tablas = json_decode( $tablas_relacionadas );
-        foreach($tablas AS $una_tabla)
-        { 
-            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+        $tablas = json_decode($tablas_relacionadas);
+        foreach ($tablas as $una_tabla) {
+            $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
 
-            if ( !empty($registro) )
-            {
+            if (!empty($registro)) {
                 return $una_tabla->mensaje;
             }
         }

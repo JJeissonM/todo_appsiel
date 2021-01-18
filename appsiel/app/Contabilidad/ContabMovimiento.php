@@ -21,7 +21,7 @@ class ContabMovimiento extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros($nro_registros, $search)
     {
         return ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_movimientos.core_tercero_id')
@@ -41,11 +41,61 @@ class ContabMovimiento extends Model
                 'contab_movimientos.valor_credito AS campo10',
                 'contab_movimientos.id AS campo11'
             )
+            ->orWhere("contab_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(inv_productos.id," ",inv_productos.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.detalle_operacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.tasa_impuesto", "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.base_impuesto", "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.valor_debito", "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.valor_credito", "LIKE", "%$search%")
             ->orderBy('contab_movimientos.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
-    public static function consultar_registros2($nro_registros)
+    public static function sqlString($search)
+    {
+        $string = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_movimientos.core_tercero_id')
+            ->leftJoin('inv_productos', 'inv_productos.id', '=', 'contab_movimientos.inv_producto_id')
+            ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+            ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                'contab_movimientos.fecha AS FECHA',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS DOCUMENTO'),
+                'core_terceros.descripcion AS TERCERO',
+                DB::raw('CONCAT(inv_productos.id," ",inv_productos.descripcion) AS PRODUCTO'),
+                'contab_movimientos.detalle_operacion AS DETALLE',
+                DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS CUENTA'),
+                'contab_movimientos.tasa_impuesto AS TASA_IMPUESTO',
+                'contab_movimientos.base_impuesto AS BASE_IMPUESTO',
+                'contab_movimientos.valor_debito AS DÉBITO',
+                'contab_movimientos.valor_credito AS CRÉDITO'
+            )
+            ->orWhere("contab_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(inv_productos.id," ",inv_productos.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.detalle_operacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.tasa_impuesto", "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.base_impuesto", "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.valor_debito", "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.valor_credito", "LIKE", "%$search%")
+            ->orderBy('contab_movimientos.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
+    }
+
+    //Titulo para la exportación en PDF y EXCEL
+    public static function tituloExport()
+    {
+        return "LISTADO DE MOVIMIENTOS CONTABLES";
+    }
+
+    public static function consultar_registros2($nro_registros, $search)
     {
         return ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_movimientos.core_tercero_id')
@@ -66,7 +116,17 @@ class ContabMovimiento extends Model
                 'contab_movimientos.valor_credito AS campo10',
                 'contab_movimientos.id AS campo11'
             )
-            ->orderBy('contab_movimientos.fecha', 'DESC')
+            ->orWhere("contab_movimientos.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(inv_productos.id," ",inv_productos.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.detalle_operacion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.tasa_impuesto", "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.base_impuesto", "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.valor_debito", "LIKE", "%$search%")
+            ->orWhere("contab_movimientos.valor_credito", "LIKE", "%$search%")
+            ->orderBy('contab_movimientos.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
