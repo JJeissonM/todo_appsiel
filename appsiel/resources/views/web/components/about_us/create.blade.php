@@ -57,11 +57,24 @@
                     <input name="descripcion" type="text" placeholder="Descripción" value="{{$aboutus->descripcion}}" class="form-control">
                 </div>
                 <div class="form-group">
-                        <label for="">Fuente Para el Componente</label>
-                        @if($fonts!=null)
-                        {!! Form::select('configuracionfuente_id',$fonts,$aboutus->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                    <label for="">Fuente Para el Componente</label>
+                    @if($fonts!=null)
+                    {!! Form::select('configuracionfuente_id',$fonts,$aboutus->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                    @endif
+                </div>
+                <div class="form-group">
+                    <label>¿Mostrar Botón Leer Más?</label>
+                    <select class="form-control" name="mostrar_leermas">
+                        <option value="SI">-- Seleccione una opción --</option>
+                        @if($aboutus->mostrar_leermas=='SI')
+                        <option selected value="SI">SI</option>
+                        <option value="NO">NO</option>
+                        @else
+                        <option value="SI">SI</option>
+                        <option selected value="NO">NO</option>
                         @endif
-                    </div>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>Misión</label>
                     <textarea name="mision" class="form-control contenido" rows="5">{{$aboutus->mision}}</textarea>
@@ -146,11 +159,19 @@
                     <input name="descripcion" type="text" placeholder="Descripción" class="form-control">
                 </div>
                 <div class="form-group">
-                        <label for="">Fuente Para el Componente</label>
-                        @if($fonts!=null)
-                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
-                        @endif
-                    </div>
+                    <label for="">Fuente Para el Componente</label>
+                    @if($fonts!=null)
+                    {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                    @endif
+                </div>
+                <div class="form-group">
+                    <label>¿Mostrar Botón Leer Más?</label>
+                    <select class="form-control" name="mostrar_leermas" required>
+                        <option value="SI">-- Seleccione una opción --</option>
+                        <option value="SI">SI</option>
+                        <option value="NO">NO</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label>Misión</label>
                     <textarea name="mision" class="form-control contenido" rows="5"></textarea>
