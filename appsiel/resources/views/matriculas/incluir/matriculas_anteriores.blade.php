@@ -5,9 +5,12 @@
                 Matrículas Anteriores
             </div>
 
+            {{ Form::bsBtnCreate( url('web/create?id=1&id_modelo=281&id_transaccion='), '_blank' ) }}
+            {{ Form::bsBtnExcel( 'Historial de matriculas' ) }}
+
             <div class="panel-body">
                 <table class="table table-striped">
-                    {{ Form::bsTableHeader(['Código','Año lectivo','Curso','Acudiente','Estado','','Imprimir']) }}
+                    {{ Form::bsTableHeader(['Código','Año lectivo','Estudiante','Curso','Estado','Imprimir','']) }}
                     <tbody>
                     @foreach ($matriculas as $registro)
                         <?php
@@ -24,11 +27,11 @@
                         <tr class="{{$clase}}">
                             <td class="table-text"><div>{{ $registro->codigo }}</div></td>
                             <td class="table-text"><div>{{ $registro->descripcion }}</div></td>
+                            <td class="table-text"><div>{{ $registro->estudiante->tercero->descripcion }}</div></td>
                             <td class="table-text"><div>{{ $registro->nombre_curso }}</div></td>
-                            <td class="table-text"><div>{{ $registro->acudiente }}</div></td>
                             <td class="table-text"><div>{{ $registro->estado }}</div></td>
-                            <td class="table-text"><div>{!!$mensaje!!}</div> </td>
                             <td class="table-text"><div><a class="btn btn-info btn-xs btn-detail" href="{{ url('matriculas/imprimir/'.$registro->id) }}"target="_blank" id="btn_imprimir"><i class="fa fa-btn fa-print"></i>&nbsp;</a></td>
+                            <td class="table-text"><div>{!!$mensaje!!}</div> </td>
                         </tr>
                     @endforeach
                     </tbody>

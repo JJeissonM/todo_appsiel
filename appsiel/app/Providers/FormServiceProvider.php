@@ -42,7 +42,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsBtnEdit', 'components.form.btn_edit', ['url']);
         Form::component('bsBtnEliminar', 'components.form.btn_eliminar', ['url']);
         Form::component('bsBtnEdit2', 'components.form.btn_edit2', ['url', 'etiqueta']);
-        Form::component('bsBtnCreate', 'components.form.btn_create', ['url']);
+        Form::component('bsBtnCreate', 'components.form.btn_create', ['url','target'=>'_self']);
         Form::component('bsBtnVolver', 'components.form.btn_volver', ['url']);
         Form::component('bsBtnPrint', 'components.form.btn_print', ['url']);
         Form::component('bsBtnEmail', 'components.form.btn_email', ['url']);

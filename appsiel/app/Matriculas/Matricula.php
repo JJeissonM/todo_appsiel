@@ -202,6 +202,7 @@ class Matricula extends Model
                 'sga_matriculas.requisitos',
                 'sga_matriculas.id'
             )
+            ->orderBy('sga_matriculas.fecha_matricula')
             ->get();
     }
 
