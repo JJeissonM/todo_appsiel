@@ -6,7 +6,7 @@
   <div class="form-login">
     <div class="col-md-12" style="text-align: center;">
       <img style="width: 100%;" src="{{asset('assets/img/appsiel-logo.png')}}" alt="Logo">
-      <h2 class="text-center" style="font-size: 30px; font-family: Roboto;">BIENVENIDO</h2>
+      <h2 class="text-center" style="font-size: 30px; font-family: 'Gotham-Narrow-Medium';">BIENVENIDOS</h2>
     </div>
     
     {{ Form::open( [ 'url' => url('/login') ] ) }}
@@ -61,6 +61,6 @@
 </div>
 
 <div class="footer">
-  <p>Desarrollado por: <a href="http://admin.appsiel.com.co/" target="_blank">APPSIEL S.A.S.</a></p>
+  <p>Desarrollado por: <a href="http://admin.appsiel.com.co/" target="_blank" style="color: #000;">APPSIEL S.A.S.</a></p>
 </div>
 @endsection

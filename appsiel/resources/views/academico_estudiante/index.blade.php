@@ -33,7 +33,7 @@
 
 		<div class="row">
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				<a href="{{url('academico_estudiante/horario?id='.Input::get('id'))}}">
+				<a style="color: #000;" href="{{url('academico_estudiante/horario?id='.Input::get('id'))}}">
           			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/horario.png')}}" width="80px" height="80px" />
 	          		<br/>
 	                Horario
@@ -41,7 +41,7 @@
 			</div>
 
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				<a href="{{url('academico_estudiante/calificaciones?id='.Input::get('id'))}}">
+				<a style="color: #000;" href="{{url('academico_estudiante/calificaciones?id='.Input::get('id'))}}">
           			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/calificaciones.png')}}" width="80px" height="80px" />
 	          		<br/>
 	                Calificaciones
@@ -49,7 +49,7 @@
 			</div>
 
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				<a href="{{url('academico_estudiante/observador_show/'.$estudiante->id)}}">
+				<a style="color: #000;" href="{{url('academico_estudiante/observador_show/'.$estudiante->id)}}">
           			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/observador.png')}}" width="80px" height="80px" />
 	          		<br/>
 	                Observador
@@ -70,7 +70,7 @@
 		-->
 
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				<a href="{{ url( 'mis_asignaturas/'.$curso->id.'?id='.Input::get('id') ) }}">
+				<a style="color: #000;" href="{{ url( 'mis_asignaturas/'.$curso->id.'?id='.Input::get('id') ) }}">
           			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/homeworks.png')}}" width="80px" height="80px" />
 	          		<br/>
 	                Mis Asignaturas
@@ -90,7 +90,7 @@
 			?>
 
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				<a href="{{ url('academico_estudiante/mi_plan_de_pagos/'.$libreta_id.'?id='.Input::get('id'))}}">
+				<a style="color: #000;" href="{{ url('academico_estudiante/mi_plan_de_pagos/'.$libreta_id.'?id='.Input::get('id'))}}">
           			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/libreta_pagos.png')}}" width="80px" height="80px" />
 	          		<br/>
 	                Libreta de pagos
@@ -98,7 +98,7 @@
 			</div>
 
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				<a href="{{ url('academico_estudiante/reconocimientos?id=' . Input::get('id') ) }}">
+				<a style="background-color: #000; opacity: 0.5; color: #FFF; padding: 5px;" href="{{ url('academico_estudiante/reconocimientos?id=' . Input::get('id') ) }}">
           			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/reconocimientos.png')}}" width="80px" height="80px" />
 	          		<br/>
 	                Reconocimientos
