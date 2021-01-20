@@ -7322,6 +7322,21 @@
       'created_at' => '2021-01-19 05:09:48',
       'updated_at' => '2021-01-19 05:10:37',
     ),
+    488 => 
+    array (
+      'id' => 514,
+      'core_app_id' => 17,
+      'modelo_id' => 282,
+      'name' => 'nom_prestaciones_liquidadas',
+      'descripcion' => 'Prestaciones liquidadas',
+      'url' => 'web',
+      'parent' => 223,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2021-01-19 15:03:49',
+      'updated_at' => '2021-01-19 15:06:45',
+    ),
   ),
   'roles' => 
   array (
@@ -18082,6 +18097,24 @@
     array (
       'orden' => 0,
       'permission_id' => 513,
+      'role_id' => 9,
+    ),
+    1767 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 514,
+      'role_id' => 1,
+    ),
+    1768 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 514,
+      'role_id' => 3,
+    ),
+    1769 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 514,
       'role_id' => 9,
     ),
   ),
@@ -42325,6 +42358,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2021-01-19 04:58:37',
       'updated_at' => '2021-01-19 04:58:37',
+    ),
+    271 => 
+    array (
+      'id' => 282,
+      'descripcion' => 'Prestaciones liquidadas',
+      'modelo' => 'PrestacionesLiquidadas',
+      'name_space' => 'App\\Nomina\\PrestacionesLiquidadas',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2021-01-19 09:13:22',
+      'updated_at' => '2021-01-19 09:13:22',
     ),
   ),
   'sys_modelo_tiene_campos' => 
