@@ -90,10 +90,17 @@
 
 .dropdown-menu>li>a:focus, 
 .dropdown-menu>li>a:hover{
-    background-color: #42A3DC !important;
+    background-color: #574696 !important;
     color: #000000 !important;
-    background-image: linear-gradient(to bottom,#42A3DC 0,#92cbec 100%) !important;
-    -webkit-background-image: linear-gradient(to bottom,#42A3DC 0,#92cbec 100%) !important;
-    -moz-background-image: linear-gradient(to bottom,#42A3DC 0,#92cbec 100%) !important;
-    -o-background-image: linear-gradient(to bottom,#42A3DC 0,#92cbec 100%) !important;
+    background-image: linear-gradient(to bottom,#574696 0,#8871da 100%) !important;
+    -webkit-background-image: linear-gradient(to bottom,#574696 0,#8871da 100%) !important;
+    -moz-background-image: linear-gradient(to bottom,#574696 0,#8871da 100%) !important;
+    -o-background-image: linear-gradient(to bottom,#574696 0,#8871da 100%) !important;
+}
+
+.navbar-inverse .navbar-nav>.active>a, .navbar-inverse .navbar-nav>.open>a{
+    background-image: linear-gradient(to bottom,#42A3Dc 0,#42A3Dc 100%) !important;
+    -webkit-background-image: linear-gradient(to bottom,#42A3Dc 0,#42A3Dc 100%) !important;
+    -moz-background-image: linear-gradient(to bottom,#42A3Dc 0,#42A3Dc 100%) !important;
+    -o-background-image: linear-gradient(to bottom,#42A3Dc 0,#42A3Dc 100%) !important;
 }
