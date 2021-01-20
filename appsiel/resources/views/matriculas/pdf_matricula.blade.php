@@ -131,8 +131,13 @@
     
 
     $responsable_financiero = $matricula->estudiante->responsable_financiero();
-
-    if( is_null( $responsable_financiero->tercero ) )
+    
+    if( is_null( $responsable_financiero )  )
+    {
+        $responsable_financiero = (object)['tercero'=>null];
+    }
+    
+    if( is_null( $responsable_financiero->tercero )  )
     {
         $responsable_financiero->tercero = (object)['numero_identificacion'=>0,'descripcion'=>' ------ Verificar Tercero'];
     }

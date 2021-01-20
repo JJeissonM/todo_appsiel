@@ -64,6 +64,8 @@ class Vacaciones implements Estrategia
             $this->tabla_resumen['vlr_dias_habiles'] = $valor_total_vacaciones;
             $this->tabla_resumen['vlr_dias_no_habiles'] = 0;
 
+            $this->actualizar_libro_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
+
             $valores = get_valores_devengo_deduccion( 'devengo',  $valor_total_vacaciones );
 
             return [ 
@@ -122,11 +124,10 @@ class Vacaciones implements Estrategia
 
             // Actualizar libro de vacaciones--------------- FALTA
             
-            // 15 días de vacaciones por cada 360 días del año 
-            $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
-            $libro_vacaciones->periodo_pagado_desde = $this->tabla_resumen['periodo_pagado_desde'];
+            $this->actualizar_libro_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
         }
         
+
         $valores = get_valores_devengo_deduccion( 'devengo', $this->tabla_resumen['vlr_dias_habiles'] );
 
         return [
@@ -360,14 +361,6 @@ class Vacaciones implements Estrategia
         }
 
         $dias_pagados_vacaciones = 0;
-        $periodo_pagado_desde = $empleado->fecha_ingreso;
-        $periodo_pagado_hasta = ;
-        if ( !is_null( $this->historial_vacaciones ) )
-        {
-            $dias_pagados_vacaciones = $this->historial_vacaciones->sum('dias_pagados');
-            $periodo_pagado_desde = $this->sumar_dias_a_fecha( $this->historial_vacaciones->periodo_pagado_hasta, 1 );
-        }
-        $this->tabla_resumen['periodo_pagado_desde'] = $periodo_pagado_desde;
 
         $dias_totales_laborados = $this->calcular_dias_laborados_calendario_30_dias( $empleado->fecha_ingreso, $documento_nomina->fecha );
 
@@ -385,6 +378,39 @@ class Vacaciones implements Estrategia
         $this->tabla_resumen['dias_pagados_vacaciones'] = $dias_pagados_vacaciones;
         $this->tabla_resumen['dias_pendientes'] = $dias_pendientes;
 
+        $this->tabla_resumen['fecha_inicial_disfrute'] = $documento_nomina->fecha;
+        $this->tabla_resumen['fecha_final_disfrute'] = $documento_nomina->fecha;
+
+        $this->tabla_resumen['dias_habiles'] = $dias_pendientes;
+        $this->tabla_resumen['dias_no_habiles'] = 0;
+
+        return $dias_pendientes;
+    }
+
+    public function actualizar_libro_vacaciones( $empleado, $documento )
+    {
+        /*
+
+
+                REVISAR TODO ESTO
+
+
+        */
+
+        return 0;
+
+        // 15 días de vacaciones por cada 360 días del año 
+        $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
+        $libro_vacaciones->periodo_pagado_desde = $this->tabla_resumen['periodo_pagado_desde'];
+            
+        $periodo_pagado_desde = $empleado->fecha_ingreso;
+        if ( !is_null( $this->historial_vacaciones ) )
+        {
+            $dias_pagados_vacaciones = $this->historial_vacaciones->sum('dias_pagados');
+            $periodo_pagado_desde = $this->sumar_dias_a_fecha( $this->historial_vacaciones->last()->periodo_pagado_hasta, 1 );
+        }
+        $this->tabla_resumen['periodo_pagado_desde'] = $periodo_pagado_desde;
+
         $periodo_pagado_hasta = $empleado->fecha_ingreso;
         $ultimo_periodo_pagado = LibroVacacion::where('nom_contrato_id',$empleado->id)->orderBy('periodo_pagado_hasta')->get()->last();
         if ( !is_null($ultimo_periodo_pagado) )
@@ -392,13 +418,8 @@ class Vacaciones implements Estrategia
             $periodo_pagado_hasta = $ultimo_periodo_pagado->periodo_pagado_hasta;
         }
 
-        $this->tabla_resumen['fecha_inicial_disfrute'] = $periodo_pagado_hasta;
-        $this->tabla_resumen['fecha_final_disfrute'] = $documento_nomina->fecha;
+        $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
 
-        $this->tabla_resumen['dias_habiles'] = $dias_pendientes;
-        $this->tabla_resumen['dias_no_habiles'] = 0;
-
-        return $dias_pendientes;
     }
 
     public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
