@@ -4,9 +4,9 @@
 
 {{ Form::bsMigaPan($miga_pan) }}
  
-<div class="col-md-12 botones-gmail">
-	<div class="col-md-1">
-		<select id="mostrar" onchange="mostrar()" class="form-control" style="color: #000 !important; font-size: 16px; width: 80px; position: absolute; float: left;">
+<div class="col-md-12 botones-gmail" style="float: none">
+		<div class="col-md-1" style="float: none">
+		<select id="mostrar" onchange="mostrar()" class="form-control" style="color: #000 !important; font-size: 16px; width: 80px; float: left;">
 			<option>Mostrar</option>
 			<option value="10">10</option>
 			<option value="20">20</option>
@@ -21,7 +21,7 @@
 			<option value="500">500</option>
 		</select>
 	</div>
-	<div class="col-md-11">
+	<div class="col-md-11" style="float: none">
 		@if(isset($url_crear))
 		@if( $url_crear != '' )
 		{{ Form::bsBtnCreate( $url_crear ) }}
@@ -76,6 +76,8 @@
 		</div>
 
 	</div>
+	
+
 </div>
 
 

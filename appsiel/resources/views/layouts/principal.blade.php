@@ -50,8 +50,8 @@
 	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
 
 
-	<!-- Optional theme -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<!-- Optional theme
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 
 	<link rel="stylesheet" href="{{ asset('assets/css/mis_estilos.css') }}">
@@ -205,6 +205,10 @@
 			padding: 5px !important;
 			font-size: 1.3rem;
 		}
+
+		.alert{
+			
+		}
 	</style>
 
 	@yield('webstyle')
@@ -226,10 +230,10 @@
 
 		@if( app()->environment() != 'demo' || !in_array( Input::get('id'), $aplicaciones_inactivas_demo ) )
 
-		@yield('content')
+		@yield('content')	
 
 		@else
-		@include('layouts.demo_pagina_bloqueo_aplicaciones')
+			@include('layouts.demo_pagina_bloqueo_aplicaciones')
 		@endif
 	</div>
 
