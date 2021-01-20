@@ -34,7 +34,11 @@
 
 		body {
 			color: #fff;
+<<<<<<< HEAD
 			background-image: url('assets/images/fondo-inicio.jpeg');
+=======
+			background-image: url('assets/images/fondo-inicio.jpg');
+>>>>>>> 81c868e9a44fd393e434c0608119fc40dc188734
 			background-position: center center;
 			background-repeat: no-repeat;
 			background-attachment: fixed;

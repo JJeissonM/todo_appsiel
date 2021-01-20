@@ -18,6 +18,19 @@
 	        cursor: pointer;
 	    }
 
+		.banner{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.nombre-empresa{
+			display: flex;
+			justify-content: center;
+			font-size: calc(1em + 3vw);
+			width: 550px;
+		}
+
 	    #div_contenido {
 		    /*background-image: url(https://cdn.pixabay.com/photo/2016/08/31/17/02/blue-1634110_960_720.png);
 		    background-repeat: no-repeat;
