@@ -98,7 +98,7 @@
 			</div>
 
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				<a style="background-color: #000; opacity: 0.5; color: #FFF; padding: 5px;" href="{{ url('academico_estudiante/reconocimientos?id=' . Input::get('id') ) }}">
+				<a style="color: #000;" href="{{ url('academico_estudiante/reconocimientos?id=' . Input::get('id') ) }}">
           			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/reconocimientos.png')}}" width="80px" height="80px" />
 	          		<br/>
 	                Reconocimientos
