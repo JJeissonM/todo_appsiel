@@ -4,8 +4,8 @@
 	<link rel="stylesheet" href="{{asset('assets/css/fullcalendar.min.css')}}">
 @endsection
 
-@section('content')
-	{{ Form::bsMigaPan($miga_pan) }}
+	@section('content')
+	{{ Form::bsMigaPan($miga_pan) }}		
 	<hr>
 
 	@include('layouts.mensajes')
@@ -16,7 +16,7 @@
 		    
 		    <!-- <div id='calendar'></div> -->
 		    <br>
-		     <p style="padding: 10px;">Horario Curso : <b>{{ $curso->descripcion }}</b></p> 
+		     <p style="padding: 10px;"><b>Horario Curso :</b> <br>{{ $curso->descripcion }}</p> 
 		    <hr>
 		    <div style="margin:20px;">
 		    	<img style="width: 100%; object-fit: cover;" src="{{ config('configuracion.url_instancia_cliente')."/storage/app/calificaciones/horarios_cursos".$curso->imagen }}" class="" />
