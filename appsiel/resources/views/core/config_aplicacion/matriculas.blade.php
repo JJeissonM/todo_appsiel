@@ -29,8 +29,6 @@
 
 		    {{ Form::open(['url'=>'guardar_config','id'=>'form_create','files' => true]) }}
 
-				<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
-
 				{{ Form::hidden('titulo', $parametros['titulo']) }}
 
 				<h4> Parámetros de facturas de estudiantes  </h4>

@@ -5,6 +5,7 @@
 			<strong>Liquidación de Vacaciones</strong>
 		</h4>
 
+		@include( 'nomina.incluir.tabla_datos_empleado', compact( 'empleado' ) )
 		<?php
 			
 			$agrupacion = '';

@@ -13,6 +13,7 @@ use App\Nomina\AgrupacionConcepto;
 use App\Nomina\LibroVacacion;
 use App\Nomina\CambioSalario;
 use App\Nomina\ProgramacionVacacion;
+use App\Nomina\PrestacionesLiquidadas;
 
 class PrimaServicios implements Estrategia
 {
@@ -310,21 +311,30 @@ class PrimaServicios implements Estrategia
 
     public function retirar(NomDocRegistro $registro)
     {
-        dd(['retirar PRIMA DE SERVICIOS',$registro]);
-
-        $novedad = $registro->novedad_tnl;
-        
-        if( is_null( $novedad ) )
-        {
-            dd( [ 'TiempoNoLaborado Novedad NULL', $registro] );
-        }
-
         if( is_null( $registro->contrato ) )
         {
             dd( [ 'TiempoNoLaborado Contrato NULL', $registro] );
         }
 
+        $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion','prima_legal')
+                                                                        ->where('grupo_empleado_id',$registro->contrato->grupo_empleado_id)
+                                                                        ->get()
+                                                                        ->first();
+        
+        if( is_null( $parametros_prestacion ) )
+        {
+            return 0;
+        }
 
-        // FALTA
+        if ( $registro->nom_concepto_id == $parametros_prestacion->nom_concepto_id )
+        {
+            PrestacionesLiquidadas::where(
+                                            ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
+                                            ['nom_contrato_id' => $registro->nom_contrato_id ]
+                                        )
+                                    ->delete();
+
+            $registro->delete();
+        }
     }
 }
