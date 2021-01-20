@@ -13,6 +13,7 @@ use App\Nomina\AgrupacionConcepto;
 use App\Nomina\LibroVacacion;
 use App\Nomina\CambioSalario;
 use App\Nomina\ProgramacionVacacion;
+use App\Nomina\PrestacionesLiquidadas;
 
 class Vacaciones implements Estrategia
 {
@@ -505,6 +506,12 @@ class Vacaciones implements Estrategia
             $programacion_vacaciones->cantidad_dias_amortizados -= $libro_vacaciones->dias_pagados;
             $programacion_vacaciones->cantidad_dias_pendientes_amortizar += $libro_vacaciones->dias_pagados;
             $programacion_vacaciones->save();
+            
+            PrestacionesLiquidadas::where(
+                                            ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
+                                            ['nom_contrato_id' => $registro->nom_contrato_id ]
+                                        )
+                                    ->delete();
 
             $registro->delete();
         }

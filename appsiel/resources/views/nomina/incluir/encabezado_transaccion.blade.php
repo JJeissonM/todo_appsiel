@@ -32,17 +32,17 @@
     </tr>
 </table>
 
-<table style="font-size: 15px; border-collapse: collapse;">
+<table class="table table-bordered">
     <tr>
-        <td style="border: solid 1px black;" colspan="2">
+        <td colspan="2">
             <b>Detalle: </b> &nbsp; {{ $encabezado_doc->descripcion }}
         </td>
     </tr>
     <tr>
-        <td style="border: solid 1px black;">
+        <td>
             <b>Total Devengos: </b> &nbsp; ${{ number_format( $encabezado_doc->total_devengos, '0','.',',') }}
         </td>
-        <td style="border: solid 1px black;">
+        <td>
             <b>Total Deducciones: </b> &nbsp; ${{ number_format( $encabezado_doc->total_deducciones, '0','.',',') }}
         </td>
     </tr>

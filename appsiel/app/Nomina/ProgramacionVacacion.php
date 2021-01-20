@@ -15,7 +15,7 @@ class ProgramacionVacacion extends Model
 
     protected $fillable = ['nom_concepto_id', 'nom_contrato_id', 'fecha_inicial_tnl', 'fecha_final_tnl', 'cantidad_dias_tnl', 'cantidad_horas_tnl', 'tipo_novedad_tnl', 'codigo_diagnostico_incapacidad', 'numero_incapacidad', 'fecha_expedicion_incapacidad', 'origen_incapacidad', 'clase_incapacidad', 'fecha_incapacidad', 'valor_a_pagar_eps', 'valor_a_pagar_arl', 'valor_a_pagar_afp', 'valor_a_pagar_empresa', 'observaciones', 'estado', 'cantidad_dias_amortizados', 'cantidad_dias_pendientes_amortizar', 'es_prorroga', 'novedad_tnl_anterior_id'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empleado', 'Inicio',  'Fin', 'Cant. días', 'Observaciones', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empleado', 'Inicio',  'Fin', 'Cant. días', 'Días amortizados', 'Observaciones', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
@@ -42,9 +42,10 @@ class ProgramacionVacacion extends Model
                 'nom_novedades_tnl.fecha_inicial_tnl AS campo2',
                 'nom_novedades_tnl.fecha_final_tnl AS campo3',
                 'nom_novedades_tnl.cantidad_dias_tnl AS campo4',
-                'nom_novedades_tnl.observaciones AS campo5',
-                'nom_novedades_tnl.estado AS campo6',
-                'nom_novedades_tnl.id AS campo7'
+                'nom_novedades_tnl.cantidad_dias_amortizados AS campo5',
+                'nom_novedades_tnl.observaciones AS campo6',
+                'nom_novedades_tnl.estado AS campo7',
+                'nom_novedades_tnl.id AS campo8'
             )
             ->paginate($nro_registros);
     }
@@ -60,6 +61,7 @@ class ProgramacionVacacion extends Model
                 'nom_novedades_tnl.fecha_inicial_tnl AS INICIO',
                 'nom_novedades_tnl.fecha_final_tnl AS FIN',
                 'nom_novedades_tnl.cantidad_dias_tnl AS CANT_DÍAS',
+                'nom_novedades_tnl.cantidad_dias_amortizados AS CANT_DÍAS_AMORTIZADOS',
                 'nom_novedades_tnl.observaciones AS OBSERVACIONES',
                 'nom_novedades_tnl.estado AS ESTADO'
             )

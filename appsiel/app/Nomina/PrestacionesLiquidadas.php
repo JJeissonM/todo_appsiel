@@ -7,8 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class PrestacionesLiquidadas extends Model
 {
     protected $table = 'nom_prestaciones_liquidadas';
-	protected $fillable = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','nom_doc_encabezado_id', 'nom_contrato_id', 'fecha_final_promedios', 'prestaciones_liquidadas', 'datos_liquidacion'];
-	public $encabezado_tabla = ['Documento', 'Empleado', 'Fecha final promedios', 'Prestaciones liquidadas'];
+	protected $fillable = ['nom_doc_encabezado_id', 'nom_contrato_id', 'fecha_final_promedios', 'prestaciones_liquidadas', 'datos_liquidacion'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Documento', 'Empleado', 'Fecha final promedios'];
+
+	public $urls_acciones = '{"show":"nom_prestaciones_liquidadas_show/id_fila"}';
+
 	public static function consultar_registros($nro_registros, $search)
 	{
 	    return PrestacionesLiquidadas::leftJoin('nom_doc_encabezados','nom_doc_encabezados.id','=','nom_prestaciones_liquidadas.nom_doc_encabezado_id')
@@ -18,8 +21,7 @@ class PrestacionesLiquidadas extends Model
 	    										'nom_doc_encabezados.descripcion AS campo1',
 	    										'core_terceros.descripcion AS campo2',
 	    										'nom_prestaciones_liquidadas.fecha_final_promedios AS campo3',
-	    										'nom_prestaciones_liquidadas.prestaciones_liquidadas AS campo4',
-	    										'nom_prestaciones_liquidadas.id AS campo5')
+	    										'nom_prestaciones_liquidadas.id AS campo4')
 	    							->paginate($nro_registros);
 	}
 	public static function sqlString($search)

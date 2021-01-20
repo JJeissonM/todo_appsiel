@@ -21,6 +21,8 @@ use App\Http\Controllers\Core\TransaccionController;
 
 
 // Modelos
+use App\Sistema\Html\MigaPan;
+use App\Sistema\Aplicacion;
 use App\Core\TipoDocApp;
 use App\Sistema\Modelo;
 use App\Core\Empresa;
@@ -32,6 +34,7 @@ use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
 use App\Nomina\AgrupacionConcepto;
+use App\Nomina\PrestacionesLiquidadas;
 use App\Nomina\DiaFestivo;
 
 use App\Nomina\ModosLiquidacion\LiquidacionPrestacionSocial;
@@ -60,13 +63,22 @@ class PrestacionesSocialesController extends TransaccionController
 
         // Se obtienen los Empleados del documento de nómina
         $empleados_documento = $documento_nomina->empleados;
+        
+        $array_prestaciones_liquidadas = (object)[];
 
         foreach ($empleados_documento as $empleado)
         {
-            //$vista .= View::make( 'nomina.incluir.tabla_datos_empleado', compact( 'empleado' ) )->render();
+            
+            $array_prestaciones_liquidadas->nom_doc_encabezado_id = $documento_nomina->id;
+            $array_prestaciones_liquidadas->nom_contrato_id = $empleado->id;
+            $array_prestaciones_liquidadas->fecha_final_promedios = $request->fecha_final_promedios;
+            $array_prestaciones_liquidadas->prestaciones = [];
 
+            $p = 0;
             foreach ($request->prestaciones as $key => $prestacion)
             {
+                $array_aux_prestacion = (object)[];
+                
                 // Se llama al subsistema de liquidación
                 $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $empleado, $documento_nomina, $request->almacenar_registros, $request->fecha_final_promedios);
 
@@ -92,13 +104,20 @@ class PrestacionesSocialesController extends TransaccionController
                     if ( $request->almacenar_registros )
                     {
                         $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $valores[0], $usuario);
+                        $array_aux_prestacion->prestacion = $prestacion;
+                        $array_aux_prestacion->tabla_resumen = $tabla_resumen;
+                        $array_prestaciones_liquidadas->prestaciones[$p] = $array_aux_prestacion;
                     }
 
                     $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen') )->render();
+
                 }else{
                     $vista .= $tabla_resumen['mensaje_error'];
                 }
+                $p++;
             }
+            
+            $this->almacenar_prestaciones_liquidadas( $array_prestaciones_liquidadas );
         }
 
         $this->registros_procesados = 0;
@@ -108,6 +127,21 @@ class PrestacionesSocialesController extends TransaccionController
         $this->actualizar_totales_documento( (int)$request->nom_doc_encabezado_id );
 
         return $vista;
+    }
+
+    public function almacenar_prestaciones_liquidadas( $array_prestaciones_liquidadas )
+    {
+        if ( empty($array_prestaciones_liquidadas->prestaciones) )
+        {
+            return 0;
+        }
+
+        PrestacionesLiquidadas::create(
+                                    ['nom_doc_encabezado_id' => $array_prestaciones_liquidadas->nom_doc_encabezado_id ] + 
+                                    ['nom_contrato_id' => $array_prestaciones_liquidadas->nom_contrato_id ] + 
+                                    ['fecha_final_promedios' => $array_prestaciones_liquidadas->fecha_final_promedios] +  
+                                    ['prestaciones_liquidadas' => json_encode( $array_prestaciones_liquidadas->prestaciones ) ]
+                                );
     }
 
     public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $valores, $usuario)
@@ -143,7 +177,7 @@ class PrestacionesSocialesController extends TransaccionController
                 if ( !is_null( $registro->concepto ) && !is_null($registro->contrato) )
                 {
                     // Se llama al subsistema de liquidación
-                    $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $registro->contrato, $documento_nomina, null);
+                    $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $registro->contrato, $documento_nomina, 0, 0);
                     $liquidacion->retirar( $prestacion, $registro );
                 }
             }                   
@@ -226,8 +260,6 @@ class PrestacionesSocialesController extends TransaccionController
                                 ];
         }
 
-        //dd($vector);
-
         $fecha_fin = $fecha_ini->addDays( $dias_vacaciones + $dias_no_habiles - 1 ); // Se resta porque el mismo día se tiene encuenta
         return response()->json( [ 
                         'fecha_fin' => $fecha_fin->format('Y-m-d'),
@@ -243,6 +275,37 @@ class PrestacionesSocialesController extends TransaccionController
         }
 
         return true;
+    }
+
+    public function prestaciones_liquidadas_show( $id )
+    {
+        $registro = PrestacionesLiquidadas::find( $id );
+        $documento_nomina = NomDocEncabezado::find( $registro->nom_doc_encabezado_id );
+        $empleado = NomContrato::find($registro->nom_contrato_id);
+        $prestaciones_liquidadas = json_decode( $registro->prestaciones_liquidadas );
+
+        $vista = $this->generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas );
+        
+        $modelo = Modelo::find(Input::get('id_modelo'));
+        $aplicacion = Aplicacion::find(Input::get('id'));
+
+        $miga_pan = MigaPan::get_array($aplicacion, $modelo, $documento_nomina->descripcion);
+
+        return view( 'nomina.prestaciones_sociales.show_prestaciones_liquidadas', compact('miga_pan','vista','documento_nomina') );
+    }
+
+    public function generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas )
+    {
+        $vista = '';
+        foreach ($prestaciones_liquidadas as $linea)
+        {
+            $prestacion = $linea->prestacion;
+            $tabla_resumen = (array)$linea->tabla_resumen;
+            
+            $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen') )->render();
+        }
+
+        return $vista;
     }
     
 }
