@@ -20,7 +20,7 @@
 	<style type="text/css">
 		body {
 			color: #fff;
-			background-image: url('assets/images/fondo_inicio.jpg');
+			background-image: url('assets/images/fondo-inicio.jpg');
 			background-position: center center;
 			background-repeat: no-repeat;
 			background-attachment: fixed;
