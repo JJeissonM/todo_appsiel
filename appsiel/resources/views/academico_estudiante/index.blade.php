@@ -11,6 +11,13 @@
 		.img-hover-zoom--colorize:hover img {
 		  transform: scale(1.4);
 		}
+
+		body{
+			background-position: bottom;
+			background-attachment: fixed;
+			background-size: cover;
+			background-image: url({{asset('assets/img/academico_estudiante/fondo-estudiante.png')}})			
+		}
 	</style>
 @endsection
 
