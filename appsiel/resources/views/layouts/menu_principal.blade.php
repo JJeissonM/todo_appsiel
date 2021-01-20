@@ -9,11 +9,11 @@
     if ( !$reportes->isEmpty() ) {
 
             $item_reporte = '<li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Reportes <span class="caret"></span></a>
-                                <ul class="dropdown-menu sub-menu">';
+                                <a href="#" style="color: #FFFFFF !important;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Reportes <span class="caret"></span></a>
+                                <ul class="dropdown-menu sub-menu" style="background-color: #42A3DC !important;">';
                                     foreach($reportes as $un_reporte)
                                     {
-                                        $item_reporte .= '<li> <a href="'.url('vista_reporte?id='.$un_reporte->core_app_id.'&reporte_id='.$un_reporte->id).'">'.$un_reporte->descripcion.'</a>
+                                        $item_reporte .= '<li> <a href="'.url('vista_reporte?id='.$un_reporte->core_app_id.'&reporte_id='.$un_reporte->id).'" style="color: #FFFFFF !important;">'.$un_reporte->descripcion.'</a>
                                                         </li>';
                                     }
 
@@ -23,7 +23,7 @@
 ?>
 
 @if (!Auth::guest())
-    <nav class="navbar navbar-inverse navbar-static-top">
+    <nav class="navbar navbar-inverse navbar-static-top" style="background: rgb(87, 70, 150) !important;">
         <div class="container-fluid">
             <div class="navbar-header">
 
@@ -36,8 +36,8 @@
                 </button>
 
                 <!-- Branding Image -->
-                <a class="navbar-brand" href="{{ url('/inicio') }}" style="height: 60px; padding-top: 5px;">
-    				<img src="{{ asset('assets/img/logo_appsiel.png') }}" height="50px">
+                <a class="navbar-brand" href="{{ url('/inicio') }}" style="height: 50px; padding-top: 5px;">
+    				<img src="{{ asset('assets/img/appsiel-logo2.png') }}" width="180" height="50px">
     			</a>
             </div>
 
@@ -60,26 +60,26 @@
                 <ul class="nav navbar-nav navbar-right">
                     <!-- Authentication Links -->
                     @if (Auth::guest())
-                        <li><a href="{{ url('/login') }}">Ingresar</a></li>
+                        <li><a style="color: #FFFFFF !important;" href="{{ url('/login') }}">Ingresar</a></li>
                     @else
                         
                         @if( config('configuracion.usar_mensajes_internos') )
                             <li>
-                                <a href="{{url('/messages')}}"><i class="fa fa-btn fa-envelope"></i>  @include('core.messenger.unread-count')</a>
+                                <a style="color: #FFFFFF !important;" href="{{url('/messages')}}"><i class="fa fa-btn fa-envelope"></i>  @include('core.messenger.unread-count')</a>
                             </li>
                         @endif
 
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            <a style="color: #FFFFFF !important;" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                 {{ Auth::user()->name }} <span class="caret"></span>
                             </a>
 
-                            <ul class="dropdown-menu" role="menu">
+                            <ul class="dropdown-menu" role="menu" style="background-color: #42A3DC !important;">
                                 <!-- <li><a href="{ { url('/dashboard?id='.Input::get('id')) }}"><i class="fa fa-btn fa-dashboard"></i>DashBoard</a></li> -->
 
-                                <li><a href="{{ url('/core/usuario/perfil/?id='.Input::get('id')) }}"><i class="fa fa-btn fa-user"></i> Perfil</a></li>
+                                <li><a style="color: #FFFFFF !important;" href="{{ url('/core/usuario/perfil/?id='.Input::get('id')) }}"><i class="fa fa-btn fa-user"></i> Perfil</a></li>
                                 
-                                <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i> Cerrar sesión</a></li>
+                                <li><a style="color: #FFFFFF !important;" href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i> Cerrar sesión</a></li>
                             </ul>
                         </li>
                     @endif
