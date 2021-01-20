@@ -345,7 +345,10 @@ class MatriculaController extends ModeloController
             ['url' => 'NO', 'etiqueta' => 'Consulta']
         ];
 
-        return view('matriculas.show_matricula', compact('modelo', 'app', 'matricula', 'reg_anterior', 'reg_siguiente', 'miga_pan', 'view_pdf', 'id'));
+        
+        $matriculas = Matricula::get_matriculas_un_estudiante($matricula->estudiante->id);
+
+        return view('matriculas.show_matricula', compact('modelo', 'app', 'matricula', 'matriculas', 'reg_anterior', 'reg_siguiente', 'miga_pan', 'view_pdf', 'id'));
     }
 
     public function imprimir($id)

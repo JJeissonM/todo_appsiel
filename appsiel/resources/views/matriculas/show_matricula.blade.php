@@ -26,8 +26,25 @@
 			echo $view_pdf;
 		?>
 
+		<br><br>
+
+		@include('matriculas.incluir.matriculas_anteriores')
+
 	</div>
 </div>
 <br /><br />
 
+@endsection
+
+@section('scripts')
+
+    <script type="text/javascript">
+       
+
+        $(document).ready(function() {
+
+            //$('#btn_excel').show();
+
+        });
+    </script>
 @endsection

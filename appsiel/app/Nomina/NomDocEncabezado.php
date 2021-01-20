@@ -83,9 +83,10 @@ class NomDocEncabezado extends Model
         foreach ($registros_documento as $registro) {
             if (!is_null($registro->concepto)) {
                 // 1: tiempo laborado
-                if (in_array($registro->concepto->modo_liquidacion_id, [1])) {
+                if (in_array($registro->concepto->modo_liquidacion_id, [1]))
+                {
                     $horas_liquidadas += $registro->cantidad_horas;
-                } # code...
+                }
             }
         }
 

@@ -234,6 +234,8 @@
 
         $(document).ready(function() {
 
+            $('#btn_excel').show();
+
             if( "{{ $estudiante_existe }}" == 1 )
             {
                 $( "#responsable_agregado" ).val( 1 );

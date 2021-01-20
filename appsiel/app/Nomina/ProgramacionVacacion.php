@@ -18,7 +18,6 @@ class ProgramacionVacacion extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empleado', 'Inicio',  'Fin', 'Cant. días', 'Observaciones', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
-    //public $urls_acciones = '{"show":"no"}';
 
     public $archivo_js = 'assets/js/nomina/programacion_vacaciones.js';
 

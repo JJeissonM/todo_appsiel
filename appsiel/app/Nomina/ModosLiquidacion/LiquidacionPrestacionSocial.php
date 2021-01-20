@@ -17,19 +17,21 @@ class LiquidacionPrestacionSocial extends Model
     protected $empleado;
     protected $documento_nomina;
     protected $almacenar_registros;
+    protected $fecha_final_promedios;
 
-    public function __construct( $prestacion, NomContrato $empleado, NomDocEncabezado $documento_nomina, $almacenar_registros )
+    public function __construct( $prestacion, NomContrato $empleado, NomDocEncabezado $documento_nomina, $almacenar_registros, $fecha_final_promedios )
     {
         $this->prestacion = $prestacion;
         $this->empleado = $empleado;
         $this->documento_nomina = $documento_nomina;
         $this->almacenar_registros = $almacenar_registros;
+        $this->fecha_final_promedios = $fecha_final_promedios;
     }
 
-    public function calcular($prestacion )
+    public function calcular( $prestacion )
     {
         $fachada = new ModoLiquidacionPrestacion;
-        return $fachada->calcular($prestacion, $this);
+        return $fachada->calcular( $prestacion, $this );
     }
 
     public function retirar( $prestacion, $registro )

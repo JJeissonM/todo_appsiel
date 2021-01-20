@@ -103,11 +103,11 @@ class NominaController extends TransaccionController
         $empleados_documento = $documento->empleados;
 
         // Guardar los valores para cada empleado      
-        foreach ($empleados_documento as $empleado) 
+        foreach ( $empleados_documento as $empleado ) 
         {
             $cant = count( $this->array_ids_modos_liquidacion_automaticos );
 
-            for ($i=0; $i < $cant; $i++) 
+            for ( $i=0; $i < $cant; $i++ ) 
             { 
                 $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
             }
@@ -121,7 +121,7 @@ class NominaController extends TransaccionController
     /*
         Recibe doc. de nómina, al empleado y el modo de liquidación para calcular el valor de devengo o deducción de cada concepto
     */
-    public function liquidar_automaticos_empleado($modo_liquidacion_id, $empleado, $documento_nomina, $usuario)
+    public function liquidar_automaticos_empleado( $modo_liquidacion_id, $empleado, $documento_nomina, $usuario )
     {
         $conceptos_automaticos = NomConcepto::where('estado','Activo')->where('modo_liquidacion_id', $modo_liquidacion_id)->get();
 
@@ -132,7 +132,7 @@ class NominaController extends TransaccionController
             {
                 // Se valida si ya hay una liquidación previa del concepto en ese documento
                 $cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
-                                        ->where('core_tercero_id', $empleado->core_tercero_id)
+                                        ->where('nom_contrato_id', $empleado->id)
                                         ->where('nom_concepto_id', $concepto->id)
                                         ->count();
             }
@@ -284,7 +284,10 @@ class NominaController extends TransaccionController
             $this->pos = 0;
             foreach ($conceptos as $un_concepto)
             {          
-                $valor = $this->get_valor_celda( NomDocRegistro::where('nom_doc_encabezado_id',$this->encabezado_doc->id)->where('core_tercero_id',$empleado->core_tercero_id)->where('nom_concepto_id',$un_concepto->nom_concepto_id)->get(), $un_concepto );
+                $valor = $this->get_valor_celda( NomDocRegistro::where('nom_doc_encabezado_id',$this->encabezado_doc->id)
+                                                                ->where('core_tercero_id',$empleado->core_tercero_id)
+                                                                ->where('nom_concepto_id',$un_concepto->nom_concepto_id)
+                                                                ->get(), $un_concepto );
                 
                 $tabla.='<td>'.$valor.'</td>';
                 $this->pos++;

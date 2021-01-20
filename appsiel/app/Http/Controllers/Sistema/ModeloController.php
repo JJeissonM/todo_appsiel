@@ -119,7 +119,9 @@ class ModeloController extends Controller
         if ($temp2 != null) {
             $search = trim($temp2);
         }
-        if (method_exists(app($this->modelo->name_space), 'consultar_registros')) {
+        if (method_exists(app($this->modelo->name_space), 'consultar_registros'))
+        {
+            
             $registros = app($this->modelo->name_space)->consultar_registros($nro_registros, $search);
             $sqlString = app($this->modelo->name_space)->sqlString($search);
             $tituloExport = app($this->modelo->name_space)->tituloExport();

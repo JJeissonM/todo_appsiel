@@ -38,7 +38,15 @@
 
 								<div class="col-sm-8">
 									{{ Form::select( 'almacenar_registros', ['Previsualizar','Almacenar registros'],null, [ 'class' => 'form-control', 'id' => 'almacenar_registros' ]) }}
-								</div>					 
+								</div>
+							</div>
+
+							<div class="row" style="padding:5px;">
+								<label class="control-label col-sm-4" > <b> *Fecha final de promedios: </b> </label>
+
+								<div class="col-sm-8">
+									{{ Form::date( 'fecha_final_promedios',null, [ 'class' => 'form-control', 'id' => 'fecha_final_promedios' ]) }}
+								</div>
 							</div>
 
 							<div class="row" style="padding:5px;">

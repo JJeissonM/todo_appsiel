@@ -44,9 +44,14 @@ class SaludObligatoria implements Estrategia
 
         $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza,  $total_IBC * $liquidacion['concepto']->porcentaje_sobre_basico / 100 );
 
+        $tiempo_a_liquidar =  NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+                                            ->where( 'nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
+                                            ->where( 'core_tercero_id', $liquidacion['empleado']->core_tercero_id )
+                                            ->sum('cantidad_horas');
+
         return [ 
                     [
-                        'cantidad_horas' => $liquidacion['documento_nomina']->tiempo_a_liquidar,
+                        'cantidad_horas' => $tiempo_a_liquidar,
                         'valor_devengo' => $valores->devengo,
                         'valor_deduccion' => $valores->deduccion 
                     ]

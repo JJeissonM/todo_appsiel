@@ -76,6 +76,7 @@ class EmailController extends Controller
     $tipo_mensaje = 'flash_message';
     $texto_mensaje = 'Correo enviado correctamente.';
 
+    //if(false)
     if ( !EmailController::enviar_email( $nombre_remitente, $email_destino, $asunto, $cuerpo_mensaje, $nombrearchivo) )
     {
       $tipo_mensaje = 'mensaje_error';

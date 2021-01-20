@@ -26,11 +26,11 @@ class Boton
 
         switch ( $btn->tag_html ) {
             case 'a':
-                $this->estructura_html = '<a btn_atributos> btn_contenido </a>';
+                $this->estructura_html = '<a btn_atributos class="btn-gmail"> btn_contenido </a>';
                 break;
 
             case 'button':
-                $this->estructura_html = '<a btn_atributos> btn_contenido </a>';
+                $this->estructura_html = '<a btn_atributos class="btn-gmail"> btn_contenido </a>';
                 break;
             
             default:
@@ -56,9 +56,10 @@ class Boton
             $btn_atributos .= ' title="'.$this->title.'"';
         }
         
+        /*
         if ( $this->color_bootstrap != '') {
             $btn_atributos .= ' class="btn btn-'.$this->color_bootstrap.' btn-'.$this->size.'"';
-        }
+        }*/
 
         if ( $this->faicon != '') {
             $btn_contenido = ' <i class="fa fa-'.$this->faicon.'"></i>';

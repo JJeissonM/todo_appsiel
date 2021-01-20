@@ -46,21 +46,6 @@ class PrestacionesSocialesController extends TransaccionController
     protected $registros_procesados = 0;
     protected $vec_campos;
 
-    /* 
-        7: Tiempo NO Laborado
-        1: tiempo laborado
-        6: Aux. transporte
-        3: cuotas
-        4: prestamos
-        10: Fondo de solidaridad pensional
-        12: Salud Obligatoria
-        13: Pensión Obligatoria
-    */
-        
-    // Nota: el orden de líquidación para 7,1 8, 10 7 11 es muy importante
-    protected $array_ids_modos_liquidacion_automaticos = [ 7, 1, 6, 3, 4, 10, 12, 13];
-    //protected $array_ids_modos_liquidacion_automaticos = [ 10 ];
-
 
     /*
         Por cada empleado activo liquida los conceptos automáticos, las cuotas y préstamos
@@ -83,7 +68,7 @@ class PrestacionesSocialesController extends TransaccionController
             foreach ($request->prestaciones as $key => $prestacion)
             {
                 // Se llama al subsistema de liquidación
-                $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $empleado, $documento_nomina, $request->almacenar_registros);
+                $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $empleado, $documento_nomina, $request->almacenar_registros, $request->fecha_final_promedios);
 
                 $valores = $liquidacion->calcular( $prestacion );
 

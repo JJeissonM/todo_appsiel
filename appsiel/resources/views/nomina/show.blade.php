@@ -15,8 +15,6 @@
 
 	{{ Form::bsMigaPan($miga_pan) }}
 
-	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnPrint( 'nomina_print/'.$id ) }}
-
 	@if ( $encabezado_doc->estado == 'Activo' )
 		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Acciones', 'success', 'money', 
 		          [ 
