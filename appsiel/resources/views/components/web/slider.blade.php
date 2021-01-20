@@ -16,15 +16,15 @@
         @endif
     }
 
-    .owl-carousel .image {
+    .owl-carousel img {
         position: absolute;
         top: 0;
         right: 0;
         width: 100%;
         height: 554px;
-        background-position: center;
+        object-position: center;
         background-repeat: no-repeat;
-        background-size: cover;
+        object-fit: cover;
     }
 </style>
 <section id="main-slider" class="slider-font">
@@ -55,8 +55,7 @@
                     </div>
                 </div>
             </div>
-           <!--<img class="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">-->
-           <div class="image" style="background-image: url('{{asset($item->imagen)}}')" tooltip="{{$item->titulo}}"></div>
+           <img class="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">
         </div>
         @endforeach
     </div>

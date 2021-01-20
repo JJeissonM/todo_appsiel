@@ -2,9 +2,16 @@
 
 @section('estilos_1')
 	<style type="text/css">
-		body {
+		/*body {
 			background-color: #FAFAFA !important;
-        }
+        }*/
+
+		body{
+			background-position: bottom;
+			background-attachment: fixed;
+			background-size: cover;			
+			background-image: url({{asset('assets/img/fondo-colegio.jpeg')}})			
+		}
 
         .img-responsive:hover {
 	        transform: scale(1.2) rotate(-15deg);
