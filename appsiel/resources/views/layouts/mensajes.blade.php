@@ -6,7 +6,7 @@
 		</div>
 	</div>
 @endif
-
+ 
 @if(Session::has('mensaje_error'))
 	<div class="container" style="clear: both; width: auto;">      
 		<div class="alert alert-danger alert-dismissible">
