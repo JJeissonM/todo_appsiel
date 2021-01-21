@@ -70,8 +70,8 @@
                                 echo "<p class='price-font' style='color: ".$item->text_color." !important;'>No hay información en este plan</p>";
                             }
                         ?>
-                        <a class="btn btn-default btn-block" style="margin-bottom: 30px; color: {{$item->text_color}} !important;" role="button" data-toggle="collapse" href="#collapse_{{$item->id}}" aria-expanded="false" aria-controls="collapseExample">
-                        Ver todas las características del plan <i class="fa fa-plus"></i></a>
+                        <a class="btn btn-default btn-block" style="margin-bottom: 30px; color: {{$item->text_color}} !important; border: 2px solid; border-color: {{$item->text_color}} !important;" role="button" data-toggle="collapse" href="#collapse_{{$item->id}}" aria-expanded="false" aria-controls="collapseExample">
+                        Ver todas las características <i class="fa fa-plus"></i></a>
                         <div class="collapse" id="collapse_{{$item->id}}">
                             <div class="well">
                                 <?php
