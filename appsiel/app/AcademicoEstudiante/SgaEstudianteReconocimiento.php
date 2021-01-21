@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class SgaEstudianteReconocimiento extends Model
 {
 	protected $fillable = ['estudiante_id', 'curso_id', 'periodo_lectivo_id', 'descripcion', 'resumen', 'archivo_adjunto', 'estado'];
-
+ 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Estudiante', 'Curso', 'Descripción', 'Resumen', 'Estado'];
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';

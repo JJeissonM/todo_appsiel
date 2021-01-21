@@ -80,11 +80,11 @@
 	<style>
 		@font-face {
 			font-family: 'Gotham-Narrow-Medium';
-			src: url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff") format('woff'),
-				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff2") format('woff2'),
-				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot"),
-				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot?#iefix") format('embedded-opentype'),
-				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.otf") format('truetype');
+			src: url("/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff") format('woff'),
+				url("/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff2") format('woff2'),
+				url("/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot"),
+				url("/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot?#iefix") format('embedded-opentype'),
+				url("/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.otf") format('truetype');
 
 			font-weight: normal;
 			font-style: normal;
