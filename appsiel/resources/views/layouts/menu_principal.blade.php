@@ -65,7 +65,7 @@
                         
                         @if( config('configuracion.usar_mensajes_internos') )
                             <li>
-                                <a style="color: #FFFFFF !important;" href="{{url('/messages')}}"><i class="fa fa-btn fa-envelope"></i>  @include('core.messenger.unread-count')</a>
+                                <a title="Mis Mensajes" style="color: #FFFFFF !important;" href="{{url('/messages')}}"><i class="fa fa-btn fa-envelope"></i>  @include('core.messenger.unread-count')</a>
                             </li>
                         @endif
 
