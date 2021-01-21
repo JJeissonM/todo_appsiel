@@ -154,24 +154,32 @@ class ComprobanteEgreso extends Model
     }
 
 
-    public static function store_adicional($datos, $registro)
+    public static function store_adicional( $datos, $registro )
     {
         $teso_motivo_id = (int)config('tesoreria.motivo_comprobante_egresos_id');
 
-        if (explode("-", $datos['teso_medio_recaudo_id'])[1] == 'Efectivo') {
+        if ( explode("-", $datos['teso_medio_recaudo_id'])[1] == 'Efectivo' )
+        {
             $datos['teso_cuenta_bancaria_id'] = 0;
-        } else {
+        }else{
             $datos['teso_caja_id'] = 0;
         }
 
         $datos['consecutivo'] = $registro->consecutivo;
 
+        $codigo_referencia_tercero = '';
+        if ( $datos['vehiculo_id'] != '' )
+        {
+            $codigo_referencia_tercero = '[{"ruta_modelo":"App\Contratotransporte\Vehiculo","registro_id":"'.$datos['vehiculo_id'].'"}]';
+        }
+
         TesoMovimiento::create(
-            $datos +
-                ['teso_motivo_id' => $teso_motivo_id] +
-                ['valor_movimiento' => (float)$datos['valor_total'] * -1] +
-                ['estado' => 'Activo']
-        );
+                                $datos +
+                                [ 'teso_motivo_id' => $teso_motivo_id] +
+                                [ 'codigo_referencia_tercero' => $codigo_referencia_tercero ] +
+                                [ 'valor_movimiento' => (float)$datos['valor_total'] * -1] +
+                                [ 'estado' => 'Activo']
+                            );
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
