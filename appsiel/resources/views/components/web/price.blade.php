@@ -57,15 +57,35 @@
                     <div style="background-color: {{$item->background_color}}; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
                         <h4 class="media-heading price-font" style="margin-top: 0px; color: {{$item->text_color}} !important;">{{$item->precio}}</h4>
                         <?php
-                        if ($item->lista_items != 'null') {
-                            $lista = json_decode($item->lista_items);
-                            foreach($lista as $l){
-                                echo "<p class='price-font' style='color: ".$item->text_color." !important;'><i style='color: ".$item->button_color." !important;' class='fa fa-".$l->icono."'></i> ".$l->item."</p>";
+                            if ($item->lista_items != 'null') {
+                                $lista = json_decode($item->lista_items);
+                                $i=0;
+                                foreach($lista as $l){
+                                    $i=$i+1;
+                                    if($i<4){
+                                        echo "<p class='price-font' style='color: ".$item->text_color." !important;'><i style='color: ".$item->button_color." !important;' class='fa fa-".$l->icono."'></i> ".$l->item."</p>";
+                                    }
+                                }
+                            }else{
+                                echo "<p class='price-font' style='color: ".$item->text_color." !important;'>No hay información en este plan</p>";
                             }
-                        }else{
-                            echo "<p class='price-font' style='color: ".$item->text_color." !important;'>No hay información en este plan</p>";
-                        }
                         ?>
+                        <a class="btn btn-default btn-block" style="margin-bottom: 30px;" role="button" data-toggle="collapse" href="#collapse_{{$item->id}}" aria-expanded="false" aria-controls="collapseExample">
+                        Ver todas las características del plan <i class="fa fa-plus"></i></a>
+                        <div class="collapse" id="collapse_{{$item->id}}">
+                            <div class="well">
+                                <?php
+                                if ($item->lista_items != 'null') {
+                                    $lista = json_decode($item->lista_items);
+                                    foreach($lista as $l){
+                                        echo "<p class='price-font' style='color: ".$item->text_color." !important;'><i style='color: ".$item->button_color." !important;' class='fa fa-".$l->icono."'></i> ".$l->item."</p>";
+                                    }
+                                }else{
+                                    echo "<p class='price-font' style='color: ".$item->text_color." !important;'>No hay información en este plan</p>";
+                                }
+                                ?>
+                            </div>
+                        </div>
                         <a style="background-color: {{$item->button_color}} !important; border-color: {{$item->button2_color}} !important;" class="btn btn-primary animate btn-block price-font" href="{{$item->url}}">DESCUBRE EL PLAN...</a>
                     </div>
                 </div>
