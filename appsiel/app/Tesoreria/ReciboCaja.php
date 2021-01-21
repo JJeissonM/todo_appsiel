@@ -167,11 +167,19 @@ class ReciboCaja extends Model
 
         $datos['consecutivo'] = $registro->consecutivo;
 
-        TesoMovimiento::create( $datos +  
-                            [ 'teso_motivo_id' => $teso_motivo_id] +
-                            [ 'valor_movimiento' => (float)$datos['valor_total'] ] +
-                            [ 'estado' => 'Activo' ]
-                        );
+        $codigo_referencia_tercero = '';
+        if ( $datos['vehiculo_id'] != '' )
+        {
+            $codigo_referencia_tercero = '[{"ruta_modelo":"App\Contratotransporte\Vehiculo","registro_id":"'.$datos['vehiculo_id'].'"}]';
+        }
+
+        TesoMovimiento::create( 
+                                $datos +
+                                [ 'teso_motivo_id' => $teso_motivo_id ] +
+                                [ 'codigo_referencia_tercero' => $codigo_referencia_tercero ] +
+                                [ 'valor_movimiento' => (float)$datos['valor_total'] ] +
+                                [ 'estado' => 'Activo' ]
+                            );
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)

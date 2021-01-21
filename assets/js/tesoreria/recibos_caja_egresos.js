@@ -79,3 +79,10 @@ $(document).ready(function(){
 	  height: 200
 	});
 });
+
+
+
+function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+{
+  $('#core_tercero_id').before('<input type="hidden" id="vehiculo_id" name="vehiculo_id" value="' + item_sugerencia.attr('data-vehiculo_id') + '" >');
+}

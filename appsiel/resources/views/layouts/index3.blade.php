@@ -93,7 +93,11 @@
 				</td>
 				<?php for ($i = 1; $i < $totalElementos; $i++) { ?>
 					<td class="table-text">
-						{{ $fila['campo'.$i] }}
+						<a href="{{url('').'/'.str_replace("id_fila", $fila['campo'.$totalElementos], $url_ver)}}" style="display: block; text-decoration: none;color: inherit;" title="Consultar">
+							<div style="width: 100%;height: 100%;">
+								{{ $fila['campo'.$i] }}
+							</div>
+						</a>
 					</td>
 				<?php } ?>
 			</tr>
@@ -125,13 +129,13 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				//location.href = url.replace('&amp;', '&');
-				window.open(url.replace('&amp;', '&'), '_blank');
+				//location.href = url.replace('&amp;', '&').replace('&amp;', '&');
+				window.open(url.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -146,12 +150,12 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				location.href = url.replace('&amp;', '&');
+				location.href = url.replace('&amp;', '&').replace('&amp;', '&');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -166,12 +170,12 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				location.href = url.replace('&amp;', '&');
+				location.href = url.replace('&amp;', '&').replace('&amp;', '&');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -186,12 +190,12 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				location.href = url.replace('&amp;', '&');
+				location.href = url.replace('&amp;', '&').replace('&amp;', '&');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -206,12 +210,12 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				location.href = url.replace('&amp;', '&');
+				location.href = url.replace('&amp;', '&').replace('&amp;', '&');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -230,7 +234,7 @@
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
