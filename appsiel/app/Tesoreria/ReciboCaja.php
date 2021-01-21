@@ -21,7 +21,7 @@ class ReciboCaja extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha','Documento','Tercero','Detalle','Valor total','Estado'];
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"teso_comprobante_egreso_show/id_fila"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"teso_recibo_caja_show/id_fila"}';
     
     public $archivo_js = 'assets/js/tesoreria/recibos_caja_egresos.js';
     
@@ -58,10 +58,28 @@ class ReciboCaja extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $transaccion_id = 56;
+        if ($search == "" )
+        {
+            return ReciboCaja::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
+                    ->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
+                    ->where('teso_doc_encabezados.core_empresa_id','=',Auth::user()->empresa_id)
+                    ->select( 
+                                'teso_doc_encabezados.fecha AS campo1',
+                                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
+                                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                                'teso_doc_encabezados.descripcion AS campo4',
+                                'teso_doc_encabezados.valor_total AS campo5',
+                                'teso_doc_encabezados.estado AS campo6',
+                                'teso_doc_encabezados.id AS campo7')
+                    ->orderBy('teso_doc_encabezados.fecha', 'DESC')
+                    ->paginate($nro_registros);
+        }
+
     	return ReciboCaja::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
-                    //->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
-                    //->where('teso_doc_encabezados.core_empresa_id','=',Auth::user()->empresa_id)
+                    ->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
+                    ->where('teso_doc_encabezados.core_empresa_id','=',Auth::user()->empresa_id)
                     ->select( 
                                 'teso_doc_encabezados.fecha AS campo1',
                                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
@@ -75,7 +93,7 @@ class ReciboCaja extends Model
                     ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
                     ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
                     ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
-                    ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")/**/
                     ->orderBy('teso_doc_encabezados.fecha', 'DESC')
                     ->paginate($nro_registros);
     }
@@ -85,8 +103,8 @@ class ReciboCaja extends Model
         $transaccion_id = 56;
         $string = ReciboCaja::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
-                    //->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
-                    //->where('teso_doc_encabezados.core_empresa_id','=',Auth::user()->empresa_id)
+                    ->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
+                    ->where('teso_doc_encabezados.core_empresa_id','=',Auth::user()->empresa_id)
                     ->select(
                                 'teso_doc_encabezados.id AS ID',
                                 'teso_doc_encabezados.fecha AS FECHA',
@@ -100,7 +118,7 @@ class ReciboCaja extends Model
                     ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
                     ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
                     ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
-                    ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
+                    ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")/**/
                     ->orderBy('teso_doc_encabezados.fecha', 'DESC')
                     ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
@@ -170,7 +188,7 @@ class ReciboCaja extends Model
         $codigo_referencia_tercero = '';
         if ( $datos['vehiculo_id'] != '' )
         {
-            $codigo_referencia_tercero = '[{"ruta_modelo":"App\Contratotransporte\Vehiculo","registro_id":"'.$datos['vehiculo_id'].'"}]';
+            $codigo_referencia_tercero = '{"ruta_modelo":"App\\\Contratotransporte\\\Vehiculo","registro_id":"'.$datos['vehiculo_id'].'"}';
         }
 
         TesoMovimiento::create( 
@@ -244,17 +262,34 @@ class ReciboCaja extends Model
         }else{
             $comprobante->teso_caja_id = 0;
         }
-        
+
+        $codigo_referencia_tercero = $movimiento->codigo_referencia_tercero;
+        if ( isset( $datos['vehiculo_id'] ) )
+        {
+            if ( $datos['vehiculo_id'] != '' )
+            {
+                $codigo_referencia_tercero = '{"ruta_modelo":"App\\\Contratotransporte\\\Vehiculo","registro_id":"'.$datos['vehiculo_id'].'"}';
+            }else {
+                $codigo_referencia_tercero = '';
+            }
+        }
+
         if ( is_null($movimiento) )
         {
-            TesoMovimiento::create( $comprobante->toArray() +  
-                            [ 'teso_motivo_id' => $teso_motivo_id] +
-                            [ 'valor_movimiento' => $comprobante->valor_total ] +
-                            [ 'estado' => 'Activo' ]
-                        );
+            TesoMovimiento::create(
+                                    $datos +  
+                                    [ 'teso_motivo_id' => $teso_motivo_id] +
+                                    [ 'codigo_referencia_tercero' => $codigo_referencia_tercero ] +
+                                    [ 'valor_movimiento' => $comprobante->valor_total ] +
+                                    [ 'estado' => 'Activo' ]
+                                );
         }else{
-            $movimiento->update( $comprobante->toArray() +
-                                [ 'valor_movimiento' => $comprobante->valor_total ]
+            $movimiento->update( 
+                                $datos + 
+                                [ 
+                                    'valor_movimiento' => $comprobante->valor_total * -1,
+                                    'codigo_referencia_tercero' => $codigo_referencia_tercero 
+                                ]
                             );
         }
     }

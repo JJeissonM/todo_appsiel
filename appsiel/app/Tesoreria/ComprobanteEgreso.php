@@ -58,6 +58,25 @@ class ComprobanteEgreso extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $transaccion_id = 57;
+
+        if ( $search == '' )
+        {
+            return ComprobanteEgreso::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+                        ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
+                        ->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
+                        ->where('teso_doc_encabezados.core_empresa_id','=',Auth::user()->empresa_id)
+                        ->select( 
+                                    'teso_doc_encabezados.fecha AS campo1',
+                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
+                                    DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                                    'teso_doc_encabezados.descripcion AS campo4',
+                                    'teso_doc_encabezados.valor_total AS campo5',
+                                    'teso_doc_encabezados.estado AS campo6',
+                                    'teso_doc_encabezados.id AS campo7')
+                        ->orderBy('teso_doc_encabezados.fecha', 'DESC')
+                        ->paginate($nro_registros);
+        }
+
     	return ComprobanteEgreso::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
                     //->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
@@ -170,7 +189,7 @@ class ComprobanteEgreso extends Model
         $codigo_referencia_tercero = '';
         if ( $datos['vehiculo_id'] != '' )
         {
-            $codigo_referencia_tercero = '[{"ruta_modelo":"App\Contratotransporte\Vehiculo","registro_id":"'.$datos['vehiculo_id'].'"}]';
+            $codigo_referencia_tercero = '{"ruta_modelo":"App\\\Contratotransporte\\\Vehiculo","registro_id":"'.$datos['vehiculo_id'].'"}';
         }
 
         TesoMovimiento::create(
@@ -250,12 +269,12 @@ class ComprobanteEgreso extends Model
         $comprobante = ComprobanteEgreso::find($registro_id);
 
         $movimiento = TesoMovimiento::where([
-            ['core_tipo_transaccion_id', '=', $comprobante->core_tipo_transaccion_id],
-            ['core_tipo_doc_app_id', '=', $comprobante->core_tipo_doc_app_id],
-            ['consecutivo', '=', $comprobante->consecutivo]
-        ])
-            ->get()
-            ->first();
+                                                ['core_tipo_transaccion_id', '=', $comprobante->core_tipo_transaccion_id],
+                                                ['core_tipo_doc_app_id', '=', $comprobante->core_tipo_doc_app_id],
+                                                ['consecutivo', '=', $comprobante->consecutivo]
+                                            ])
+                                    ->get()
+                                    ->first();
 
         $teso_motivo_id = (int)config('tesoreria.motivo_comprobante_egresos_id');
 
@@ -265,18 +284,37 @@ class ComprobanteEgreso extends Model
             $comprobante->teso_caja_id = 0;
         }
 
-        if (is_null($movimiento)) {
+        $codigo_referencia_tercero = $movimiento->codigo_referencia_tercero;
+        if ( isset( $datos['vehiculo_id'] ) )
+        {
+            if ( $datos['vehiculo_id'] != '' )
+            {
+                $codigo_referencia_tercero = '{"ruta_modelo":"App\\\Contratotransporte\\\Vehiculo","registro_id":"'.$datos['vehiculo_id'].'"}';
+            }else {
+                $codigo_referencia_tercero = '';
+            }
+        }
+
+        if ( is_null($movimiento) )
+        {
             TesoMovimiento::create(
-                $comprobante->toArray() +
-                    ['teso_motivo_id' => $teso_motivo_id] +
-                    ['valor_movimiento' => $comprobante->valor_total * -1] +
-                    ['estado' => 'Activo']
-            );
+                                    $datos +  
+                                    [ 'teso_motivo_id' => $teso_motivo_id] +
+                                    [ 'codigo_referencia_tercero' => $codigo_referencia_tercero ] +
+                                    [ 'valor_movimiento' => $comprobante->valor_total ] +
+                                    [ 'estado' => 'Activo' ]
+                                );
         } else {
-            $movimiento->update(
-                $comprobante->toArray() +
-                    ['valor_movimiento' => $comprobante->valor_total * -1]
-            );
+
+            //dd($codigo_referencia_tercero);
+
+            $movimiento->update( 
+                                $datos + 
+                                [ 
+                                    'valor_movimiento' => $comprobante->valor_total * -1,
+                                    'codigo_referencia_tercero' => $codigo_referencia_tercero 
+                                ]
+                            );
         }
     }
 }

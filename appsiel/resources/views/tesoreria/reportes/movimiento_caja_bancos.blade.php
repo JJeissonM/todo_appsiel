@@ -67,7 +67,16 @@
                 <tr>
                     <td> {{ $fila->fecha }}</td>
                     <td> {{ $fila->documento_transaccion_prefijo_consecutivo }} </td>
-                    <td> {{ $fila->tercero_descripcion }} </td>
+                    <td> 
+                        {{ $fila->tercero_descripcion }}
+                        <?php 
+                            $referencia_tercero = $fila->get_datos_referencia_tercero();
+                        ?>
+                        @if( !is_null($referencia_tercero) )
+                            <br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: gray;"> <b>{{ $referencia_tercero->etiqueta }}:</b>{{ $referencia_tercero->valor }} </span>
+                        @endif
+                    </td>
                     <td> {{ $caja }} {{ $cuenta_bancaria }} </td>
                     <td> {{ $fila->descripcion }} </td>
                     <td> {{ $fila->motivo_descripcion }} </td>

@@ -89,6 +89,11 @@ Route::get('teso_comprobante_egreso_imprimir/{id}', 'Tesoreria\ComprobanteEgreso
 Route::get('teso_comprobante_egreso_anular/{id}', 'Tesoreria\ComprobanteEgresoController@anular');
 
 
+Route::get('teso_recibo_caja_show/{id}', 'Tesoreria\ReciboCajaController@show');
+Route::get('teso_recibo_caja_imprimir/{id}', 'Tesoreria\ReciboCajaController@imprimir');
+Route::get('teso_recibo_caja_anular/{id}', 'Tesoreria\ReciboCajaController@anular');
+
+
 
 // CONCILIACION BANCARIA
 Route::post('tesoreria/procesa_archivo_plano_bancos', 'Tesoreria\ConciliacionBancariaController@procesa_archivo_plano_bancos');

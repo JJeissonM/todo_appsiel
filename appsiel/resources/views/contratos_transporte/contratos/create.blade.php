@@ -62,11 +62,13 @@
 								</div>
 								<div class="form-group">
 									<label>En Representación de...</label>
-									<input type="text" required class="form-control" name="representacion_de" value="PARA UN GRUPO ESPECIFICO DE USUARIOS DE TRANSPORTE DE PERSONAL (TRANSPORTE PARTICULAR)">
+									<textarea required class="form-control" name="representacion_de">PARA UN GRUPO ESPECIFICO DE USUARIOS DE TRANSPORTE DE PERSONAL (TRANSPORTE PARTICULAR)</textarea>
+									<!-- <input type="text" required class="form-control" name="representacion_de" value="PARA UN GRUPO ESPECIFICO DE USUARIOS DE TRANSPORTE DE PERSONAL (TRANSPORTE PARTICULAR)"> -->
 								</div>
 								<div class="form-group">
 									<label>Objeto del Contrato</label>
-									<input type="text" class="form-control" required name="objeto" value="el objeto del contrato consiste en el transporte terrestre de pasajeros, mediante un servicio expreso al grupo específico descrito anteriormente" />
+									<textarea class="form-control" required name="objeto">Prestacion del servicio transporte especial para un grupo especifico de usuarios de transporte de personal (transporte particular).</textarea>
+									<!-- <input type="text" class="form-control" required name="objeto" value="el objeto del contrato consiste en el transporte terrestre de pasajeros, mediante un servicio expreso al grupo específico descrito anteriormente" /> -->
 								</div>
 								<div class="form-group">
 									<label>Vehículo</label>

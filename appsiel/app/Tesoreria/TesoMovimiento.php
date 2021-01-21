@@ -53,6 +53,46 @@ class TesoMovimiento extends Model
                         ->get();
     }
 
+    public function get_registro_referencia_tercero()
+    {
+        $codigo_referencia_tercero = json_decode($this->codigo_referencia_tercero,true);
+
+        if ( is_null($codigo_referencia_tercero) )
+        {
+            return null;
+        }
+
+        return app($codigo_referencia_tercero['ruta_modelo'])->find($codigo_referencia_tercero['registro_id']);
+    }
+
+    public function get_datos_referencia_tercero()
+    {
+        $codigo_referencia_tercero = json_decode($this->codigo_referencia_tercero,true);
+
+        if ( is_null($codigo_referencia_tercero) )
+        {
+            return null;
+        }
+
+        $registro = app($codigo_referencia_tercero['ruta_modelo'])->find($codigo_referencia_tercero['registro_id']);
+
+        $etiqueta = '';
+        $valor = '';
+        switch ($codigo_referencia_tercero['ruta_modelo'])
+        {
+            case 'App\Contratotransporte\Vehiculo':
+                $etiqueta = 'Placa Vehículo';
+                $valor = $registro->placa;
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        return (object)['etiqueta'=>$etiqueta,'valor'=>$valor];
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS campo2';
@@ -172,6 +212,7 @@ class TesoMovimiento extends Model
                                 ->select(
                                             'teso_motivos.descripcion as motivo',
                                             'teso_motivos.movimiento',
+                                            'teso_movimientos.codigo_referencia_tercero',
                                             DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento')
                                         )
                                 ->get()
@@ -247,6 +288,7 @@ class TesoMovimiento extends Model
                                         'teso_movimientos.valor_movimiento',
                                         'teso_movimientos.teso_motivo_id',
                                         'teso_movimientos.descripcion',
+                                        'teso_movimientos.codigo_referencia_tercero',
                                         'teso_movimientos.teso_caja_id',
                                         'teso_movimientos.teso_cuenta_bancaria_id',
                                         'core_terceros.descripcion as tercero_descripcion' )
