@@ -2,14 +2,34 @@
 
 @section('estilos_1')
 	<style type="text/css">
-		body {
+		/*body {
 			background-color: #FAFAFA !important;
-        }
+        }*/
+
+		body{
+			background-position: bottom;
+			background-attachment: fixed;
+			background-size: cover;			
+			background-image: url({{asset('assets/img/fondo-colegio.jpeg')}})			
+		}
 
         .img-responsive:hover {
 	        transform: scale(1.2) rotate(-15deg);
 	        cursor: pointer;
 	    }
+
+		.banner{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.nombre-empresa{
+			display: flex;
+			justify-content: center;
+			font-size: calc(1em + 3vw);
+			width: 550px;
+		}
 
 	    #div_contenido {
 		    /*background-image: url(https://cdn.pixabay.com/photo/2016/08/31/17/02/blue-1634110_960_720.png);
@@ -65,7 +85,7 @@
 				          <div class="col-sm-{{12/$cant_cols}} col-xs-{{12/$cant_cols}}" style="padding: 5px; text-align: center;">
 				          		<a href="{{url($url)}}">
 				          			<img class="img-responsive" src="https://appsiel.com.co/el_software/assets/iconos_2021/{{$fila['nombre_imagen']}}" width="{{$tam_iconos}}" title="{{$fila['descripcion']}}" style="display: inline;" />
-				          			<p>
+				          			<p style="color: #000;">
 				          				{{$fila['descripcion']}}
 				          			</p>
 					                

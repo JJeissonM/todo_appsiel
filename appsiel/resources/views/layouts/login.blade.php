@@ -18,14 +18,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">-->
 
 	<style type="text/css">
+		@font-face {
+			font-family: 'Gotham-Narrow-Medium';
+			src: url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff") format('woff'),
+				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff2") format('woff2'),
+				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot"),
+				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot?#iefix") format('embedded-opentype'),
+				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.otf") format('truetype');
+
+			font-weight: normal;
+			font-style: normal;
+			font-display: swap;
+		}
+
+
 		body {
 			color: #fff;
-			background-image: url('assets/images/fondo_inicio.jpg');
+			background-image: url('assets/images/fondo-inicio.jpeg');
 			background-position: center center;
 			background-repeat: no-repeat;
 			background-attachment: fixed;
 			background-size: cover;
 			/*background: #d47677;*/
+			font-family: "Gotham-Narrow-Medium";
 		}
 
 		.form-control {
@@ -131,19 +146,19 @@
 			left: 0;
 			bottom: 0;
 			width: 100%;
-			color: #FFFFFF;
+			color: #000;
 			font-weight: bold;
 			text-align: center;
-			font-family: "Roboto";
+			font-family: "Gotham-Narrow-Medium";
 			font-size: 14px;
 		}
 
-		.login-form form{
+		.login-form form {
 			padding: 30px;
 		}
 
 		.form-control2 {
-			font-family: "Roboto";
+			font-family: "Gotham-Narrow-Medium";
 			font-size: 16px;
 			color: #303F9F;
 			width: 100%;
@@ -166,7 +181,7 @@
 			color: #fff;
 			cursor: pointer;
 			display: inline-block;
-			font-family: "Roboto";
+			font-family: "Gotham-Narrow-Medium";
 			text-transform: uppercase;
 			font-weight: bold;
 			font-size: 16px;

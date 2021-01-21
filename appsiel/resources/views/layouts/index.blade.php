@@ -5,7 +5,7 @@
 {{ Form::bsMigaPan($miga_pan) }}
  
 <div class="col-md-12 botones-gmail">
-	<div class="col-md-1">
+		<div class="col-md-1">
 		<select id="mostrar" onchange="mostrar()" class="form-control" style="color: #000 !important; font-size: 16px; width: 80px; position: absolute; float: left;">
 			<option>Mostrar</option>
 			<option value="10">10</option>
@@ -76,6 +76,8 @@
 		</div>
 
 	</div>
+	
+
 </div>
 
 

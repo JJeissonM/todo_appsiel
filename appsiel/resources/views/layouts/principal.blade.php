@@ -8,26 +8,24 @@
 
 	<?php
 
-		//$aplicaciones_inactivas_demo = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 6];
-		$aplicaciones_inactivas_demo = [17];
-		$app = App\Sistema\Aplicacion::find( Input::get('id') );
-		$modelo = App\Sistema\Modelo::find( Input::get('id_modelo') );
+	//$aplicaciones_inactivas_demo = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 6];
+	$aplicaciones_inactivas_demo = [17];
+	$app = App\Sistema\Aplicacion::find(Input::get('id'));
+	$modelo = App\Sistema\Modelo::find(Input::get('id_modelo'));
 
-		$titulo = '';
+	$titulo = '';
 
-		if ( !is_null($modelo) )
-		{
-			$titulo = $modelo->descripcion . ' - ';
-		}
+	if (!is_null($modelo)) {
+		$titulo = $modelo->descripcion . ' - ';
+	}
 
-		if ( !is_null($app) )
-		{
-			$titulo .= $app->descripcion;
-		}else{
-			$titulo = 'Inicio';
-		}
+	if (!is_null($app)) {
+		$titulo .= $app->descripcion;
+	} else {
+		$titulo = 'Inicio';
+	}
 
-		$titulo .= ' - APPSIEL';
+	$titulo .= ' - APPSIEL';
 
 	?>
 
@@ -52,8 +50,8 @@
 	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
 
 
-	<!-- Optional theme -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+	<!-- Optional theme
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
 
 	<link rel="stylesheet" href="{{ asset('assets/css/mis_estilos.css') }}">
@@ -63,25 +61,38 @@
 
 	<!-- Estilos de las tablas tipo GMAIL -->
 	<link rel="stylesheet" href="{{ asset('css/Styletable.css')}}">
-		
+
 
 	@if( app()->environment() == 'demo' )
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-	    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-123891072-2"></script>
-	    <script>
-	        window.dataLayer = window.dataLayer || [];
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-123891072-2"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
 
-	        function gtag() {
-	            dataLayer.push(arguments);
-	        }
-	        gtag('js', new Date());
-	        gtag('config', 'UA-123891072-2');
-	    </script>
+		function gtag() {
+			dataLayer.push(arguments);
+		}
+		gtag('js', new Date());
+		gtag('config', 'UA-123891072-2');
+	</script>
 	@endif
 
 	<style>
+		@font-face {
+			font-family: 'Gotham-Narrow-Medium';
+			src: url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff") format('woff'),
+				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff2") format('woff2'),
+				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot"),
+				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot?#iefix") format('embedded-opentype'),
+				url("fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.otf") format('truetype');
+
+			font-weight: normal;
+			font-style: normal;
+			font-display: swap;
+		}
+
 		body {
-			font-family: 'Lato';
+			font-family: 'Gotham-Narrow-Medium';
 			background-color: #FAFAFA !important;
 			/*width: 98%;*/
 		}
@@ -185,12 +196,12 @@
 			opacity: 0.7;
 		}
 
-		#myTable th{
+		#myTable th {
 			padding: 0;
 			font-size: 1.3rem;
 		}
 
-		#myTable td{
+		#myTable td {
 			padding: 5px !important;
 			font-size: 1.3rem;
 		}
@@ -216,7 +227,7 @@
 
 		@if( app()->environment() != 'demo' || !in_array( Input::get('id'), $aplicaciones_inactivas_demo ) )
 
-			@yield('content')
+		@yield('content')	
 
 		@else
 			@include('layouts.demo_pagina_bloqueo_aplicaciones')
@@ -263,16 +274,13 @@
 	<script src="https://unpkg.com/jspdf@ latest/dist/jspdf.min.js"></script>
 	-->
 	<script type="text/javascript">
-
-		if ( document.getElementById('id_tipo_documento_id') !== null )
-		{
+		if (document.getElementById('id_tipo_documento_id') !== null) {
 			document.getElementById('id_tipo_documento_id').value = 13;
 		}
 
-		if ( document.getElementById('codigo_ciudad') !== null )
-		{
+		if (document.getElementById('codigo_ciudad') !== null) {
 			document.getElementById('codigo_ciudad').value = 16920001;
-		}		
+		}
 
 		var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
 		function validar_requeridos() {
@@ -372,32 +380,29 @@
 
 
 			// !!!! Solo valida en la tabla core_terceros
-			$('#email').keyup(function(){
-				
+			$('#email').keyup(function() {
+
 				var email = $("#email").val();
 
 				url_2 = "{{ url('/core/validar_email/') }}" + "/" + email;
 
-				console.log( url_2 );
+				console.log(url_2);
 
-				$.get( url_2 , function( datos ) 
-				{
-			        if ( datos != '') 
-			        {
-			        	if ( datos == email_inicial ) 
-			        	{
-			        		// No hay problema
-			        		$('#bs_boton_guardar').show();
-			        	}else{
-			        		alert( "Ya existe una persona con ese EMAIL. Cambié el EMAIL o no podrá guardar el registro." );
-			        		$('#bs_boton_guardar').hide();
-			        	}
-			        	
-			        }else{
-			        	// Número de identificación
-			        	$('#bs_boton_guardar').show();
-			        }
-			        
+				$.get(url_2, function(datos) {
+					if (datos != '') {
+						if (datos == email_inicial) {
+							// No hay problema
+							$('#bs_boton_guardar').show();
+						} else {
+							alert("Ya existe una persona con ese EMAIL. Cambié el EMAIL o no podrá guardar el registro.");
+							$('#bs_boton_guardar').hide();
+						}
+
+					} else {
+						// Número de identificación
+						$('#bs_boton_guardar').show();
+					}
+
 				});
 			});
 
@@ -549,14 +554,16 @@
 	</script>
 
 	<script src="{{ asset('assets/js/input_lista_sugerencias.js') }}"></script> <!-- -->
-	
+
 	@yield('scripts')
 	@yield('scripts2')
 	@yield('scripts3')
 
 	<script src="https://www.gstatic.com/charts/loader.js"></script>
 	<script>
-	    window.google.charts.load('46', {packages: ['corechart']});
+		window.google.charts.load('46', {
+			packages: ['corechart']
+		});
 	</script>
 
 </body>

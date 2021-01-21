@@ -15,9 +15,9 @@
         top: 0;
         width: 100%;
         height: 554px;
-        background-position: center;
+        object-position: center;
         background-repeat: no-repeat;
-        background-size: cover;
+        object-fit: cover;
     }
 
 </style>
@@ -43,8 +43,8 @@
                 @else
                 <div class="carousel-item">
                     @endif
-                    <div style="background-image: url('{{asset($item->imagen)}}')" alt="{{$item->titulo}}" class="image d-block w-100"></div>
-                    <div class="carousel-caption d-none d-md-block">
+                    <img src="{{asset($item->imagen)}}" alt="{{$item->titulo}}" class="image d-block w-100">
+                    <div class="carousel-caption d-md-block"><!--<div class="carousel-caption d-none d-md-block">-->
                         <h5 class="slider-font" style="color: {{$item->colorTitle}} !important;">{{$item->titulo}}</h5>
                         <p class="slider-font" style="color: {{$item->colorText}} !important;">{{$item->descripcion}}<br><br><br><a class="slider-font btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}} <i class="fa fa-plus"></i></a></p>
                     </div>
