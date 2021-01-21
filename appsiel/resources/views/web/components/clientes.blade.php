@@ -206,7 +206,7 @@
                     {!! Form::open(['route'=>'clientes.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
-                    <input type="hidden" name="cliente_id" value="{{$clientes->id}}">
+                    <input type="hidden" name="cliente_id" value="@if($clientes!=null){{$clientes->id}}@endif">
                     <div class="form-group">
                         <label>Nombre del Cliente</label>
                         <input name="nombre" type="text" required placeholder="Nombre de la empresa o persona" class="form-control">
@@ -249,7 +249,7 @@
                     {!! Form::model($clientes,['route'=>['clientes.modificarSeccion',$clientes],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
-                    <input type="hidden" name="cliente_id" value="{{$clientes->id}}">
+                    <input type="hidden" name="cliente_id" value="@if($clientes!=null){{$clientes->id}}@endif">
                     <div class="form-group">
                         <label>Titulo</label>
                         <input name="title" type="text" placeholder="Titulo" value="{{$clientes->title}}" class="form-control">
