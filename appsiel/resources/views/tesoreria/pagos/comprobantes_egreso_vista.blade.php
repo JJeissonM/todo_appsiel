@@ -24,8 +24,8 @@
 <table class="table table-bordered" style="font-size: 14px;">
     @if( $vista_impresion )
         <tr>
-            <td style="border: solid 1px #ddd; margin-top: -40px;">
-                <img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen}}" height="{{ config('configuracion.alto_logo_formatos') }}" />
+            <td style="border: solid 1px #ddd; margin-top: -40px; width: 60%;">
+                <img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen}}" height="{{ config('configuracion.alto_logo_formatos') }}" width="80%" />
             </td>
             <td style="border: solid 1px #ddd;">
                     <b style="font-size: 1.1em; text-align: center; display: block;">{{ $encabezado_documento->tipo_documento_app->descripcion }}</b>
