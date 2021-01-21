@@ -206,9 +206,6 @@
 			font-size: 1.3rem;
 		}
 
-		.alert{
-			
-		}
 	</style>
 
 	@yield('webstyle')
