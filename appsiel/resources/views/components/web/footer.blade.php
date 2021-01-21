@@ -77,11 +77,13 @@
     }
 
     .footer-font {
+        text-align: justify;
         @if( !is_null($footer ) )
             @if( !is_null($footer->configuracionfuente ) )
                 font-family: <?php echo $footer->configuracionfuente->fuente->font; ?> !important;
             @endif
         @endif
+        
     }
 </style>
 
@@ -251,7 +253,7 @@
             <div class="col-md-3 col-sm-12 d-flex justify-content-between flex-wrap">
                 <div class="contenido col-md-12 col-sm-12" style="margin:20px 0;">
                     <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
-                        ENCUENTRANOS</h5>
+                        Encuentranos</h5>
                     <aside class="footer-font">
                         {!! str_replace('width="300"','width="200"',$footer->ubicacion)!!}
                     </aside>

@@ -120,7 +120,7 @@
     background-color: #fff;
     background-clip: border-box;
     border: 1px solid rgba(0,0,0,.125);
-    border-radius: .25rem;
+    border-radius: 1rem;
 }
 
     .backside .cardTeam a {
@@ -147,7 +147,14 @@
         margin-bottom: 0;
     }
 
-    @media (max-width: 468px) {
+    .frontside .cardTeam-text {
+        min-height: 52px;
+    }
+
+    @media (max-width: 574px) {
+        .frontside .cardTeam-text {
+            min-height: 100%;
+        }
         .container h2 {
             font-size: 28px !important;
         }
