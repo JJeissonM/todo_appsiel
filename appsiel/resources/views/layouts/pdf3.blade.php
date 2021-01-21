@@ -47,24 +47,24 @@
 
 		    table.encabezado{
 		        padding:5px;
-		        border: 1px solid #ddd;
+		        border: 1px solid gray;
 		    }
 
 		    table.banner{
 		        font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
 		        font-style: italic;
 		        font-size: larger;
-		        border: 1px solid #ddd;
+		        border: 1px solid gray;
 		        padding: 0px;
 		    }
 
 		    table.contenido td {
-		        border: 1px solid #ddd;
+		        border: 1px solid gray;
 		    }
 
 		    th {
 		        background-color: #E0E0E0;
-		        border: 1px solid #ddd;
+		        border: 1px solid gray;
 		    }
 
 		    ul{
@@ -92,16 +92,16 @@
 		    {
 			    line-height: 1.42857143;
 			    vertical-align: top;
-			    border-top: 1px solid #ddd;
+			    border-top: 1px solid gray;
 			}
 
 
 		    .table-bordered {
-			    border: 1px solid #ddd;
+			    border: 1px solid gray;
 			}
 
 			.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
-			    border: 1px solid #ddd;
+			    border: 1px solid gray;
 			}
 
 		    table tr.grupo_abuelo {
@@ -109,11 +109,11 @@
 		    }
 
 		    table tr.grupo_padre {
-		        background-color: #ddd;
+		        background-color: gray;
 		    }
 
 		    table tr.grupo_padre {
-		        background-color: #ddd;
+		        background-color: gray;
 		    }
 
 			.pull-right {
@@ -144,7 +144,7 @@
 		      bottom: -50px;
 		      right: 0px;
 		      height: 40px;
-		      border-bottom: 2px solid #ddd;
+		      border-bottom: 2px solid gray;
 		    }
 
 	   </style>
