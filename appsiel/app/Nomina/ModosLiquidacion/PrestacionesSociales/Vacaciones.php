@@ -47,7 +47,9 @@ class Vacaciones implements Estrategia
                 ];
         }
 
-        $this->historial_vacaciones = LibroVacacion::where( 'nom_contrato_id', $liquidacion['empleado']->id )->get();
+        $this->historial_vacaciones = LibroVacacion::where( 'nom_contrato_id', $liquidacion['empleado']->id )
+                                                    ->orderBy('periodo_pagado_hasta')
+                                                    ->get();
 
         $dias_pendientes = $this->get_dias_pendientes( $liquidacion['empleado'], $liquidacion['documento_nomina'], $parametros_prestacion );
         $this->tabla_resumen['dias_pendientes'] = $dias_pendientes;
@@ -55,7 +57,6 @@ class Vacaciones implements Estrategia
         $valor_base_diaria =  $this->get_valor_base_diaria( $liquidacion['empleado'], $liquidacion['documento_nomina']->fecha, $liquidacion['documento_nomina']->tipo_liquidacion, $parametros_prestacion );
 
         $this->tabla_resumen['valor_base_diaria'] = $valor_base_diaria;
-
 
         if ( $liquidacion['documento_nomina']->tipo_liquidacion == 'terminacion_contrato' )
         {
@@ -65,7 +66,16 @@ class Vacaciones implements Estrategia
             $this->tabla_resumen['vlr_dias_habiles'] = $valor_total_vacaciones;
             $this->tabla_resumen['vlr_dias_no_habiles'] = 0;
 
-            $this->actualizar_libro_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
+            $this->novedad_id = 0;
+            $this->tabla_resumen['fecha_inicial_disfrute'] = '0000-00-00';
+            $this->tabla_resumen['fecha_final_disfrute'] = '0000-00-00';
+
+            $this->set_periodo_causacion_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
+
+            if ( $liquidacion['almacenar_registros'] )
+            {
+                $this->actualizar_libro_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'], null );
+            }
 
             $valores = get_valores_devengo_deduccion( 'devengo',  $valor_total_vacaciones );
 
@@ -79,7 +89,6 @@ class Vacaciones implements Estrategia
                     ];
         }
 
-
         $programacion_vacaciones = ProgramacionVacacion::where( [
                                                                     [ 'nom_contrato_id', '=', $liquidacion['empleado']->id ],
                                                                     [ 'tipo_novedad_tnl', '=', 'vacaciones' ],
@@ -87,6 +96,7 @@ class Vacaciones implements Estrategia
                                                                 ] )
                                                         ->get()
                                                         ->first();
+
         if ( is_null($programacion_vacaciones) )
         {
             $this->tabla_resumen['mensaje_error'] = '<br>Empleado ' . $liquidacion['empleado']->tercero->descripcion  . ' no tiene vacaciones programadas.';
@@ -101,6 +111,7 @@ class Vacaciones implements Estrategia
         }
 
         $this->novedad_id = $programacion_vacaciones->id;
+        // El registro en el libro de vacaciones se creó al crear la programación de la vacación 
         $libro_vacaciones = LibroVacacion::where( 'novedad_tnl_id', $programacion_vacaciones->id )->get()->first();
 
         $this->tabla_resumen['fecha_inicial_disfrute'] = $programacion_vacaciones->fecha_inicial_tnl;
@@ -113,6 +124,8 @@ class Vacaciones implements Estrategia
 
         $this->tabla_resumen['valor_total_vacaciones'] = $this->tabla_resumen['vlr_dias_habiles'] + $this->tabla_resumen['vlr_dias_no_habiles'];
 
+        $this->set_periodo_causacion_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
+
         if ( $liquidacion['almacenar_registros'] )
         {
             // Actualiza programación de vacaciones (TNL)
@@ -123,11 +136,8 @@ class Vacaciones implements Estrategia
             // Almacenar registro para los días no hábiles
             $this->crear_registro_concepto_vacaciones_dias_no_habiles( $programacion_vacaciones->id, $liquidacion['documento_nomina'], $liquidacion['empleado'], $libro_vacaciones->dias_no_habiles * (int)config('nomina.horas_dia_laboral') );
 
-            // Actualizar libro de vacaciones--------------- FALTA
-            
-            $this->actualizar_libro_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
-        }
-        
+            $this->actualizar_libro_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'], $libro_vacaciones );
+        }        
 
         $valores = get_valores_devengo_deduccion( 'devengo', $this->tabla_resumen['vlr_dias_habiles'] );
 
@@ -147,20 +157,20 @@ class Vacaciones implements Estrategia
         if ( $this->tabla_resumen['vlr_dias_no_habiles'] > 0 )
         {
             $registro = NomDocRegistro::create(
-                            [ 'nom_doc_encabezado_id' => $documento_nomina->id ] + 
-                            [ 'fecha' => $documento_nomina->fecha] + 
-                            [ 'core_empresa_id' => $documento_nomina->core_empresa_id] +  
-                            [ 'nom_concepto_id' => (int)config('nomina.concepto_vacaciones_dias_no_habiles') ] + 
-                            [ 'core_tercero_id' => $empleado->core_tercero_id ] + 
-                            [ 'nom_contrato_id' => $empleado->id ] +
-                            [ 'estado' => 'Activo' ] + 
-                            [ 'creado_por' => Auth::user()->email ] + 
-                            [ 'modificado_por' => '' ] +
-                            [ 'cantidad_horas' => $cantidad_horas_a_liquidar ] +
-                            [ 'valor_devengo' => $this->tabla_resumen['vlr_dias_no_habiles'] ] +
-                            [ 'valor_deduccion' => 0 ] +
-                            [ 'novedad_tnl_id' => $novedad_tnl_id ]
-                        );
+                                                [ 'nom_doc_encabezado_id' => $documento_nomina->id ] + 
+                                                [ 'fecha' => $documento_nomina->fecha] + 
+                                                [ 'core_empresa_id' => $documento_nomina->core_empresa_id] +  
+                                                [ 'nom_concepto_id' => (int)config('nomina.concepto_vacaciones_dias_no_habiles') ] + 
+                                                [ 'core_tercero_id' => $empleado->core_tercero_id ] + 
+                                                [ 'nom_contrato_id' => $empleado->id ] +
+                                                [ 'estado' => 'Activo' ] + 
+                                                [ 'creado_por' => Auth::user()->email ] + 
+                                                [ 'modificado_por' => '' ] +
+                                                [ 'cantidad_horas' => $cantidad_horas_a_liquidar ] +
+                                                [ 'valor_devengo' => $this->tabla_resumen['vlr_dias_no_habiles'] ] +
+                                                [ 'valor_deduccion' => 0 ] +
+                                                [ 'novedad_tnl_id' => $novedad_tnl_id ]
+                                            );
         }
     }
 
@@ -388,39 +398,59 @@ class Vacaciones implements Estrategia
         return $dias_pendientes;
     }
 
-    public function actualizar_libro_vacaciones( $empleado, $documento )
-    {
-        /*
-
-
-                REVISAR TODO ESTO
-
-
-        */
-
-        return 0;
-
-        // 15 días de vacaciones por cada 360 días del año 
-        $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
-        $libro_vacaciones->periodo_pagado_desde = $this->tabla_resumen['periodo_pagado_desde'];
-            
+    public function set_periodo_causacion_vacaciones( $empleado, $documento_nomina )
+    {            
         $periodo_pagado_desde = $empleado->fecha_ingreso;
         if ( !is_null( $this->historial_vacaciones ) )
         {
-            $dias_pagados_vacaciones = $this->historial_vacaciones->sum('dias_pagados');
-            $periodo_pagado_desde = $this->sumar_dias_a_fecha( $this->historial_vacaciones->last()->periodo_pagado_hasta, 1 );
+            if ( $this->historial_vacaciones->last()->periodo_pagado_hasta != '0000-00-00' )
+            {
+                // Se agrega un día a la fecha del "Úlltimo día pagado en el libro de vacaciones"
+                $periodo_pagado_desde = $this->sumar_dias_calendario_a_fecha( $this->historial_vacaciones->last()->periodo_pagado_hasta, 1 );
+            }                
         }
-        $this->tabla_resumen['periodo_pagado_desde'] = $periodo_pagado_desde;
 
-        $periodo_pagado_hasta = $empleado->fecha_ingreso;
-        $ultimo_periodo_pagado = LibroVacacion::where('nom_contrato_id',$empleado->id)->orderBy('periodo_pagado_hasta')->get()->last();
-        if ( !is_null($ultimo_periodo_pagado) )
+        if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' )
         {
-            $periodo_pagado_hasta = $ultimo_periodo_pagado->periodo_pagado_hasta;
+            $periodo_pagado_hasta = $documento_nomina->fecha;
+
+        }else{
+            // 15 días de vacaciones por cada 360 días del año
+            // 24.35 días calendario por cada 1 día de vacaciones
+            $dias_calendario_vacaciones = $this->tabla_resumen['dias_habiles'] * (float)config('nomina.dias_calendario_por_dia_vacacion_legal');
+            $periodo_pagado_hasta = $this->sumar_dias_calendario_a_fecha( $periodo_pagado_desde, ($dias_calendario_vacaciones ) );
         }
 
-        $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
 
+        $this->tabla_resumen['periodo_pagado_desde'] = $periodo_pagado_desde;
+        $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
+    }
+
+    public function actualizar_libro_vacaciones( $empleado, $documento_nomina )
+    {
+        if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' )
+        {
+            LibroVacacion::create(
+                                    [ 'nom_contrato_id' => $empleado->id ] +
+                                    [ 'nom_doc_encabezado_id' => $documento_nomina->id ] +
+                                    [ 'novedad_tnl_id' => 0 ] +
+                                    [ 'periodo_pagado_desde' => $this->tabla_resumen['periodo_pagado_desde'] ] +
+                                    [ 'periodo_pagado_hasta' => $this->tabla_resumen['periodo_pagado_hasta'] ] +
+                                    [ 'periodo_disfrute_vacacion_desde' => '0000-00-00' ] +
+                                    [ 'periodo_disfrute_vacacion_hasta' => '0000-00-00' ] +
+                                    [ 'dias_pagados' => $this->tabla_resumen['dias_pendientes'] ] +
+                                    [ 'dias_compensados' => 0 ] +
+                                    [ 'dias_disfrutados' => 0 ] +
+                                    [ 'dias_no_habiles' => 0 ] +
+                                    [ 'valor_vacaciones' => $this->tabla_resumen['valor_total_vacaciones'] ]
+                                );
+        }else{
+            $libro_vacaciones->nom_doc_encabezado_id = $documento_nomina->id;
+            $libro_vacaciones->periodo_pagado_desde = $this->tabla_resumen['periodo_pagado_desde'];
+            $libro_vacaciones->periodo_pagado_hasta = $this->tabla_resumen['periodo_pagado_hasta'];
+            $libro_vacaciones->valor_vacaciones = $this->tabla_resumen['valor_total_vacaciones'];
+            $libro_vacaciones->save();
+        }
     }
 
     public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
@@ -464,7 +494,7 @@ class Vacaciones implements Estrategia
         return abs( $fecha_ini->diffInDays($fecha_fin) );
     }
 
-    public function sumar_dias_a_fecha( string $fecha, int $cantidad_dias )
+    public function sumar_dias_calendario_a_fecha( string $fecha, int $cantidad_dias )
     {
         $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
 

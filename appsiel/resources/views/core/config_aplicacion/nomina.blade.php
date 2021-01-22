@@ -194,7 +194,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php
+								$dias_calendario_por_dia_vacacion_legal = 24.35; 
+								if( isset($parametros['dias_calendario_por_dia_vacacion_legal'] ) )
+								{
+									$dias_calendario_por_dia_vacacion_legal = $parametros['dias_calendario_por_dia_vacacion_legal'];
+								}
+							?>
+							{{ Form::bsText('dias_calendario_por_dia_vacacion_legal', $dias_calendario_por_dia_vacacion_legal, 'Días calendario por cada día de vacación legal', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

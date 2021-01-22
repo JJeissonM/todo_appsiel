@@ -101,6 +101,8 @@
 
 			var opcion_seleccionada = 0;
 
+			$('#fecha_final_promedios').val( get_fecha_hoy() );
+
 			$(".check_prestacion").change(function(){
 				if ( $(this).is(':checked') )
 				{
