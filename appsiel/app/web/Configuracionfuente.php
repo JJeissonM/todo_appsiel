@@ -84,4 +84,9 @@ class Configuracionfuente extends Model
     {
         return $this->hasMany(Modal::class);
     }
+
+    public function galerias()
+    {
+        return $this->hasMany(Galeria::class);
+    }
 }

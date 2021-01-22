@@ -65,8 +65,24 @@ class GaleriaController extends Controller
 
     public function guardarseccion(Request $request)
     {
+        if ($request->tipo_fondo == '') {
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('mensaje_error', 'Debe indicar el tipo de fondo a usar en el componente.');
+        }
         $galeria = new Galeria($request->all());
-        $galeria->titulo = $request->titulo;
+        if ($request->tipo_fondo == 'IMAGEN') {
+            //el fondo es una imagen
+            $file = $request->file('fondo');
+            $name = time() . $file->getClientOriginalName();
+            $filename = "img/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $galeria->fondo = $filename;
+            } else {
+                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                return redirect()->back()->withInput($request->input())
+                    ->with('mensaje_error', $message);
+            }
+        }
         $result = $galeria->save();
         if ($result) {
             $message = 'La sección fue almacenada correctamente.';
@@ -81,6 +97,35 @@ class GaleriaController extends Controller
     {
         $galeria = Galeria::find($id);
         $galeria->titulo = $request->titulo;
+        $tipo_fondo = $galeria->tipo_fondo;
+        $galeria->configuracionfuente_id = $request->configuracionfuente_id;
+        if ($request->tipo_fondo == '') {
+            $galeria->tipo_fondo = $tipo_fondo;
+        }
+        if ($request->tipo_fondo != '') {
+            if ($request->tipo_fondo == 'IMAGEN') {
+                if (isset($request->fondo)) {
+                    //el fondo es una imagen
+                    $file = $request->file('fondo');
+                    $name = time() . $file->getClientOriginalName();
+                    $filename = "img/" . $name;
+                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                    if ($flag !== false) {
+                        $galeria->fondo = $filename;
+                        $galeria->tipo_fondo = 'IMAGEN';
+                        $galeria->repetir = $request->repetir;
+                        $galeria->direccion = $request->direccion;
+                    } else {
+                        $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                        return redirect()->back()->withInput($request->input())
+                            ->with('mensaje_error', $message);
+                    }
+                }
+            } else {
+                $galeria->fondo = $request->fondo;
+                $galeria->tipo_fondo = "COLOR";
+            }
+        }
         $result = $galeria->save();
         if ($result) {
             $message = 'La sección fue modificada correctamente.';
@@ -238,9 +283,10 @@ class GaleriaController extends Controller
         $result = $imagen->delete();
         if ($result) {
 
-            if ( file_exists( $imagen->nombre ) )
-                { unlink( $imagen->nombre ); }
-            
+            if (file_exists($imagen->nombre)) {
+                unlink($imagen->nombre);
+            }
+
             $message = 'Imagen eliminada de forma exitosa.';
             return redirect(url('galeria/edit/' . $album->id) . $variables_url)->with('flash_message', $message);
         } else {
@@ -255,10 +301,10 @@ class GaleriaController extends Controller
         $widget = $album->galeria->widget_id;
         $fotos = $album->fotos;
         if (count($fotos) > 0) {
-            foreach ($fotos as $img)
-            {
-                if ( file_exists( $img->nombre ) )
-                { unlink( $img->nombre ); }
+            foreach ($fotos as $img) {
+                if (file_exists($img->nombre)) {
+                    unlink($img->nombre);
+                }
             }
         }
         $result = $album->delete();
@@ -404,10 +450,10 @@ class GaleriaController extends Controller
     }
 
 
-    public function ver_album_carousel( $album_id )
+    public function ver_album_carousel($album_id)
     {
-        $album = Album::find( $album_id );
+        $album = Album::find($album_id);
         $fotos = $album->fotos;
-        return View::make( 'web.galeria.carousel', compact('fotos', 'album') )->render();
+        return View::make('web.galeria.carousel', compact('fotos', 'album'))->render();
     }
 }

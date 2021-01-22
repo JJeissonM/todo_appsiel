@@ -1,6 +1,29 @@
-
-
 <style type="text/css">
+
+        #portfolio {
+            position: relative;
+            z-index: 80 !important;
+            padding: 100px 0 75px;
+
+            <?php
+            if ($galeria != null) {
+                if ($galeria->tipo_fondo == 'COLOR') {
+                    echo "background-color: " . $galeria->fondo . ";";
+                } else {
+            ?>background: url('{{$galeria->fondo}}') {{$galeria->repetir}} center {{$galeria->direccion}};
+            <?php
+                }
+            }
+            ?>
+        }
+
+        .galeria-font {
+            @if( !is_null($galeria) )
+                @if( !is_null($galeria->configuracionfuente ) )
+                    font-family: <?php echo $galeria->configuracionfuente->fuente->font; ?> !important;
+                @endif
+            @endif
+        }
 
         .abrir_modal:hover img {
           opacity: 0.7;
@@ -30,14 +53,14 @@
         }
 
         #portfolio{
-          border-radius: 30% 70% 70% 30% / 55% 30% 70% 45%;
-          background-image: linear-gradient(45deg, #3023AE 0%, #f09 100%);
+          /*border-radius: 30% 70% 70% 30% / 55% 30% 70% 45%;*/
+          /*background-image: linear-gradient(45deg, #3023AE 0%, #f09 100%);*/
         }
 
 
 </style>
 
-<section id="portfolio" style="background: white">
+<section id="portfolio" class="galeria-font">
     <div class="container">
     
         @if($galeria != null)

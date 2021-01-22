@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Galeria extends Model
 {
     protected $table = 'pw_galerias';
-    protected $fillable = ['id', 'titulo', 'disposicion', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'titulo', 'tipo_fondo', 'fondo', 'repetir', 'direccion', 'configuracionfuente_id', 'widget_id', 'disposicion', 'created_at', 'updated_at'];
 
     public function widget()
     {
@@ -17,5 +17,10 @@ class Galeria extends Model
     public function albums()
     {
         return $this->hasMany(Album::class);
+    }
+
+    public function configuracionfuente()
+    {
+        return $this->belongsTo(Configuracionfuente::class);
     }
 }
