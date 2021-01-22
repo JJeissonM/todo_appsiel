@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Seccion extends Model
 {
   protected $table = 'pw_seccion';
-  protected $fillable = ['id', 'nombre', 'descripcion', 'preview', 'created_at', 'updated_at'];
+  protected $fillable = ['id', 'nombre', 'descripcion', 'preview', 'created_at', 'updated_at', 'tipo'];
 
   public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Descripción', 'URL imágen'];
 

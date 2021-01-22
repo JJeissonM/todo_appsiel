@@ -175,7 +175,14 @@ class PaginaController extends Controller
             ]
         ];
         $pagina = $id;
-        $secciones = Seccion::all();
+        //$secciones = Seccion::all();
+        $sec = config('web.secciones');
+        $secciones = null;
+        if ($sec != null) {
+            foreach ($sec as $s) {
+                $secciones[] = new Seccion($s);
+            }
+        }
         $variables_url = '?id=' . Input::get('id');
         return view('web.paginas.secciones.addSeccion', compact('secciones', 'miga_pan', 'pagina', 'variables_url'));
     }
