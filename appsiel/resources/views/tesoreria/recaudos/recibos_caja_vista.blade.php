@@ -24,8 +24,8 @@
 <table class="table table-bordered" style="font-size: 14px;">
     @if( $vista_impresion )
         <tr>
-            <td style="border: solid 1px #ddd; margin-top: -40px;">
-                <img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen}}" height="{{ config('configuracion.alto_logo_formatos') }}" />
+            <td style="border: solid 1px #ddd; margin-top: -40px; width: 60%;">
+                <img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen}}" height="{{ config('configuracion.alto_logo_formatos') }}" width="80%" />
             </td>
             <td style="border: solid 1px #ddd;">
                     <b style="font-size: 1.1em; text-align: center; display: block; margin-bottom: -15px;">{{ $encabezado_documento->tipo_documento_app->descripcion }}</b>
@@ -45,7 +45,7 @@
     @endif
     <tr>
         <td colspan="2">
-            <b>Pagado a:</b> {{ $encabezado_documento->tercero->descripcion }}
+            <b>Recibido de:</b> {{ $encabezado_documento->tercero->descripcion }}
             &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; 
             <b> {{ $encabezado_documento->tercero->tipo_doc_identidad->abreviatura }}: </b> {{ number_format( $encabezado_documento->tercero->numero_identificacion, 0, ',', '.') }}
             &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; 
@@ -63,7 +63,7 @@
             
     <tr>
         <td>
-            La suma de: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ strtoupper( NumerosEnLetras::convertir( $encabezado_documento->valor_total,'pesos',false) ) }}
+            <b>La suma de: </b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ strtoupper( NumerosEnLetras::convertir( $encabezado_documento->valor_total,'pesos',false) ) }}
         </td>
         <td>
             @if( !is_null( $caja ) )

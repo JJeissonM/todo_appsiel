@@ -799,7 +799,8 @@ class ContratoTransporteController extends Controller
     //verificar planilla pública
     public function verificarPlanilla($id)
     {
-        return $this->planillaimprimir($id);
+        //return $this->planillaimprimir($id);
+        return redirect('cte_contratos/planillas/'.$id.'/imprimir');
     }
 
 
