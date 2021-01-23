@@ -103,13 +103,19 @@
             </div>
             <div class="col-md-12 add d-flex">
                 <div class="col-md-4">
-                    <a href="{{url('sticky/destroy').'/'.$sticky->id.$variables_url}}" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold;"> Eliminar</a>
+                    <a href="{{url('sticky/destroy').'/'.$sticky->id.$variables_url}}"
+                        class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold;">
+                        Eliminar</a>
                 </div>
                 <div class="col-md-4 justify-content-end">
-                    <a data-toggle="modal" data-target="#Modaledit" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold; cursor: pointer;"> Editar</a>
+                    <a data-toggle="modal" data-target="#Modaledit"
+                        class="btn btn-primary waves-effect btn-block btn-sm"
+                        style="color: white; font-weight: bold; cursor: pointer;"> Editar</a>
                 </div>
                 <div class="col-md-4 justify-content-end">
-                    <a data-toggle="modal" data-target="#Modalboton" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold; cursor: pointer;"><i class='fa fa-plus'></i> Botón</a>
+                    <a data-toggle="modal" data-target="#Modalboton"
+                        class="btn btn-primary waves-effect btn-block btn-sm"
+                        style="color: white; font-weight: bold; cursor: pointer;"><i class='fa fa-plus'></i> Botón</a>
                 </div>
             </div>
             <div class="col-md-12" style="margin-top: 20px;">
@@ -122,7 +128,8 @@
                     Texto: {{$b->texto}}<br>
                     Enlace: {{$b->enlace}}<br>
                 </p>
-                <a class="btn btn-danger waves-effect btn-sm" href="{{url('sticky/destroy').'/'.$b->id.'/boton'.$variables_url}}">Eliminar Botón</a>
+                <a class="btn btn-danger waves-effect btn-sm"
+                    href="{{url('sticky/destroy').'/'.$b->id.'/boton'.$variables_url}}">Eliminar Botón</a>
                 <hr>
                 @endforeach
                 @else
@@ -131,7 +138,8 @@
             </div>
             @else
             <div class="add d-flex justify-content-end col-md-12">
-                <a data-toggle="modal" data-target="#modalcrear" class="btn btn-primary waves-effect btn-block btn-sm" style="color: white; font-weight: bold; cursor: pointer;"> Agregar Sección </a>
+                <a data-toggle="modal" data-target="#modalcrear" class="btn btn-primary waves-effect btn-block btn-sm"
+                    style="color: white; font-weight: bold; cursor: pointer;"> Agregar Sección </a>
             </div>
             @endif
         </div>
@@ -156,7 +164,8 @@
             </div>
             <div class="modal-body">
                 <div class="col-md-12">
-                    {!! Form::open(['route'=>'sticky.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    {!!
+                    Form::open(['route'=>'sticky.store','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
@@ -171,7 +180,15 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <br /><br /><a class="btn btn-danger" id="modalcrear" style="color: white" onclick="cerrar(this.id)">Cancelar</a>
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control
+                        select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
+                    <div class="form-group">
+                        <br /><br /><a class="btn btn-danger" id="modalcrear" style="color: white"
+                            onclick="cerrar(this.id)">Cancelar</a>
                         <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
                         {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
                     </div>
@@ -194,13 +211,15 @@
             <div class="modal-body">
                 <div class="col-md-12">
                     @if($sticky != null)
-                    {!! Form::model($sticky,['route'=>['sticky.updated',$sticky],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
+                    {!!
+                    Form::model($sticky,['route'=>['sticky.updated',$sticky],'method'=>'PUT','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <input type="hidden" name="sticky" value="{{$sticky->id}}">
                     <div class="form-group">
                         <label>Ancho del Botón en Pixeles</label>
-                        <input name="ancho_boton" type="number" value="{{$sticky->ancho_boton}}" required class="form-control">
+                        <input name="ancho_boton" type="number" value="{{$sticky->ancho_boton}}" required
+                            class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Posición en la Pantalla</label>
@@ -218,7 +237,16 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <br /><br /><a class="btn btn-danger" id="Modaledit" style="color: white" onclick="cerrar(this.id)">Cancelar</a>
+                        <label for="">Fuente Para el Componente</label>
+                        @if($fonts!=null)
+                        {!!
+                        Form::select('configuracionfuente_id',$fonts,$sticky->configuracionfuente_id,['class'=>'form-control
+                        select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                        @endif
+                    </div>
+                    <div class="form-group">
+                        <br /><br /><a class="btn btn-danger" id="Modaledit" style="color: white"
+                            onclick="cerrar(this.id)">Cancelar</a>
                         <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
                         {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
                     </div>
@@ -242,8 +270,12 @@
             <div class="modal-body">
                 <div class="col-md-12">
                     @if($sticky != null)
-                    <p style="text-align: justify;"><b>Nota: </b>Puede colocar, una sola imágen para el botón, solo ícono, solo texto, si prefiere dos o tres de las opciones también es posible. De la estética del componente usted será responsable si decide usar las opciones combinadas (texto, ícono e imágen)</p>
-                    {!! Form::open(['route'=>'sticky.storeboton','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
+                    <p style="text-align: justify;"><b>Nota: </b>Puede colocar, una sola imágen para el botón, solo
+                        ícono, solo texto, si prefiere dos o tres de las opciones también es posible. De la estética del
+                        componente usted será responsable si decide usar las opciones combinadas (texto, ícono e imágen)
+                    </p>
+                    {!!
+                    Form::open(['route'=>'sticky.storeboton','method'=>'POST','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="widget_id" value="{{$widget}}">
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <input type="hidden" name="sticky_id" value="{{$sticky->id}}">
@@ -253,7 +285,8 @@
                     </div>
                     <div class="form-group">
                         <label>Ícono (Opcional)</label>
-                        <input name="icono" type="text" class="form-control" data-toggle="modal" data-target="#exampleModal" id="iconotxt">
+                        <input name="icono" type="text" class="form-control" data-toggle="modal"
+                            data-target="#exampleModal" id="iconotxt">
                     </div>
                     <div class="form-group">
                         <label>Enlace (Opcional)</label>
@@ -268,7 +301,8 @@
                         <input name="imagen" type="file" class="form-control">
                     </div>
                     <div class="form-group">
-                        <br /><br /><a class="btn btn-danger" id="Modalboton" style="color: white" onclick="cerrar(this.id)">Cancelar</a>
+                        <br /><br /><a class="btn btn-danger" id="Modalboton" style="color: white"
+                            onclick="cerrar(this.id)">Cancelar</a>
                         <button class="btn  btn-info" type="reset">Limpiar Formulario</button>
                         {!! Form::submit('Guardar',['class'=>'btn btn-success waves-effect']) !!}
                     </div>

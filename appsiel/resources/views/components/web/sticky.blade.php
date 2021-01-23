@@ -1,4 +1,10 @@
 <style>
+    .stickies-font {
+        @if( !is_null($sticky)) @if( !is_null($sticky->configuracionfuente)) font-family: <?php echo $sticky->configuracionfuente->fuente->font;
+        ?> !important;
+        @endif @endif
+    }
+
     .social {
         position: fixed;
         /* Hacemos que la posición en pantalla sea fija para que siempre se muestre en pantalla*/
@@ -21,13 +27,8 @@
     }
 
     .social ul li a {
-        width: @if($sticky !=null) {
-                {
-                $sticky->ancho_boton
-            }
-        }
-
-        px @else 50px @endif;
+        width: @if($sticky !=null) {{$sticky->ancho_boton}}px 
+        @else 50px @endif;
         display: inline-block;
         color: #fff;
         background: #000;
@@ -42,20 +43,22 @@
     .social ul li a:hover {
         background: #000;
         /* Cambiamos el fondo cuando el usuario pase el mouse */
-        @if($sticky !=null) @if($sticky->posicion=='DERECHA') padding: 50px 15px;
-        @else padding: 15px 50px;
+        @if($sticky !=null) @if($sticky->posicion=='DERECHA') transform: scale(1.4);
+        @else transform: scale(1.4);
         @endif @endif
         /* Hacemos mas grande el espacio cuando el usuario pase el mouse */
     }
 </style>
 
-<div class="social">
+<div class="social stickies-font">
     <ul>
         @if($sticky!=null)
         @if(count($sticky->stickybotons)>0)
         @foreach($sticky->stickybotons as $b)
         <li>
-            <a @if($b->texto!=null) data-toggle="tooltip" data-placement="right" title="{{$b->texto}}" @endif @if($b->enlace!=null) href="{{$b->enlace}}" @endif target="_blank" style="background-color: {{$b->color}};"> @if($b->icono!=null) <i class="fa fa-{{$b->icono}}"></i> @endif
+            <a @if($b->texto!=null) data-toggle="tooltip" data-placement="right" title="{{$b->texto}}" @endif
+                @if($b->enlace!=null) href="{{$b->enlace}}" @endif target="_blank" style="background-color:
+                {{$b->color}};"> @if($b->icono!=null) <i class="fa fa-{{$b->icono}}"></i> @endif
                 @if($b->imagen!=null)
                 <img style="width: 100px; max-height: 100px;" src="{{ asset('docs/'.$b->imagen)}}" />
                 @endif

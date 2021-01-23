@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Sticky extends Model
 {
     protected $table = 'pw_stickies';
-    protected $fillable = ['id', 'posicion', 'ancho_boton', 'widget_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'posicion', 'ancho_boton', 'configuracionfuente_id', 'widget_id', 'created_at', 'updated_at'];
 
     public function widget()
     {
@@ -17,5 +17,10 @@ class Sticky extends Model
     public function stickybotons()
     {
         return $this->hasMany(Stickyboton::class);
+    }
+
+    public function configuracionfuente()
+    {
+        return $this->belongsTo(Configuracionfuente::class);
     }
 }
