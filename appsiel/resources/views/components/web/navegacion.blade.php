@@ -26,7 +26,7 @@ if ($nav->fixed) {
 ?>
 
 <style>
-    #navegacion {
+    #myHeader {
         /*position: fixed;
         z-index: 99999;
         top: 50px;*/
