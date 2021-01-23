@@ -1,4 +1,31 @@
-<section id="blog">
+<style type="text/css">
+
+    #blog {
+        
+        <?php
+        if ($archivo != null) {
+            if ($archivo->tipo_fondo == 'COLOR') {
+                echo "background-color: " . $archivo->fondo . ";";
+            } else {
+        ?>background: url('{{$archivo->fondo}}') {{$archivo->repetir}} center {{$archivo->direccion}};
+        <?php
+            }
+        }
+        ?>
+    }
+
+    .archivos-font {
+        @if( !is_null($archivo) )
+            @if( !is_null($archivo->configuracionfuente ) )
+                font-family: <?php echo $archivo->configuracionfuente->fuente->font; ?> !important;
+            @endif
+        @endif
+    }
+
+</style>
+
+
+<section id="blog" class="archivos-font">
     <div class="container">
         @if($archivo!=null)
         <div class="section-header">
