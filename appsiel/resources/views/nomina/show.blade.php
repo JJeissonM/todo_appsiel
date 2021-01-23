@@ -15,12 +15,18 @@
 
 	{{ Form::bsMigaPan($miga_pan) }}
 
+	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnCreate( 'web/create?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
+
 	@if ( $encabezado_doc->estado == 'Activo' )
-		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Acciones', 'success', 'money', 
+		{{ Form::bsBtnEdit2('web/'.$id.'/edit?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
+		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Liquidar', 'primary', 'cogs', 
 		          [ 
 		            ['link' => 'nomina/liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 
-		            'etiqueta' => 'Liquidación automática'], 
-		            ['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'etiqueta' => 'Retirar registros automáticos' ]
+		            'etiqueta' => 'Registros automáticos (todo)']
+		          ] ) }}
+		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Retirar', 'warning', 'history', 
+		          [ 
+		            ['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'etiqueta' => 'Registros automáticos (todo)' ]
 		          ] ) }}
 	@else
 		<small>(Documento está <b>{{ $encabezado_doc->estado }}</b>)</small>

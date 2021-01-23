@@ -17,7 +17,7 @@
 					}
 				?>
 
-				<a href="{{ url( $urls[$i]['link'] ) }}" target="{{$target}}"> 
+				<a href="{{ url( $urls[$i]['link'] ) }}" target="{{$target}}" class="enlace_dropdown"> 
 					{!! $urls[$i]['etiqueta'] !!} 
 				</a>
 			</li>

@@ -56,15 +56,20 @@
 					</tr>
 				@endif
 				<tr>
-					<td colspan="3" style="text-align: center; background-color: #ddd;"><strong>Datos de liquidación</strong></td>
+					<td colspan="3" style="text-align: center; background-color: #ddd;"><strong>Datos de liquidación (Causación)</strong></td>
 				</tr>
 				<tr>
-					<td><strong>Fecha ingreso: </strong> {{ $tabla_resumen['fecha_ingreso'] }} </td>
+					<td rowspan="2">
+						<strong>Periodo causado: </strong> 
+						<br>
+						<b>Desde: </b> {{ $tabla_resumen['periodo_pagado_desde'] }}
+						<br>
+						<b>Hasta: </b> {{ $tabla_resumen['periodo_pagado_hasta'] }}
+					</td>
 					<td><strong>Días totales vacac.: </strong> {{ number_format( $tabla_resumen['dias_totales_vacaciones'],2,',','.' ) }} </td>
 					<td><strong>Días pagados: </strong> {{ number_format( $tabla_resumen['dias_pagados_vacaciones'],2,',','.' ) }} </td>
 				</tr>
 				<tr>
-					<td><strong>Fecha liquidación: </strong> {{ $tabla_resumen['fecha_liquidacion'] }} </td>
 					<td><strong>Días Laborados / No Laborados: </strong> {{ number_format( $tabla_resumen['dias_totales_laborados'],0,',','.' ) }} / {{ number_format( $tabla_resumen['dias_totales_no_laborados'],0,',','.' ) }} </td>
 					<td><strong>Días vacac. pendientes: </strong> {{ number_format( $tabla_resumen['dias_pendientes'],2,',','.' ) }} </td>
 				</tr>
