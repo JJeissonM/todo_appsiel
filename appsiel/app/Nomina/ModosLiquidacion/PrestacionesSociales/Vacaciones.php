@@ -37,14 +37,16 @@ class Vacaciones implements Estrategia
 
         if( is_null( $parametros_prestacion ) )
         {
+            $this->tabla_resumen['mensaje_error'] = 'No están configurados los parámetros de Vacaciones para el grupo de empleado ' . $liquidacion['empleado']->grupo_empleado->descripcion;
+
             return [
-                    [
-                        'cantidad_horas' => 0,
-                        'valor_devengo' => 0,
-                        'valor_deduccion' => 0,
-                        'tabla_resumen' => $this->tabla_resumen
-                    ]
-                ];
+                        [
+                            'cantidad_horas' => 0,
+                            'valor_devengo' => 0,
+                            'valor_deduccion' => 0,
+                            'tabla_resumen' => $this->tabla_resumen
+                        ]
+                    ];
         }
 
         $this->historial_vacaciones = LibroVacacion::where( 'nom_contrato_id', $liquidacion['empleado']->id )
@@ -92,14 +94,14 @@ class Vacaciones implements Estrategia
         $programacion_vacaciones = ProgramacionVacacion::where( [
                                                                     [ 'nom_contrato_id', '=', $liquidacion['empleado']->id ],
                                                                     [ 'tipo_novedad_tnl', '=', 'vacaciones' ],
-                                                                    [ 'cantidad_dias_pendientes_amortizar', '>', 0 ]
+                                                                    [ 'cantidad_dias_amortizados', '=', 0 ]
                                                                 ] )
                                                         ->get()
                                                         ->first();
 
         if ( is_null($programacion_vacaciones) )
         {
-            $this->tabla_resumen['mensaje_error'] = '<br>Empleado ' . $liquidacion['empleado']->tercero->descripcion  . ' no tiene vacaciones programadas.';
+            $this->tabla_resumen['mensaje_error'] = '<br>Empleado ' . $liquidacion['empleado']->tercero->descripcion  . ' no tiene vacaciones programadas pendientes por liquidar.';
             return [ 
                         [
                             'cantidad_horas' => 0,
@@ -129,8 +131,8 @@ class Vacaciones implements Estrategia
         if ( $liquidacion['almacenar_registros'] )
         {
             // Actualiza programación de vacaciones (TNL)
-            $programacion_vacaciones->cantidad_dias_amortizados += $libro_vacaciones->dias_pagados;
-            $programacion_vacaciones->cantidad_dias_pendientes_amortizar -= $libro_vacaciones->dias_pagados;
+            $programacion_vacaciones->cantidad_dias_amortizados += $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $liquidacion['documento_nomina'] );
+            $programacion_vacaciones->cantidad_dias_pendientes_amortizar -= $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $liquidacion['documento_nomina'] );
             $programacion_vacaciones->save();
 
             // Almacenar registro para los días no hábiles
@@ -353,6 +355,18 @@ class Vacaciones implements Estrategia
         return ( $anio_inicial . '-' . $mes_inicial . '-' . $dia_inicial );
     }
 
+    public function get_cantidad_dias_amortizar( $programacion_vacaciones, $documento_nomina )
+    {
+        $fecha_final = $documento_nomina->lapso()->fecha_final;
+
+        if ( $fecha_final > $programacion_vacaciones->fecha_final_tnl )
+        {
+            $fecha_final = $programacion_vacaciones->fecha_final_tnl;
+        }
+
+        return $this->diferencia_en_dias_entre_fechas( $programacion_vacaciones->fecha_inicial_tnl, $fecha_final ) + 1;
+    }
+
     public function formatear_numero_a_texto_dos_digitos( $numero )
     {
         if ( strlen($numero) == 1 )
@@ -426,7 +440,7 @@ class Vacaciones implements Estrategia
         $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
     }
 
-    public function actualizar_libro_vacaciones( $empleado, $documento_nomina )
+    public function actualizar_libro_vacaciones( $empleado, $documento_nomina, $libro_vacaciones )
     {
         if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' )
         {
@@ -498,13 +512,11 @@ class Vacaciones implements Estrategia
     {
         $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
 
-        return $fecha_aux->addDays( $cantidad_dias );
+        return $fecha_aux->addDays( $cantidad_dias )->format('Y-m-d');
     }
 
-    public function retirar( NomDocRegistro $registro)
+    public function retirar( NomDocRegistro $registro )
     {
-        //dd( [ 'retirar vacaciones', $registro]);
-
         $novedad = $registro->novedad_tnl;
         
         if( is_null( $novedad ) )
@@ -532,9 +544,8 @@ class Vacaciones implements Estrategia
             // Actualiza programación de vacaciones (TNL)
             $programacion_vacaciones = ProgramacionVacacion::find( $novedad->id );
 
-            $libro_vacaciones = LibroVacacion::where( 'novedad_tnl_id', $programacion_vacaciones->id )->get()->first();
-            $programacion_vacaciones->cantidad_dias_amortizados -= $libro_vacaciones->dias_pagados;
-            $programacion_vacaciones->cantidad_dias_pendientes_amortizar += $libro_vacaciones->dias_pagados;
+            $programacion_vacaciones->cantidad_dias_amortizados -= $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $registro->encabezado_documento );
+            $programacion_vacaciones->cantidad_dias_pendientes_amortizar += $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $registro->encabezado_documento );
             $programacion_vacaciones->save();
             
             PrestacionesLiquidadas::where(
@@ -542,6 +553,13 @@ class Vacaciones implements Estrategia
                                             ['nom_contrato_id' => $registro->nom_contrato_id ]
                                         )
                                     ->delete();
+            
+            $libro_vacaciones = LibroVacacion::where( 'novedad_tnl_id', $programacion_vacaciones->id )->get()->first();
+            $libro_vacaciones->nom_doc_encabezado_id = 0;
+            $libro_vacaciones->periodo_pagado_desde = '0000-00-00';
+            $libro_vacaciones->periodo_pagado_hasta = '0000-00-00';
+            $libro_vacaciones->valor_vacaciones = 0;
+            $libro_vacaciones->save();
 
             $registro->delete();
         }
@@ -551,5 +569,4 @@ class Vacaciones implements Estrategia
             $registro->delete();
         }
     }
-
 }

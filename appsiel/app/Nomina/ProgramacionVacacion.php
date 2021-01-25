@@ -94,15 +94,15 @@ class ProgramacionVacacion extends Model
 
         $dias_disfrutados = (int)$datos['cantidad_dias_tomados'] - (int)$datos['dias_compensados'];
         LibroVacacion::create(
-            ['nom_contrato_id' => $registro->nom_contrato_id] +
-                ['novedad_tnl_id' => $registro->id] +
-                ['periodo_disfrute_vacacion_desde' => $datos['fecha_inicial_tnl']] +
-                ['periodo_disfrute_vacacion_hasta' => $datos['fecha_final_tnl']] +
-                ['dias_pagados' => $datos['cantidad_dias_tomados']] +
-                ['dias_compensados' => $datos['dias_compensados']] +
-                ['dias_no_habiles' => $datos['dias_no_habiles']] +
-                ['dias_disfrutados' => $dias_disfrutados]
-        );
+                                ['nom_contrato_id' => $registro->nom_contrato_id] +
+                                    ['novedad_tnl_id' => $registro->id] +
+                                    ['periodo_disfrute_vacacion_desde' => $datos['fecha_inicial_tnl']] +
+                                    ['periodo_disfrute_vacacion_hasta' => $datos['fecha_final_tnl']] +
+                                    ['dias_pagados' => $datos['cantidad_dias_tomados']] +
+                                    ['dias_compensados' => $datos['dias_compensados']] +
+                                    ['dias_no_habiles' => $datos['dias_no_habiles']] +
+                                    ['dias_disfrutados' => $dias_disfrutados]
+                            );
 
         $empleado = NomContrato::find($registro->nom_contrato_id);
 

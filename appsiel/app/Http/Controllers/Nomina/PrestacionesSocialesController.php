@@ -136,12 +136,14 @@ class PrestacionesSocialesController extends TransaccionController
             return 0;
         }
 
+        
+
         PrestacionesLiquidadas::create(
-                                    ['nom_doc_encabezado_id' => $array_prestaciones_liquidadas->nom_doc_encabezado_id ] + 
-                                    ['nom_contrato_id' => $array_prestaciones_liquidadas->nom_contrato_id ] + 
-                                    ['fecha_final_promedios' => $array_prestaciones_liquidadas->fecha_final_promedios] +  
-                                    ['prestaciones_liquidadas' => json_encode( $array_prestaciones_liquidadas->prestaciones ) ]
-                                );
+                                        ['nom_doc_encabezado_id' => $array_prestaciones_liquidadas->nom_doc_encabezado_id ] + 
+                                        ['nom_contrato_id' => $array_prestaciones_liquidadas->nom_contrato_id ] + 
+                                        ['fecha_final_promedios' => $array_prestaciones_liquidadas->fecha_final_promedios] +  
+                                        ['prestaciones_liquidadas' => json_encode( $array_prestaciones_liquidadas->prestaciones ) ]
+                                    );
     }
 
     public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $valores, $usuario)

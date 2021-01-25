@@ -126,19 +126,29 @@ class NomDocEncabezado extends Model
         $dia_inicio = '01';
         $dia_fin = '15';
 
-        if ((int)$array_fecha[2] > 16) {
+        if ( (int)$array_fecha[2] > 16 ) 
+        {
             $dia_inicio = '16';
             $dia_fin = '30';
-            // Mes de febrero
-            if ($array_fecha[1] == '02') {
-                $dia_fin = '28';
-            }
+        }
+
+        // Liquidación un mes
+        if ( $this->tiempo_a_liquidar == 240 )
+        {
+            $dia_inicio = '01';
+            $dia_fin = '30';
+        }
+
+        // Mes de febrero
+        if ($array_fecha[1] == '02')
+        {
+            $dia_fin = '28';
         }
 
         return (object)[
-            'fecha_inicial' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_inicio,
-            'fecha_final' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_fin
-        ];
+                            'fecha_inicial' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_inicio,
+                            'fecha_final' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_fin
+                        ];
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -253,8 +263,27 @@ class NomDocEncabezado extends Model
         $registro = NomDocRegistro::where('nom_doc_encabezado_id', $registro->id)->get()->first();
 
         // Si hay al menos un registro para el documento de nómina, no se puede editar
-        if (!is_null($registro)) {
-            return [null, 'No se puede editar este documento. Ya tiene registros asociados.'];
+        if (!is_null($registro))
+        {
+            return [[
+                "id" => 999,
+                "descripcion" => "",
+                "tipo" => "personalizado",
+                "name" => "name_1",
+                "opciones" => "",
+                "value" => '<p>Documento: <b>' . $registro->descripcion . '</b> </p> <div class="form-group">                    
+                                                    <div class="alert alert-danger">
+                                                      <strong>¡Advertencia!</strong>
+                                                      <br>
+                                                      No se puede editar este documento. Ya tiene registros asociados.
+                                                    </div>
+                                                </div>',
+                "atributos" => [],
+                "definicion" => "",
+                "requerido" => 0,
+                "editable" => 1,
+                "unico" => 0
+            ]];
         }
 
         return $lista_campos;
@@ -289,7 +318,7 @@ class NomDocEncabezado extends Model
             $tabla .= '<td>' . $empleado->tercero->numero_identificacion . '</td>';
             $tabla .= '<td>' . $empleado->tercero->descripcion . '</td>';
             $tabla .= '<td>
-                                        <a class="btn btn-danger btn-sm" href="' . url('nom_eliminar_asignacion/registro_modelo_hijo_id/' . $fila['id'] . '/registro_modelo_padre_id/' . $registro_modelo_padre->id . '/id_app/' . Input::get('id') . '/id_modelo_padre/' . Input::get('id_modelo')) . '"><i class="fa fa-btn fa-trash"></i> </a>
+                                        <a class="btn btn-danger btn-sm" href="' . url( 'nom_eliminar_asignacion/registro_modelo_hijo_id/' . $fila['id'] . '/registro_modelo_padre_id/' . $registro_modelo_padre->id . '/id_app/' . Input::get('id') . '/id_modelo_padre/' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') ) . '"><i class="fa fa-btn fa-trash"></i> </a>
                                         </td>
                             </tr>';
         }

@@ -1432,15 +1432,15 @@
       'id' => 119,
       'core_app_id' => 7,
       'modelo_id' => 26,
-      'name' => 'Config transacciones',
-      'descripcion' => 'Config. transacciones',
+      'name' => 'config_transacciones',
+      'descripcion' => 'Transacciones',
       'url' => 'web',
       'parent' => 0,
       'orden' => 8,
       'enabled' => 1,
       'fa_icon' => 'cogs',
       'created_at' => '2018-09-07 16:05:33',
-      'updated_at' => '2019-11-16 09:08:52',
+      'updated_at' => '2021-01-25 03:31:41',
     ),
     96 => 
     array (
@@ -6910,12 +6910,12 @@
       'name' => 'nom_configuracion',
       'descripcion' => 'Configuración',
       'url' => 'config',
-      'parent' => 0,
-      'orden' => 99,
+      'parent' => 225,
+      'orden' => 999,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-12-14 03:38:43',
-      'updated_at' => '2020-12-14 03:38:59',
+      'updated_at' => '2021-01-23 00:58:58',
     ),
     461 => 
     array (
@@ -22060,15 +22060,15 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'descripcion' => 'Medio de pago',
       'tipo' => 'select',
       'name' => 'teso_medio_recaudo_id',
-      'opciones' => 'table_teso_medios_recaudo',
+      'opciones' => 'model_App\\Tesoreria\\TesoMedioRecaudo',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
       'requerido' => 1,
-      'editable' => 1,
+      'editable' => 0,
       'unico' => 0,
       'created_at' => '2018-11-29 11:59:50',
-      'updated_at' => '2018-11-29 12:52:05',
+      'updated_at' => '2021-01-25 03:38:36',
     ),
     244 => 
     array (
@@ -22081,10 +22081,10 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'atributos' => '',
       'definicion' => '',
       'requerido' => 0,
-      'editable' => 1,
+      'editable' => 0,
       'unico' => 0,
       'created_at' => '2018-11-29 12:02:53',
-      'updated_at' => '2020-06-16 11:51:23',
+      'updated_at' => '2021-01-25 03:44:47',
     ),
     245 => 
     array (
@@ -22097,10 +22097,10 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'atributos' => '',
       'definicion' => '',
       'requerido' => 0,
-      'editable' => 1,
+      'editable' => 0,
       'unico' => 0,
       'created_at' => '2018-11-29 12:03:13',
-      'updated_at' => '2020-06-16 11:51:35',
+      'updated_at' => '2021-01-25 03:44:59',
     ),
     246 => 
     array (
@@ -22348,15 +22348,15 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'descripcion' => 'Valor total',
       'tipo' => 'bsText',
       'name' => 'valor_total',
-      'opciones' => '',
+      'opciones' => ' ',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
       'requerido' => 1,
-      'editable' => 1,
+      'editable' => 0,
       'unico' => 0,
       'created_at' => '2018-12-07 08:49:21',
-      'updated_at' => '2018-12-07 17:06:28',
+      'updated_at' => '2021-01-25 03:36:36',
     ),
     262 => 
     array (
@@ -27572,7 +27572,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'descripcion' => 'Tiempo a liquidar',
       'tipo' => 'select',
       'name' => 'tiempo_a_liquidar',
-      'opciones' => '{"120":"Una Quincena"}',
+      'opciones' => '{"120":"Una Quincena (120 horas)","240":"Una mes (240 horas)"}',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
@@ -27580,7 +27580,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2019-12-20 10:36:57',
-      'updated_at' => '2020-12-18 12:24:23',
+      'updated_at' => '2021-01-23 00:29:01',
     ),
     585 => 
     array (
@@ -36408,6 +36408,38 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'unico' => 0,
       'created_at' => '2021-01-19 06:31:37',
       'updated_at' => '2021-01-19 06:32:12',
+    ),
+    1135 => 
+    array (
+      'id' => 1141,
+      'descripcion' => 'Tercero',
+      'tipo' => 'input_lista_sugerencias',
+      'name' => 'core_tercero_id',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '{"class":"form-control text_input_sugerencias","data-url_busqueda":"core_consultar_terceros_v2","data-clase_modelo":"App\\\\Core\\\\Tercero"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2021-01-25 03:34:41',
+      'updated_at' => '2021-01-25 03:34:56',
+    ),
+    1136 => 
+    array (
+      'id' => 1142,
+      'descripcion' => 'Fecha',
+      'tipo' => 'fecha',
+      'name' => 'fecha',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2021-01-25 03:50:43',
+      'updated_at' => '2021-01-25 03:50:56',
     ),
   ),
   'sys_modelos' => 
@@ -58103,493 +58135,493 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     2240 => 
     array (
-      'id' => 2551,
-      'orden' => 3,
-      'core_modelo_id' => 279,
-      'core_campo_id' => 93,
-    ),
-    2241 => 
-    array (
       'id' => 2552,
       'orden' => 99,
       'core_modelo_id' => 279,
       'core_campo_id' => 94,
     ),
-    2242 => 
+    2241 => 
     array (
       'id' => 2553,
       'orden' => 99,
       'core_modelo_id' => 279,
       'core_campo_id' => 95,
     ),
-    2243 => 
+    2242 => 
     array (
       'id' => 2554,
       'orden' => 99,
       'core_modelo_id' => 279,
       'core_campo_id' => 98,
     ),
-    2244 => 
+    2243 => 
     array (
       'id' => 2555,
       'orden' => 99,
       'core_modelo_id' => 279,
       'core_campo_id' => 100,
     ),
-    2245 => 
+    2244 => 
     array (
       'id' => 2556,
       'orden' => 1,
       'core_modelo_id' => 279,
       'core_campo_id' => 201,
     ),
-    2246 => 
+    2245 => 
     array (
       'id' => 2557,
       'orden' => 99,
       'core_modelo_id' => 279,
       'core_campo_id' => 225,
     ),
-    2247 => 
+    2246 => 
     array (
       'id' => 2559,
       'orden' => 12,
       'core_modelo_id' => 279,
       'core_campo_id' => 248,
     ),
-    2248 => 
+    2247 => 
     array (
       'id' => 2560,
       'orden' => 14,
       'core_modelo_id' => 279,
       'core_campo_id' => 249,
     ),
-    2249 => 
+    2248 => 
     array (
       'id' => 2561,
       'orden' => 18,
       'core_modelo_id' => 279,
       'core_campo_id' => 250,
     ),
-    2250 => 
-    array (
-      'id' => 2563,
-      'orden' => 4,
-      'core_modelo_id' => 279,
-      'core_campo_id' => 740,
-    ),
-    2251 => 
+    2249 => 
     array (
       'id' => 2581,
       'orden' => 9,
       'core_modelo_id' => 279,
       'core_campo_id' => 1138,
     ),
-    2252 => 
+    2250 => 
     array (
       'id' => 2583,
       'orden' => 8,
       'core_modelo_id' => 279,
       'core_campo_id' => 266,
     ),
-    2253 => 
+    2251 => 
     array (
       'id' => 2585,
       'orden' => 16,
       'core_modelo_id' => 279,
       'core_campo_id' => 123,
     ),
-    2254 => 
+    2252 => 
     array (
       'id' => 2586,
       'orden' => 13,
       'core_modelo_id' => 279,
       'core_campo_id' => 97,
     ),
-    2255 => 
+    2253 => 
     array (
       'id' => 2587,
       'orden' => 20,
       'core_modelo_id' => 279,
       'core_campo_id' => 1139,
     ),
-    2256 => 
+    2254 => 
     array (
       'id' => 2588,
       'orden' => 5,
       'core_modelo_id' => 279,
       'core_campo_id' => 329,
     ),
-    2257 => 
+    2255 => 
     array (
       'id' => 2589,
       'orden' => 10,
       'core_modelo_id' => 279,
       'core_campo_id' => 446,
     ),
-    2258 => 
+    2256 => 
     array (
       'id' => 2590,
       'orden' => 99,
       'core_modelo_id' => 280,
       'core_campo_id' => 87,
     ),
-    2259 => 
+    2257 => 
     array (
       'id' => 2591,
       'orden' => 2,
       'core_modelo_id' => 280,
       'core_campo_id' => 88,
     ),
-    2260 => 
-    array (
-      'id' => 2592,
-      'orden' => 3,
-      'core_modelo_id' => 280,
-      'core_campo_id' => 93,
-    ),
-    2261 => 
+    2258 => 
     array (
       'id' => 2593,
       'orden' => 99,
       'core_modelo_id' => 280,
       'core_campo_id' => 94,
     ),
-    2262 => 
+    2259 => 
     array (
       'id' => 2594,
       'orden' => 99,
       'core_modelo_id' => 280,
       'core_campo_id' => 95,
     ),
-    2263 => 
+    2260 => 
     array (
       'id' => 2595,
       'orden' => 13,
       'core_modelo_id' => 280,
       'core_campo_id' => 97,
     ),
-    2264 => 
+    2261 => 
     array (
       'id' => 2596,
       'orden' => 99,
       'core_modelo_id' => 280,
       'core_campo_id' => 98,
     ),
-    2265 => 
+    2262 => 
     array (
       'id' => 2597,
       'orden' => 99,
       'core_modelo_id' => 280,
       'core_campo_id' => 100,
     ),
-    2266 => 
+    2263 => 
     array (
       'id' => 2598,
       'orden' => 16,
       'core_modelo_id' => 280,
       'core_campo_id' => 123,
     ),
-    2267 => 
+    2264 => 
     array (
       'id' => 2599,
       'orden' => 1,
       'core_modelo_id' => 280,
       'core_campo_id' => 201,
     ),
-    2268 => 
+    2265 => 
     array (
       'id' => 2600,
       'orden' => 99,
       'core_modelo_id' => 280,
       'core_campo_id' => 225,
     ),
-    2269 => 
+    2266 => 
     array (
       'id' => 2601,
       'orden' => 12,
       'core_modelo_id' => 280,
       'core_campo_id' => 248,
     ),
-    2270 => 
+    2267 => 
     array (
       'id' => 2602,
       'orden' => 14,
       'core_modelo_id' => 280,
       'core_campo_id' => 249,
     ),
-    2271 => 
+    2268 => 
     array (
       'id' => 2603,
       'orden' => 18,
       'core_modelo_id' => 280,
       'core_campo_id' => 250,
     ),
-    2272 => 
+    2269 => 
     array (
       'id' => 2604,
       'orden' => 8,
       'core_modelo_id' => 280,
       'core_campo_id' => 266,
     ),
-    2273 => 
+    2270 => 
     array (
       'id' => 2605,
       'orden' => 5,
       'core_modelo_id' => 280,
       'core_campo_id' => 329,
     ),
-    2274 => 
+    2271 => 
     array (
       'id' => 2606,
       'orden' => 10,
       'core_modelo_id' => 280,
       'core_campo_id' => 446,
     ),
-    2275 => 
-    array (
-      'id' => 2607,
-      'orden' => 4,
-      'core_modelo_id' => 280,
-      'core_campo_id' => 740,
-    ),
-    2276 => 
+    2272 => 
     array (
       'id' => 2608,
       'orden' => 9,
       'core_modelo_id' => 280,
       'core_campo_id' => 1138,
     ),
-    2277 => 
+    2273 => 
     array (
       'id' => 2609,
       'orden' => 20,
       'core_modelo_id' => 280,
       'core_campo_id' => 1139,
     ),
-    2278 => 
+    2274 => 
     array (
       'id' => 2610,
       'orden' => 2,
       'core_modelo_id' => 281,
       'core_campo_id' => 71,
     ),
-    2279 => 
+    2275 => 
     array (
       'id' => 2611,
       'orden' => 4,
       'core_modelo_id' => 281,
       'core_campo_id' => 3,
     ),
-    2280 => 
+    2276 => 
     array (
       'id' => 2612,
       'orden' => 6,
       'core_modelo_id' => 281,
       'core_campo_id' => 290,
     ),
-    2281 => 
+    2277 => 
     array (
       'id' => 2613,
       'orden' => 8,
       'core_modelo_id' => 281,
       'core_campo_id' => 182,
     ),
-    2282 => 
+    2278 => 
     array (
       'id' => 2614,
       'orden' => 10,
       'core_modelo_id' => 281,
       'core_campo_id' => 293,
     ),
-    2283 => 
+    2279 => 
     array (
       'id' => 2615,
       'orden' => 9,
       'core_modelo_id' => 188,
       'core_campo_id' => 1140,
     ),
-    2284 => 
+    2280 => 
     array (
       'id' => 2616,
       'orden' => 99,
       'core_modelo_id' => 7,
       'core_campo_id' => 94,
     ),
-    2285 => 
+    2281 => 
     array (
       'id' => 2617,
       'orden' => 99,
       'core_modelo_id' => 7,
       'core_campo_id' => 95,
     ),
-    2286 => 
+    2282 => 
     array (
       'id' => 2618,
       'orden' => 22,
       'core_modelo_id' => 283,
       'core_campo_id' => 22,
     ),
-    2287 => 
+    2283 => 
     array (
       'id' => 2619,
       'orden' => 5,
       'core_modelo_id' => 283,
       'core_campo_id' => 37,
     ),
-    2288 => 
+    2284 => 
     array (
       'id' => 2620,
       'orden' => 1,
       'core_modelo_id' => 283,
       'core_campo_id' => 41,
     ),
-    2289 => 
+    2285 => 
     array (
       'id' => 2621,
       'orden' => 2,
       'core_modelo_id' => 283,
       'core_campo_id' => 42,
     ),
-    2290 => 
+    2286 => 
     array (
       'id' => 2622,
       'orden' => 3,
       'core_modelo_id' => 283,
       'core_campo_id' => 43,
     ),
-    2291 => 
+    2287 => 
     array (
       'id' => 2623,
       'orden' => 6,
       'core_modelo_id' => 283,
       'core_campo_id' => 44,
     ),
-    2292 => 
+    2288 => 
     array (
       'id' => 2624,
       'orden' => 8,
       'core_modelo_id' => 283,
       'core_campo_id' => 45,
     ),
-    2293 => 
+    2289 => 
     array (
       'id' => 2625,
       'orden' => 9,
       'core_modelo_id' => 283,
       'core_campo_id' => 46,
     ),
-    2294 => 
+    2290 => 
     array (
       'id' => 2626,
       'orden' => 10,
       'core_modelo_id' => 283,
       'core_campo_id' => 47,
     ),
-    2295 => 
+    2291 => 
     array (
       'id' => 2627,
       'orden' => 13,
       'core_modelo_id' => 283,
       'core_campo_id' => 50,
     ),
-    2296 => 
+    2292 => 
     array (
       'id' => 2628,
       'orden' => 14,
       'core_modelo_id' => 283,
       'core_campo_id' => 51,
     ),
-    2297 => 
+    2293 => 
     array (
       'id' => 2629,
       'orden' => 15,
       'core_modelo_id' => 283,
       'core_campo_id' => 52,
     ),
-    2298 => 
+    2294 => 
     array (
       'id' => 2630,
       'orden' => 16,
       'core_modelo_id' => 283,
       'core_campo_id' => 53,
     ),
-    2299 => 
+    2295 => 
     array (
       'id' => 2631,
       'orden' => 17,
       'core_modelo_id' => 283,
       'core_campo_id' => 54,
     ),
-    2300 => 
+    2296 => 
     array (
       'id' => 2632,
       'orden' => 18,
       'core_modelo_id' => 283,
       'core_campo_id' => 55,
     ),
-    2301 => 
+    2297 => 
     array (
       'id' => 2633,
       'orden' => 19,
       'core_modelo_id' => 283,
       'core_campo_id' => 56,
     ),
-    2302 => 
+    2298 => 
     array (
       'id' => 2634,
       'orden' => 21,
       'core_modelo_id' => 283,
       'core_campo_id' => 57,
     ),
-    2303 => 
+    2299 => 
     array (
       'id' => 2635,
       'orden' => 4,
       'core_modelo_id' => 283,
       'core_campo_id' => 58,
     ),
-    2304 => 
+    2300 => 
     array (
       'id' => 2636,
       'orden' => 99,
       'core_modelo_id' => 283,
       'core_campo_id' => 94,
     ),
-    2305 => 
+    2301 => 
     array (
       'id' => 2637,
       'orden' => 99,
       'core_modelo_id' => 283,
       'core_campo_id' => 95,
     ),
-    2306 => 
+    2302 => 
     array (
       'id' => 2638,
       'orden' => 2,
       'core_modelo_id' => 283,
       'core_campo_id' => 118,
     ),
-    2307 => 
+    2303 => 
     array (
       'id' => 2639,
       'orden' => 0,
       'core_modelo_id' => 283,
       'core_campo_id' => 140,
     ),
-    2308 => 
+    2304 => 
     array (
       'id' => 2640,
       'orden' => 0,
       'core_modelo_id' => 283,
       'core_campo_id' => 201,
     ),
-    2309 => 
+    2305 => 
     array (
       'id' => 2641,
       'orden' => 20,
       'core_modelo_id' => 283,
       'core_campo_id' => 988,
+    ),
+    2306 => 
+    array (
+      'id' => 2642,
+      'orden' => 4,
+      'core_modelo_id' => 279,
+      'core_campo_id' => 1141,
+    ),
+    2307 => 
+    array (
+      'id' => 2643,
+      'orden' => 4,
+      'core_modelo_id' => 280,
+      'core_campo_id' => 1141,
+    ),
+    2308 => 
+    array (
+      'id' => 2644,
+      'orden' => 3,
+      'core_modelo_id' => 280,
+      'core_campo_id' => 1142,
+    ),
+    2309 => 
+    array (
+      'id' => 2645,
+      'orden' => 3,
+      'core_modelo_id' => 279,
+      'core_campo_id' => 1142,
     ),
   ),
   'sys_reportes' => 
@@ -60615,171 +60647,6 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'estado' => 'Activo',
       'created_at' => '2021-01-16 10:48:37',
       'updated_at' => '2021-01-16 10:55:35',
-    ),
-  ),
-  'nom_modos_liquidacion' => 
-  array (
-    0 => 
-    array (
-      'id' => 1,
-      'descripcion' => 'Tiempo Laborado',
-      'detalle' => '',
-      'estado' => 'Activo',
-      'created_at' => '2019-04-28 20:32:36',
-      'updated_at' => '2020-06-29 00:14:06',
-    ),
-    1 => 
-    array (
-      'id' => 2,
-      'descripcion' => 'Manual',
-      'detalle' => '',
-      'estado' => 'Activo',
-      'created_at' => '2019-04-28 20:32:36',
-      'updated_at' => '2019-04-28 20:32:36',
-    ),
-    2 => 
-    array (
-      'id' => 3,
-      'descripcion' => 'Cuota',
-      'detalle' => '',
-      'estado' => 'Activo',
-      'created_at' => '2019-04-28 20:32:36',
-      'updated_at' => '2019-04-28 20:32:36',
-    ),
-    3 => 
-    array (
-      'id' => 4,
-      'descripcion' => 'Préstamo',
-      'detalle' => '',
-      'estado' => 'Activo',
-      'created_at' => '2019-04-28 20:32:36',
-      'updated_at' => '2019-04-28 20:32:36',
-    ),
-    4 => 
-    array (
-      'id' => 5,
-      'descripcion' => 'Cruce de saldos de CxC',
-      'detalle' => 'Busca todos los saldos pendientes en CxC SOLO entre las fechas del documento de liquidación, los totaliza y los descuenta en el documento de liquidación de nómina.',
-      'estado' => 'Activo',
-      'created_at' => '2019-12-19 10:22:21',
-      'updated_at' => '2020-06-29 14:09:52',
-    ),
-    5 => 
-    array (
-      'id' => 6,
-      'descripcion' => 'Auxilio de transporte',
-      'detalle' => 'Solo se puede haber un conceto de este tipo. ',
-      'estado' => 'Activo',
-      'created_at' => '2020-06-24 16:34:55',
-      'updated_at' => '2020-06-24 16:51:16',
-    ),
-    6 => 
-    array (
-      'id' => 7,
-      'descripcion' => 'Tiempo NO Laborado',
-      'detalle' => '',
-      'estado' => 'Activo',
-      'created_at' => '2020-06-29 00:14:22',
-      'updated_at' => '2020-06-29 00:14:22',
-    ),
-    7 => 
-    array (
-      'id' => 8,
-      'descripcion' => 'Seguridad social',
-      'detalle' => '',
-      'estado' => 'Activo',
-      'created_at' => '2020-06-29 00:16:06',
-      'updated_at' => '2020-06-29 09:54:58',
-    ),
-    8 => 
-    array (
-      'id' => 9,
-      'descripcion' => 'Prestaciones sociales',
-      'detalle' => '',
-      'estado' => 'Activo',
-      'created_at' => '2020-06-29 09:55:10',
-      'updated_at' => '2020-06-29 09:55:10',
-    ),
-    9 => 
-    array (
-      'id' => 10,
-      'descripcion' => 'FondoSolidaridadPensional',
-      'detalle' => '',
-      'estado' => 'Activo',
-      'created_at' => '2020-12-17 14:53:09',
-      'updated_at' => '2020-12-21 07:13:22',
-    ),
-    10 => 
-    array (
-      'id' => 11,
-      'descripcion' => 'Retefuente',
-      'detalle' => '',
-      'estado' => 'Activo',
-      'created_at' => '2020-12-17 15:04:04',
-      'updated_at' => '2020-12-21 07:13:32',
-    ),
-    11 => 
-    array (
-      'id' => 12,
-      'descripcion' => 'Salud obligatoria',
-      'detalle' => 'Descuentos EPS. Entidades promotoras de Salud',
-      'estado' => 'Activo',
-      'created_at' => '2020-12-21 07:16:33',
-      'updated_at' => '2020-12-21 07:16:33',
-    ),
-    12 => 
-    array (
-      'id' => 13,
-      'descripcion' => 'Pensión  obligatoria',
-      'detalle' => 'AFP. Administradoras Fondos de Pensión',
-      'estado' => 'Activo',
-      'created_at' => '2020-12-21 07:17:02',
-      'updated_at' => '2020-12-21 07:17:02',
-    ),
-    13 => 
-    array (
-      'id' => 14,
-      'descripcion' => 'Prima Legal',
-      'detalle' => 'Pagada semestralmente',
-      'estado' => 'Activo',
-      'created_at' => '2020-12-21 07:19:36',
-      'updated_at' => '2020-12-21 07:19:36',
-    ),
-    14 => 
-    array (
-      'id' => 15,
-      'descripcion' => 'Cesantías consignadas',
-      'detalle' => 'Cesantías que se consignan anualmente al fondo.',
-      'estado' => 'Activo',
-      'created_at' => '2020-12-21 07:26:15',
-      'updated_at' => '2020-12-21 07:26:15',
-    ),
-    15 => 
-    array (
-      'id' => 16,
-      'descripcion' => 'Intereses de cesantías',
-      'detalle' => 'Los que se le pagan anualmente al empleado o al momento de liquidar su contrato.',
-      'estado' => 'Activo',
-      'created_at' => '2020-12-21 07:26:46',
-      'updated_at' => '2020-12-21 07:26:46',
-    ),
-    16 => 
-    array (
-      'id' => 17,
-      'descripcion' => 'Cesantías pagadas',
-      'detalle' => 'Las que se pagan al empleado en la terminación de contrato.',
-      'estado' => 'Activo',
-      'created_at' => '2020-12-21 07:28:47',
-      'updated_at' => '2020-12-21 07:28:47',
-    ),
-    17 => 
-    array (
-      'id' => 18,
-      'descripcion' => 'Parafiscales',
-      'detalle' => 'Provisiones hechas por la empresa: SENA, ICBF y Caja de compesanción.',
-      'estado' => 'Activo',
-      'created_at' => '2020-12-21 07:35:58',
-      'updated_at' => '2020-12-21 07:35:58',
     ),
   ),
 ) ;

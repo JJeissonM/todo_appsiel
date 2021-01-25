@@ -763,7 +763,7 @@ class ModeloController extends Controller
                 }
             }
 
-            if ($lista_campos[$i]['name'] == 'teso_medio_recaudo_id') {
+            /*if ($lista_campos[$i]['name'] == 'teso_medio_recaudo_id') {
                 $registros = TesoMedioRecaudo::all();
                 $vec_m[''] = '';
                 foreach ($registros as $fila) {
@@ -777,7 +777,7 @@ class ModeloController extends Controller
                     $medio_recaudo = TesoMedioRecaudo::find($lista_campos[$i]['value']);
                     $lista_campos[$i]['value'] = $lista_campos[$i]['value'] . '-' . $medio_recaudo->comportamiento;
                 }
-            }
+            }*/
 
             unset($vec_m);
             if ($lista_campos[$i]['name'] == 'teso_caja_id') {
@@ -953,6 +953,14 @@ class ModeloController extends Controller
                     if ($lista_campos[$i]['tipo'] == 'personalizado') {
                         $lista_campos[$i]['value'] = '';
                     }
+                }else{
+                    if ($lista_campos[$i]['tipo'] == 'input_lista_sugerencias') {
+                        $campo_del_modelo = $lista_campos[$i]['name'];
+                        $registro_input = app($lista_campos[$i]['atributos']['data-clase_modelo'])->find($registro->$campo_del_modelo);
+
+                        // value es un array con los valores para text_input y para el input hidden
+                        $lista_campos[$i]['value'] = [$registro_input->descripcion . ' (' . number_format($registro_input->numero_identificacion, 0, ',', '.') . ')', $registro->$campo_del_modelo];
+                    }
                 }
 
                 switch ($lista_campos[$i]['name']) {
@@ -1009,13 +1017,7 @@ class ModeloController extends Controller
 
 
 
-                if ($lista_campos[$i]['tipo'] == 'input_lista_sugerencias') {
-                    $campo_del_modelo = $lista_campos[$i]['name'];
-                    $registro_input = app($lista_campos[$i]['atributos']['data-clase_modelo'])->find($registro->$campo_del_modelo);
-
-                    // value es un array con los valores para text_input y para el input hidden
-                    $lista_campos[$i]['value'] = [$registro_input->descripcion . ' (' . number_format($registro_input->numero_identificacion, 0, ',', '.') . ')', $registro->$campo_del_modelo];
-                }
+                    
             }
         }
         return $lista_campos;

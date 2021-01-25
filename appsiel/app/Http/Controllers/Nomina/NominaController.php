@@ -115,7 +115,7 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'flash_message','Liquidación realizada correctamente. Se procesaron '.$this->registros_procesados.' registros.' );
+        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message','Liquidación realizada correctamente. Se procesaron '.$this->registros_procesados.' registros.' );
     }
 
     /*
@@ -400,7 +400,7 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registros automáticos retirados correctamente.' );
+        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'mensaje_error','Registros automáticos retirados correctamente.' );
     }
 
     function actualizar_totales_documento($nom_doc_encabezado_id)
@@ -442,7 +442,7 @@ class NominaController extends TransaccionController
             $empleado->save();
         }            
 
-        return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Empleado AGREGADO correctamente al documento.');
+        return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )->with('flash_message', 'Empleado AGREGADO correctamente al documento.');
     }
 
     // ELIMINACIÓN DE UN CAMPO A UN MODELO

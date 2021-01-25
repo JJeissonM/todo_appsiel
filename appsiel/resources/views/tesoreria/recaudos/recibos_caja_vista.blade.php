@@ -19,6 +19,7 @@
             $cuenta_bancaria = null;
             break;
     }
+
 ?>
 
 <table class="table table-bordered" style="font-size: 14px;">
@@ -30,14 +31,14 @@
             <td style="border: solid 1px #ddd;">
                     <b style="font-size: 1.1em; text-align: center; display: block; margin-bottom: -15px;">{{ $encabezado_documento->tipo_documento_app->descripcion }}</b>
                     <br/>
-                    <b>Documento:</b> {{ $encabezado_documento->tipo_documento_app->prefijo }} {{ $encabezado_documento->consecutivo }}
+                    <b>Documento:</b> {{ $encabezado_documento->tipo_documento_app->prefijo }} {{ repetir_caracter($encabezado_documento->consecutivo,0,'izquierda',4) }}
                     <br/>
                     <b>Fecha:</b> {{ $encabezado_documento->fecha }}
                     <br>
                     <b>Valor: &nbsp;&nbsp;</b> ${{ number_format( $encabezado_documento->valor_total,0,',','.') }}
                 @if($encabezado_documento->estado == 'Anulado')
                     <div class="alert alert-danger" class="center">
-                        <strong>Documento Anulado</strong>
+                        <span style="color: red;"><strong>Documento Anulado</strong></span>
                     </div>
                 @endif
             </td>

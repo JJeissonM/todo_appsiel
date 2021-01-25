@@ -18,33 +18,12 @@ class TiempoLaborado implements Estrategia
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
+		// En el lapso del documento, pueden haber varios documentos en el mismo lapso
+		$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
 
-		$lapso = $liquidacion['documento_nomina']->lapso();
-		$registros_documento = NomDocRegistro::whereBetween( 'nom_doc_registros.fecha', [$lapso->fecha_inicial,$lapso->fecha_final] )
-													->where( 'nom_doc_registros.core_tercero_id', $liquidacion['empleado']->core_tercero_id )
-													->get();
+		$horas_liquidadas_empleado = $this->get_horas_no_vacaciones_lapso( $horas_liquidadas_empleado, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
 
-		$horas_liquidadas_empleado = 0; // En el lapso del documento, pueden haber varios documentos en el mismo lapso
-        foreach ($registros_documento as $registro )
-        {   
-            if ( !is_null($registro->concepto) )
-            {
-                if ( $registro->concepto->forma_parte_basico )
-                {
-                    $horas_liquidadas_empleado += $registro->cantidad_horas;
-                }
-            }
-        }
-
-        $aux = $horas_liquidadas_empleado;
-        // Verifiar si hay días de vacaciones en el lapso del documento y restar el tiempo desde el inicio del lapso hasta cuando empiezan las vacaciones
-        $horas_a_restar = $this->get_horas_no_vacaciones_lapso( $liquidacion['empleado'], $lapso->fecha_inicial, $lapso->fecha_final);
-        if ( $horas_liquidadas_empleado > $horas_a_restar )
-        {
-        	$horas_liquidadas_empleado -= $horas_a_restar;
-        }
-
-		// NO se puede liquidar más tiempo del que tiene el documento
+		// NO se puede liquidar más tiempo del que tiene el documento, a menos que haya conceptos de Vacaciones
 		if ( $horas_liquidadas_empleado >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
 		{
 			return [ 
@@ -121,27 +100,68 @@ class TiempoLaborado implements Estrategia
 				];
 	}
 
-	public function get_horas_no_vacaciones_lapso( $empleado, $fecha_inicial, $fecha_final)
+	public function get_horas_ya_liquidadas_en_el_lapso_del_documento( $documento_nomina, $empleado )
 	{
+		// En el lapso del documento, pueden haber varios documentos en el mismo lapso
+		$lapso = $documento_nomina->lapso();
+		$registros_documento = NomDocRegistro::whereBetween( 'nom_doc_registros.fecha', [$lapso->fecha_inicial,$lapso->fecha_final] )
+													->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
+													->get();
+
+		$horas_liquidadas_empleado = 0; 
+        
+        foreach ($registros_documento as $registro )
+        {   
+            if ( !is_null($registro->concepto) )
+            {
+                if ( $registro->concepto->forma_parte_basico )
+                {
+                    $horas_liquidadas_empleado += $registro->cantidad_horas;
+                }
+            }
+        }
+
+        return $horas_liquidadas_empleado;
+	}
+
+	/*
+		Las vacaciones en el lapso pudieron haber liquidado más tiempo del permitido en el documento
+		Sin embargo, se debe liquidar el salario de días que no son de vacaciones
+		Se dan varios casos:
+			1ro. Las vacaciones comienzan y terminan en el lapso
+			2do. Las vacacaciones terminan en el lapso, pues comenzaron en el lapso anterior
+	*/
+	public function get_horas_no_vacaciones_lapso( $horas_liquidadas_empleado, $documento_nomina, $empleado )
+	{
+		$lapso = $documento_nomina->lapso();
+
+		// Caso 1. Las vacaciones comienzan y terminan en el lapso.
 		$this->vacaciones_programadas = ProgramacionVacacion::where([
 																['tipo_novedad_tnl','=','vacaciones'],
 																['nom_contrato_id','=',$empleado->id]
 															])
-														->whereBetween('fecha_inicial_tnl',[$fecha_inicial,$fecha_final])
+														->whereBetween('fecha_inicial_tnl',[$lapso->fecha_inicial,$lapso->fecha_final])
 														->get()->first();
-
-		if ( is_null($this->vacaciones_programadas) )
+		if ( !is_null($this->vacaciones_programadas) )
 		{
-			return 0;
+			return $this->diferencia_en_dias_entre_fechas( $lapso->fecha_inicial, $this->vacaciones_programadas->fecha_inicial_tnl ) * self::CANTIDAD_HORAS_DIA_LABORAL; // Se le suma el mismo día
 		}
 
-		// Si ya se amortizaron días de vacaciones, quiere decir que ya se restaron las horas NO VACACIONES del lapso
-		if ( $this->vacaciones_programadas->cantidad_dias_amortizados > 0 )
+		// Caso 2. Las vacacaciones terminan en el lapso y comenzaron en el lapso anterior
+		$this->vacaciones_programadas = ProgramacionVacacion::where([
+																['tipo_novedad_tnl','=','vacaciones'],
+																['nom_contrato_id','=',$empleado->id],
+																['fecha_inicial_tnl','<',$lapso->fecha_inicial]
+															])
+														->whereBetween('fecha_final_tnl',[$lapso->fecha_inicial,$lapso->fecha_final])
+														->get()->first();
+		if ( !is_null($this->vacaciones_programadas) )
 		{
-			return 0;
+			return $this->diferencia_en_dias_entre_fechas( $this->vacaciones_programadas->fecha_final_tnl, $lapso->fecha_final ) * self::CANTIDAD_HORAS_DIA_LABORAL;
 		}
 
-		return $this->diferencia_en_dias_entre_fechas( $fecha_inicial, $this->vacaciones_programadas->fecha_inicial_tnl ) * self::CANTIDAD_HORAS_DIA_LABORAL + self::CANTIDAD_HORAS_DIA_LABORAL; // Se le suma un día
+		return $horas_liquidadas_empleado;
+
 	}
 
 
@@ -157,7 +177,7 @@ class TiempoLaborado implements Estrategia
 
 		if ( !is_null( $this->vacaciones_programadas ) )
 		{
-			$fecha_final = $this->vacaciones_programadas->fecha_final_tnl; // Ya esto valida la fecha final del contrato
+			return $horas_liquidadas_empleado;
 		}
 
 		// Caso 1: el contrato empieza dentro del lapso del documento
@@ -173,24 +193,11 @@ class TiempoLaborado implements Estrategia
 		{
 			$tiempo_a_descontar_2 = $this->diferencia_en_dias_entre_fechas( $empleado->contrato_hasta, $fecha_final ) * self::CANTIDAD_HORAS_DIA_LABORAL;
 		}
-
-		// Caso 3: Vacaciones terminan dentro del lapso del documento
-		$tiempo_a_descontar_3 = 0;
-		if ( $fecha_final < $documento_nomina->lapso()->fecha_final )
-		{
-			// Si NO se han amortizado días de vacaciones, se liquidan las horas ya calculadas (antes del comienzo de vacaciones) 
-			if ( $this->vacaciones_programadas->cantidad_dias_amortizados == 0 )
-			{
-				return $horas_liquidadas_empleado;
-			}
-		}
 		
-        $tiempo_a_liquidar = $documento_nomina->tiempo_a_liquidar - $tiempo_a_descontar_1 - $tiempo_a_descontar_2 - $tiempo_a_descontar_3 - $horas_liquidadas_empleado;
+        $tiempo_a_liquidar = $documento_nomina->tiempo_a_liquidar - $tiempo_a_descontar_1 - $tiempo_a_descontar_2 - $horas_liquidadas_empleado;
         
         return $tiempo_a_liquidar;
 	}
-
-
 
 	public function diferencia_en_dias_entre_fechas( string $fecha_inicial, string $fecha_final )
 	{

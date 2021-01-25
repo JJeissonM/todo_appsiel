@@ -67,7 +67,8 @@ class TesoCaja extends Model
             ->get();
 
         $vec[''] = '';
-        foreach ($opciones as $opcion) {
+        foreach ($opciones as $opcion)
+        {
             $vec[$opcion->id] = $opcion->descripcion;
         }
 
