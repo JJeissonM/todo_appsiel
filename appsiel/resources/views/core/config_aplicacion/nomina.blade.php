@@ -188,7 +188,7 @@
 									$concepto_vacaciones_dias_no_habiles = $parametros['concepto_vacaciones_dias_no_habiles'];
 								}
 							?>
-							{{ Form::bsSelect('concepto_vacaciones_dias_no_habiles', $concepto_vacaciones_dias_no_habiles, 'Concepto a pagar', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('concepto_vacaciones_dias_no_habiles', $concepto_vacaciones_dias_no_habiles, 'Concepto a pagar para días NO hábiles de vacaciones', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 

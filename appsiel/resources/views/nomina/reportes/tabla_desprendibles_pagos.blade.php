@@ -73,10 +73,10 @@
                         $cantidad_horas = '';
                         if ( $registro->cantidad_horas != 0 )
                         {
-                            if ( $registro->concepto->forma_parte_basico )
-                            {
+                            //if ( $registro->concepto->forma_parte_basico )
+                            //{
                                 $cantidad_horas = $registro->cantidad_horas;
-                            }
+                            //}
                         }
                     ?>
 
