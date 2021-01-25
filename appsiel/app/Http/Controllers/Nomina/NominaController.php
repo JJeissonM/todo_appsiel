@@ -31,6 +31,7 @@ use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
 use App\Nomina\AgrupacionConcepto;
+use App\Nomina\ProgramacionVacacion;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
@@ -108,7 +109,12 @@ class NominaController extends TransaccionController
             $cant = count( $this->array_ids_modos_liquidacion_automaticos );
 
             for ( $i=0; $i < $cant; $i++ ) 
-            { 
+            {
+                /*if ( $this->esta_vacaciones( $empleado, $documento ) )
+                {
+                    continue;
+                }*/
+                
                 $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
             }
         }
@@ -116,6 +122,26 @@ class NominaController extends TransaccionController
         $this->actualizar_totales_documento($id);
 
         return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message','Liquidación realizada correctamente. Se procesaron '.$this->registros_procesados.' registros.' );
+    }
+
+    public function esta_vacaciones( $empleado, $documento_nomina )
+    {
+        $lapso = $documento_nomina->lapso();
+
+        $programacion_vacaciones = ProgramacionVacacion::where( [
+                                                                    [ 'nom_contrato_id', '=', $empleado->id ],
+                                                                    [ 'tipo_novedad_tnl', '=', 'vacaciones' ],
+                                                                    [ 'fecha_inicial_tnl', '<=', $lapso->fecha_final ],
+                                                                    [ 'fecha_final_tnl', '>=', $lapso->fecha_final ]
+                                                                ] )
+                                                        ->get()
+                                                        ->first();
+        if ( is_null( $programacion_vacaciones ) )
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /*

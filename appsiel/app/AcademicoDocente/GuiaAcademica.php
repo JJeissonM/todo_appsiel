@@ -356,8 +356,6 @@ class GuiaAcademica extends Model
                 );
             }
         }
-
-        return true;
     }
 
     public static function get_registros_anterior_siguiente($id)

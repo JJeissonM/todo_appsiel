@@ -289,6 +289,34 @@ class NomDocEncabezado extends Model
         return $lista_campos;
     }
 
+    public static function update_adicional( $datos, $registro_id )
+    {
+        $registro = NomDocEncabezado::find( $registro_id );
+        $fecha_inicial_documento = $registro->lapso()->fecha_inicial;
+
+        // Se agregan todos los contratos al documento
+        if ($registro->tipo_liquidacion == 'normal')
+        {
+            $empleados = NomContrato::where([
+                                                ['estado', '=', 'Activo'],
+                                                ['contrato_hasta', '>=', $fecha_inicial_documento]
+                                            ])
+                                        ->get();
+
+            foreach ($empleados as $contrato)
+            {
+                DB::table('nom_empleados_del_documento')->insert([
+                    'nom_doc_encabezado_id' => $registro->id,
+                    'nom_contrato_id' => $contrato->id
+                ]);
+            }
+        }else{
+             DB::table('nom_empleados_del_documento')->where([
+                                                            'nom_doc_encabezado_id' => $registro->id
+                                                        ])->delete();
+        }
+    }
+
 
 
     /*

@@ -42,10 +42,18 @@
 							</div>
 
 							<div class="row" style="padding:5px;">
-								<label class="control-label col-sm-4" > <b> *Fecha final de promedios: </b> </label>
+								<label class="control-label col-sm-4" > <b> *Fecha final para promedios de acumulados: </b> </label>
 
 								<div class="col-sm-8">
 									{{ Form::date( 'fecha_final_promedios',null, [ 'class' => 'form-control', 'id' => 'fecha_final_promedios' ]) }}
+								</div>
+							</div>
+
+							<div class="row" style="padding:5px;">
+								<label class="control-label col-sm-4" > <b> *Fecha final para promedios de liquidación: </b> </label>
+
+								<div class="col-sm-8">
+									{{ Form::date( 'fecha_final_liquidacion',null, [ 'class' => 'form-control', 'id' => 'fecha_final_liquidacion' ]) }}
 								</div>
 							</div>
 
@@ -102,6 +110,7 @@
 			var opcion_seleccionada = 0;
 
 			$('#fecha_final_promedios').val( get_fecha_hoy() );
+			$('#fecha_final_liquidacion').val( get_fecha_hoy() );
 
 			$(".check_prestacion").change(function(){
 				if ( $(this).is(':checked') )
