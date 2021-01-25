@@ -39,15 +39,31 @@ class ArchivoController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->tipo_fondo == '') {
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('mensaje_error', 'Debe indicar el tipo de fondo a usar en el componente.');
+        }
         $a = new Archivo($request->all());
+        if ($request->tipo_fondo == 'IMAGEN') {
+            //el fondo es una imagen
+            $file = $request->file('fondo');
+            $name = time() . $file->getClientOriginalName();
+            $filename = "img/" . $name;
+            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+            if ($flag !== false) {
+                $a->fondo = $filename;
+            } else {
+                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                return redirect()->back()->withInput($request->input())
+                    ->with('mensaje_error', $message);
+            }
+        }
         $result = $a->save();
-        $variables_url = $request->variables_url;
         if ($result) {
             $message = 'La configuración de la sección fue almacenada correctamente.';
-            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
         } else {
             $message = 'La configuración no pudo ser almacenada, intente mas tarde.';
-            return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
+            return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('flash_message', $message);
         }
     }
 
@@ -83,7 +99,35 @@ class ArchivoController extends Controller
     public function update(Request $request, $id)
     {
         $as = Archivo::find($id);
-        $as->fill($request->all());
+        $tipo_fondo = $as->tipo_fondo;
+        $as->configuracionfuente_id = $request->configuracionfuente_id;
+        if ($request->tipo_fondo == '') {
+            $as->tipo_fondo = $tipo_fondo;
+        }
+        if ($request->tipo_fondo != '') {
+            if ($request->tipo_fondo == 'IMAGEN') {
+                if (isset($request->fondo)) {
+                    //el fondo es una imagen
+                    $file = $request->file('fondo');
+                    $name = time() . $file->getClientOriginalName();
+                    $filename = "img/" . $name;
+                    $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                    if ($flag !== false) {
+                        $as->fondo = $filename;
+                        $as->tipo_fondo = 'IMAGEN';
+                        $as->repetir = $request->repetir;
+                        $as->direccion = $request->direccion;
+                    } else {
+                        $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                        return redirect()->back()->withInput($request->input())
+                            ->with('mensaje_error', $message);
+                    }
+                }
+            } else {
+                $as->fondo = $request->fondo;
+                $as->tipo_fondo = "COLOR";
+            }
+        }
         $result = $as->save();
         $variables_url = $request->variables_url;
         if ($result) {
@@ -107,8 +151,9 @@ class ArchivoController extends Controller
         $result = $a->delete();
         $variables_url = $request->variables_url;
         if ($result) {
-            if ( file_exists( 'docs/' . $a->file ) )
-            { unlink('docs/' . $a->file); }
+            if (file_exists('docs/' . $a->file)) {
+                unlink('docs/' . $a->file);
+            }
             $message = 'El archivo fue borrado correctamente.';
             return redirect(url('seccion/' . $request->widget_id) . $variables_url)->with('flash_message', $message);
         } else {

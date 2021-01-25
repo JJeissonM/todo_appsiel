@@ -20,6 +20,24 @@
         object-fit: cover;
     }
 
+    @media (max-width: 1440px){
+        .image{
+            height: 480px;
+        }
+        #carousel-item{
+            height: 484px;
+        }
+    }
+
+    @media (max-width: 1024px){
+        .image{
+            width: 100%;
+        }
+        #carousel-item{
+            width: 100%;
+        }
+    }
+
 </style>
 <section id="main-slider" class="slider-font">
     @if($slider != null && $slider->items->count() > 0)

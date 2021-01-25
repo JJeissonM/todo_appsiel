@@ -1,11 +1,4 @@
-<style>
-    #main-slider {
-        /*margin-top: 40px;*/
-    }
-
-    #main-slider .item {
-        /*height: 550px;*/
-    }
+<style>   
 
 
     .slider-font {
@@ -26,6 +19,40 @@
         background-repeat: no-repeat;
         object-fit: cover;
     }
+
+    @media (max-width: 1440px){
+        .owl-carousel img {
+            height: 480px;
+        }
+        #main-slider .item {
+            height: 484px;
+        }
+    }
+
+    @media (max-width: 1024px){
+        .owl-carousel img {
+            width: 100%;
+        }
+        #main-slider .item {
+            width: 100%;
+        }
+    }
+
+    #main-slider .owl-prev{
+        border-radius: 0 35px 35px 0;
+        width: 35px;
+        left: 0;
+        text-indent: 0;
+    }
+
+    #main-slider .owl-next{
+        border-radius: 35px 0 0 35px;
+        width: 35px;
+        right: 0;
+        text-indent: 0;
+    }
+
+
 </style>
 <section id="main-slider" class="slider-font">
     @if($slider != null && $slider->items->count() > 0)
