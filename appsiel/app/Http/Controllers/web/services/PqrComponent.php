@@ -7,7 +7,7 @@ use App\web\PqrForm;
 use App\web\Widget;
 
 use App\Sistema\Campo;
-
+use App\web\Configuracionfuente;
 use Illuminate\Support\Facades\Input;
 use Form;
 
@@ -21,18 +21,18 @@ class PqrComponent implements IDrawComponent
 
     public function DrawComponent()
     {
-        $registro = PqrForm::where('widget_id',$this->widget)->first();        
-        
-        $pagina = Widget::find( $this->widget )->pagina;
+        $registro = PqrForm::where('widget_id', $this->widget)->first();
+
+        $pagina = Widget::find($this->widget)->pagina;
 
         // Se llama al FormServiceProvider
-        return Form::pqr( $registro, $pagina );
+        return Form::pqr($registro, $pagina);
     }
 
     public function viewComponent()
     {
 
-        $widget = Widget::find( $this->widget );
+        $widget = Widget::find($this->widget);
 
         $miga_pan = [
             [
@@ -49,14 +49,22 @@ class PqrComponent implements IDrawComponent
             ]
         ];
 
+        $fuentes = Configuracionfuente::all();
+        $fonts = null;
+        if (count($fuentes) > 0) {
+            foreach ($fuentes as $f) {
+                $fonts[$f->id] = $f->fuente->font;
+            }
+        }
+
         $variables_url = '?id=' . Input::get('id');
 
         $campos = Campo::opciones_campo_select();
 
-        $registro = PqrForm::where('widget_id',$this->widget)->first();
+        $registro = PqrForm::where('widget_id', $this->widget)->first();
 
-        $pagina = Widget::find( $this->widget )->pagina;
+        $pagina = Widget::find($this->widget)->pagina;
 
-        return view( 'web.components.pqr', compact('miga_pan', 'variables_url', 'widget', 'campos', 'registro', 'pagina') );
+        return view('web.components.pqr', compact('miga_pan', 'fonts', 'variables_url', 'widget', 'campos', 'registro', 'pagina'));
     }
 }

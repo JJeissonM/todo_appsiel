@@ -131,7 +131,8 @@ class Vehiculo extends Model
 
     public static function get_campos_adicionales_edit($lista_campos, $registro)
     {
-        $placa = str_replace(" ", "", $registro->placa);
+        //$placa = str_replace(" ", "", $registro->placa);
+        $placa = $registro->placa;
 
         $user = User::where('email', $placa)->get()->first();
 
@@ -163,7 +164,8 @@ class Vehiculo extends Model
         if (!is_null($user)) {
             $descripcion = 'Vehículo ' . $datos['marca'] . ' ' . $datos['modelo'] . ', placa: ' . $datos['placa'];
 
-            $placa = str_replace(" ", "", $datos['placa']);
+            //$placa = str_replace(" ", "", $datos['placa']);
+            $placa = $datos['placa'];
 
             PasswordReset::where('email', $user->email)->update(['email' => $placa]);
 

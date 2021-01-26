@@ -48,6 +48,21 @@ class TiempoNoLaborado implements Estrategia
 				continue;
 			}
 
+			// Si ya se liquidaron vacaciones en el documento, se salta
+			if ( $novedad->tipo_novedad_tnl == 'vacaciones' )
+			{
+				$registro_vacacion_liquidada = NomDocRegistro::where([
+																		['nom_doc_encabezado_id','=',$liquidacion['documento_nomina']->id],
+																		['nom_contrato_id','=',$liquidacion['empleado']->id],
+																		['nom_concepto_id','=',$liquidacion['concepto']->id]
+																	])
+															->get()->first();
+				if ( !is_null($registro_vacacion_liquidada) )
+				{
+					continue;
+				}
+			}
+
 			$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
 
 			$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
@@ -239,7 +254,6 @@ class TiempoNoLaborado implements Estrategia
 
 	public function calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento )
 	{
-
 		$fecha_ini_novedad = strtotime( $novedad->fecha_inicial_tnl );
 		$fecha_fin_novedad = strtotime( $novedad->fecha_final_tnl );
 

@@ -12,7 +12,7 @@ class NomDocRegistro extends Model
     //protected $table = 'nom_doc_registros';
     protected $fillable = ['nom_doc_encabezado_id', 'core_tercero_id', 'nom_contrato_id', 'fecha', 'core_empresa_id', 'porcentaje', 'detalle', 'nom_concepto_id', 'nom_cuota_id', 'nom_prestamo_id', 'novedad_tnl_id', 'cantidad_horas', 'valor_devengo', 'valor_deduccion', 'estado', 'creado_por', 'modificado_por'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Empleado', 'Fecha', 'Detalle', 'Concepto', 'Devengo', 'Deducción', 'Estado', 'ID'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Empleado', 'Fecha', 'Detalle', 'Concepto', 'Horas', 'Devengo', 'Deducción', 'Estado', 'ID'];
 
     public $rutas = [
         'create' => 'web',
@@ -67,11 +67,12 @@ class NomDocRegistro extends Model
                 'nom_doc_registros.fecha AS campo3',
                 'nom_doc_registros.detalle AS campo4',
                 'nom_conceptos.descripcion AS campo5',
-                'nom_doc_registros.valor_devengo AS campo6',
-                'nom_doc_registros.valor_deduccion AS campo7',
-                'nom_doc_registros.estado AS campo8',
-                'nom_doc_registros.id AS campo9',
-                'nom_doc_registros.id AS campo10'
+                'nom_doc_registros.cantidad_horas AS campo6',
+                'nom_doc_registros.valor_devengo AS campo7',
+                'nom_doc_registros.valor_deduccion AS campo8',
+                'nom_doc_registros.estado AS campo9',
+                'nom_doc_registros.id AS campo10',
+                'nom_doc_registros.id AS campo11'
             )
             ->where("nom_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
@@ -97,6 +98,7 @@ class NomDocRegistro extends Model
                 'nom_doc_registros.fecha AS FECHA',
                 'nom_doc_registros.detalle AS DETALLE',
                 'nom_conceptos.descripcion AS CONCEPTO',
+                'nom_doc_registros.cantidad_horas AS HORAS',
                 'nom_doc_registros.valor_devengo AS DEVENGO',
                 'nom_doc_registros.valor_deduccion AS DEDUCCIÓN',
                 'nom_doc_registros.estado AS ESTADO',
@@ -152,7 +154,7 @@ class NomDocRegistro extends Model
     {
         return NomDocRegistro::leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
             ->leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_doc_registros.nom_contrato_id')
-            ->whereIn('nom_conceptos.modo_liquidacion_id', [12,10]) // modo salud y fondo solidaridad
+            ->whereIn('nom_conceptos.modo_liquidacion_id', [12]) // Modo salud
             ->whereIn('nom_contratos.entidad_salud_id', $entidades)
             ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
             ->orderBy('nom_contratos.id')
@@ -163,7 +165,7 @@ class NomDocRegistro extends Model
     {
         return NomDocRegistro::leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
             ->leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_doc_registros.nom_contrato_id')
-            ->where('nom_conceptos.modo_liquidacion_id', 13)
+            ->whereIn('nom_conceptos.modo_liquidacion_id', [13,10])// Modo pensión y Fondo solidaridad
             ->whereIn('nom_contratos.entidad_pension_id', $entidades)
             ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
             ->orderBy('nom_contratos.id')

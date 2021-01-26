@@ -72,6 +72,7 @@ class PrestacionesSocialesController extends TransaccionController
             $array_prestaciones_liquidadas->nom_doc_encabezado_id = $documento_nomina->id;
             $array_prestaciones_liquidadas->nom_contrato_id = $empleado->id;
             $array_prestaciones_liquidadas->fecha_final_promedios = $request->fecha_final_promedios;
+            $array_prestaciones_liquidadas->fecha_final_liquidacion = $request->fecha_final_liquidacion;
             $array_prestaciones_liquidadas->prestaciones = [];
 
             $p = 0;
@@ -80,7 +81,7 @@ class PrestacionesSocialesController extends TransaccionController
                 $array_aux_prestacion = (object)[];
                 
                 // Se llama al subsistema de liquidación
-                $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $empleado, $documento_nomina, $request->almacenar_registros, $request->fecha_final_promedios);
+                $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $empleado, $documento_nomina, $request->almacenar_registros, $request->fecha_final_promedios, $request->fecha_final_liquidacion);
 
                 $valores = $liquidacion->calcular( $prestacion );
 
@@ -137,11 +138,11 @@ class PrestacionesSocialesController extends TransaccionController
         }
 
         PrestacionesLiquidadas::create(
-                                    ['nom_doc_encabezado_id' => $array_prestaciones_liquidadas->nom_doc_encabezado_id ] + 
-                                    ['nom_contrato_id' => $array_prestaciones_liquidadas->nom_contrato_id ] + 
-                                    ['fecha_final_promedios' => $array_prestaciones_liquidadas->fecha_final_promedios] +  
-                                    ['prestaciones_liquidadas' => json_encode( $array_prestaciones_liquidadas->prestaciones ) ]
-                                );
+                                        ['nom_doc_encabezado_id' => $array_prestaciones_liquidadas->nom_doc_encabezado_id ] + 
+                                        ['nom_contrato_id' => $array_prestaciones_liquidadas->nom_contrato_id ] + 
+                                        ['fecha_final_promedios' => $array_prestaciones_liquidadas->fecha_final_promedios] +  
+                                        ['prestaciones_liquidadas' => json_encode( $array_prestaciones_liquidadas->prestaciones ) ]
+                                    );
     }
 
     public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $valores, $usuario)
@@ -177,7 +178,7 @@ class PrestacionesSocialesController extends TransaccionController
                 if ( !is_null( $registro->concepto ) && !is_null($registro->contrato) )
                 {
                     // Se llama al subsistema de liquidación
-                    $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $registro->contrato, $documento_nomina, 0, 0);
+                    $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $registro->contrato, $documento_nomina, 0, 0, 0);
                     $liquidacion->retirar( $prestacion, $registro );
                 }
             }                   

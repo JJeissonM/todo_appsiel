@@ -22,6 +22,7 @@ class InteresesCesantias implements Estrategia
     protected $historial_vacaciones;
     protected $tabla_resumen = [];
     protected $fecha_final_promedios;
+    protected $fecha_final_liquidacion;
 
     /*
         ** Hay vacaciones Compensadas y Disfrutadas
@@ -48,6 +49,7 @@ class InteresesCesantias implements Estrategia
         }
 
         $this->fecha_final_promedios = $liquidacion['fecha_final_promedios'];
+        $this->fecha_final_liquidacion = $liquidacion['fecha_final_liquidacion'];
 
         $dias_totales_liquidacion = $this->get_dias_liquidacion( $liquidacion['empleado'], $parametros_prestacion );
 
@@ -263,13 +265,13 @@ class InteresesCesantias implements Estrategia
             return 0;
         }
 
-        $fecha_inicial = $this->get_fecha_inicial_promedios( $this->fecha_final_promedios, $parametros_prestacion->cantidad_meses_a_promediar );
+        $fecha_inicial = $this->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $parametros_prestacion->cantidad_meses_a_promediar );
 
-        $dias_totales_laborados = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_promedios, $parametros_prestacion->nom_agrupacion_id );
+        $dias_totales_laborados = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion, $parametros_prestacion->nom_agrupacion_id );
 
         $dias_totales_liquidacion = $dias_totales_laborados * $parametros_prestacion->dias_a_liquidar / self::DIAS_BASE_LEGALES;
 
-        $this->tabla_resumen['fecha_liquidacion'] = $this->fecha_final_promedios;
+        $this->tabla_resumen['fecha_liquidacion'] = $this->fecha_final_liquidacion;
         $this->tabla_resumen['dias_totales_laborados'] = $dias_totales_laborados;
         $this->tabla_resumen['dias_totales_no_laborados'] = 0;
         $this->tabla_resumen['dias_totales_liquidacion'] = $dias_totales_liquidacion;

@@ -27,7 +27,7 @@ class NomDocEncabezado extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Descripción', 'Total devengos', 'Total deducciones', 'Estado'];
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"nomina/id_fila","cambiar_estado":"a_i/id_fila"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"nomina/id_fila","cambiar_estado":"a_i/id_fila","eliminar":"web_eliminar/id_fila"}';
 
     public function empresa()
     {
@@ -59,10 +59,13 @@ class NomDocEncabezado extends Model
         $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)->all();
 
         $horas_liquidadas = 0;
-        foreach ($registros_documento as $registro) {
-            if (!is_null($registro->concepto)) {
+        foreach ($registros_documento as $registro)
+        {
+            if (!is_null($registro->concepto))
+            {
                 // 7: Tiempo NO Laborado, 1: tiempo laborado
-                if (in_array($registro->concepto->modo_liquidacion_id, [1, 7])) {
+                if ( in_array($registro->concepto->modo_liquidacion_id, [1, 7]) )
+                {
                     $horas_liquidadas += $registro->cantidad_horas;
                 }
             }
@@ -126,19 +129,29 @@ class NomDocEncabezado extends Model
         $dia_inicio = '01';
         $dia_fin = '15';
 
-        if ((int)$array_fecha[2] > 16) {
+        if ( (int)$array_fecha[2] > 16 ) 
+        {
             $dia_inicio = '16';
             $dia_fin = '30';
-            // Mes de febrero
-            if ($array_fecha[1] == '02') {
-                $dia_fin = '28';
-            }
+        }
+
+        // Liquidación un mes
+        if ( $this->tiempo_a_liquidar == 240 )
+        {
+            $dia_inicio = '01';
+            $dia_fin = '30';
+        }
+
+        // Mes de febrero
+        if ($array_fecha[1] == '02')
+        {
+            $dia_fin = '28';
         }
 
         return (object)[
-            'fecha_inicial' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_inicio,
-            'fecha_final' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_fin
-        ];
+                            'fecha_inicial' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_inicio,
+                            'fecha_final' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_fin
+                        ];
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -253,11 +266,58 @@ class NomDocEncabezado extends Model
         $registro = NomDocRegistro::where('nom_doc_encabezado_id', $registro->id)->get()->first();
 
         // Si hay al menos un registro para el documento de nómina, no se puede editar
-        if (!is_null($registro)) {
-            return [null, 'No se puede editar este documento. Ya tiene registros asociados.'];
+        if (!is_null($registro))
+        {
+            return [[
+                "id" => 999,
+                "descripcion" => "",
+                "tipo" => "personalizado",
+                "name" => "name_1",
+                "opciones" => "",
+                "value" => '<p>Documento: <b>' . $registro->descripcion . '</b> </p> <div class="form-group">                    
+                                                    <div class="alert alert-danger">
+                                                      <strong>¡Advertencia!</strong>
+                                                      <br>
+                                                      No se puede editar este documento. Ya tiene registros asociados.
+                                                    </div>
+                                                </div>',
+                "atributos" => [],
+                "definicion" => "",
+                "requerido" => 0,
+                "editable" => 1,
+                "unico" => 0
+            ]];
         }
 
         return $lista_campos;
+    }
+
+    public static function update_adicional( $datos, $registro_id )
+    {
+        $registro = NomDocEncabezado::find( $registro_id );
+        $fecha_inicial_documento = $registro->lapso()->fecha_inicial;
+
+        // Se agregan todos los contratos al documento
+        if ($registro->tipo_liquidacion == 'normal')
+        {
+            $empleados = NomContrato::where([
+                                                ['estado', '=', 'Activo'],
+                                                ['contrato_hasta', '>=', $fecha_inicial_documento]
+                                            ])
+                                        ->get();
+
+            foreach ($empleados as $contrato)
+            {
+                DB::table('nom_empleados_del_documento')->insert([
+                    'nom_doc_encabezado_id' => $registro->id,
+                    'nom_contrato_id' => $contrato->id
+                ]);
+            }
+        }else{
+             DB::table('nom_empleados_del_documento')->where([
+                                                            'nom_doc_encabezado_id' => $registro->id
+                                                        ])->delete();
+        }
     }
 
 
@@ -289,7 +349,7 @@ class NomDocEncabezado extends Model
             $tabla .= '<td>' . $empleado->tercero->numero_identificacion . '</td>';
             $tabla .= '<td>' . $empleado->tercero->descripcion . '</td>';
             $tabla .= '<td>
-                                        <a class="btn btn-danger btn-sm" href="' . url('nom_eliminar_asignacion/registro_modelo_hijo_id/' . $fila['id'] . '/registro_modelo_padre_id/' . $registro_modelo_padre->id . '/id_app/' . Input::get('id') . '/id_modelo_padre/' . Input::get('id_modelo')) . '"><i class="fa fa-btn fa-trash"></i> </a>
+                                        <a class="btn btn-danger btn-sm" href="' . url( 'nom_eliminar_asignacion/registro_modelo_hijo_id/' . $fila['id'] . '/registro_modelo_padre_id/' . $registro_modelo_padre->id . '/id_app/' . Input::get('id') . '/id_modelo_padre/' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') ) . '"><i class="fa fa-btn fa-trash"></i> </a>
                                         </td>
                             </tr>';
         }
@@ -321,5 +381,41 @@ class NomDocEncabezado extends Model
         $registro_modelo_hijo_id = 'nom_contrato_id';
 
         return compact('nombre_tabla', 'nombre_columna1', 'registro_modelo_padre_id', 'registro_modelo_hijo_id');
+    }
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"nom_doc_registros",
+                                    "llave_foranea":"nom_doc_encabezado_id",
+                                    "mensaje":"Tienes registros de liquidación."
+                                },
+                            "1":{
+                                    "tabla":"nom_empleados_del_documento",
+                                    "llave_foranea":"nom_doc_encabezado_id",
+                                    "mensaje":"El documento tiene empleados asignados. Debe retirar primero a los empleados del documento."
+                                },
+                            "2":{
+                                    "tabla":"nom_libro_vacaciones",
+                                    "llave_foranea":"nom_doc_encabezado_id",
+                                    "mensaje":"El documento está relacionado en el Libro de vacaciones."
+                                },
+                            "3":{
+                                    "tabla":"nom_prestaciones_liquidadas",
+                                    "llave_foranea":"nom_doc_encabezado_id",
+                                    "mensaje":"El documento tiene registros de prestaciones liquidadas."
+                                }
+                        }';
+        $tablas = json_decode($tablas_relacionadas);
+        foreach ($tablas as $una_tabla) {
+            $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
+
+            if (!empty($registro)) {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
     }
 }

@@ -254,43 +254,14 @@ class ReciboCaja extends Model
                                         ->get()
                                         ->first();
 
-        $teso_motivo_id = (int)config('tesoreria.motivo_recibo_caja_id');
+        $comprobante->core_tercero_id = $movimiento->core_tercero_id;
+        $comprobante->save();
 
-        if ( explode("-", $datos['teso_medio_recaudo_id'])[1] == 'Efectivo' )
-        {
-            $comprobante->teso_cuenta_bancaria_id = 0;
-        }else{
-            $comprobante->teso_caja_id = 0;
-        }
-
-        $codigo_referencia_tercero = $movimiento->codigo_referencia_tercero;
-        if ( isset( $datos['vehiculo_id'] ) )
-        {
-            if ( $datos['vehiculo_id'] != '' )
-            {
-                $codigo_referencia_tercero = '{"ruta_modelo":"App\\\Contratotransporte\\\Vehiculo","registro_id":"'.$datos['vehiculo_id'].'"}';
-            }else {
-                $codigo_referencia_tercero = '';
-            }
-        }
-
-        if ( is_null($movimiento) )
-        {
-            TesoMovimiento::create(
-                                    $datos +  
-                                    [ 'teso_motivo_id' => $teso_motivo_id] +
-                                    [ 'codigo_referencia_tercero' => $codigo_referencia_tercero ] +
-                                    [ 'valor_movimiento' => $comprobante->valor_total ] +
-                                    [ 'estado' => 'Activo' ]
-                                );
-        }else{
-            $movimiento->update( 
-                                $datos + 
-                                [ 
-                                    'valor_movimiento' => $comprobante->valor_total * -1,
-                                    'codigo_referencia_tercero' => $codigo_referencia_tercero 
-                                ]
-                            );
-        }
+        $movimiento->update(
+                            [ 
+                                'documento_soporte' => $datos['documento_soporte'],
+                                'descripcion' => $datos['descripcion'] 
+                            ]
+                        );
     }
 }

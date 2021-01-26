@@ -13,27 +13,41 @@ class Profesor extends Model
 
     protected $fillable = ['empresa_id','name', 'email', 'password'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Perfil', 'Nombre', 'Email'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Email', 'Perfil'];
 
     public static function consultar_registros($nro_registros, $search)
     {
-        $registros = UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
-            ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
-            ->where(['roles.name' => 'Profesor'])
-            ->orWhere(['roles.name' => 'Director de grupo'])
-            ->select(
-                'roles.name AS campo1',
-                'users.name AS campo2',
-                'users.email As campo3',
-                'users.id AS campo4'
-            )
-            ->where("roles.name", "LIKE", "%$search%")
-            ->orWhere("users.name", "LIKE", "%$search%")
-            ->orWhere("users.email", "LIKE", "%$search%")
-            ->orderBy('users.created_at', 'DESC')
-            ->paginate($nro_registros);
+        if ( $search == '')
+        {
+            return UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
+                            ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
+                            ->where(['roles.name' => 'Profesor'])
+                            ->orWhere(['roles.name' => 'Director de grupo'])
+                            ->select(
+                                'users.name AS campo1',
+                                'users.email As campo2',
+                                'roles.name AS campo3',
+                                'users.id AS campo4'
+                            )
+                            ->orderBy('users.name')
+                            ->paginate($nro_registros);
+        }
 
-        return $registros;
+        return UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
+                        ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
+                        ->where(['roles.name' => 'Profesor'])
+                        ->orWhere(['roles.name' => 'Director de grupo'])
+                        ->select(
+                            'users.name AS campo1',
+                            'users.email As campo2',
+                            'roles.name AS campo3',
+                            'users.id AS campo4'
+                        )
+                        ->where("roles.name", "LIKE", "%$search%")
+                        ->orWhere("users.name", "LIKE", "%$search%")
+                        ->orWhere("users.email", "LIKE", "%$search%")
+                        ->orderBy('users.created_at', 'DESC')
+                        ->paginate($nro_registros);
     }
 
     public static function sqlString($search)

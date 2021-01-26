@@ -13,7 +13,6 @@
 
 	    {{Form::open(array('route'=>array('revision'),'method'=>'POST','class'=>'form-horizontal','id'=>'form-revisar'))}}
 
-
 			<div class="row" style="padding:5px;">
 				{{ Form::bsSelect('id_periodo','','Seleccionar periodo',$periodos,['required'=>'required']) }}
 			</div>

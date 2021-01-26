@@ -7,7 +7,7 @@
 <table border="0" width="100%">
 	<tr>
 		<td width="20%">
-			<img src="{{ $url }}" height="{{ config('configuracion.alto_logo_formatos') }}" />
+			<img src="{{ $url }}" height="{{ config('configuracion.alto_logo_formatos') }}" width="{{ config('configuracion.ancho_logo_formatos') }}" style="padding: 2px 10px;" />
 		</td>
 		<td>
 			<div style="font-size: 15px; text-align: center;">

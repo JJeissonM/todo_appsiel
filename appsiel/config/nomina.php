@@ -11,6 +11,7 @@
   'pago_salario_completo_en_incapacidades' => '0',
   'id_concepto_pagar_empresa_en_incapacidades' => '71',
   'concepto_vacaciones_dias_no_habiles' => '84',
+  'dias_calendario_por_dia_vacacion_legal' => '24.33',
   'agrupacion_calculo_ibc_salud' => '8',
   'agrupacion_calculo_ibc_parafiscales' => '7',
   'concepto_a_pagar_pasante_sena' => '77',

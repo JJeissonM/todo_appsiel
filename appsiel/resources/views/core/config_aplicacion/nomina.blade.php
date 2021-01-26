@@ -188,13 +188,20 @@
 									$concepto_vacaciones_dias_no_habiles = $parametros['concepto_vacaciones_dias_no_habiles'];
 								}
 							?>
-							{{ Form::bsSelect('concepto_vacaciones_dias_no_habiles', $concepto_vacaciones_dias_no_habiles, 'Concepto a pagar', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('concepto_vacaciones_dias_no_habiles', $concepto_vacaciones_dias_no_habiles, 'Concepto a pagar para días NO hábiles de vacaciones', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php
+								$dias_calendario_por_dia_vacacion_legal = 24.35; 
+								if( isset($parametros['dias_calendario_por_dia_vacacion_legal'] ) )
+								{
+									$dias_calendario_por_dia_vacacion_legal = $parametros['dias_calendario_por_dia_vacacion_legal'];
+								}
+							?>
+							{{ Form::bsText('dias_calendario_por_dia_vacacion_legal', $dias_calendario_por_dia_vacacion_legal, 'Días calendario por cada día de vacación legal', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

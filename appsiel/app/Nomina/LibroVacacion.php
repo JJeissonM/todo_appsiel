@@ -4,6 +4,8 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
+use DB;
+
 class LibroVacacion extends Model
 {
 	protected $table = 'nom_libro_vacaciones';
@@ -20,9 +22,10 @@ class LibroVacacion extends Model
 		return LibroVacacion::leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_libro_vacaciones.nom_contrato_id')
 			->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
 			->leftJoin('nom_doc_encabezados', 'nom_doc_encabezados.id', '=', 'nom_libro_vacaciones.nom_doc_encabezado_id')
-			->select(
+			->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_doc_encabezados.core_tipo_doc_app_id')
+            ->select(
 				'core_terceros.descripcion AS campo1',
-				'nom_doc_encabezados.descripcion AS campo2',
+				DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_doc_encabezados.consecutivo, " - ",nom_doc_encabezados.descripcion) AS campo2'),
 				'nom_libro_vacaciones.periodo_pagado_desde AS campo3',
 				'nom_libro_vacaciones.periodo_pagado_hasta AS campo4',
 				'nom_libro_vacaciones.periodo_disfrute_vacacion_desde AS campo5',
@@ -37,6 +40,7 @@ class LibroVacacion extends Model
 
 			->where("core_terceros.descripcion", "LIKE", "%$search%")
 			->orWhere("nom_doc_encabezados.descripcion", "LIKE", "%$search%")
+			->orWhere("core_tipos_docs_apps.prefijo", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.periodo_pagado_desde", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.periodo_pagado_hasta", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.periodo_disfrute_vacacion_desde", "LIKE", "%$search%")
@@ -55,9 +59,10 @@ class LibroVacacion extends Model
 		$string = LibroVacacion::leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_libro_vacaciones.nom_contrato_id')
 			->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
 			->leftJoin('nom_doc_encabezados', 'nom_doc_encabezados.id', '=', 'nom_libro_vacaciones.nom_doc_encabezado_id')
-			->select(
+			->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_doc_encabezados.core_tipo_doc_app_id')
+            ->select(
 				'core_terceros.descripcion AS EMPLEADO',
-				'nom_doc_encabezados.descripcion AS DOC_NÓMINA',
+				DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_doc_encabezados.consecutivo, " - ",nom_doc_encabezados.descripcion) AS DOCUMENTO'),
 				'nom_libro_vacaciones.periodo_pagado_desde AS PAGADA_DESDE',
 				'nom_libro_vacaciones.periodo_pagado_hasta AS PAGADA_HASTA',
 				'nom_libro_vacaciones.periodo_disfrute_vacacion_desde AS DISFRUTADA_DESDE',
@@ -71,6 +76,7 @@ class LibroVacacion extends Model
 
 			->where("core_terceros.descripcion", "LIKE", "%$search%")
 			->orWhere("nom_doc_encabezados.descripcion", "LIKE", "%$search%")
+			->orWhere("core_tipos_docs_apps.prefijo", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.periodo_pagado_desde", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.periodo_pagado_hasta", "LIKE", "%$search%")
 			->orWhere("nom_libro_vacaciones.periodo_disfrute_vacacion_desde", "LIKE", "%$search%")

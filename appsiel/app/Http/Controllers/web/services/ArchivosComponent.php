@@ -7,6 +7,7 @@ use App\web\Archivo;
 use App\web\Archivoitem;
 use App\web\Article;
 use App\web\Articlesetup;
+use App\web\Configuracionfuente;
 use Form;
 use Illuminate\Support\Facades\Input;
 
@@ -44,6 +45,13 @@ class ArchivosComponent implements IDrawComponent
                 'etiqueta' => 'Archivos'
             ]
         ];
+        $fuentes = Configuracionfuente::all();
+        $fonts = null;
+        if (count($fuentes) > 0) {
+            foreach ($fuentes as $f) {
+                $fonts[$f->id] = $f->fuente->font;
+            }
+        }
         $widget = $this->widget;
         $variables_url = '?id=' . Input::get('id');
         $archivo = Archivo::where('widget_id', $widget)->first();
@@ -51,6 +59,6 @@ class ArchivosComponent implements IDrawComponent
         if ($archivo != null) {
             $items = Archivoitem::where('archivo_id', $archivo->id)->orderBy('created_at', 'DESC')->get();
         }
-        return view('web.components.archivos', compact('miga_pan', 'variables_url', 'widget', 'archivo', 'items'));
+        return view('web.components.archivos', compact('miga_pan', 'fonts', 'variables_url', 'widget', 'archivo', 'items'));
     }
 }

@@ -32,7 +32,21 @@ class ContratoTransporteController extends Controller
         ];
         $hoy = getdate();
         $mes_actual = $hoy['mon'];
-        $cont = Contrato::all();
+
+        $cont = [];
+        $user = Auth::user();
+        if( $user->hasRole('Vehículo (FUEC)') )
+        {
+            $vehiculo = Vehiculo::where( 'placa', $user->email )->get()->first();
+            if (!is_null($vehiculo))
+            {
+                $cont = Contrato::where('vehiculo_id',$vehiculo->id)->get();
+            }
+                
+        }else{
+            $cont = Contrato::all();
+        }        
+
         $contratos = null;
         if (count($cont) > 0) {
             foreach ($cont as $c) {

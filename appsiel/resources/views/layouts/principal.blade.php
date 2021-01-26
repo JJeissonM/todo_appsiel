@@ -547,6 +547,9 @@
 
 			});
 
+			$('.enlace_dropdown').on('click',function(){
+				$('#div_cargando').show();
+			});
 
 			@yield('j_query')
 

@@ -1,5 +1,43 @@
 <?php
 
+if ( !function_exists('repetir_caracter') )
+{
+    
+    /* 
+        orientacion_relleno: 
+            derecha= completar con caracter de relleno hacia la derecha
+            izquierda= completar con caracter de relleno hacia la izquierda
+
+    */
+    function repetir_caracter( $valor_campo, $caracter_relleno, $orientacion_relleno, $longitud_campo )
+    {
+        $largo_campo = strlen($valor_campo);
+        $longitud_campo -= $largo_campo;
+        switch ( $orientacion_relleno)
+        {
+            case 'izquierda':
+                for ($i=0; $i < $longitud_campo; $i++)
+                {
+                    $valor_campo = $caracter_relleno . $valor_campo;
+                }
+                break;            
+            
+            case 'derecha':
+                for ($i=0; $i < $longitud_campo; $i++)
+                {
+                    $valor_campo = $valor_campo . $caracter_relleno;
+                }
+                break;
+            
+            default:
+                # code...
+                break;
+            
+        }
+
+        return $valor_campo;
+    }
+}
 
 if (! function_exists('generado_por_appsiel'))
 {

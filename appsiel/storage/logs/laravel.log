@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2021-01-21 12:42:52] production.ERROR: RuntimeException: No supported encrypter found. The cipher and / or key length are invalid. in C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Encryption\EncryptionServiceProvider.php:45
 Stack trace:
 #0 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Encryption\EncryptionServiceProvider.php(25): Illuminate\Encryption\EncryptionServiceProvider->getEncrypterForKeyAndCipher(NULL, 'AES-256-CBC')
@@ -769,3 +770,5 @@ Stack trace:
 #61 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #62 C:\xampp\htdocs\todo_appsiel\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #63 {main}  
+=======
+>>>>>>> 42ff3736671e9a75469c4e08e7dffc4f503867ef

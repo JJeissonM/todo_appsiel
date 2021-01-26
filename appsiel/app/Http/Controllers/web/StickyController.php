@@ -51,6 +51,8 @@ class StickyController extends Controller
         $s = Sticky::find($id);
         $s->posicion = $request->posicion;
         $s->ancho_boton = $request->ancho_boton;
+        $s->configuracionfuente_id = $request->configuracionfuente_id;
+
         $result = $s->save();
         $variables_url = $request->variables_url;
         if ($result) {

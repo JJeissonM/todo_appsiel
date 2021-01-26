@@ -89,4 +89,19 @@ class Configuracionfuente extends Model
     {
         return $this->hasMany(Galeria::class);
     }
+
+    public function archivos()
+    {
+        return $this->hasMany(Archivo::class);
+    }
+
+    public function stickies()
+    {
+        return $this->hasMany(Sticky::class);
+    }
+
+    public function pqrforms()
+    {
+        return $this->hasMany(PqrForm::class);
+    }
 }

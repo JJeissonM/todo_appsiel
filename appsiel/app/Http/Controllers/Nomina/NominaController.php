@@ -31,6 +31,7 @@ use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
 use App\Nomina\AgrupacionConcepto;
+use App\Nomina\ProgramacionVacacion;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
@@ -108,14 +109,39 @@ class NominaController extends TransaccionController
             $cant = count( $this->array_ids_modos_liquidacion_automaticos );
 
             for ( $i=0; $i < $cant; $i++ ) 
-            { 
+            {
+                /*if ( $this->esta_vacaciones( $empleado, $documento ) )
+                {
+                    continue;
+                }*/
+                
                 $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
             }
         }
 
         $this->actualizar_totales_documento($id);
 
-        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'flash_message','Liquidación realizada correctamente. Se procesaron '.$this->registros_procesados.' registros.' );
+        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message','Liquidación realizada correctamente. Se procesaron '.$this->registros_procesados.' registros.' );
+    }
+
+    public function esta_vacaciones( $empleado, $documento_nomina )
+    {
+        $lapso = $documento_nomina->lapso();
+
+        $programacion_vacaciones = ProgramacionVacacion::where( [
+                                                                    [ 'nom_contrato_id', '=', $empleado->id ],
+                                                                    [ 'tipo_novedad_tnl', '=', 'vacaciones' ],
+                                                                    [ 'fecha_inicial_tnl', '<=', $lapso->fecha_final ],
+                                                                    [ 'fecha_final_tnl', '>=', $lapso->fecha_final ]
+                                                                ] )
+                                                        ->get()
+                                                        ->first();
+        if ( is_null( $programacion_vacaciones ) )
+        {
+            return false;
+        }
+
+        return true;
     }
 
     /*
@@ -400,7 +426,7 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registros automáticos retirados correctamente.' );
+        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'mensaje_error','Registros automáticos retirados correctamente.' );
     }
 
     function actualizar_totales_documento($nom_doc_encabezado_id)
@@ -442,7 +468,7 @@ class NominaController extends TransaccionController
             $empleado->save();
         }            
 
-        return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Empleado AGREGADO correctamente al documento.');
+        return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )->with('flash_message', 'Empleado AGREGADO correctamente al documento.');
     }
 
     // ELIMINACIÓN DE UN CAMPO A UN MODELO

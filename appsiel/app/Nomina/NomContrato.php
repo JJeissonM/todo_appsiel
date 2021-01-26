@@ -156,6 +156,7 @@ class NomContrato extends Model
                 'entidad_salud.descripcion AS EPS',
                 'entidad_pension.descripcion AS AFP',
                 'entidad_cesantias.descripcion AS FONDO_CESANTIAS',
+                'entidad_cesantias.id AS ID',
                 'nom_contratos.estado AS ESTADO'
             )
             ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")

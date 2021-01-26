@@ -34,7 +34,7 @@
 
 <table class="table table-bordered">
     <tr>
-        <td colspan="2">
+        <td colspan="3">
             <b>Detalle: </b> &nbsp; {{ $encabezado_doc->descripcion }}
         </td>
     </tr>
@@ -44,6 +44,9 @@
         </td>
         <td>
             <b>Total Deducciones: </b> &nbsp; ${{ number_format( $encabezado_doc->total_deducciones, '0','.',',') }}
+        </td>
+        <td>
+            <b>Valor Neto: </b> &nbsp; ${{ number_format( $encabezado_doc->total_devengos - $encabezado_doc->total_deducciones, '0','.',',') }}
         </td>
     </tr>
 </table>

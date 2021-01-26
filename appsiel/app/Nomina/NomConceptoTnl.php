@@ -12,7 +12,9 @@ class NomConceptoTnl extends NomConcepto
 
     public static function opciones_campo_select()
     {
-        $opciones = NomConceptoTnl::where('estado','Activo')->where('modo_liquidacion_id', 7)->get();
+        $opciones = NomConceptoTnl::where('estado','Activo')
+                                    ->where('modo_liquidacion_id', 7)
+                                    ->get();
 
         $vec['']='';
         foreach ($opciones as $opcion)

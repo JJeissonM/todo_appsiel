@@ -4,6 +4,8 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
+use DB;
+
 class PrestacionesLiquidadas extends Model
 {
     protected $table = 'nom_prestaciones_liquidadas';
@@ -15,10 +17,11 @@ class PrestacionesLiquidadas extends Model
 	public static function consultar_registros($nro_registros, $search)
 	{
 	    return PrestacionesLiquidadas::leftJoin('nom_doc_encabezados','nom_doc_encabezados.id','=','nom_prestaciones_liquidadas.nom_doc_encabezado_id')
-	    							->leftJoin('nom_contratos','nom_contratos.id','=','nom_prestaciones_liquidadas.nom_contrato_id')
+	    							->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_doc_encabezados.core_tipo_doc_app_id')
+            						->leftJoin('nom_contratos','nom_contratos.id','=','nom_prestaciones_liquidadas.nom_contrato_id')
 	    							->leftJoin('core_terceros','core_terceros.id','=','nom_contratos.core_tercero_id')
 	    							->select(
-	    										'nom_doc_encabezados.descripcion AS campo1',
+	    										DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_doc_encabezados.consecutivo, " - ",nom_doc_encabezados.descripcion) AS campo1'),
 	    										'core_terceros.descripcion AS campo2',
 	    										'nom_prestaciones_liquidadas.fecha_final_promedios AS campo3',
 	    										'nom_prestaciones_liquidadas.id AS campo4')

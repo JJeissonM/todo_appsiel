@@ -73,11 +73,7 @@
                         $cantidad_horas = '';
                         if ( $registro->cantidad_horas != 0 )
                         {
-                            // 8: seguridad social
-                            if ( !in_array( $modo_liquidacion_id, [8] ) )
-                            {
-                                $cantidad_horas = $registro->cantidad_horas;
-                            }
+                            $cantidad_horas = $registro->cantidad_horas;
                         }
                     ?>
 
@@ -117,7 +113,7 @@
                 <tr>
                     <td colspan="4">
                         <b>Saldo a pagar: </b> 
-                        ${{ number_format( $total_a_pagar, 0, ',', '.') }} ( {{ NumerosEnLetras::convertir( $total_a_pagar, 'pesos', false ) }})
+                        <span style="font-size: 1.2em;"> ${{ number_format( $total_a_pagar, 0, ',', '.') }}</span> ( {{ NumerosEnLetras::convertir( $total_a_pagar, 'pesos', false ) }})
                     </td>
                 </tr>
             </tbody>

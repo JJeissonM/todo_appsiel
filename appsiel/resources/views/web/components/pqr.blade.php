@@ -1,74 +1,71 @@
 @extends('web.templates.main')
 
 @section('style')
-    <style>
-        .card-body {
-            padding: 0 !important;
-            overflow: hidden;
-        }
+<style>
+    .card-body {
+        padding: 0 !important;
+        overflow: hidden;
+    }
 
-        #wrapper {
-            overflow-y: scroll;
-            overflow-x: hidden;
-            width: 30%;
-            margin-right: 0;
-            padding: 5px;
-        }
+    #wrapper {
+        overflow-y: scroll;
+        overflow-x: hidden;
+        width: 30%;
+        margin-right: 0;
+        padding: 5px;
+    }
 
-        .list-group-item {
-            background-color: transparent;
-            font-size: 16px;
-        }
+    .list-group-item {
+        background-color: transparent;
+        font-size: 16px;
+    }
 
-        .list-group-item:hover {
-            background-color: #3d6983;
-            color: white;
-            cursor: pointer;
-        }
+    .list-group-item:hover {
+        background-color: #3d6983;
+        color: white;
+        cursor: pointer;
+    }
 
-        .widgets {
-            width: 70%;
-        }
+    .widgets {
+        width: 70%;
+    }
 
-        .widgets img {
-            width: 100%;
-            object-fit: cover;
-            height: 72.5vh;
-            max-width: 100%;
-        }
+    .widgets img {
+        width: 100%;
+        object-fit: cover;
+        height: 72.5vh;
+        max-width: 100%;
+    }
 
-        .widgets .card-body {
-            position: relative;
-        }
+    .widgets .card-body {
+        position: relative;
+    }
 
-        .activo {
+    .activo {}
 
-        }
+    .descripcion {
+        padding: 5px;
+    }
 
-        .descripcion {
-            padding: 5px;
-        }
+    .descripcion h5 {
+        color: black;
+        font-size: 16px;
+    }
 
-        .descripcion h5 {
-            color: black;
-            font-size: 16px;
-        }
+    .add {
+        margin-top: 20px;
+    }
 
-        .add {
-            margin-top: 20px;
-        }
+    .add a {
+        color: #1c85c4;
+    }
 
-        .add a {
-            color: #1c85c4;
-        }
-
-        #form_create label{
-            background: #ddd;
-            width: 100%;
-            margin-bottom: 5px;
-        }
-
-    </style>
+    #form_create label {
+        background: #ddd;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+</style>
 
 @endsection
 
@@ -77,54 +74,56 @@
 ?>
 
 @section('content')
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-                <h4>.:: En ésta Sección: {{$widget->seccion->nombre}} ::.</h4>
-            </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
+            <h4>.:: En ésta Sección: {{$widget->seccion->nombre}} ::.</h4>
         </div>
     </div>
-    <div class="card">
-        <div class="body d-flex justify-content-between flex-wrap">
-            <div id="wrapper">
+</div>
+<div class="card">
+    <div class="body d-flex justify-content-between flex-wrap">
+        <div id="wrapper">
 
-                <h4 class="column-title" style="padding: 10px;"> Configurar {{$widget->seccion->nombre}}</h4>
-                @if($registro != null)
-                    {{ Form::model($registro, ['url' => 'pqr_form/'.$registro->id, 'method' => 'PUT','id'=>'form_create','files' => true]) }}
-                    <?php
+            <h4 class="column-title" style="padding: 10px;"> Configurar {{$widget->seccion->nombre}}</h4>
+            @if($registro != null)
+            {{ Form::model($registro, ['url' => 'pqr_form/'.$registro->id, 'method' => 'PUT','id'=>'form_create','files' => true]) }}
+            <?php
                         $contenido_encabezado = $registro->contenido_encabezado;
                         $contenido_pie_formulario = $registro->contenido_pie_formulario;
                         $campos_mostrar = $registro->campos_mostrar;
                         $parametros = $registro->parametros;
                     ?>
-                @else
-                    {{ Form::open(['url'=>'pqr_form','id'=>'form_create','files' => true]) }}
-                    <?php
+            @else
+            {{ Form::open(['url'=>'pqr_form','id'=>'form_create','files' => true]) }}
+            <?php
                         $contenido_encabezado = '';
                         $contenido_pie_formulario = '';
                         $campos_mostrar = '';
                         $parametros = '';
                     ?>
-                @endif
+            @endif
 
-                <div class="form-group">
-                    <label for="contenido_encabezado" class="col-form-label">Contenido del encabezado</label>
-                    <textarea name="contenido_encabezado" class="form-control contenido" id="contenido_encabezado">{{$contenido_encabezado}}</textarea>
-                </div>
+            <div class="form-group">
+                <label for="contenido_encabezado" class="col-form-label">Contenido del encabezado</label>
+                <textarea name="contenido_encabezado" class="form-control contenido"
+                    id="contenido_encabezado">{{$contenido_encabezado}}</textarea>
+            </div>
 
 
-                <div class="form-group">
-                    <label for="contenido_pie_formulario" class="col-form-label">Contenido al pie del formulario</label>
-                    <textarea name="contenido_pie_formulario" class="form-control contenido" id="contenido_pie_formulario">{{$contenido_pie_formulario}}</textarea>
-                </div>
+            <div class="form-group">
+                <label for="contenido_pie_formulario" class="col-form-label">Contenido al pie del formulario</label>
+                <textarea name="contenido_pie_formulario" class="form-control contenido"
+                    id="contenido_pie_formulario">{{$contenido_pie_formulario}}</textarea>
+            </div>
 
-                <!-- ESTE CAMPO SE AMACENA EN FORMATO JSON EN EL CAMPO PARAMETROS DE LA TABLA PW_PQR_FORM -->
-                <div class="form-group">
-                    <label for="parametros" class="col-form-label">E-mail donde recibir mensajes</label>
-                    <input type="email" class="form-control" name="parametros" id="name" value="{{$parametros}}">
-                </div>
+            <!-- ESTE CAMPO SE AMACENA EN FORMATO JSON EN EL CAMPO PARAMETROS DE LA TABLA PW_PQR_FORM -->
+            <div class="form-group">
+                <label for="parametros" class="col-form-label">E-mail donde recibir mensajes</label>
+                <input type="email" class="form-control" name="parametros" id="name" value="{{$parametros}}">
+            </div>
 
-                <?php 
+            <?php 
                     $filas = '';
                     if ( $campos_mostrar != '' ) 
                     {
@@ -171,40 +170,58 @@
 
                     ?>
 
-                    {!! $tabla !!}
+            {!! $tabla !!}
 
-                    <input type="hidden" class="form-control" name="campos_mostrar" id="campos_mostrar" style="background:cyan;" value="{{$campos_mostrar}}" >
+            <input type="hidden" class="form-control" name="campos_mostrar" id="campos_mostrar" style="background:cyan;"
+                value="{{$campos_mostrar}}">
 
-                    <div class="form-group">
-                        <label for="campo_id" class="col-form-label">Seleccionar Campo</label>
-                        {{ Form::select( 'campo_id', $campos, null, ['class'=>'form-control','id'=>'campo_id'] ) }}
-                    </div>
-
-                    
-
-                    {{ Form::hidden('widget_id', $widget->id) }}
-                    {{ Form::hidden('url_id',Input::get('id')) }}
-
-                    <div class="form-group">
-                        <br/><br/>
-                        {{ Form::bsButtonsForm( 'paginas?id=' . Input::get('id') ) }}
-                    </div>
-                    
-                {{ Form::close() }}                
+            <div class="form-group">
+                <label for="campo_id" class="col-form-label">Seleccionar Campo</label>
+                {{ Form::select( 'campo_id', $campos, null, ['class'=>'form-control','id'=>'campo_id'] ) }}
             </div>
 
-            <div class="widgets" id="widgets" style="position: relative;">
-                <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
-                {!! Form::pqr( $registro, $pagina )!!}
+            {{ Form::hidden('widget_id', $widget->id) }}
+            {{ Form::hidden('url_id',Input::get('id')) }}
+
+            <div class="form-group">
+                <label for="">Fuente Para el Componente</label>
+                @if($fonts!=null)
+                {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control
+                select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                @endif
+            </div>
+            <div class="form-group">
+                <label>¿El fondo es Imagen o Color?</label>
+                <select type="select" class="form-control" id="tipo_fondo" required name="tipo_fondo"
+                    onchange="cambiar()">
+                    <option value="">-- Seleccione una opción --</option>
+                    <option value="IMAGEN">IMAGEN</option>
+                    <option value="COLOR">COLOR</option>
+                </select>
+            </div>
+            <div class="form-group" id="fondo_container">
             </div>
 
+            <div class="form-group">
+                <br /><br />
+                {{ Form::bsButtonsForm( 'paginas?id=' . Input::get('id') ) }}
+            </div>
+
+            {{ Form::close() }}
         </div>
+
+        <div class="widgets" id="widgets" style="position: relative;">
+            <h4 class="column-title" style="padding: 10px;">Vista Previa</h4>
+            {!! Form::pqr( $registro, $pagina )!!}
+        </div>
+
     </div>
+</div>
 @endsection
 
 @section('script')
-    <script type="text/javascript">
-        $(document).ready(function(){
+<script type="text/javascript">
+    $(document).ready(function(){
 
             $('#bs_boton_guardar').on('click',function(event){
                 event.preventDefault();
@@ -310,5 +327,37 @@
 
         });
 
-    </script>
+        function cambiar() {
+        $("#fondo_container").html("");
+        var f = $("#tipo_fondo").val();
+        var html = "<label>";
+        if (f == 'IMAGEN') {
+            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
+                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
+                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>";
+        } else if (f == 'COLOR') {
+            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+        } else {
+            html = "";
+        }
+        $("#fondo_container").html(html);
+    }
+
+    function cambiar2() {
+        $("#fondo_container2").html("");
+        var f = $("#tipo_fondo2").val();
+        var html = "<label>";
+        if (f == 'IMAGEN') {
+            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
+                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
+                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>";
+        } else if (f == 'COLOR') {
+            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+        } else {
+            html = "";
+        }
+        $("#fondo_container2").html(html);
+    }
+
+</script>
 @endsection
