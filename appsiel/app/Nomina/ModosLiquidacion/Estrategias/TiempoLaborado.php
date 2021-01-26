@@ -68,6 +68,8 @@ class TiempoLaborado implements Estrategia
 		}
 
 		$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+
+		//$horas_liquidadas_empleado -= $this->get_horas_vacaciones_fuera_lapso( $horas_liquidadas_empleado, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
 		
 		$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
 		
@@ -98,7 +100,8 @@ class TiempoLaborado implements Estrategia
         {   
             if ( !is_null($registro->concepto) )
             {
-                if ( $registro->concepto->forma_parte_basico )
+            	// 1:Tiempo laborado, 7:Tiempo NO laborado
+                if ( in_array($registro->concepto->modo_liquidacion_id, [1,7] ) )
                 {
                     $horas_liquidadas_empleado += $registro->cantidad_horas;
                 }
@@ -110,13 +113,10 @@ class TiempoLaborado implements Estrategia
 
 	/*
 		Las vacaciones en el lapso pudieron haber liquidado más tiempo del permitido en el documento
-		Sin embargo, se debe liquidar el salario de días que no son de vacaciones
-		Se dan varios casos:
-			1ro. Las vacaciones comienzan y terminan en el lapso ( Liquidar dias después de las vaciones)
-			2do. Las vacaciones comienzan en el lapso y terminan en un lapso posterior 
-			3ro. Las vacacaciones terminan en el lapso y comenzaron en el lapso anterior
+		Esto hace que se tomen horas liquidadas que en realidad se deben pagar
+		Por tanto se deben restar las horas de vacaciones fuera del lapso del documento
 	*/
-	public function get_horas_no_vacaciones_lapso( $horas_liquidadas_empleado, $documento_nomina, $empleado )
+	public function get_horas_vacaciones_fuera_lapso( $horas_liquidadas_empleado, $documento_nomina, $empleado )
 	{
 		$lapso = $documento_nomina->lapso();
 
