@@ -128,11 +128,13 @@ class Vacaciones implements Estrategia
 
         $this->set_periodo_causacion_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
 
+        $cantidad_dias_amortizar = $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $liquidacion['documento_nomina'] );
+
         if ( $liquidacion['almacenar_registros'] )
-        {
+        {    
             // Actualiza programación de vacaciones (TNL)
-            $programacion_vacaciones->cantidad_dias_amortizados += $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $liquidacion['documento_nomina'] );
-            $programacion_vacaciones->cantidad_dias_pendientes_amortizar -= $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $liquidacion['documento_nomina'] );
+            $programacion_vacaciones->cantidad_dias_amortizados += $cantidad_dias_amortizar;
+            $programacion_vacaciones->cantidad_dias_pendientes_amortizar -= $cantidad_dias_amortizar;
             $programacion_vacaciones->save();
 
             // Almacenar registro para los días no hábiles
@@ -145,7 +147,7 @@ class Vacaciones implements Estrategia
 
         return [
                     [
-                        'cantidad_horas' => $libro_vacaciones->dias_pagados * (int)config('nomina.horas_dia_laboral'), // pendiente
+                        'cantidad_horas' => $cantidad_dias_amortizar * (int)config('nomina.horas_dia_laboral'), // Se almacenan solo los días a amortizar, el resto del tiempo de vacaciones se almacenan en el documento siguiente de nómina
                         'valor_devengo' => $valores->devengo,
                         'valor_deduccion' => $valores->deduccion,
                         'novedad_tnl_id' => $this->novedad_id,

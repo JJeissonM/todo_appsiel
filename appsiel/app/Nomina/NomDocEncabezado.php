@@ -27,7 +27,7 @@ class NomDocEncabezado extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Descripción', 'Total devengos', 'Total deducciones', 'Estado'];
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"nomina/id_fila","cambiar_estado":"a_i/id_fila"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"nomina/id_fila","cambiar_estado":"a_i/id_fila","eliminar":"web_eliminar/id_fila"}';
 
     public function empresa()
     {
@@ -59,10 +59,13 @@ class NomDocEncabezado extends Model
         $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)->all();
 
         $horas_liquidadas = 0;
-        foreach ($registros_documento as $registro) {
-            if (!is_null($registro->concepto)) {
+        foreach ($registros_documento as $registro)
+        {
+            if (!is_null($registro->concepto))
+            {
                 // 7: Tiempo NO Laborado, 1: tiempo laborado
-                if (in_array($registro->concepto->modo_liquidacion_id, [1, 7])) {
+                if ( in_array($registro->concepto->modo_liquidacion_id, [1, 7]) )
+                {
                     $horas_liquidadas += $registro->cantidad_horas;
                 }
             }
@@ -378,5 +381,41 @@ class NomDocEncabezado extends Model
         $registro_modelo_hijo_id = 'nom_contrato_id';
 
         return compact('nombre_tabla', 'nombre_columna1', 'registro_modelo_padre_id', 'registro_modelo_hijo_id');
+    }
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"nom_doc_registros",
+                                    "llave_foranea":"nom_doc_encabezado_id",
+                                    "mensaje":"Tienes registros de liquidación."
+                                },
+                            "1":{
+                                    "tabla":"nom_empleados_del_documento",
+                                    "llave_foranea":"nom_doc_encabezado_id",
+                                    "mensaje":"El documento tiene empleados asignados. Debe retirar primero a los empleados del documento."
+                                },
+                            "2":{
+                                    "tabla":"nom_libro_vacaciones",
+                                    "llave_foranea":"nom_doc_encabezado_id",
+                                    "mensaje":"El documento está relacionado en el Libro de vacaciones."
+                                },
+                            "3":{
+                                    "tabla":"nom_prestaciones_liquidadas",
+                                    "llave_foranea":"nom_doc_encabezado_id",
+                                    "mensaje":"El documento tiene registros de prestaciones liquidadas."
+                                }
+                        }';
+        $tablas = json_decode($tablas_relacionadas);
+        foreach ($tablas as $una_tabla) {
+            $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
+
+            if (!empty($registro)) {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
     }
 }

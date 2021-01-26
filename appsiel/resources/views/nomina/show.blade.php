@@ -19,6 +19,7 @@
 
 	@if ( $encabezado_doc->estado == 'Activo' )
 		{{ Form::bsBtnEdit2('web/'.$id.'/edit?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
+		{{ Form::bsBtnEliminar('web_eliminar/'.$id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
 		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Liquidar', 'primary', 'cogs', 
 		          [ 
 		            ['link' => 'nomina/liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 

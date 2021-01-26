@@ -154,7 +154,7 @@ class NomDocRegistro extends Model
     {
         return NomDocRegistro::leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
             ->leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_doc_registros.nom_contrato_id')
-            ->whereIn('nom_conceptos.modo_liquidacion_id', [12,10]) // modo salud y fondo solidaridad
+            ->whereIn('nom_conceptos.modo_liquidacion_id', [12]) // Modo salud
             ->whereIn('nom_contratos.entidad_salud_id', $entidades)
             ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
             ->orderBy('nom_contratos.id')
@@ -165,7 +165,7 @@ class NomDocRegistro extends Model
     {
         return NomDocRegistro::leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')
             ->leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_doc_registros.nom_contrato_id')
-            ->where('nom_conceptos.modo_liquidacion_id', 13)
+            ->whereIn('nom_conceptos.modo_liquidacion_id', [13,10])// Modo pensión y Fondo solidaridad
             ->whereIn('nom_contratos.entidad_pension_id', $entidades)
             ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
             ->orderBy('nom_contratos.id')

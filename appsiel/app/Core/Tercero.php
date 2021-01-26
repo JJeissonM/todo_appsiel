@@ -86,9 +86,20 @@ class Tercero extends Model
             ->select(
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO'),
                 'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
+                'core_terceros.nombre1 AS PRIMER_NOMBRE',
+                'core_terceros.otros_nombres AS OTROS_NOMBRES',
+                'core_terceros.apellido1 AS APELLIDO_1',
+                'core_terceros.apellido2 AS APELLIDO_2',
                 'core_terceros.descripcion AS DESCRIPCIÓN',
-                'core_terceros.direccion1 AS DIRECCIÓN',
-                'core_terceros.telefono1 AS TELÉFONO'
+                'core_terceros.razon_social AS RAZON_SOCIAL',
+                'core_terceros.direccion1 AS DIRECCIÓN_1',
+                'core_terceros.direccion2 AS DIRECCIÓN_2',
+                'core_terceros.barrio AS BARRIO',
+                'core_terceros.telefono1 AS TELÉFONO_1',
+                'core_terceros.telefono2 AS TELÉFONO_2',
+                'core_terceros.email AS EMAIL',
+                'core_terceros.pagina_web AS PAGINA_WEB',
+                'core_terceros.estado AS ESTADO'
             )->where(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")

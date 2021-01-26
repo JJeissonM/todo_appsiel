@@ -120,17 +120,18 @@ class TiempoLaborado implements Estrategia
 	{
 		$lapso = $documento_nomina->lapso();
 
-		// Caso 1. Las vacacaciones comienzan y terminan en el lapso ( Liquidar dias después de las vaciones)
+		// Caso 1. Las vacacaciones comienzan y terminan en el lapso, ya están en horas_liquidadas_empleado
 		$this->vacaciones_programadas = ProgramacionVacacion::where([
 																['tipo_novedad_tnl','=','vacaciones'],
 																['nom_contrato_id','=',$empleado->id],
-																['fecha_inicial_tnl','>=',$lapso->fecha_inicial]
+																['fecha_inicial_tnl','>=',$lapso->fecha_inicial],
+																['fecha_final_tnl','<=',$lapso->fecha_final]
 															])
-														->whereBetween('fecha_final_tnl',[$lapso->fecha_inicial,$lapso->fecha_final])
 														->get()->first();
 		if ( !is_null($this->vacaciones_programadas) )
 		{
-			return $this->diferencia_en_dias_entre_fechas( $this->vacaciones_programadas->fecha_final_tnl, $lapso->fecha_final ) * self::CANTIDAD_HORAS_DIA_LABORAL;
+			//return $this->diferencia_en_dias_entre_fechas( $this->vacaciones_programadas->fecha_final_tnl, $lapso->fecha_final ) * self::CANTIDAD_HORAS_DIA_LABORAL;
+			return 0;
 		}
 
 
