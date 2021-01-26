@@ -177,7 +177,7 @@ $(document).ready(function(){
 		event.preventDefault();
 		var nombre_listado = $(this).attr('title');
 		var tT = new XMLSerializer().serializeToString(document.querySelector('table')); //Serialised table
-		var tF = nombre_listado + '.xls'; //Filename
+		var tF = nombre_listado + '.xlsx'; //Filename
 		var tB = new Blob([tT]); //Blub
 
 		if(window.navigator.msSaveOrOpenBlob){

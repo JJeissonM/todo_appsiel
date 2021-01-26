@@ -22,7 +22,7 @@
 }
 
 .btn-excel{
-    color: #326d3c !important;
+    color: #50B794 !important;
 }
 
 .btn-gmail > i{
@@ -43,7 +43,7 @@
 }
 
 .btn-excel:hover{
-    background-color: #326d3c !important;
+    background-color: #50B794 !important;
     color: #ffffff !important;
 }
 

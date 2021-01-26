@@ -5,7 +5,7 @@
 <input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
 
 <h3> Calificaciones </h3>
-<h4> Pase el mouse por encima de la nota para ver el detalle de la actividad calificada. </h4>
+<h4> Para ver detalles, ubique el cursor sobre la calificación. </h4>
 
 @if( $observacion_boletin->puesto != '' )
     <div>
