@@ -18,23 +18,6 @@ class TiempoLaborado implements Estrategia
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
-		// En el lapso del documento, pueden haber varios documentos en el mismo lapso
-		$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
-
-		$horas_liquidadas_empleado = $this->get_horas_no_vacaciones_lapso( $horas_liquidadas_empleado, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
-
-		// NO se puede liquidar más tiempo del que tiene el documento, a menos que haya conceptos de Vacaciones
-		if ( $horas_liquidadas_empleado >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
-		{
-			return [ 
-						[
-							'cantidad_horas' => 0,
-							'valor_devengo' => 0,
-							'valor_deduccion' => 0 
-						]
-					];
-		}
-
 		// Para salario integral
 		if ( ( (int)config('nomina.concepto_salario_integral') == $liquidacion['concepto']->id ) && !$liquidacion['empleado']->salario_integral )
 		{
@@ -84,7 +67,8 @@ class TiempoLaborado implements Estrategia
 					];
 		}
 
-
+		$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+		
 		$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
 		
 		$tiempo_a_liquidar = $this->get_tiempo_a_liquidar( $liquidacion['empleado'], $liquidacion['documento_nomina'], $horas_liquidadas_empleado );
@@ -102,7 +86,7 @@ class TiempoLaborado implements Estrategia
 
 	public function get_horas_ya_liquidadas_en_el_lapso_del_documento( $documento_nomina, $empleado )
 	{
-		// En el lapso del documento, pueden haber varios documentos en el mismo lapso
+		// En el lapso del documento, pueden haber varios documentos con tiempos liquidados
 		$lapso = $documento_nomina->lapso();
 		$registros_documento = NomDocRegistro::whereBetween( 'nom_doc_registros.fecha', [$lapso->fecha_inicial,$lapso->fecha_final] )
 													->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
@@ -190,19 +174,14 @@ class TiempoLaborado implements Estrategia
 			return 0;
 		}
 
-		if ( !is_null( $this->vacaciones_programadas ) )
-		{
-			return $horas_liquidadas_empleado;
-		}
-
-		// Caso 1: el contrato empieza dentro del lapso del documento
+		// Caso 1: el contrato empieza dentro del lapso del documento, se restan días desde el inicio del documento hasta que empieza el contrato
 		$tiempo_a_descontar_1 = 0;
 		if ( $empleado->fecha_ingreso >= $fecha_inicial && $empleado->fecha_ingreso <= $fecha_final )
 		{
 			$tiempo_a_descontar_1 = $this->diferencia_en_dias_entre_fechas( $fecha_inicial, $empleado->fecha_ingreso ) * self::CANTIDAD_HORAS_DIA_LABORAL;
 		}
 
-		// Caso 2: el contrato termina dentro del lapso del documento
+		// Caso 2: el contrato termina dentro del lapso del documento, se restan los días después de la fecha terminación del contrato
 		$tiempo_a_descontar_2 = 0;
 		if ( $empleado->contrato_hasta >= $fecha_inicial && $empleado->contrato_hasta <= $fecha_final )
 		{
