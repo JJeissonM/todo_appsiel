@@ -1,7 +1,7 @@
 <!-- Promedio de todos los periodos -->
 <input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
 
-<h3> Calificaciones periodo FINAL</h3>
+<h3> Calificaciones periodo final</h3>
 <h4> Las notas son calculadas con base en la nota final de los demás periodos. </h4>
 
 @if( $observacion_boletin->puesto != '' )

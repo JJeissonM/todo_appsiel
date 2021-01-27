@@ -70,12 +70,12 @@
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
-			
+
 			{{ Form::bsBtnExcel('calificaciones') }}
 
 			@if( config('calificaciones.permitir_imprimir_boletin_a_estudiantes') == 'Si' )
-				<a class="btn btn-primary btn-sm" id="btn_imprimir" target="_blank" style="display: none;">
-					<i class="fa fa-btn fa-print"></i> Imprimir
+				<a class="btn-gmail" id="btn_imprimir" target="_blank" style="display: none;" title="Imprimir">
+					<i class="fa fa-btn fa-print"></i>
 				</a>
 			@endif
 

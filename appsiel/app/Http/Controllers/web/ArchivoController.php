@@ -99,8 +99,11 @@ class ArchivoController extends Controller
     public function update(Request $request, $id)
     {
         $as = Archivo::find($id);
-        $tipo_fondo = $as->tipo_fondo;
+        $as->formato = $request->formato;
         $as->configuracionfuente_id = $request->configuracionfuente_id;
+        
+
+        $tipo_fondo = $as->tipo_fondo;        
         if ($request->tipo_fondo == '') {
             $as->tipo_fondo = $tipo_fondo;
         }

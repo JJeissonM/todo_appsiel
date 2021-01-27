@@ -1,6 +1,26 @@
+<style type="text/css">
+    
+    .gua thead tr{
+        background-color: white !important;         
+    }
 
-<div class="container-fluid">
-    <h1>Consulta de guías académicas</h1>
+    .gua th{
+        background-color: #64686d;
+        color: white !important;      
+        border: 2px solid white !important;
+        border-bottom: 4px solid #45474b !important;
+        border-radius: 4px 0 4px 0;
+    }
+
+    .gua tbody td{
+        text-align: center;
+        border: 2px solid white !important;
+    }
+
+</style>
+
+<div class="container">
+    <h1 class="my-2 text-center">Consulta de guías académicas</h1>
     <hr>
 
     <form class="form-inline" action="/action_page.php">
@@ -12,7 +32,7 @@
             </div> 
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-6">
 
             <div class="form-group">
                 {{ Form::Spin(32) }}
@@ -24,7 +44,7 @@
             </div>  
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-2">
             <button class="btn btn-primary" id="btn_consultar" >Consultar</button>
         </div>
 

@@ -76,7 +76,7 @@ if ($nav->fixed) {
         background-color: <?php echo $fondos['background_1']; ?> !important;
     }
 
-    li a:hover {
+    #myHeader .navbar-nav>li>a:hover {
         color: #FFF !important;
         background-color: <?php echo $fondos['background_1']; ?> !important;
         transition: all 0.5s;

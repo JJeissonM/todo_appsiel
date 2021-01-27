@@ -109,7 +109,7 @@
         }
 
         .carousel-control-prev{
-          justify-content: flex-end;
+          justify-content: flex-start;
           background: linear-gradient(to Left, rgba(255,255,255,0) 50%, rgba(219,219,219,1) 100%);
         }
         .carousel-control-next{
