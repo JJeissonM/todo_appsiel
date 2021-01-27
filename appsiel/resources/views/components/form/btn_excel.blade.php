@@ -1,1 +1,1 @@
-<a class="btn-gmail" id="btn_excel" style="display: none;" title="{{$nombre_listado}} - EXCEL"><i class="fa fa-file-excel-o"></i></a>
+<a class="btn-gmail btn-excel" id="btn_excel" style="display: none;" title="{{$nombre_listado}}"><i class="fa fa-file-excel-o"></i></a>
