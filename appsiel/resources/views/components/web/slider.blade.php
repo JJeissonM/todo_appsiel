@@ -48,13 +48,13 @@
             width: 100vw;
             /*transition: object-position 7s;
             object-position: 70% 50% !important;*/
-            animation: linear 5s infinite alternate example;
+            animation: linear 6s infinite alternate example;
         }
     }
 
     @keyframes example {
-        from {object-position: 30% 50% ;}
-        to {object-position: 70% 50% ;}
+        from {object-position: 0% 50% ;}
+        to {object-position: 100% 50% ;}
     }
 
     #main-slider .owl-prev{
