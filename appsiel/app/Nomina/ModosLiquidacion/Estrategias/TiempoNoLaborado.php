@@ -68,8 +68,6 @@ class TiempoNoLaborado implements Estrategia
 
 			$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
 
-				
-
 			$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
 
         	$valor_real_novedad = $this->calcular_valores_liquidar_novedad( $novedad, $liquidacion['empleado'], $liquidacion['documento_nomina'], $cantidad_horas_a_liquidar, $salario_x_hora );
