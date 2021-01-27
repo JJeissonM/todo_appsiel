@@ -23,19 +23,38 @@
     @media (max-width: 1440px){
         .owl-carousel img {
             height: 480px;
+            
         }
         #main-slider .item {
-            height: 484px;
+            height: 482px;
         }
     }
 
+    
+
+
     @media (max-width: 1024px){
         .owl-carousel img {
-            width: 100%;
+            width: 100vw;
+            /*object-position: 30% 50% !important;*/
         }
-        #main-slider .item {
-            width: 100%;
+        .owl-carousel img:after{
+            width: 100vw;
+            /*transition: object-position 7s;
+            object-position: 70% 50% !important;*/
         }
+
+        #image{
+            width: 100vw;
+            /*transition: object-position 7s;
+            object-position: 70% 50% !important;*/
+            animation: linear 5s infinite alternate example;
+        }
+    }
+
+    @keyframes example {
+        from {object-position: 30% 50% ;}
+        to {object-position: 70% 50% ;}
     }
 
     #main-slider .owl-prev{
@@ -82,7 +101,7 @@
                     </div>
                 </div>
             </div>
-           <img class="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">
+           <img id="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">
         </div>
         @endforeach
     </div>
