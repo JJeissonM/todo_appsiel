@@ -31,6 +31,7 @@ if ($nav->fixed) {
         z-index: 99999;
         top: 50px;*/
         width: 100%;
+        height: 70px;
     }
 
     .navegacion-font{
@@ -113,7 +114,7 @@ if ($nav->fixed) {
 ?>
 
 <header class="no" id="myHeader">
-    <div class="container">
+    <div class="container-fluid">
         <nav class="navbar navbar-expand-lg navbar-light {{ $clase_header }}" style="{{ $style }}" >
             <!-- mu-navbar  d-flex -->
 
