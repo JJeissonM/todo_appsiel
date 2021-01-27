@@ -1,6 +1,6 @@
-<h3 align="center">Guías Académicas para la asignatura "{{ $asignatura->descripcion }}" </h3>
+<h3 class="my-3" align="center">Guías Académicas para la asignatura "{{ $asignatura->descripcion }}" </h3>
 
-<div class="table-responsive">
+<div class="table-responsive gua">
 	<table class="table table-bordered table-striped" id="myTable">
 		{{ Form::bsTableHeader([ 'Fecha', 'Descripción', 'Semana académica', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Descargar']) }}
 		<tbody>

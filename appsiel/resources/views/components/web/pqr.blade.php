@@ -24,24 +24,33 @@
     #pqrform p{
         text-align: center;
     }
+
+    #pqrform .col-sm-9, #pqrform .col-md-9{
+        flex: 0 0 auto;
+        max-width: 100%;
+    }
+
 </style>
 
 <div id="pqrform" class="container-wrapper pqrform-font">
     <div class="container">
-        <div class="row" style="border-radius: 10px; background-color: white;">
-            <div class="col-md-12">
+        <div class="row justify-content-center py-5" style="border-radius: 10px; background-color: white;">
+            <div class="col-md-6">
 
                 @include('layouts.mensajes')
 
                 @if( !is_null($registro) )            
 
-                <div class="col-sm-9">
-                    {!! $registro->contenido_encabezado !!}
+                <div class="col-sm-9 py-3">
+
+                    <h2>{!! $registro->contenido_encabezado !!}</h2>
                  </div> 
 
                 {{ Form::open(['url'=>'pqr_form/enviar','id'=>'formulario_pqr','method'=>'PUT','files' => true]) }}
-
-                {!! $registro->get_lista_campos() !!}
+                 <div>
+                    {!! $registro->get_lista_campos() !!}
+                 </div>
+                
 
                 {{ Form::hidden('email_recepcion', $registro->parametros) }}
                 {{ Form::hidden('fecha_hora', date('Y-m-d h:i a') ) }}
@@ -54,8 +63,8 @@
 
                 {{ Form::close() }}
 
-                <div class="col-sm-9">
-                    {!! $registro->contenido_pie_formulario !!}
+                <div class="col-sm-9 py-3">
+                    <h2>{!! $registro->contenido_pie_formulario !!}</h2>                    
                  </div>                 
 
                 @endif
