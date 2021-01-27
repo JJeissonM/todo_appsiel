@@ -48,7 +48,14 @@
             width: 100vw;
             /*transition: object-position 7s;
             object-position: 70% 50% !important;*/
-            animation: linear 6s infinite alternate example;
+            animation: linear 7s infinite alternate example;
+        }
+
+        #image:hover{
+            width: 100vw;
+            /*transition: object-position 7s;
+            object-position: 70% 50% !important;*/
+            animation-play-state: paused;        
         }
     }
 
