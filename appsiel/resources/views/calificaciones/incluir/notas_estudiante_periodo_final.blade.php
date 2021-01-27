@@ -2,7 +2,40 @@
 <input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
 
 <h3> Calificaciones periodo final</h3>
-<h4> Las notas son calculadas con base en la nota final de los demás periodos. </h4>
+<p> Las notas son calculadas en base a la nota final de los periodos. </p>
+
+<br>
+
+
+<br>
+<?php
+
+    $escalas = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->get();
+
+    $tbody = '<table style="border: 1px solid; border_collapsed: collapsed; width:170px; font-size: 3.5mm;">
+                <tr>
+                    <td colspan="3" style="text-align:center;border: 1px solid; padding: 10px;">Escala de valoración
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">Desempeño</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">Calificación Mínima</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">Calificación Máxima</td>
+                </tr>';
+    foreach($escalas as $linea)
+    {
+        $tbody.='<tr>
+                    <td style="border: 1px solid; padding: 10px;">'.$linea->nombre_escala.'</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">'.number_format($linea->calificacion_minima,2,'.',',').'</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">'.number_format($linea->calificacion_maxima,2,'.',',').'</td>
+                </tr>';
+    }
+
+    $tbody.='</table>';
+    echo $tbody;
+?>
+
+<br><br>
 
 @if( $observacion_boletin->puesto != '' )
     <div>
@@ -14,13 +47,13 @@
 
     <table class="table table-striped tabla_registros" style="margin-top: -4px;">
         <thead>
-            <tr>
+            <tr style="font-size: 16px;">
                 <th> </th>
-                <th colspan="{{ count($periodos_del_anio_lectivo) }}"> Periodos </th>
+                <th colspan="{{ count($periodos_del_anio_lectivo) }}" style="text-align: center;"> Periodos </th>
                 <th> </th>
                 <th> </th>
             </tr>
-            <tr>
+            <tr style="font-size: 16px;">
                 <th>
                    Asignatura
                 </th>
@@ -40,9 +73,9 @@
                     //dd( $fila->periodos );
                 ?>
                 <tr class="fila-{{$j}}" >
-                    <td>{{ $fila->asignatura->descripcion }}</td>
+                    <td style="font-size: 16px;">{{ $fila->asignatura->descripcion }}</td>
                     @foreach( $fila->periodos as $un_periodo )
-                        <td> {{ number_format( $un_periodo->calificacion, 2, ',', '.') }} </td>
+                        <td> {{ number_format( $un_periodo->calificacion, 2, '.', ',') }} </td>
                     @endforeach                    
                     <td> {{ $fila->escala_valoracion_periodo_final }} </td>
                     <td>
@@ -74,31 +107,3 @@
         <div class="well"> {{ $observacion_boletin->observacion }} </div>
     </div>
 </div>
-
-<br>
-<?php
-
-    $escala = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->get();
-
-    $tbody = '<table style="border: 1px solid; border_collapsed: collapsed; width:170px; font-size: 3.5mm;">
-                <tr>
-                    <td colspan="3" style="text-align:center;border: 1px solid;">Escala de valoración
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align:center;border: 1px solid;">Desempeño</td>
-                    <td style="text-align:center;border: 1px solid;">Mín.</td>
-                    <td style="text-align:center;border: 1px solid;">Máx.</td>
-                </tr>';
-    foreach($escala as $linea)
-    {
-        $tbody.='<tr>
-                    <td style="border: 1px solid;">'.$linea->nombre_escala.'</td>
-                    <td style="text-align:center;border: 1px solid;">'.$linea->calificacion_minima.'</td>
-                    <td style="text-align:center;border: 1px solid;">'.$linea->calificacion_maxima.'</td>
-                </tr>';
-    }
-
-    $tbody.='</table>';
-    echo $tbody;
-?>
