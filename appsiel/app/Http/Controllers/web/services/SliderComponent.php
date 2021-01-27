@@ -34,6 +34,9 @@ class SliderComponent implements IDrawComponent
                 case 'BOOTSTRAP':
                     return Form::sliderbootstrap($slider);
                     break;
+                case 'APPSIEL':
+                    return Form::sliderappsiel($slider);
+                    break;
             }
         }
     }

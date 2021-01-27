@@ -103,6 +103,7 @@
                     <option value="DEFAULT">SLIDER POR DEFECTO</option>
                     <option value="PREMIUM">SLIDER PREMIUM</option>
                     <option value="BOOTSTRAP">SLIDER BOOTSTRAP</option>
+                    <option value="APPSIEL">SLIDER APPSIEL</option>
                 </select>
             </div>
             <div class="form-group">
