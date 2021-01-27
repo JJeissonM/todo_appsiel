@@ -3,10 +3,10 @@
         <tr>
             <th> Documento </th>
             <th> Fecha </th>
-            <th> Fecha vencimiento </th>
-            <th> Valor Documento </th>
-            <th> Valor pagado </th>
-            <th> Saldo pendiente </th>
+            <th> Fecha <br> vencimiento </th>
+            <th> Valor <br> Documento </th>
+            <th> Valor <br> pagado </th>
+            <th> Saldo <br> pendiente </th>
         </tr>
     </thead>
     <tbody>

@@ -36,6 +36,30 @@ class NovedadTnl extends Model
 
 	public static function consultar_registros($nro_registros, $search)
 	{
+		if ( $search == '' )
+		{
+			return NovedadTnl::leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_novedades_tnl.nom_concepto_id')
+						->leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_novedades_tnl.nom_contrato_id')
+						->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+						->where("nom_novedades_tnl.tipo_novedad_tnl", "<>", "vacaciones")
+						->select(
+							'nom_conceptos.descripcion AS campo1',
+							'core_terceros.descripcion AS campo2',
+							'nom_novedades_tnl.tipo_novedad_tnl AS campo3',
+							'nom_novedades_tnl.origen_incapacidad AS campo4',
+							'nom_novedades_tnl.fecha_inicial_tnl AS campo5',
+							'nom_novedades_tnl.fecha_final_tnl AS campo6',
+							'nom_novedades_tnl.cantidad_dias_tnl AS campo7',
+							'nom_novedades_tnl.cantidad_dias_amortizados AS campo8',
+							'nom_novedades_tnl.cantidad_dias_pendientes_amortizar AS campo9',
+							'nom_novedades_tnl.observaciones AS campo10',
+							'nom_novedades_tnl.estado AS campo11',
+							'nom_novedades_tnl.id AS campo12'
+						)
+						->orderBy('nom_novedades_tnl.created_at', 'DESC')
+						->paginate($nro_registros);
+		}
+		
 		return NovedadTnl::leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_novedades_tnl.nom_concepto_id')
 			->leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_novedades_tnl.nom_contrato_id')
 			->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')

@@ -9,6 +9,8 @@ use Carbon\Carbon;
 
 use App\Nomina\NovedadTnl;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\LibroVacacion;
+use App\Nomina\ProgramacionVacacion;
 
 class TiempoNoLaborado implements Estrategia
 {
@@ -42,8 +44,9 @@ class TiempoNoLaborado implements Estrategia
 		$valores_novedades = [];
         foreach( $novedades as $novedad )
         {			
-			// NO se puede liquidar más tiempo del que tiene el documento
-			if ( $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado']->core_tercero_id ) >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
+			// NO se puede liquidar más tiempo del que tiene el documento en el lapso
+			$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+			if ( $horas_liquidadas_empleado >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
 			{
 				continue;
 			}
@@ -64,6 +67,8 @@ class TiempoNoLaborado implements Estrategia
 			}
 
 			$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
+
+				
 
 			$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
 
@@ -99,6 +104,33 @@ class TiempoNoLaborado implements Estrategia
                                 	];
         }
         return $valores_novedades;
+	}
+
+
+
+	public function get_horas_ya_liquidadas_en_el_lapso_del_documento( $documento_nomina, $empleado )
+	{
+		// En el lapso del documento, pueden haber varios documentos con tiempos liquidados
+		$lapso = $documento_nomina->lapso();
+		$registros_documento = NomDocRegistro::whereBetween( 'nom_doc_registros.fecha', [$lapso->fecha_inicial,$lapso->fecha_final] )
+													->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
+													->get();
+
+		$horas_liquidadas_empleado = 0; 
+        
+        foreach ($registros_documento as $registro )
+        {   
+            if ( !is_null($registro->concepto) )
+            {
+            	// 1:Tiempo laborado, 7:Tiempo NO laborado
+                if ( in_array($registro->concepto->modo_liquidacion_id, [1,7] ) )
+                {
+                    $horas_liquidadas_empleado += $registro->cantidad_horas;
+                }
+            }
+        }
+
+        return $horas_liquidadas_empleado;
 	}
 
 	public function calcular_valores_liquidar_novedad( &$novedad, $empleado, $documento_nomina, $cantidad_horas_a_liquidar, $salario_x_hora )
@@ -267,7 +299,7 @@ class TiempoNoLaborado implements Estrategia
 			return $novedad->cantidad_horas_tnl;
 		}
 
-		// Caso 2: Liquidar una parte del tiempo de la novedad, el tiempo restante queda para el siguiente documento
+		// Caso 2: Liquidar una parte del tiempo de la novedad, el tiempo restante queda para siguiente(s) documento(s)
 		if ( $fecha_ini_novedad >= $fecha_ini_documento && $fecha_ini_novedad < $fecha_fin_documento && $fecha_fin_novedad > $fecha_fin_documento )
 		{
 			$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $novedad->fecha_inicial_tnl, $lapso_documento->fecha_final );
@@ -305,22 +337,27 @@ class TiempoNoLaborado implements Estrategia
 		
 		if( is_null( $novedad ) )
 		{
-			dd( [ 'TiempoNoLaborado Novedad NULL', $registro] );
+			dd( [ 'Class TiempoNoLaborado@retirar(), $registro->novedad_tnl = NULL', $registro] );
 		}
-		
-		if( $novedad->tipo_novedad_tnl == 'vacaciones' )
+
+		// Se elimina cuando solo hay Amortización de tiempo (no dinero) de vacaciones 
+		if( $novedad->tipo_novedad_tnl == 'vacaciones')
 		{
-			return 0;
+			if ( $registro->valor_devengo > 1 ) // Vacaciones en dinero
+			{
+				return 0;
+			}
 		}
 
 		if( is_null( $registro->contrato ) )
 		{
-			dd( [ 'TiempoNoLaborado Contrato NULL', $registro] );
+			dd( [ 'TiempoNoLaborado@retirar(), $registro->contrato = NULL', $registro] );
 		}
 
 		$lapso_documento = $registro->encabezado_documento->lapso();
 		$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
 
+		// Para todas las novedades
 		if ( $registro->nom_concepto_id != (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades')  )
 		{
 			$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;

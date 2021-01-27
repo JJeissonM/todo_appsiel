@@ -172,7 +172,7 @@ class NomDocRegistro extends Model
             ->get();
     }
 
-
+    // PARA UN SOLO REGISTRO
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
 
@@ -318,8 +318,15 @@ class NomDocRegistro extends Model
 
     public function update_adicional($datos, $id)
     {
-        if (($datos['valor_devengo'] + $datos['valor_deduccion'] + $datos['cantidad_horas']) == 0) {
-            NomDocRegistro::find($id)->delete();
+        $registro = NomDocRegistro::find($id);
+        if ( ($datos['valor_devengo'] + $datos['valor_deduccion'] + $datos['cantidad_horas'] ) == 0)
+        {
+            $documento = $registro->encabezado_documento;
+            $documento->total_devengos = NomDocRegistro::where('nom_doc_encabezado_id',$documento->id)->sum('valor_devengo');
+            $documento->total_deducciones = NomDocRegistro::where('nom_doc_encabezado_id',$documento->id)->sum('valor_deduccion');
+            $documento->save();
+
+            $registro->delete();
         }
     }
 }

@@ -133,6 +133,11 @@ class NomDocEncabezado extends Model
         {
             $dia_inicio = '16';
             $dia_fin = '30';
+            // Mes de febrero
+            if ($array_fecha[1] == '02')
+            {
+                $dia_fin = '28';
+            }
         }
 
         // Liquidación un mes
@@ -140,13 +145,12 @@ class NomDocEncabezado extends Model
         {
             $dia_inicio = '01';
             $dia_fin = '30';
-        }
-
-        // Mes de febrero
-        if ($array_fecha[1] == '02')
-        {
-            $dia_fin = '28';
-        }
+            // Mes de febrero
+            if ($array_fecha[1] == '02')
+            {
+                $dia_fin = '28';
+            }
+        }            
 
         return (object)[
                             'fecha_inicial' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_inicio,

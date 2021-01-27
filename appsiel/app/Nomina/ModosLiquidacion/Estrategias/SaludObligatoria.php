@@ -26,8 +26,12 @@ class SaludObligatoria implements Estrategia
 		// Cada concepto de Seguridad social se debe liquidar al final, porque se usan los valores de otros conceptos para calcular su valor
 
         // Un concepto de seguridad social tiene una agrupación de conceptos para el cálculo de su valor; se deben suman los valores liquidados de cada concepto de su Agrupación para cálculo
-
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $liquidacion['concepto']->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
+
+        $tiempo_a_liquidar =  NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+                                            ->where( 'nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
+                                            ->where( 'core_tercero_id', $liquidacion['empleado']->core_tercero_id )
+                                            ->sum('cantidad_horas');
 
         // Ingreso Base Cotización
         $total_ibc_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
@@ -44,11 +48,9 @@ class SaludObligatoria implements Estrategia
 
         $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza,  $total_IBC * $liquidacion['concepto']->porcentaje_sobre_basico / 100 );
 
-        $tiempo_a_liquidar =  NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
-                                            ->where( 'core_tercero_id', $liquidacion['empleado']->core_tercero_id )
-                                            ->sum('cantidad_horas');
-
+                                            if ( $liquidacion['empleado']->id == 76 ) {
+                                                dd([$tiempo_a_liquidar,$total_ibc_devengos, $total_ibc_deducciones,$total_IBC]);
+                                            }
         return [ 
                     [
                         'cantidad_horas' => $tiempo_a_liquidar,

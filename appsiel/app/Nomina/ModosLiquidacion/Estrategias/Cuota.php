@@ -10,6 +10,12 @@ class Cuota implements Estrategia
 {
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
+        // Si no hay tiempos liquidados en el documento, no liquida cuotas
+        if ( $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado']->core_tercero_id ) == 0 )
+        {
+            return [];
+        }
+
         $cuotas = NomCuota::where( [
                                     ['estado', '=', 'Activo'],
                                     ['core_tercero_id','=', $liquidacion['empleado']->core_tercero_id],

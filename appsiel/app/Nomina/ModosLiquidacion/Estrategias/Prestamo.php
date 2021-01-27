@@ -10,6 +10,13 @@ class Prestamo implements Estrategia
 {
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
+
+        // Si no hay tiempos liquidados en el documento, no liquida préstamos
+        if ( $liquidacion['documento_nomina']->horas_liquidadas_empleado( $liquidacion['empleado']->core_tercero_id ) == 0 )
+        {
+            return [];
+        }
+
 		$prestamos = NomPrestamo::where( [
                                             ['estado', '=', 'Activo'],
                                             ['core_tercero_id','=', $liquidacion['empleado']->core_tercero_id],
