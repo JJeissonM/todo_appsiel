@@ -25,7 +25,6 @@ class PqrFormController extends Controller
         if ($request->tipo_fondo == '') {
             return redirect(url('seccion/' . $request->widget_id) . $request->variables_url)->with('mensaje_error', 'Debe indicar el tipo de fondo a usar en el componente.');
         }
-
         $registro = PqrForm::create($request->all());
 
         if ($request->tipo_fondo == 'IMAGEN') {
@@ -42,7 +41,7 @@ class PqrFormController extends Controller
                     ->with('mensaje_error', $message);
             }
         }
-
+        
         return redirect('seccion/' . $request->widget_id . '?id=' . $request->url_id)->with('flash_message', 'Sección almacenada correctamente.');
     }
 
@@ -52,9 +51,15 @@ class PqrFormController extends Controller
             return $this->enviar_formulario($request);
         }
 
+        //dd($request);
         $registro = PqrForm::find($id);
         $tipo_fondo = $registro->tipo_fondo;
+        $registro->campos_mostrar = $request->campos_mostrar;
+        $registro->contenido_encabezado = $request->contenido_encabezado;
+        $registro->contenido_pie_formulario = $request->contenido_pie_formulario;
+        $registro->parametros = $request->parametros;
         $registro->configuracionfuente_id = $request->configuracionfuente_id;
+
         if ($request->tipo_fondo == '') {
             $registro->tipo_fondo = $tipo_fondo;
         }
@@ -82,9 +87,18 @@ class PqrFormController extends Controller
                 $registro->tipo_fondo = "COLOR";
             }
         }
-        $registro->save();
+        //dd($registro);
+        $result = $registro->save();
+        $variables_url = $request->variables_url;
+        if ($result) {
+            $message = 'La configuración de la sección fue modificada correctamente.';
+            return redirect('seccion/' . $request->widget_id . $variables_url)->with('flash_message', $message);
+        } else {
+            $message = 'La configuración no pudo ser modificada, intente mas tarde.';
+            return redirect('seccion/' . $request->widget_id . $variables_url)->with('flash_message', $message);
+        }
 
-        return redirect('seccion/' . $request->widget_id . '?id=' . $request->url_id)->with('flash_message', 'Sección actualizada correctamente.');
+        //return redirect('seccion/' . $request->widget_id . '?id=' . $request->url_id)->with('flash_message', 'Sección actualizada correctamente.');
     }
 
 

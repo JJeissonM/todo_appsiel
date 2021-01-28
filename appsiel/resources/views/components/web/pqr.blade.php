@@ -32,22 +32,22 @@
 
 </style>
 
-<div id="pqrform" class="container-wrapper pqrform-font">
-    <div class="container">
-        <div class="row justify-content-center py-5" style="border-radius: 10px; background-color: white;">
-            <div class="col-md-6">
+<div id="pqrform" class="container-wrapper pqrform-font p-md-5 p-sm-2">
+    <div class="container-fluid">
+        <div class="row justify-content-center py-5" style="border-radius: 10px; background-color: white; ">
+            <div class="col-md-6" style="max-width: 800px;">
 
                 @include('layouts.mensajes')
 
                 @if( !is_null($registro) )            
 
-                <div class="col-sm-9 py-3">
+                <div class="col-sm-9 section-header">
 
-                    <h2>{!! $registro->contenido_encabezado !!}</h2>
+                    <h2 class="text-center section-title pqrform-font">{!! $registro->contenido_encabezado !!}</h2>
                  </div> 
 
                 {{ Form::open(['url'=>'pqr_form/enviar','id'=>'formulario_pqr','method'=>'PUT','files' => true]) }}
-                 <div>
+                 <div class="pqrform-font">
                     {!! $registro->get_lista_campos() !!}
                  </div>
                 
@@ -64,7 +64,7 @@
                 {{ Form::close() }}
 
                 <div class="col-sm-9 py-3">
-                    <h2>{!! $registro->contenido_pie_formulario !!}</h2>                    
+                    <h2 class="pqrform-font ">{!! $registro->contenido_pie_formulario !!}</h2>                    
                  </div>                 
 
                 @endif
@@ -76,7 +76,7 @@
 
 <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
 <script type="text/javascript">
-    document.getElementById('email').attributes[4].value = "email";
+    //document.getElementById('email').value = "email";
 
         function enviar_form( btn )
         {
