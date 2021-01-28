@@ -27,6 +27,7 @@ Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/
 Route::post('nom_liquidar_prestaciones_sociales', 'Nomina\PrestacionesSocialesController@liquidacion');
 Route::get('nom_retirar_prestaciones_sociales/{doc_encabezado_id}/{prestaciones}', 'Nomina\PrestacionesSocialesController@retirar_liquidacion');
 Route::get('nom_prestaciones_liquidadas_show/{registro_id}', 'Nomina\PrestacionesSocialesController@prestaciones_liquidadas_show');
+Route::get('nom_pdf_prestaciones_liquidadas/{registro_id}', 'Nomina\PrestacionesSocialesController@pdf_prestaciones_liquidadas');
 
 
 // RETEFUENTE

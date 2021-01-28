@@ -308,10 +308,10 @@ class PrestacionesSocialesController extends TransaccionController
 
         $miga_pan = MigaPan::get_array($aplicacion, $modelo, $documento_nomina->descripcion);
 
-        return view( 'nomina.prestaciones_sociales.show_prestaciones_liquidadas', compact('miga_pan','vista','documento_nomina') );
+        return view( 'nomina.prestaciones_sociales.show_prestaciones_liquidadas', compact('miga_pan','vista','documento_nomina','id') );
     }
 
-    public function generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas )
+    public function generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas, $tipo_vista = 'show' )
     {
         $vista = '';
         foreach ($prestaciones_liquidadas as $linea)
@@ -319,10 +319,32 @@ class PrestacionesSocialesController extends TransaccionController
             $prestacion = $linea->prestacion;
             $tabla_resumen = (array)$linea->tabla_resumen;
             
-            $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen') )->render();
+            $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen' ) )->render();
+
+            if ( $tipo_vista = 'imprimir' )
+            {
+                $vista .= '<div class="page-break"></div>';
+            }
         }
 
         return $vista;
+    }
+
+    public function pdf_prestaciones_liquidadas( $id )
+    {
+        $registro = PrestacionesLiquidadas::find( $id );
+        $documento_nomina = NomDocEncabezado::find( $registro->nom_doc_encabezado_id );
+        $empleado = NomContrato::find($registro->nom_contrato_id);
+        $prestaciones_liquidadas = json_decode( $registro->prestaciones_liquidadas );
+
+        $vista = $this->generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas, 'imprimir' );
+
+        $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
+        $orientacion='landscape';
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
+
+        return $pdf->stream('pdf_listado_vacaciones_pendientes.pdf');
     }
     
 }
