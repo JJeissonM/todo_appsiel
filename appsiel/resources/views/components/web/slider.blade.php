@@ -30,7 +30,19 @@
         }
     }
 
-    
+    @media (max-width: 769px){
+        #main-slider .owl-next,
+        #main-slider .owl-prev{
+            top: 25%;
+        } 
+    }
+
+    @media @media (min-width: 768px) and (max-width: 1024px){
+        #main-slider .owl-next,
+        #main-slider .owl-prev{
+            top: 40%;
+        } 
+    }
 
 
     @media (max-width: 1024px){

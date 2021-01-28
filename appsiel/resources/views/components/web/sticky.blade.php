@@ -40,14 +40,17 @@
         /* Establecemos una transición a todas las propiedades */
     }
 
-    .social ul li a:hover {
-        background: #000;
+    .social ul li a:hover {        
         /* Cambiamos el fondo cuando el usuario pase el mouse */
         @if($sticky !=null) @if($sticky->posicion=='DERECHA') transform: scale(1.4);
         @else transform: scale(1.4);
-        @endif @endif
+        @endif 
+        @endif
         /* Hacemos mas grande el espacio cuando el usuario pase el mouse */
     }
+
+        
+
 </style>
 
 <div class="social stickies-font">
@@ -58,7 +61,7 @@
         <li>
             <a @if($b->texto!=null) data-toggle="tooltip" data-placement="right" title="{{$b->texto}}" @endif
                 @if($b->enlace!=null) href="{{$b->enlace}}" @endif target="_blank" style="background-color:
-                {{$b->color}};"> @if($b->icono!=null) <i class="fa fa-{{$b->icono}}"></i> @endif
+                {{$b->color}}; opacity: {{$b->alpha/10}}"> @if($b->icono!=null) <i class="fa fa-{{$b->icono}}"></i> @endif
                 @if($b->imagen!=null)
                 <img style="width: 100px; max-height: 100px;" src="{{ asset('docs/'.$b->imagen)}}" />
                 @endif

@@ -23,6 +23,13 @@
         height: auto !important;
     }
 
+    @media (max-width: 500px){
+        #main-slider .owl-next,
+        #main-slider .owl-prev{
+            top: 20%;
+        } 
+    }
+
     @media (max-width: 769px){
         #main-slider .owl-next,
         #main-slider .owl-prev{
