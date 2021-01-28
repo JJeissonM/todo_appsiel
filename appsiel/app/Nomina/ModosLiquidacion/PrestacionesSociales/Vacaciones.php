@@ -357,7 +357,7 @@ class Vacaciones implements Estrategia
         $fecha_inicial = $anio_inicial . '-' . $mes_inicial . '-' . $dia_inicial;
 
         $diferencia = $this->diferencia_en_dias_entre_fechas( $fecha_inicial, $empleado->fecha_ingreso );
-        //dd( [ $fecha_inicial, $empleado->fecha_ingreso, $diferencia]);
+
         // si la fecha_inicial es menor que la fecha_ingreso del empleado, la fecha inicial debe ser la del contrato
         if ( $diferencia > 0 )
         {
@@ -492,11 +492,6 @@ class Vacaciones implements Estrategia
     public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
     {
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
-
-        /*$cantidad_horas_laboradas = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'cantidad_horas' );*/
 
         $cantidad_horas_laboradas = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
                                             ->where( 'nom_conceptos.forma_parte_basico', 1 )

@@ -85,7 +85,7 @@ class Cesantias implements Estrategia
         $valor_base_diaria = 0;
         $valor_base_diaria_sueldo = 0;
 
-        $fecha_inicial = $this->get_fecha_inicial_promedios( $fecha_final, $parametros_prestacion->cantidad_meses_a_promediar );
+        $fecha_inicial = $this->get_fecha_inicial_promedios( $fecha_final, $parametros_prestacion->cantidad_meses_a_promediar, $empleado );
         if ( $fecha_inicial < $empleado->fecha_ingreso)
         {
             $fecha_inicial = $empleado->fecha_ingreso;
@@ -216,7 +216,7 @@ class Cesantias implements Estrategia
         return ( $total_devengos - $total_deducciones );
     }
 
-    public function get_fecha_inicial_promedios( $fecha_final, $cantidad_meses_a_promediar )
+    public function get_fecha_inicial_promedios( $fecha_final, $cantidad_meses_a_promediar, $empleado )
     {
         $vec_fecha_documento = explode("-", $fecha_final);
         
@@ -245,7 +245,17 @@ class Cesantias implements Estrategia
         $mes_inicial = $this->formatear_numero_a_texto_dos_digitos( $mes_inicial );
         $anio_inicial =  $this->formatear_numero_a_texto_dos_digitos( $anio_inicial );
 
-        return ( $anio_inicial . '-' . $mes_inicial . '-' . $dia_inicial );
+        $fecha_inicial = $anio_inicial . '-' . $mes_inicial . '-' . $dia_inicial;
+
+        $diferencia = $this->diferencia_en_dias_entre_fechas( $fecha_inicial, $empleado->fecha_ingreso );
+        
+        // si la fecha_inicial es menor que la fecha_ingreso del empleado, la fecha inicial debe ser la del contrato
+        if ( $diferencia > 0 )
+        {
+            return $empleado->fecha_ingreso;
+        }
+
+        return $fecha_inicial;
     }
 
     public function formatear_numero_a_texto_dos_digitos( $numero )
@@ -265,7 +275,7 @@ class Cesantias implements Estrategia
             return 0;
         }
 
-        $fecha_inicial = $this->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $parametros_prestacion->cantidad_meses_a_promediar );
+        $fecha_inicial = $this->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $parametros_prestacion->cantidad_meses_a_promediar, $empleado );
 
         $dias_totales_laborados = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion, $parametros_prestacion->nom_agrupacion_id );
 
@@ -281,22 +291,15 @@ class Cesantias implements Estrategia
 
     public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
     {
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
+        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-        // El tiempo se calcula para los concepto que forman parte del básico
-        $vec_conceptos = [];
-        foreach ($conceptos_de_la_agrupacion as $concepto)
-        {
-            if ($concepto->forma_parte_basico)
-            {
-                $vec_conceptos[] = $concepto->id;
-            }
-        }
-
-        $cantidad_horas_laboradas = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'cantidad_horas' );
+        $cantidad_horas_laboradas = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
+                                            ->whereBetween( 'nom_doc_registros.fecha', [$fecha_inicial,$fecha_final] )
+                                            ->whereIn( 'nom_doc_registros.nom_concepto_id', $conceptos_de_la_agrupacion )
+                                            ->where( 'nom_conceptos.forma_parte_basico', 1 )
+                                            ->where( 'nom_conceptos.id', '<>', 66 )
+                                            ->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
+                                            ->sum( 'nom_doc_registros.cantidad_horas' );/**/
 
         return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
     }

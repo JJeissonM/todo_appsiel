@@ -7328,14 +7328,14 @@
       'core_app_id' => 17,
       'modelo_id' => 282,
       'name' => 'nom_prestaciones_liquidadas',
-      'descripcion' => 'Prestaciones liquidadas',
+      'descripcion' => 'Comprobantes de Prestaciones',
       'url' => 'web',
       'parent' => 223,
       'orden' => 2,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2021-01-19 15:03:49',
-      'updated_at' => '2021-01-19 15:06:45',
+      'updated_at' => '2021-01-28 15:04:18',
     ),
     489 => 
     array (
