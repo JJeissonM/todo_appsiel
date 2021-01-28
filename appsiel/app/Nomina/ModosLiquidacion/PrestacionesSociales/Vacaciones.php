@@ -427,7 +427,7 @@ class Vacaciones implements Estrategia
     public function set_periodo_causacion_vacaciones( $empleado, $documento_nomina )
     {            
         $periodo_pagado_desde = $empleado->fecha_ingreso;
-        if ( !is_null( $this->historial_vacaciones ) )
+        if ( !empty( $this->historial_vacaciones->toArray() ) )
         {
             if ( $this->historial_vacaciones->last()->periodo_pagado_hasta != '0000-00-00' )
             {
