@@ -104,6 +104,22 @@ class PrestacionesSocialesController extends TransaccionController
 
                     if ( $request->almacenar_registros )
                     {
+                        if ( is_null($concepto) )
+                        {
+                            dd('Favor revisar la parametrización para la prestación ' . $prestacion);
+                        }
+
+                        // Validar que el conceto no esté registrado
+                        $cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
+                                        ->where('nom_contrato_id', $empleado->id)
+                                        ->where('nom_concepto_id', $concepto->id)
+                                        ->count();                            
+
+                        if ( $cant != 0 ) 
+                        {
+                            continue;
+                        }
+                        
                         $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $valores[0], $usuario);
                         $array_aux_prestacion->prestacion = $prestacion;
                         $array_aux_prestacion->tabla_resumen = $tabla_resumen;
