@@ -387,11 +387,21 @@ class Vacaciones implements Estrategia
             return 0;
         }
 
-        $dias_pagados_vacaciones = 0;
+        $dias_pagados_vacaciones = LibroVacacion::where([
+                                                            ['nom_contrato_id','=',$empleado->id],
+                                                            ['periodo_pagado_hasta','<>','0000-00-00']
+                                                        ])
+                                                ->sum('dias_pagados');
+        if ( is_null($dias_pagados_vacaciones) )
+        {
+            $dias_pagados_vacaciones = 0;
+        }
 
         $dias_totales_laborados = $this->calcular_dias_laborados_calendario_30_dias( $empleado->fecha_ingreso, $documento_nomina->fecha );
 
-        $dias_totales_laborados_2 = $this->diferencia_en_dias_entre_fechas( $documento_nomina->fecha, $empleado->fecha_ingreso );
+        /*
+            Falta calcular los días no laborados
+        */
 
         $dias_totales_vacaciones = $dias_totales_laborados * $parametros_prestacion->dias_a_liquidar / self::DIAS_BASE_LEGALES;
 
@@ -417,7 +427,7 @@ class Vacaciones implements Estrategia
     public function set_periodo_causacion_vacaciones( $empleado, $documento_nomina )
     {            
         $periodo_pagado_desde = $empleado->fecha_ingreso;
-        if ( !is_null( $this->historial_vacaciones ) )
+        if ( !empty( $this->historial_vacaciones->toArray() ) )
         {
             if ( $this->historial_vacaciones->last()->periodo_pagado_hasta != '0000-00-00' )
             {

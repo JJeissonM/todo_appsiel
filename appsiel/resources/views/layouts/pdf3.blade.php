@@ -10,6 +10,9 @@
 	    <style>
 	        body {
 	            font-family: 'Lato';
+	            @if( isset($font_size) )
+					font-size: {{ $font_size }}px;
+				@endif
 	        }
 
 	        .fa-btn {
@@ -34,6 +37,7 @@
 				-moz-text-align-last: center; /* Code for Firefox */
 				text-align-last: center;
 			}
+
 
 			
 		    img {

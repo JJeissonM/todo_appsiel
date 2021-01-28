@@ -7352,6 +7352,21 @@
       'created_at' => '2021-01-21 12:26:11',
       'updated_at' => '2021-01-21 12:26:31',
     ),
+    490 => 
+    array (
+      'id' => 516,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_listado_vacaciones_pendientes',
+      'descripcion' => 'Listado vacaciones pendientes',
+      'url' => 'nom_listado_vacaciones_pendientes',
+      'parent' => 223,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2021-01-27 20:59:05',
+      'updated_at' => '2021-01-27 20:59:49',
+    ),
   ),
   'roles' => 
   array (
@@ -18131,6 +18146,24 @@
       'orden' => 0,
       'permission_id' => 515,
       'role_id' => 22,
+    ),
+    1770 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 516,
+      'role_id' => 1,
+    ),
+    1771 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 516,
+      'role_id' => 3,
+    ),
+    1772 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 516,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -60663,6 +60696,171 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'estado' => 'Activo',
       'created_at' => '2021-01-16 10:48:37',
       'updated_at' => '2021-01-16 10:55:35',
+    ),
+  ),
+  'nom_modos_liquidacion' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'descripcion' => 'Tiempo Laborado',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2019-04-28 20:32:36',
+      'updated_at' => '2020-06-29 00:14:06',
+    ),
+    1 => 
+    array (
+      'id' => 2,
+      'descripcion' => 'Manual',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2019-04-28 20:32:36',
+      'updated_at' => '2019-04-28 20:32:36',
+    ),
+    2 => 
+    array (
+      'id' => 3,
+      'descripcion' => 'Cuota',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2019-04-28 20:32:36',
+      'updated_at' => '2019-04-28 20:32:36',
+    ),
+    3 => 
+    array (
+      'id' => 4,
+      'descripcion' => 'Préstamo',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2019-04-28 20:32:36',
+      'updated_at' => '2019-04-28 20:32:36',
+    ),
+    4 => 
+    array (
+      'id' => 5,
+      'descripcion' => 'Cruce de saldos de CxC',
+      'detalle' => 'Busca todos los saldos pendientes en CxC SOLO entre las fechas del documento de liquidación, los totaliza y los descuenta en el documento de liquidación de nómina.',
+      'estado' => 'Activo',
+      'created_at' => '2019-12-19 10:22:21',
+      'updated_at' => '2020-06-29 14:09:52',
+    ),
+    5 => 
+    array (
+      'id' => 6,
+      'descripcion' => 'Auxilio de transporte',
+      'detalle' => 'Solo se puede haber un conceto de este tipo. ',
+      'estado' => 'Activo',
+      'created_at' => '2020-06-24 16:34:55',
+      'updated_at' => '2020-06-24 16:51:16',
+    ),
+    6 => 
+    array (
+      'id' => 7,
+      'descripcion' => 'Tiempo NO Laborado',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-06-29 00:14:22',
+      'updated_at' => '2020-06-29 00:14:22',
+    ),
+    7 => 
+    array (
+      'id' => 8,
+      'descripcion' => 'Seguridad social',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-06-29 00:16:06',
+      'updated_at' => '2020-06-29 09:54:58',
+    ),
+    8 => 
+    array (
+      'id' => 9,
+      'descripcion' => 'Prestaciones sociales',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-06-29 09:55:10',
+      'updated_at' => '2020-06-29 09:55:10',
+    ),
+    9 => 
+    array (
+      'id' => 10,
+      'descripcion' => 'FondoSolidaridadPensional',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-17 14:53:09',
+      'updated_at' => '2020-12-21 07:13:22',
+    ),
+    10 => 
+    array (
+      'id' => 11,
+      'descripcion' => 'Retefuente',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-17 15:04:04',
+      'updated_at' => '2020-12-21 07:13:32',
+    ),
+    11 => 
+    array (
+      'id' => 12,
+      'descripcion' => 'Salud obligatoria',
+      'detalle' => 'Descuentos EPS. Entidades promotoras de Salud',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-21 07:16:33',
+      'updated_at' => '2020-12-21 07:16:33',
+    ),
+    12 => 
+    array (
+      'id' => 13,
+      'descripcion' => 'Pensión  obligatoria',
+      'detalle' => 'AFP. Administradoras Fondos de Pensión',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-21 07:17:02',
+      'updated_at' => '2020-12-21 07:17:02',
+    ),
+    13 => 
+    array (
+      'id' => 14,
+      'descripcion' => 'Prima Legal',
+      'detalle' => 'Pagada semestralmente',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-21 07:19:36',
+      'updated_at' => '2020-12-21 07:19:36',
+    ),
+    14 => 
+    array (
+      'id' => 15,
+      'descripcion' => 'Cesantías consignadas',
+      'detalle' => 'Cesantías que se consignan anualmente al fondo.',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-21 07:26:15',
+      'updated_at' => '2020-12-21 07:26:15',
+    ),
+    15 => 
+    array (
+      'id' => 16,
+      'descripcion' => 'Intereses de cesantías',
+      'detalle' => 'Los que se le pagan anualmente al empleado o al momento de liquidar su contrato.',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-21 07:26:46',
+      'updated_at' => '2020-12-21 07:26:46',
+    ),
+    16 => 
+    array (
+      'id' => 17,
+      'descripcion' => 'Cesantías pagadas',
+      'detalle' => 'Las que se pagan al empleado en la terminación de contrato.',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-21 07:28:47',
+      'updated_at' => '2020-12-21 07:28:47',
+    ),
+    17 => 
+    array (
+      'id' => 18,
+      'descripcion' => 'Parafiscales',
+      'detalle' => 'Provisiones hechas por la empresa: SENA, ICBF y Caja de compesanción.',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-21 07:35:58',
+      'updated_at' => '2020-12-21 07:35:58',
     ),
   ),
 ) ;
