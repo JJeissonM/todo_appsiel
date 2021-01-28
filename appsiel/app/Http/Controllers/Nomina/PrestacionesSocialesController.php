@@ -319,7 +319,7 @@ class PrestacionesSocialesController extends TransaccionController
             $prestacion = $linea->prestacion;
             $tabla_resumen = (array)$linea->tabla_resumen;
             
-            $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen' ) )->render();
+            $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen' ) )->render() . '<div class="page-break"></div>';
 
             if ( $tipo_vista = 'imprimir' )
             {
@@ -337,10 +337,12 @@ class PrestacionesSocialesController extends TransaccionController
         $empleado = NomContrato::find($registro->nom_contrato_id);
         $prestaciones_liquidadas = json_decode( $registro->prestaciones_liquidadas );
 
-        $vista = $this->generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas, 'imprimir' );
+        $encabezado = View::make( 'nomina.incluir.encabezado_transaccion', ['encabezado_doc' => $documento_nomina, 'empresa' => $documento_nomina->empresa , 'descripcion_transaccion' => $documento_nomina->tipo_documento_app->descripcion ] )->render();
+
+        $vista = $encabezado . '<h3 style="width:100%; text-aling:center;">Comprobante de liquidación de prestaciones sociales</h3>' . $this->generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas, 'imprimir' );
 
         $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
-        $orientacion='landscape';
+        $orientacion='portrait';//landscape
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
 

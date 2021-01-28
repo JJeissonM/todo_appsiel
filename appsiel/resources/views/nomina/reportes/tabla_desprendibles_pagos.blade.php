@@ -79,7 +79,7 @@
 
                     <tr>
                         <td> {{ $descripcion_concepto }} </td>
-                        <td style="text-align: center;"> {{ $cantidad_horas }} </td>
+                        <td style="text-align: center;"> {{ number_format( $cantidad_horas,2,',','.') }} </td>
                         <td> {{ $devengo }} </td>
                         <td> {{ $deduccion }} </td>
                     </tr>
