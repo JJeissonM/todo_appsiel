@@ -185,7 +185,7 @@
                         {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control
                         select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                         @endif
-                    </div>
+                    </div>                    
                     <div class="form-group">
                         <br /><br /><a class="btn btn-danger" id="modalcrear" style="color: white"
                             onclick="cerrar(this.id)">Cancelar</a>
@@ -299,6 +299,10 @@
                     <div class="form-group">
                         <label>Imágen (Opcional)</label>
                         <input name="imagen" type="file" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="alpha">Transparencia</label>
+                        <input class="form-control" type="range" id="alpha" name="alpha" min="0" max="10">
                     </div>
                     <div class="form-group">
                         <br /><br /><a class="btn btn-danger" id="Modalboton" style="color: white"

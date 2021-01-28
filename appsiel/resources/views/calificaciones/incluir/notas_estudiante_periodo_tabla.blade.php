@@ -5,7 +5,38 @@
 <input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
 
 <h3> Calificaciones </h3>
-<h4> Para ver detalles, ubique el cursor sobre la calificación. </h4>
+<p> Para ver detalles, ubique el cursor sobre la calificación. </p>
+
+<br>
+
+<?php
+
+    $escalas = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->get();
+
+    $tbody = '<table style="border: 1px solid; border_collapsed: collapsed; width:170px; font-size: 3.5mm;">
+                <tr>
+                    <td colspan="3" style="text-align:center;border: 1px solid; padding: 10px;">Escala de valoración
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">Desempeño</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">Calificación Mínima</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">Calificación Máxima</td>
+                </tr>';
+    foreach($escalas as $linea)
+    {
+        $tbody.='<tr>
+                    <td style="border: 1px solid; padding: 10px;">'.$linea->nombre_escala.'</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">'.number_format($linea->calificacion_minima,2,'.',',').'</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">'.number_format($linea->calificacion_maxima,2,'.',',').'</td>
+                </tr>';
+    }
+
+    $tbody.='</table>';
+    echo $tbody;
+?>
+
+<br><br>
 
 @if( $observacion_boletin->puesto != '' )
     <div>
@@ -15,18 +46,37 @@
 
 <div class="table-responsive" id="table_content">
 
+    <?php
+        $limite=16;
+        if(count($registros)>0){
+            $ultimoTotal=0;
+            foreach($registros as $r){
+                $total=1;
+                for($m=1; $m<16; $m++){
+                    $label="C".$m;
+                    if($r->$label!=0){
+                        $total=$total+1;
+                    }
+                }
+                if($total>$ultimoTotal){
+                    $ultimoTotal=$total;
+                }
+            }
+            $limite=$ultimoTotal;
+        }
+
+    ?>
+
     <table class="table table-striped tabla_registros" style="margin-top: -4px;">
         <thead>
-            <tr>
-                <th>
-                   Asignatura
-                </th>
-                @for($k=1; $k < 16; $k++)
-                    <th>C{{$k}}</th>
+            <tr style="font-size: 16px;">
+                <th>Asignatura</th>
+                @for($k=1; $k < $limite; $k++)
+                <th>C{{$k}}</th>
                 @endfor
-                <th> Final </th>
-                <th> Desempeño </th>
-                <th> Logros </th>
+                <th>Final</th>
+                <th>Desempeño</th>
+                <th>Logros</th>
             </tr>
         </thead>
         <tbody>
@@ -36,18 +86,18 @@
             ?>
             @for($i=0; $i < $cant ; $i++) 
                 <tr class="fila-{{$j}}" >
-                    <td>{{$registros[$i]->asignatura}}</td>
+                    <td style="font-size: 16px;">{{$registros[$i]->asignatura}}</td>
                     <?php
                         $promedio = 0;
                         $n = 0;
-                        for ($k=1; $k < 16; $k++) { 
+                        for ($k=1; $k < $limite; $k++) { 
                             
                             $c = 'C'.$k;
                             $texto_calificacion = '';
                             
                             if ( $registros[$i]->$c != 0) 
                             {
-                                $texto_calificacion = $registros[$i]->$c;
+                                $texto_calificacion = number_format($registros[$i]->$c,2,'.',',');
                                 $n++;
                             }
                             
@@ -80,7 +130,7 @@
                                 // Si la calificacion $prom no está en alguna escala de valoración, entonces $escala = null
                                 $escala = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $prom, $periodo->periodo_lectivo_id );
                             }
-                        
+                            
                             $desempeno = '';
                             $logros = (object) array('descripcion' => '');
                             $n_nom_logros = 0;
@@ -93,7 +143,7 @@
                                 $n_nom_logros = count($logros);
                             }
                     ?>
-                            <td> {{number_format($prom, 2, ',', '.')}} </td>
+                            <th style="font-size: 16px;"> {{number_format($prom, 2, '.', ',')}} </th>
                             <td> {{$desempeno}} </td>
                             <td>
                                <ul>
@@ -126,29 +176,3 @@
 </div>
 
 <br>
-<?php
-
-    $escala = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->get();
-
-    $tbody = '<table style="border: 1px solid; border_collapsed: collapsed; width:170px; font-size: 3.5mm;">
-                <tr>
-                    <td colspan="3" style="text-align:center;border: 1px solid;">Escala de valoración
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align:center;border: 1px solid;">Desempeño</td>
-                    <td style="text-align:center;border: 1px solid;">Mín.</td>
-                    <td style="text-align:center;border: 1px solid;">Máx.</td>
-                </tr>';
-    foreach($escala as $linea)
-    {
-        $tbody.='<tr>
-                    <td style="border: 1px solid;">'.$linea->nombre_escala.'</td>
-                    <td style="text-align:center;border: 1px solid;">'.$linea->calificacion_minima.'</td>
-                    <td style="text-align:center;border: 1px solid;">'.$linea->calificacion_maxima.'</td>
-                </tr>';
-    }
-
-    $tbody.='</table>';
-    echo $tbody;
-?>

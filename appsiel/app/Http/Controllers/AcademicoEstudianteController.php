@@ -175,7 +175,7 @@ class AcademicoEstudianteController extends Controller
         $curso_id = $request->curso_id;
 
         $observacion_boletin = ObservacionesBoletin::get_x_estudiante($periodo_id, $curso_id, $this->estudiante->id);
-
+ 
         if ($observacion_boletin == null) {
             $observacion_boletin = (object)['puesto' => '', 'observacion' => ''];
         }

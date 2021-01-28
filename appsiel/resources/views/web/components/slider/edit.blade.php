@@ -115,14 +115,22 @@
                     <option selected value="DEFAULT">SLIDER POR DEFECTO</option>
                     <option value="PREMIUM">SLIDER PREMIUM</option>
                     <option value="BOOTSTRAP">SLIDER BOOTSTRAP</option>
+                    <option value="APPSIEL">SLIDER APPSIEL</option>
                     @elseif($slider->disposicion=='PREMIUM')
                     <option value="DEFAULT">SLIDER POR DEFECTO</option>
                     <option selected value="PREMIUM">SLIDER PREMIUM</option>
                     <option value="BOOTSTRAP">SLIDER BOOTSTRAP</option>
+                    <option value="APPSIEL">SLIDER APPSIEL</option>
+                    @elseif($slider->disposicion=='APPSIEL')
+                    <option value="DEFAULT">SLIDER POR DEFECTO</option>
+                    <option value="PREMIUM">SLIDER PREMIUM</option>
+                    <option value="BOOTSTRAP">SLIDER BOOTSTRAP</option>
+                    <option selected value="APPSIEL">SLIDER APPSIEL</option>
                     @else
                     <option value="DEFAULT">SLIDER POR DEFECTO</option>
                     <option value="PREMIUM">SLIDER PREMIUM</option>
                     <option selected value="BOOTSTRAP">SLIDER BOOTSTRAP</option>
+                    <option value="APPSIEL">SLIDER APPSIEL</option>
                     @endif
                 </select>
             </div>

@@ -183,20 +183,11 @@
         }
 
         .btn.btn-primary {
-            background: @if($configuracion !=null) {
-                    {
-                    $configuracion->color_primario
-                }
-            }
+            background: @if($configuracion !=null) {{$configuracion->color_primario}}
 
             @else #000 @endif  !important;
 
-            border-color: @if($configuracion !=null) {
-                    {
-                    $configuracion->color_terciario
-                }
-            }
-
+            border-color: @if($configuracion !=null) {{$configuracion->color_terciari}}
             @else #000 @endif  !important;
         }
 

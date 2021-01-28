@@ -107,7 +107,10 @@
                 <?php break;
                 case 'BOOTSTRAP': ?>
                     {!! Form::sliderbootstrap($slider) !!}
-            <?php break;
+                <?php break;
+                case 'APPSIEL': ?>
+                    {!! Form::sliderappsiel($slider) !!}
+                <?php break;
                 default:
                     break;
             } ?>
