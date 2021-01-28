@@ -529,6 +529,26 @@ class Vacaciones implements Estrategia
 
     public function retirar( NomDocRegistro $registro )
     {
+        if ( $registro->encabezado_documento->tipo_liquidacion == 'terminacion_contrato' )
+        {
+            // Borrar registro prestaciones liquidads
+            PrestacionesLiquidadas::where(
+                                            ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
+                                            ['nom_contrato_id' => $registro->nom_contrato_id ]
+                                        )
+                                    ->delete();
+            
+            // Borrar registro libro de vacaciones
+            LibroVacacion::where(
+                                    ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
+                                    ['nom_contrato_id' => $registro->nom_contrato_id ]
+                                )
+                            ->delete();
+
+            $registro->delete();
+            return 0;
+        }
+        
         $novedad = $registro->novedad_tnl;
         
         if( is_null( $novedad ) )
@@ -553,19 +573,21 @@ class Vacaciones implements Estrategia
 
         if ( $registro->nom_concepto_id == $parametros_prestacion->nom_concepto_id )
         {
-            // Actualiza programación de vacaciones (TNL)
+            // 1. Actualiza programación de vacaciones (TNL)
             $programacion_vacaciones = ProgramacionVacacion::find( $novedad->id );
 
             $programacion_vacaciones->cantidad_dias_amortizados -= $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $registro->encabezado_documento );
             $programacion_vacaciones->cantidad_dias_pendientes_amortizar += $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $registro->encabezado_documento );
             $programacion_vacaciones->save();
             
+            // 2.
             PrestacionesLiquidadas::where(
                                             ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
                                             ['nom_contrato_id' => $registro->nom_contrato_id ]
                                         )
                                     ->delete();
             
+            // 3.
             $libro_vacaciones = LibroVacacion::where( 'novedad_tnl_id', $programacion_vacaciones->id )->get()->first();
             $libro_vacaciones->nom_doc_encabezado_id = 0;
             $libro_vacaciones->periodo_pagado_desde = '0000-00-00';
