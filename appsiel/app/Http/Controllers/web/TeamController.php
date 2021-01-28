@@ -144,6 +144,7 @@ class TeamController extends Controller
     public function update(Request $request, $id)
     {
         $team = Team::find($id);
+        $team->fill($request->all());
         $team->title = strtoupper($request->title);
         $team->description = $request->description;
         $team->configuracionfuente_id=$request->configuracionfuente_id;
