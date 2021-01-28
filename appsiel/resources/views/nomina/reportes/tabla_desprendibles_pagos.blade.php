@@ -70,7 +70,7 @@
                             $modo_liquidacion_id = $registro->concepto->modo_liquidacion_id;
                         }
 
-                        $cantidad_horas = '';
+                        $cantidad_horas = 0;
                         if ( $registro->cantidad_horas != 0 )
                         {
                             $cantidad_horas = $registro->cantidad_horas;
@@ -79,7 +79,7 @@
 
                     <tr>
                         <td> {{ $descripcion_concepto }} </td>
-                        <td style="text-align: center;"> {{ number_format( (float)$cantidad_horas,2,',','.') }} </td>
+                        <td style="text-align: center;"> {{ number_format( $cantidad_horas,0,',','.') }} </td>
                         <td> {{ $devengo }} </td>
                         <td> {{ $deduccion }} </td>
                     </tr>
