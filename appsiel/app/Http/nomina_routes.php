@@ -49,6 +49,11 @@ Route::post('nomina/ajax_reporte_desprendibles_de_pago','Nomina\ReporteControlle
 Route::get('nomina_pdf_reporte_desprendibles_de_pago','Nomina\ReporteController@nomina_pdf_reporte_desprendibles_de_pago');
 Route::post( 'nom_enviar_por_email_desprendibles_de_pago','Nomina\ReporteController@enviar_por_email_desprendibles_de_pago');
 
+// Listado de vacaciones pendientes
+Route::get('nom_listado_vacaciones_pendientes','Nomina\ReporteController@listado_vacaciones_pendientes');
+Route::post('nom_ajax_listado_vacaciones_pendientes','Nomina\ReporteController@ajax_listado_vacaciones_pendientes');
+Route::get('nomina_pdf_listado_vacaciones_pendientes','Nomina\ReporteController@pdf_listado_vacaciones_pendientes');
+
 //PROCESOS
 Route::post('nom_procesar_archivo_plano','Nomina\ProcesosController@procesar_archivo_plano');
 Route::post('nom_almacenar_registros_via_interface','Nomina\ProcesosController@almacenar_registros_via_interface');
