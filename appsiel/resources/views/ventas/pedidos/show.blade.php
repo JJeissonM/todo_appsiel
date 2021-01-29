@@ -34,6 +34,8 @@ Formato: {{ Form::select('formato_impresion_id',['1'=>'POS','2'=>'Estándar'],nu
 <b>Para:</b> {{ $doc_encabezado->tercero_nombre_completo }}
 <br />
 <b>NIT: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+<br />
+<b>Entrega: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_entrega }}
 @endsection
 
 @section('filas_adicionales_encabezado')

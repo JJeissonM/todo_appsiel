@@ -617,15 +617,38 @@ class InventarioController extends TransaccionController
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
-        foreach ($producto as $linea) {
+        $ultimo_item = 0;
+        $num_item = 1;
+        $cantidad_datos = count( $producto->toArray() );
+        foreach ($producto as $linea)
+        {
+            $primer_item = 0;
             $clase = '';
             if ($es_el_primero) {
                 $clase = 'active';
                 $es_el_primero = false;
+                $primer_item = 1;
             }
 
-            $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->nueva_cadena . '" data-producto_id="' . $linea->id . '">' . $linea->id . ' ' . $linea->nueva_cadena  . '</a>';
+
+            if ( $num_item == $cantidad_datos )
+            {
+                $ultimo_item = 1;
+            }
+
+
+            $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->nueva_cadena . '" data-producto_id="' . $linea->id . '" data-primer_item="'.$primer_item.
+                                '" data-accion="na" '.
+                                '" data-ultimo_item="'.$ultimo_item . '">' . $linea->id . ' ' . $linea->nueva_cadena  . '</a>';
+
+
+            $num_item++;
         }
+        
+        // Linea crear nuevo registro
+        $modelo_id = 22; // Items
+        $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
+
         $html .= '</div>';
 
         return $html;

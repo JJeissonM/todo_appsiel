@@ -66,7 +66,7 @@ $(document).ready( function(){
 
     		case 38:// Flecha hacia arriba
 
-				// Si es el útimo item, entonces no se mueve hacia abajo
+				// Si es el primer item, entonces no se mueve hacia arriba
 				if( item_activo.attr('data-primer_item') == 1 )
 				{
 					return false;

@@ -165,7 +165,7 @@ class ReportesController extends Controller
         $parametros = config('ventas');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha', '<', $fecha], ['estado', 'Pendiente']])->get();
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '<', $fecha], ['estado', 'Pendiente']])->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -183,7 +183,7 @@ class ReportesController extends Controller
         $parametros = config('ventas');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha', '>', $fecha], ['estado', 'Pendiente']])->get();
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $fecha], ['estado', 'Pendiente']])->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -212,7 +212,7 @@ class ReportesController extends Controller
         $parametros = config('ventas');
 
         foreach ($fechas as $f) {
-            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha', 'like','%'.$f.'%'], ['estado', 'Pendiente']])->get();
+            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'], ['estado', 'Pendiente']])->get();
             $pedidos = null;
             if (count($pedidos_db) > 0) {
                 foreach ($pedidos_db as $o) {
@@ -238,9 +238,10 @@ class ReportesController extends Controller
         }
         $orden = [
             'id' => $o->id,
-            'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " - " . $o->consecutivo,
+            'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " " . $o->consecutivo,
             'cliente' => $cliente,
-            'fecha' => $o->fecha
+            'fecha' => $o->fecha,
+            'fecha_entrega' => $o->fecha_entrega
         ];
         return $orden;
     }
