@@ -683,8 +683,8 @@ class ReporteController extends Controller
                                                                 [ 'nom_contrato_id', '=', $empleado->id ],
                                                                 [ 'periodo_pagado_hasta', '<=', $fecha_corte ]
                                                              ] )
-                                                    ->get()
                                                     ->orderBy('periodo_pagado_hasta')
+                                                    ->get()
                                                     ->last();
             if ( !is_null($ultima_vacacion_pagada ) )
             {
