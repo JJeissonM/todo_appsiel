@@ -683,7 +683,9 @@ class ReporteController extends Controller
                                                                 [ 'nom_contrato_id', '=', $empleado->id ],
                                                                 [ 'periodo_pagado_hasta', '<=', $fecha_corte ]
                                                              ] )
-                                                    ->get()->last();
+                                                    ->get()
+                                                    ->orderBy('periodo_pagado_hasta')
+                                                    ->last();
             if ( !is_null($ultima_vacacion_pagada ) )
             {
                 $vacaciones_pendientes[$vp]['datos']->fecha_final_ultimo_periodo_pagado = $ultima_vacacion_pagada->periodo_pagado_hasta;
