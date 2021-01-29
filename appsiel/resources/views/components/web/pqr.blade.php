@@ -64,7 +64,7 @@
                 {{ Form::close() }}
 
                 <div class="col-sm-9 py-3">
-                    <h2 class="pqrform-font ">{!! $registro->contenido_pie_formulario !!}</h2>                    
+                    <p class="h4 pqrform-font ">{!! $registro->contenido_pie_formulario !!}</p>                    
                  </div>                 
 
                 @endif
