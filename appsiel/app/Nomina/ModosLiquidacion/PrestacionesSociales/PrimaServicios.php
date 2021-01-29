@@ -90,7 +90,8 @@ class PrimaServicios implements Estrategia
         $this->tabla_resumen['fecha_inicial_promedios'] = $fecha_inicial;
         $this->tabla_resumen['fecha_final_promedios'] = $fecha_final;
 
-        $cantidad_dias = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $parametros_prestacion->nom_agrupacion_id );
+        $fecha_inicial_liquidacion = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
+        $cantidad_dias = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial_liquidacion, $this->fecha_final_liquidacion, $parametros_prestacion->nom_agrupacion_id );
 
         $this->tabla_resumen['cantidad_dias'] = $cantidad_dias;
 
@@ -141,9 +142,10 @@ class PrimaServicios implements Estrategia
 
                 $valor_acumulado_agrupacion_variables = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_variables( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $this->fecha_final_promedios );
 
+                $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
                 $valor_acumulado_agrupacion_salario = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_solo_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $this->fecha_final_liquidacion );
 
-                $valor_acumulado_agrupacion = $valor_acumulado_agrupacion_salario + $valor_acumulado_agrupacion_variables;
+                $valor_acumulado_agrupacion = $valor_acumulado_agrupacion_salario + $valor_acumulado_agrupacion_variables;                
 
                 if ( $cantidad_dias != 0 )
                 {

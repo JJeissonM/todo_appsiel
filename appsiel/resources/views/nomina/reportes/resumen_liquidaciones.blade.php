@@ -64,7 +64,7 @@
 						' . $registro->concepto . '
 					</td>
 					<td>
-						' . $registro->cantidad_horas . '
+						' . number_format( $registro->cantidad_horas, 2,',','.') . '
 					</td>
 					<td style="text-align:right;">
 						$' . number_format( $registro->valor_devengo, 2,',','.') . '
@@ -105,7 +105,7 @@
 						' . $registro->concepto . '
 					</td>
 					<td>
-						' . $registro->cantidad_horas . '
+						' . number_format( $registro->cantidad_horas, 2,',','.') . '
 					</td>
 					<td style="text-align:right;">
 						$' . number_format( $registro->valor_devengo, 2,',','.') . '

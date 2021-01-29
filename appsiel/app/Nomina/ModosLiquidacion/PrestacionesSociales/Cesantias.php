@@ -253,7 +253,7 @@ class Cesantias implements Estrategia
                                             ->whereBetween( 'nom_doc_registros.fecha', [$fecha_inicial,$fecha_final] )
                                             ->whereIn( 'nom_doc_registros.nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'nom_conceptos.forma_parte_basico', 1 )
-                                            ->where( 'nom_conceptos.id', '<>', 66 )
+                                            //->where( 'nom_conceptos.id', '<>', 66 )
                                             ->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
                                             ->sum( 'nom_doc_registros.cantidad_horas' );/**/
 
