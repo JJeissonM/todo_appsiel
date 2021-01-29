@@ -85,11 +85,7 @@ class Cesantias implements Estrategia
         $valor_base_diaria = 0;
         $valor_base_diaria_sueldo = 0;
 
-        $fecha_inicial = $this->get_fecha_inicial_promedios( $fecha_final, $parametros_prestacion->cantidad_meses_a_promediar, $empleado );
-        if ( $fecha_inicial < $empleado->fecha_ingreso)
-        {
-            $fecha_inicial = $empleado->fecha_ingreso;
-        }
+        $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $fecha_final, $empleado );
 
         $this->tabla_resumen['fecha_inicial_promedios'] = $fecha_inicial;
         $this->tabla_resumen['fecha_final_promedios'] = $fecha_final;
@@ -218,48 +214,6 @@ class Cesantias implements Estrategia
         return ( $total_devengos - $total_deducciones );
     }
 
-    public function get_fecha_inicial_promedios( $fecha_final, $cantidad_meses_a_promediar, $empleado )
-    {
-        $vec_fecha_documento = explode("-", $fecha_final);
-        
-        $anio_final = (int)$vec_fecha_documento[0];
-        $mes_final = (int)$vec_fecha_documento[1];
-        $dia_final = $vec_fecha_documento[2];
-
-        $anio_inicial = $anio_final;
-        $mes_inicial = 0;
-        $dia_inicial = '01';
-
-        $mes_anterior = $mes_final + 1;
-        for ( $i = $cantidad_meses_a_promediar; $i > 0; $i--)
-        {
-            $mes_iteracion = $mes_anterior - 1;
-            if ( $mes_iteracion <= 0 )
-            {
-                $mes_inicial = 12 + $mes_iteracion;
-                $anio_inicial = $anio_final - 1;
-            }else{
-                $mes_inicial = $mes_iteracion;
-            }
-            $mes_anterior = $mes_iteracion;
-        }
-
-        $mes_inicial = $this->formatear_numero_a_texto_dos_digitos( $mes_inicial );
-        $anio_inicial =  $this->formatear_numero_a_texto_dos_digitos( $anio_inicial );
-
-        $fecha_inicial = $anio_inicial . '-' . $mes_inicial . '-' . $dia_inicial;
-
-        $diferencia = $this->diferencia_en_dias_entre_fechas( $fecha_inicial, $empleado->fecha_ingreso );
-        
-        // si la fecha_inicial es menor que la fecha_ingreso del empleado, la fecha inicial debe ser la del contrato
-        if ( $diferencia > 0 )
-        {
-            return $empleado->fecha_ingreso;
-        }
-
-        return $fecha_inicial;
-    }
-
     public function formatear_numero_a_texto_dos_digitos( $numero )
     {
         if ( strlen($numero) == 1 )
@@ -277,7 +231,7 @@ class Cesantias implements Estrategia
             return 0;
         }
 
-        $fecha_inicial = $this->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $parametros_prestacion->cantidad_meses_a_promediar, $empleado );
+        $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
 
         $dias_totales_laborados = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion, $parametros_prestacion->nom_agrupacion_id );
 

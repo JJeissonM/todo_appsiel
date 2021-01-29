@@ -249,7 +249,8 @@ class ReportesController extends Controller
             'id' => $o->id,
             'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " - " . $o->consecutivo,
             'proveedor' => $proveedor,
-            'fecha_recepcion' => $o->fecha_recepcion
+            'fecha_recepcion' => $o->fecha_recepcion,
+            'fecha' => $o->fecha
         ];
         return $orden;
     }
