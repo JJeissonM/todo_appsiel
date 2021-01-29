@@ -205,11 +205,13 @@ class PrimaServicios implements Estrategia
 
         $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'core_tercero_id', $empleado->core_tercero_id )
+                                            //->where( 'nom_concepto_id', '<>', 66 )
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'valor_devengo' );
 
         $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'core_tercero_id', $empleado->core_tercero_id )
+                                            //->where( 'nom_concepto_id', '<>', 66 )
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'valor_deduccion' );
 

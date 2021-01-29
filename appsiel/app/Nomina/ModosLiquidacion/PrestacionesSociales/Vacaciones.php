@@ -236,7 +236,7 @@ class Vacaciones implements Estrategia
                     $valor_agrupacion_x_dia = $valor_acumulado_agrupacion / $cantidad_dias;
                 }
 
-                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find($parametros_prestacion->nom_agrupacion_id)->descripcion;
+                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find( $nom_agrupacion_id )->descripcion;
                 $this->tabla_resumen['valor_acumulado_salario'] = $empleado->sueldo;
                 $this->tabla_resumen['valor_acumulado_agrupacion'] = $valor_acumulado_agrupacion;
                 $this->tabla_resumen['valor_salario_x_dia'] = $empleado->salario_x_dia();
@@ -259,7 +259,7 @@ class Vacaciones implements Estrategia
                     $valor_base_diaria = $valor_acumulado_agrupacion / $cantidad_dias;
                 }
 
-                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find($parametros_prestacion->nom_agrupacion_id)->descripcion;
+                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find( $nom_agrupacion_id )->descripcion;
                 $this->tabla_resumen['valor_acumulado_salario'] = 0;
                 $this->tabla_resumen['valor_acumulado_agrupacion'] = $valor_acumulado_agrupacion;
                 $this->tabla_resumen['valor_salario_x_dia'] = 0;
@@ -554,16 +554,11 @@ class Vacaciones implements Estrategia
                                                                         ->get()
                                                                         ->first();
 
-
             if( is_null( $parametros_prestacion ) )
             {
                 return 0;
             }
 
-            if( $parametros_prestacion->concepto_prestacion != 'vacaciones' )
-            {
-                return 0;
-            }
 
             if ( $registro->nom_concepto_id != $parametros_prestacion->nom_concepto_id )
             {
@@ -585,6 +580,7 @@ class Vacaciones implements Estrategia
                             ->delete();
 
             $registro->delete();
+            
             return 0;
         }
         
