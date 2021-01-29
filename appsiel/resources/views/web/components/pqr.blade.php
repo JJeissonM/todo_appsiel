@@ -177,7 +177,7 @@
 
             <div class="form-group">
                 <label for="campo_id" class="col-form-label">Seleccionar Campo</label>
-                {{ Form::select( 'campo_id', $campos, null, ['class'=>'form-control','id'=>'campo_id'] ) }}
+                {{ Form::select( 'campo_id', $campos, null, ['class'=>'form-control select2-search','id'=>'campo_id'] ) }}
             </div>
 
             {{ Form::hidden('widget_id', $widget->id) }}
@@ -221,6 +221,12 @@
 
 @section('script')
 <script type="text/javascript">
+
+$(document).ready(function() {
+    $('.select2-search').select2();
+});
+
+
     $(document).ready(function(){
 
             $('#bs_boton_guardar').on('click',function(event){

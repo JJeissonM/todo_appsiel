@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2021-01-27 15:45:52] production.ERROR: ErrorException: Undefined variable: escala in C:\xampp\htdocs\todo_appsiel\appsiel\storage\framework\views\a4c6289e84a80e17df18e5450003cbef4c9f6ca2.php:95
 Stack trace:
 #0 C:\xampp\htdocs\todo_appsiel\appsiel\storage\framework\views\a4c6289e84a80e17df18e5450003cbef4c9f6ca2.php(95): Illuminate\Foundation\Bootstrap\HandleExceptions->handleError(8, 'Undefined varia...', 'C:\\xampp\\htdocs...', 95, Array)
@@ -436,3 +437,5 @@ Stack trace:
 #67 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(99): Illuminate\Foundation\Http\Kernel->sendRequestThroughRouter(Object(Illuminate\Http\Request))
 #68 C:\xampp\htdocs\todo_appsiel\index.php(53): Illuminate\Foundation\Http\Kernel->handle(Object(Illuminate\Http\Request))
 #69 {main}  
+=======
+>>>>>>> dce03ea457dded568a1a1e192568b0e93133dfce

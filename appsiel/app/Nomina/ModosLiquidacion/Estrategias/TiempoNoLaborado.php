@@ -335,6 +335,11 @@ class TiempoNoLaborado implements Estrategia
 		
 		if( is_null( $novedad ) )
 		{
+			if ( $registro->encabezado_documento->tipo_liquidacion == 'terminacion_contrato' )
+	        {
+	            return 0;
+	        }
+
 			dd( [ 'Class TiempoNoLaborado@retirar(), $registro->novedad_tnl = NULL', $registro] );
 		}
 

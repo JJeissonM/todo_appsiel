@@ -7328,14 +7328,14 @@
       'core_app_id' => 17,
       'modelo_id' => 282,
       'name' => 'nom_prestaciones_liquidadas',
-      'descripcion' => 'Prestaciones liquidadas',
+      'descripcion' => 'Comprobantes de Prestaciones',
       'url' => 'web',
       'parent' => 223,
       'orden' => 2,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2021-01-19 15:03:49',
-      'updated_at' => '2021-01-19 15:06:45',
+      'updated_at' => '2021-01-28 15:04:18',
     ),
     489 => 
     array (
@@ -7351,6 +7351,21 @@
       'fa_icon' => 'male',
       'created_at' => '2021-01-21 12:26:11',
       'updated_at' => '2021-01-21 12:26:31',
+    ),
+    490 => 
+    array (
+      'id' => 516,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_listado_vacaciones_pendientes',
+      'descripcion' => 'Listado vacaciones pendientes',
+      'url' => 'nom_listado_vacaciones_pendientes',
+      'parent' => 223,
+      'orden' => 3,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2021-01-27 20:59:05',
+      'updated_at' => '2021-01-27 20:59:49',
     ),
   ),
   'roles' => 
@@ -18132,6 +18147,24 @@
       'permission_id' => 515,
       'role_id' => 22,
     ),
+    1770 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 516,
+      'role_id' => 1,
+    ),
+    1771 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 516,
+      'role_id' => 3,
+    ),
+    1772 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 516,
+      'role_id' => 9,
+    ),
   ),
   'sys_campos' => 
   array (
@@ -20905,10 +20938,10 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     171 => 
     array (
       'id' => 176,
-      'descripcion' => 'Fecha de entrega',
+      'descripcion' => 'Fecha de entrega actividad',
       'tipo' => 'fecha',
       'name' => 'fecha_entrega',
-      'opciones' => '',
+      'opciones' => ' ',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
@@ -20916,7 +20949,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2018-10-16 10:44:50',
-      'updated_at' => '2018-10-16 10:44:50',
+      'updated_at' => '2021-01-29 05:26:35',
     ),
     172 => 
     array (
@@ -58622,6 +58655,20 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 3,
       'core_modelo_id' => 279,
       'core_campo_id' => 1142,
+    ),
+    2310 => 
+    array (
+      'id' => 2646,
+      'orden' => 8,
+      'core_modelo_id' => 175,
+      'core_campo_id' => 324,
+    ),
+    2311 => 
+    array (
+      'id' => 2647,
+      'orden' => 10,
+      'core_modelo_id' => 175,
+      'core_campo_id' => 97,
     ),
   ),
   'sys_reportes' => 

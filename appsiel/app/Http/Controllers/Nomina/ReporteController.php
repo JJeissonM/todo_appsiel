@@ -40,6 +40,8 @@ use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 
+use App\Nomina\LibroVacacion;
+
 use App\Nomina\PilaNovedades;
 use App\Nomina\PilaSalud;
 use App\Nomina\PilaPension;
@@ -460,24 +462,6 @@ class ReporteController extends Controller
         return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
     }
 
-
-
-    public function calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final )
-    {
-        $vec_fecha_inicial = explode("-", $fecha_inicial);
-        $vec_fecha_final = explode("-", $fecha_final);
-
-        // Días iniciales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
-        $dias_iniciales = ( (int)$vec_fecha_inicial[0] * 360 ) + ( ( (int)$vec_fecha_inicial[1] - 1 ) * 30) + (int)$vec_fecha_inicial[2];
-
-        // Días finales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
-        $dias_finales = ( (int)$vec_fecha_final[0] * 360 ) + ( ( (int)$vec_fecha_final[1] - 1 ) * 30) + (int)$vec_fecha_final[2];
-
-        $dias_totales_laborados = ($dias_finales - $dias_iniciales) + 1;
-
-        return $dias_totales_laborados;
-    }
-
     public function listado_aportes_pila(Request $request)
     {
         $fecha_final_mes = $request->fecha_final_mes;
@@ -646,5 +630,144 @@ class ReporteController extends Controller
             }
         }
         return $datos_2;
+    }
+
+    public function listado_vacaciones_pendientes()
+    {
+        $app = Aplicacion::find(Input::get('id'));
+
+        $empleados = NomContrato::opciones_campo_select_2();
+
+        $miga_pan = [
+                ['url' => $app->app.'?id='.Input::get('id'),'etiqueta'=> $app->descripcion],
+                ['url'=>$app->app.'?id='.Input::get('id'),'etiqueta'=>'Informes y listados'],
+                ['url'=>$app->app.'?id='.Input::get('id'),'etiqueta'=>'Listado vacaciones pendientes']
+            ];
+
+        return view('nomina.reportes.listado_vacaciones_pendientes', compact('miga_pan', 'empleados') );
+    }
+
+
+    public function ajax_listado_vacaciones_pendientes(Request $request)
+    {
+        return $this->tabla_listado_vacaciones_pendientes($request->fecha_corte,  $request->nom_contrato_id, $request->calcular_valor_con_base_en );
+    }
+
+    public function tabla_listado_vacaciones_pendientes( $fecha_corte, $nom_contrato_id, $calcular_valor_con_base_en )
+    {       
+
+        if ( $nom_contrato_id == '' )
+        {
+            $empleados =  NomContrato::where( 'estado', 'Activo' )->get();
+        }else{
+            $empleados =  NomContrato::where( 'id', $nom_contrato_id )->get(); // no se usa find() para que arroje una collection de objectos
+        }
+
+        $vacaciones_pendientes = [];
+        $vp = 0;
+        foreach ($empleados as $empleado)
+        {
+            $vacaciones_pendientes[$vp]['apellidos'] = $empleado->tercero->apellido1 . ' ' . $empleado->tercero->apellido2;
+            $vacaciones_pendientes[$vp]['numero_fila'] = $vp + 1;
+            $vacaciones_pendientes[$vp]['fecha_corte'] = $fecha_corte;
+
+            $vacaciones_pendientes[$vp]['datos'] = (object)[
+                                                            'empleado' => $empleado,
+                                                            'fecha_final_ultimo_periodo_pagado' => '0000-00-00',
+                                                            'dias_pendientes' => 0,
+                                                            'valor_pendiente_por_pagar' => 0,
+                                                            'valor_un_periodo_vacacion' => 0 
+                                                        ];
+
+            $ultima_vacacion_pagada = LibroVacacion::where( [ 
+                                                                [ 'nom_contrato_id', '=', $empleado->id ],
+                                                                [ 'periodo_pagado_hasta', '<=', $fecha_corte ]
+                                                             ] )
+                                                    ->get()->last();
+            if ( !is_null($ultima_vacacion_pagada ) )
+            {
+                $vacaciones_pendientes[$vp]['datos']->fecha_final_ultimo_periodo_pagado = $ultima_vacacion_pagada->periodo_pagado_hasta;
+            }
+
+            $dias_pendientes = $this->get_dias_pendientes( $empleado, $fecha_corte );
+            $vacaciones_pendientes[$vp]['datos']->dias_pendientes = $dias_pendientes;
+
+            switch ( $calcular_valor_con_base_en )
+            {
+                case 'salario_actual_empleado':
+                    $vacaciones_pendientes[$vp]['datos']->valor_pendiente_por_pagar = $empleado->salario_x_dia() * $dias_pendientes;
+                    $vacaciones_pendientes[$vp]['datos']->valor_un_periodo_vacacion = $empleado->salario_x_dia() * 15;
+                    break;
+
+                case 'saldo_consolidado_fecha_corte':
+                    // LLamar a los consolidados
+                    $vacaciones_pendientes[$vp]['datos']->valor_pendiente_por_pagar = 0;
+                    $vacaciones_pendientes[$vp]['datos']->valor_un_periodo_vacacion = $empleado->salario_x_dia() * 15;
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+
+            $vp++;
+        }
+
+        asort($vacaciones_pendientes);
+
+        $vista = View::make('nomina.reportes.listado_vacaciones_pendientes_tabla', compact('vacaciones_pendientes','fecha_corte') )->render();
+                                                    
+        return $vista;
+    }
+
+    public function pdf_listado_vacaciones_pendientes()
+    {
+        $view = $this->tabla_listado_vacaciones_pendientes(Input::get('fecha_corte'), Input::get('nom_contrato_id'), Input::get('calcular_valor_con_base_en') );
+        $font_size = 12;
+        $vista = View::make( 'layouts.pdf3',compact('view','font_size') )->render();
+
+        $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
+        $orientacion='landscape';
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
+
+        return $pdf->download('pdf_listado_vacaciones_pendientes.pdf');
+    }
+
+    public function get_dias_pendientes( $empleado, $fecha_corte )
+    {
+        $dias_pagados_vacaciones = LibroVacacion::where([
+                                                            ['nom_contrato_id','=',$empleado->id],
+                                                            ['periodo_pagado_hasta','<>','0000-00-00']
+                                                        ])
+                                                ->sum('dias_pagados');
+        if ( is_null($dias_pagados_vacaciones) )
+        {
+            $dias_pagados_vacaciones = 0;
+        }
+
+        $dias_totales_laborados = $this->calcular_dias_laborados_calendario_30_dias( $empleado->fecha_ingreso, $fecha_corte );
+
+        $dias_totales_vacaciones = $dias_totales_laborados * 15 / 360;
+
+        $dias_pendientes = $dias_totales_vacaciones - $dias_pagados_vacaciones;
+
+        return $dias_pendientes;
+    }
+
+    public function calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final )
+    {
+        $vec_fecha_inicial = explode("-", $fecha_inicial);
+        $vec_fecha_final = explode("-", $fecha_final);
+
+        // Días iniciales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
+        $dias_iniciales = ( (int)$vec_fecha_inicial[0] * 360 ) + ( ( (int)$vec_fecha_inicial[1] - 1 ) * 30) + (int)$vec_fecha_inicial[2];
+
+        // Días finales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
+        $dias_finales = ( (int)$vec_fecha_final[0] * 360 ) + ( ( (int)$vec_fecha_final[1] - 1 ) * 30) + (int)$vec_fecha_final[2];
+
+        $dias_totales_laborados = ($dias_finales - $dias_iniciales) + 1;
+
+        return $dias_totales_laborados;
     }
 }

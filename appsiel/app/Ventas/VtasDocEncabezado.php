@@ -164,6 +164,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.consecutivo',
                 'vtas_doc_encabezados.fecha',
                 'vtas_doc_encabezados.fecha_vencimiento',
+                'vtas_doc_encabezados.fecha_entrega',
                 'vtas_doc_encabezados.vendedor_id',
                 'vtas_doc_encabezados.descripcion',
                 'vtas_doc_encabezados.estado',

@@ -113,10 +113,6 @@ class ReporteController extends Controller
 
         $observaciones = ObservacionesBoletin::get_observaciones_boletines( $this->colegio->id, $request->periodo_id, $request->curso_id);
 
-        //where(['id_periodo' => $request->periodo_id, 'curso_id' => $request->curso_id])->select('id_estudiante','puesto')->get();
-
-        //dd($calificaciones);
-
         $vista = View::make( 'calificaciones.incluir.consolidado_periodo_por_curso', compact('estudiantes', 'calificaciones', 'celdas_encabezado_areas', 'celdas_encabezado_asignaturas','vec_asignaturas','observaciones','periodo','curso','tope_escala_valoracion_minima') )->render();        
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );

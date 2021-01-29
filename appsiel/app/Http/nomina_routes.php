@@ -27,6 +27,7 @@ Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/
 Route::post('nom_liquidar_prestaciones_sociales', 'Nomina\PrestacionesSocialesController@liquidacion');
 Route::get('nom_retirar_prestaciones_sociales/{doc_encabezado_id}/{prestaciones}', 'Nomina\PrestacionesSocialesController@retirar_liquidacion');
 Route::get('nom_prestaciones_liquidadas_show/{registro_id}', 'Nomina\PrestacionesSocialesController@prestaciones_liquidadas_show');
+Route::get('nom_pdf_prestaciones_liquidadas/{registro_id}', 'Nomina\PrestacionesSocialesController@pdf_prestaciones_liquidadas');
 
 
 // RETEFUENTE
@@ -48,6 +49,11 @@ Route::get('nomina/reporte_desprendibles_de_pago','Nomina\ReporteController@repo
 Route::post('nomina/ajax_reporte_desprendibles_de_pago','Nomina\ReporteController@ajax_reporte_desprendibles_de_pago');
 Route::get('nomina_pdf_reporte_desprendibles_de_pago','Nomina\ReporteController@nomina_pdf_reporte_desprendibles_de_pago');
 Route::post( 'nom_enviar_por_email_desprendibles_de_pago','Nomina\ReporteController@enviar_por_email_desprendibles_de_pago');
+
+// Listado de vacaciones pendientes
+Route::get('nom_listado_vacaciones_pendientes','Nomina\ReporteController@listado_vacaciones_pendientes');
+Route::post('nom_ajax_listado_vacaciones_pendientes','Nomina\ReporteController@ajax_listado_vacaciones_pendientes');
+Route::get('nomina_pdf_listado_vacaciones_pendientes','Nomina\ReporteController@pdf_listado_vacaciones_pendientes');
 
 //PROCESOS
 Route::post('nom_procesar_archivo_plano','Nomina\ProcesosController@procesar_archivo_plano');

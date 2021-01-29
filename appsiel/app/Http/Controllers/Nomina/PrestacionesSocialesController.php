@@ -104,6 +104,22 @@ class PrestacionesSocialesController extends TransaccionController
 
                     if ( $request->almacenar_registros )
                     {
+                        if ( is_null($concepto) )
+                        {
+                            dd('Favor revisar la parametrización para la prestación ' . $prestacion);
+                        }
+
+                        // Validar que el conceto no esté registrado
+                        $cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
+                                        ->where('nom_contrato_id', $empleado->id)
+                                        ->where('nom_concepto_id', $concepto->id)
+                                        ->count();                            
+
+                        if ( $cant != 0 ) 
+                        {
+                            continue;
+                        }
+                        
                         $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $valores[0], $usuario);
                         $array_aux_prestacion->prestacion = $prestacion;
                         $array_aux_prestacion->tabla_resumen = $tabla_resumen;
@@ -292,10 +308,10 @@ class PrestacionesSocialesController extends TransaccionController
 
         $miga_pan = MigaPan::get_array($aplicacion, $modelo, $documento_nomina->descripcion);
 
-        return view( 'nomina.prestaciones_sociales.show_prestaciones_liquidadas', compact('miga_pan','vista','documento_nomina') );
+        return view( 'nomina.prestaciones_sociales.show_prestaciones_liquidadas', compact('miga_pan','vista','documento_nomina','id') );
     }
 
-    public function generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas )
+    public function generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas, $tipo_vista = 'show' )
     {
         $vista = '';
         foreach ($prestaciones_liquidadas as $linea)
@@ -303,10 +319,34 @@ class PrestacionesSocialesController extends TransaccionController
             $prestacion = $linea->prestacion;
             $tabla_resumen = (array)$linea->tabla_resumen;
             
-            $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen') )->render();
+            $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen' ) )->render() . '<div class="page-break"></div>';
+
+            if ( $tipo_vista = 'imprimir' )
+            {
+                $vista .= '<div class="page-break"></div>';
+            }
         }
 
         return $vista;
+    }
+
+    public function pdf_prestaciones_liquidadas( $id )
+    {
+        $registro = PrestacionesLiquidadas::find( $id );
+        $documento_nomina = NomDocEncabezado::find( $registro->nom_doc_encabezado_id );
+        $empleado = NomContrato::find($registro->nom_contrato_id);
+        $prestaciones_liquidadas = json_decode( $registro->prestaciones_liquidadas );
+
+        $encabezado = View::make( 'nomina.incluir.encabezado_transaccion', ['encabezado_doc' => $documento_nomina, 'empresa' => $documento_nomina->empresa , 'descripcion_transaccion' => $documento_nomina->tipo_documento_app->descripcion ] )->render();
+
+        $vista = $encabezado . '<h3 style="width:100%; text-aling:center;">Comprobante de liquidación de prestaciones sociales</h3>' . $this->generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas, 'imprimir' );
+
+        $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
+        $orientacion='portrait';//landscape
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
+
+        return $pdf->stream('pdf_listado_vacaciones_pendientes.pdf');
     }
     
 }
