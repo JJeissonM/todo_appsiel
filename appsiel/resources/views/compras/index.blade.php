@@ -50,8 +50,8 @@ $semana = ReportesController::ordenes_semana();
 									<ol>
 										@foreach($s['data'] as $d)
 										<li>
-											<a target="_blank" href="{{url('orden_compra/'.$d['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$d['documento']}}</a>
-											- {{$d['proveedor']." - ".$d['fecha_recepcion']}}
+											<a style="color: #0b97c4;" target="_blank" href="{{url('orden_compra/'.$d['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$d['documento']}}</a>
+													/ {{ $d['fecha'] }} > <span title="{{ $d['proveedor'] }}"> {{ substr( $d['proveedor'], 0, 10) }}... </span>
 										</li>
 										@endforeach
 									</ol>

@@ -6,7 +6,7 @@
 	$tabla = ReportesController::grafica_ventas_diarias(date("Y-m-d", strtotime($fecha_hoy . "- 30 days")), $fecha_hoy);
 	$vencidas = ReportesController::pedidos_vencidos();
 	$futuras = ReportesController::pedidos_futuros();
-	$semana = ReportesController::pedidos_semana();
+	$pedidos_de_la_semana = ReportesController::pedidos_semana();
 
 	$vendedor = App\Ventas\Vendedor::where( 'user_id', Auth::user()->id )->get()->first();
 
@@ -95,7 +95,7 @@
 					<div class="col-md-12">
 						<h4 style="text-align: center; width: 100%; background-color: #faf4d4; color: #636363;">Pedidos ésta semana</h4>
 						<div class="table-responsive">
-							@if($semana!=null)
+							@if($pedidos_de_la_semana!=null)
 							<table class="table table-striped table-bordered">
 								<thead>
 									<tr>
@@ -110,7 +110,7 @@
 								</thead>
 								<tbody>
 									<tr>
-										@foreach($semana as $s)
+										@foreach($pedidos_de_la_semana as $s)
 										<td>
 											<!-- <div class="alert alert-success" style="padding: 5px" role="alert">
 												{ {$s['fecha']}}
@@ -121,7 +121,7 @@
 												@foreach($s['data'] as $d)
 												<li>
 													<a style="color: #0b97c4;" target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$d['documento']}}</a>
-													- {{$d['cliente']." - ".$d['fecha']}}
+													/ {{ $d['fecha'] }} > <span title="{{ $d['cliente'] }}"> {{ substr( $d['cliente'], 0, 10) }}... </span>
 												</li>
 												@endforeach
 											</ol>
@@ -157,7 +157,7 @@
 								<tr>
 									<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
 									<td>{{$v['cliente']}}</td>
-									<td>{{$v['fecha']}}</td>
+									<td>{{$v['fecha_entrega']}}</td>
 								</tr>
 								@endforeach
 							</tbody>
@@ -183,7 +183,7 @@
 								<tr>
 									<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
 									<td>{{$v['cliente']}}</td>
-									<td>{{$v['fecha']}}</td>
+									<td>{{$v['fecha_entrega']}}</td>
 								</tr>
 								@endforeach
 							</tbody>

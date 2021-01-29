@@ -188,7 +188,7 @@ class Vacaciones implements Estrategia
         $valor_base_diaria = 0;
         $valor_base_diaria_sueldo = 0;
 
-        $fecha_inicial = $this->get_fecha_inicial_promedios( $fecha_final, $parametros_prestacion->cantidad_meses_a_promediar );
+        $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $fecha_final, $empleado );
         if ( $fecha_inicial < $empleado->fecha_ingreso)
         {
             $fecha_inicial = $empleado->fecha_ingreso;
@@ -236,7 +236,7 @@ class Vacaciones implements Estrategia
                     $valor_agrupacion_x_dia = $valor_acumulado_agrupacion / $cantidad_dias;
                 }
 
-                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find($parametros_prestacion->nom_agrupacion_id)->descripcion;
+                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find( $nom_agrupacion_id )->descripcion;
                 $this->tabla_resumen['valor_acumulado_salario'] = $empleado->sueldo;
                 $this->tabla_resumen['valor_acumulado_agrupacion'] = $valor_acumulado_agrupacion;
                 $this->tabla_resumen['valor_salario_x_dia'] = $empleado->salario_x_dia();
@@ -259,7 +259,7 @@ class Vacaciones implements Estrategia
                     $valor_base_diaria = $valor_acumulado_agrupacion / $cantidad_dias;
                 }
 
-                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find($parametros_prestacion->nom_agrupacion_id)->descripcion;
+                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find( $nom_agrupacion_id )->descripcion;
                 $this->tabla_resumen['valor_acumulado_salario'] = 0;
                 $this->tabla_resumen['valor_acumulado_agrupacion'] = $valor_acumulado_agrupacion;
                 $this->tabla_resumen['valor_salario_x_dia'] = 0;
@@ -323,38 +323,6 @@ class Vacaciones implements Estrategia
                                             ->sum( 'valor_deduccion' );
 
         return ( $total_devengos - $total_deducciones );
-    }
-
-    public function get_fecha_inicial_promedios( $fecha_final, $cantidad_meses_a_promediar )
-    {
-        $vec_fecha_documento = explode("-", $fecha_final);
-        
-        $anio_final = (int)$vec_fecha_documento[0];
-        $mes_final = (int)$vec_fecha_documento[1];
-        $dia_final = $vec_fecha_documento[2];
-
-        $anio_inicial = $anio_final;
-        $mes_inicial = 0;
-        $dia_inicial = '01';
-
-        $mes_anterior = $mes_final + 1;
-        for ( $i = $cantidad_meses_a_promediar; $i > 0; $i--)
-        {
-            $mes_iteracion = $mes_anterior - 1;
-            if ( $mes_iteracion <= 0 )
-            {
-                $mes_inicial = 12 + $mes_iteracion;
-                $anio_inicial = $anio_final - 1;
-            }else{
-                $mes_inicial = $mes_iteracion;
-            }
-            $mes_anterior = $mes_iteracion;
-        }
-
-        $mes_inicial = $this->formatear_numero_a_texto_dos_digitos( $mes_inicial );
-        $anio_inicial =  $this->formatear_numero_a_texto_dos_digitos( $anio_inicial );
-
-        return ( $anio_inicial . '-' . $mes_inicial . '-' . $dia_inicial );
     }
 
     public function get_cantidad_dias_amortizar( $programacion_vacaciones, $documento_nomina )
@@ -483,10 +451,12 @@ class Vacaciones implements Estrategia
     {
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-        $cantidad_horas_laboradas = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'cantidad_horas' );
+        $cantidad_horas_laboradas = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
+                                            ->where( 'nom_conceptos.forma_parte_basico', 1 )
+                                            ->whereIn( 'nom_doc_registros.nom_concepto_id', $conceptos_de_la_agrupacion )
+                                            ->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
+                                            ->whereBetween( 'nom_doc_registros.fecha', [$fecha_inicial,$fecha_final] )
+                                            ->sum( 'nom_doc_registros.cantidad_horas' );/**/
 
         return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
     }
@@ -529,6 +499,49 @@ class Vacaciones implements Estrategia
 
     public function retirar( NomDocRegistro $registro )
     {
+        if ( $registro->encabezado_documento->tipo_liquidacion == 'terminacion_contrato' )
+        {
+
+            if( is_null( $registro->contrato ) || is_null( $registro->concepto ) )
+            {
+                return 0;
+            }
+
+            $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion','vacaciones')
+                                                                        ->where('grupo_empleado_id',$registro->contrato->grupo_empleado_id)
+                                                                        ->get()
+                                                                        ->first();
+
+            if( is_null( $parametros_prestacion ) )
+            {
+                return 0;
+            }
+
+
+            if ( $registro->nom_concepto_id != $parametros_prestacion->nom_concepto_id )
+            {
+                return 0;
+            }
+            
+            // Borrar registro prestaciones liquidads
+            PrestacionesLiquidadas::where(
+                                            ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
+                                            ['nom_contrato_id' => $registro->nom_contrato_id ]
+                                        )
+                                    ->delete();
+            
+            // Borrar registro libro de vacaciones
+            LibroVacacion::where(
+                                    ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
+                                    ['nom_contrato_id' => $registro->nom_contrato_id ]
+                                )
+                            ->delete();
+
+            $registro->delete();
+
+            return 0;
+        }
+        
         $novedad = $registro->novedad_tnl;
         
         if( is_null( $novedad ) )
@@ -553,19 +566,21 @@ class Vacaciones implements Estrategia
 
         if ( $registro->nom_concepto_id == $parametros_prestacion->nom_concepto_id )
         {
-            // Actualiza programación de vacaciones (TNL)
+            // 1. Actualiza programación de vacaciones (TNL)
             $programacion_vacaciones = ProgramacionVacacion::find( $novedad->id );
 
             $programacion_vacaciones->cantidad_dias_amortizados -= $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $registro->encabezado_documento );
             $programacion_vacaciones->cantidad_dias_pendientes_amortizar += $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $registro->encabezado_documento );
             $programacion_vacaciones->save();
             
+            // 2.
             PrestacionesLiquidadas::where(
                                             ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
                                             ['nom_contrato_id' => $registro->nom_contrato_id ]
                                         )
                                     ->delete();
             
+            // 3.
             $libro_vacaciones = LibroVacacion::where( 'novedad_tnl_id', $programacion_vacaciones->id )->get()->first();
             $libro_vacaciones->nom_doc_encabezado_id = 0;
             $libro_vacaciones->periodo_pagado_desde = '0000-00-00';

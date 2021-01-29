@@ -103,22 +103,9 @@
 				
 			{{ Form::close() }}
 
-			<br/>
-
-			@include('ventas.incluir.elementos_remisiones_pendientes')
 
 			<br/>
 
-
-
-			<!--
-			<div class="well">
-				<h3>Llamar datos de la bascula</h3>
-				<label class="radio-inline"><input type="radio" name="bascula_id" value="3">Bascula 1</label>
-				<label class="radio-inline"><input type="radio" name="bascula_id" value="34">Bascula 2</label>
-				<label class="radio-inline"> <button class="btn btn-default btn-xs" id="cargar_datos_producto"> Cargar productos </button> </label>
-			</div>
-		-->
 
 			{!! $tabla->dibujar() !!}
 
@@ -147,4 +134,10 @@
 
 @section('scripts')
 	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$('#fecha_entrega').val( get_fecha_hoy() );
+		});
+	</script>
 @endsection

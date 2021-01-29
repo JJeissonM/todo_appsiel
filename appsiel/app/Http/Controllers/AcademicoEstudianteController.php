@@ -181,7 +181,7 @@ class AcademicoEstudianteController extends Controller
         }
 
         $estudiante = Estudiante::get_datos_basicos($this->estudiante->id);
-
+        
         if ($periodo->periodo_de_promedios) {
             return View::make('calificaciones.incluir.notas_estudiante_periodo_final', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante', 'periodos_del_anio_lectivo'))->render();
         } else {

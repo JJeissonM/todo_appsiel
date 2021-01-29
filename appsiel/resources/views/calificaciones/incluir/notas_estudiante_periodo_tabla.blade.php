@@ -1,5 +1,6 @@
 <?php 
     $periodo = App\Calificaciones\Periodo::find($periodo_id);
+    $nota_reprobar = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
 ?>
 
 <input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
@@ -8,35 +9,6 @@
 <p> Para ver detalles, ubique el cursor sobre la calificación. </p>
 
 <br>
-
-<?php
-
-    $escalas = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->get();
-
-    $tbody = '<table style="border: 1px solid; border_collapsed: collapsed; width:170px; font-size: 3.5mm;">
-                <tr>
-                    <td colspan="3" style="text-align:center;border: 1px solid; padding: 10px;">Escala de valoración
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-align:center;border: 1px solid; padding: 10px;">Desempeño</td>
-                    <td style="text-align:center;border: 1px solid; padding: 10px;">Calificación Mínima</td>
-                    <td style="text-align:center;border: 1px solid; padding: 10px;">Calificación Máxima</td>
-                </tr>';
-    foreach($escalas as $linea)
-    {
-        $tbody.='<tr>
-                    <td style="border: 1px solid; padding: 10px;">'.$linea->nombre_escala.'</td>
-                    <td style="text-align:center;border: 1px solid; padding: 10px;">'.number_format($linea->calificacion_minima,2,'.',',').'</td>
-                    <td style="text-align:center;border: 1px solid; padding: 10px;">'.number_format($linea->calificacion_maxima,2,'.',',').'</td>
-                </tr>';
-    }
-
-    $tbody.='</table>';
-    echo $tbody;
-?>
-
-<br><br>
 
 @if( $observacion_boletin->puesto != '' )
     <div>
@@ -100,6 +72,11 @@
                                 $texto_calificacion = number_format($registros[$i]->$c,2,'.',',');
                                 $n++;
                             }
+
+                            $style="color: #000000;";
+                            if($texto_calificacion<=$nota_reprobar){
+                                $style="color: #f00;";
+                            }
                             
                             $fecha_calificacion = '';
                             $detalle_calificacion = 'Sin detalle.';
@@ -113,7 +90,7 @@
                             }
                     ?>
                             <td>
-                                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-html="true" data-placement="top" title="{{$fecha_calificacion.$detalle_calificacion}}"> {{$texto_calificacion}} </button >
+                                <button style="{{$style}}" type="button" class="btn btn-secondary" data-toggle="tooltip" data-html="true" data-placement="top" title="{{$fecha_calificacion.$detalle_calificacion}}"> {{$texto_calificacion}} </button >
                             </td>
                     <?php
                             $promedio+=(float)$registros[$i]->$c;
@@ -142,8 +119,12 @@
 
                                 $n_nom_logros = count($logros);
                             }
+                            $style2="color: #000000;";
+                            if($prom<=$nota_reprobar){
+                                $style2="color: #f00;";
+                            }
                     ?>
-                            <th style="font-size: 16px;"> {{number_format($prom, 2, '.', ',')}} </th>
+                            <th style="font-size: 16px; {{$style2}}"> {{number_format($prom, 2, '.', ',')}} </th>
                             <td> {{$desempeno}} </td>
                             <td>
                                <ul>
@@ -176,3 +157,30 @@
 </div>
 
 <br>
+
+<?php
+
+    $escalas = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->get();
+
+    $tbody = '<table style="border: 1px solid; border_collapsed: collapsed; width:170px; font-size: 3.5mm;">
+                <tr>
+                    <td colspan="3" style="text-align:center;border: 1px solid; padding: 10px;">Escala de valoración
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">Desempeño</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">Calificación Mínima</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">Calificación Máxima</td>
+                </tr>';
+    foreach($escalas as $linea)
+    {
+        $tbody.='<tr>
+                    <td style="border: 1px solid; padding: 10px;">'.$linea->nombre_escala.'</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">'.number_format($linea->calificacion_minima,2,'.',',').'</td>
+                    <td style="text-align:center;border: 1px solid; padding: 10px;">'.number_format($linea->calificacion_maxima,2,'.',',').'</td>
+                </tr>';
+    }
+
+    $tbody.='</table>';
+    echo $tbody;
+?>

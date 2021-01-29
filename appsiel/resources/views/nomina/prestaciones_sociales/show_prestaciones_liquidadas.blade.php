@@ -4,6 +4,8 @@
 
 	{{ Form::bsMigaPan($miga_pan) }}
 	
+	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnPrint( url('nom_pdf_prestaciones_liquidadas/') . '/' . $id ) }}
+	<br><br>
 
 	@include('layouts.mensajes')
 

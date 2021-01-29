@@ -85,11 +85,7 @@ class PrimaServicios implements Estrategia
         $valor_base_diaria = 0;
         $valor_base_diaria_sueldo = 0;
 
-        $fecha_inicial = $this->get_fecha_inicial_promedios( $fecha_final, $parametros_prestacion->cantidad_meses_a_promediar );
-        if ( $fecha_inicial < $empleado->fecha_ingreso)
-        {
-            $fecha_inicial = $empleado->fecha_ingreso;
-        }
+        $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $fecha_final, $empleado );
 
         $this->tabla_resumen['fecha_inicial_promedios'] = $fecha_inicial;
         $this->tabla_resumen['fecha_final_promedios'] = $fecha_final;
@@ -120,7 +116,7 @@ class PrimaServicios implements Estrategia
                 
                 $valor_agrupacion_x_dia = 0;                
 
-                $valor_acumulado_agrupacion = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $fecha_final );
+                $valor_acumulado_agrupacion = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_variables( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $fecha_final );
                 
                 if ( $cantidad_dias != 0 )
                 {
@@ -143,7 +139,11 @@ class PrimaServicios implements Estrategia
             
             case 'promedio_agrupacion':
 
-                $valor_acumulado_agrupacion = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $fecha_final );
+                $valor_acumulado_agrupacion_variables = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_variables( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $this->fecha_final_promedios );
+
+                $valor_acumulado_agrupacion_salario = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_solo_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $this->fecha_final_liquidacion );
+
+                $valor_acumulado_agrupacion = $valor_acumulado_agrupacion_salario + $valor_acumulado_agrupacion_variables;
 
                 if ( $cantidad_dias != 0 )
                 {
@@ -172,7 +172,7 @@ class PrimaServicios implements Estrategia
         return $valor_base_diaria;
     }
 
-    public function get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
+    public function get_valor_acumulado_agrupacion_entre_meses_conceptos_variables( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
     {
 
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
@@ -198,17 +198,25 @@ class PrimaServicios implements Estrategia
         return ( $total_devengos - $total_deducciones );
     }
 
-    public function get_valor_acumulado_agrupacion_entre_meses( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
+    public function get_valor_acumulado_agrupacion_entre_meses_conceptos_solo_salario( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
     {
 
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
+        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
 
-        $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+        $vec_conceptos = [];
+        foreach ($conceptos_de_la_agrupacion as $concepto)
+        {
+            if ($concepto->forma_parte_basico)
+            {
+                $vec_conceptos[] = $concepto->id;
+            }
+        }
+        $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
                                             ->where( 'core_tercero_id', $empleado->core_tercero_id )
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'valor_devengo' );
 
-        $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+        $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
                                             ->where( 'core_tercero_id', $empleado->core_tercero_id )
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'valor_deduccion' );
@@ -216,36 +224,24 @@ class PrimaServicios implements Estrategia
         return ( $total_devengos - $total_deducciones );
     }
 
-    public function get_fecha_inicial_promedios( $fecha_final, $cantidad_meses_a_promediar )
+    public function get_valor_acumulado_agrupacion_entre_meses( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
     {
-        $vec_fecha_documento = explode("-", $fecha_final);
-        
-        $anio_final = (int)$vec_fecha_documento[0];
-        $mes_final = (int)$vec_fecha_documento[1];
-        $dia_final = $vec_fecha_documento[2];
 
-        $anio_inicial = $anio_final;
-        $mes_inicial = 0;
-        $dia_inicial = '01';
+        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-        $mes_anterior = $mes_final + 1;
-        for ( $i = $cantidad_meses_a_promediar; $i > 0; $i--)
-        {
-            $mes_iteracion = $mes_anterior - 1;
-            if ( $mes_iteracion <= 0 )
-            {
-                $mes_inicial = 12 + $mes_iteracion;
-                $anio_inicial = $anio_final - 1;
-            }else{
-                $mes_inicial = $mes_iteracion;
-            }
-            $mes_anterior = $mes_iteracion;
-        }
+        $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
+                                            //->where( 'nom_concepto_id', '<>', 66 )
+                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
+                                            ->sum( 'valor_devengo' );
 
-        $mes_inicial = $this->formatear_numero_a_texto_dos_digitos( $mes_inicial );
-        $anio_inicial =  $this->formatear_numero_a_texto_dos_digitos( $anio_inicial );
+        $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
+                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
+                                            //->where( 'nom_concepto_id', '<>', 66 )
+                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
+                                            ->sum( 'valor_deduccion' );
 
-        return ( $anio_inicial . '-' . $mes_inicial . '-' . $dia_inicial );
+        return ( $total_devengos - $total_deducciones );
     }
 
     public function formatear_numero_a_texto_dos_digitos( $numero )
@@ -265,7 +261,7 @@ class PrimaServicios implements Estrategia
             return 0;
         }
 
-        $fecha_inicial = $this->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $parametros_prestacion->cantidad_meses_a_promediar );
+        $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
 
         $dias_totales_laborados = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion, $parametros_prestacion->nom_agrupacion_id );
 
@@ -281,22 +277,15 @@ class PrimaServicios implements Estrategia
 
     public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
     {
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
+        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-        // El tiempo se calcula para los concepto que forman parte del básico
-        $vec_conceptos = [];
-        foreach ($conceptos_de_la_agrupacion as $concepto)
-        {
-            if ($concepto->forma_parte_basico)
-            {
-                $vec_conceptos[] = $concepto->id;
-            }
-        }
-
-        $cantidad_horas_laboradas = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
-                                            ->where( 'nom_contrato_id', $empleado->id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'cantidad_horas' );
+        $cantidad_horas_laboradas = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
+                                            ->whereBetween( 'nom_doc_registros.fecha', [$fecha_inicial,$fecha_final] )
+                                            ->whereIn( 'nom_doc_registros.nom_concepto_id', $conceptos_de_la_agrupacion )
+                                            ->where( 'nom_conceptos.forma_parte_basico', 1 )
+                                            //->where( 'nom_conceptos.id', '<>', 66 )
+                                            ->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
+                                            ->sum( 'nom_doc_registros.cantidad_horas' );/**/
 
         return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
     }

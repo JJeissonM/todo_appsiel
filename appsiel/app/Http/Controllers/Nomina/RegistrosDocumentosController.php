@@ -191,8 +191,9 @@ class RegistrosDocumentosController extends TransaccionController
         $datos['modificado_por'] = '';
 
         // Guardar los valores para cada persona      
-        for( $i=0; $i < $request->cantidad_empleados; $i++)
+        for( $i=0; $i < (int)$request->cantidad_empleados; $i++)
         {
+
             if ( isset( $request->valor ) )
             {
                 $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i) );
@@ -201,7 +202,7 @@ class RegistrosDocumentosController extends TransaccionController
             if ( isset( $request->cantidad_horas ) )
             {
                 $this->registrar_por_cantidad_horas( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('cantidad_horas.'.$i) );
-            }/**/
+            }
         }
 
         $this->actualizar_totales_documento($documento->id);
@@ -231,7 +232,7 @@ class RegistrosDocumentosController extends TransaccionController
     {
         if ( $cantidad_horas > 0 )
         {
-            $sueldo = NomContrato::where('core_tercero_id',$core_tercero_id)->where('estado','Activo')->value('sueldo');
+            $sueldo = NomContrato::where('core_tercero_id',$core_tercero_id)->value('sueldo');
 
             if ( is_null( $sueldo ) )
             {
@@ -365,7 +366,7 @@ class RegistrosDocumentosController extends TransaccionController
             $registro->delete();
         }else{
 
-            $sueldo = NomContrato::where('core_tercero_id',$core_tercero_id)->where('estado','Activo')->value('sueldo');
+            $sueldo = NomContrato::where('core_tercero_id',$core_tercero_id)->value('sueldo');
 
             if ( is_null( $sueldo ) )
             {

@@ -4,8 +4,8 @@
 
 <style type="text/css">
 	.img-responsive:hover {
-		transform: scale(1.1);
-		cursor: pointer;
+		/*transform: scale(1.1);
+		cursor: pointer;*/
 	}
 </style>
 
@@ -22,14 +22,11 @@
 	<div class="marco_formulario">
 
 		<div class="row">
-			<div class="col-md-2"></div>
-			<div class="col-md-4" style="position: relative;">
-				<h2 style="text-align: left; color: #ff9800;">Mis Reconocimientos</h2>
+			<div class="col-md-12" style="display: flex; justify-content: center;">
+				<img style="width: 45px; height: 80px;" src="{{url('assets/img/reconocimientos.png')}}" />
+			    <h3 style="color: #ff9800;">Mis Reconocimientos</h3>
+				<img style="width: 45px; height: 80px;" src="{{url('assets/img/reconocimientos.png')}}" />
 			</div>
-			<div class="col-md-4">
-				<img style="float: right;" src="{{url('assets/img/reconocimientos.png')}}" />
-			</div>
-			<div class="col-md-2"></div>
 		</div>
 		<hr>
 
