@@ -62,7 +62,8 @@
                 </div>
                 <div class="form-group">
                     <label>Más Detalles (Parte Posterior) Máx: 250 caracteres</label>
-                    <textarea name="more_details" class="form-control contenido" required rows="5"></textarea>
+                    <textarea id="detalles" name="more_details" class="form-control contenido" required rows="5"></textarea>
+                    <p id="limittext"></p>
                 </div>
                 <div class="form-group">
                     <label>Color del Texto</label>
@@ -119,5 +120,22 @@
         $(this).attr('name', original_name);
 
     });
+
+    var campo = document.getElementById("detalles");
+
+    campo.addEventListener("keydown",(e)=>{
+        var maxLength = 249;
+        var strLength = campo.value.length;
+        console.log(strLength);
+        
+        if(strLength > maxLength){            
+            campo.value = campo.value.substring(0, maxLength);            
+        }else{
+            document.getElementById("limittext").innerHTML = strLength+' de '+maxLength+' caracteres.';
+            
+        }
+    });
+
+
 </script>
 @endsection
