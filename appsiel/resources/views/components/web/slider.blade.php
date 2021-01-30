@@ -1,5 +1,8 @@
 <style>   
 
+        #main-slider{
+            position: relative;
+        }
 
     .slider-font {
         @if( !is_null($slider) )
@@ -22,51 +25,29 @@
 
     @media (max-width: 1440px){
         .owl-carousel img {
-            height: 480px;
+           height: 480px;
             
         }
         #main-slider .item {
             height: 482px;
         }
     }
-
-    @media (max-width: 769px){
-        #main-slider .owl-next,
-        #main-slider .owl-prev{
-            top: 25%;
-        } 
-    }
-
-    @media @media (min-width: 768px) and (max-width: 1024px){
-        #main-slider .owl-next,
-        #main-slider .owl-prev{
-            top: 40%;
-        } 
-    }
-
-
+    
     @media (max-width: 1024px){
         .owl-carousel img {
             width: 100vw;
-            /*object-position: 30% 50% !important;*/
         }
         .owl-carousel img:after{
             width: 100vw;
-            /*transition: object-position 7s;
-            object-position: 70% 50% !important;*/
         }
 
         #image{
             width: 100vw;
-            /*transition: object-position 7s;
-            object-position: 70% 50% !important;*/
             animation: linear 7s infinite alternate example;
         }
 
         #image:hover{
             width: 100vw;
-            /*transition: object-position 7s;
-            object-position: 70% 50% !important;*/
             animation-play-state: paused;        
         }
     }
@@ -92,7 +73,7 @@
 
 
 </style>
-<section id="main-slider" class="slider-font">
+<section id="main-slider" class="slider-font" >
     @if($slider != null && $slider->items->count() > 0)
     <div class="owl-carousel slider-font">
         @foreach($slider->items as $item)

@@ -1,5 +1,8 @@
 <style>   
 
+    #main-slider{
+      position: relative;
+    }
 
     .slider-font {
         @if( !is_null($slider) )
@@ -22,28 +25,6 @@
         width: 100% !important;
         height: auto !important;
     }
-
-    @media (max-width: 500px){
-        #main-slider .owl-next,
-        #main-slider .owl-prev{
-            top: 20%;
-        } 
-    }
-
-    @media (max-width: 769px){
-        #main-slider .owl-next,
-        #main-slider .owl-prev{
-            top: 25%;
-        } 
-    }
-
-    @media @media (min-width: 768px) and (max-width: 1024px){
-        #main-slider .owl-next,
-        #main-slider .owl-prev{
-            top: 40%;
-        } 
-    }
-    
 
     #main-slider .owl-prev{
         border-radius: 0 35px 35px 0;
