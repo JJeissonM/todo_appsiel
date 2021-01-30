@@ -890,7 +890,7 @@ class ReporteController extends TesoreriaController
             if (!is_null($acl))
             {
                 $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
-                                    ->where('id',$acl->recurso_id)
+                                    ->where('teso_cuentas_bancarias.id',$acl->recurso_id)
                                     ->orderBy('contab_cuentas.codigo')
                                     ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
                                     ->get();
@@ -940,6 +940,7 @@ class ReporteController extends TesoreriaController
 
     public static function get_cajas_permitidas()
     {
+        $cajas = [];
         $user = Auth::user();
         if( $user->hasRole('Agencia') )
         {

@@ -110,7 +110,7 @@ class TesoCuentaBancaria extends Model
             if (!is_null($acl))
             {
                 $cuentas = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
-                            ->where('id',$acl->recurso_id)
+                            ->where('teso_cuentas_bancarias.id',$acl->recurso_id)
                             ->where('teso_cuentas_bancarias.estado','Activo')
                             ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_entidades_financieras.descripcion AS entidad_financiera')
                             ->get();
