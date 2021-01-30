@@ -63,8 +63,8 @@ class TesoCaja extends Model
     public static function opciones_campo_select()
     {
         $opciones = TesoCaja::where('teso_cajas.estado', 'Activo')
-            ->select('teso_cajas.id', 'teso_cajas.descripcion')
-            ->get();
+                            ->select('teso_cajas.id', 'teso_cajas.descripcion')
+                            ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion)

@@ -32,9 +32,13 @@
                 <div class="modal-body" style="padding: 0;">
                     <div class="col-md-12" style="padding: 40px; color: #000; text-align: justify;">
                         <h3 class="modal-font">{{$modal->title}}</h3>
-                        <p class="modal-font">{{$modal->body}}</p>
+                        
+                        <p class="modal-font">
+                            {!! $modal->body !!}
+                        </p>
+                        
                         @if($modal->enlace!=null || $modal->enlace!='')
-                        <a target="_blank" class="btn btn-primary modal-font" href="{{$modal->enlace}}">Conoce más...</a>
+                            <a target="_blank" class="btn btn-primary modal-font" href="{{$modal->enlace}}">Conoce más...</a>
                         @endif
                     </div>
                 </div>
