@@ -7,8 +7,10 @@ $(document).ready(function(){
   if ( valor[1] == 'Tarjeta bancaria' )
   {
     $('#teso_cuenta_bancaria_id').parent().parent().fadeIn();
+    $('#teso_cuenta_bancaria_id').attr('required','required');
   }else{
     $('#teso_caja_id').parent().parent().fadeIn();
+    $('#teso_caja_id').attr('required','required');
   }
 
 	$('#teso_medio_recaudo_id').change(function(){
@@ -16,14 +18,24 @@ $(document).ready(function(){
 		if (valor!='') {
 			if (valor[1]=='Tarjeta bancaria'){
 				$('#teso_caja_id').parent().parent().fadeOut();
+        $('#teso_caja_id').removeAttr('required');
+
 				$('#teso_cuenta_bancaria_id').parent().parent().fadeIn();
+        $('#teso_cuenta_bancaria_id').attr('required','required');
 			}else{
-				$('#teso_cuenta_bancaria_id').parent().parent().fadeOut();
+				
+        $('#teso_cuenta_bancaria_id').parent().parent().fadeOut();
+        $('#teso_cuenta_bancaria_id').removeAttr('required');
+
 				$('#teso_caja_id').parent().parent().fadeIn();
+        $('#teso_caja_id').attr('required','required');
 			}
 		}else{
 			$('#teso_cuenta_bancaria_id').parent().parent().fadeOut();
+      $('#teso_cuenta_bancaria_id').removeAttr('required');
+
 			$('#teso_caja_id').parent().parent().fadeOut();
+      $('#teso_caja_id').removeAttr('required');
 			$(this).focus();
 		}
 	});

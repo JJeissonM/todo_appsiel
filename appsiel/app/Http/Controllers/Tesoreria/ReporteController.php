@@ -12,6 +12,7 @@ use Lava;
 use Input;
 use Cache;
 
+use App\Core\Acl;
 
 use App\Http\Controllers\Core\ConfiguracionController;
 use App\Http\Controllers\Sistema\ModeloController;
@@ -845,10 +846,8 @@ class ReporteController extends TesoreriaController
     */
     public static function reporte_cuentas( $fecha_corte )
     {
-        $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
-                                    ->orderBy('contab_cuentas.codigo')
-                                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
-                                    ->get();
+        $cuentas = self::get_cuentas_permitidas();
+
         $response = [
             'total' => 0,
             'data' => null
@@ -874,12 +873,46 @@ class ReporteController extends TesoreriaController
         return $response;
     }
 
+
+    public static function get_cuentas_permitidas()
+    {
+        $cuentas = [];
+        $user = Auth::user();
+        if( $user->hasRole('Agencia') )
+        {
+            $acl = Acl::where([
+                            ['modelo_recurso_id','=',33],
+                            ['user_id','=',Auth::user()->id] ,
+                            ['permiso_concedido','=',1] 
+                        ] )
+                    ->get()->first();
+
+            if (!is_null($acl))
+            {
+                $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
+                                    ->where('id',$acl->recurso_id)
+                                    ->orderBy('contab_cuentas.codigo')
+                                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
+                                    ->get();
+            }
+            
+        }else{
+            $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
+                                    ->orderBy('contab_cuentas.codigo')
+                                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
+                                    ->get();
+        }
+
+        return $cuentas;
+    }
+
     /*
     Reporte saldos de cajas
     */
     public static function reporte_cajas( $fecha_corte )
     {
-        $cajas = TesoCaja::all();
+        $cajas = self::get_cajas_permitidas();
+        
         $response = [
             'total' => 0,
             'data' => null
@@ -903,6 +936,30 @@ class ReporteController extends TesoreriaController
             $response['total'] = $total;
         }
         return $response;
+    }
+
+    public static function get_cajas_permitidas()
+    {
+        $user = Auth::user();
+        if( $user->hasRole('Agencia') )
+        {
+            $acl = Acl::where([
+                            ['modelo_recurso_id','=',45],
+                            ['user_id','=',Auth::user()->id] ,
+                            ['permiso_concedido','=',1] 
+                        ] )
+                    ->get()->first();
+
+            if (!is_null($acl))
+            {
+                $cajas = TesoCaja::where('id',$acl->recurso_id)->get();
+            }
+            
+        }else{
+            $cajas = TesoCaja::all();
+        }
+
+        return $cajas;
     }
 
 
