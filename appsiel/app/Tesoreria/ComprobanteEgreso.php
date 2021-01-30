@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use Auth;
+use App\Core\Acl;
 
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
@@ -58,9 +59,29 @@ class ComprobanteEgreso extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $transaccion_id = 57;
+        $teso_caja_id = self::get_caja_id();
 
         if ( $search == '' )
         {
+            if ( $teso_caja_id!= 0 )
+            {
+                return ComprobanteEgreso::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+                        ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
+                        ->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
+                        ->where('teso_doc_encabezados.core_empresa_id','=',Auth::user()->empresa_id)
+                        ->where('teso_doc_encabezados.teso_caja_id','=', $teso_caja_id)
+                        ->select( 
+                                    'teso_doc_encabezados.fecha AS campo1',
+                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
+                                    DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                                    'teso_doc_encabezados.descripcion AS campo4',
+                                    'teso_doc_encabezados.valor_total AS campo5',
+                                    'teso_doc_encabezados.estado AS campo6',
+                                    'teso_doc_encabezados.id AS campo7')
+                        ->orderBy('teso_doc_encabezados.fecha', 'DESC')
+                        ->paginate($nro_registros);
+            }
+
             return ComprobanteEgreso::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                         ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
                         ->where('teso_doc_encabezados.core_tipo_transaccion_id','=', $transaccion_id)
@@ -97,6 +118,29 @@ class ComprobanteEgreso extends Model
                     ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
                     ->orderBy('teso_doc_encabezados.fecha', 'DESC')
                     ->paginate($nro_registros);
+    }
+
+    public static function get_caja_id()
+    {
+        $teso_caja_id = 0;
+        $user = Auth::user();
+        if( $user->hasRole('Agencia') )
+        {
+            $acl = Acl::where([
+                            ['modelo_recurso_id','=',45],
+                            ['user_id','=',Auth::user()->id] ,
+                            ['permiso_concedido','=',1] 
+                        ] )
+                    ->get()->first();
+
+            if (!is_null($acl))
+            {
+                $teso_caja_id = $acl->recurso_id;
+            }
+            
+        }
+
+        return $teso_caja_id;
     }
 
     public static function sqlString($search)

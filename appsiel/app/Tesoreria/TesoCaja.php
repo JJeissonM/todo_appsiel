@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use Auth;
+use App\Core\Acl;
 
 class TesoCaja extends Model
 {
@@ -62,9 +63,7 @@ class TesoCaja extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = TesoCaja::where('teso_cajas.estado', 'Activo')
-            ->select('teso_cajas.id', 'teso_cajas.descripcion')
-            ->get();
+        $opciones = self::get_cajas_permitidas();
 
         $vec[''] = '';
         foreach ($opciones as $opcion)
@@ -73,6 +72,36 @@ class TesoCaja extends Model
         }
 
         return $vec;
+    }
+
+
+    public static function get_cajas_permitidas()
+    {
+        $user = Auth::user();
+        if( $user->hasRole('Agencia') )
+        {
+            $acl = Acl::where([
+                            ['modelo_recurso_id','=',45],
+                            ['user_id','=',Auth::user()->id] ,
+                            ['permiso_concedido','=',1] 
+                        ] )
+                    ->get()->first();
+
+            if (!is_null($acl))
+            {
+                $cajas = TesoCaja::where('id',$acl->recurso_id)
+                            ->where('teso_cajas.estado', 'Activo')
+                            ->select('teso_cajas.id', 'teso_cajas.descripcion')
+                            ->get();
+            }
+            
+        }else{
+            $cajas = TesoCaja::where('teso_cajas.estado', 'Activo')
+                            ->select('teso_cajas.id', 'teso_cajas.descripcion')
+                            ->get();
+        }
+
+        return $cajas;
     }
 
 

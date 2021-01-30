@@ -35,7 +35,7 @@ class ContratoTransporteController extends Controller
 
         $cont = [];
         $user = Auth::user();
-        if( $user->hasRole('Vehículo (FUEC)') )
+        if( $user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia') )
         {
             $vehiculo = Vehiculo::where( 'placa', $user->email )->get()->first();
             if (!is_null($vehiculo))

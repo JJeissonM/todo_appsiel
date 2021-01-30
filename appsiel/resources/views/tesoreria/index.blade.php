@@ -1,17 +1,17 @@
 <?php
 
-use App\Http\Controllers\Tesoreria\ReporteController;
+	use App\Http\Controllers\Tesoreria\ReporteController;
 
-$fecha_hoy = date('Y-m-d');
+	$fecha_hoy = date('Y-m-d');
 
-if ( !is_null( Input::get('fecha_corte') ) )
-{
-	$fecha_hoy = Input::get('fecha_corte');
-}
+	if ( !is_null( Input::get('fecha_corte') ) )
+	{
+		$fecha_hoy = Input::get('fecha_corte');
+	}
 
-$tabla = ReporteController::grafica_movimientos_diarios( date("Y-m-d", strtotime($fecha_hoy . "- 30 days") ), $fecha_hoy);
-$cuentas = ReporteController::reporte_cuentas( $fecha_hoy );
-$cajas = ReporteController::reporte_cajas( $fecha_hoy );
+	$tabla = ReporteController::grafica_movimientos_diarios( date("Y-m-d", strtotime($fecha_hoy . "- 30 days") ), $fecha_hoy);
+	$cuentas = ReporteController::reporte_cuentas( $fecha_hoy );
+	$cajas = ReporteController::reporte_cajas( $fecha_hoy );
 ?>
 @extends('layouts.principal')
 

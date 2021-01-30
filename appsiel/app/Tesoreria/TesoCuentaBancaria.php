@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Core\Acl;
+
 use App\Tesoreria\TesoEntidadFinanciera;
 
 class TesoCuentaBancaria extends Model
@@ -81,10 +83,7 @@ class TesoCuentaBancaria extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
-                            ->where('teso_cuentas_bancarias.estado','Activo')
-                            ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_entidades_financieras.descripcion AS entidad_financiera')
-                            ->get();
+        $opciones = self::get_cuentas_permitidas();
 
         $vec['']='';
         foreach ($opciones as $opcion)
@@ -93,6 +92,38 @@ class TesoCuentaBancaria extends Model
         }
 
         return $vec;
+    }
+
+    public static function get_cuentas_permitidas()
+    {
+        $cuentas = [];
+        $user = Auth::user();
+        if( $user->hasRole('Agencia') )
+        {
+            $acl = Acl::where([
+                            ['modelo_recurso_id','=',33],
+                            ['user_id','=',Auth::user()->id] ,
+                            ['permiso_concedido','=',1] 
+                        ] )
+                    ->get()->first();
+
+            if (!is_null($acl))
+            {
+                $cuentas = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
+                            ->where('id',$acl->recurso_id)
+                            ->where('teso_cuentas_bancarias.estado','Activo')
+                            ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_entidades_financieras.descripcion AS entidad_financiera')
+                            ->get();
+            }
+            
+        }else{
+            $cuentas = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
+                            ->where('teso_cuentas_bancarias.estado','Activo')
+                            ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_entidades_financieras.descripcion AS entidad_financiera')
+                            ->get();
+        }
+
+        return $cuentas;
     }
 
     public static function get_cuenta_por_defecto()

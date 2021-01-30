@@ -20,7 +20,7 @@
 
 <div class="container-fluid">
 	<div class="marco_formulario">
-
+ 
 		<div class="row">
 			<div class="col-md-12" style="display: flex; justify-content: center;">
 				<img style="width: 45px; height: 80px;" src="{{url('assets/img/reconocimientos.png')}}" />

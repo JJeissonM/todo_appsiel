@@ -515,10 +515,12 @@ class MatriculaController extends ModeloController
         $todas_las_matriculas = Matricula::where('id_estudiante', $registro->id_estudiante)->get();
 
         $tabla_existe = DB::select(DB::raw("SHOW TABLES LIKE 'teso_libretas_pagos'"));
-        if (!empty($tabla_existe)) {
+        if ( !empty($tabla_existe) )
+        {
             // Verificación 1: Libreta de pagos
             $cantidad = TesoLibretasPago::where('matricula_id', $id)->count();
-            if ($cantidad != 0) {
+            if ($cantidad != 0)
+            {
                 return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Matrícula NO puede ser eliminada. Tiene libreta de pago asociada.');
             }
         }
@@ -531,18 +533,19 @@ class MatriculaController extends ModeloController
             'codigo_matricula' => $registro->codigo
         ])
             ->count();
-        if ($cant_calificaciones != 0) {
+        if ($cant_calificaciones != 0)
+        {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Matrícula NO puede ser eliminada. El estudiante tiene CALIFICACIONES resgistradas.');
         }
 
         $cant_calificaciones = DB::table('sga_observaciones_boletines')
-            ->where(
-                [
-                    'id_colegio' => $registro->id_colegio,
-                    'codigo_matricula' => $registro->codigo
-                ]
-            )
-            ->count();
+                                    ->where(
+                                        [
+                                            'id_colegio' => $registro->id_colegio,
+                                            'codigo_matricula' => $registro->codigo
+                                        ]
+                                    )
+                                    ->count();
 
         if ($cant_calificaciones != 0) {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Matrícula NO puede ser eliminada. El estudiante tiene OBSERVACIONES de boletín resgistradas.');

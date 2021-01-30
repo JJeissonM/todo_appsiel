@@ -54,6 +54,8 @@ $(document).ready(function(){
 
 	$('#fecha_inicial_tnl').on( 'change', function(){
 		
+		console.log( $(this).val() );
+
 		validar_fecha_ingresada( $(this) );
 
 		calcular_fecha_final();
@@ -112,7 +114,6 @@ $(document).ready(function(){
 		$.get( url )
 			.done(function( data ) {
 	    		$('#div_cargando').hide();
-	    		console.log( data );
                 $('#fecha_final_tnl').val( data.fecha_fin );
                 $('#dias_no_habiles').val( data.dias_no_habiles );
                 validar_fecha_ingresada( $('#fecha_final_tnl') );
@@ -123,6 +124,7 @@ $(document).ready(function(){
 	function validar_fecha_ingresada( fecha_seleccionada )
 	{
 		var fecha = fecha_seleccionada.val();
+		var fecha_inicial_tnl = $('#fecha_inicial_tnl').val();
 
 		if ( $('#fecha_ingreso').text() == '' )
 		{
@@ -131,7 +133,7 @@ $(document).ready(function(){
 			return false;
 		}
 
-		if ( fecha_seleccionada.val() < $('#fecha_ingreso').text()  )
+		if ( fecha_inicial_tnl < $('#fecha_ingreso').text()  )
 		{
 			fecha_seleccionada.val('');
 			alert('La fecha ingresada (' + fecha + ') no puede ser MENOR a la fecha inicial del contrato del empleado: ' + $('#fecha_ingreso').text() );

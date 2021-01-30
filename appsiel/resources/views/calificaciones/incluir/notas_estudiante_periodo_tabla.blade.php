@@ -39,7 +39,7 @@
 
     ?>
 
-    <table class="table table-striped tabla_registros" style="margin-top: -4px;">
+    <table id="tbDatos" class="table table-striped tabla_registros" style="margin-top: -4px;">
         <thead>
             <tr style="font-size: 16px;">
                 <th>Asignatura</th>

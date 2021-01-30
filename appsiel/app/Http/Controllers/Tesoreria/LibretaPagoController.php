@@ -209,22 +209,6 @@ class LibretaPagoController extends ModeloController
         $this->almacenar_linea_registro_cartera( $datos );
 
         // 2. Se agregan los registros de pensiones por pagar
-        $fecha = explode("-",$request->fecha_inicio);
-        $num_mes = $fecha[1];
-        for( $i=0; $i < $request->numero_periodos ; $i++)
-        {
-            $datos['inv_producto_id'] = (int)config('matriculas.inv_producto_id_default_pension');
-            $datos['valor_cartera'] = $request->valor_pension_mensual;
-            $datos['saldo_pendiente'] = $request->valor_pension_mensual;
-            $datos['fecha_vencimiento'] = $fecha[0].'-'.$num_mes.'-' . $fecha[2];
-            $this->almacenar_linea_registro_cartera( $datos );
-            $num_mes++;
-            if ($num_mes>12)
-            {
-                $num_mes = 1;
-            }
-        }
-
         // Datos del concepto de Pensión (por cada mes)
         $this->almacenar_registros_pension( $datos, $request );
 
