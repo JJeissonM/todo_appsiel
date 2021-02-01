@@ -51,25 +51,30 @@
                     <input type="hidden" name="disposicion" value="{{$servicio->disposicion}}">
                     <div class="form-group">
                         <label>Titulo</label>
+                        <span data-toggle="tooltip" title="Establece el titulo del Servicio."> <i class="fa fa-question-circle"></i></span>
                         <input name="titulo" type="text" placeholder="Titulo" value="{{$item->titulo}}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
+                        <span data-toggle="tooltip" title="Establece la descripcion del Servicio."> <i class="fa fa-question-circle"></i></span>
                         <textarea name="descripcion" class="form-control contenido" rows="5">{{$item->descripcion}}</textarea>
                     </div>
                     <div class="form-group">
                         <label>URL (Solo si desea redirigir botón ver más)</label>
+                        <span data-toggle="tooltip" title="Establece la URL a redirigir (Opcional)."> <i class="fa fa-question-circle"></i></span>
                         <input type="text" name="url" value="{{$item->url}}" class="form-control">
                     </div>
                     @if($servicio->disposicion=='ICONO')
                     <div class="form-group">
                         <label>Icono</label>
+                        <span data-toggle="tooltip" title="Establece el icono del Servicio."> <i class="fa fa-question-circle"></i></span>
                         <input data-toggle="modal" data-target="#exampleModal" name="icono" value="{{$item->icono}}" type="text" id="iconotxt"
                                placeholder="Nombre del icono" class="form-control">
                     </div>
                     @else
                     <div class="form-group">
                         <label>Imáagen (410x291 px, bordes superiores redondeados)</label>
+                        <span data-toggle="tooltip" title="Establece la imagen del Servicio."> <i class="fa fa-question-circle"></i></span>
                         <label>Actual (<a target="_blank" href="{{asset($item->icono)}}">Ver Imágen</a>)</label>
                         <input name="icono" type="file" placeholder="Archivo de Imagen" class="form-control">
                     </div>
@@ -135,6 +140,64 @@
             $(this).attr('name', original_name);
 
         });
+
+        function cambiar() {
+        $("#fondo_container").html("");
+        var f = $("#tipo_fondo").val();
+        var html = "<label>";
+        if (f == 'IMAGEN') {
+            html = html + `Imagen de Fondo <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='file' class='form-control' name='fondo' required>` +
+                `<label>Repetir <span data-toggle="tooltip" title="Establece si la imagen se repite en el fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>                
+                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>`+
+                `<label>Orientación Imagen <span data-toggle="tooltip" title="Establece la orientacion de la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>
+                <select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>`;
+        } else if (f == 'COLOR') {
+            html = html + `Color de Fondo <span data-toggle="tooltip" title="Establece el color de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='color' class='form-control' name='fondo' required>`;
+        } else {
+            html = "";
+        }
+        $("#fondo_container").html(html);
+        
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'auto',
+            html: true
+        });
+    }
+
+    function cambiar2() {
+        $("#fondo_container2").html("");
+        var f = $("#tipo_fondo2").val();
+        var html = "<label>";
+        if (f == 'IMAGEN') {
+            html = html + `Imagen de Fondo <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='file' class='form-control' name='fondo' required>` +
+                `<label>Repetir <span data-toggle="tooltip" title="Establece si la imagen se repite en el fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>                
+                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>`+
+                `<label>Orientación Imagen <span data-toggle="tooltip" title="Establece la orientacion de la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>
+                <select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>`;
+        } else if (f == 'COLOR') {
+            html = html + `Color de Fondo <span data-toggle="tooltip" title="Establece el color de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='color' class='form-control' name='fondo' required>`;
+        } else {
+            html = "";
+        }
+        $("#fondo_container2").html(html);
+
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'auto',
+            html: true
+        });
+    }
+
+    $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'auto',
+        html: true
+    });
     </script>
 
 @endsection
