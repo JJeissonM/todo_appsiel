@@ -62,8 +62,8 @@
                 </div>
                 <div class="form-group">
                     <label>Más Detalles (Parte Posterior) Máx: 250 caracteres</label>
-                    <textarea id="detalles" name="more_details" class="form-control contenido" required rows="5"></textarea>
-                    <p id="limittext"></p>
+                    <label id="dinamic" style="color: #ff0000;">0 de 250 caracteres</label>
+                    <textarea id="detalles" maxlength="250" name="more_details" class="form-control contenido" required rows="5"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Color del Texto</label>
@@ -111,7 +111,18 @@
             // By default, some basic text styles buttons are removed in the Standard preset.
             // The code below resets the default config.removeButtons setting.
             removeButtons: ''
-        });
+        }).on('key',
+            function(e) {
+                setTimeout(function() {
+                    var content = e.editor.getData();
+                    var tam = content.length;
+                    $("#dinamic").html(tam + " de 250 caracteres");
+                    if(tam>=250){
+                        
+                    }
+                }, 10);
+            }
+        );
 
     });
 
@@ -120,22 +131,5 @@
         $(this).attr('name', original_name);
 
     });
-
-    var campo = document.getElementById("detalles");
-
-    campo.addEventListener("keydown",(e)=>{
-        var maxLength = 249;
-        var strLength = campo.value.length;
-        console.log(strLength);
-        
-        if(strLength > maxLength){            
-            campo.value = campo.value.substring(0, maxLength);            
-        }else{
-            document.getElementById("limittext").innerHTML = strLength+' de '+maxLength+' caracteres.';
-            
-        }
-    });
-
-
 </script>
 @endsection

@@ -158,14 +158,18 @@
                                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                                     <div class="form-group">
                                         <label>Título</label>
+                                        <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
                                         <input type="text" class="form-control" value="{{$archivo->titulo}}" required name="titulo">
                                     </div>
                                     <div class="form-group">
                                         <label>Descripción</label>
+                                        <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
                                         <input type="text" class="form-control" value="{{$archivo->descripcion}}" name="descripcion">
                                     </div>
                                     <div class="form-group">
                                         <label>Formato</label>
+                                        <span data-toggle="tooltip" title="Establece el formato de vista de la sección. Formtato Lista: <img src='{{asset('assets/img/archivo-lista.png')}}' /> o Formato Blog: <img src='{{asset('assets/img/archivo-blog.png')}}' />"> <i class="fa fa-question-circle"></i></span>
+                                        
                                         <select class="form-control" name="formato">
                                             @if($archivo->formato=='LISTA')
                                             <option selected value="LISTA">ARCHIVOS EN FORMATO DE LISTA</option>
@@ -177,13 +181,14 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="">Fuente Para el Componente</label>
+                                        <label for="">Fuente Para el Componente <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span></label>                                        
                                         @if($fonts!=null)
                                         {!! Form::select('configuracionfuente_id',$fonts,$archivo->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                                         @endif
                                     </div>
                                     <div class="form-group">
                                         <label>¿El fondo es Imagen o Color?</label>
+                                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
                                         <select type="select" class="form-control" id="tipo_fondo2" name="tipo_fondo" onchange="cambiar2()">
                                             @if($archivo->tipo_fondo=='IMAGEN')
                                             <option value="">-- Seleccione una opción --</option>
@@ -198,12 +203,12 @@
                                     </div>
                                     <div class="form-group" id="fondo_container2">
                                         @if($archivo->tipo_fondo=='IMAGEN')
-                                        <label>Imagen de Fondo</label>
+                                        <label>Imagen de Fondo</label>                                        
                                         <a target="_blank" href="{{asset($archivo->fondo)}}">Ver Actual</a><br>
                                         <b>Repetir: {{$archivo->repetir}}</b><br>
                                         <b>Orientación Imagen: {{$archivo->direccion}}</b>
                                         @else
-                                        <label>Color de Fondo</label>
+                                        <label>Color de Fondo</label>                                        
                                         <div class="col-md-12" style="background-color: {{$archivo->fondo}}; width: 100%; height: 20px;"></div>
                                         @endif
                                     </div>
@@ -217,28 +222,28 @@
                                     <input type="hidden" name="widget_id" value="{{$widget}}">
                                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                                     <div class="form-group">
-                                        <label>Título</label>
+                                        <label>Título  <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span></label>
                                         <input type="text" class="form-control" required name="titulo">
                                     </div>
                                     <div class="form-group">
-                                        <label>Descripción</label>
+                                        <label>Descripción <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span></label>
                                         <input type="text" class="form-control" name="descripcion">
                                     </div>
                                     <div class="form-group">
-                                        <label>Formato</label>
+                                        <label>Formato <span data-toggle="tooltip" title="Establece el formato de vista de la sección. Formtato Lista: <img src='{{asset('assets/img/archivo-lista.png')}}' /> o Formato Blog: <img src='{{asset('assets/img/archivo-blog.png')}}' />"> <i class="fa fa-question-circle"></i></span></label>
                                         <select class="form-control" name="formato">
                                             <option value="LISTA">ARCHIVOS EN FORMATO DE LISTA</option>
                                             <option value="BLOG">ARCHIVOS EN FORMATO DE BLOG</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="">Fuente Para el Componente</label>
+                                        <label for="">Fuente Para el Componente <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span></label>
                                         @if($fonts!=null)
                                         {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                                         @endif
                                     </div>
                                     <div class="form-group">
-                                        <label>¿El fondo es Imagen o Color?</label>
+                                        <label>¿El fondo es Imagen o Color?  <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span></label>
                                         <select type="select" class="form-control" id="tipo_fondo" required name="tipo_fondo" onchange="cambiar()">
                                             <option value="">-- Seleccione una opción --</option>
                                             <option value="IMAGEN">IMAGEN</option>
@@ -355,14 +360,17 @@
                     @endif
                     <div class="form-group">
                         <label>Título</label>
+                        <span data-toggle="tooltip" title="Establece el titulo del archivo."> <i class="fa fa-question-circle"></i></span>
                         <input type="text" class="form-control" required name="titulo">
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
+                        <span data-toggle="tooltip" title="Establece la descripción del archivo."> <i class="fa fa-question-circle"></i></span>
                         <input type="text" class="form-control" name="descripcion">
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">Estado</label>
+                        <span data-toggle="tooltip" title="Establece la visibilidad del archivo."> <i class="fa fa-question-circle"></i></span>
                         <select class="form-control" name="estado">
                             <option value="VISIBLE">VISIBLE EN LA SECCIÓN</option>
                             <option value="OCULTO">OCULTO EN LA SECCIÓN</option>
@@ -370,6 +378,7 @@
                     </div>
                     <div class="form-group">
                         <label for="message-text" class="col-form-label">Archivo</label>
+                        <span data-toggle="tooltip" title="Establece el archivo a subir."> <i class="fa fa-question-circle"></i></span>
                         {!! Form::file('archivo',['class'=>'form-control has-feedback-left','required'=>'required']) !!}
                     </div>
                     {!! Form::close() !!}
@@ -389,10 +398,6 @@
 @section('script')
 
 <script type="text/javascript">
-    $(function() {
-
-    });
-
     function submit() {
         $("#form-article").submit();
     }
@@ -406,15 +411,25 @@
         var f = $("#tipo_fondo").val();
         var html = "<label>";
         if (f == 'IMAGEN') {
-            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
-                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
-                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>";
+            html = html + `Imagen de Fondo <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='file' class='form-control' name='fondo' required>` +
+                `<label>Repetir <span data-toggle="tooltip" title="Establece si la imagen se repite en el fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>                
+                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>`+
+                `<label>Orientación Imagen <span data-toggle="tooltip" title="Establece la orientacion de la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>
+                <select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>`;
         } else if (f == 'COLOR') {
-            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+            html = html + `Color de Fondo <span data-toggle="tooltip" title="Establece el color de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='color' class='form-control' name='fondo' required>`;
         } else {
             html = "";
         }
         $("#fondo_container").html(html);
+        
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'auto',
+            html: true
+        });
     }
 
     function cambiar2() {
@@ -422,16 +437,32 @@
         var f = $("#tipo_fondo2").val();
         var html = "<label>";
         if (f == 'IMAGEN') {
-            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
-                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
-                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>";
+            html = html + `Imagen de Fondo <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='file' class='form-control' name='fondo' required>` +
+                `<label>Repetir <span data-toggle="tooltip" title="Establece si la imagen se repite en el fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>                
+                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>`+
+                `<label>Orientación Imagen <span data-toggle="tooltip" title="Establece la orientacion de la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>
+                <select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>`;
         } else if (f == 'COLOR') {
-            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+            html = html + `Color de Fondo <span data-toggle="tooltip" title="Establece el color de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='color' class='form-control' name='fondo' required>`;
         } else {
             html = "";
         }
         $("#fondo_container2").html(html);
+
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'auto',
+            html: true
+        });
     }
+
+    $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'auto',
+        html: true
+    });
 
 </script>
 

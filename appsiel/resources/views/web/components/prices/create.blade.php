@@ -50,34 +50,42 @@
                 <input type="hidden" name="variables_url" value="{{$variables_url}}">
                 <div class="form-group">
                     <label>URL Para el Botón</label>
+                    <span data-toggle="tooltip" title="Establece el enlace para mostrar información detallada del plan."> <i class="fa fa-question-circle"></i></span>
                     <input name="url" type="text" placeholder="Url que abrirá el botón" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Precio</label>
+                    <span data-toggle="tooltip" title="Establece el precio para el plan."> <i class="fa fa-question-circle"></i></span>
                     <input name="precio" type="text" placeholder="Precio del plan, ejemplo: $50,000/mes" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Color del Texto (Ítems del plan)</label>
+                    <span data-toggle="tooltip" title="Establece el color para los items o caracteristicas del plan."> <i class="fa fa-question-circle"></i></span>
                     <input type='color' class='form-control' name='text_color' required>
                 </div>
                 <div class="form-group">
                     <label>Imagen de la Cabecera(400x200 px)</label>
+                    <span data-toggle="tooltip" title="Establece una imagen como cabecera del plan."> <i class="fa fa-question-circle"></i></span>
                     <input name="imagen_cabecera" type="file" required placeholder="Archivo de Imagen" class="form-control">
                 </div>
                 <div class="form-group">
                     <label>Color del Botón 1</label>
+                    <span data-toggle="tooltip" title="Establece un color para los iconos de los items del plan."> <i class="fa fa-question-circle"></i></span>
                     <input type='color' class='form-control' name='button_color' required>
                 </div>
                 <div class="form-group">
                     <label>Color del Botón 2</label>
+                    <span data-toggle="tooltip" title="Establece un color para el boton del plan."> <i class="fa fa-question-circle"></i></span>
                     <input type='color' class='form-control' name='button2_color' required>
                 </div>
                 <div class="form-group">
                     <label>Color del Fondo del Plan</label>
+                    <span data-toggle="tooltip" title="Establece un color para el fondo del plan."> <i class="fa fa-question-circle"></i></span>
                     <input type='color' class='form-control' name='background_color' required>
                 </div>
                 <div class="table-responsive col-md-12" id="table_content">
-                    <h4>Ítems del Plan</h4>
+                    <h4>Ítems del Plan <span data-toggle="tooltip" title="Establece los items o caracteristicas del plan."> <i class="fa fa-question-circle"></i></span></h4>
+                    <span data-toggle="tooltip" title="Establece los items o caracteristicas del plan."> <i class="fa fa-question-circle"></i></span>
                     <a onclick="addRow()" style="color: #fff;" class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> Agregar Ítem</a>
                     <table id="items" class="table table-bordered table-striped">
                         <thead>
@@ -142,6 +150,11 @@
 
         $(this).attr('name', original_name);
 
+    });
+    $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'auto',
+        html: true
     });
 </script>
 @endsection

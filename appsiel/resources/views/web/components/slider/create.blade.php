@@ -79,26 +79,32 @@
             <input type="hidden" name="widget_id" value="{{$widget}}">
             <div class="form-group">
                 <label for="">Titulo</label>
+                <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
                 <input type="text" class="form-control" placeholder="" name="titulo">
             </div>
             <div class="form-group">
                 <label>Color del Título</label>
+                <span data-toggle="tooltip" title="Establece el color del titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
                 <input type="color" class="form-control" name="colorTitle" required>
             </div>
             <div class="form-group">
                 <label for="">Descripción</label>
+                <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
                 <textarea name="descripcion" id="" cols="30" rows="10" class="form-control"></textarea>
             </div>
             <div class="form-group">
                 <label>Color de la Descripción</label>
+                <span data-toggle="tooltip" title="Establece el color de la descripción del elemento ."> <i class="fa fa-question-circle"></i></span>
                 <input type="color" class="form-control" name="colorText" required>
             </div>
             <div class="form-group">
                 <label for="">Imagen (1600x550 px)</label>
+                <span data-toggle="tooltip" title="Establece el color de la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
                 <input type="file" class="form-control" name="imagen" required>
             </div>
             <div class="form-group">
                 <label>Disposición</label>
+                <span data-toggle="tooltip" title="Establece el tipo de estilo de Slider de la sección."> <i class="fa fa-question-circle"></i></span>
                 <select class="form-control" name="disposicion" required>
                     <option value="DEFAULT">SLIDER POR DEFECTO</option>
                     <option value="PREMIUM">SLIDER PREMIUM</option>
@@ -108,6 +114,7 @@
             </div>
             <div class="form-group">
                 <label for="">Fuente Para el Componente</label>
+                <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                 @if($fonts!=null)
                 {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                 @endif
@@ -118,13 +125,15 @@
                 <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="pagina">
                 <div class="form-group">
                     <label for="">Titulo del Enlace</label>
+                    <span data-toggle="tooltip" title="Establece el titulo del elemento del slider."> <i class="fa fa-question-circle"></i></span>
                     <input type="text" class="form-control" name="button">
                 </div>
                 <nav>
                     <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página</a>
-                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL
-                            del sitio web</a>
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página<span data-toggle="tooltip" title="Establece un enlace del elemtendo del slider a una pagina."> <i class="fa fa-question-circle"></i></span>
+                        </a>
+                        <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web <span data-toggle="tooltip" title="Establece un enlace del elemento del slider a una pagina web externa."> <i class="fa fa-question-circle"></i></span>
+                        </a>
                     </div>
                 </nav>
                 <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
@@ -139,6 +148,7 @@
                         </div>
                         <div class="form-group" style="display: inline-block;width: 58%;">
                             <label for="">Sección en una página</label>
+                            <span data-toggle="tooltip" title="Establece la pagina a la cual quieres enlazar el elemento del slider."> <i class="fa fa-question-circle"></i></span>
                             <select class="form-control" id="secciones" name="seccion">
                                 <option value="principio">Principio de la Página</option>
                             </select>
@@ -220,5 +230,12 @@
         let tipo = document.getElementById('tipo_enlace');
         tipo.value = opcion;
     }
+    
+    $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'auto',
+        html: true
+    });
+
 </script>
 @endsection
