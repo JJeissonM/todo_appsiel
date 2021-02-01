@@ -126,8 +126,8 @@
 							<td><b>Cant. horas</b></td>
 						</tr>';
 
-		$contenido .= '<tr><td>$ ' . number_format( $devengo - $deduccion, 2, ',', '.') . ' </td>';
-		$contenido .= '<td>$ ' . number_format( $cantidad_horas, 2, ',', '.') . ' </td></tr>';
+		$contenido .= '<tr><td>' . number_format( $devengo - $deduccion, 0, ',', '.') . ' </td>';
+		$contenido .= '<td>' . number_format( $cantidad_horas, 2, ',', '.') . ' </td></tr>';
 
 		$contenido .= '</table>';
 

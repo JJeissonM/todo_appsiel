@@ -67,10 +67,10 @@
 						' . number_format( $registro->cantidad_horas, 2,',','.') . '
 					</td>
 					<td style="text-align:right;">
-						$' . number_format( $registro->valor_devengo, 2,',','.') . '
+						' . number_format( $registro->valor_devengo, 0,',','.') . '
 					</td>
 					<td style="text-align:right;">
-						$' . number_format( $registro->valor_deduccion, 2,',','.') . '
+						' . number_format( $registro->valor_deduccion, 0,',','.') . '
 					</td>
 				</tr>';
 	}
@@ -79,8 +79,8 @@
 	{
 		return '<tr>
 					<td colspan="4"> </td>
-					<td style="text-align:right;"> $' . number_format( $total_devengos, 2,',','.') . ' </td> 
-					<td style="text-align:right;"> $' . number_format( $total_deducciones, 2,',','.') . ' </td> 
+					<td style="text-align:right;"> ' . number_format( $total_devengos, 0,',','.') . ' </td> 
+					<td style="text-align:right;"> ' . number_format( $total_deducciones, 0,',','.') . ' </td> 
 				</tr>
 				<tr><td colspan="6"></td></tr>';
 	}
@@ -89,8 +89,8 @@
 	{
 		return '<tr>
 					<td colspan="3"> </td>
-					<td style="text-align:right;"> $' . number_format( $total_devengos, 2,',','.') . ' </td> 
-					<td style="text-align:right;"> $' . number_format( $total_deducciones, 2,',','.') . ' </td> 
+					<td style="text-align:right;"> ' . number_format( $total_devengos, 0,',','.') . ' </td> 
+					<td style="text-align:right;"> ' . number_format( $total_deducciones, 0,',','.') . ' </td> 
 				</tr>
 				<tr><td colspan="5"></td></tr>';
 	}
@@ -108,10 +108,10 @@
 						' . number_format( $registro->cantidad_horas, 2,',','.') . '
 					</td>
 					<td style="text-align:right;">
-						$' . number_format( $registro->valor_devengo, 2,',','.') . '
+						' . number_format( $registro->valor_devengo, 0,',','.') . '
 					</td>
 					<td style="text-align:right;">
-						$' . number_format( $registro->valor_deduccion, 2,',','.') . '
+						' . number_format( $registro->valor_deduccion, 0,',','.') . '
 					</td>
 				</tr>';
 	}

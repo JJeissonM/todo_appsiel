@@ -128,26 +128,34 @@ class NomDocRegistro extends Model
     /*
         No se usan filtros por Agrupación y Contaro al mismom tiempo 
     */
-    public static function listado_acumulados($fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id = null)
+    public static function listado_acumulados($fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id)
     {
-        if (!is_null($nom_contrato_id)) {
-            return NomDocRegistro::where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
-                ->where('nom_doc_registros.nom_contrato_id', $nom_contrato_id)
-                ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
-                ->get();
+        $array_wheres = [ [ 'nom_doc_registros.core_empresa_id', '=', Auth::user()->empresa_id ] ];
+        
+        if ( $nom_agrupacion_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [[ 'nom_agrupacion_tiene_conceptos.nom_agrupacion_id', '=', $nom_agrupacion_id ]] );
         }
-
-        if ($nom_agrupacion_id == '') {
-            return NomDocRegistro::where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
-                ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
-                ->get();
+        
+        if ( $nom_contrato_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [[ 'nom_doc_registros.nom_contrato_id', '=', $nom_contrato_id ]] );
+        }
+        
+        if ( $nom_concepto_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [
+                                                            [ 'nom_doc_registros.nom_concepto_id', '=', $nom_concepto_id ],
+                                                            [ 'nom_agrupacion_tiene_conceptos.nom_agrupacion_id', 'LIKE', '%%' ]
+                                                        ] );
         }
 
         return NomDocRegistro::leftJoin('nom_agrupacion_tiene_conceptos', 'nom_agrupacion_tiene_conceptos.nom_concepto_id', '=', 'nom_doc_registros.nom_concepto_id')
-            ->where('nom_doc_registros.core_empresa_id', Auth::user()->empresa_id)
-            ->whereBetween('nom_doc_registros.fecha', [$fecha_desde, $fecha_hasta])
-            ->where('nom_agrupacion_tiene_conceptos.nom_agrupacion_id', $nom_agrupacion_id)
-            ->get();
+                            ->where( $array_wheres )
+                            ->whereBetween('nom_doc_registros.fecha', [ $fecha_desde, $fecha_hasta ] )
+                            ->select('nom_doc_registros.id', 'nom_doc_registros.nom_doc_encabezado_id', 'nom_doc_registros.core_tercero_id', 'nom_doc_registros.nom_contrato_id', 'nom_doc_registros.fecha', 'nom_doc_registros.core_empresa_id', 'nom_doc_registros.porcentaje', 'nom_doc_registros.detalle', 'nom_doc_registros.nom_concepto_id', 'nom_doc_registros.nom_cuota_id', 'nom_doc_registros.nom_prestamo_id', 'nom_doc_registros.novedad_tnl_id', 'nom_doc_registros.cantidad_horas', 'nom_doc_registros.valor_devengo', 'nom_doc_registros.valor_deduccion', 'nom_doc_registros.estado', 'nom_doc_registros.creado_por', 'nom_doc_registros.modificado_por')
+                            ->distinct('nom_doc_registros.id')
+                            ->get();
     }
 
     public static function movimientos_entidades_salud($fecha_desde, $fecha_hasta, array $entidades)

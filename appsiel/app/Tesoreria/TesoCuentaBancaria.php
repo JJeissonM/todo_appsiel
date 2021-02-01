@@ -122,7 +122,7 @@ class TesoCuentaBancaria extends Model
                             ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_entidades_financieras.descripcion AS entidad_financiera')
                             ->get();
         }
-
+        
         return $cuentas;
     }
 

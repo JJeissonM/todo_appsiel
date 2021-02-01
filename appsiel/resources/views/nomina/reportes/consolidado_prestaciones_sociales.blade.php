@@ -63,16 +63,16 @@
 						' . $registro->concepto . '
 					</td>
 					<td>
-						' . number_format( $registro->dias_laborados, 2,',','.') . '
+						' . number_format( $registro->dias_laborados, 0,',','.') . '
 					</td>
 					<td>
-						' . number_format( $registro->dias_derecho, 2,',','.') . '
+						' . number_format( $registro->dias_derecho, 0,',','.') . '
 					</td>
 					<td style="text-align:right;">
-						$' . number_format( $registro->base_diaria, 2,',','.') . '
+						' . number_format( $registro->base_diaria, 0,',','.') . '
 					</td>
 					<td style="text-align:right;">
-						$' . number_format( $registro->valor_provision, 2,',','.') . '
+						' . number_format( $registro->valor_provision, 0,',','.') . '
 					</td>
 				</tr>';
 	}
@@ -81,7 +81,7 @@
 	{
 		return '<tr>
 					<td colspan="6"> </td>
-					<td style="text-align:right;"> $' . number_format( $total, 2,',','.') . ' </td> 
+					<td style="text-align:right;"> ' . number_format( $total, 0,',','.') . ' </td> 
 				</tr>
 				<tr><td colspan="7"></td></tr>';
 	}
