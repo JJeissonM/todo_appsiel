@@ -116,20 +116,21 @@ class PlanillaGenerada extends Model
 
     */
 
-    public function store_adicional($datos, $registro)
+    public function store_adicional($datos, $planilla_generada)
     {
         $fecha_lapso = explode("-", $datos['fecha_final_mes']);
 
         $fecha_inicial = $fecha_lapso[0] . '-' . $fecha_lapso[1] . '-01';
 
         $empleados = NomDocRegistro::whereBetween('fecha', [$fecha_inicial, $datos['fecha_final_mes']])
-            ->select('nom_contrato_id')
-            ->distinct('nom_contrato_id')
-            ->get();
+                                    ->select('nom_contrato_id')
+                                    ->distinct('nom_contrato_id')
+                                    ->get();
 
         // Se agregan todos los contratos al documento
         $i = 1;
-        foreach ($empleados as $empleado) {
+        foreach ($empleados as $empleado)
+        {
             $contrato = NomContrato::find($empleado->nom_contrato_id);
 
             /*
@@ -137,94 +138,77 @@ class PlanillaGenerada extends Model
         	*/
             if ($contrato->grupo_empleado_id != 5) // Grupo prepensionados
             {
-                $conceptos_liquidados_mes = $this->conceptos_liquidados_mes($contrato, $fecha_inicial, $datos['fecha_final_mes']);
+                /* 
+                    Se agrega una línea de empleado por cada novedad de TNL
+                */
+                $i = $this->agregar_lineas_adicionales( $planilla_generada, $contrato, $i, $fecha_inicial, $datos['fecha_final_mes'] );
 
-                // Se agrega una línea de empleado por cada novedad de TNL
-
-                $conceptos_suspencion = [61, 62, 63];
-                foreach ($conceptos_suspencion as $key => $value) {
-                    if (in_array($value, $conceptos_liquidados_mes)) {
-                        EmpleadoPlanilla::create([
-                            'orden' => $i,
-                            'planilla_generada_id' => $registro->id,
-                            'nom_contrato_id' => $contrato->id,
-                            'tipo_linea' => 'adicional'
-                        ]);
-                        $i++;
-                    }
-                }
-
-                $conceptos_incapacidad_enfermedad_general = [58];
-                foreach ($conceptos_incapacidad_enfermedad_general as $key => $value) {
-                    if (in_array($value, $conceptos_liquidados_mes)) {
-                        EmpleadoPlanilla::create([
-                            'orden' => $i,
-                            'planilla_generada_id' => $registro->id,
-                            'nom_contrato_id' => $contrato->id,
-                            'tipo_linea' => 'adicional'
-                        ]);
-                        $i++;
-                    }
-                }
-
-                $conceptos_licencia_maternidad = [59, 33]; // O Paternidad
-                foreach ($conceptos_licencia_maternidad as $key => $value) {
-                    if (in_array($value, $conceptos_liquidados_mes)) {
-                        EmpleadoPlanilla::create([
-                            'orden' => $i,
-                            'planilla_generada_id' => $registro->id,
-                            'nom_contrato_id' => $contrato->id,
-                            'tipo_linea' => 'adicional'
-                        ]);
-                        $i++;
-                    }
-                }
-
-                $conceptos_vacaciones = [66]; // Disfrutadas
-                foreach ($conceptos_vacaciones as $key => $value) {
-                    if (in_array($value, $conceptos_liquidados_mes)) {
-                        EmpleadoPlanilla::create([
-                            'orden' => $i,
-                            'planilla_generada_id' => $registro->id,
-                            'nom_contrato_id' => $contrato->id,
-                            'tipo_linea' => 'adicional'
-                        ]);
-                        $i++;
-                    }
-                }
-
-                $conceptos_accidente_laboral = [60];
-                foreach ($conceptos_accidente_laboral as $key => $value) {
-                    if (in_array($value, $conceptos_liquidados_mes)) {
-                        EmpleadoPlanilla::create([
-                            'orden' => $i,
-                            'planilla_generada_id' => $registro->id,
-                            'nom_contrato_id' => $contrato->id,
-                            'tipo_linea' => 'adicional'
-                        ]);
-                        $i++;
-                    }
-                }
 
                 // SE AGREGA EL REGISTRO PRINCIPAL
                 EmpleadoPlanilla::create([
-                    'orden' => $i,
-                    'planilla_generada_id' => $registro->id,
-                    'nom_contrato_id' => $contrato->id,
-                    'tipo_linea' => 'principal'
-                ]);
+                                            'orden' => $i,
+                                            'planilla_generada_id' => $planilla_generada->id,
+                                            'nom_contrato_id' => $contrato->id,
+                                            'tipo_linea' => 'principal'
+                                        ]);
                 $i++;
             }
         }
     }
 
-    public function conceptos_liquidados_mes($empleado, $fecha_inicial, $fecha_final)
+    public function agregar_lineas_adicionales( $planilla_generada, $contrato, $orden, $fecha_inicial, $fecha_final_mes )
+    {
+        $registros_conceptos_liquidados_mes = $this->registros_conceptos_liquidados_mes($contrato, $fecha_inicial, $fecha_final_mes);
+        
+        foreach( $registros_conceptos_liquidados_mes as $registro_documentos_nomina )
+        {
+
+            // Se excluyen los permisos REMUNERADOS (se tratan como salario - linea_principal)
+            if ( in_array($registro_documentos_nomina->nom_concepto_id, [86,79] ) )
+            {
+                continue;
+            }
+
+            // Se excluyen Vacaciones días NO HABILES (se tratan como salario - linea_principal)
+            if ( in_array($registro_documentos_nomina->nom_concepto_id, [84] ) )
+            {
+                continue;
+            }
+
+            if ( !is_null( $registro_documentos_nomina->novedad_tnl_id ) )
+            {
+                // Solo se permite una linea de novedad al mes
+                $novedad_empleado = EmpleadoPlanilla::where([
+                                                    [ 'planilla_generada_id', '=', $planilla_generada->id ],
+                                                    [ 'nom_contrato_id', '=', $contrato->id ],
+                                                    [ 'novedad_tnl_id', '=', $registro_documentos_nomina->novedad_tnl_id ]
+                                                ])
+                                        ->get()->first();
+
+                if ( is_null( $novedad_empleado ) ) // Si aún no se ha creado la linea para esa novedad
+                {
+                    EmpleadoPlanilla::create([
+                                                'orden' => $orden,
+                                                'planilla_generada_id' => $planilla_generada->id,
+                                                'nom_contrato_id' => $contrato->id,
+                                                'tipo_linea' => 'adicional',
+                                                'cantidad_dias_linea_adicional' => round( $registro_documentos_nomina->cantidad_horas / (int)config('nomina.horas_dia_laboral'), 0),
+                                                'novedad_tnl_id' => $registro_documentos_nomina->novedad_tnl_id,
+                                                'nom_concepto_id' => $registro_documentos_nomina->nom_concepto_id,
+                                            ]);
+                    $orden++;
+                }                    
+            }
+        }
+
+        return $orden;
+    }
+
+    public function registros_conceptos_liquidados_mes($empleado, $fecha_inicial, $fecha_final)
     {
         return NomDocRegistro::where('nom_contrato_id', $empleado->id)
-            ->whereBetween('fecha', [$fecha_inicial, $fecha_final])
-            ->distinct('nom_concepto_id')
-            ->get()
-            ->pluck('nom_concepto_id')
-            ->toArray();
+                            ->whereBetween('fecha', [$fecha_inicial, $fecha_final])
+                            ->orderBy('nom_concepto_id')
+                            ->get();
     }
 }
