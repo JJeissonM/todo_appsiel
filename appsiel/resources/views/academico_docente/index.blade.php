@@ -129,7 +129,6 @@
 						</div>
 					</div>
 				</div>
-
 				<table class="table table-responsive">
 					<thead>
 						<tr>
