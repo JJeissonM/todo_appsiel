@@ -145,8 +145,7 @@ class NomDocRegistro extends Model
         if ( $nom_concepto_id != 0 )
         {
             $array_wheres = array_merge( $array_wheres, [
-                                                            [ 'nom_doc_registros.nom_concepto_id', '=', $nom_concepto_id ],
-                                                            [ 'nom_agrupacion_tiene_conceptos.nom_agrupacion_id', 'LIKE', '%%' ]
+                                                            [ 'nom_doc_registros.nom_concepto_id', '=', $nom_concepto_id ]
                                                         ] );
         }
 
