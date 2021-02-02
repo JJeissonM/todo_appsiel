@@ -170,10 +170,12 @@
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Ancho del Botón en Pixeles</label>
+                        <span data-toggle="tooltip" title="Establece el ancho de los botones Sticky en pixeles."> <i class="fa fa-question-circle"></i></span>
                         <input name="ancho_boton" type="number" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Posición en la Pantalla</label>
+                        <span data-toggle="tooltip" title="Establece la ubicación de los botones Sticky."> <i class="fa fa-question-circle"></i></span>
                         <select class="form-control" name="posicion" required>
                             <option value="DERECHA">DERECHA</option>
                             <option value="IZQUIERDA">IZQUIERDA</option>
@@ -181,6 +183,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Fuente Para el Componente</label>
+                        <span data-toggle="tooltip" title="Establece la fuente de los botones Sticky."> <i class="fa fa-question-circle"></i></span>
                         @if($fonts!=null)
                         {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control
                         select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
@@ -218,11 +221,13 @@
                     <input type="hidden" name="sticky" value="{{$sticky->id}}">
                     <div class="form-group">
                         <label>Ancho del Botón en Pixeles</label>
+                        <span data-toggle="tooltip" title="Establece el ancho de los botones Sticky en pixeles."> <i class="fa fa-question-circle"></i></span>
                         <input name="ancho_boton" type="number" value="{{$sticky->ancho_boton}}" required
                             class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Posición en la Pantalla</label>
+                        <span data-toggle="tooltip" title="Establece la ubicación de los botones Sticky."> <i class="fa fa-question-circle"></i></span>
                         <select class="form-control" name="posicion" required>
                             @if($sticky->posicion=='DERECHA')
                             <option selected value="DERECHA">DERECHA</option>
@@ -238,6 +243,7 @@
                     </div>
                     <div class="form-group">
                         <label for="">Fuente Para el Componente</label>
+                        <span data-toggle="tooltip" title="Establece la fuente de los botones Sticky."> <i class="fa fa-question-circle"></i></span>
                         @if($fonts!=null)
                         {!!
                         Form::select('configuracionfuente_id',$fonts,$sticky->configuracionfuente_id,['class'=>'form-control
@@ -281,27 +287,33 @@
                     <input type="hidden" name="sticky_id" value="{{$sticky->id}}">
                     <div class="form-group">
                         <label>Color</label>
+                        <span data-toggle="tooltip" title="Establece el color del boton Sticky."> <i class="fa fa-question-circle"></i></span>
                         <input name="color" type="color" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Ícono (Opcional)</label>
+                        <span data-toggle="tooltip" title="Establece el ícono del boton Sticky."> <i class="fa fa-question-circle"></i></span>
                         <input name="icono" type="text" class="form-control" data-toggle="modal"
                             data-target="#exampleModal" id="iconotxt">
                     </div>
                     <div class="form-group">
                         <label>Enlace (Opcional)</label>
+                        <span data-toggle="tooltip" title="Establece un enlace al boton Sticky."> <i class="fa fa-question-circle"></i></span>
                         <input name="enlace" type="text" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Texto (Opcional)</label>
+                        <span data-toggle="tooltip" title="Establece el texto a mostrar del boton Sticky."> <i class="fa fa-question-circle"></i></span>
                         <input name="texto" type="text" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Imágen (Opcional)</label>
+                        <span data-toggle="tooltip" title="Establece una imagen para el boton Sticky."> <i class="fa fa-question-circle"></i></span>
                         <input name="imagen" type="file" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="alpha">Transparencia</label>
+                        <span data-toggle="tooltip" title="Establece la transparencia del boton Sticky."> <i class="fa fa-question-circle"></i></span>
                         <input class="form-control" type="range" id="alpha" name="alpha" min="0" max="10">
                     </div>
                     <div class="form-group">
@@ -349,5 +361,10 @@
         $("#" + id).removeClass('modal-open');
         $('.' + id).remove();
     }
+    $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'right',
+        html: true
+    });
 </script>
 @endsection

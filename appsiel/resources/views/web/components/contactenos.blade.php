@@ -143,28 +143,34 @@
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Nombre de la Empresa</label>
+                        <span data-toggle="tooltip" title="Establece el nombre de tu empresa."> <i class="fa fa-question-circle"></i></span>
                         <input name="empresa" type="text" placeholder="Nombre de la empresa o persona"
                                class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Telefono</label>
+                        <span data-toggle="tooltip" title="Establece el numero de telefono de la empresa."> <i class="fa fa-question-circle"></i></span>
                         <input name="telefono" type="number" placeholder="Telefono de contacto" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Ciudad</label>
+                        <span data-toggle="tooltip" title="Establece la ciudad donde esta ubicada tu empresa."> <i class="fa fa-question-circle"></i></span>
                         <input name="ciudad" type="text" placeholder="Ciudad" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Correo</label>
+                        <span data-toggle="tooltip" title="Establece el correo electronico de tu empresa."> <i class="fa fa-question-circle"></i></span>
                         <input name="correo" type="email" placeholder="Correo electronico de contacto"
                                class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Dirección</label>
+                        <span data-toggle="tooltip" title="Establece la direccion donde esta ubicada tu empresa."> <i class="fa fa-question-circle"></i></span>
                         <input name="direccion" type="text" placeholder="Dirección de contacto" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="">Fuente Para el Componente</label>
+                        <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                         @if($fonts!=null)
                         {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                         @endif
@@ -202,31 +208,37 @@
                         <input type="hidden" name="servicio" value="{{$contactenos->id}}">
                         <div class="form-group">
                             <label>Nombre de la Empresa</label>
+                            <span data-toggle="tooltip" title="Establece el nombre de tu empresa."> <i class="fa fa-question-circle"></i></span>
                             <input name="empresa" type="text" placeholder="Nombre de la empresa o persona"
                                    value="{{$contactenos->empresa}}" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Telefono</label>
+                            <span data-toggle="tooltip" title="Establece el numero de telefono de la empresa."> <i class="fa fa-question-circle"></i></span>
                             <input name="telefono" type="number" placeholder="Telefono de contacto"
                                    value="{{$contactenos->telefono}}" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Ciudad</label>
+                            <span data-toggle="tooltip" title="Establece la ciudad donde esta ubicada tu empresa."> <i class="fa fa-question-circle"></i></span>
                             <input name="ciudad" type="text" placeholder="Ciudad" value="{{$contactenos->ciudad}}"
                                    class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Correo</label>
+                            <span data-toggle="tooltip" title="Establece el correo electronico de tu empresa."> <i class="fa fa-question-circle"></i></span>
                             <input name="correo" type="email" placeholder="Correo electronico de contacto"
                                    value="{{$contactenos->correo}}" class="form-control">
                         </div>
                         <div class="form-group">
                             <label>Dirección</label>
+                            <span data-toggle="tooltip" title="Establece la direccion donde esta ubicada tu empresa."> <i class="fa fa-question-circle"></i></span>
                             <input name="direccion" type="text" placeholder="Dirección de contacto"
                                    value="{{$contactenos->direccion}}" class="form-control">
                         </div>
                         <div class="form-group">
                             <label for="">Fuente Para el Componente</label>
+                            <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                             @if($fonts!=null)
                             {!! Form::select('configuracionfuente_id',$fonts,$contactenos->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                             @endif
@@ -251,5 +263,10 @@
             $("#" + id).removeClass('modal-open');
             $('.' + id).remove();
         }
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
     </script>
 @endsection

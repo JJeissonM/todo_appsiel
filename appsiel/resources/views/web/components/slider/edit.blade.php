@@ -115,7 +115,7 @@
             </div>
             <div class="form-group">
                 <label>Disposición</label>
-                <span data-toggle="tooltips" title="Establece el tipo de estilo de Slider de la sección."> <i class="fa fa-question-circle"></i></span>
+                <span data-toggle="tooltips" title="Establece el tipo de slider de la sección. SLIDER POR DEFECTO: Mantiene el alto de los items del slider y estos se desplazan a los lados para mostrar el contenido completo <img src='{{asset('assets/img/slider-pordefecto.png')}}' /> o SLIDER BOOTSTRAP: Mantiene el alto del slider y su contenido. <img src='{{asset('assets/img/slider-bootstrap.png')}}'/> o SLIDER APPSIEL: mantiene el alto de los items del slider y estos se desplazan a los lados para mostrar el contenido completo. <img src='{{asset('assets/img/slider-appsiel.png')}}' />"> <i class="fa fa-question-circle"></i></span>
                 <select class="form-control" name="disposicion" required>
                     @if($slider->disposicion=='DEFAULT')
                     <option selected value="DEFAULT">SLIDER POR DEFECTO</option>
@@ -225,7 +225,7 @@
      
      $('[data-toggle="tooltips"]').tooltip({
         animated: 'fade',
-        placement: 'auto',
+        placement: 'right',
         html: true
     });
     
@@ -242,8 +242,7 @@
     function rellenarSelect(select) {
 
         select = select.options[select.selectedIndex].value;
-        const url = '{{url('
-        ')}}/' + 'pagina/secciones/' + select;
+        const url = '{{url(' + ')}}/' + 'pagina/secciones/' + select;
 
         axios.get(url)
             .then(function(response) {

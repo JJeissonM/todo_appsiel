@@ -107,10 +107,31 @@ return array(
             'tipo' => 'GENERICO'
         ],
         '15' => [
-            'id' => 25,
+            'id' => 5,
             'nombre' => 'Galería de Fotos y/o Videos',
             'descripcion' => 'Muestra una galería de fotos y vídeos',
             'preview' => 'assets/web/componentes/galeria.png',
+            'tipo' => 'GENERICO'
+        ],
+        '16' => [
+            'id' => 11,
+            'nombre' => 'Archivos',
+            'descripcion' => 'Muestra una lista de archivos adjuntos descargables para el usuario.',
+            'preview' => 'assets/web/componentes/archivos.png',
+            'tipo' => 'GENERICO'
+        ],
+        '17' => [
+            'id' => 20,
+            'nombre' => 'Guías academicas',
+            'descripcion' => 'Muestra una galería de fotos y vídeos',
+            'preview' => 'assets/web/componentes/guias-academicas.png',
+            'tipo' => 'GENERICO'
+        ],
+        '18' => [
+            'id' => 17,
+            'nombre' => 'PQR',
+            'descripcion' => 'Muestra un formulario para los usuarios que quieran hacer sus solicitudes de peticiones, quejas o reclamos ',
+            'preview' => 'assets/web/componentes/form-pqr.png',
             'tipo' => 'GENERICO'
         ],
     )

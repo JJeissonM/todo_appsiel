@@ -3,9 +3,9 @@
 @section('content')
 
 {{ Form::bsMigaPan($miga_pan) }}
- 
+
 <div class="col-md-12 botones-gmail">
-		<div class="col-md-1">
+	<div class="col-md-1">
 		<select id="mostrar" onchange="mostrar()" class="form-control" style="color: #000 !important; font-size: 16px; width: 80px; position: absolute; float: left;">
 			<option>Mostrar</option>
 			<option value="10">10</option>
@@ -67,16 +67,20 @@
 			<a class="btn-gmail btn-excel" id="btnExcel" onclick="exportExcel()" title="Exportar en Excel"><i class="fa fa-file-excel-o"></i></a>
 		</form>
 		<div class="search">
-			<form class="form-horizontal" role="search" method="get" action="@if($source=='INDEX2') {{route('calificaciones.index2')}} @elseif($source=='BOLETIN') {{url('calificaciones/observaciones_boletin')}} @else {{route('web.index')}} @endif">
+			<form class="form-horizontal" role="search" method="get" action="@if($source=='INDEX2') {{route('calificaciones.index2')}} @elseif($source=='BOLETIN') {{url('calificaciones/observaciones_boletin')}} @elseif($source=='INDEX3') {{url('academico_docente/asistencia_clases')}} @else {{route('web.index')}} @endif">
 				<input type="hidden" name="id" value="{{$id_app}}" />
 				<input type="hidden" name="id_modelo" value="{{$id_modelo}}" />
+				@if(isset($url_complemento))
+				<input type="hidden" name="curso_id" value="{{$curso->id}}" />
+				<input type="hidden" name="asignatura_id" value="{{$asignatura->id}}" />
+				@endif
 				<input type="text" value="{{$search}}" name="search" style="color: #000 !important; font-size: 16px;" class="form-control input-sm" placeholder="Escriba aquí para buscar..." />
 				<button style="position: absolute; height: 30px; right: 0; top: 5px; border-radius:2px;" class="btn btn-primary btn-xl" title="Consultar" type="submit"><i class="fa fa-search"></i></button>
 			</form>
 		</div>
 
 	</div>
-	
+
 
 </div>
 
@@ -111,7 +115,7 @@
 			@endforeach
 		</tbody>
 	</table>
-	{{ $registros->appends(['id' => $id_app,'id_modelo'=>$id_modelo,'nro_registros'=>$nro_registros,'search'=>$search])->links() }}
+	{{ $registros->appends(['id' => $id_app,'id_modelo'=>$id_modelo,'nro_registros'=>$nro_registros,'search'=>$search,'curso_id'=> (isset($curso)) ? $curso->id : '','asignatura_id'=>(isset($asignatura)) ? $asignatura->id : ''])->links() }}
 </div>
 @endsection
 
@@ -133,6 +137,8 @@
 			location.href = "{{url('')}}/calificaciones/index2?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";
 		} else if (source == 'BOLETIN') {
 			location.href = "{{url('')}}/calificaciones/observaciones_boletin?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";
+		} else if (source == 'INDEX3') {
+			location.href = "{{url('')}}/academico_docente/asistencia_clases?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}"+"<?php if(isset($url_complemento)){ echo $url_complemento; } ?>";
 		} else {
 			//INDEX1
 			location.href = "{{url('')}}/web?id={{$id_app}}&id_modelo={{$id_modelo}}&nro_registros=" + nro + "&search={{$search}}";

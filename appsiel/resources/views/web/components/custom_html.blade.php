@@ -105,6 +105,7 @@
                 @endif
 
                      <label class="form-label">Contenido</label>
+                     <span data-toggle="tooltip" title="Establece el contenido de la sección."> <i class="fa fa-question-circle"></i></span>
                     <textarea name="contenido" class="form-control contenido" rows="15" required="required">{{ $contenido }}</textarea>
 
                     {{ Form::hidden('widget_id', $widget) }}
@@ -146,5 +147,10 @@
             });
 
         });
+        $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'right',
+        html: true
+    });
     </script>
 @endsection
