@@ -27,8 +27,27 @@ use App\Calificaciones\Asignatura;
 
 class ProcesosController extends ModeloController
 {
+    public function crear_matriculas_masivas( Request $request )
+    {
+        $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
 
-    // TERMINAR
+        $matriculas = Matricula::where([
+                                        ['periodo_lectivo_id','=',$request->periodo_lectivo_id],
+                                        ['curso_id','=',$request->curso_id],
+                                        ['estado','=','Activo']
+                                    ])
+                                ->get();
+
+        $vista = View::make('matriculas.procesos.crear_matriculas_masivas_lista_estudiantes_promover',compact('matriculas'))->render();
+
+        return $vista;
+    }
+
+
+
+    /* 
+        PENDIENTE POR TERMINAR
+    */
     public function form_cambiar_de_curso()
     {
 
@@ -43,7 +62,9 @@ class ProcesosController extends ModeloController
     }
 
 
-    // TERMINAR
+    /* 
+        PENDIENTE POR TERMINAR
+    */
     public function cambiar_de_curso( $estudiante_id, $curso_actual_id, $curso_futuro_id )
     {
         $tablas_relacionadas = '{
