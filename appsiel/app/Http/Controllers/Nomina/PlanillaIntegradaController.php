@@ -109,6 +109,15 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas[] = $this->formatear_campo( $this->formatear_acentos( $tercero->nombre1 ),' ','derecha',20);
             $datos_columnas[] = $this->formatear_campo( $this->formatear_acentos( $tercero->otros_nombres ),' ','derecha',30);
 
+
+            // Primera columna para mostrar la TNL registrada del empleado
+            if ( $linea->novedad_tnl_id == 0 )
+            {
+                $datos_columnas[] = '';
+            }else{
+                $datos_columnas[] = '<a href="' . url('web/' . $linea->novedad_tnl_id . '?id=17&id_modelo=261&id_transaccion=') . '" target="_blank">' . $linea->novedad_tnl->observaciones . '</a>';
+            }
+
             /*
                         DATOS DE NOVEDADES
             */
@@ -195,7 +204,8 @@ class PlanillaIntegradaController extends Controller
 
         array_pop($vector);
         array_pop($vector);
-        array_pop($vector);
+        array_pop($vector);       
+
         return $vector;
     }
 
@@ -316,7 +326,7 @@ class PlanillaIntegradaController extends Controller
     */
     public function formatear_campo( $valor_campo, $caracter_relleno, $orientacion_relleno, $longitud_campo )
     {
-        $largo_campo = strlen($valor_campo);
+        $largo_campo = strlen( $valor_campo );
         $longitud_campo -= $largo_campo;
         switch ( $orientacion_relleno)
         {
@@ -415,7 +425,7 @@ class PlanillaIntegradaController extends Controller
 
             $this->empleado_planilla_id = $linea->id;
             $this->calcular_ibc( $planilla, $empleado );
-            $this->almacenar_datos_novedades( $planilla, $empleado, $linea->tipo_linea );
+            $this->almacenar_datos_novedades( $planilla, $empleado, $linea );
         }
 
         return redirect( 'nom_pila_show/' . $planilla_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' )->with('flash_message', 'Registros de Planilla actualizados correctamente.');
@@ -424,9 +434,9 @@ class PlanillaIntegradaController extends Controller
 
     public function calcular_ibc( $planilla, $empleado )
     {
-        $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final ) + 10;
+        $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final ) + 10;// $10 de tolerancia por las aproximaciones decimales
 
-        $this->cantidad_dias_laborados = $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') );
+        $this->cantidad_dias_laborados = round( $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ), 0);
 
         $this->validar_ibc_mayor_al_minimino_legal();
 
@@ -447,7 +457,7 @@ class PlanillaIntegradaController extends Controller
         $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (int)config('nomina.horas_laborales') * (int)config('nomina.horas_dia_laboral');
         if ( $this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal )
         {
-            $this->ibc_salud = (float)config('nomina.SMMLV') + 10; // $10 de tolerancia por las aproximaciones decimales
+            $this->ibc_salud = ( $valor_ibc_un_dia_minimo_legal * $this->cantidad_dias_laborados ) + 10; // $10 de tolerancia por las aproximaciones decimales
             $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
         }
     }
@@ -495,6 +505,11 @@ class PlanillaIntegradaController extends Controller
         $vec_conceptos = [];
         foreach ($conceptos_de_la_agrupacion as $concepto)
         {
+            if ( $empleado->estado == 'Retirado' && $concepto->id == 66 ) // Vacaciones liquidacion de contrato
+            {
+                continue;
+            }
+            
             if ($concepto->forma_parte_basico)
             {
                 $vec_conceptos[] = $concepto->id;
@@ -519,7 +534,7 @@ class PlanillaIntegradaController extends Controller
                             ->toArray();
     }
 
-    public function almacenar_datos_novedades($planilla, $empleado, $tipo_linea)
+    public function almacenar_datos_novedades($planilla, $empleado, $linea_empleado_planilla)
     {
 
         $ing = ' ';
@@ -566,27 +581,25 @@ class PlanillaIntegradaController extends Controller
         $this->dias_incapacidad_accidente_trabajo = 0;
         $this->novedad_de_ausentismo = false;
 
-        if ( $tipo_linea == 'adicional' )
-        {        
-            $conceptos_liquidados_mes = $this->conceptos_liquidados_mes( $empleado, $this->fecha_inicial, $this->fecha_final );
-            
+        if ( $linea_empleado_planilla->tipo_linea == 'adicional' )
+        {
+
+            /*
+                61: PERMISO NO REMUNERADO
+            */
             $conceptos_suspencion = [61,62,63];
             foreach ($conceptos_suspencion as $key => $value)
             {
-                if ( in_array($value, $conceptos_liquidados_mes) )
+                if ( $linea_empleado_planilla->nom_concepto_id == $value )
                 {
                     $sln = 'X';
                     $vst = ' ';
                     $ret = ' ';
                     $fecha_de_retiro = '          ';
                     $this->novedad_de_ausentismo = true;
-                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
-                                                    ->where('nom_concepto_id',$value)
-                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
-                                                    ->get()
-                                                    ->first(); // Aquí deberían se todos, no usar first()
 
-                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    $novedad_tnl = $linea_empleado_planilla->novedad_tnl;
+
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_suspension_temporal_del_contrato_sln = $novedad_tnl->fecha_inicial_tnl;
@@ -600,29 +613,26 @@ class PlanillaIntegradaController extends Controller
                         {
                             $fecha_final_suspension_temporal_del_contrato_sln = $this->fecha_final;
                         }
-                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+
+                        $this->cambiar_ibc_salud( $novedad_tnl, $linea_empleado_planilla );
                         $es_linea_principal = false;
                     } 
                 }
             }
             
-            $conceptos_incapacidad_enfermedad_general = [58];
+            $conceptos_incapacidad_enfermedad_general = [58,71]; // Enferemedad general (58) e Incapacidad pagada por la empresa (71)
             foreach ($conceptos_incapacidad_enfermedad_general as $key => $value)
             {
-                if ( in_array($value, $conceptos_liquidados_mes) )
+                if ( $linea_empleado_planilla->nom_concepto_id == $value )
                 {
                     $ige = 'X';
                     $vst = ' ';
                     $ret = ' ';
                     $fecha_de_retiro = '          ';
                     $this->novedad_de_ausentismo = true;
-                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
-                                                    ->where('nom_concepto_id',$value)
-                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
-                                                    ->get()
-                                                    ->first(); // Aquí deberían se todos, no usar first()
 
-                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    $novedad_tnl = $linea_empleado_planilla->novedad_tnl;
+
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_incapacidad_enfermedad_general_ige = $novedad_tnl->fecha_inicial_tnl;
@@ -636,7 +646,7 @@ class PlanillaIntegradaController extends Controller
                         {
                             $fecha_final_incapacidad_enfermedad_general_ige = $this->fecha_final;
                         }
-                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+                        $this->cambiar_ibc_salud( $novedad_tnl, $linea_empleado_planilla );
                         $es_linea_principal = false;
                     }                    
                 }
@@ -645,20 +655,16 @@ class PlanillaIntegradaController extends Controller
             $conceptos_licencia_maternidad = [59, 33]; // O Paternidad
             foreach ($conceptos_licencia_maternidad as $key => $value)
             {
-                if ( in_array($value, $conceptos_liquidados_mes) )
+                if ( $linea_empleado_planilla->nom_concepto_id == $value )
                 {
                     $lma = 'X';
                     $vst = ' ';
                     $ret = ' ';
                     $fecha_de_retiro = '          ';
                     $this->novedad_de_ausentismo = true;
-                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
-                                                    ->where('nom_concepto_id',$value)
-                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
-                                                    ->get()
-                                                    ->first(); // Aquí deberían se todos, no usar first()
 
-                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    $novedad_tnl = $linea_empleado_planilla->novedad_tnl;
+
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_licencia_por_maternidad_lma = $novedad_tnl->fecha_inicial_tnl;
@@ -672,7 +678,7 @@ class PlanillaIntegradaController extends Controller
                         {
                             $fecha_final_licencia_por_maternidad_lma = $this->fecha_final;
                         }
-                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+                        $this->cambiar_ibc_salud( $novedad_tnl, $linea_empleado_planilla );
                         $es_linea_principal = false;
                     } 
                 }
@@ -681,19 +687,21 @@ class PlanillaIntegradaController extends Controller
             $conceptos_vacaciones = [66]; // Disfrutadas
             foreach ($conceptos_vacaciones as $key => $value)
             {
-                if ( in_array($value, $conceptos_liquidados_mes) )
+                if ( $linea_empleado_planilla->nom_concepto_id == $value )
                 {
+                    // Si la vaciones se liquidaron por la liquidacion del contrato
+                    if ( $empleado->estado == 'Retirado' )
+                    {
+                        break;
+                    }
+                    
                     $vac = 'X';
                     $vst = ' ';
                     $ret = ' ';
                     $fecha_de_retiro = '          ';
-                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
-                                                    ->where('nom_concepto_id',$value)
-                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
-                                                    ->get()
-                                                    ->first(); // Aquí deberían se todos, no usar first()
 
-                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    $novedad_tnl = $linea_empleado_planilla->novedad_tnl;
+
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_vacaciones_licencias_remuneradas_vac = $novedad_tnl->fecha_inicial_tnl;
@@ -707,7 +715,7 @@ class PlanillaIntegradaController extends Controller
                         {
                             $fecha_final_vacaciones_licencias_remuneradas_vac = $this->fecha_final;
                         }
-                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+                        $this->cambiar_ibc_salud( $novedad_tnl, $linea_empleado_planilla );
                         $es_linea_principal = false;
                     } 
                 }
@@ -716,20 +724,16 @@ class PlanillaIntegradaController extends Controller
             $conceptos_accidente_laboral = [60];
             foreach ($conceptos_accidente_laboral as $key => $value)
             {
-                if ( in_array($value, $conceptos_liquidados_mes) )
+                if ( $linea_empleado_planilla->nom_concepto_id == $value )
                 {
                     $irl = 'X';
                     $vst = ' ';
                     $ret = ' ';
                     $fecha_de_retiro = '          ';
                     $this->novedad_de_ausentismo = true;
-                    $registro_novedad_tnl = NomDocRegistro::where('nom_contrato_id',$empleado->id)
-                                                    ->where('nom_concepto_id',$value)
-                                                    ->whereBetween('fecha',[$this->fecha_inicial,$this->fecha_final])
-                                                    ->get()
-                                                    ->first(); // Aquí deberían se todos, no usar first()
 
-                    $novedad_tnl = NovedadTnl::find($registro_novedad_tnl->novedad_tnl_id);
+                    $novedad_tnl = $linea_empleado_planilla->novedad_tnl;
+
                     if ( !is_null($novedad_tnl) )
                     {
                         $fecha_inicial_incapacidad_riesgos_laborales_irl = $novedad_tnl->fecha_inicial_tnl;
@@ -746,7 +750,7 @@ class PlanillaIntegradaController extends Controller
                         
                         $this->dias_incapacidad_accidente_trabajo = $this->diferencia_en_dias_entre_fechas( $fecha_inicial_incapacidad_riesgos_laborales_irl, $fecha_final_incapacidad_riesgos_laborales_irl );
 
-                        $this->cambiar_ibc_salud( $registro_novedad_tnl );
+                        $this->cambiar_ibc_salud( $novedad_tnl, $linea_empleado_planilla );
                     } 
                 }
             }
@@ -754,9 +758,23 @@ class PlanillaIntegradaController extends Controller
         }else // $es_linea_principal 
         {
             $this->cambiar_ibc_salud_linea_principal( $planilla, $empleado );
+
+            $dias_ya_laborados_novedades = PilaNovedades::where([
+                                                                ['planilla_generada_id','=',$planilla->id],
+                                                                ['nom_contrato_id','=',$empleado->id]
+                                                            ])
+                                                        ->sum('aux_cantidad_dias_laborados');
+            if ( ( $dias_ya_laborados_novedades + $this->cantidad_dias_laborados ) > 30 )
+            {
+                $this->cantidad_dias_laborados--; 
+            }
         }
 
         $tipo_de_salario = 'F'; // Los valores permitidos son, Salario fijo (F), Salario variable (V), Salario integral (X)
+        if ( $empleado->salario_integral )
+        {
+            $tipo_de_salario = 'X';
+        }
 
         if ( $empleado->es_pasante_sena )
         {
@@ -824,18 +842,26 @@ class PlanillaIntegradaController extends Controller
     }
 
     // PARA LÍNEAS ADICIONALES
-    public function cambiar_ibc_salud( $registro_novedad_tnl )
+    public function cambiar_ibc_salud( $novedad_tnl, $linea_empleado_planilla )
     {
-        $this->cantidad_dias_laborados = $registro_novedad_tnl->cantidad_horas / (int)config('nomina.horas_dia_laboral');
+        // Se excluyen Vacaciones días NO HABILES (cpto 84) (se tratan como salario - linea_principal)
+
+        $registros_asociados_novedad = NomDocRegistro::where([
+                                                                ['novedad_tnl_id','=',$novedad_tnl->id],
+                                                                ['nom_concepto_id','<>',84]
+                                                            ])
+                                                    ->get();
+
+        $this->cantidad_dias_laborados = round( $registros_asociados_novedad->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
+
         // sumar devengos/deducciones asociados a la novedad
-        $registros_asociados_novedad = NomDocRegistro::where('novedad_tnl_id',$registro_novedad_tnl->novedad_tnl_id)->get();
-        $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion') + 10;
+        $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion') + 10;// $10 de tolerancia por las aproximaciones decimales
         
         $this->validar_ibc_mayor_al_minimino_legal();
 
         $this->ibc_parafiscales = $this->ibc_salud;
         $this->cantidad_dias_parafiscales = $this->cantidad_dias_laborados;
-
+        
         // Debe haber algun pago de Parafiscales. El operador de la PILLA dice: 
         // El tipo de cotizante 01 por ausentismo no está obligado aportar a todos los sistemas pero debe por lo menos realizar aportes a uno.
         if ( $this->ibc_salud <= 0 )

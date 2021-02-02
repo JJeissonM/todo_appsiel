@@ -33,22 +33,23 @@
 		<th class="celda_datos_basicos">Segundo Apellido</th>
 		<th class="celda_datos_basicos">Primer Nombre</th>
 		<th class="celda_datos_basicos">Otros Nombres</th>
-		<th class="celda_novedades">ING</th>
-		<th class="celda_novedades">RET</th>
-		<th class="celda_novedades">TDE</th>
-		<th class="celda_novedades">TAE</th>
-		<th class="celda_novedades">TDP</th>
-		<th class="celda_novedades">TAP</th>
-		<th class="celda_novedades">VSP</th>
-		<th class="celda_novedades">COR</th>
-		<th class="celda_novedades">VST</th>
-		<th class="celda_novedades">SLN</th>
-		<th class="celda_novedades">IGE</th>
-		<th class="celda_novedades">LMA</th>
-		<th class="celda_novedades">VAC</th>
-		<th class="celda_novedades">AVP</th>
-		<th class="celda_novedades">VCT</th>
-		<th class="celda_novedades">IRP</th>
+		<th class="celda_novedades">Novedad TNL</th>
+		<th class="celda_novedades" title="Ingreso">ING</th>
+		<th class="celda_novedades" title="Retiro">RET</th>
+		<th class="celda_novedades" title="Traslado desde otra EPS">TDE</th>
+		<th class="celda_novedades" title="Traslado hacia otra EPS">TAE</th>
+		<th class="celda_novedades" title="Traslado desde otra AFP">TDP</th>
+		<th class="celda_novedades" title="Traslado hacia otra AFP">TAP</th>
+		<th class="celda_novedades" title="Variación Permanente de Salario">VSP</th>
+		<th class="celda_novedades" title="Correcciones">COR</th>
+		<th class="celda_novedades" title="Variación Transitoria de Salario">VST</th>
+		<th class="celda_novedades" title="Suspensión temporal del contrato de trabajo o licencia no remunerada o comisión de servicios">SLN</th>
+		<th class="celda_novedades" title="Incapacidad Temporal por Enfermedad General">IGE</th>
+		<th class="celda_novedades" title="Licencia de Maternidad o de paternidad">LMA</th>
+		<th class="celda_novedades" title="Vacaciones, Licencia Remunerada">VAC</th>
+		<th class="celda_novedades" title="Aporte Voluntario">AVP</th>
+		<th class="celda_novedades" title="Variación centros de trabajo">VCT</th>
+		<th class="celda_novedades" title="Incapacidad por accidente de trabajo o enfermedad profesional">IRP</th>
 		<th class="celda_novedades">salario</th>
 		<th class="celda_novedades">Tipo salario</th>
 		<th class="celda_novedades">No. días laborados</th>
@@ -109,7 +110,7 @@
 			<tr>
 				@foreach( $fila AS $key => $value )
 					<td>
-						{{ $value }}
+						{!! $value !!}
 					</td>
 				@endforeach
 			<tr>
