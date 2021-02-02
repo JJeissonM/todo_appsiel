@@ -46,6 +46,9 @@ Route::get('matriculas/imprimir/{id}', 'Matriculas\MatriculaController@imprimir'
 Route::post('matriculas/crear_nuevo', 'Matriculas\MatriculaController@crear_nuevo');
 Route::resource('matriculas', 'Matriculas\MatriculaController', ['except' => ['show']]);
 
+// 			PROCESOS
+// Matriculas masivas de estudiantes (Promover de curso)
+ Route::post('sga_crear_matriculas_masivas', 'Matriculas\ProcesosController@crear_matriculas_masivas');
 
 // FACTURACION ESTUDIANTES
 Route::resource('facturas_estudiantes', 'Matriculas\FacturaEstudianteController');
