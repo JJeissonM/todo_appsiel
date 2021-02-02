@@ -79,32 +79,32 @@
             <input type="hidden" name="widget_id" value="{{$widget}}">
             <div class="form-group">
                 <label for="">Titulo</label>
-                <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
+                <span data-toggle="tooltip" title="Establece el titulo o encabezado del item."> <i class="fa fa-question-circle"></i></span>
                 <input type="text" class="form-control" placeholder="" name="titulo">
             </div>
             <div class="form-group">
                 <label>Color del Título</label>
-                <span data-toggle="tooltip" title="Establece el color del titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
+                <span data-toggle="tooltip" title="Establece el color del titulo o encabezado del item."> <i class="fa fa-question-circle"></i></span>
                 <input type="color" class="form-control" name="colorTitle" required>
             </div>
             <div class="form-group">
                 <label for="">Descripción</label>
-                <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
+                <span data-toggle="tooltip" title="Establece la descripción del item."> <i class="fa fa-question-circle"></i></span>
                 <textarea name="descripcion" id="" cols="30" rows="10" class="form-control"></textarea>
             </div>
             <div class="form-group">
                 <label>Color de la Descripción</label>
-                <span data-toggle="tooltip" title="Establece el color de la descripción del elemento ."> <i class="fa fa-question-circle"></i></span>
+                <span data-toggle="tooltip" title="Establece el color de la descripción del item."> <i class="fa fa-question-circle"></i></span>
                 <input type="color" class="form-control" name="colorText" required>
             </div>
             <div class="form-group">
                 <label for="">Imagen (1600x550 px)</label>
-                <span data-toggle="tooltip" title="Establece el color de la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
+                <span data-toggle="tooltip" title="Establece la imagen del item."> <i class="fa fa-question-circle"></i></span>
                 <input type="file" class="form-control" name="imagen" required>
             </div>
             <div class="form-group">
                 <label>Disposición</label>
-                <span data-toggle="tooltip" title="Establece el tipo de estilo de Slider de la sección."> <i class="fa fa-question-circle"></i></span>
+                <span data-toggle="tooltip" title="Establece el tipo de slider de la sección. SLIDER POR DEFECTO: Mantiene el alto de los items del slider y estos se desplazan a los lados para mostrar el contenido completo <img src='{{asset('assets/img/slider-pordefecto.png')}}' /> o SLIDER BOOTSTRAP: Mantiene el alto del slider y su contenido. <img src='{{asset('assets/img/slider-bootstrap.png')}}'/> o SLIDER APPSIEL: mantiene el alto de los items del slider y estos se desplazan a los lados para mostrar el contenido completo. <img src='{{asset('assets/img/slider-appsiel.png')}}' />"> <i class="fa fa-question-circle"></i></span>
                 <select class="form-control" name="disposicion" required>
                     <option value="DEFAULT">SLIDER POR DEFECTO</option>
                     <option value="PREMIUM">SLIDER PREMIUM</option>
@@ -233,7 +233,7 @@
     
     $('[data-toggle="tooltip"]').tooltip({
         animated: 'fade',
-        placement: 'auto',
+        placement: 'right',
         html: true
     });
 

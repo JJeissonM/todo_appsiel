@@ -153,7 +153,7 @@
     });
     $('[data-toggle="tooltip"]').tooltip({
         animated: 'fade',
-        placement: 'auto',
+        placement: 'right',
         html: true
     });
 </script>

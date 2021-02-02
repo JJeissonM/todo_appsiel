@@ -139,18 +139,22 @@
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
+                        <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
                         <input name="titulo" type="text" placeholder="Titulo" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
+                        <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
                         <input name="descripcion" type="text" placeholder="Descripción" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Color del Texto</label>
+                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
                         <input name="textcolor" type="color" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>¿Color o Imágen de Fondo?</label>
+                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
                         <select class="form-control" id="color" name="modo" required onchange="cambiarColor()">
                             <option value="fondo">-- Selecciona una opción --</option>
                             <option value="COLOR">COLOR DE FONDO</option>
@@ -162,6 +166,7 @@
                     </div>
                     <div class="form-group">
                         <label>Contenido HTML</label>
+                        <span data-toggle="tooltip" title="Establece el contenido de la sección."> <i class="fa fa-question-circle"></i></span>
                         <textarea name="content_html" required class="form-control"></textarea>
                     </div>
                     <div class="form-group">
@@ -194,18 +199,23 @@
                     <input type="hidden" name="parallax" value="{{$parallax->id}}">
                     <div class="form-group">
                         <label>Titulo</label>
+                        <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
                         <input name="titulo" value="{{$parallax->titulo}}" type="text" placeholder="Titulo" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
+                        <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
                         <input name="descripcion" value="{{$parallax->descripcion}}" type="text" placeholder="Descripción" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Color del Texto</label>
+                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
                         <input name="textcolor" type="color" value="{{$parallax->textcolor}}" required class="form-control">
                     </div>
                     <div class="form-group">
-                        <label>¿Color o Imágen de Fondo? (Actual: {{$parallax->modo." - ".$parallax->fondo}})</label>
+                        <label>¿Color o Imágen de Fondo? 
+                            <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
+                            (Actual: {{$parallax->modo." - ".$parallax->fondo}})</label>                        
                         <select class="form-control" id="color2" name="modo" required onchange="cambiarColor2()">
                             <option value="fondo">-- Selecciona una opción --</option>
                             <option value="COLOR">COLOR DE FONDO</option>
@@ -217,6 +227,7 @@
                     </div>
                     <div class="form-group">
                         <label>Contenido HTML</label>
+                        <span data-toggle="tooltip" title="Establece el contenido de la sección."> <i class="fa fa-question-circle"></i></span>
                         <textarea name="content_html" required class="form-control">{{$parallax->content_html}}</textarea>
                     </div>
                     <div class="form-group">
@@ -233,6 +244,11 @@
 </div>
 @section('script')
 <script type="text/javascript">
+$('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
     function cerrar(id) {
         $("#" + id).modal('hide');
         $("#" + id).removeClass('modal-open');
@@ -243,30 +259,41 @@
         var c = $("#color").val();
         switch (c) {
             case 'COLOR':
-                $("#fondo").html("<label>Color de Fondo</label><input name='fondo' type='color' required class='form-control'>");
+                $("#fondo").html("<label>Color de Fondo<span data-toggle='tooltip' title='Establece el color de fondo de la sección.'> <i class='fa fa-question-circle'></i></span></label><input name='fondo' type='color' required class='form-control'>");
                 break;
             case 'IMAGEN':
-                $("#fondo").html("<label>Imágen de Fondo</label><input name='fondo' type='file' required class='form-control'>");
+                $("#fondo").html("<label>Imágen de Fondo<span data-toggle='tooltip' title='Establece la imagen de fondo de la sección.''> <i class='fa fa-question-circle'></i></span></label><input name='fondo' type='file' required class='form-control'>");
                 break;
             case 'fondo':
                 $("#fondo").html("");
                 break;
         }
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
     }
 
     function cambiarColor2() {
         var c = $("#color2").val();
         switch (c) {
             case 'COLOR':
-                $("#fondo2").html("<label>Color de Fondo</label><input name='fondo' type='color' required class='form-control'>");
+                $("#fondo2").html("<label>Color de Fondo<span data-toggle='tooltip' title='Establece el color de fondo de la sección.'> <i class='fa fa-question-circle'></i></span></label><input name='fondo' type='color' required class='form-control'>");
                 break;
             case 'IMAGEN':
-                $("#fondo2").html("<label>Imágen de Fondo</label><input name='fondo' type='file' required class='form-control'>");
+                $("#fondo2").html("<label>Imágen de Fondo<span data-toggle='tooltip' title='Establece la imagen de fondo de la sección.'> <i class='fa fa-question-circle'></i></span></label><input name='fondo' type='file' required class='form-control'>");
                 break;
             case 'fondo':
                 $("#fondo2").html("");
                 break;
         }
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
     }
+    
 </script>
 @endsection

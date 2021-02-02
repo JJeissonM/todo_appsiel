@@ -195,22 +195,32 @@ class ReporteController extends Controller
         $fecha_hasta  = $request->fecha_hasta;
         $valores_a_mostrar  = $request->valores_a_mostrar;
 
-        $nom_contrato_id = (int)$request->nom_contrato_id;
-
         $nom_agrupacion_id = (int)$request->nom_agrupacion_id;
-        $agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id );
+        $nom_contrato_id = (int)$request->nom_contrato_id;
+        $nom_concepto_id = (int)$request->nom_concepto_id;
+
+        //dd( $nom_agrupacion_id, $nom_concepto_id, $nom_contrato_id );
 
         $detalla_empleados = $request->detalla_empleados;
         $operador2 = '=';
 
-        $movimientos = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id);
+        $movimientos = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
 
-        $conceptos =  NomConcepto::whereIn( 'id', array_keys( $movimientos->groupBy('nom_concepto_id')->toArray() ) )->get();
+        //dd( [ $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id, count( $movimientos->toArray() ), $movimientos ] );
 
-        $empleados =  NomContrato::whereIn( 'core_tercero_id', array_keys( $movimientos->groupBy('core_tercero_id')->toArray() ) )->get();
+        $agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id );
 
-        if ( $nom_contrato_id != 0 )
+        if( $nom_concepto_id == 0 )
         {
+            $conceptos =  NomConcepto::whereIn( 'id', array_keys( $movimientos->groupBy('nom_concepto_id')->toArray() ) )->get();
+        }else{
+            $conceptos =  NomConcepto::where( 'id', $nom_concepto_id )->get();
+        }
+
+        if ( $nom_contrato_id == 0 )
+        {
+            $empleados =  NomContrato::whereIn( 'core_tercero_id', array_keys( $movimientos->groupBy('core_tercero_id')->toArray() ) )->get();
+        }else{
             $empleados =  NomContrato::where( 'id', $nom_contrato_id )->get();
         }
 
@@ -353,13 +363,9 @@ class ReporteController extends Controller
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
-        $nom_contrato_id = null;
-        if ( $request->nom_contrato_id != '' )
-        {
-            $nom_contrato_id = (int)$request->nom_contrato_id;
-        }
+        $nom_contrato_id = (int)$request->nom_contrato_id;
         
-        $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, '', $nom_contrato_id);
+        $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, 0, $nom_contrato_id, 0);
 
         $empleados_con_movimiento = $movimiento->unique('nom_contrato_id')->values()->all();
 
@@ -497,13 +503,11 @@ class ReporteController extends Controller
 
         $forma_visualizacion  = $request->forma_visualizacion;
 
-        $nom_contrato_id = null;
-        if ( $request->nom_contrato_id != '' )
-        {
-            $nom_contrato_id = (int)$request->nom_contrato_id;
-        }
+        $nom_contrato_id = (int)$request->nom_contrato_id;
+        $nom_concepto_id = (int)$request->nom_concepto_id;
+        $nom_agrupacion_id = (int)$request->nom_agrupacion_id;
 
-        $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, '', $nom_contrato_id);
+        $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
 
         switch ($forma_visualizacion)
         {

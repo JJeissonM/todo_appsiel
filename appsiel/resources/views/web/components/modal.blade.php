@@ -98,24 +98,29 @@
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label for="title">Titulo</label>
+                        <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
                         <input type="text" id="title" class="form-control" name="title" value="{{$modal->title}}">
                     </div>
                     <div class="form-group">
                         <label for="">Descripción</label>
+                        <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
                         <textarea name="body" class="form-control" cols="30" rows="5">{{$modal->body}}</textarea>
                     </div>
                     <div class="form-group">
                         <label for="body">Enlace</label>
+                        <span data-toggle="tooltip" title="Establece el enlace del boton inferior."> <i class="fa fa-question-circle"></i></span>
                         <input type="text" id="body" class="form-control" name="enlace" value="{{$modal->enlace}}">
                     </div>
                     <div class="form-group">
                         <label for="">Fuente Para el Componente</label>
+                        <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                         @if($fonts!=null)
                         {!! Form::select('configuracionfuente_id',$fonts,$modal->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                         @endif
                     </div>
                     <div class="form-group">
                         <label for="recurso">Imagen de Fondo (800x550 px)</label>
+                        <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span>
                         <input type="file" id="recurso" class="form-control" name="path" value="">
                     </div>
                     <button class="btn btn-primary waves-effect btn-block btn-sm">Guardar</button>
@@ -129,24 +134,29 @@
                         <input type="hidden" name="variables_url" value="{{$variables_url}}">
                         <div class="form-group">
                             <label for="title">Titulo</label>
+                            <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
                             <input type="text" id="title" class="form-control" name="title">
                         </div>
                         <div class="form-group">
                             <label for="">Descripción</label>
+                            <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
                             <textarea name="body" class="form-control" cols="30" rows="5"></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="">Fuente Para el Componente</label>
-                            @if($fonts!=null)
-                            {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
-                            @endif
-                        </div>
-                        <div class="form-group">
                             <label for="body">Enlace</label>
+                            <span data-toggle="tooltip" title="Establece el enlace del boton inferior."> <i class="fa fa-question-circle"></i></span>
                             <input type="text" id="body" class="form-control" name="enlace">
                         </div>
                         <div class="form-group">
+                            <label for="">Fuente Para el Componente</label>
+                            <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
+                            @if($fonts!=null)
+                            {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                            @endif
+                        </div>                        
+                        <div class="form-group">
                             <label for="recurso">Imagen de Fondo (800x550 px)</label>
+                            <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span>
                             <input type="file" id="recurso" class="form-control" name="path">
                         </div>
                         <button class="btn btn-primary waves-effect btn-block btn-sm">Guardar</button>
@@ -183,4 +193,13 @@
         </div>
     </div>
 </div>
+@endsection
+@section('script')
+<script type="text/javascript">    
+    $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'right',
+        html: true
+    });
+</script>
 @endsection

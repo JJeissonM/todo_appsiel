@@ -67,7 +67,7 @@
                         <td> {{ $linea->concepto->id }} - {!! $linea->concepto->descripcion !!} </td>
                         <td> {{ $linea->concepto->naturaleza }} </td>
                         <td style="text-align: right;"> {{ number_format( $linea->cantidad_horas, 2,',','.' ) }} </td>
-                        <td style="text-align: right;"> ${{ number_format( $linea->valor, 2,',','.' ) }} </td>
+                        <td style="text-align: right;"> {{ number_format( $linea->valor, 0,',','.' ) }} </td>
                         <td>
                             <button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-trash" title="Eliminar fila"></i></button>
                             {!! $mensaje_error_valores !!}

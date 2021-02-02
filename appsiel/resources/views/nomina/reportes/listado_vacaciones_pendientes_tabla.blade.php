@@ -38,13 +38,13 @@
 	                <td> {{ $fila['datos']->empleado->tercero->descripcion }} ({{ $fila['datos']->empleado->tercero->numero_identificacion }}) </td>
 	                <td> {{ $fila['datos']->empleado->grupo_empleado->descripcion }} / {{ $fila['datos']->empleado->cargo->descripcion }} </td>
 	                <td> {{ $fila['datos']->empleado->fecha_ingreso }} </td>
-	                <td> ${{ number_format( $fila['datos']->empleado->sueldo, 0,',','.' ) }} </td>
+	                <td> {{ number_format( $fila['datos']->empleado->sueldo, 0,',','.' ) }} </td>
 	                <td> {{ $fila['datos']->fecha_final_ultimo_periodo_pagado }} </td>
 	                <td> {{ $fila['fecha_corte'] }} </td>
                     <td> {{ number_format( $fila['datos']->dias_pendientes /15, 2,',','.' ) }} </td>
                     <td> {{ number_format( $fila['datos']->dias_pendientes, 2,',','.' ) }} </td>
-	                <td> ${{ number_format( $fila['datos']->valor_pendiente_por_pagar, 0,',','.' ) }} </td>
-	                <td> ${{ number_format( $fila['datos']->valor_un_periodo_vacacion, 0,',','.' ) }} </td>
+	                <td> {{ number_format( $fila['datos']->valor_pendiente_por_pagar, 0,',','.' ) }} </td>
+	                <td> {{ number_format( $fila['datos']->valor_un_periodo_vacacion, 0,',','.' ) }} </td>
 	            </tr>
 	            <?php
 	            	$total_dias_pendientes += $fila['datos']->dias_pendientes;
@@ -60,8 +60,8 @@
 				</td> 
                 <td> {{ number_format( $total_dias_pendientes / 15, 2,',','.' ) }} </td>
                 <td> {{ number_format( $total_dias_pendientes, 2,',','.' ) }} </td>
-				<td> ${{ number_format( $total_valor_pendiente_por_pagar, 0,',','.' ) }} </td>
-				<td> ${{ number_format( $total_valor_un_periodo_vacacion, 0,',','.' ) }} </td>
+				<td> {{ number_format( $total_valor_pendiente_por_pagar, 0,',','.' ) }} </td>
+				<td> {{ number_format( $total_valor_un_periodo_vacacion, 0,',','.' ) }} </td>
         	</tr>        	
         </tfoot>
     </table>

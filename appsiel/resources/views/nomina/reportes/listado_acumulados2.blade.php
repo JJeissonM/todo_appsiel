@@ -22,7 +22,7 @@
 ?>
 
 <div class="table-responsive">
-    <table id="myTable" class="table table-striped">
+    <table id="tbDatos" class="table table-striped">
         <thead>
             <tr>
                 <th> {{ $lbl_encabezado }} </th>
@@ -47,12 +47,12 @@
 
                 $fila = '';
             	foreach( $empleados as $empleado )
-            	{
+            	{	                
 	                $fila .= '<tr class="fila-'.$j.'">';
 
 			        $k = 0;
 
-	                $fila .= '<td> ' . $empleado->tercero->numero_identificacion . ' - ' . $empleado->tercero->descripcion . '</td>';
+	                $fila .= '<td> ' . $empleado->tercero->numero_identificacion . ' - ' . $empleado->tercero->descripcion . $movimientos->whereLoose( 'core_tercero_id', $empleado->core_tercero_id )->sum('valor_devengo') . '</td>';
 	                $fila .= '<td> ' . $empleado->grupo_empleado->descripcion . '</td>';
 	                $fila .= '<td> ' . $empleado->cargo->descripcion . '</td>';
 
@@ -147,11 +147,11 @@
 		switch ( $valores_a_mostrar)
 		{
 			case 'solo_valores':
-				$valor = '$ ' . number_format( $devengo - $deduccion, 2, ',', '.');
+				$valor = number_format( $devengo - $deduccion, 0, ',', '.');
 				break;
 			
 			case 'valores_y_cantidades':
-				$valor = '$ ' . number_format( $devengo - $deduccion, 2, ',', '.');
+				$valor = number_format( $devengo - $deduccion, 0, ',', '.');
 				$cantidad = ' / ' . number_format( $cantidad_horas, 2, ',', '.');
 				break;
 			
