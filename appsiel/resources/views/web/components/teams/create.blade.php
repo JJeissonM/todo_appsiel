@@ -50,31 +50,38 @@
                 <input type="hidden" name="variables_url" value="{{$variables_url}}">
                 <div class="form-group">
                     <label>Titulo</label>
+                    <span data-toggle="tooltip" title="Establece el titulo de la tarjeta."> <i class="fa fa-question-circle"></i></span>
                     <input name="title" type="text" placeholder="Titulo" class="form-control" required>
                 </div>
                 <div class="form-group">
                     <label>Color del Título</label>
+                    <span data-toggle="tooltip" title="Establece el color del titulo de la tarjeta."> <i class="fa fa-question-circle"></i></span>
                     <input type='color' class='form-control' name='title_color' required>
                 </div>
                 <div class="form-group">
                     <label>Descripción</label>
+                    <span data-toggle="tooltip" title="Establece la descripción de la tarjeta."> <i class="fa fa-question-circle"></i></span>
                     <textarea name="description" class="form-control" rows="5" required></textarea>
                 </div>
                 <div class="form-group">
                     <label>Más Detalles (Parte Posterior) Máx: 250 caracteres</label>
+                    <span data-toggle="tooltip" title="Establece el contenido para la parte posterior de la tarjeta."> <i class="fa fa-question-circle"></i></span>
                     <label id="dinamic" style="color: #ff0000;">0 de 250 caracteres</label>
                     <textarea id="detalles" maxlength="250" name="more_details" class="form-control contenido" required rows="5"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Color del Texto</label>
+                    <span data-toggle="tooltip" title="Establece el color del texto de la tarjeta."> <i class="fa fa-question-circle"></i></span>
                     <input type='color' class='form-control' name='text_color' required>
                 </div>
                 <div class="form-group">
                     <label>Imagen (410x291 px)</label>
+                    <span data-toggle="tooltip" title="Establece una imagen para la tarjeta."> <i class="fa fa-question-circle"></i></span>
                     <input name="imagen" type="file" required placeholder="Archivo de Imagen" class="form-control">
                 </div>
                 <div class="form-group">
                     <label>Color del Fondo de la Tarjeta</label>
+                    <span data-toggle="tooltip" title="Establece el color de fondo de la tarjeta."> <i class="fa fa-question-circle"></i></span>
                     <input type='color' class='form-control' name='background_color' required>
                 </div>
                 <div class="form-group">
@@ -130,6 +137,11 @@
 
         $(this).attr('name', original_name);
 
+    });
+    $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'right',
+        html: true
     });
 </script>
 @endsection

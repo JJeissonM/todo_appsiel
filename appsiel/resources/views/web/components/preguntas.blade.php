@@ -149,32 +149,39 @@
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
+                        <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
                         <input name="titulo" type="text" placeholder="Nombre de la pregunta" class="form-control" required="required">
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
+                        <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
                         <textarea name="descripcion" class="form-control" rows="3" required="required"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="">Fuente Para el Componente</label>
+                        <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                         @if($fonts!=null)
                         {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                         @endif
                     </div>
                     <div class="form-group">
                         <label>Color 1 Para el Degradado</label>
+                        <span data-toggle="tooltip" title="Establece un primer color para el degradado de la pregunta."> <i class="fa fa-question-circle"></i></span>
                         <input type="color" name="color1" class="form-control" required="required">
                     </div>
                     <div class="form-group">
                         <label>Color 2 Para el Degradado</label>
+                        <span data-toggle="tooltip" title="Establece un segundo color para el degradado de la pregunta."> <i class="fa fa-question-circle"></i></span>
                         <input type="color" name="color2" class="form-control" required="required">
                     </div>
                     <div class="form-group">
                         <label>Imagen Para el Fondo Derecho</label>
+                        <span data-toggle="tooltip" title="Establece una imagen a la derecha de las preguntas."> <i class="fa fa-question-circle"></i></span>
                         <input type="file" name="imagen_fondo" class="form-control" rows="3">
                     </div>
                     <div class="form-group">
                         <label>¿El fondo es Imagen o Color?</label>
+                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
                         <select type="select" class="form-control" id="tipo_fondo" required name="tipo_fondo" onchange="cambiar()">
                             <option value="">-- Seleccione una opción --</option>
                             <option value="IMAGEN">IMAGEN</option>
@@ -215,33 +222,40 @@
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <div class="form-group">
                         <label>Titulo</label>
+                        <span data-toggle="tooltip" title="Establece el titulo o encabezado de la sección."> <i class="fa fa-question-circle"></i></span>
                         <input name="titulo" type="text" placeholder="Titulo" value="{{$pregunta->titulo}}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>Descripción</label>
+                        <span data-toggle="tooltip" title="Establece la descripción de la sección."> <i class="fa fa-question-circle"></i></span>
                         <input name="descripcion" type="text" placeholder="Titulo" value="{{$pregunta->descripcion}}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label for="">Fuente Para el Componente</label>
+                        <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                         @if($fonts!=null)
                         {!! Form::select('configuracionfuente_id',$fonts,$pregunta->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                         @endif
                     </div>
                     <div class="form-group">
                         <label>Color 1 Para el Degradado</label>
+                        <span data-toggle="tooltip" title="Establece un primer color para el degradado de la pregunta."> <i class="fa fa-question-circle"></i></span>
                         <input type="color" name="color1" value="{{$pregunta->color1}}" class="form-control" required="required">
                     </div>
                     <div class="form-group">
                         <label>Color 2 Para el Degradado</label>
+                        <span data-toggle="tooltip" title="Establece un segundo color para el degradado de la pregunta."> <i class="fa fa-question-circle"></i></span>
                         <input type="color" name="color2" value="{{$pregunta->color2}}" class="form-control" required="required">
                     </div>
                     <div class="form-group">
                         <label>Imagen Para el Fondo Derecho</label>
+                        <span data-toggle="tooltip" title="Establece una imagen a la derecha de las preguntas."> <i class="fa fa-question-circle"></i></span>
                         <a target="_blank" href="{{asset($pregunta->imagen_fondo)}}">Ver Actual</a><br>
                         <input type="file" name="imagen_fondo" class="form-control">
                     </div>
                     <div class="form-group">
                         <label>¿El fondo es Imagen o Color?</label>
+                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
                         <select type="select" class="form-control" id="tipo_fondo2" name="tipo_fondo" onchange="cambiar2()">
                             @if($pregunta->tipo_fondo=='IMAGEN')
                             <option value="">-- Seleccione una opción --</option>
@@ -296,10 +310,12 @@
                     <input type="hidden" name="pregunta_id" value="{{$pregunta->id}}">
                     <div class="form-group">
                         <label>Pregunta</label>
+                        <span data-toggle="tooltip" title="Establece una pregunta para mostrar."> <i class="fa fa-question-circle"></i></span>
                         <input name="pregunta" type="text" placeholder="Nombre de la pregunta" class="form-control" required="required">
                     </div>
                     <div class="form-group">
                         <label>Respuesta</label>
+                        <span data-toggle="tooltip" title="Establece la respuesta de la pregunta a mostrar."> <i class="fa fa-question-circle"></i></span>
                         <textarea name="respuesta" class="form-control" rows="3" required="required"></textarea>
                     </div>
                     <div class="form-group">
@@ -335,11 +351,13 @@
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <input type="hidden" name="itempregunta_id" id="itempregunta_id">
                     <div class="form-group">
-                        <label>Nombre del Pregunta</label>
+                        <label>Pregunta</label>
+                        <span data-toggle="tooltip" title="Establece una pregunta para mostrar."> <i class="fa fa-question-circle"></i></span>
                         <input name="pregunta" id="pregunta" type="text" placeholder="Nombre de la Pregunta" class="form-control" required="required">
                     </div>
                     <div class="form-group">
                         <label>Respuesta</label>
+                        <span data-toggle="tooltip" title="Establece la respuesta de la pregunta a mostrar."> <i class="fa fa-question-circle"></i></span>
                         <textarea name="respuesta" id="respuesta" class="form-control" rows="3" required="required"></textarea>
                     </div>
                     <div class="form-group">
@@ -375,15 +393,25 @@
         var f = $("#tipo_fondo").val();
         var html = "<label>";
         if (f == 'IMAGEN') {
-            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
-                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
-                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option></select>";
+            html = html + `Imagen de Fondo <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='file' class='form-control' name='fondo' required>` +
+                `<label>Repetir <span data-toggle="tooltip" title="Establece si la imagen se repite en el fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>                
+                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>`+
+                `<label>Orientación Imagen <span data-toggle="tooltip" title="Establece la orientacion de la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>
+                <select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>`;
         } else if (f == 'COLOR') {
-            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+            html = html + `Color de Fondo <span data-toggle="tooltip" title="Establece el color de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='color' class='form-control' name='fondo' required>`;
         } else {
             html = "";
         }
         $("#fondo_container").html(html);
+        
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
     }
 
     function cambiar2() {
@@ -391,15 +419,31 @@
         var f = $("#tipo_fondo2").val();
         var html = "<label>";
         if (f == 'IMAGEN') {
-            html = html + "Imagen de Fondo</label><input type='file' class='form-control' name='fondo' required>" +
-                "<label>Repetir</label><select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>" +
-                "<label>Orientación Imagen</label><select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option></select>";
+            html = html + `Imagen de Fondo <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='file' class='form-control' name='fondo' required>` +
+                `<label>Repetir <span data-toggle="tooltip" title="Establece si la imagen se repite en el fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>                
+                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>`+
+                `<label>Orientación Imagen <span data-toggle="tooltip" title="Establece la orientacion de la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>
+                <select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>`;
         } else if (f == 'COLOR') {
-            html = html + "Color de Fondo</label><input type='color' class='form-control' name='fondo' required>";
+            html = html + `Color de Fondo <span data-toggle="tooltip" title="Establece el color de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
+            <input type='color' class='form-control' name='fondo' required>`;
         } else {
             html = "";
         }
         $("#fondo_container2").html(html);
+
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
     }
+
+    $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'right',
+        html: true
+    });
 </script>
 @endsection
