@@ -24,25 +24,47 @@ use App\Calificaciones\Periodo;
 use App\Calificaciones\Calificacion;
 use App\Calificaciones\CursoTieneAsignatura;
 use App\Calificaciones\Asignatura;
+use App\Calificaciones\NotaNivelacion;
 
 class ProcesosController extends ModeloController
 {
-    public function crear_matriculas_masivas( Request $request )
+    public function matriculas_masivas_cargar_listado( Request $request )
     {
         $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
 
-        $matriculas = Matricula::where([
+        $listado = Matricula::where([
                                         ['periodo_lectivo_id','=',$request->periodo_lectivo_id],
                                         ['curso_id','=',$request->curso_id],
                                         ['estado','=','Activo']
                                     ])
                                 ->get();
+        $matriculas = collect([]);
 
-        $vista = View::make('matriculas.procesos.crear_matriculas_masivas_lista_estudiantes_promover',compact('matriculas'))->render();
+        foreach ( $listado as $matricula )
+        {
+            $matricula->periodo_final = $matricula->periodo_lectivo->periodo_final_del_anio_lectivo();
+            $matricula->promedio_final = Calificacion::get_calificacion_promedio_estudiante_periodos( [$matricula->periodo_final->id ], $matricula->curso_id, $matricula->id_estudiante);
+            $matricula->cantidad_nivelaciones = NotaNivelacion::where([
+                                                        [ 'estudiante_id', '=', $matricula->id_estudiante],
+                                                        [ 'periodo_id', '=', $matricula->periodo_final->id ]
+                                                    ])->count();
+
+            $matriculas->push( $matricula );
+        }
+    //dd([$matriculas]);
+
+        $opciones_cursos = Curso::opciones_campo_select();
+        $cantidad_estudiantes = $listado->count();
+
+        $vista = View::make('matriculas.procesos.crear_matriculas_masivas_lista_estudiantes_promover',compact('matriculas','opciones_cursos','cantidad_estudiantes'))->render();
 
         return $vista;
     }
 
+    public function matriculas_masivas_generar( Request $request )
+    {
+        dd( $request->all() );
+    }
 
 
     /* 

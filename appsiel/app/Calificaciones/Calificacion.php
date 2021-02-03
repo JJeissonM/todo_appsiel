@@ -225,12 +225,23 @@ class Calificacion extends Model
     public static function get_calificacion_promedio_asignatura_estudiante_periodos($periodos_promediar, $curso_id, $estudiante_id, $asignatura_id)
     {
         return Calificacion::whereIn('id_periodo', $periodos_promediar)
-            ->where([
-                'curso_id' => $curso_id,
-                'id_estudiante' => $estudiante_id,
-                'id_asignatura' => $asignatura_id
-            ])
-            ->avg('calificacion');
+                            ->where([
+                                'curso_id' => $curso_id,
+                                'id_estudiante' => $estudiante_id,
+                                'id_asignatura' => $asignatura_id
+                            ])
+                            ->avg('calificacion');
+    }
+
+    public static function get_calificacion_promedio_estudiante_periodos($periodos_promediar, $curso_id, $estudiante_id)
+    {
+        //dd($periodos_promediar, $curso_id, $estudiante_id);
+        return Calificacion::whereIn('id_periodo', $periodos_promediar)
+                            ->where([
+                                'curso_id' => $curso_id,
+                                'id_estudiante' => $estudiante_id
+                            ])
+                            ->avg('calificacion');
     }
 
 

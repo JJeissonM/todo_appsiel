@@ -48,6 +48,9 @@
                 ?>
                 @foreach ($registros as $registro )
                     <?php
+                        
+                        $devengo = '';
+                        $deduccion = '';
 
                         if ( $registro->valor_devengo != 0) 
                         {

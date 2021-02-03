@@ -142,6 +142,15 @@ class PeriodoLectivo extends Model
         return PeriodoLectivo::find( Periodo::find( $periodo_id )->periodo_lectivo_id );
     }
 
+    public function periodo_final_del_anio_lectivo()
+    {
+        return Periodo::where( [
+                                ['periodo_lectivo_id', '=', $this->id],
+                                ['estado', '=', 'Activo']
+                            ] )
+                        ->orderBy('numero')->get()->last();
+    }
+
     public function validar_eliminacion($id)
     {
         $tablas_relacionadas = '{

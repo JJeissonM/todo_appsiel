@@ -48,7 +48,8 @@ Route::resource('matriculas', 'Matriculas\MatriculaController', ['except' => ['s
 
 // 			PROCESOS
 // Matriculas masivas de estudiantes (Promover de curso)
- Route::post('sga_crear_matriculas_masivas', 'Matriculas\ProcesosController@crear_matriculas_masivas');
+ Route::post('sga_matriculas_masivas_cargar_listado', 'Matriculas\ProcesosController@matriculas_masivas_cargar_listado');
+ Route::post('sga_matriculas_masivas_generar', 'Matriculas\ProcesosController@matriculas_masivas_generar');
 
 // FACTURACION ESTUDIANTES
 Route::resource('facturas_estudiantes', 'Matriculas\FacturaEstudianteController');

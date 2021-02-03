@@ -22,9 +22,7 @@
 							Parámetros de selección
 						</h4>
 						<hr>
-						{{ Form::open(['url'=>'sga_crear_matriculas_masivas','id'=>'formulario_inicial','files' => true]) }}
-
-
+						{{ Form::open(['url'=>'sga_matriculas_masivas_cargar_listado','id'=>'formulario_inicial','files' => true]) }}
 							<div class="row">
 								<div class="col-sm-4">
 									<div class="row">
@@ -46,7 +44,7 @@
 								</div>
 								<div class="col-sm-4">
 									{{ Form::label(' ','.') }}
-									<button class="btn btn-success" id="btn_cargar_estudiantes"> <i class="fa fa-paper-plane"></i> Cargar estudiantes </button>
+									<button class="btn btn-success" id="btn_cargar_estudiantes"> <i class="fa fa-list"></i> Listar estudiantes </button>
 								</div>
 							</div>
 						{{ Form::close() }}
@@ -55,22 +53,20 @@
 				</div>
 					
 			</div>
-			<!--
-			<div class="col-md-6">
-				<h4>
-					Empleados del documento
-				</h4>
-				<hr>
-				<div class="div_lista_empleados_del_documento">
-					
-				</div>
-			</div>
-		-->
 		</div>
 				
 	</div>
 
+	{{ Form::open(['url'=>'sga_matriculas_masivas_generar','id'=>'formulario_lista_estudiantes','files' => true]) }}
+		<input type="hidden" name="cantidad_estudiantes" id="cantidad_estudiantes" value="0">
+		<input type="hidden" name="lineas_estudiantes" id="lineas_estudiantes" value="0">
+	{{ Form::close() }}
+
 	<div class="row" id="div_resultado">
+			
+	</div>
+
+	<div class="row" id="div_resultado2">
 			
 	</div>
 
@@ -81,6 +77,36 @@
 
 		$(document).ready(function(){
 
+			var opcion_seleccionada;
+
+			$(document).on('change',".checkbox_fila",function(){
+				if ( $(this).is(':checked') )
+				{
+					opcion_seleccionada++;
+					$('#cantidad_estudiantes').val( $('#cantidad_estudiantes').val() + 1);
+					$(this).next('.checkbox_aux').text(1);
+				}else{
+					$('#cantidad_estudiantes').val( $('#cantidad_estudiantes').val() - 1);
+					$(this).next('.checkbox_aux').text(0);
+				}
+			  });
+
+			$(document).on('change',"#checkbox_head",function(){
+
+				$(".checkbox_fila").each(function(){
+					if ( $('#checkbox_head').is(':checked') )
+					{
+						$(this).prop('checked',true);
+						$('#cantidad_estudiantes').val( $('#cantidad_estudiantes').val() + 1);
+						$(this).next('.checkbox_aux').text(1);
+					}else{
+						$(this).prop('checked',false);
+						$('#cantidad_estudiantes').val( $('#cantidad_estudiantes').val() - 1);
+						$(this).next('.checkbox_aux').text(0);
+					}					
+				});
+
+			});
 
 			$("#btn_cargar_estudiantes").on('click',function(event){
 		    	event.preventDefault();
@@ -118,22 +144,38 @@
 		    });
 
 
-
-			$("#btn_retirar").on('click',function(event){
+			$(document).on('click',"#btn_promover",function(event){
 		    	event.preventDefault();
+
+        		$("#div_resultado2").html( '' );
 
 		    	if ( !validar_requeridos() )
 		    	{
 		    		return false;
 		    	}
 
-		    	if ( opcion_seleccionada == 0) { alert('Debe seleccionar al menos una prestación.'); return false; }
+		    	if ( $('#cantidad_estudiantes').val() == 0) { alert('Debe seleccionar al menos un estudiante.'); return false; }
+
+		    	if ( $('#curso_id').val() == $('#curso_promover_id').val() ) { alert('No se pueden promover los estudiantes hacia el mismo curso actual: ' + $('#curso_promover_id option:selected').text() ); return false; }
+
+		    	if ( $('#periodo_lectivo_id').val() == $('#periodo_lectivo_promover_id').val() ) { alert('No se pueden promover los estudiantes hacia el mismo Año lectivo: ' + $('#periodo_lectivo_promover_id option:selected').text() ); return false; }
+
+		    	if ( !confirm('¿Está seguro de promover todos los estudiantes seleccionados al nuevo curso ' + $('#curso_promover_id option:selected').text() + '?') )
+		    	{
+		    		return false;
+		    	}
 
 		 		$("#div_spin").show();
 		 		$("#div_cargando").show();
-        		$("#div_resultado").html( '' );
 
-				var form = $('#formulario_inicial');
+        		var table = $('#tabla_lista_estudiantes').tableToJSON();
+				// Se asigna el objeto JSON a un campo oculto del formulario
+		 		$('#lineas_estudiantes').val(JSON.stringify(table));
+
+				var form = $('#formulario_lista_estudiantes');
+				var url = form.attr('action');
+				var datos = new FormData(document.getElementById("formulario_lista_estudiantes"));
+				/*
 				var prestaciones = '';
 				var i;
 				$(".check_prestacion").each(function(){
@@ -144,12 +186,13 @@
 					}
 				  });
 
-				var url = "{{ url('nom_retirar_prestaciones_sociales') }}" + '/' + $('#nom_doc_encabezado_id').val() + '/' + prestaciones;
-
+				var url = "{ { url('nom_retirar_prestaciones_sociales') }}" + '/' + $('#nom_doc_encabezado_id').val() + '/' + prestaciones;
+				*/
 				$.ajax({
 				    url: url,
-				    type: "get",
+				    type: "post",
 				    dataType: "html",
+				    data: datos,
 				    cache: false,
 				    contentType: false,
 				    processData: false
@@ -158,8 +201,7 @@
 			        $('#div_cargando').hide();
         			$("#div_spin").hide();
 
-        			$("#div_resultado").html( respuesta );
-        			$("#div_resultado").fadeIn( 1000 );
+        			$("#div_resultado2").html( respuesta );
 			    });
 		    });
 

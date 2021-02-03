@@ -96,6 +96,9 @@ class PrestacionesSocialesController extends TransaccionController
 
                 if( ( $valores[0]['valor_devengo'] + $valores[0]['valor_deduccion']  + $cantidad_horas ) != 0 )
                 {
+                    $valores[0]['valor_devengo'] = round( $valores[0]['valor_devengo'], 0);
+                    $valores[0]['valor_deduccion'] = round( $valores[0]['valor_deduccion'], 0);
+                    
                     $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion',$prestacion)
                                                                         ->where('grupo_empleado_id',$empleado->grupo_empleado_id)
                                                                         ->get()->first();
