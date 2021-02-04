@@ -44,8 +44,8 @@
 	<div class="container-fluid">
 		<div class="marco_formulario">
 			
-			{{ Form::bsBtnExcel('reporte_cartera_por_curso') }}
-			{{ Form::bsBtnPdf('reporte_cartera_por_curso') }}
+			{{ Form::bsBtnExcel('desprendibles_de_pago_nomina') }}
+			{{ Form::bsBtnPdf('desprendibles_de_pago_nomina') }}
 
 			<div style="display: none;">
 				{{ Form::open(['url'=>'nom_enviar_por_email_desprendibles_de_pago','id'=>'form_enviar_email']) }}

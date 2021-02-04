@@ -122,21 +122,19 @@ class PlanillaGenerada extends Model
 
         $fecha_inicial = $fecha_lapso[0] . '-' . $fecha_lapso[1] . '-01';
 
-        $empleados = NomDocRegistro::whereBetween('fecha', [$fecha_inicial, $datos['fecha_final_mes']])
+        $empleados_con_registros = NomDocRegistro::whereBetween('fecha', [$fecha_inicial, $datos['fecha_final_mes']])
                                     ->select('nom_contrato_id')
                                     ->distinct('nom_contrato_id')
                                     ->get();
 
         // Se agregan todos los contratos al documento
         $i = 1;
-        foreach ($empleados as $empleado)
+        foreach ( $empleados_con_registros as $linea_registro_nomina )
         {
-            $contrato = NomContrato::find($empleado->nom_contrato_id);
 
-            /*
-				cambiar la validacion siguiente por un campo que el empleado que diga: genera planilla SI: NO 
-        	*/
-            if ($contrato->grupo_empleado_id != 5) // Grupo prepensionados
+            $contrato = $linea_registro_nomina->contrato;
+
+            if ( $contrato->genera_planilla_integrada ) 
             {
                 /* 
                     Se agrega una línea de empleado por cada novedad de TNL
@@ -144,7 +142,7 @@ class PlanillaGenerada extends Model
                 $i = $this->agregar_lineas_adicionales( $planilla_generada, $contrato, $i, $fecha_inicial, $datos['fecha_final_mes'] );
 
 
-                // SE AGREGA EL REGISTRO PRINCIPAL
+                // SE AGREGA LA LÍNEA PRINCIPAL
                 EmpleadoPlanilla::create([
                                             'orden' => $i,
                                             'planilla_generada_id' => $planilla_generada->id,

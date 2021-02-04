@@ -204,7 +204,8 @@ class PlanillaIntegradaController extends Controller
 
         array_pop($vector);
         array_pop($vector);
-        array_pop($vector);       
+        array_pop($vector);
+        array_pop($vector);     
 
         return $vector;
     }
@@ -434,7 +435,7 @@ class PlanillaIntegradaController extends Controller
 
     public function calcular_ibc( $planilla, $empleado )
     {
-        $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final ) + 10;// $10 de tolerancia por las aproximaciones decimales
+        $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final ) + 10;// $10 para que alcance la siguiente decena más cercana
 
         $this->cantidad_dias_laborados = round( $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ), 0);
 
@@ -457,7 +458,7 @@ class PlanillaIntegradaController extends Controller
         $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (int)config('nomina.horas_laborales') * (int)config('nomina.horas_dia_laboral');
         if ( $this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal )
         {
-            $this->ibc_salud = ( $valor_ibc_un_dia_minimo_legal * $this->cantidad_dias_laborados ) + 10; // $10 de tolerancia por las aproximaciones decimales
+            $this->ibc_salud = ( $valor_ibc_un_dia_minimo_legal * $this->cantidad_dias_laborados ) + 10;// $10 para que alcance la siguiente decena más cercana
             $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
         }
     }
@@ -482,7 +483,7 @@ class PlanillaIntegradaController extends Controller
         return abs( $total_devengos - $total_deducciones );
     }
 
-    public function get_valor_acumulado_concepto_entre_meses( $empleado, $nom_concepto_id, $fecha_inicial, $fecha_final )
+    public function get_valor_acumulado_concepto_entre_fechas( $empleado, $nom_concepto_id, $fecha_inicial, $fecha_final )
     {
         $total_devengos = NomDocRegistro::where( 'nom_concepto_id', $nom_concepto_id )
                                             ->where( 'nom_contrato_id', $empleado->id )
@@ -699,6 +700,7 @@ class PlanillaIntegradaController extends Controller
                     $vst = ' ';
                     $ret = ' ';
                     $fecha_de_retiro = '          ';
+                    $this->novedad_de_ausentismo = true;
 
                     $novedad_tnl = $linea_empleado_planilla->novedad_tnl;
 
@@ -766,7 +768,8 @@ class PlanillaIntegradaController extends Controller
                                                         ->sum('aux_cantidad_dias_laborados');
             if ( ( $dias_ya_laborados_novedades + $this->cantidad_dias_laborados ) > 30 )
             {
-                $this->cantidad_dias_laborados--; 
+                $this->cantidad_dias_laborados--;
+                $this->cantidad_dias_parafiscales--;
             }
         }
 
@@ -845,7 +848,6 @@ class PlanillaIntegradaController extends Controller
     public function cambiar_ibc_salud( $novedad_tnl, $linea_empleado_planilla )
     {
         // Se excluyen Vacaciones días NO HABILES (cpto 84) (se tratan como salario - linea_principal)
-
         $registros_asociados_novedad = NomDocRegistro::where([
                                                                 ['novedad_tnl_id','=',$novedad_tnl->id],
                                                                 ['nom_concepto_id','<>',84]
@@ -855,7 +857,7 @@ class PlanillaIntegradaController extends Controller
         $this->cantidad_dias_laborados = round( $registros_asociados_novedad->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
 
         // sumar devengos/deducciones asociados a la novedad
-        $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion') + 10;// $10 de tolerancia por las aproximaciones decimales
+        $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion') + 10;// $10 para que alcance la siguiente decena más cercana
         
         $this->validar_ibc_mayor_al_minimino_legal();
 
@@ -918,6 +920,8 @@ class PlanillaIntegradaController extends Controller
     public function almacenar_datos_pension($planilla, $empleado)
     {
         $this->el_empleado_id = $empleado->id;
+        $cantidad_dias_laborados = $this->cantidad_dias_laborados;
+        $ibc_salud = $this->ibc_salud;
 
         $codigo_entidad_pension = $this->formatear_campo( $empleado->entidad_pension->codigo_nacional,' ','derecha',6);
         $porcentaje_pension = 16 / 100;
@@ -925,6 +929,8 @@ class PlanillaIntegradaController extends Controller
         {
             $porcentaje_pension = '0.0';
             $codigo_entidad_pension = '      ';
+            $cantidad_dias_laborados = 0;
+            $ibc_salud = 0;
         }
         $valor_cotizacion_pension = number_format( $this->ibc_salud * $porcentaje_pension, 0,'','');
         $tarifa_pension = $this->formatear_campo( $porcentaje_pension,'0','derecha',7);
@@ -934,11 +940,11 @@ class PlanillaIntegradaController extends Controller
         $subcuenta_solidaridad_fsp = '000000000';
         $subcuenta_subsistencia_fsp = '000000000';
         $conceptos_liquidados_mes = $this->conceptos_liquidados_mes( $empleado, $this->fecha_inicial, $this->fecha_final );
-        $concepto_fsp = 75;
+        $concepto_fsp = 75; // Fondo de Solidaridad Pensional
         
         if ( in_array($concepto_fsp, $conceptos_liquidados_mes) )
         {
-            $valor_cotizacion_fsp = number_format( $this->get_valor_acumulado_concepto_entre_meses( $empleado, $concepto_fsp, $this->fecha_inicial, $this->fecha_final ), 0,'','');
+            $valor_cotizacion_fsp = number_format( $this->get_valor_acumulado_concepto_entre_fechas( $empleado, $concepto_fsp, $this->fecha_inicial, $this->fecha_final ), 0,'','');
             $mitad = number_format( $valor_cotizacion_fsp / 2, 0,'','');
             $subcuenta_solidaridad_fsp = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $mitad, 100, 'superior'),'0','izquierda',9);
             $subcuenta_subsistencia_fsp = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $mitad, 100, 'superior'),'0','izquierda',9);
@@ -951,8 +957,8 @@ class PlanillaIntegradaController extends Controller
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
                     [ 'codigo_entidad_pension' => $codigo_entidad_pension ] +
-                    [ 'dias_cotizados_pension' => $this->formatear_campo( $this->cantidad_dias_laborados,'0','izquierda',2) ] +
-                    [ 'ibc_pension' => $this->formatear_campo( number_format( $this->ibc_salud,0,'',''),'0','izquierda',9) ] +
+                    [ 'dias_cotizados_pension' => $this->formatear_campo( $cantidad_dias_laborados,'0','izquierda',2) ] +
+                    [ 'ibc_pension' => $this->formatear_campo( number_format( $ibc_salud,0,'',''),'0','izquierda',9) ] +
                     [ 'tarifa_pension' => $tarifa_pension ] +
                     [ 'cotizacion_pension' => $cotizacion_pension ] +
                     [ 'afp_voluntario_rais_empleado' => '000000000' ] +
@@ -1365,13 +1371,13 @@ class PlanillaIntegradaController extends Controller
 
     public function get_tipo_cotizante( $empleado )
     {
-        $tipo_cotizante = '01';
+        /*$tipo_cotizante = '01';
         if ( $empleado->es_pasante_sena)
         {
             $tipo_cotizante = '19';
-        }
+        }*/
 
-        return $tipo_cotizante;
+        return $empleado->tipo_cotizante;
     }
 
     /*

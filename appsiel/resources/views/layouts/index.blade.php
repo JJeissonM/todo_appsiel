@@ -121,6 +121,8 @@
 			@endforeach
 		</tbody>
 	</table>
+	<span class="text-info">Mostrando {{ $registros->count() }} de {{ $registros->total() }} registros</span>
+	<br>
 	{{ $registros->appends(['id' => $id_app,'id_modelo'=>$id_modelo,'nro_registros'=>$nro_registros,'search'=>$search,'curso_id'=> (isset($curso)) ? $curso->id : '','asignatura_id'=>(isset($asignatura)) ? $asignatura->id : ''])->links() }}
 </div>
 @endsection

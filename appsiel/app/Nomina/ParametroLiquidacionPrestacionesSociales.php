@@ -106,9 +106,18 @@ class ParametroLiquidacionPrestacionesSociales extends Model
 
         $anio_inicial = $anio_final;
         $mes_inicial = 0;
-        $dia_inicial = '01';
+        $dia_inicial = $this->formatear_numero_a_texto_dos_digitos( $dia_final + 1 );
+        if ( $dia_final >= 30 )
+        {
+            $dia_inicial = '01';
+        }
 
-        $mes_anterior = $mes_final + 1;
+        if ( ($mes_final == 2) && ($dia_final >= 28) ) // Febrero
+        {
+            $dia_inicial = '01';
+        }
+
+        $mes_anterior = $mes_final;// + 1;
         for ( $i = $this->cantidad_meses_a_promediar; $i > 0; $i--)
         {
             $mes_iteracion = $mes_anterior - 1;

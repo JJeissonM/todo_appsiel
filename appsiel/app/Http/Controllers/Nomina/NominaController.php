@@ -103,7 +103,7 @@ class NominaController extends TransaccionController
         // Se obtienen los Empleados del documento
         $empleados_documento = $documento->empleados;
 
-        // Guardar los valores para cada empleado      
+        // Guardar los valores para cada empleado 
         foreach ( $empleados_documento as $empleado ) 
         {
             $cant = count( $this->array_ids_modos_liquidacion_automaticos );
@@ -184,6 +184,8 @@ class NominaController extends TransaccionController
 
                 if( ( $registro['valor_devengo'] + $registro['valor_deduccion']  + $cantidad_horas ) != 0 )
                 {
+                    $registro['valor_devengo'] = round( $registro['valor_devengo'], 0);
+                    $registro['valor_deduccion'] = round( $registro['valor_deduccion'], 0);
                     $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $registro, $usuario);
 
                     $this->registros_procesados++;

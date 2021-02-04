@@ -155,6 +155,13 @@
 				e.preventDefault();
 				$('.alert.alert-warning').hide(1000);
 			});
+
+
+
+			$('td').hover(function(){
+				var celda_encabezado = $('table thead tr th').eq( $(this).index() );
+				$(this).attr( 'title', celda_encabezado.attr('title') );
+			});
 		});
 	</script>
 @endsection
