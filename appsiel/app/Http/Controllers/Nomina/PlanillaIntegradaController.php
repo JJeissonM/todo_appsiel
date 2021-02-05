@@ -435,7 +435,7 @@ class PlanillaIntegradaController extends Controller
 
     public function calcular_ibc( $planilla, $empleado )
     {
-        $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final ) + 10;// $10 para que alcance la siguiente decena más cercana
+        $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final );// + 10;// $10 para que alcance la siguiente decena más cercana
 
         $this->cantidad_dias_laborados = round( $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ), 0);
 
@@ -458,27 +458,29 @@ class PlanillaIntegradaController extends Controller
         $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (int)config('nomina.horas_laborales') * (int)config('nomina.horas_dia_laboral');
         if ( $this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal )
         {
-            $this->ibc_salud = ( $valor_ibc_un_dia_minimo_legal * $this->cantidad_dias_laborados ) + 10;// $10 para que alcance la siguiente decena más cercana
+            $this->ibc_salud = ( $valor_ibc_un_dia_minimo_legal * $this->cantidad_dias_laborados );// + 10;// $10 para que alcance la siguiente decena más cercana
             $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
         }
     }
 
     public function get_valor_acumulado_agrupacion_entre_meses( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
     {
-
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
+        $total_devengos = 0;
+        $total_deducciones = 0;
+        foreach ( $conceptos_de_la_agrupacion as $key => $concepto_id )
+        {
+            $total_devengos += NomDocRegistro::where( 'nom_concepto_id', $concepto_id )
+                                                ->where( 'nom_contrato_id', $empleado->id )
+                                                ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
+                                                ->sum( 'valor_devengo' );
 
-
-        $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'nom_contrato_id', $empleado->id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_devengo' );
-
-        $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'nom_contrato_id', $empleado->id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_deduccion' );
+            $total_deducciones += NomDocRegistro::where( 'nom_concepto_id', $concepto_id )
+                                                ->where( 'nom_contrato_id', $empleado->id )
+                                                ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
+                                                ->sum( 'valor_deduccion' );
+        }
 
         return abs( $total_devengos - $total_deducciones );
     }
@@ -857,7 +859,7 @@ class PlanillaIntegradaController extends Controller
         $this->cantidad_dias_laborados = round( $registros_asociados_novedad->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
 
         // sumar devengos/deducciones asociados a la novedad
-        $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion') + 10;// $10 para que alcance la siguiente decena más cercana
+        $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion');// + 10;// $10 para que alcance la siguiente decena más cercana
         
         $this->validar_ibc_mayor_al_minimino_legal();
 
@@ -893,6 +895,20 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_salud($planilla, $empleado)
     {
+
+        // Vacaciones de liq. de contrato se tienen en cuenta en parafiscales, mas no para salud y pensión.
+        if ( $empleado->estado == 'Retirado' )
+        {
+            // Restar conceptos de vacaciones
+            $devengo_salud_liquidacion_contrato = NomDocRegistro::where( 'nom_concepto_id', 66 )
+                                                ->where( 'nom_contrato_id', $empleado->id )
+                                                ->where( 'novedad_tnl_id', NULL )
+                                                ->whereBetween( 'fecha', [ $this->fecha_inicial, $this->fecha_final ] )
+                                                ->sum( 'valor_devengo' );
+
+            $this->ibc_salud -= $devengo_salud_liquidacion_contrato;
+        }
+
         $porcentaje_salud = 4 / 100;
         if ( $empleado->es_pasante_sena )
         {
