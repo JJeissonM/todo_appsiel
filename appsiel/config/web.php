@@ -123,7 +123,7 @@ return array(
         '17' => [
             'id' => 20,
             'nombre' => 'Guías academicas',
-            'descripcion' => 'Muestra una galería de fotos y vídeos',
+            'descripcion' => 'Esta es una sección especial para las instituciones educativas donde se visualizan en la página web las guías académicas cargadas por los docentes. ',
             'preview' => 'assets/web/componentes/guias-academicas.png',
             'tipo' => 'GENERICO'
         ],
@@ -132,6 +132,13 @@ return array(
             'nombre' => 'PQR',
             'descripcion' => 'Muestra un formulario para los usuarios que quieran hacer sus solicitudes de peticiones, quejas o reclamos ',
             'preview' => 'assets/web/componentes/form-pqr.png',
+            'tipo' => 'GENERICO'
+        ],
+        '19' => [
+            'id' => 19,
+            'nombre' => 'Sticky',
+            'descripcion' => 'Muestra unos botones de redes sociales o enlaces personalizados en los laterales del sitio web.',
+            'preview' => 'assets/web/componentes/sticky.png',
             'tipo' => 'GENERICO'
         ],
     )
