@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Sistema;
 
+use App\Calificaciones\Asignatura;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -28,7 +29,7 @@ use App\User;
 use App\Calificaciones\Logro;
 
 use App\Inventarios\InvBodega;
-
+use App\Matriculas\Curso;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
@@ -119,9 +120,8 @@ class ModeloController extends Controller
         if ($temp2 != null) {
             $search = trim($temp2);
         }
-        if (method_exists(app($this->modelo->name_space), 'consultar_registros'))
-        {
-            
+        if (method_exists(app($this->modelo->name_space), 'consultar_registros')) {
+
             $registros = app($this->modelo->name_space)->consultar_registros($nro_registros, $search);
             $sqlString = app($this->modelo->name_space)->sqlString($search);
             $tituloExport = app($this->modelo->name_space)->tituloExport();
@@ -138,10 +138,12 @@ class ModeloController extends Controller
         }
 
         $source = "INDEX1";
+        $curso = new Curso();
+        $asignatura = new Asignatura();
 
         // ¿Cómo saber qué métodos estan llamando a la vista layouts.index?
         // Si modifico esa vista, cómo se qué partes del software se verán afectadas???
-        return view($vista, compact('id_app', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_modelo', 'id_transaccion', 'registros', 'miga_pan', 'url_crear', 'encabezado_tabla', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar', 'archivo_js', 'botones'));
+        return view($vista, compact('id_app', 'asignatura', 'curso', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_modelo', 'id_transaccion', 'registros', 'miga_pan', 'url_crear', 'encabezado_tabla', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar', 'archivo_js', 'botones'));
     }
 
 
@@ -495,7 +497,7 @@ class ModeloController extends Controller
 
 
         $acciones = $this->acciones_basicas_modelo($this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'));
-        
+
         $url_action = str_replace('id_fila', $registro->id, $acciones->update);
 
         $form_create = [
@@ -905,7 +907,7 @@ class ModeloController extends Controller
                     if ($lista_campos[$i]['tipo'] == 'personalizado') {
                         $lista_campos[$i]['value'] = '';
                     }
-                }else{
+                } else {
                     if ($lista_campos[$i]['tipo'] == 'input_lista_sugerencias') {
                         $campo_del_modelo = $lista_campos[$i]['name'];
                         $registro_input = app($lista_campos[$i]['atributos']['data-clase_modelo'])->find($registro->$campo_del_modelo);
@@ -966,10 +968,6 @@ class ModeloController extends Controller
                         $lista_campos[$i]['value'] = $registro->$nombre_campo;
                     }
                 }
-
-
-
-                    
             }
         }
         return $lista_campos;
