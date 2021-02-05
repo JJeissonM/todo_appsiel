@@ -9,7 +9,6 @@ $(document).ready(function(){
 
 	$("#id_tipo_documento_id").val('');
 	$("#numero_identificacion2").focus();
-	$("#creado_por").attr('type','text');
 
 	$(document).on('blur, keyup','#numero_identificacion2',function(){
 

@@ -44,7 +44,7 @@ class PeriodoLectivo extends Model
             ->orWhere("sga_periodos_lectivos.fecha_hasta", "LIKE", "%$search%")
             ->orWhere("CERRADO", "LIKE", "%$search%")
             ->orWhere("sga_periodos_lectivos.estado", "LIKE", "%$search%")
-            ->orderBy('sga_periodos_lectivos.created_at', 'DESC')
+            ->orderBy('sga_periodos_lectivos.fecha_hasta', 'DESC')
             ->paginate($nro_registros);
 
         return $registros;

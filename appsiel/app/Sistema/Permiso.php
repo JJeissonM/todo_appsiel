@@ -29,7 +29,6 @@ class Permiso extends Permission
     {
         return Permission::leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'permissions.core_app_id')
             ->leftJoin('sys_modelos', 'sys_modelos.id', '=', 'permissions.modelo_id')
-            ->orderBy('sys_aplicaciones.id', 'ASC')
             ->select(
                 'sys_aplicaciones.descripcion AS campo1',
                 DB::raw('CONCAT(sys_modelos.descripcion," (",sys_modelos.id,")") AS campo2'),
@@ -59,7 +58,6 @@ class Permiso extends Permission
     {
         $string = Permission::leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'permissions.core_app_id')
             ->leftJoin('sys_modelos', 'sys_modelos.id', '=', 'permissions.modelo_id')
-            ->orderBy('sys_aplicaciones.id', 'ASC')
             ->select(
                 'sys_aplicaciones.descripcion AS APP',
                 DB::raw('CONCAT(sys_modelos.descripcion," (",sys_modelos.id,")") AS MODELO'),

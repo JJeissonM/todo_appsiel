@@ -17,6 +17,12 @@ Route::get('ventas_pos_form_registro_ingresos_gastos/{pdv_id}/{id_modelo}/{id_tr
 Route::post('ventas_pos_form_registro_ingresos_gastos', 'VentasPos\FacturaPosController@store_registro_ingresos_gastos');
 
 
+// 				CREAR DESDE PEDIDO DE VENTAS
+Route::get('pos_factura_crear_desde_pedido/{pedido_id}', 'VentasPos\FacturaPosController@crear_desde_pedido');
+Route::get('pos_revisar_pedidos_ventas/{pdv_id}', 'VentasPos\ReporteController@revisar_pedidos_ventas');
+
+
+
 // Proceso especial
 // Generar remisiones para documentos ya acumulados
 Route::get('pos_factura_generar_remisiones/{pdv_id}', 'VentasPos\FacturaPosController@generar_remisiones');

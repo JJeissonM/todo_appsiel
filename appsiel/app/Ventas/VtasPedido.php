@@ -23,6 +23,31 @@ class VtasPedido extends VtasDocEncabezado
 
     public $archivo_js = 'assets/js/ventas/pedidos.js';
 
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function cliente()
+    {
+        return $this->belongsTo( Cliente::class,'cliente_id');
+    }
+
+    public function vendedor()
+    {
+        return $this->belongsTo( Vendedor::class,'vendedor_id');
+    }
+
+    public function lineas_registros()
+    {
+        return $this->hasMany(VtasDocRegistro::class, 'vtas_doc_encabezado_id');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 42;

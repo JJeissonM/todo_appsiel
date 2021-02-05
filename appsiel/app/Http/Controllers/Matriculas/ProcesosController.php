@@ -15,6 +15,7 @@ use View;
 use File;
 
 use App\Http\Requests;
+use App\Sistema\SecuenciaCodigo;
 
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Curso;
@@ -28,7 +29,7 @@ use App\Calificaciones\NotaNivelacion;
 
 class ProcesosController extends ModeloController
 {
-    public function matriculas_masivas_cargar_listado( Request $request )
+    public function promocion_academica_cargar_listado( Request $request )
     {
         $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
 
@@ -51,19 +52,54 @@ class ProcesosController extends ModeloController
 
             $matriculas->push( $matricula );
         }
-    //dd([$matriculas]);
 
         $opciones_cursos = Curso::opciones_campo_select();
         $cantidad_estudiantes = $listado->count();
 
-        $vista = View::make('matriculas.procesos.crear_matriculas_masivas_lista_estudiantes_promover',compact('matriculas','opciones_cursos','cantidad_estudiantes'))->render();
+        $vista = View::make('matriculas.procesos.promocion_academica_lista_estudiantes_promover',compact('matriculas','opciones_cursos','cantidad_estudiantes'))->render();
 
         return $vista;
     }
 
-    public function matriculas_masivas_generar( Request $request )
+    public function promocion_academica_generar( Request $request )
     {
-        dd( $request->all() );
+        $lineas_estudiantes = json_decode($request->lineas_estudiantes);
+
+        $cantidad_registros = count($lineas_estudiantes);
+        $nuevas_matriculas = 0;
+        for ($i=0; $i < $cantidad_registros; $i++) 
+        {
+            if ( (int)$lineas_estudiantes[$i]->checkbox == 0 )
+            {
+                continue;
+            }
+
+            $requisitos = "on-on-on-on-on-on";
+            $matricula = Matricula::find( (int)$lineas_estudiantes[$i]->matricula_id );
+
+            $nuevo_curso = Curso::find( (int)$request->nuevo_curso_id );
+            $nuevo_codigo = SecuenciaCodigo::get_codigo('matriculas', (object)['grado_id' => $nuevo_curso->grado->id ]);
+
+            $linea_datos = [ 'periodo_lectivo_id' => (int)$request->nuevo_periodo_lectivo_id ] +
+                            [ 'id_colegio' => $matricula->id_colegio ] +
+                            [ 'codigo' => $nuevo_codigo ] +
+                            [ 'fecha_matricula' => $request->fecha_matricula ] +
+                            [ 'id_estudiante' => $matricula->id_estudiante ] +
+                            [ 'curso_id' => (int)$request->nuevo_curso_id ] +
+                            [ 'requisitos' => $requisitos  ] +
+                            [ 'estado' => 'Activo' ];
+
+            Matricula::create( $linea_datos );
+            SecuenciaCodigo::incrementar_consecutivo('matriculas');
+
+            $matricula->estado = 'Inactivo';
+            $matricula->save();
+
+            $nuevas_matriculas++;
+
+        } // Fin por cada registro
+
+        return redirect( 'web?id=1&id_modelo=19&&search=' . date('Y-m-d') )->with( 'flash_message', 'Promoción académica exitosa. Se crearon ' . $nuevas_matriculas . ' nuevas matrículas.' );
     }
 
 

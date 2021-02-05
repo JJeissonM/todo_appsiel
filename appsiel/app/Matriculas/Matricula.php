@@ -19,7 +19,7 @@ class Matricula extends Model
 
     protected $fillable = ['periodo_lectivo_id', 'id_colegio', 'codigo', 'fecha_matricula', 'id_estudiante', 'curso_id', 'requisitos', 'estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Fecha matricula', 'Año lectivo', 'Nombres', 'Apellidos', 'Doc. Identidad', 'Email/Usuario', 'Acudiente', 'Curso', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Fecha matricula', 'Año lectivo', 'Nombres', 'Apellidos', 'Doc. Identidad', 'Email/Usuario', 'Curso', 'Estado'];
 
     public function periodo_lectivo()
     {
@@ -55,10 +55,9 @@ class Matricula extends Model
                 DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2) AS campo5'),
                 'core_terceros.numero_identificacion AS campo6',
                 'core_terceros.email AS campo7',
-                'sga_matriculas.acudiente AS campo8',
-                'sga_cursos.descripcion AS campo9',
-                'sga_matriculas.estado AS campo10',
-                'sga_matriculas.id AS campo11'
+                'sga_cursos.descripcion AS campo8',
+                'sga_matriculas.estado AS campo9',
+                'sga_matriculas.id AS campo10'
             )->where("sga_matriculas.codigo", "LIKE", "%$search%")
             ->orWhere("sga_matriculas.fecha_matricula", "LIKE", "%$search%")
             ->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
@@ -66,9 +65,9 @@ class Matricula extends Model
             ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2)"), "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.email", "LIKE", "%$search%")
-            ->orWhere("sga_matriculas.acudiente", "LIKE", "%$search%")
             ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_matriculas.estado", "LIKE", "%$search%")
+            ->orWhere("sga_matriculas.created_at", "LIKE", "%$search%")
             ->orderBy('sga_matriculas.created_at', 'DESC')
             ->paginate($nro_registros);
     }
@@ -87,7 +86,6 @@ class Matricula extends Model
                 DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2) AS APELLIDOS'),
                 'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
                 'core_terceros.email AS EMAIL',
-                'sga_matriculas.acudiente AS ACUDIENTE',
                 'sga_cursos.descripcion AS DESCRIPCIÓN',
                 'sga_matriculas.estado AS ESTADO'
             )->where("sga_matriculas.codigo", "LIKE", "%$search%")
@@ -97,7 +95,6 @@ class Matricula extends Model
             ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2)"), "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.email", "LIKE", "%$search%")
-            ->orWhere("sga_matriculas.acudiente", "LIKE", "%$search%")
             ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_matriculas.estado", "LIKE", "%$search%")
             ->orderBy('sga_matriculas.created_at', 'DESC')

@@ -252,7 +252,7 @@ class PedidoController extends TransaccionController
     */
     public function imprimir($id)
     {
-        $documento_vista = $this->generar_documento_vista($id, 'documento_imprimir');
+        $documento_vista = $this->generar_documento_vista($id, 'ventas.pedidos.formatos_impresion.'.Input::get('formato_impresion_id') );
 
         // Se prepara el PDF
         $orientacion = 'portrait';
@@ -314,7 +314,7 @@ class PedidoController extends TransaccionController
     /*
         Generar la vista para los métodos show(), imprimir() o enviar_por_email()
     */
-    public function generar_documento_vista($id, $nombre_vista)
+    public function generar_documento_vista($id, $ruta_vista)
     {
         $this->doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
 
@@ -327,7 +327,53 @@ class PedidoController extends TransaccionController
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 
-        return View::make('ventas.pedidos.' . $nombre_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion'))->render();
+        $etiquetas = $this->get_etiquetas();
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','etiquetas'))->render();
+    }
+
+
+
+    public function get_etiquetas()
+    {
+        $parametros = config('ventas');
+
+        $encabezado = '';
+
+        if ($parametros['encabezado_linea_1'] != '')
+        {
+            $encabezado .= $parametros['encabezado_linea_1'];
+        }
+
+        if ($parametros['encabezado_linea_2'] != '')
+        {
+            $encabezado .= '<br>'.$parametros['encabezado_linea_2'];
+        }
+
+        if ($parametros['encabezado_linea_3'] != '')
+        {
+            $encabezado .= '<br>'.$parametros['encabezado_linea_3'];
+        }
+
+
+        $pie_pagina = '';
+
+        if ($parametros['pie_pagina_linea_1'] != '')
+        {
+            $pie_pagina .= $parametros['pie_pagina_linea_1'];
+        }
+
+        if ($parametros['pie_pagina_linea_2'] != '')
+        {
+            $pie_pagina .= '<br>'.$parametros['pie_pagina_linea_2'];
+        }
+
+        if ($parametros['pie_pagina_linea_3'] != '')
+        {
+            $pie_pagina .= '<br>'.$parametros['pie_pagina_linea_3'];
+        }
+
+        return [ 'encabezado' => $encabezado, 'pie_pagina' => $pie_pagina ];
     }
 
 
