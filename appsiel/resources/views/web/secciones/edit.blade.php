@@ -52,7 +52,7 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
-							<label class="control-label col-sm-3" for="descripcion">*Descripción:</label>
+							<label class="control-label col-sm-3" for="descripcion">*_Descripción:</label>
 							<div class="col-sm-9">
 								{{ Form::text('descripcion',null, array_merge(['class' => 'form-control','id'=>'descripcion','placeholder'=>'*Descripción', 'required'=>"required"], [])) }}
 							</div>

@@ -54,21 +54,25 @@
 
                             <div class="form-group">
                                 <label for="">Color Fondo</label>
+                                <span data-toggle="tooltip" title="Establece en color de fondo de la navegacion."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" name="background[]" id="background" style="display: none;" value="{{ $fondos['background_0'] }}">
                             </div>
 
                             <div class="form-group">
                                 <label for="">Color Fondo 2</label>
+                                <span data-toggle="tooltip" title="Establece el color que se muestra al pasar el mouse por los elemetos de la navegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" name="background[]" id="background2" style="display: none;" value="{{ $fondos['background_1'] }}">
                             </div>
 
                             <div class="form-group">
                                 <label for="">Color texto</label>
+                                <span data-toggle="tooltip" title="Establece el color del texto de la navegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="color" id="color" onchange="selectColor(event)" class="form-control" name="color" value="{{ $nav->color }}" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="imagen_logo">Logo</label> <br>
+                                <label for="imagen_logo">Logo</label>
+                                <span data-toggle="tooltip" title="Establece una imagen(logo) en la navegación."> <i class="fa fa-question-circle"></i></span> <br>
                                 @if( $logo['imagen_logo'] != '' )
                                 <img src="{{asset($logo['imagen_logo'])}}" height="150px" width="150px">
                                 @endif
@@ -77,11 +81,13 @@
 
                             <div class="form-group">
                                 <label for="altura_logo">Altura Logo (px)</label>
+                                <span data-toggle="tooltip" title="Establece establece la altura en pixeles de la imagen(logo) de la navegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="number" min="0" class="form-control" name="altura_logo" value="{{$logo['altura_logo']}}">
                             </div>
 
                             <div class="form-group">
                                 <label for="anchura_logo">Anchura Logo (px)</label>
+                                <span data-toggle="tooltip" title="Establece establece la anchura en pixeles de la imagen(logo) de la navegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="number" min="0" class="form-control" name="anchura_logo" value="{{$logo['anchura_logo']}}">
                             </div>
 
@@ -89,17 +95,19 @@
                                 <div class="checkbox">
                                     <label>
                                         <input class="" type="checkbox" name="fixed" {{$checked}}>
-                                        Fixed</label>
+                                        Fixed<span data-toggle="tooltip" title="Establece la navegacion anclada siempre en la parte superior de la vista de la pagina."> <i class="fa fa-question-circle"></i></span></label>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label for="anchura_logo">Grado de Transparencia (solo para fixed)</label>
+                                <span data-toggle="tooltip" title="Establece el grado de tranparencia de la navegación, esta caracteristica solo funciona si esta activada la funcion fixed."> <i class="fa fa-question-circle"></i></span>
                                 <input type="range" min="1" max="10" class="form-control" name="alpha" value="{{$nav->alpha}}">
                             </div>
 
                             <div class="form-group">
                                 <label for="">Fuente Para el Componente</label>
+                                <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                                 @if($fonts!=null)
                                 {!! Form::select('configuracionfuente_id',$fonts,$nav->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                                 @endif
@@ -175,12 +183,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="formGroupExampleInput">Nombre</label>
+                                <span data-toggle="tooltip" title="Establece el nombre del nuevo elemento de la nacegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" required class="form-control" id="formGroupExampleInput" placeholder="" name="titulo">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="formGroupExampleInput">Descripción</label>
+                                <span data-toggle="tooltip" title="Establece la desripción del nuevo elemento de la nacegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" required class="form-control" id="formGroupExampleInput2" placeholder="" name="descripcion">
                             </div>
                         </div>
@@ -188,6 +198,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="formGroupExampleInput" for="orden">Orden</label>
+                                <span data-toggle="tooltip" title="Establece la poscición del nuevo elemento de la nacegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" class="form-control" id="orden" name="orden">
                             </div>
                         </div>
@@ -195,6 +206,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Icono</label>
+                                <span data-toggle="tooltip" title="Establece un icono del nuevo elemento de la nacegación."> <i class="fa fa-question-circle"></i></span>
                                 <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
                             </div>
                         </div>
@@ -204,8 +216,9 @@
                             <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="pagina">
                             <nav>
                                 <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página</a>
-                                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web</a>
+                                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página<span data-toggle="tooltip" title="Establece un enlace del elemento a una pagina."> <i class="fa fa-question-circle"></i></span>
+                                    </a>
+                                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web <span data-toggle="tooltip" title="Establece un enlace del elemento a una pagina web externa."> <i class="fa fa-question-circle"></i></span></a>
                                 </div>
                             </nav>
                             <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
@@ -220,6 +233,7 @@
                                     </div>
                                     <div class="form-group" style="display: inline-block;width: 58%;">
                                         <label for="">Sección en una página</label>
+                                        <span data-toggle="tooltip" title="Establece la pagina a la cual quieres enlazar el elemento."> <i class="fa fa-question-circle"></i></span>
                                         <select class="form-control" id="secciones" name="seccion">
                                             <option value="">Principio de la Página</option>
                                         </select>
@@ -324,5 +338,10 @@
         $('#parent').val(parent);
         $('#exampleModalCenter').modal('show');
     }
+    $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
 </script>
 @endsection

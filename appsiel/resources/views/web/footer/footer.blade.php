@@ -141,18 +141,22 @@
                                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                                     <div class="form-group">
                                         <label>Color de Fondo</label>
+                                        <span data-toggle="tooltip" title="Establece el color de fondo de la sección."> <i class="fa fa-question-circle"></i></span>
                                         <input type="color" class="form-control" required name="background" style="background-color: #000;" value="{{$footer->background}}" onchange="selectColor(event)">
                                     </div>
                                     <div class="form-group">
                                         <label>Color de Fondo Copyright</label>
+                                        <span data-toggle="tooltip" title="Establece el color de fondo del area de Copyright."> <i class="fa fa-question-circle"></i></span>
                                         <input type="color" class="form-control" required name="background2" style="background-color: #000;" value="{{$footer->background2}}" onchange="selectColor(event)">
                                     </div>
                                     <div class="form-group">
                                         <label>Color del Texto</label>
+                                        <span data-toggle="tooltip" title="Establece el color del texto del area de Copyright."> <i class="fa fa-question-circle"></i></span>                                        
                                         <input type="color" class="form-control" required name="color" style="background-color: white;" value="{{$footer->color}}" onchange="selectColor(event)">
                                     </div>
                                     <div class="form-group">
                                         <label>Dibujar Borde Ondulado</label>
+                                        <span data-toggle="tooltip" title="Establece un diseño ondulado en la parte superior del Pie de pagina."> <i class="fa fa-question-circle"></i></span>
                                         <select type="select" class="form-control" required name="ondas">
                                             @if($footer->ondas=='SI')
                                             <option selected value="SI">SI</option>
@@ -165,6 +169,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Animación</label>
+                                        <span data-toggle="tooltip" title="Establece una animacion en el fondo de la sección. <br> <strong>circulos-descienden</strong>: Muesta unos circulos semitransparentes que descienden. <br> <strong>efecto-ondas-cursor</strong>: Muestras unas ondas que siguen el puntero del mouse."> <i class="fa fa-question-circle"></i></span>
                                         <select type="select" class="form-control" required name="animacion">
                                             @foreach($animaciones as $an)
                                             @if($footer->animacion==$an)
@@ -177,10 +182,12 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Texto Junto a Copyright</label>
+                                        <span data-toggle="tooltip" title="Establece el texto del area de Copyright."> <i class="fa fa-question-circle"></i></span>
                                         <input type="text" class="form-control" name="texto" value="{{$footer->texto}}">
                                     </div>
                                     <div class="form-group">
                                         <label for="">Fuente Para el Componente</label>
+                                        <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                                         @if($fonts!=null)
                                         {!! Form::select('configuracionfuente_id',$fonts,$footer->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                                         @endif
@@ -191,6 +198,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Copyright</label>
+                                        <span data-toggle="tooltip" title="Establece el nombre de tu marca registrada."> <i class="fa fa-question-circle"></i></span>
                                         <input type="text" class="form-control" name="copyright" required value="{{$footer->copyright}}">
                                     </div>
                                     <div class="form-group">
@@ -203,18 +211,22 @@
                                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                                     <div class="form-group">
                                         <label>Color de Fondo</label>
+                                        <span data-toggle="tooltip" title="Establece el color de fondo de la sección."> <i class="fa fa-question-circle"></i></span>
                                         <input type="color" class="form-control" required name="background" style="background-color: #000;" onchange="selectColor(event)">
                                     </div>
                                     <div class="form-group">
                                         <label>Color de Fondo Copyright</label>
+                                        <span data-toggle="tooltip" title="Establece el color de fondo del area de Copyright."> <i class="fa fa-question-circle"></i></span>
                                         <input type="color" class="form-control" required name="background2" style="background-color: #000;" onchange="selectColor(event)">
                                     </div>
                                     <div class="form-group">
                                         <label>Color del Texto</label>
+                                        <span data-toggle="tooltip" title="Establece el color del texto del area de Copyright."> <i class="fa fa-question-circle"></i></span> 
                                         <input type="color" class="form-control" required name="color" style="background-color: white;" value="#fff" onchange="selectColor(event)">
                                     </div>
                                     <div class="form-group">
                                         <label>Dibujar Borde Ondulado</label>
+                                        <span data-toggle="tooltip" title="Establece un diseño ondulado en la parte superior del Pie de pagina."> <i class="fa fa-question-circle"></i></span>
                                         <select type="select" class="form-control" required name="ondas">
                                             <option value="SI">SI</option>
                                             <option value="NO">NO</option>
@@ -222,6 +234,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Animación</label>
+                                        <span data-toggle="tooltip" title="Establece una animacion en el fondo de la sección. <br> <strong>circulos-descienden</strong>: Muesta unos circulos semitransparentes que descienden. <br> <strong>efecto-ondas-cursor</strong>: Muestras unas ondas que siguen el puntero del mouse."> <i class="fa fa-question-circle"></i></span>
                                         <select type="select" class="form-control" required name="animacion">
                                             @foreach($animaciones as $an)
                                             <option value="{{$an}}">{{$an}}</option>
@@ -230,10 +243,12 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Texto Junto a Copyright</label>
+                                        <span data-toggle="tooltip" title="Establece el texto del area de Copyright."> <i class="fa fa-question-circle"></i></span>
                                         <input type="text" class="form-control" name="texto">
                                     </div>
                                     <div class="form-group">
                                         <label for="">Fuente Para el Componente</label>
+                                        <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                                         @if($fonts!=null)
                                         {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                                         @endif
@@ -244,6 +259,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Copyright</label>
+                                        <span data-toggle="tooltip" title="Establece el nombre de tu marca registrada."> <i class="fa fa-question-circle"></i></span>
                                         <input type="text" class="form-control" name="copyright" required>
                                     </div>
                                     <div class="form-group">
@@ -346,6 +362,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label for="recipient-name" class="col-form-label">Título</label>
+                            <span data-toggle="tooltip" title="Establece el titulo de la categoria de esta sección."> <i class="fa fa-question-circle"></i></span>
                             <input name="texto" type="text" class="form-control" id="tituloe">
                         </div>
                     </div>
@@ -359,7 +376,7 @@
                 </div>
                 <div class="col-md-12 " style="margin-top: 20px;">
                     <div class="col-md-12 d-flex justify-content-between">
-                        <h5 class="card-title">Items</h5>
+                        <h5 class="card-title">Items <span data-toggle="tooltip" title="Establece los items para esta categoria de la sección."> <i class="fa fa-question-circle"></i></span></h5>
                         <a href="" style="color: #0000FF;" data-toggle="modal" data-target="#enlace">+ Agregar items</a>
                     </div>
                     <table class="table">
@@ -395,6 +412,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label for="recipient-name" class="col-form-label">Título</label>
+                            <span data-toggle="tooltip" title="Establece el titulo de la categoria de esta sección."> <i class="fa fa-question-circle"></i></span>
                             <input name="texto" type="text" class="form-control" id="recipient-name">
                         </div>
                     </div>
@@ -425,11 +443,13 @@
                         <input type="hidden" id="categoria" name="categoria_id" value="">
                         <div class="form-group">
                             <label for="">Titulo</label>
+                            <span data-toggle="tooltip" title="Establece titulo del enlace."> <i class="fa fa-question-circle"></i></span>
                             <input type="text" id="texto" class="form-control" name="texto" required>
                         </div>
 
                         <div class="form-group">
                             <label>Icono</label>
+                            <span data-toggle="tooltip" title="Establece el icono del enlace."> <i class="fa fa-question-circle"></i></span>
                             <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
                         </div>
 
@@ -438,8 +458,9 @@
                             <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="pagina">
                             <nav>
                                 <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página</a>
-                                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web</a>
+                                    <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página <span data-toggle="tooltip" title="Establece un enlace del elemento a una pagina."> <i class="fa fa-question-circle"></i></span>
+                                    </a>
+                                    <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web <span data-toggle="tooltip" title="Establece un enlace del elemento a una pagina web externa."> <i class="fa fa-question-circle"></i></span></a>
                                 </div>
                             </nav>
                             <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
@@ -455,6 +476,7 @@
                                     </div>
                                     <div class="form-group" style="display: inline-block;width: 58%;">
                                         <label for="">Sección en una página</label>
+                                        <span data-toggle="tooltip" title="Establece la pagina a la cual quieres enlazar el elemento."> <i class="fa fa-question-circle"></i></span>
                                         <select class="form-control" id="secciones" name="seccion">
                                             <option value="principio">Principio de la Página</option>
                                         </select>
@@ -687,5 +709,10 @@
                 tbody.innerHTML = $html;
             });
     }
+    $('[data-toggle="tooltip"]').tooltip({
+        animated: 'fade',
+        placement: 'right',
+        html: true
+    });     
 </script>
 @endsection
