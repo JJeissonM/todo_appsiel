@@ -551,6 +551,7 @@ class MatriculaController extends ModeloController
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Matrícula NO puede ser eliminada. El estudiante tiene OBSERVACIONES de boletín resgistradas.');
         }
 
+        $this->actualizar_estado_ultima_inscripcion( $registro->estudiante->core_tercero_id );
 
         // Si hay SOLO una (1) matrícula, se elimina al usuario y al estudiante
         if (count($todas_las_matriculas->toArray()) == 1)
@@ -572,9 +573,7 @@ class MatriculaController extends ModeloController
                 //Borrar Estudiante
                 $estudiante->delete();
             }
-        }
-
-        $this->actualizar_estado_ultima_inscripcion( $registro->estudiante->core_tercero_id );
+        }       
         
         //Borrar Matrícula
         $registro->delete();

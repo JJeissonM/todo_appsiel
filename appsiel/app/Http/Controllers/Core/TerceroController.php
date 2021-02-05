@@ -176,26 +176,30 @@ class TerceroController extends Controller
                             [ 'core_terceros.'.$campo_busqueda, 'LIKE', $cadena_busqueda ]
                         ];
 
-        if ( Aplicacion::where('app','contratos_transporte')->get()->first()->estado == 'Activo' )
+        $app_contratos_transporte = Aplicacion::where('app','contratos_transporte')->get()->first();
+        if ( !is_null( $app_contratos_transporte ) )
         {
-            $vehiculos = \App\Contratotransporte\Vehiculo::leftJoin('cte_propietarios','cte_propietarios.id','=','cte_vehiculos.propietario_id')
-                            ->leftJoin('core_terceros','core_terceros.id','=','cte_propietarios.tercero_id')
-                            ->where($array_wheres)
-                            ->orWhere('cte_vehiculos.placa','LIKE',$cadena_busqueda)
-                            ->select('core_terceros.id','core_terceros.descripcion','core_terceros.numero_identificacion','core_terceros.direccion1','core_terceros.telefono1','core_terceros.email','cte_vehiculos.placa','cte_vehiculos.id AS vehiculo_id')
-                            ->get()
-                            ->take(7);
-
-            if( empty( $vehiculos->toArray() ) )
+            if ( $app_contratos_transporte->estado == 'Activo' )
             {
-                return Tercero::where($array_wheres)
-                            ->get()
-                            ->take(7);
+                $vehiculos = \App\Contratotransporte\Vehiculo::leftJoin('cte_propietarios','cte_propietarios.id','=','cte_vehiculos.propietario_id')
+                                ->leftJoin('core_terceros','core_terceros.id','=','cte_propietarios.tercero_id')
+                                ->where($array_wheres)
+                                ->orWhere('cte_vehiculos.placa','LIKE',$cadena_busqueda)
+                                ->select('core_terceros.id','core_terceros.descripcion','core_terceros.numero_identificacion','core_terceros.direccion1','core_terceros.telefono1','core_terceros.email','cte_vehiculos.placa','cte_vehiculos.id AS vehiculo_id')
+                                ->get()
+                                ->take(7);
+
+                if( empty( $vehiculos->toArray() ) )
+                {
+                    return Tercero::where($array_wheres)
+                                ->get()
+                                ->take(7);
+                }
+
+                return $vehiculos;
             }
-
-            return $vehiculos;
-        }/**/
-
+        }
+        
         return Tercero::where($array_wheres)
                         ->get()
                         ->take(7);

@@ -20,8 +20,8 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
 @endsection
 
 @section('botones_imprimir_email')
-Formato: {{ Form::select('formato_impresion_id',['1'=>'POS','2'=>'Estándar'],null, [ 'id' =>'formato_impresion_id' ]) }}
-{{ Form::bsBtnPrint( 'vtas_pedidos_imprimir/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
+Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Estándar'],null, [ 'id' =>'formato_impresion_id' ]) }}
+{{ Form::bsBtnPrint( 'vtas_pedidos_imprimir/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
 {{ Form::bsBtnEmail( 'vtas_pedidos_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
 @endsection
 

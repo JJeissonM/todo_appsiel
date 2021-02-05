@@ -39,6 +39,8 @@ use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMovimiento;
 
+use App\Ventas\VtasPedido;
+
 class ReporteController extends Controller
 {
 
@@ -129,5 +131,13 @@ class ReporteController extends Controller
         $vista = View::make('tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento', 'mensaje'))->render();
 
         return $vista;
+    }
+
+    public function revisar_pedidos_ventas( $pdv_id )
+    {
+        $pedidos = VtasPedido::where( 'estado', 'Pendiente' )->orderBy('fecha','DESC')->get();
+
+        return View::make( 'ventas_pos.lista_pedidos_pendientes_tabla', compact( 'pedidos', 'pdv_id' ) )->render();
+
     }
 }

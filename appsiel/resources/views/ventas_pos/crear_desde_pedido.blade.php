@@ -78,23 +78,21 @@ use App\Http\Controllers\Sistema\VistaController;
 
             <div class="col-md-4 col-xs-12 text-center">
                 <div class="btn-group">
-                    <button class="btn btn-success btn-xs btn_registrar_ingresos_gastos" data-id_modelo="46"
-                            data-id_transaccion="8" data-lbl_ventana="Ingresos"><i
-                                class="fa fa-btn fa-arrow-up"></i> <i class="fa fa-btn fa-money"></i> Registrar Ingresos
+                    <button class="btn btn-info btn-xs btn_registrar_ingresos_gastos" data-id_modelo="46"
+                            data-id_transaccion="8" data-lbl_ventana="Ingresos"><i class="fa fa-btn fa-money"></i> <i
+                                class="fa fa-btn fa-arrow-up"></i> Registrar Ingresos
                     </button>
-                    <button class="btn btn-danger btn-xs btn_registrar_ingresos_gastos" data-id_modelo="54"
-                            data-id_transaccion="17" data-lbl_ventana="Gastos"> <i
-                                class="fa fa-btn fa-arrow-down"></i> <i class="fa fa-btn fa-money"></i> Registrar Salidas
+                    <button class="btn btn-warning btn-xs btn_registrar_ingresos_gastos" data-id_modelo="54"
+                            data-id_transaccion="17" data-lbl_ventana="Gastos"><i class="fa fa-btn fa-money"></i> <i
+                                class="fa fa-btn fa-arrow-down"></i> Registrar Salidas
                     </button>
                 </div>
             </div>
 
 
             <div class="col-md-4 col-xs-12">
-                <div class="btn-group pull-right">
-                    <button class="btn btn-info btn-xs btn_revisar_pedidos_ventas" data-id_modelo="54"
-                            data-id_transaccion="17" data-lbl_ventana="PEDIDOS DE VENTAS"><i class="fa fa-eye"></i> Revisar pedidos
-                    </button>
+                <div class="btn-group">
+                    &nbsp;
                 </div>
             </div>
         </div>
@@ -172,6 +170,8 @@ use App\Http\Controllers\Sistema\VistaController;
             <input type="hidden" name="valor_total_cambio" id="valor_total_cambio" value="0">
             <input type="hidden" name="total_efectivo_recibido" id="total_efectivo_recibido">
 
+            <input type="hidden" name="pedido_id" id="pedido_id" value="{{$pedido_id}}">
+
             <div id="popup_alerta"></div>
 
             {{ Form::close() }}
@@ -179,9 +179,14 @@ use App\Http\Controllers\Sistema\VistaController;
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-8">
-                        {!! $tabla->dibujar() !!}
-                        Productos ingresados: <span id="numero_lineas"> 0 </span>
+                        <!-- NO QUITAR LOS ESPACIOS ENTRE <TBODY> DE STR_REPLACE -->
+                        {!! str_replace("<tbody>
+                
+            </tbody>", $lineas_registros, $tabla->dibujar() ) !!}
+
+                        Productos ingresados: <span id="numero_lineas"> {{ $numero_linea - 1 }} </span>
                         <br/><br/>
+
                         <div class="well">
                             @include('tesoreria.incluir.medios_recaudos')
                         </div>
@@ -190,6 +195,12 @@ use App\Http\Controllers\Sistema\VistaController;
                     <div class="col-md-4 well" style="font-size: 1.2em;">
                         <h3 style="width: 100%; text-align: center;">Totales</h3>
                         <hr>
+
+                        <div class="container-fluid" style="text-align: center;">
+                            <button class="btn btn-default btn-detail" id="btn_recalcular_totales">Re-Calcular totales</button>
+                        </div>
+                        <br>
+                            
                         <div id="total_cantidad" style="display: none;"> 0</div>
 
                         <div class="alert alert-info">
@@ -373,14 +384,16 @@ use App\Http\Controllers\Sistema\VistaController;
 
     <script type="text/javascript">
 
-        var hay_productos = 0;
+        var hay_productos = {{ $numero_linea - 1 }};
 
         var redondear_centena = {{ $redondear_centena }};
         var productos = {!! json_encode($productos) !!};
         var precios = {!! json_encode($precios) !!};
         var descuentos = {!! json_encode($descuentos) !!};
-        
-        $('#btn_nuevo').hide();
+
+        var numero_linea = {{ $numero_linea }};
+
+        $('#btn_recalcular_totales').focus();
 
         $(document).ready(function () {
 
@@ -756,8 +769,6 @@ use App\Http\Controllers\Sistema\VistaController;
                 $("html, body").animate({scrollTop: $(document).height() + "px"});
             }
 
-            var numero_linea = 1;
-
             function agregar_nueva_linea() 
             {
                 if (!calcular_precio_total()) 
@@ -783,8 +794,8 @@ use App\Http\Controllers\Sistema\VistaController;
                 if (string_fila == false) 
                 {
                     $('#popup_alerta').show();
-                    $('#popup_alerta').css('background-color', 'red');
-                    $('#popup_alerta').text('Producto no encontrado.');
+                    $('#popup_alerta').css('background-color', 'red' );
+                    $('#popup_alerta').text( 'Producto no encontrado.' );
                     return false;
                 }
 
@@ -800,7 +811,7 @@ use App\Http\Controllers\Sistema\VistaController;
                 deshabilitar_campos_encabezado();
 
                 // Bajar el Scroll hasta el final de la página
-                $("html, body").animate({scrollTop: $(document).height() + "px"});
+                $("html, body").animate( { scrollTop: $(document).height() + "px"} );
 
                 reset_linea_ingreso_default();
                 reset_efectivo_recibido();
@@ -810,12 +821,24 @@ use App\Http\Controllers\Sistema\VistaController;
                 numero_linea++;
             }
 
-            function deshabilitar_campos_encabezado() 
-            {
-                $('#cliente_input').attr('disabled', 'disabled');
-                $('#fecha').attr('disabled', 'disabled');
-                $('#inv_bodega_id').attr('disabled', 'disabled');
-            }
+
+            $(document).on('click', '#btn_recalcular_totales', function(event) {
+                event.preventDefault();
+                calcular_totales();
+
+                $('#btn_nuevo').show();
+                $('#numero_lineas').text(hay_productos);
+                deshabilitar_campos_encabezado();
+
+                // Bajar el Scroll hasta el final de la página
+                $("html, body").animate( { scrollTop: $(document).height() + "px"} );
+
+                reset_linea_ingreso_default();
+                reset_efectivo_recibido();
+
+                $('#total_valor_total').actualizar_medio_recaudo();
+                $('#lbl_efectivo_recibido').text('$ 0');
+            });
 
             function habilitar_campos_encabezado() 
             {
@@ -827,7 +850,7 @@ use App\Http\Controllers\Sistema\VistaController;
             /*
             ** Al eliminar una fila
             */
-            $(document).on('click', '.btn_eliminar', function (event) {
+            $(document).on('click', '.btn_eliminar', function(event) {
                 event.preventDefault();
                 var fila = $(this).closest("tr");
 
@@ -851,7 +874,7 @@ use App\Http\Controllers\Sistema\VistaController;
             });
 
             // GUARDAR EL FORMULARIO
-            $('#btn_guardar_factura').click(function (event){
+            $('#btn_guardar_factura').click(function(event){
                 event.preventDefault();
 
                 if( hay_productos == 0 )
@@ -896,7 +919,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
                     ventana_imprimir();
 
-                    location.reload();
+                    location.href = "{{url('pos_factura/create')}}" + "?id=20&id_modelo=230&id_transaccion=47&pdv_id=" + $('#pdv_id').val();
                     
                 });
 
@@ -1161,30 +1184,6 @@ use App\Http\Controllers\Sistema\VistaController;
                 $("#myModal2 .btn_save_modal").hide();
 
                 var url = "{{ url('pos_get_saldos_caja_pdv') }}" + "/" + $('#pdv_id').val() + "/" + "{{date('Y-m-d')}}" + "/" + "{{date('Y-m-d')}}";
-
-                $.get(url, function (respuesta) {
-                    $('#div_spin2').hide();
-                    $('#contenido_modal2').html(respuesta);
-                });/**/
-            });
-
-
-            $(document).on('click', ".btn_revisar_pedidos_ventas", function (event) {
-                event.preventDefault();
-
-                $('#contenido_modal2').html('');
-                $('#div_spin2').fadeIn();
-
-                $("#myModal2").modal(
-                    {backdrop: "static"}
-                );
-
-                $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
-
-                $("#myModal2 .btn_edit_modal").hide();
-                $("#myModal2 .btn_save_modal").hide();
-
-                var url = "{{ url('pos_revisar_pedidos_ventas') }}" + "/" + $('#pdv_id').val();
 
                 $.get(url, function (respuesta) {
                     $('#div_spin2').hide();

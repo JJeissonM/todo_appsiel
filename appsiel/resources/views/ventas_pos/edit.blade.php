@@ -152,8 +152,9 @@
 
 						Productos ingresados: <span id="numero_lineas"> {{ $numero_linea - 1 }} </span>
                         <br/><br/>
-                        
-                        {!! $vista_medios_recaudo !!}
+                        <div class="well">
+                            {!! $vista_medios_recaudo !!}
+                        </div>
 					</div>
 
 					<div class="col-md-4 well" style="font-size: 1.2em;">
@@ -761,13 +762,13 @@
 				if ( string_fila == false )
 				{
 					$('#popup_alerta').show();
-					$('#popup_alerta').css('background-color','red');
+					$('#popup_alerta').css('background-color', 'red' );
 					$('#popup_alerta').text( 'Producto no encontrado.' );
 					return false;
 				}
 
 				// agregar nueva fila a la tabla
-				$('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="'+numero_linea+'">' + string_fila + '</tr>');
+				$('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="' + numero_linea + '">' + string_fila + '</tr>');
 				
 				// Se calculan los totales
 				calcular_totales();
@@ -778,7 +779,7 @@
 				deshabilitar_campos_encabezado();
 
 				// Bajar el Scroll hasta el final de la página
-				$("html, body").animate( { scrollTop: $(document).height()+"px"} );
+				$("html, body").animate( { scrollTop: $(document).height() + "px"} );
 
 				reset_linea_ingreso_default();
 				reset_efectivo_recibido();

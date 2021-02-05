@@ -52,6 +52,8 @@ use App\VentasPos\FacturaPos;
 use App\VentasPos\DocRegistro;
 use App\VentasPos\Movimiento;
 
+use App\Ventas\VtasPedido;
+
 use App\VentasPos\Pdv;
 
 use App\Ventas\Cliente;
@@ -83,7 +85,6 @@ class FacturaPosController extends TransaccionController
     protected $doc_encabezado;
 
     /* El método index() está en TransaccionController */
-
     
     public function create()
     {
@@ -191,6 +192,13 @@ class FacturaPosController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
+        if ( isset( $request->pedido_id ) )
+        {
+            $pedido = VtasPedido::find( $request->pedido_id );
+            $pedido->estado = 'Facturado';
+            $pedido->save();
+        }
+        
         return $doc_encabezado->consecutivo;
     }
 
@@ -367,7 +375,7 @@ class FacturaPosController extends TransaccionController
         $this->set_variables_globales();
 
         // Se obtiene el registro a modificar del modelo
-        $registro = app( $this->modelo->name_space )->find($id);
+        $registro = app( $this->modelo->name_space )->find($id); // Encabezado FActura POS
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro,'edit');
 
@@ -1184,6 +1192,100 @@ class FacturaPosController extends TransaccionController
         }
 
         return [ 'encabezado' => $encabezado, 'pie_pagina' => $pie_pagina ];
+    }
+
+
+    public function crear_desde_pedido( $pedido_id )
+    {
+        $this->set_variables_globales();
+
+        // Enviar valores predeterminados
+        // WARNING!!!! Este motivo es de INVENTARIOS
+        $motivos = ['10-salida' => 'Ventas POS' ]; 
+
+        $inv_motivo_id = 10;
+
+        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
+        $tabla = new TablaIngresoLineaRegistros( PreparaTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
+
+        if ( is_null($tabla) )
+        {
+            $tabla = '';
+        }
+        
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo,'','create');
+        $cantidad_campos = count($lista_campos);
+
+        $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos, 'create', null);
+
+        $modelo_controller = new ModeloController;
+        $acciones = $modelo_controller->acciones_basicas_modelo( $this->modelo, '' );
+
+        $user = Auth::user();        
+
+        $pdv = Pdv::find( Input::get('pdv_id') );
+
+        //Personalización de la lista de campos
+        for ($i = 0; $i < $cantidad_campos; $i++)
+        {
+            switch ($lista_campos[$i]['name']) {
+
+                case 'core_tipo_doc_app_id':
+                    $lista_campos[$i]['opciones'] = [ $pdv->tipo_doc_app_default_id => $pdv->tipo_doc_app->prefijo . " - " . $pdv->tipo_doc_app->descripcion];
+                    break;
+
+                case 'cliente_input':
+                    $lista_campos[$i]['value'] = $pdv->cliente->tercero->descripcion;
+                    break;
+
+                case 'vendedor_id':
+                    array_shift( $lista_campos[$i]['opciones'] );
+                    $lista_campos[$i]['value'] = [ $pdv->cliente->vendedor_id ];
+                    //$lista_campos[$i]['opciones'] = [ $pdv->cliente->vendedor->id => $pdv->cliente->vendedor->tercero->descripcion];
+                    break;
+
+                case 'fecha_vencimiento':
+                    $lista_campos[$i]['value'] = date('Y-m-d');
+                    break;
+
+                case 'inv_bodega_id':
+                    $lista_campos[$i]['opciones'] = [ $pdv->bodega_default_id => $pdv->bodega->descripcion ];
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
+        
+        $form_create = [
+                        'url' => $acciones->store,
+                        'campos' => $lista_campos
+                    ];
+        $id_transaccion = 8;// 8 = Recaudo cartera
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Crear: '.$this->transaccion->descripcion );
+        
+        $productos = InvProducto::get_datos_basicos( '', 'Activo' );
+        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id );
+        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id );
+
+        $contenido_modal = View::make('ventas_pos.lista_items',compact( 'productos') )->render();
+
+        $plantilla_factura = $this->generar_plantilla_factura( $pdv );
+
+        $redondear_centena = config('ventas_pos.redondear_centena');
+
+        // DATOS DE LINEAS DE REGISTROS DEL PEDIDO
+        $pedido = VtasPedido::find( $pedido_id );
+        $numero_linea = count( $pedido->lineas_registros ) + 1;
+
+        $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros( $pedido->lineas_registros );
+
+        return view( 'ventas_pos.crear_desde_pedido', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura', 'redondear_centena','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias','lineas_registros','numero_linea','pedido_id') );
     }
 
 }

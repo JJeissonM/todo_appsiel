@@ -2,9 +2,9 @@
 
 @section('encabezado_2')
     @if( $etiquetas['encabezado'] != '')
-        <table style="width: 100%;">
+        <table style="width: 100%; font-size: 12px;">
             <tr>
-                <td style="border: solid 1px #ddd; text-align: center; font-family: Courier New; font-style: italic;">
+                <td style="border: solid 1px #ddd; text-align: center;">
                     <b> {!! $etiquetas['encabezado'] !!} </b> 
                 </td>
             </tr>
