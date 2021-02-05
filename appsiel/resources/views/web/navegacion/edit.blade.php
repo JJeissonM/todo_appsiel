@@ -20,12 +20,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="formGroupExampleInput">Nombre</label>
+                                <span data-toggle="tooltip" title="Establece el nombre del elemento de la nacegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" required class="form-control" id="formGroupExampleInput" placeholder="" name="titulo" value="{{$menu->titulo}}">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="formGroupExampleInput">Descripción</label>
+                                <span data-toggle="tooltip" title="Establece la desripción del elemento de la nacegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" required class="form-control" id="formGroupExampleInput" placeholder="" name="descripcion" value="{{$menu->descripcion}}">
                             </div>
                         </div>
@@ -33,6 +35,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="formGroupExampleInput" for="orden">Orden</label>
+                                <span data-toggle="tooltip" title="Establece la poscición del elemento de la nacegación."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" class="form-control" id="orden" name="orden" value="{{$menu->orden}}">
                             </div>
                         </div>
@@ -40,6 +43,7 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Icono(Opcional)</label>
+                                <span data-toggle="tooltip" title="Establece un icono del elemento de la nacegación."> <i class="fa fa-question-circle"></i></span>
                                 <input data-toggle="modal" value="{{$menu->icono}}" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
                             </div>
                         </div>
@@ -49,8 +53,8 @@
                             <input type="hidden" id="tipo_enlace" name="tipo_enlace" value="url">
                             <nav>
                                 <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-                                    <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página</a>
-                                    <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web</a>
+                                    <a class="nav-item nav-link " id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" onclick="select('pagina')">Página<span data-toggle="tooltip" title="Establece un enlace del elemento a una pagina."> <i class="fa fa-question-circle"></i></span></a>
+                                    <a class="nav-item nav-link active" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" onclick="select('url')">URL del sitio web <span data-toggle="tooltip" title="Establece un enlace del elemento a una pagina web externa."> <i class="fa fa-question-circle"></i></span></a>
                                 </div>
                             </nav>
                             <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
@@ -65,6 +69,7 @@
                                     </div>
                                     <div class="form-group" style="display: inline-block;width: 58%;">
                                         <label for="">Sección en una página</label>
+                                        <span data-toggle="tooltip" title="Establece la pagina a la cual quieres enlazar el elemento."> <i class="fa fa-question-circle"></i></span>
                                         <select class="form-control" id="secciones" name="seccion">
                                             <option value="">Principio de la Página</option>
                                         </select>
@@ -177,7 +182,11 @@
             let tipo = document.getElementById('tipo_enlace');
             tipo.value = opcion;
         }
-
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
     </script>
 
 @endsection

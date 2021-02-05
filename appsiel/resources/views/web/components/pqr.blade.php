@@ -191,7 +191,7 @@
                 @endif
             </div>
             <div class="form-group">
-                <label>¿El fondo es Imagen o Color? <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span></label>                
+                <label>¿El fondo es Imagen o Color? <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen: <img src='{{asset('assets/img/fondo-imagen.png')}}' /> o Color: <img src='{{asset('assets/img/fondo-color.png')}}' />"> <i class="fa fa-question-circle"></i></span></label>                
                 <select type="select" class="form-control" id="tipo_fondo" required name="tipo_fondo"
                     onchange="cambiar()">
                     <option value="">-- Seleccione una opción --</option>

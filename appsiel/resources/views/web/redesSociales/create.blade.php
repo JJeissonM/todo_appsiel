@@ -19,18 +19,21 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="">Nombre</label>
+                                <span data-toggle="tooltip" title="Establece el nombre de la red social."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" name="nombre" class="form-control" placeholder="About us">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="">enlace</label>
+                                <label for="">Enlace</label>
+                                <span data-toggle="tooltip" title="Establece el enlace a la red social."> <i class="fa fa-question-circle"></i></span>
                                 <input type="text" maxlength="158" name="enlace" class="form-control" placeholder="https://">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Icono</label>
+                                <span data-toggle="tooltip" title="Establece el icono de la red social."> <i class="fa fa-question-circle"></i></span>
                                 <input data-toggle="modal" data-target="#exampleModal" name="icono" type="text" id="iconotxt" placeholder="Nombre del icono" class="form-control">
                             </div>
                         </div>
@@ -68,4 +71,11 @@
 @section('script')
     <script src="{{asset('assets/js/select2.min.js')}}"></script>
     <script src="{{asset('assets/js/tagsinput.js')}}"></script>
+    <script>
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
+    </script>
 @endsection

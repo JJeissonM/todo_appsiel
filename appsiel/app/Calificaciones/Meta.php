@@ -95,7 +95,7 @@ class Meta extends Model
 
 
 
-    public static function get_metas($colegio_id, $curso_id, $asignatura_id)
+    public static function get_metas($colegio_id, $curso_id, $asignatura_id, $nro_registros, $search)
     {
 
         $array_wheres = ['sga_metas.colegio_id' => $colegio_id];
@@ -120,9 +120,47 @@ class Meta extends Model
                 'sga_metas.estado AS campo5',
                 'sga_metas.id AS campo6'
             )
-            ->get()
-            ->toArray();
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_metas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_metas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_metas.created_at', 'DESC')
+            ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString2($colegio_id, $curso_id, $asignatura_id, $search)
+    {
+        $array_wheres = ['sga_metas.colegio_id' => $colegio_id];
+
+        if ($curso_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_metas.curso_id' => $curso_id]);
+        }
+
+        if ($asignatura_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_metas.asignatura_id' => $asignatura_id]);
+        }
+
+        $string = Meta::where($array_wheres)
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_metas.periodo_id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_metas.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_metas.asignatura_id')
+            ->select(
+                'sga_periodos.descripcion AS PERÍODO',
+                'sga_cursos.descripcion AS CURSO',
+                'sga_asignaturas.descripcion AS ASIGNATURA',
+                'sga_metas.descripcion AS DESCRIPCIÓN',
+                'sga_metas.estado AS ESTADO'
+            )
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_metas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_metas.estado", "LIKE", "%$search%")
+            ->orderBy('sga_metas.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
     }
 }

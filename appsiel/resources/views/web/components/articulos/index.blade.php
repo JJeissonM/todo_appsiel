@@ -199,6 +199,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <label class="col-form-label">Estado</label>
+                            <span data-toggle="tooltip" title="Establece el estado de visibilidad del articulo."> <i class="fa fa-question-circle"></i></span>
                             <select class="form-control" name="estado">
                                 <option value="VISIBLE">ACTIVO (Visible en la web)</option>
                                 <option value="OCULTO">INACTIVO (Oculto en la web)</option>
@@ -206,12 +207,14 @@
                         </div>
                         <div class="col-md-8">
                             <label for="recipient-name" class="col-form-label">Título</label>
+                            <span data-toggle="tooltip" title="Establece el título del articulo."> <i class="fa fa-question-circle"></i></span>
                             <input name="titulo" type="text" class="form-control" id="recipient-name">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
                             <label class="col-form-label">Imágen</label>
+                            <span data-toggle="tooltip" title="Establece una imagen para el articulo."> <i class="fa fa-question-circle"></i></span>
                             <input type="file" class="form-control" name="imagen" accept="image/*">
                         </div>
                     </div>
@@ -219,12 +222,14 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label class="col-form-label">Descripción</label>
+                            <span data-toggle="tooltip" title="Establece la descripcion del articulo."> <i class="fa fa-question-circle"></i></span>
                             <textarea class="form-control" name="descripcion" maxlength="250"></textarea>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="message-text" class="col-form-label">Contenido</label>
+                        <span data-toggle="tooltip" title="Establece el contenido del articulo."> <i class="fa fa-question-circle"></i></span>
                         <textarea name="contenido" class="form-control editor" id="contenido"></textarea>
                     </div>
                     {!! Form::close() !!}
@@ -260,6 +265,7 @@
                         </div>
                         <div class="col-md-8">
                             <label for="recipient-name" class="col-form-label">Título</label>
+                            <span data-toggle="tooltip" title="Establece el título del articulo."> <i class="fa fa-question-circle"></i></span>
                             <input name="titulo" type="text" class="form-control" id="tituloe">
                         </div>
                     </div>
@@ -267,6 +273,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label class="col-form-label">Descripción</label>
+                            <span data-toggle="tooltip" title="Establece la descripcion del articulo."> <i class="fa fa-question-circle"></i></span>
                             <textarea class="form-control" name="descripcion" id="descripcione" maxlength="250"></textarea>
                         </div>
                     </div>
@@ -274,6 +281,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label class="col-form-label">Imágen</label>
+                            <span data-toggle="tooltip" title="Establece una imagen para el articulo."> <i class="fa fa-question-circle"></i></span>
                             <input type="file" class="form-control" name="imagen" accept="image/*">
                         </div>
                     </div>
@@ -394,19 +402,29 @@
         //poner datos
         $("#tituloe").val(i.titulo);
         $("#descripcione").html(i.descripcion);
-        var htmlestado = "<label class='col-form-label'>Estado</label>" +
+        var htmlestado = "<label class='col-form-label'>Estado</label><span data-toggle='tooltip' title='Establece el estado de visibilidad del articulo.''> <i class='fa fa-question-circle'></i></span>" +
             "<select class='form-control' name='estado' id='estadoe'>" +
             "<option value='VISIBLE'>VISIBLE EN LA SECCIÓN</option>" +
             "<option value='OCULTO'>OCULTO EN LA SECCIÓN</option></select>";
         $("#textestado").html(htmlestado);
         $("#estadoe option[value=" + i.estado + "]").attr("selected", true);
-        var html = "<label for='message-text' class='col-form-label'>Contenido</label><textarea" +
+        var html = "<label for='message-text' class='col-form-label'>Contenido</label><span data-toggle='tooltip' title='Establece el contenido del articulo.'> <i class='fa fa-question-circle'></i></span><textarea" +
             " name='contenido' class='form-control editor' id='contenidoe'>" + i.contenido + "</textarea>";
         $("#textarea").html(html);
         CKEDITOR.replace('contenidoe', {
             height: 200,
             removeButtons: ''
         });
+        $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
     }
+    $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
 </script>
 @endsection

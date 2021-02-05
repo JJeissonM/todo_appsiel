@@ -165,21 +165,25 @@
                                         <input type="hidden" name="_method" value="POST">
                                         <div class="form-group">
                                             <label for="">Color Primario</label>
+                                            <span data-toggle="tooltip" title="Establece el color primario de tu sitio web."> <i class="fa fa-question-circle"></i></span>
                                             <input type="color" id="color_primario" onchange="selectColor(event)" class="form-control" name="color_primario" value="" required>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="">Color Segundario</label>
+                                            <span data-toggle="tooltip" title="Establece el color secundario de tu sitio web."> <i class="fa fa-question-circle"></i></span>
                                             <input type="color" id="color_segundario" onchange="selectColor(event)" class="form-control" name="color_segundario" value="" required>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="">Color Terciario</label>
+                                            <span data-toggle="tooltip" title="Establece el color terciario de tu sitio web."> <i class="fa fa-question-circle"></i></span>
                                             <input type="color" id="color_terciario" onchange="selectColor(event)" class="form-control" name="color_terciario" value="" required>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="">Fuentes que Usará su Sitio Web</label>
+                                            <span data-toggle="tooltip" title="Establece las fuentes que puede usar tu sitio web."> <i class="fa fa-question-circle"></i></span>
                                             <select name="fuentes[]" class="form-control select2" style="width: 100%;" multiple required>
                                                 <option value="">-- Seleccione opción --</option>
                                                 @if($fonts!=null)
@@ -201,21 +205,25 @@
                                         <input type="hidden" name="_method" value="PUT">
                                         <div class="form-group">
                                             <label for="">Color Primario</label>
+                                            <span data-toggle="tooltip" title="Establece el color primario de tu sitio web."> <i class="fa fa-question-circle"></i></span>
                                             <input type="color" id="color_primario" onchange="selectColor(event)" class="form-control" name="color_primario" value="{{$configuracion->color_primario}}" required>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="">Color Segundario</label>
+                                            <span data-toggle="tooltip" title="Establece el color secundario de tu sitio web."> <i class="fa fa-question-circle"></i></span>
                                             <input type="color" id="color_segundario" onchange="selectColor(event)" class="form-control" name="color_segundario" value="{{$configuracion->color_segundario}}" required>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="">Color Terciario</label>
+                                            <span data-toggle="tooltip" title="Establece el color terciario de tu sitio web."> <i class="fa fa-question-circle"></i></span>
                                             <input type="color" id="color_terciario" onchange="selectColor(event)" class="form-control" name="color_terciario" value="{{$configuracion->color_terciario}}" required>
                                         </div>
 
                                         <div class="form-group">
                                             <label for="">Fuentes que Usará su Sitio Web</label>
+                                            <span data-toggle="tooltip" title="Establece las fuentes que puede usar tu sitio web."> <i class="fa fa-question-circle"></i></span>
                                             @if($fonts!=null)
                                             {!! Form::select('fuentes[]',$fonts,$fontsconfig,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','multiple','style'=>'width: 100%;']) !!}
                                             @endif
@@ -362,6 +370,11 @@
     function cerrar() {
         location.reload();
     }
+    $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
 </script>
 
 @endsection

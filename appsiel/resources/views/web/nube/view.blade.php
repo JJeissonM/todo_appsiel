@@ -230,6 +230,7 @@
                         <input type="hidden" name="id" value="{{$id}}" />
                         <div class="form-group">
                             <label class="control-label">Nombre de la carpeta</label>
+                            <span data-toggle="tooltip" title="Establece el nombre de la carpeta para tus archivos."> <i class="fa fa-question-circle"></i></span>
                             <input type="text" id="name" name="name" class="form-control" required>
                         </div>
                         {{ csrf_field() }}
@@ -261,6 +262,7 @@
                         <input type="hidden" name="id" value="{{$id}}" />
                         <div class="form-group">
                             <label for="message-text" class="col-form-label">Archivos</label>
+                            <span data-toggle="tooltip" title="Establece los archivos que deseas subir."> <i class="fa fa-question-circle"></i></span>
                             {!! Form::file('archivo[]',['class'=>'form-control has-feedback-left','required'=>'required','multiple'=>'multiple']) !!}
                         </div>
                         {{ csrf_field() }}
@@ -299,8 +301,12 @@
     @yield('script')
 
     <script type="text/javascript">
+    $('[data-toggle="tooltip"]').tooltip({
+            animated: 'fade',
+            placement: 'right',
+            html: true
+        });
         var iconos = <?php echo json_encode($files); ?>;
-
 
         function buscar() {
             $("#txt").html("");

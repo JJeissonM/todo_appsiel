@@ -149,12 +149,12 @@
                     </div>
                     <div class="form-group">
                         <label>Color del Texto</label>
-                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
+                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen: <img src='{{asset('assets/img/fondo-imagen.png')}}' /> o Color: <img src='{{asset('assets/img/fondo-color.png')}}' />"> <i class="fa fa-question-circle"></i></span>
                         <input name="textcolor" type="color" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>¿Color o Imágen de Fondo?</label>
-                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
+                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen: <img src='{{asset('assets/img/fondo-imagen.png')}}' /> o Color: <img src='{{asset('assets/img/fondo-color.png')}}' />"> <i class="fa fa-question-circle"></i></span>
                         <select class="form-control" id="color" name="modo" required onchange="cambiarColor()">
                             <option value="fondo">-- Selecciona una opción --</option>
                             <option value="COLOR">COLOR DE FONDO</option>
@@ -209,12 +209,12 @@
                     </div>
                     <div class="form-group">
                         <label>Color del Texto</label>
-                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
+                        <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen: <img src='{{asset('assets/img/fondo-imagen.png')}}' /> o Color: <img src='{{asset('assets/img/fondo-color.png')}}' />"> <i class="fa fa-question-circle"></i></span>
                         <input name="textcolor" type="color" value="{{$parallax->textcolor}}" required class="form-control">
                     </div>
                     <div class="form-group">
                         <label>¿Color o Imágen de Fondo? 
-                            <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen o Color"> <i class="fa fa-question-circle"></i></span>
+                            <span data-toggle="tooltip" title="Establece el tipo de fondo de la sección. De tipo Imagen: <img src='{{asset('assets/img/fondo-imagen.png')}}' /> o Color: <img src='{{asset('assets/img/fondo-color.png')}}' />"> <i class="fa fa-question-circle"></i></span>
                             (Actual: {{$parallax->modo." - ".$parallax->fondo}})</label>                        
                         <select class="form-control" id="color2" name="modo" required onchange="cambiarColor2()">
                             <option value="fondo">-- Selecciona una opción --</option>
