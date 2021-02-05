@@ -7372,15 +7372,45 @@
       'id' => 517,
       'core_app_id' => 1,
       'modelo_id' => 0,
-      'name' => 'sga_crear_matriculas_masivas',
+      'name' => 'sga_promocion_academica',
       'descripcion' => 'Promoción académica',
-      'url' => 'index_procesos/matriculas.procesos.crear_matriculas_masivas',
+      'url' => 'index_procesos/matriculas.procesos.promocion_academica_form',
       'parent' => 1,
       'orden' => 99,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2021-02-02 04:35:09',
-      'updated_at' => '2021-02-03 03:31:46',
+      'updated_at' => '2021-02-04 04:17:27',
+    ),
+    492 => 
+    array (
+      'id' => 518,
+      'core_app_id' => 20,
+      'modelo_id' => 175,
+      'name' => 'vtas_pedidos_imprimir',
+      'descripcion' => 'Imprimir pedido',
+      'url' => 'vtas_pedidos_imprimir',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => 'print',
+      'created_at' => '2021-02-05 07:43:49',
+      'updated_at' => '2021-02-05 07:44:47',
+    ),
+    493 => 
+    array (
+      'id' => 519,
+      'core_app_id' => 20,
+      'modelo_id' => 175,
+      'name' => 'vtas_pos_crear_pedido',
+      'descripcion' => 'Crear pedido',
+      'url' => 'vtas_pedidos/create',
+      'parent' => 397,
+      'orden' => 2,
+      'enabled' => 1,
+      'fa_icon' => 'list',
+      'created_at' => '2021-02-05 10:14:16',
+      'updated_at' => '2021-02-05 10:15:03',
     ),
   ),
   'roles' => 
@@ -18264,6 +18294,54 @@
       'orden' => 0,
       'permission_id' => 517,
       'role_id' => 9,
+    ),
+    1786 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 518,
+      'role_id' => 1,
+    ),
+    1787 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 518,
+      'role_id' => 3,
+    ),
+    1788 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 518,
+      'role_id' => 15,
+    ),
+    1789 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 518,
+      'role_id' => 20,
+    ),
+    1790 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 519,
+      'role_id' => 1,
+    ),
+    1791 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 519,
+      'role_id' => 3,
+    ),
+    1792 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 519,
+      'role_id' => 15,
+    ),
+    1793 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 519,
+      'role_id' => 20,
     ),
   ),
   'sys_campos' => 
