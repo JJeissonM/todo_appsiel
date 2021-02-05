@@ -199,14 +199,10 @@ class ReporteController extends Controller
         $nom_contrato_id = (int)$request->nom_contrato_id;
         $nom_concepto_id = (int)$request->nom_concepto_id;
 
-        //dd( $nom_agrupacion_id, $nom_concepto_id, $nom_contrato_id );
-
         $detalla_empleados = $request->detalla_empleados;
         $operador2 = '=';
 
         $movimientos = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
-
-        //dd( [ $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id, count( $movimientos->toArray() ), $movimientos ] );
 
         $agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id );
 

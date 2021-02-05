@@ -126,7 +126,7 @@ class Logro extends Model
         return "LISTADO DE LOGROS";
     }
 
-    public static function get_logros($id_colegio, $curso_id, $asignatura_id, $periodo_id = null)
+    public static function get_logros($id_colegio, $curso_id, $asignatura_id, $periodo_id = null, $nro_registros, $search)
     {
 
         $array_wheres = ['sga_logros.id_colegio' => $id_colegio];
@@ -163,11 +163,66 @@ class Logro extends Model
                 'sga_logros.estado AS campo8',
                 'sga_logros.id AS campo9'
             )
+            ->orWhere("sga_logros.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")")'), "LIKE", "%$search%")
+            ->orWhere("sga_logros.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_logros.estado", "LIKE", "%$search%")
             ->orderBy('sga_logros.codigo', 'DESC')
-            ->get()
-            ->toArray();
+            ->paginate($nro_registros);
 
         return $registros;
+    }
+
+    public static function sqlString2($id_colegio, $curso_id, $asignatura_id, $periodo_id = null, $search)
+    {
+        $array_wheres = ['sga_logros.id_colegio' => $id_colegio];
+
+        if ($curso_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_logros.curso_id' => $curso_id]);
+        }
+
+        if ($asignatura_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_logros.asignatura_id' => $asignatura_id]);
+        }
+
+        if ($periodo_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_logros.periodo_id' => $periodo_id]);
+        }
+
+        $select_raw = 'CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")") AS ESCALA';
+
+        $string = Logro::where($array_wheres)
+            ->where('sga_logros.escala_valoracion_id', '<>', 0)
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_logros.periodo_id')
+            ->leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_periodos.periodo_lectivo_id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_logros.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_logros.asignatura_id')
+            ->leftJoin('sga_escala_valoracion', 'sga_escala_valoracion.id', '=', 'sga_logros.escala_valoracion_id')
+            ->select(
+                'sga_logros.codigo AS CÓDIGO',
+                'sga_periodos_lectivos.descripcion AS AÑO_LECTIVO',
+                'sga_periodos.descripcion AS PERIODO',
+                'sga_cursos.descripcion AS CURSO',
+                'sga_asignaturas.descripcion AS ASIGNATURA',
+                DB::raw($select_raw),
+                'sga_logros.descripcion AS LOGRO',
+                'sga_logros.estado AS ESTADO'
+            )
+            ->orWhere("sga_logros.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")")'), "LIKE", "%$search%")
+            ->orWhere("sga_logros.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_logros.estado", "LIKE", "%$search%")
+            ->orderBy('sga_logros.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
     }
 
     public static function get_logros_periodo_curso_asignatura($periodo_id, $curso_id, $asignatura_id)

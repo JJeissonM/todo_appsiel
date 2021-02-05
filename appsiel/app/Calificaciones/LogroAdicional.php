@@ -14,8 +14,8 @@ use App\Matriculas\PeriodoLectivo;
 class LogroAdicional extends Model
 {
     protected $table = 'sga_logros';
-    
-    protected $fillable = ['id_colegio','codigo','asignatura_id', 'descripcion','estado','ocupado','escala_valoracion_id','curso_id','periodo_id'];
+
+    protected $fillable = ['id_colegio', 'codigo', 'asignatura_id', 'descripcion', 'estado', 'ocupado', 'escala_valoracion_id', 'curso_id', 'periodo_id'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Cód.', 'Año lectivo', 'Periodo', 'Curso', 'Asignatura', 'Descripción', 'Estado'];
 
@@ -103,41 +103,95 @@ class LogroAdicional extends Model
         return "LISTADO DE LOGROS ADICIONALES";
     }
 
-    public static function get_logros($id_colegio, $curso_id, $asignatura_id, $periodo_id = null)
+    public static function get_logros($id_colegio, $curso_id, $asignatura_id, $periodo_id = null, $nro_registros, $search)
     {
 
         $array_wheres = ['sga_logros.id_colegio' => $id_colegio];
 
-        if ( $curso_id != null ) {
+        if ($curso_id != null) {
             $array_wheres = array_merge($array_wheres, ['sga_logros.curso_id' => $curso_id]);
         }
 
-        if ( $asignatura_id != null ) {
-            $array_wheres = array_merge( $array_wheres, ['sga_logros.asignatura_id' => $asignatura_id] );
+        if ($asignatura_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_logros.asignatura_id' => $asignatura_id]);
         }
 
-        if ( $periodo_id != null ) {
-            $array_wheres = array_merge( $array_wheres, ['sga_logros.periodo_id' => $periodo_id] );
+        if ($periodo_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_logros.periodo_id' => $periodo_id]);
         }
 
-        return Logro::where($array_wheres)
-                        ->where('sga_logros.escala_valoracion_id', 0)
-                        ->leftJoin('sga_periodos','sga_periodos.id','=','sga_logros.periodo_id')
-                        ->leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_periodos.periodo_lectivo_id')
-                        ->leftJoin('sga_cursos','sga_cursos.id','=','sga_logros.curso_id')
-                        ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_logros.asignatura_id')
-                        ->leftJoin('sga_escala_valoracion','sga_escala_valoracion.id','=','sga_logros.escala_valoracion_id')
-                        ->select('sga_logros.codigo AS campo1',
-                                'sga_periodos_lectivos.descripcion AS campo2',
-                                'sga_periodos.descripcion AS campo3',
-                                'sga_cursos.descripcion AS campo4',
-                                'sga_asignaturas.descripcion AS campo5',
-                                'sga_logros.descripcion AS campo6',
-                                'sga_logros.estado AS campo7',
-                                'sga_logros.id AS campo8')
-                        ->orderBy('sga_logros.codigo','DESC')
-                        ->get()
-                        ->toArray();
+        $registros = Logro::where($array_wheres)
+            ->where('sga_logros.escala_valoracion_id', 0)
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_logros.periodo_id')
+            ->leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_periodos.periodo_lectivo_id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_logros.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_logros.asignatura_id')
+            ->leftJoin('sga_escala_valoracion', 'sga_escala_valoracion.id', '=', 'sga_logros.escala_valoracion_id')
+            ->select(
+                'sga_logros.codigo AS campo1',
+                'sga_periodos_lectivos.descripcion AS campo2',
+                'sga_periodos.descripcion AS campo3',
+                'sga_cursos.descripcion AS campo4',
+                'sga_asignaturas.descripcion AS campo5',
+                'sga_logros.descripcion AS campo6',
+                'sga_logros.estado AS campo7',
+                'sga_logros.id AS campo8'
+            )
+            ->orWhere("sga_logros.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_logros.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_logros.estado", "LIKE", "%$search%")
+            ->orderBy('sga_logros.codigo', 'DESC')
+            ->paginate($nro_registros);
+
+        return $registros;
+    }
+
+    public static function sqlString2($id_colegio, $curso_id, $asignatura_id, $periodo_id = null, $search)
+    {
+        $array_wheres = ['sga_logros.id_colegio' => $id_colegio];
+
+        if ($curso_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_logros.curso_id' => $curso_id]);
+        }
+
+        if ($asignatura_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_logros.asignatura_id' => $asignatura_id]);
+        }
+
+        if ($periodo_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_logros.periodo_id' => $periodo_id]);
+        }
+
+        $string = Logro::where($array_wheres)
+            ->where('sga_logros.escala_valoracion_id', 0)
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_logros.periodo_id')
+            ->leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_periodos.periodo_lectivo_id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_logros.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_logros.asignatura_id')
+            ->leftJoin('sga_escala_valoracion', 'sga_escala_valoracion.id', '=', 'sga_logros.escala_valoracion_id')
+            ->select(
+                'sga_logros.codigo AS CÓDIGO',
+                'sga_periodos_lectivos.descripcion AS AÑO_LECTIVO',
+                'sga_periodos.descripcion AS PERÍODO',
+                'sga_cursos.descripcion AS CURSO',
+                'sga_asignaturas.descripcion AS ASIGNATURA',
+                'sga_logros.descripcion AS LOGRO',
+                'sga_logros.estado AS ESTADO'
+            )
+            ->orWhere("sga_logros.codigo", "LIKE", "%$search%")
+            ->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_logros.descripcion", "LIKE", "%$search%")
+            ->orWhere("sga_logros.estado", "LIKE", "%$search%")
+            ->orderBy('sga_logros.created_at', 'DESC')
+            ->toSql();
+        return str_replace('?', '"%' . $search . '%"', $string);
     }
 
     /**
@@ -151,14 +205,13 @@ class LogroAdicional extends Model
     // PADRE = CURSO, HIJO = asignaturas
     public static function get_registros_select_hijo($id_select_padre)
     {
-        $registros = CursoTieneAsignatura::asignaturas_del_curso( $id_select_padre, null, null, null );
+        $registros = CursoTieneAsignatura::asignaturas_del_curso($id_select_padre, null, null, null);
 
         $opciones = '<option value="">Seleccionar...</option>';
         foreach ($registros as $campo) {
-                            
-            $opciones .= '<option value="'.$campo->id.'">'.$campo->descripcion.'</option>';
+
+            $opciones .= '<option value="' . $campo->id . '">' . $campo->descripcion . '</option>';
         }
         return $opciones;
     }
-
 }

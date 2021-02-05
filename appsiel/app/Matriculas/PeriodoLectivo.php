@@ -23,6 +23,11 @@ class PeriodoLectivo extends Model
         return $this->hasMany('App\Calificaciones\Periodo', 'periodo_lectivo_id');
     }
 
+    public function matriculas()
+    {
+        return $this->hasMany('App\Matriculas\Matricula', 'periodo_lectivo_id');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $select_raw = 'IF(sga_periodos_lectivos.cerrado=0,REPLACE(sga_periodos_lectivos.cerrado,0,"No"),REPLACE(sga_periodos_lectivos.cerrado,1,"Si")) AS campo4';
@@ -135,6 +140,15 @@ class PeriodoLectivo extends Model
     public static function get_segun_periodo( $periodo_id )
     {
         return PeriodoLectivo::find( Periodo::find( $periodo_id )->periodo_lectivo_id );
+    }
+
+    public function periodo_final_del_anio_lectivo()
+    {
+        return Periodo::where( [
+                                ['periodo_lectivo_id', '=', $this->id],
+                                ['estado', '=', 'Activo']
+                            ] )
+                        ->orderBy('numero')->get()->last();
     }
 
     public function validar_eliminacion($id)

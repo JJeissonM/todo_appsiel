@@ -171,7 +171,7 @@ class Vacaciones implements Estrategia
                                                 [ 'creado_por' => Auth::user()->email ] + 
                                                 [ 'modificado_por' => '' ] +
                                                 [ 'cantidad_horas' => $cantidad_horas_a_liquidar ] +
-                                                [ 'valor_devengo' => $this->tabla_resumen['vlr_dias_no_habiles'] ] +
+                                                [ 'valor_devengo' => round( $this->tabla_resumen['vlr_dias_no_habiles'], 0) ] +
                                                 [ 'valor_deduccion' => 0 ] +
                                                 [ 'novedad_tnl_id' => $novedad_tnl_id ]
                                             );

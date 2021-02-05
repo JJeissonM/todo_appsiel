@@ -122,7 +122,7 @@ return array(
         ],
         '17' => [
             'id' => 20,
-            'nombre' => 'Guias academicas',
+            'nombre' => 'Guías academicas',
             'descripcion' => 'Muestra una galería de fotos y vídeos',
             'preview' => 'assets/web/componentes/guias-academicas.png',
             'tipo' => 'GENERICO'

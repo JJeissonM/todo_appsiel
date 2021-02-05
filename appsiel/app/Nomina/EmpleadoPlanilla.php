@@ -8,9 +8,14 @@ class EmpleadoPlanilla extends Model
 {
 	protected $table = 'nom_pila_empleados_planilla';
 
-	protected $fillable = ['orden', 'planilla_generada_id', 'nom_contrato_id', 'tipo_linea'];
+	protected $fillable = [ 'orden', 'planilla_generada_id', 'nom_contrato_id', 'tipo_linea' , 'cantidad_dias_linea_adicional', 'novedad_tnl_id', 'nom_concepto_id' ];
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Orden', 'Planilla generada', 'Empleado'];
+
+	public function novedad_tnl()
+	{
+		return $this->belongsTo(NovedadTnl::class, 'novedad_tnl_id');
+	}
 
 	public function empleado()
 	{
@@ -56,9 +61,9 @@ class EmpleadoPlanilla extends Model
 	public static function opciones_campo_select()
 	{
 		$opciones = EmpleadoPlanilla::leftJoin('nom_pila_planillas_generadas', 'nom_pila_planillas_generadas.id', '=', 'nom_pila_datos_empresa.planilla_generada_id')
-			->where('nom_pila_empleados_planilla.estado', 'Activo')
-			->select('nom_pila_empleados_planilla.id', 'nom_pila_planillas_generadas.descripcion')
-			->get();
+									->where('nom_pila_empleados_planilla.estado', 'Activo')
+									->select('nom_pila_empleados_planilla.id', 'nom_pila_planillas_generadas.descripcion')
+									->get();
 
 		$vec[''] = '';
 		foreach ($opciones as $opcion) {

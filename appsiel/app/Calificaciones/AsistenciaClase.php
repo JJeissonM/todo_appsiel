@@ -88,7 +88,7 @@ class AsistenciaClase extends Model
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO DE ASISTENCIA";
+        return "LISTADO DE ASISTENCIA A CLASE";
     }
 
     /**

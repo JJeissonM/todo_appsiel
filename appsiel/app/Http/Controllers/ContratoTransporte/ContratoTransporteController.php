@@ -59,8 +59,22 @@ class ContratoTransporteController extends Controller
             $mes_actual = "0" . $mes_actual;
         }
         $mes_actual = $this->mes()[$mes_actual];
+        
         //valido documentos vencidos
-        $docs = Documentosconductor::all();
+
+        if( $user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia') )
+        {
+            $vehiculo = Vehiculo::where( 'placa', $user->email )->get()->first();
+            if (!is_null($vehiculo))
+            {
+                $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $vehiculo->id)->get()->pluck('conductor_id')->toArray();
+                $docs = Documentosconductor::whereIn( 'conductor_id', $conductoresDelVehiculo )->get();
+            }
+                
+        }else{
+            $docs = Documentosconductor::all();
+        }
+        
         $documentos = null;
         if (count($docs) > 0) {
             foreach ($docs as $d) {

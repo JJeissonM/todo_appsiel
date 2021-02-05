@@ -24,6 +24,8 @@ class TerceroCreadoVehiculo extends Tercero
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre/Razón Social', 'Identificación', 'Establecimiento', 'Dirección', 'Teléfono'];
 
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
+
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)

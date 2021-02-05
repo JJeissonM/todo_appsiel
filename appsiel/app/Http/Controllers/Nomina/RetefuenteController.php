@@ -105,7 +105,7 @@ class RetefuenteController extends TransaccionController
                                     ['estado' => 'Activo'] + 
                                     ['creado_por' => $usuario->email] + 
                                     ['modificado_por' => '']+ 
-                                    ['valor_deduccion' => $deduccion]
+                                    ['valor_deduccion' => round( $deduccion, 0) ]
                                 );
     }
 

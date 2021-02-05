@@ -222,8 +222,8 @@ class RegistrosDocumentosController extends TransaccionController
                                     $datos +
                                     [ 'core_tercero_id' => $core_tercero_id ] +
                                     [ 'nom_contrato_id' => $contrato->id ] +
-                                    [ 'valor_devengo' => $valores[0] ] + 
-                                    [ 'valor_deduccion' => $valores[1] ]
+                                    [ 'valor_devengo' => round( $valores[0], 0) ] + 
+                                    [ 'valor_deduccion' => round( $valores[1], 0) ]
                                 );
         }
     }
@@ -258,8 +258,8 @@ class RegistrosDocumentosController extends TransaccionController
                                     $datos +
                                     [ 'core_tercero_id' => $core_tercero_id ] +
                                     [ 'nom_contrato_id' => $contrato->id ] +
-                                    [ 'valor_devengo' => $valores[0] ] + 
-                                    [ 'valor_deduccion' => $valores[1] ] + 
+                                    [ 'valor_devengo' => round( $valores[0], 0) ] + 
+                                    [ 'valor_deduccion' => round( $valores[1], 0) ] + 
                                     [ 'cantidad_horas' => $cantidad_horas ]
                                 );
         }

@@ -203,7 +203,7 @@ class TiempoNoLaborado implements Estrategia
                             [ 'creado_por' => Auth::user()->email ] + 
                             [ 'modificado_por' => '' ] +
                             [ 'cantidad_horas' => $cantidad_horas ] +
-							[ 'valor_devengo' => $this->valor_a_pagar_empresa ] +
+							[ 'valor_devengo' => round( $this->valor_a_pagar_empresa, 0) ] +
 							[ 'valor_deduccion' => 0 ] +
 							[ 'novedad_tnl_id' => $novedad->id ]
                         );

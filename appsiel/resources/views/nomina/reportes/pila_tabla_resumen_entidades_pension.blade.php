@@ -50,10 +50,10 @@
 						echo dibujar_etiquetas( $descripcion_entidad, $nit, $codigo_nacional );
 					}
 					
-					$total_entidad += (float)$registro->cotizacion_pension;
+					$total_entidad += (float)$registro->total_cotizacion_pension;
 
 				}else{
-					$total_entidad += (float)$registro->cotizacion_pension;
+					$total_entidad += (float)$registro->total_cotizacion_pension;
 					$entidad_anterior = $codigo_nacional;
 					$es_siguiente_iteracion = true;
 				}
@@ -63,7 +63,7 @@
 					$hay_mas_registros = false;
 				}
 
-				$gran_total += (float)$registro->cotizacion_pension;
+				$gran_total += (float)$registro->total_cotizacion_pension;
 				$iteracion++;
 
 			}
