@@ -175,14 +175,22 @@ class PedidoController extends TransaccionController
 
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
-            if(!isset($lineas_registros[$i]->inv_motivo_id))
+            if( !isset($lineas_registros[$i]->inv_motivo_id) )
                 $inv_motivo_id = config('pagina_web.pedidos_inv_motivo_id');
             else
                 $inv_motivo_id = $lineas_registros[$i]->inv_motivo_id;
 
-            // Se llama nuevamente el precio de venta para estar SEGURO
+            // Se llama nuevamente el precio de venta para estar SEGURO ( Cuando se hace desde la web )
           $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
 
+          if ( isset( $request->url_id ) )
+          {
+            if ( (int)$request->url_id == 13 || (int)$request->url_id == 20 ) // Si el pedido se hace desde el modulo de ventas o POS
+            {
+                $precio_unitario = (float)$lineas_registros[$i]->precio_unitario;
+            }
+          }
+          
           $tasa_descuento = ListaDctoDetalle::get_descuento_producto( $lista_descuentos_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
 
           $tasa_impuesto = Impuesto::get_tasa($lineas_registros[$i]->inv_producto_id,0,$doc_encabezado->cliente_id);
@@ -213,6 +221,8 @@ class PedidoController extends TransaccionController
 
         } // Fin por cada registro
 
+        $doc_encabezado->valor_total = $total_documento;
+        $doc_encabezado->save();
     }
 
 

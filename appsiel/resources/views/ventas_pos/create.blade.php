@@ -152,8 +152,7 @@ use App\Http\Controllers\Sistema\VistaController;
                     {{ Form::bsText( 'numero_identificacion', $pdv->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
                     {{ Form::bsText( 'telefono1', $pdv->cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
                 </div>
-            </div>
-                    
+            </div>                    
 
             <input type="hidden" name="lista_precios_id" id="lista_precios_id"
                    value="{{$pdv->cliente->lista_precios_id}}" required="required">

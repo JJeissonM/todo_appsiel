@@ -1212,6 +1212,11 @@ class FacturaPosController extends TransaccionController
     {
         $this->set_variables_globales();
 
+        // DATOS DE LINEAS DE REGISTROS DEL PEDIDO
+        $pedido = VtasPedido::find( $pedido_id );
+        $numero_linea = count( $pedido->lineas_registros ) + 1;
+
+
         // Enviar valores predeterminados
         // WARNING!!!! Este motivo es de INVENTARIOS
         $motivos = ['10-salida' => 'Ventas POS' ]; 
@@ -1237,7 +1242,7 @@ class FacturaPosController extends TransaccionController
         $user = Auth::user();        
 
         $pdv = Pdv::find( Input::get('pdv_id') );
-
+        $cliente = $pedido->cliente;
         //Personalización de la lista de campos
         for ($i = 0; $i < $cantidad_campos; $i++)
         {
@@ -1248,12 +1253,12 @@ class FacturaPosController extends TransaccionController
                     break;
 
                 case 'cliente_input':
-                    $lista_campos[$i]['value'] = $pdv->cliente->tercero->descripcion;
+                    $lista_campos[$i]['value'] = $cliente->tercero->descripcion;
                     break;
 
                 case 'vendedor_id':
                     array_shift( $lista_campos[$i]['opciones'] );
-                    $lista_campos[$i]['value'] = [ $pdv->cliente->vendedor_id ];
+                    $lista_campos[$i]['value'] = [ $pedido->vendedor->id ];
                     //$lista_campos[$i]['opciones'] = [ $pdv->cliente->vendedor->id => $pdv->cliente->vendedor->tercero->descripcion];
                     break;
 
@@ -1283,8 +1288,8 @@ class FacturaPosController extends TransaccionController
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Crear: '.$this->transaccion->descripcion );
         
         $productos = InvProducto::get_datos_basicos( '', 'Activo' );
-        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id );
-        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id );
+        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista( $cliente->lista_precios_id );
+        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista( $cliente->lista_descuentos_id );
 
         $contenido_modal = View::make('ventas_pos.lista_items',compact( 'productos') )->render();
 
@@ -1292,13 +1297,9 @@ class FacturaPosController extends TransaccionController
 
         $redondear_centena = config('ventas_pos.redondear_centena');
 
-        // DATOS DE LINEAS DE REGISTROS DEL PEDIDO
-        $pedido = VtasPedido::find( $pedido_id );
-        $numero_linea = count( $pedido->lineas_registros ) + 1;
-
         $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros( $pedido->lineas_registros );
 
-        return view( 'ventas_pos.crear_desde_pedido', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura', 'redondear_centena','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias','lineas_registros','numero_linea','pedido_id') );
+        return view( 'ventas_pos.crear_desde_pedido', compact( 'form_create','miga_pan','tabla','pdv','productos','precios','descuentos', 'inv_motivo_id','contenido_modal', 'plantilla_factura', 'redondear_centena','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias','lineas_registros','numero_linea','pedido_id','cliente') );
     }
 
 }

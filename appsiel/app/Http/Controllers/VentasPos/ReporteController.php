@@ -135,7 +135,7 @@ class ReporteController extends Controller
 
     public function revisar_pedidos_ventas( $pdv_id )
     {
-        $pedidos = VtasPedido::where( 'estado', 'Pendiente' )->orderBy('fecha','DESC')->get();
+        $pedidos = VtasPedido::where( 'estado', 'Pendiente' )->orderBy('fecha','DESC')->orderBy('consecutivo','DESC')->get();
 
         return View::make( 'ventas_pos.lista_pedidos_pendientes_tabla', compact( 'pedidos', 'pdv_id' ) )->render();
 

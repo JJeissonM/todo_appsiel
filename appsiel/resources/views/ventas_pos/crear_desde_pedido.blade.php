@@ -127,29 +127,37 @@ use App\Http\Controllers\Sistema\VistaController;
 
             {{ Form::hidden('inv_bodega_id_aux',$pdv->bodega_default_id,['id'=>'inv_bodega_id_aux']) }}
 
-            <input type="hidden" name="cliente_id" id="cliente_id" value="{{$pdv->cliente_default_id}}"
+            <input type="hidden" name="cliente_id" id="cliente_id" value="{{ $cliente->id }}"
                    required="required">
-            <input type="hidden" name="zona_id" id="zona_id" value="{{$pdv->cliente->zona_id}}" required="required">
+            <input type="hidden" name="zona_id" id="zona_id" value="{{ $cliente->zona_id }}" required="required">
             <input type="hidden" name="clase_cliente_id" id="clase_cliente_id"
-                   value="{{$pdv->cliente->clase_cliente_id}}" required="required">
+                   value="{{$cliente->clase_cliente_id}}" required="required">
 
-            <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$pdv->cliente->core_tercero_id}}"
+            <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$cliente->core_tercero_id}}"
                    required="required">
 
             <input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
 
             <input type="hidden" name="cliente_descripcion" id="cliente_descripcion"
-                   value="{{$pdv->cliente->tercero->descripcion}}" required="required">
-            {{ Form::bsText( 'numero_identificacion', $pdv->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
-            {{ Form::bsText( 'direccion1', $pdv->cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
-            {{ Form::bsText( 'telefono1', $pdv->cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
+                   value="{{$cliente->tercero->descripcion}}" required="required">
+
+            <div class="row well">
+                <div class="col-md-6">
+                    {{ Form::bsText( 'cliente_descripcion_aux', $cliente->tercero->descripcion, 'Cliente', ['id'=>'cliente_descripcion_aux', 'required'=>'required', 'class'=>'form-control'] ) }}
+                    {{ Form::bsText( 'direccion1', $cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
+                </div>
+                <div class="col-md-6">
+                    {{ Form::bsText( 'numero_identificacion', $cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
+                    {{ Form::bsText( 'telefono1', $cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
+                </div>
+            </div>
 
             <input type="hidden" name="lista_precios_id" id="lista_precios_id"
-                   value="{{$pdv->cliente->lista_precios_id}}" required="required">
+                   value="{{$cliente->lista_precios_id}}" required="required">
             <input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id"
-                   value="{{$pdv->cliente->lista_descuentos_id}}" required="required">
+                   value="{{$cliente->lista_descuentos_id}}" required="required">
             <input type="hidden" name="liquida_impuestos" id="liquida_impuestos"
-                   value="{{$pdv->cliente->liquida_impuestos}}" required="required">
+                   value="{{$cliente->liquida_impuestos}}" required="required">
 
             <input type="hidden" name="inv_motivo_id" id="inv_motivo_id" value="{{$inv_motivo_id}}">
 
@@ -176,9 +184,11 @@ use App\Http\Controllers\Sistema\VistaController;
 
             {{ Form::close() }}
 
+            <hr>
+
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-8 well">
                         <!-- NO QUITAR LOS ESPACIOS ENTRE <TBODY> DE STR_REPLACE -->
                         {!! str_replace("<tbody>
                 
@@ -723,6 +733,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
 
                 $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
+                $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
                 $('#numero_identificacion').val(item_sugerencia.attr('data-numero_identificacion'));
                 $('#direccion1').val(item_sugerencia.attr('data-direccion1'));
                 $('#telefono1').val(item_sugerencia.attr('data-telefono1'));
@@ -958,7 +969,7 @@ use App\Http\Controllers\Sistema\VistaController;
                     $('.lbl_fecha_vencimiento').text($('#fecha_vencimiento').val());
                 }
 
-                $('.lbl_cliente_descripcion').text($('#cliente_descripcion').val());
+                $('.lbl_cliente_descripcion').text( $('#cliente_descripcion_aux').val() );
                 $('.lbl_cliente_nit').text($('#numero_identificacion').val());
                 $('.lbl_cliente_direccion').text($('#direccion1').val());
                 $('.lbl_cliente_telefono').text($('#telefono1').val());
