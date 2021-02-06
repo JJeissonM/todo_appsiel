@@ -181,8 +181,6 @@ class Retefuente implements Estrategia
 		// R	Total rentas exentas de los 12 meses anteriores (O + P +Q)
 		$total_rentas_exentas = $aportes_pension_voluntaria + $ahorros_cuentas_afc + $rentas_trabajo_exentas;
 		$this->tabla_resumen['total_rentas_exentas'] = $total_rentas_exentas;
-
-
 		
 		/**  Deducciones particulares  **/
 

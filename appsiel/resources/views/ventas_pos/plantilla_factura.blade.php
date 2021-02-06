@@ -104,7 +104,7 @@
             </tr>
             <tr>
                 <td>
-                    <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"></div> {{ $pdv->cliente->tercero->direccion1 }}
+                    <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"> {{ $pdv->cliente->tercero->direccion1 }} </div>
                 </td>
                 <td>
                     <b>Teléfono:</b> <div class="lbl_cliente_telefono" style="display: inline;"> {{ $pdv->cliente->tercero->telefono1 }} </div>

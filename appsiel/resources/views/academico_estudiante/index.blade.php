@@ -60,14 +60,14 @@
 		<br/>
 
 		<div class="row">
-			<!-- <div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				<a href="{ {url('academico_estudiante/actividades_escolares?id='.Input::get('id'))}}">
-          			<img class="img-responsive" src="{ {asset('assets/img/academico_estudiante/homeworks.png')}}" width="80px" height="80px" />
+			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
+				<a style="color: #000;" href="{{ url('academico_estudiante_aula_virtual/'.$curso->id.'?id='.Input::get('id'))}}">
+          			<img class="img-responsive" src="{{ asset('assets/img/academico_estudiante/aula_virtual.png')}}" width="80px" height="80px" />
 	          		<br/>
-	                Actividades Escolares
+	                Aula Virtual
 	            </a>
 			</div>
-		-->
+		<!-- -->
 
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
 				<a style="color: #000;" href="{{ url( 'mis_asignaturas/'.$curso->id.'?id='.Input::get('id') ) }}">
@@ -76,6 +76,7 @@
 	                Mis Asignaturas
 	            </a>
 			</div>
+
 			<?php 
 
 

@@ -18,6 +18,10 @@ Route::get('academico_estudiante', 'AcademicoEstudianteController@index');
 Route::get('academico_estudiante/mi_plan_de_pagos/{libreta_id}', 'AcademicoEstudianteController@mi_plan_de_pagos');
 
 
+
+Route::get('academico_estudiante_aula_virtual/{curso_id}', 'AcademicoEstudianteController@aula_virtual');
+
+
 Route::get('mis_asignaturas/{curso_id}','AcademicoEstudianteController@mis_asignaturas');
 
 

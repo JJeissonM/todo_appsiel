@@ -358,6 +358,19 @@ class AcademicoEstudianteController extends Controller
         return view('academico_estudiante.preinforme_academico', compact('estudiante', 'periodo', 'anio', 'curso', 'asignaturas'));
     }
 
+    public function aula_virtual( $curso_id )
+    {
+
+        $miga_pan = [
+            ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
+            ['url' => 'NO', 'etiqueta' => 'Aula virtual']
+        ];
+
+        $curso = Curso::find($curso_id);
+
+        return view( 'academico_estudiante.aula_virtual', compact( 'curso', 'miga_pan' ) );
+    }
+
     public function reconocimientos()
     {
         $reconocimientos = SgaEstudianteReconocimiento::where('estudiante_id', $this->estudiante->id)

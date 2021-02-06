@@ -188,6 +188,13 @@ class FacturaPosController extends TransaccionController
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
+        if ( $doc_encabezado->core_tercero_id == 0 )
+        {
+            $pdv = Pdv::find( $doc_encabezado->pdv_id );
+            $doc_encabezado->core_tercero_id = $pdv->cliente->tercero->id;
+            $doc_encabezado->save();
+        }
+
         // Crear Registros del documento de ventas
         $request['creado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
@@ -195,6 +202,7 @@ class FacturaPosController extends TransaccionController
         if ( isset( $request->pedido_id ) )
         {
             $pedido = VtasPedido::find( $request->pedido_id );
+            $pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
             $pedido->estado = 'Facturado';
             $pedido->save();
         }
@@ -663,6 +671,11 @@ class FacturaPosController extends TransaccionController
 
         foreach ($encabezados_documentos as $factura)
         {
+            if ( $factura->core_tercero_id == 0 )
+            {
+                $factura->core_tercero_id = $pdv->cliente->tercero->id;
+            }
+            
             $lineas_registros = DocRegistro::where( 'vtas_pos_doc_encabezado_id', $factura->id )->get();
 
             foreach ($lineas_registros as $linea)

@@ -142,9 +142,18 @@ use App\Http\Controllers\Sistema\VistaController;
 
             <input type="hidden" name="cliente_descripcion" id="cliente_descripcion"
                    value="{{$pdv->cliente->tercero->descripcion}}" required="required">
-            {{ Form::bsText( 'numero_identificacion', $pdv->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
-            {{ Form::bsText( 'direccion1', $pdv->cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
-            {{ Form::bsText( 'telefono1', $pdv->cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
+
+            <div class="row well">
+                <div class="col-md-6">
+                    {{ Form::bsText( 'cliente_descripcion_aux', $pdv->cliente->tercero->descripcion, 'Cliente', ['id'=>'cliente_descripcion_aux', 'required'=>'required', 'class'=>'form-control'] ) }}
+                    {{ Form::bsText( 'direccion1', $pdv->cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
+                </div>
+                <div class="col-md-6">
+                    {{ Form::bsText( 'numero_identificacion', $pdv->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
+                    {{ Form::bsText( 'telefono1', $pdv->cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
+                </div>
+            </div>
+                    
 
             <input type="hidden" name="lista_precios_id" id="lista_precios_id"
                    value="{{$pdv->cliente->lista_precios_id}}" required="required">
@@ -176,9 +185,11 @@ use App\Http\Controllers\Sistema\VistaController;
 
             {{ Form::close() }}
 
+            <hr>
+
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-8 well">
                         {!! $tabla->dibujar() !!}
                         Productos ingresados: <span id="numero_lineas"> 0 </span>
                         <br/><br/>
@@ -264,7 +275,7 @@ use App\Http\Controllers\Sistema\VistaController;
                         </div>
 
                         <div class="alert alert-default" id="div_total_cambio">
-                            <table style="width: 100%; margin: 0px;">
+                            <table style="width: 100%; margin: 0px; color: black;">
                                 <tr>
                                     <td width="35%" style="border: 0px;">
                                         <strong> Total cambio </strong>
@@ -710,6 +721,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
 
                 $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
+                $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
                 $('#numero_identificacion').val(item_sugerencia.attr('data-numero_identificacion'));
                 $('#direccion1').val(item_sugerencia.attr('data-direccion1'));
                 $('#telefono1').val(item_sugerencia.attr('data-telefono1'));
@@ -931,16 +943,16 @@ use App\Http\Controllers\Sistema\VistaController;
                 if ($('#forma_pago').val() == 'credito')
                 {
                     $('#tr_fecha_vencimiento').show();
-                    $('.lbl_condicion_pago').text($('#forma_pago').val());
-                    $('.lbl_fecha_vencimiento').text($('#fecha_vencimiento').val());
+                    $('.lbl_condicion_pago').text( $('#forma_pago').val() );
+                    $('.lbl_fecha_vencimiento').text( $('#fecha_vencimiento').val() );
                 }
 
-                $('.lbl_cliente_descripcion').text($('#cliente_descripcion').val());
-                $('.lbl_cliente_nit').text($('#numero_identificacion').val());
-                $('.lbl_cliente_direccion').text($('#direccion1').val());
-                $('.lbl_cliente_telefono').text($('#telefono1').val());
-                $('.lbl_atendido_por').text($('#vendedor_id option:selected').text());
-                $('.lbl_descripcion_doc_encabezado').text($('#descripcion').val());
+                $('.lbl_cliente_descripcion').text( $('#cliente_descripcion_aux').val() );
+                $('.lbl_cliente_nit').text( $('#numero_identificacion').val() );
+                $('.lbl_cliente_direccion').text( $('#direccion1').val() );
+                $('.lbl_cliente_telefono').text( $('#telefono1').val() );
+                $('.lbl_atendido_por').text( $('#vendedor_id option:selected').text() );
+                $('.lbl_descripcion_doc_encabezado').text( $('#descripcion').val() );
 
             }
 
