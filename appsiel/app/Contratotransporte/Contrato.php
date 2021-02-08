@@ -62,13 +62,18 @@ class Contrato extends Model
             ->orWhere("cte_contratos.estado", "LIKE", "%$search%")
             ->orderBy('cte_contratos.created_at', 'DESC')
             ->paginate($nro_registros);
-        if (count($collection) > 0) {
-            foreach ($collection as $c) {
-                if ($c->campo6 == null || $c->campo6 == 'null') {
+
+        if (count($collection) > 0)
+        {
+            foreach ($collection as $c)
+            {
+                if ($c->campo6 == null || $c->campo6 == 'null')
+                {
                     $c->campo6 = Contrato::find($c->campo10)->contratanteText;
                 }
             }
         }
+        
         return $collection;
     }
 

@@ -94,6 +94,8 @@ class TesoDocEncabezadoTraslado extends Model
 
     public function store_adicional($datos, $registro)
     {
+        $datos['consecutivo'] = $registro->consecutivo;
+
         $registros = json_decode($datos['lineas_registros']);
         $total = 0;
         foreach ($registros as $item) {

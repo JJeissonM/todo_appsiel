@@ -12,11 +12,13 @@ use App\Sistema\Modelo;
 use Input;
 use View;
 use Storage;
+use Auth;
 
 use App\AcademicoDocente\PlanClaseEstrucPlantilla;
 use App\AcademicoDocente\PlanClaseEncabezado;
 use App\AcademicoDocente\PlanClaseRegistro;
 
+use App\AcademicoDocente\GuiaAcademica;
 
 class GuiasAcademicasController extends ModeloController
 {
@@ -200,5 +202,30 @@ class GuiasAcademicasController extends ModeloController
 
         return redirect( 'sga_planes_clases/'.$encabezado_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion=0' )->with( 'flash_message','Archivo adjunto removido correctamente.' );
         
+    }
+
+    public function get_options_guias_academicas( $curso_id, $asignatura_id, $user_id )
+    {
+        $array_wheres = [ 
+                            [ 'curso_id', '=', $curso_id ],
+                            [ 'asignatura_id', '=', $asignatura_id ]
+                        ];
+
+        $user = Auth::user();
+
+        if( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
+        {
+            $array_wheres = array_merge($array_wheres, [ [ 'user_id', '=', $user_id] ]);
+        }
+
+        $opciones = GuiaAcademica::where( $array_wheres )->get();
+        
+        $select = '<option value="">Seleccionar... </option>';
+        foreach ($opciones as $opcion)
+        {
+            $select .= '<option value="'.$opcion->id.'">'.$opcion->descripcion.'</option>';
+        }
+
+        return $select;
     }
 }

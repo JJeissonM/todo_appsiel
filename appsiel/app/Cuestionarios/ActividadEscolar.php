@@ -121,6 +121,14 @@ class ActividadEscolar extends Model
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 
+
+    public static function opciones_campo_select()
+    {
+        $vec['']=''; // La actividad escolar depende del curso y la asignatura
+        
+        return $vec;
+    }
+
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {

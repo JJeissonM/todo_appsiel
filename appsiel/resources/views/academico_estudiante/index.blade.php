@@ -61,7 +61,7 @@
 
 		<div class="row">
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
-				<a style="color: #000;" href="{{ url('academico_estudiante_aula_virtual/'.$curso->id.'?id='.Input::get('id'))}}">
+				<a style="color: #000;" href="{{ url( 'academico_estudiante_aula_virtual/'.$curso->id.'?id='.Input::get('id') . '&fecha=' . date('Y-m-d') ) }}">
           			<img class="img-responsive" src="{{ asset('assets/img/academico_estudiante/aula_virtual.png')}}" width="80px" height="80px" />
 	          		<br/>
 	                Aula Virtual
@@ -97,6 +97,19 @@
 	                Libreta de pagos
 	            </a>
 			</div>
+		</div>
+
+		<br/>
+
+		<div class="row">
+
+			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
+				<a style="color: #000;" href="https://gmail.com" target="_blank">
+          			<img class="img-responsive" src="{{asset('assets/img/academico_estudiante/correo_institucional.png')}}" width="80px" height="80px" />
+	          		<br/>
+	                Correo institucional
+	            </a>
+			</div>
 
 			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
 				<a style="color: #000;" href="{{ url('academico_estudiante/reconocimientos?id=' . Input::get('id') ) }}">
@@ -104,6 +117,10 @@
 	          		<br/>
 	                Reconocimientos
 	            </a>
+			</div>
+
+			<div class="col-sm-4 img-hover-zoom img-hover-zoom--colorize" align="center">
+				&nbsp;
 			</div>
 		</div>
 	</div>

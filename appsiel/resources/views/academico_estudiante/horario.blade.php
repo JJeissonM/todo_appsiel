@@ -18,8 +18,8 @@
 		    <br>
 		     <p style="padding: 10px;"><b>Horario Curso :</b> <br>{{ $curso->descripcion }}</p> 
 		    <hr>
-		    <div style="margin:20px;">
-		    	<img style="width: 100%; object-fit: cover;" src="{{ config('configuracion.url_instancia_cliente')."/storage/app/calificaciones/horarios_cursos".$curso->imagen }}" class="" />
+		    <div style="margin:20px; text-align: center;">
+		    	<img style="width: 70%; object-fit: cover;" src="{{ config('configuracion.url_instancia_cliente')."/storage/app/calificaciones/horarios_cursos/".$curso->imagen }}" class="" />
 		    </div>
 
 		</div>

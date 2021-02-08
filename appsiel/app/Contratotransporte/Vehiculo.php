@@ -120,13 +120,7 @@ class Vehiculo extends Model
 
         $password = str_random(7);
 
-        $usuario = User::crear_y_asignar_role($descripcion, $placa, 22, $password); // 22 = Vehículo (FUEC)
-
-        // Se almacena la contraseña temporalmente; cuando el usuario la cambie, se eliminará
-        PasswordReset::insert([
-            'email' => $placa,
-            'token' => $password
-        ]);
+        User::crear_y_asignar_role($descripcion, $placa, 22, $password); // 22 = Vehículo (FUEC)
     }
 
     public static function get_campos_adicionales_edit($lista_campos, $registro)

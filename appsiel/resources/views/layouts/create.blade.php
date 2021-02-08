@@ -46,7 +46,6 @@
 
 				$('#form_create').submit();
 			});
-
 		});
 	</script>
 	@if( isset($archivo_js) )

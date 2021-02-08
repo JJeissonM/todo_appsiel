@@ -9,6 +9,7 @@ use DB;
 use View;
 use Lava;
 use Input;
+use Carbon\Carbon;
 
 use App\Http\Controllers\Matriculas\ObservadorEstudianteController;
 
@@ -38,6 +39,8 @@ use App\Cuestionarios\ActividadEscolar;
 
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoPlanPagosEstudiante;
+
+use App\AcademicoEstudiante\ProgramacionAulaVirtual;
 
 
 class AcademicoEstudianteController extends Controller
@@ -358,19 +361,6 @@ class AcademicoEstudianteController extends Controller
         return view('academico_estudiante.preinforme_academico', compact('estudiante', 'periodo', 'anio', 'curso', 'asignaturas'));
     }
 
-    public function aula_virtual( $curso_id )
-    {
-
-        $miga_pan = [
-            ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
-            ['url' => 'NO', 'etiqueta' => 'Aula virtual']
-        ];
-
-        $curso = Curso::find($curso_id);
-
-        return view( 'academico_estudiante.aula_virtual', compact( 'curso', 'miga_pan' ) );
-    }
-
     public function reconocimientos()
     {
         $reconocimientos = SgaEstudianteReconocimiento::where('estudiante_id', $this->estudiante->id)
@@ -383,5 +373,46 @@ class AcademicoEstudianteController extends Controller
         ];
 
         return view('academico_estudiante.reconocimientos', compact('miga_pan', 'reconocimientos'));
+    }
+
+    public function aula_virtual( $curso_id )
+    {
+        $dia_semana = $this->get_dia_semana( Input::get('fecha') );
+        $eventos = ProgramacionAulaVirtual::where([
+                                                                    [ 'dia_semana', '=', $dia_semana ]
+                                                                ])
+                                                        ->orWhere('fecha', Input::get('fecha'))
+                                                        ->orderBy('hora_inicio')
+                                                        ->get();
+
+        //dd( $eventos );
+
+        $miga_pan = [
+            ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
+            ['url' => 'NO', 'etiqueta' => 'Aula virtual']
+        ];
+
+        $curso = Curso::find($curso_id);
+
+
+        return view( 'academico_estudiante.aula_virtual', compact( 'eventos', 'dia_semana', 'curso', 'miga_pan' ) );
+    }
+
+    public function get_dia_semana( $fecha )
+    {
+        $fecha2 = Carbon::createFromFormat('Y-m-d', $fecha );
+
+        $weekMap = [
+                        0 => 'domingo',
+                        1 => 'lunes',
+                        2 => 'martes',
+                        3 => 'miercoles',
+                        4 => 'jueves',
+                        5 => 'viernes',
+                        6 => 'sabado',
+                    ];
+
+        $dayOfTheWeek = $fecha2->dayOfWeek;
+        return $weekMap[ $dayOfTheWeek ];
     }
 }

@@ -157,15 +157,38 @@ class Tercero extends Model
     public static function opciones_campo_select()
     {
         $opciones = Tercero::where('core_terceros.core_empresa_id', Auth::user()->empresa_id)
-            ->where('core_terceros.estado', 'Activo')
-            ->select('core_terceros.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
-            ->orderBy('core_terceros.descripcion')
-            ->get();
+                        ->where('core_terceros.estado', 'Activo')
+                        ->select(
+                                    'core_terceros.id',
+                                    'core_terceros.descripcion',
+                                    'core_terceros.nombre1',
+                                    'core_terceros.otros_nombres',
+                                    'core_terceros.apellido1',
+                                    'core_terceros.apellido2',
+                                    'core_terceros.razon_social',
+                                    'core_terceros.numero_identificacion'
+                                )
+                        ->orderBy('core_terceros.descripcion')
+                        ->get();
 
-        $vec[''] = '';
-        foreach ($opciones as $opcion) {
-            $vec[$opcion->id] = $opcion->descripcion . ' ' . $opcion->numero_identificacion;
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $nombre_completo = $opcion->descripcion;
+
+            if ( $nombre_completo == '' )
+            {
+                $nombre_completo = $opcion->razon_social;
+            }
+
+            if ( $nombre_completo == '' )
+            {
+                $nombre_completo = $opcion->apellido1 . ' ' . $opcion->apellido2 . ' ' . $opcion->nombre1 . ' ' . $opcion->otros_nombres;
+            }
+
+            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $nombre_completo;
         }
+
 
         return $vec;
     }

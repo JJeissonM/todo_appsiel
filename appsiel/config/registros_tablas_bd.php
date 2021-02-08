@@ -7412,6 +7412,21 @@
       'created_at' => '2021-02-05 10:14:16',
       'updated_at' => '2021-02-05 10:15:03',
     ),
+    494 => 
+    array (
+      'id' => 520,
+      'core_app_id' => 5,
+      'modelo_id' => 284,
+      'name' => 'sga_programacion_eventos_aula_virtual',
+      'descripcion' => 'Programación de eventos Aula Virtual',
+      'url' => 'web',
+      'parent' => 334,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2021-02-07 07:26:51',
+      'updated_at' => '2021-02-07 07:26:51',
+    ),
   ),
   'roles' => 
   array (
@@ -18342,6 +18357,18 @@
       'orden' => 0,
       'permission_id' => 519,
       'role_id' => 20,
+    ),
+    1794 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 520,
+      'role_id' => 1,
+    ),
+    1795 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 520,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -36700,6 +36727,134 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-02-02 23:52:22',
       'updated_at' => '2021-02-03 00:01:49',
     ),
+    1140 => 
+    array (
+      'id' => 1146,
+      'descripcion' => 'Tipo de evento',
+      'tipo' => 'select',
+      'name' => 'tipo_evento',
+      'opciones' => '{"clase_normal":"Clase normal","descanso":"Descanso","otro":"Otro"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 11:31:46',
+    ),
+    1141 => 
+    array (
+      'id' => 1147,
+      'descripcion' => 'Día de la semana',
+      'tipo' => 'select',
+      'name' => 'dia_semana',
+      'opciones' => '{"":"","lunes":"Lunes","martes":"Martes","miercoles":"Miércoles","jueves":"Jueves","viernes":"Viernes","sabado":"Sábado","domingo":"Domingo"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 08:36:22',
+    ),
+    1142 => 
+    array (
+      'id' => 1148,
+      'descripcion' => 'Hora inicio',
+      'tipo' => 'hora',
+      'name' => 'hora_inicio',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 09:46:22',
+    ),
+    1143 => 
+    array (
+      'id' => 1149,
+      'descripcion' => 'Guía académica',
+      'tipo' => 'select',
+      'name' => 'guia_academica_id',
+      'opciones' => '{"":""}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 11:31:38',
+    ),
+    1144 => 
+    array (
+      'id' => 1150,
+      'descripcion' => 'Actividad escolar',
+      'tipo' => 'select',
+      'name' => 'actividad_escolar_id',
+      'opciones' => '{"":""}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 11:31:31',
+    ),
+    1145 => 
+    array (
+      'id' => 1151,
+      'descripcion' => 'Enlace reunión virtual',
+      'tipo' => 'bsTextArea',
+      'name' => 'enlace_reunion_virtual',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 09:50:15',
+    ),
+    1146 => 
+    array (
+      'id' => 1152,
+      'descripcion' => 'Descripción',
+      'tipo' => 'bsText',
+      'name' => 'descripcion',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 11:07:47',
+      'updated_at' => '2021-02-07 11:07:55',
+    ),
+    1147 => 
+    array (
+      'id' => 1153,
+      'descripcion' => 'Fecha',
+      'tipo' => 'fecha',
+      'name' => 'fecha',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 11:10:31',
+      'updated_at' => '2021-02-07 11:10:43',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -42708,6 +42863,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2021-01-21 12:18:04',
       'updated_at' => '2021-01-21 12:18:33',
+    ),
+    273 => 
+    array (
+      'id' => 284,
+      'descripcion' => 'Programación de eventos Aula Virtual',
+      'modelo' => 'ProgramacionAulaVirtual',
+      'name_space' => 'App\\AcademicoEstudiante\\ProgramacionAulaVirtual',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2021-02-07 09:13:22',
+      'updated_at' => '2021-02-07 09:13:22',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -58902,6 +59079,125 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 20,
       'core_modelo_id' => 83,
       'core_campo_id' => 1145,
+    ),
+    2313 => 
+    array (
+      'id' => 2650,
+      'orden' => 2,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1146,
+    ),
+    2314 => 
+    array (
+      'id' => 2652,
+      'orden' => 6,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1147,
+    ),
+    2315 => 
+    array (
+      'id' => 2653,
+      'orden' => 8,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1148,
+    ),
+    2316 => 
+    array (
+      'id' => 2656,
+      'orden' => 14,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1149,
+    ),
+    2317 => 
+    array (
+      'id' => 2657,
+      'orden' => 16,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1150,
+    ),
+    2318 => 
+    array (
+      'id' => 2658,
+      'orden' => 18,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1151,
+    ),
+    2319 => 
+    array (
+      'id' => 2659,
+      'orden' => 20,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 22,
+    ),
+    2320 => 
+    array (
+      'id' => 2660,
+      'orden' => 99,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 94,
+    ),
+    2321 => 
+    array (
+      'id' => 2661,
+      'orden' => 99,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 95,
+    ),
+    2322 => 
+    array (
+      'id' => 2663,
+      'orden' => 12,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 600,
+    ),
+    2323 => 
+    array (
+      'id' => 2664,
+      'orden' => 10,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 311,
+    ),
+    2324 => 
+    array (
+      'id' => 2665,
+      'orden' => 3,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 123,
+    ),
+    2325 => 
+    array (
+      'id' => 2666,
+      'orden' => 99,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 319,
+    ),
+    2326 => 
+    array (
+      'id' => 2667,
+      'orden' => 4,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1152,
+    ),
+    2327 => 
+    array (
+      'id' => 2668,
+      'orden' => 5,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1153,
+    ),
+    2328 => 
+    array (
+      'id' => 2670,
+      'orden' => 11,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 329,
+    ),
+    2329 => 
+    array (
+      'id' => 2671,
+      'orden' => 13,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 97,
     ),
   ),
   'sys_reportes' => 

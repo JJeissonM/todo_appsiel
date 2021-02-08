@@ -395,4 +395,32 @@ class ActividadesEscolaresController extends ModeloController
 
         return View::make('calificaciones.actividades_escolares.resultados_cuestionario',compact('cuestionario', 'preguntas','estudiante','respuestas'))->render();        
     }
+
+
+
+    public function get_options_actividades_escolares( $curso_id, $asignatura_id, $user_id )
+    {
+        $array_wheres = [ 
+                            [ 'curso_id', '=', $curso_id ],
+                            [ 'asignatura_id', '=', $asignatura_id ]
+                        ];
+
+        $user = Auth::user();
+
+        if( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
+        {
+            $array_wheres = array_merge($array_wheres, [ [ 'created_by', '=', $user_id] ]);
+        }
+
+        $opciones = ActividadEscolar::where( $array_wheres )->get();
+        
+        $select = '<option value="">Seleccionar... </option>';
+        foreach ($opciones as $opcion)
+        {
+            $select .= '<option value="'.$opcion->id.'">'.$opcion->descripcion.'</option>';
+        }
+
+        return $select;
+    }
+
 }

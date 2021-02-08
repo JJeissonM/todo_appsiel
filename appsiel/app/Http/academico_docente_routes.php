@@ -86,7 +86,14 @@ Route::post( 'sga_resumen_planes_clases', 'AcademicoDocente\ReportesController@r
 Route::post( 'sga_resumen_actividades_academicas', 'AcademicoDocente\ReportesController@resumen_actividades_academicas');
 
 
+
+// 				GUIAS ACADEMICAS
+Route::get('sga_get_options_guias_academicas/{curso_id}/{asignatura_id}/{user_id}', 'AcademicoDocente\GuiasAcademicasController@get_options_guias_academicas');
+
 Route::resource('sga_guias_academicas', 'AcademicoDocente\GuiasAcademicasController');
+
+// 				ACTIVIDADES ESCOLARES
+Route::get('sga_get_options_actividades_escolares/{curso_id}/{asignatura_id}/{user_id}', 'ActividadesEscolares\ActividadesEscolaresController@get_options_actividades_escolares');
 
 // El resource debe estar al final
 Route::resource('academico_docente', 'AcademicoDocente\AcademicoDocenteController');

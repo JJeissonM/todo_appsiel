@@ -307,17 +307,29 @@ class EstudianteController extends ModeloController
                 if (is_null($usuario)) {
                     $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
                     $email = $request->email;
-                    $usuario = User::crear_y_asignar_role($name, $email, 4); // 4 = Role Estudiante
-                    $mensaje = '<br> Se creó un nuevo usuario para el estudiante. <br> Puede acceder al sistema con los siguientes datos: <br> email: ' . $request->email . ' <br> Contraseña: colombia1';
+                    $password = str_random(7);
+                    $usuario = User::crear_y_asignar_role($name, $email, 4, $password ); // 4 = Role Estudiante
+
+                    if ( is_null( $usuario ) )
+                    {
+                        $mensaje = '<br> Si embargo no se pudo crear su usuario por ese email ya lo tiene otro usuario. <br> Email: ' . $request->email;
+                        $usuario_id = 0;
+                    }else{
+                        $mensaje = '<br> Se creó un nuevo usuario para el estudiante. <br> Puede acceder al sistema con los siguientes datos: <br> email: ' . $request->email . ' <br> Contraseña: ' . $password;
+                        $usuario_id = $usuario->id;
+                    }
+                    
+
                 } else {
                     $usuario->name = $descripcion;
                     $usuario->email = $request->email;
                     $usuario->save();
                     $mensaje = '';
+                    $usuario_id = $usuario->id;
                 }
 
                 $estudiante->fill($datos);
-                $estudiante->user_id = $usuario->id;
+                $estudiante->user_id = $usuario_id;
                 $estudiante->save();
 
                 if (isset($request->imagen)) {

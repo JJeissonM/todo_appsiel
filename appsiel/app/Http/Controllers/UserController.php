@@ -323,12 +323,6 @@ class UserController extends ModeloController
 
                 $usuario = User::crear_y_asignar_role( $descripcion, $placa, 22, $password); // 22 = Vehículo (FUEC)
 
-                // Se almacena la contraseña temporalmente; cuando el usuario la cambie, se eliminará
-                PasswordReset::insert([
-                                        'email' => $placa,
-                                        'token' => $password,
-                                        'created_at' => date('Y-m-d H:i:s') ]);
-
                 $l++;
             }
 

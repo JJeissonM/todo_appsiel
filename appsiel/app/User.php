@@ -12,6 +12,8 @@ use DB;
 use Auth;
 use Hash;
 
+use App\Core\PasswordReset;
+
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -112,21 +114,28 @@ class User extends Authenticatable
         return "LISTADO DE USUARIOS";
     }
 
-    public static function crear_y_asignar_role($name, $email, $role_id, $password = null)
+    public static function crear_y_asignar_role($name, $email, $role_id, $password)
     {
-        if (is_null($password)) {
-            $password = 'colombia1';
+        if ( !is_null( User::where('email',$email)->get()->first() ) )
+        {
+            return null;
         }
-
+        
         $user = User::create([
-            'empresa_id' => Auth::user()->empresa_id,
-            'name' => $name,
-            'email' => $email,
-            'password' => Hash::make($password)
-        ]);
+                                'empresa_id' => Auth::user()->empresa_id,
+                                'name' => $name,
+                                'email' => $email,
+                                'password' => Hash::make($password)
+                            ]);
 
         $role_r = Role::where('id', '=', $role_id)->firstOrFail();
         $user->assignRole($role_r); //Assigning role to user
+
+        // Se almacena la contraseña temporalmente; cuando el usuario la cambie, se eliminará
+        PasswordReset::insert([
+                                'email' => $email,
+                                'token' => $password,
+                                'created_at' => date('Y-m-d H:i:s') ]);
 
         return $user;
     }
