@@ -4,6 +4,7 @@
   'SMMLV' => '908526',
   'horas_laborales' => '240',
   'horas_dia_laboral' => '8',
+  'valor_uvt_actual' => '36308',
   'sabado_es_dia_habil' => '1',
   'calcular_valor_proyectado_fondo_solidaridad' => '1',
   'concepto_salario_integral' => '2',

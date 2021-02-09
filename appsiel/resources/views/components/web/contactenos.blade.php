@@ -1,7 +1,11 @@
 <style>
 
 .contactenos-font {
-    font-family: <?php echo $contactenos->configuracionfuente->fuente->font; ?> !important;
+    @if( !is_null($contactenos) )
+        @if( !is_null($contactenos->configuracionfuente ) )
+            font-family: <?php echo $contactenos->configuracionfuente->fuente->font; ?> !important;
+        @endif
+    @endif
 }
 
 </style>

@@ -34,6 +34,8 @@ Route::get('nom_pdf_prestaciones_liquidadas/{registro_id}', 'Nomina\Prestaciones
 Route::post('nom_liquidar_retefuente', 'Nomina\RetefuenteController@liquidacion');
 Route::get('nom_retirar_retefuente/{doc_encabezado_id}', 'Nomina\RetefuenteController@retirar_liquidacion');
 
+Route::post('nom_calcular_porcentaje_fijo_retefuente', 'Nomina\RetefuenteController@calcular_porcentaje_fijo_retefuente');
+
 
 // INFORMES Y LISTADOS
 Route::post('nom_resumen_liquidaciones','Nomina\ReporteController@resumen_liquidaciones');

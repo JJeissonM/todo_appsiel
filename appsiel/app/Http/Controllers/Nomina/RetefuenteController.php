@@ -34,6 +34,8 @@ use App\Nomina\AgrupacionConcepto;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
+use App\Nomina\ModosLiquidacion\Estrategias\Retefuente;
+use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 
 class RetefuenteController extends TransaccionController
 {
@@ -174,6 +176,107 @@ class RetefuenteController extends TransaccionController
         $this->actualizar_totales_documento($doc_encabezado_id);
 
         return '<h3><b>Registros de Retefuente retirados correctamente.</b></h3>';
+    }
+
+
+    public function calcular_porcentaje_fijo_retefuente( Request $request )
+    {
+        
+        $empleados_activos = NomContrato::where( 'estado', 'Activo' )->get();
+
+        foreach ( $empleados_activos as $empleado ) 
+        {
+            $obj_retefuente = new ReteFuente();
+            
+            $obj_auxiliar = new ParametroLiquidacionPrestacionesSociales();
+            $obj_auxiliar->cantidad_meses_a_promediar = $request->meses_a_promediar;
+            $fecha_inicial = $obj_auxiliar->get_fecha_inicial_promedios( $request->fecha_final_promedios, $empleado );
+
+            $valor_base_depurada = $obj_retefuente->get_valor_base_depurada( $fecha_inicial, $request->fecha_final_promedios, $empleado );
+
+            // X    Renta de trabajo exenta del 25% numeral 10 del artículo 206 ET (W X 25%)
+            $renta_trabajo_exenta = $valor_base_depurada * 25 / 100;
+
+            // Y    SubTotal2
+            $sub_total2 = $valor_base_depurada - $renta_trabajo_exenta;
+
+            $numero_meses = round( $this->calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $request->fecha_final_promedios ) / 30 , 0);
+
+            $base_retencion_pesos = 0;
+            $base_retencion_uvts = 0;
+            if ( $numero_meses != 0 )
+            {
+                // AA Base en pesos para determinar porcentaje fijo de retención
+                $base_retencion_pesos = $sub_total2 / $numero_meses;
+
+                // AB Base en UVT (AA dividido valor_uvt_actual) (aplicar tabla artículo 383 ET)
+                $base_retencion_uvts = $base_retencion_pesos / $request->valor_uvt_actual;
+            }
+
+            // AC  Rango de la tabla del artículo 383 ET
+            $rango_tabla = $obj_retefuente->get_rango_tabla_uvts( $base_retencion_uvts );
+            
+            // AD  Últimas UVT del rango anterior
+            $ultimas_uvts_rango_anterior = $rango_tabla->ultimas_uvts_rango_anterior;
+            
+            // AE  Tarifa marginal (%)
+            $tarifa_marginal = $rango_tabla->tarifa_marginal;
+
+            // AF  UVT marginales (los determina la tabla)
+            $uvts_marginales = $rango_tabla->uvts_marginales;
+
+            // AG  Retención en la fuente en UVT (((AB – AD) X AE) + AF)
+            $valor_retencion_uvts = ( $base_retencion_uvts - $ultimas_uvts_rango_anterior ) * $tarifa_marginal + $uvts_marginales;
+            
+            // AH  Porcentaje fijo de retención ((AG dividido AB) X 100)
+            $porcentaje_fijo = $valor_retencion_uvts / $base_retencion_uvts * 100;
+
+            dd( [ $obj_auxiliar->cantidad_meses_a_promediar, $fecha_inicial, $valor_base_depurada ] );
+
+            // Se llama al subsistema de liquidación
+            $liquidacion = new LiquidacionConcepto( $concepto->id, $empleado, $documento_nomina);
+
+            $valores = $liquidacion->calcular( $modo_liquidacion_id );
+            
+            $cantidad_horas = 0;
+            
+            if( isset($valores[0]['cantidad_horas'] ) )
+            {
+                $cantidad_horas = $valores[0]['cantidad_horas'];
+            }
+
+            if( ( $valores[0]['valor_devengo'] + $valores[0]['valor_deduccion']  + $cantidad_horas ) != 0 )
+            {
+                $deduccion = $valores[0]['valor_deduccion'];
+                $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $deduccion, $usuario);
+
+                $tabla_resumen = $valores[0]['tabla_resumen'];
+
+                $vista .= View::make( 'nomina.reportes.tabla_liquidacion_retefuente', compact('empleado', 'tabla_resumen') )->render();
+            }
+        }
+
+        $this->actualizar_totales_documento( (int)$request->nom_doc_encabezado_id );
+
+        return $vista;
+    }
+
+
+
+    public function calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final )
+    {
+        $vec_fecha_inicial = explode("-", $fecha_inicial);
+        $vec_fecha_final = explode("-", $fecha_final);
+
+        // Días iniciales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
+        $dias_iniciales = ( (int)$vec_fecha_inicial[0] * 360 ) + ( ( (int)$vec_fecha_inicial[1] - 1 ) * 30) + (int)$vec_fecha_inicial[2];
+
+        // Días finales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
+        $dias_finales = ( (int)$vec_fecha_final[0] * 360 ) + ( ( (int)$vec_fecha_final[1] - 1 ) * 30) + (int)$vec_fecha_final[2];
+
+        $dias_totales_laborados = ($dias_finales - $dias_iniciales) + 1;
+
+        return $dias_totales_laborados;
     }
     
 }

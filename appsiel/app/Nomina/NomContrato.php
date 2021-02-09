@@ -100,8 +100,10 @@ class NomContrato extends Model
     {
         $todos_los_registros = $this->registros_documentos_nomina;
         $coleccion = collect();
-        foreach ($todos_los_registros as $registro) {
-            if ($registro->fecha >= $fecha_inicial && $registro->fecha <= $fecha_final) {
+        foreach ($todos_los_registros as $registro)
+        {
+            if ($registro->fecha >= $fecha_inicial && $registro->fecha <= $fecha_final)
+            {
                 $coleccion[] = $registro;
             }
         }

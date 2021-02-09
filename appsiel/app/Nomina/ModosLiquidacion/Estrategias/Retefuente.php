@@ -50,7 +50,14 @@ class Retefuente implements Estrategia
 			
 			
 			case '2': // Porcentaje fijo mensual, ya calculado semestralmente 
-				$valor_base_depurada = $this->get_valor_base_depurada( $liquidacion['documento_nomina'], $liquidacion['empleado'] ); // subtotal
+
+				$vec_fecha = explode("-", $liquidacion['documento_nomina']->fecha);
+				$mes = $vec_fecha[1];
+				$anio = $vec_fecha[0];
+				$fecha_inicial = $anio.'-'.$mes.'-01';
+				$fecha_final = $anio.'-'.$mes.'-30';
+
+				$valor_base_depurada = $this->get_valor_base_depurada( $fecha_inicial, $fecha_final, $liquidacion['empleado'] ); // subtotal
 
 				// X	Renta de trabajo exenta del 25% numeral 10 del artículo 206 ET (W X 25%)
 				$renta_trabajo_exenta = $valor_base_depurada * 25 / 100;
@@ -86,19 +93,15 @@ class Retefuente implements Estrategia
 
 	}
 
-	public function get_valor_base_depurada( $documento_nomina, $empleado )
+	public function get_valor_base_depurada( $fecha_inicial, $fecha_final, $empleado )
 	{
-		$vec_fecha = explode("-", $documento_nomina->fecha);
-		$mes = $vec_fecha[1];
-		$anio = $vec_fecha[0];
-
 		//$conceptos_de_la_agrupacion = AgrupacionConcepto::find( $liquidacion['concepto']->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-		$registros_liquidados_empleado = $empleado->get_registros_documentos_nomina_entre_fechas( $anio.'-'.$mes.'-01', $anio.'-'.$mes.'-30');
+		$registros_liquidados_empleado = $empleado->get_registros_documentos_nomina_entre_fechas( $fecha_inicial, $fecha_final);
 
 		$total_pagos = $this->get_total_pagos_empleado( $registros_liquidados_empleado );
 
-		$total_deducciones = $this->get_total_deducciones_empleado( $registros_liquidados_empleado );
+		$total_deducciones = $this->get_total_deducciones_empleado( $registros_liquidados_empleado, $empleado );
 
 		// W	Subtotal 1 (F – N – R - V)
 		$subtotal = $total_pagos - $total_deducciones;
@@ -214,7 +217,7 @@ class Retefuente implements Estrategia
         $registro->delete();
 	}
 
-	public function determinar_valor_liquidacion_tabla( $valor_comparacion, $valor_base_liquidacion, $valor_uvt )
+	public function determinar_valor_liquidacion_tabla( $valor_uvt )
 	{
 		/*
 		   Rangos en UVT	   Porcentaje a liquidar
@@ -229,13 +232,21 @@ class Retefuente implements Estrategia
 
 
 			// PENDIENTE
-			//
-			//
+			//PENDIENTE
+			//PENDIENTE
 
 		if ( $valor_comparacion >= ($valor_uvt * 4) )
         {
         	if ( $valor_comparacion < ($valor_uvt * 16) ) // 1%
         	{
+        		return (object)[ 
+	        						'uvts_iniciales' =>0,
+	        						'uvts_finales' => 0,
+	        						'ultimas_uvts_rango_anterior' => 0,
+	        						'tarifa_marginal' => 0,
+	        						'uvts_marginales' => 0
+	        					];
+
 				return ( $valor_base_liquidacion * 1 / 100 );
         	}
 

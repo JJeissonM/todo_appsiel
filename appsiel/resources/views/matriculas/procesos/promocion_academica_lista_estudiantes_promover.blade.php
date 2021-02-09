@@ -36,7 +36,14 @@
 						<td> {{ $matricula->estudiante->tercero->descripcion }}</td>
 						<td> {{ $matricula->curso->grado->descripcion }} / {{ $matricula->curso->descripcion }}</td>
 						<td> {{ $matricula->periodo_final->descripcion }} </td>
-						<td> {{ number_format( $matricula->promedio_final, 2,',','.') }} </td>
+							<?php
+								$color_text = 'black';
+                                if ( $matricula->promedio_final <= $tope_escala_valoracion_minima )
+                                {
+                                    $color_text = 'red';
+                                }
+							?>
+						<td> <span style="color: {{$color_text}}"> {{ number_format( $matricula->promedio_final, 2,',','.') }} </span> </td>
 						<td>
 							<?php
 								$hizo_nivelacion = 'No'; 
