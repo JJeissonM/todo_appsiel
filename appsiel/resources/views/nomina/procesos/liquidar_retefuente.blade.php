@@ -1,6 +1,6 @@
 @extends('core.procesos.layout')
 
-@section( 'titulo', 'Liquidar prestaciones sociales' )
+@section( 'titulo', 'Liquidar ReteFuente' )
 
 @section('detalles')
 	<p>

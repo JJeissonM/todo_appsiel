@@ -98,6 +98,11 @@ class RetefuenteController extends TransaccionController
 
         $this->actualizar_totales_documento( (int)$request->nom_doc_encabezado_id );
 
+        if ( $vista == '' )
+        {
+            return '<h3> Ninguna ReteFuente fue aplicada. <small> Verifique en Catálogos los parámetros de ReteFuente de Empleados. </small> </h3>';
+        }
+        
         return $vista;
     }
 
