@@ -249,9 +249,9 @@ class PlanClaseEncabezado extends Model
         ]);
 
         $elementos_plantilla = PlanClaseEstrucElemento::where('plantilla_plan_clases_id', $plantilla_default->id)
-            ->where('estado', 'Activo')
-            ->orderBy('orden')
-            ->get();
+                                ->where('estado', 'Activo')
+                                ->orderBy('orden')
+                                ->get();
 
         foreach ($elementos_plantilla as $elemento) {
             array_push($lista_campos, [

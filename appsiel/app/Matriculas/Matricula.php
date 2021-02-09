@@ -116,7 +116,7 @@ class Matricula extends Model
     }
 
 
-    public static function estudiantes_matriculados($curso_id, $periodo_lectivo_id, $estado_matricula, $estudiante_id = null)
+    public static function estudiantes_matriculados( $curso_id, $periodo_lectivo_id, $estado_matricula, $estudiante_id = null)
     {
         $array_wheres = [['sga_matriculas.id', '>', 0]];
 

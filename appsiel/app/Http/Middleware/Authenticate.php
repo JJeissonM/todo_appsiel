@@ -27,10 +27,10 @@ class Authenticate
                 return redirect()->guest('/login');
             }
         }
+
         $user = Auth::user();
 
         if(isset($request->id) && isset($request->id_modelo)){
-
             $permisos = DB::table('users')
                 ->join('user_has_roles','users.id','=','user_has_roles.user_id')
                 ->join('roles','user_has_roles.role_id','=','roles.id')
@@ -111,7 +111,7 @@ class Authenticate
                 ->get();
 
             if(sizeof($permisos) == 0){
-                return redirect()->back()->with('flash_message','Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
+                return redirect()->back()->with('flash_message','Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles.');
             }
 
         }

@@ -228,7 +228,8 @@ class EstudianteController extends ModeloController
         switch ($id) {
             case 'listado':
 
-                if ($request->sga_grado_id == "Todos") {
+                if ($request->sga_grado_id == "Todos")
+                {
                     $grados = Grado::where('estado', 'Activo')->get();
                 } else {
                     // Un grado específico
@@ -240,19 +241,21 @@ class EstudianteController extends ModeloController
 
                     $grado = Grado::find($fila_grado->id);
 
-                    if ($request->curso_id == "Todos") {
+                    if ($request->curso_id == "Todos")
+                    {
                         $cursos = Curso::where('sga_grado_id', $grado->id)->where('estado', 'Activo')->get();
                     } else {
                         $cursos = Curso::where('id', $request->curso_id)->get();
                     }
 
-                    foreach ($cursos as $fila_curso) {
+                    foreach ($cursos as $fila_curso)
+                    {
                         $estudiantes[$i]['grado'] = $grado->descripcion;
 
                         $curso = Curso::find($fila_curso->id);
                         $estudiantes[$i]['curso'] = $curso->descripcion;
 
-                        $estudiantes[$i]['listado'] = Matricula::estudiantes_matriculados($curso->id, $request->periodo_lectivo_id, null);
+                        $estudiantes[$i]['listado'] = Matricula::estudiantes_matriculados( $curso->id, $request->periodo_lectivo_id, 'Activo', null );
                         $i++;
                     }
                 }

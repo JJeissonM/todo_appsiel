@@ -251,44 +251,46 @@
 				$("#lbl_danger").hide();
 				$('#div_cargando').show();
 
-			 	if ( confirm("Realmente quiere eliminar esa asignacion?") )
+			 	if ( !confirm("Realmente quiere eliminar esa asignacion?") )
 			 	{
-					
-					var fila = $(this).closest("tr");
-			    	var asignacion_id = $(this).attr('data-asignacion_id');
-
-					$.ajax({
-			        	url: "{{ url('academico_docente/profesores/eliminar_asignacion') }}" + "/" + asignacion_id,
-			        	type: 'get',
-			        	success: function(datos){
-				    		$('#div_cargando').hide();
-				    		fila.remove();
-
-				    		$('#lbl_danger').show();
-
-				    		var ih = parseFloat( $('#ih_total').text() );
-
-		                    var ih2 = ih - parseFloat( datos );
-
-		                    $('#ih_total').text( ih2 );
-
-		                    actualizar_total_asignaturas( -1 );
-
-				        },
-				        error: function(xhr) {
-					        alert('Error al eliminar la asignacion. Intente nuevamente. '+xhr);
-					        $("#listado2").show();
-							$("#listado2").html(xhr);
-							$('#lbl_danger').hide();
-							$('#div_cargando').hide();
-					    }
-				    });
-				    
-			    }else {
 			    	$('#div_cargando').hide();
 					$('#lbl_danger').hide();
 			        return false;
 			    }
+
+				var fila = $(this).closest("tr");
+		    	var asignacion_id = $(this).attr('data-asignacion_id');
+
+		    	var app_id = getParameterByName('id');
+		    	var modelo_id = getParameterByName('id_modelo');
+
+				$.ajax({
+		        	url: "{{ url('academico_docente/profesores/eliminar_asignacion') }}" + "/" + asignacion_id + "&id=" + app_id + "?id_modelo=" + modelo_id,
+		        	type: 'get',
+		        	success: function(datos){
+			    		$('#div_cargando').hide();
+			    		fila.remove();
+
+			    		$('#lbl_danger').show();
+
+			    		var ih = parseFloat( $('#ih_total').text() );
+
+	                    var ih2 = ih - parseFloat( datos );
+
+	                    $('#ih_total').text( ih2 );
+
+	                    actualizar_total_asignaturas( -1 );
+
+			        },
+			        error: function(xhr) {
+				        alert('Error al eliminar la asignacion. Intente nuevamente. '+xhr);
+				        $("#listado2").show();
+						$("#listado2").html(xhr);
+						$('#lbl_danger').hide();
+						$('#div_cargando').hide();
+				    }
+			    });
+				    
 			 });
 		});
 	</script>

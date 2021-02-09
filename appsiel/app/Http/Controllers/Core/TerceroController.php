@@ -247,7 +247,7 @@ class TerceroController extends Controller
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
-        foreach ($datos as $linea) 
+        foreach ($datos as $linea)
         {
             $clase = '';
             if ($es_el_primero) {

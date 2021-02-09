@@ -77,8 +77,12 @@
                             <ul class="dropdown-menu" role="menu" style="background-color: #42A3DC !important;">
                                 <!-- <li><a href="{ { url('/dashboard?id='.Input::get('id')) }}"><i class="fa fa-btn fa-dashboard"></i>DashBoard</a></li> -->
 
-                                <li><a style="color: #FFFFFF !important;" href="{{ url('/core/usuario/perfil/?id='.Input::get('id')) }}"><i class="fa fa-btn fa-user"></i> Perfil</a></li>
-                                
+                                @if( !is_null( Input::get('id') ) )
+                                    <li><a style="color: #FFFFFF !important;" href="{{ url('/core/usuario/perfil/?id='.Input::get('id')) }}"><i class="fa fa-btn fa-user"></i> Perfil</a></li>
+                                @else
+                                    <li><i>(Ingrese a una aplicación para ver su perfil)</i></li>
+                                @endif
+
                                 <li><a style="color: #FFFFFF !important;" href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i> Cerrar sesión</a></li>
                             </ul>
                         </li>
