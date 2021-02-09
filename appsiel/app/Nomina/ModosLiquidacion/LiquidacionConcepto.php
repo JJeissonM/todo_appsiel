@@ -16,12 +16,14 @@ class LiquidacionConcepto extends Model
     protected $concepto;
     protected $empleado;
     protected $documento_nomina;
+    protected $fecha_final_promedios;
 
-    public function __construct( $concepto_id, NomContrato $empleado, NomDocEncabezado $documento_nomina )
+    public function __construct( $concepto_id, NomContrato $empleado, NomDocEncabezado $documento_nomina, $fecha_final_promedios = null )
     {
         $this->concepto = NomConcepto::find($concepto_id);
         $this->empleado = $empleado;
         $this->documento_nomina = $documento_nomina;
+        $this->fecha_final_promedios= $fecha_final_promedios;
     }
 
     public function calcular($modo_liquidacion_id)

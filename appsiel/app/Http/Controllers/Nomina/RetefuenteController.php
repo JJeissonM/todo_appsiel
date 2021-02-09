@@ -44,7 +44,6 @@ class RetefuenteController extends TransaccionController
 
     public function liquidacion( Request $request )
     {
-
         $modo_liquidacion_id = 11; // ReteFuente
         $usuario = Auth::user();
         
@@ -71,7 +70,7 @@ class RetefuenteController extends TransaccionController
             }
              
             // Se llama al subsistema de liquidación
-            $liquidacion = new LiquidacionConcepto( $concepto->id, $empleado, $documento_nomina);
+            $liquidacion = new LiquidacionConcepto( $concepto->id, $empleado, $documento_nomina, $request->fecha_final_promedios );
 
             $valores = $liquidacion->calcular( $modo_liquidacion_id );
             
@@ -85,7 +84,11 @@ class RetefuenteController extends TransaccionController
             if( ( $valores[0]['valor_devengo'] + $valores[0]['valor_deduccion']  + $cantidad_horas ) != 0 )
             {
                 $deduccion = $valores[0]['valor_deduccion'];
-                $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $deduccion, $usuario);
+
+                if ( $request->almacenar_registros )
+                {
+                    $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $deduccion, $usuario);
+                }
 
                 $tabla_resumen = $valores[0]['tabla_resumen'];
 

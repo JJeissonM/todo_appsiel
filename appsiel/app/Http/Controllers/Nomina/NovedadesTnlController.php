@@ -63,7 +63,7 @@ class NovedadesTnlController extends Controller
         $opciones = '<option value="">Seleccionar...</option>';
         foreach ($registros as $campo)
         {
-            $opciones .= '<option value="'.$campo->id.'">'.$campo->concepto->descripcion . ' (' . $campo->observaciones . ') ( Inicio: ' . $campo->fecha_inicial_tnl . ') </option>';
+            $opciones .= '<option value="'.$campo->id.'">'.$campo->concepto->descripcion . ' (' . $campo->observaciones . ' - No. ' . $campo->numero_incapacidad . ') ( Inicio: ' . $campo->fecha_inicial_tnl . ') </option>';
         }
         return $opciones;
     }

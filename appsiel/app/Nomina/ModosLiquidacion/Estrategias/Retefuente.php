@@ -60,7 +60,11 @@ class Retefuente implements Estrategia
 			
 			case '2': // Porcentaje fijo mensual, ya calculado semestralmente 
 
-				$vec_fecha = explode("-", $liquidacion['documento_nomina']->fecha);
+				$vec_fecha = explode( "-", $liquidacion['documento_nomina']->fecha );
+				if ( $liquidacion['fecha_final_promedios'] != '' )
+				{
+					$vec_fecha = explode( "-", $liquidacion['fecha_final_promedios'] );
+				}
 				$mes = $vec_fecha[1];
 				$anio = $vec_fecha[0];
 				$fecha_inicial = $anio.'-'.$mes.'-01';
