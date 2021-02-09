@@ -5,6 +5,7 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\AgrupacionConcepto;
+use App\Nomina\ParametrosRetefuenteEmpleado;
 
 class Retefuente implements Estrategia
 {
@@ -35,17 +36,25 @@ class Retefuente implements Estrategia
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
-		$parametros_retefuente_empleado = (object)[
-													'procedimiento' => 2,
-													'porcentaje_fijo' => 3.23
-												];
+		$parametros_retefuente_empleado = ParametrosRetefuenteEmpleado::where('nom_contrato_id', $liquidacion['empleado']->id)->orderBy('fecha_final_promedios')->get()->last();
+
+        if ( is_null( $parametros_retefuente_empleado ) )  // falta validar a qué empleados se aplicará
+        {
+            $parametros_retefuente_empleado = (object)[
+														'procedimiento' => 0,
+														'porcentaje_fijo' => 0
+													];
+        }
+			
 
 		switch ( $parametros_retefuente_empleado->procedimiento )
 		{
 			case '1': // Calculo mensual del porcentaje que corresponda según el monto del salario devengado
-				//$ = $this->get_porcentaje();
-				$valor_base_retencion = $this->get_valor_base_retencion( $total_devengos_gravados, );
-				$valor_liquidacion = $this->determinar_valor_liquidacion_tabla( $valor_base_retencion, $valor_base_retencion, $valor_uvt );
+
+				/*
+						PROCESO PENDIENTE
+				*/
+				$valor_liquidacion = 0;
 				break;
 			
 			
@@ -76,7 +85,7 @@ class Retefuente implements Estrategia
 				break;
 			
 			default:
-				
+				$valor_liquidacion = 0;
 				break;
 		}
 
@@ -217,9 +226,10 @@ class Retefuente implements Estrategia
         $registro->delete();
 	}
 
-	public function determinar_valor_liquidacion_tabla( $valor_uvt )
+	public function get_rango_tabla_uvts( $valor_uvt )
 	{
 		/*
+			ARTíCULO 383.  Del Estatuto Tributario ( Modificado por LEY-2010-DEL-27-DE-DICIEMBRE-DE-2019 )
 		   Rangos en UVT	   Porcentaje a liquidar
 			0 a 95						0%
 			>95  a 150					19%
@@ -230,51 +240,87 @@ class Retefuente implements Estrategia
 			>2300 en adelante			39%
 		*/
 
+		if ( $valor_uvt <= 95 ) // 1%
+    	{
+    		return (object)[ 
+        						'fila_rango' => 1,
+        						'uvts_iniciales' => 0,
+        						'uvts_finales' => 95,
+        						'uvts_finales_rango_anterior' => 0,
+        						'tarifa_marginal' => 0,
+        						'uvts_marginales' => 0
+        					];
+    	}
 
-			// PENDIENTE
-			//PENDIENTE
-			//PENDIENTE
+		if ( $valor_uvt > 95 && $valor_uvt <= 150  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 2,
+        						'uvts_iniciales' => 95,
+        						'uvts_finales' => 150,
+        						'uvts_finales_rango_anterior' => 95,
+        						'tarifa_marginal' => 19 / 100,
+        						'uvts_marginales' => 0
+        					];
+    	}
 
-		if ( $valor_comparacion >= ($valor_uvt * 4) )
-        {
-        	if ( $valor_comparacion < ($valor_uvt * 16) ) // 1%
-        	{
-        		return (object)[ 
-	        						'uvts_iniciales' =>0,
-	        						'uvts_finales' => 0,
-	        						'ultimas_uvts_rango_anterior' => 0,
-	        						'tarifa_marginal' => 0,
-	        						'uvts_marginales' => 0
-	        					];
+		if ( $valor_uvt > 150 && $valor_uvt <= 360  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 3,
+        						'uvts_iniciales' => 150,
+        						'uvts_finales' => 360,
+        						'uvts_finales_rango_anterior' => 150,
+        						'tarifa_marginal' => 28 / 100,
+        						'uvts_marginales' => 10
+        					];
+    	}
 
-				return ( $valor_base_liquidacion * 1 / 100 );
-        	}
+		if ( $valor_uvt > 360 && $valor_uvt <= 640  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 4,
+        						'uvts_iniciales' => 360,
+        						'uvts_finales' => 640,
+        						'uvts_finales_rango_anterior' => 360,
+        						'tarifa_marginal' => 33 / 100,
+        						'uvts_marginales' => 69
+        					];
+    	}
 
-        	if ( $valor_comparacion < ($valor_uvt * 17) ) // 1.2%
-        	{
-				return ( $valor_base_liquidacion * 1.2 / 100 );
-        	}
+		if ( $valor_uvt > 640 && $valor_uvt <= 945  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 5,
+        						'uvts_iniciales' => 640,
+        						'uvts_finales' => 945,
+        						'uvts_finales_rango_anterior' => 640,
+        						'tarifa_marginal' => 35 / 100,
+        						'uvts_marginales' => 162
+        					];
+    	}
 
-        	if ( $valor_comparacion < ($valor_uvt * 18) ) // 1.4%
-        	{
-				return ( $valor_base_liquidacion * 1.4 / 100 );
-        	}
+		if ( $valor_uvt > 945 && $valor_uvt <= 2300  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 6,
+        						'uvts_iniciales' => 945,
+        						'uvts_finales' => 2300,
+        						'uvts_finales_rango_anterior' => 945,
+        						'tarifa_marginal' => 37 / 100,
+        						'uvts_marginales' => 268
+        					];
+    	}
 
-        	if ( $valor_comparacion < ($valor_uvt * 19) ) // 1.6%
-        	{
-				return ( $valor_base_liquidacion * 1.6 / 100 );
-        	}
-
-        	if ( $valor_comparacion < ($valor_uvt * 20) ) // 1.8%
-        	{
-				return ( $valor_base_liquidacion * 1.8 / 100 );
-        	}
-
-        	// >= 20SMMLV 2%
-        	return ( $valor_base_liquidacion * 2 / 100 );
-        }
-
-        return 0;
+    	// > 2300 UVTs
+    	return (object)[ 
+    						'fila_rango' => 7,
+    						'uvts_iniciales' => 2300,
+    						'uvts_finales' => 999999,
+    						'uvts_finales_rango_anterior' => 2300,
+    						'tarifa_marginal' => 39 / 100,
+    						'uvts_marginales' => 770
+    					];
 	}
 
 }

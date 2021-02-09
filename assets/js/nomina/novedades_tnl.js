@@ -182,17 +182,47 @@ $(document).ready(function(){
 	
 	$('#es_prorroga').on( 'change', function(){
 		
-		if ( $(this).val() == 1 )
+		if ( $('#nom_contrato_id').val() == '' )
 		{
-			$('#novedad_tnl_anterior_id').parent().parent().parent().parent().show();
-			$('#novedad_tnl_anterior_id').attr('required','required');
-			/*
-				llenar select novedad_tnl_anterior_id con incapacidades del empleado
-			*/
-		}else{
+			alert('Debe seleccionar a un empleado.');
+			return false;
+		}
+
+		if ( $(this).val() == 0 )
+		{
+	    	$('#novedad_tnl_anterior_id').html('');
 			$('#novedad_tnl_anterior_id').parent().parent().parent().parent().hide();
 			$('#novedad_tnl_anterior_id').removeAttr('required');
+			return false;
 		}
+
+		$('#novedad_tnl_anterior_id').parent().parent().parent().parent().show();
+		$('#novedad_tnl_anterior_id').attr('required','required');
+		
+		/*
+			Llenar select novedad_tnl_anterior_id con incapacidades del empleado
+		*/
+		$('#div_cargando').show();
+		var fecha_inicial_tnl = $('#fecha_inicial_tnl').val();
+		var fecha_final_tnl = $('#fecha_final_tnl').val();
+
+		if ( fecha_inicial_tnl == '') { fecha_inicial_tnl = 0; }
+		if ( fecha_final_tnl == '') { fecha_final_tnl = 0; }
+
+		if( direccion.search("edit") == -1)
+		{
+			// Creando
+			var url = '../nom_get_options_incapacidades_anteriores/' + fecha_inicial_tnl + '/' + fecha_final_tnl + '/' + $('#nom_contrato_id').val() + '/0';
+		}else{
+			// Editando
+			var url = '../../nom_get_options_incapacidades_anteriores/' + $('#fecha_inicial_tnl').val() + '/' + $('#fecha_final_tnl').val() + '/' + $('#nom_contrato_id').val() + '/' + JSON.parse( $('#datos_registro').val() ).id;
+		}
+
+		$.get( url )
+			.done(function( data ) {
+	    		$('#div_cargando').hide();
+	    		$('#novedad_tnl_anterior_id').html( data );
+			});
 
 	});
 
