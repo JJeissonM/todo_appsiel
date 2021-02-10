@@ -8701,12 +8701,12 @@
       'name' => 'nom_consolidados_prestaciones_sociales',
       'descripcion' => 'Consolidados de prestaciones sociales',
       'url' => 'web',
-      'parent' => 448,
-      'orden' => 2,
+      'parent' => 225,
+      'orden' => 30,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-12-23 07:15:17',
-      'updated_at' => '2020-12-23 07:22:51',
+      'updated_at' => '2021-02-09 16:51:34',
     ),
     469 => 
     array (
@@ -8777,11 +8777,11 @@
       'descripcion' => 'Planilla integrada',
       'url' => 'nom_pila_catalogos/499',
       'parent' => 448,
-      'orden' => 26,
+      'orden' => 3,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2021-01-07 05:50:51',
-      'updated_at' => '2021-01-07 05:52:04',
+      'updated_at' => '2021-02-09 16:56:43',
     ),
     474 => 
     array (
@@ -9112,6 +9112,21 @@
       'fa_icon' => 'calendar',
       'created_at' => '2021-02-09 12:24:50',
       'updated_at' => '2021-02-09 12:27:29',
+    ),
+    496 => 
+    array (
+      'id' => 522,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_proc_generar_archivo_consignacion_cesantias',
+      'descripcion' => 'Generar archivo consignación Cesantías',
+      'url' => 'index_procesos/nomina.procesos.generar_archivo_consignacion_cesantias',
+      'parent' => 448,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2021-02-09 16:54:01',
+      'updated_at' => '2021-02-09 17:11:08',
     ),
   ),
   'roles' => 
@@ -20072,6 +20087,24 @@
     array (
       'orden' => 0,
       'permission_id' => 521,
+      'role_id' => 9,
+    ),
+    1799 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 522,
+      'role_id' => 1,
+    ),
+    1800 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 522,
+      'role_id' => 3,
+    ),
+    1801 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 522,
       'role_id' => 9,
     ),
   ),
