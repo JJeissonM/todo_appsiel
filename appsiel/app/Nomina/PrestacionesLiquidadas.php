@@ -25,8 +25,13 @@ class PrestacionesLiquidadas extends Model
 	    										'core_terceros.descripcion AS campo2',
 	    										'nom_prestaciones_liquidadas.fecha_final_promedios AS campo3',
 	    										'nom_prestaciones_liquidadas.id AS campo4')
+						            ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
+						            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+						            ->orWhere("nom_prestaciones_liquidadas.fecha_final_promedios", "LIKE", "%$search%")
+						            ->orWhere("nom_prestaciones_liquidadas.prestaciones_liquidadas", "LIKE", "%$search%")
 	    							->orderBy( 'nom_doc_encabezados.fecha', 'DESC')
 	    							->paginate($nro_registros);
+
 	}
 	public static function sqlString($search)
 	{
@@ -36,9 +41,11 @@ class PrestacionesLiquidadas extends Model
 	    							->select(
 	    										'nom_doc_encabezados.descripcion AS DOCUMENTO_NOMINA',
 	    										'core_terceros.descripcion AS EMPLEADO',
+	    										'core_terceros.numero_identificacion AS NUMERO_IDENTIFICACION',
 	    										'nom_prestaciones_liquidadas.fecha_final_promedios AS FECHA_FINAL_PROMEDIOS',
 	    										'nom_prestaciones_liquidadas.prestaciones_liquidadas AS PRESTACIONES',
-	    										'nom_prestaciones_liquidadas.id AS campo5')
+	    										'nom_prestaciones_liquidadas.id AS ID')
+	    							->orderBy( 'nom_doc_encabezados.fecha', 'DESC')
 	    							->toSql();
 	    return str_replace('?', '""%' . $search . '%""', $string);
 	}

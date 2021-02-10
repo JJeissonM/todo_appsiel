@@ -52,7 +52,7 @@
 
 			        $k = 0;
 
-	                $fila .= '<td> ' . $empleado->tercero->numero_identificacion . ' - ' . $empleado->tercero->descripcion . $movimientos->whereLoose( 'core_tercero_id', $empleado->core_tercero_id )->sum('valor_devengo') . '</td>';
+	                $fila .= '<td> ' . $empleado->tercero->numero_identificacion . ' - ' . $empleado->tercero->descripcion . '</td>';
 	                $fila .= '<td> ' . $empleado->grupo_empleado->descripcion . '</td>';
 	                $fila .= '<td> ' . $empleado->cargo->descripcion . '</td>';
 
