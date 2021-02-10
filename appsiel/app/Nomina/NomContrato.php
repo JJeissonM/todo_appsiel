@@ -86,6 +86,23 @@ class NomContrato extends Model
         return ($this->sueldo / (int)config('nomina.horas_laborales')) * (int)config('nomina.horas_dia_laboral');
     }
 
+    public function salario_anterior()
+    {
+        $ultimo_cambio = CambioSalario::where( 'nom_contrato_id', $this->id )->orderBy('fecha_modificacion')->get()->last();
+        
+        if ( is_null( $ultimo_cambio ) )
+        {
+            return null;
+        }
+
+        if ( $ultimo_cambio->salario_anterior == 0 )
+        {
+            return null;
+        }
+
+        return $ultimo_cambio->salario_anterior;
+    }
+
     public function parametros_retefuente()
     {
         return ParametrosRetefuenteEmpleado::where('nom_contrato_id',$this->id)->orderBy('fecha_final_promedios')->get()->last();

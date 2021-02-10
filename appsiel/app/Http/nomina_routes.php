@@ -65,6 +65,7 @@ Route::post('nom_almacenar_registros_via_interface','Nomina\ProcesosController@a
 
 Route::post('nom_calcular_acumulados_seguridad_social_parafiscales','Nomina\ProcesosController@calcular_acumulados_seguridad_social_parafiscales');
 Route::post('nom_almacenar_acumulados_seguridad_social_parafiscales','Nomina\ProcesosController@almacenar_acumulados_seguridad_social_parafiscales');
+Route::post('nom_generar_archivo_consignar_cesantias','Nomina\ProcesosController@generar_archivo_consignar_cesantias');
 
 
 // PLANILLA INTEGRADA

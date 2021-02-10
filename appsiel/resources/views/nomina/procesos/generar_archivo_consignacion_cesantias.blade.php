@@ -26,7 +26,7 @@
 							Parámetros de selección
 						</h4>
 						<hr>
-						{{ Form::open(['url'=>'nom_calcular_porcentaje_fijo_retefuente','id'=>'formulario_inicial','files' => true]) }}
+						{{ Form::open(['url'=>'nom_generar_archivo_consignar_cesantias','id'=>'formulario_inicial','files' => true]) }}
 							
 
 							<div class="row" style="padding:5px;">
@@ -69,6 +69,8 @@
 		</div>
 	</div>
 
+	<a class="btn-gmail btn-excel" id="btn_excel2" style="display: none;" title="liquidacion_cesantias"><i class="fa fa-file-excel-o"></i></a>
+
 	<div class="row" id="div_resultado">
 			
 	</div>
@@ -82,11 +84,10 @@
 
 			var opcion_seleccionada = 0;
 
-			$('#fecha_final_promedios').val( get_fecha_hoy() );
+			$('#nom_doc_encabezado_id').focus();
 
 			$("#btn_visualizar").on('click',function(event){
 		    	event.preventDefault();
-
 
 		    	if ( !validar_requeridos() )
 		    	{
@@ -95,6 +96,7 @@
 
 		 		$("#div_spin").show();
 		 		$("#div_cargando").show();
+		 		$("#btn_excel2").hide();
 				$("#div_resultado").html('');
 
 				var form = $('#formulario_inicial');
@@ -113,57 +115,36 @@
 			    .done(function( respuesta ){
 			        $('#div_cargando').hide();
         			$("#div_spin").hide();
+        			$("#btn_excel2").show();
+
 
         			$("#div_resultado").html( respuesta );
         			$("#div_resultado").fadeIn( 1000 );
 			    });
 		    });
 
+		    $('#btn_excel2').click(function (event) {
+				event.preventDefault();
 
+				var nombre_listado = $(this).attr('title');
+				var tT = new XMLSerializer().serializeToString(document.querySelector('.table_registros')); //Serialised table
+				var tF = nombre_listado + '.xls'; //Filename
+				var tB = new Blob([tT]); //Blub
 
-			$("#btn_retirar").on('click',function(event){
-		    	event.preventDefault();
-
-		    	if ( !validar_requeridos() )
-		    	{
-		    		return false;
-		    	}
-
-		    	if ( opcion_seleccionada == 0) { alert('Debe seleccionar al menos una prestación.'); return false; }
-
-		 		$("#div_spin").show();
-		 		$("#div_cargando").show();
-        		$("#div_resultado").html( '' );
-
-				var form = $('#formulario_inicial');
-				var prestaciones = '';
-				var i;
-				$(".check_prestacion").each(function(){
-					if ( $(this).is(':checked') )
-					{
-						prestaciones = prestaciones + '-' + $(this).val();
-						//i++;
-					}
-				  });
-
-				var url = "{{ url('nom_retirar_prestaciones_sociales') }}" + '/' + $('#nom_doc_encabezado_id').val() + '/' + prestaciones;
-
-				$.ajax({
-				    url: url,
-				    type: "get",
-				    dataType: "html",
-				    cache: false,
-				    contentType: false,
-				    processData: false
-				})
-			    .done(function( respuesta ){
-			        $('#div_cargando').hide();
-        			$("#div_spin").hide();
-
-        			$("#div_resultado").html( respuesta );
-        			$("#div_resultado").fadeIn( 1000 );
-			    });
-		    });
+				if(window.navigator.msSaveOrOpenBlob){
+					//Store Blob in IE
+					window.navigator.msSaveOrOpenBlob(tB, tF)
+				}
+				else{
+					//Store Blob in others
+					var tA = document.body.appendChild(document.createElement('a'));
+					tA.href = URL.createObjectURL(tB);
+					tA.download = tF;
+					tA.style.display = 'none';
+					tA.click();
+					tA.parentNode.removeChild(tA)
+				}
+			});
 
 		});
 	</script>

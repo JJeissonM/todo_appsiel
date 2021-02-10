@@ -104,6 +104,10 @@ class PrestacionesSocialesController extends TransaccionController
                                                                         ->get()->first();
 
                     $concepto = NomConcepto::find( $parametros_prestacion->nom_concepto_id );
+                    if ( $request->concepto_cesantias_id != '' )
+                    {
+                        $concepto = NomConcepto::find( $request->concepto_cesantias_id );
+                    }
 
                     if ( $request->almacenar_registros )
                     {

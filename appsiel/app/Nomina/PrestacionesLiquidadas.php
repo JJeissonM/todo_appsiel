@@ -25,6 +25,7 @@ class PrestacionesLiquidadas extends Model
 	    										'core_terceros.descripcion AS campo2',
 	    										'nom_prestaciones_liquidadas.fecha_final_promedios AS campo3',
 	    										'nom_prestaciones_liquidadas.id AS campo4')
+	    							->orderBy( 'nom_doc_encabezados.fecha', 'DESC')
 	    							->paginate($nro_registros);
 	}
 	public static function sqlString($search)
