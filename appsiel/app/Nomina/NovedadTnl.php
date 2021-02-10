@@ -109,7 +109,8 @@ class NovedadTnl extends Model
 				'nom_novedades_tnl.cantidad_dias_amortizados AS CANT_DÍAS_AMORTIZADOS',
 				'nom_novedades_tnl.cantidad_dias_pendientes_amortizar AS CANT_DÍAS_PEND',
 				'nom_novedades_tnl.observaciones AS OBSERVACIONES',
-				'nom_novedades_tnl.estado AS ESTADO'
+				'nom_novedades_tnl.estado AS ESTADO',
+				'nom_novedades_tnl.id AS ID'
 			)
 			->where("nom_conceptos.descripcion", "LIKE", "%$search%")
 			->orWhere("core_terceros.descripcion", "LIKE", "%$search%")

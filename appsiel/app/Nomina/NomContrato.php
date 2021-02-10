@@ -10,6 +10,7 @@ use App\Core\Tercero;
 use App\Nomina\MovimientoIbcEmpleado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\CambioSalario;
+use App\Nomina\ParametrosRetefuenteEmpleado;
 
 class NomContrato extends Model
 {
@@ -83,6 +84,11 @@ class NomContrato extends Model
     public function salario_x_dia()
     {
         return ($this->sueldo / (int)config('nomina.horas_laborales')) * (int)config('nomina.horas_dia_laboral');
+    }
+
+    public function parametros_retefuente()
+    {
+        return ParametrosRetefuenteEmpleado::where('nom_contrato_id',$this->id)->orderBy('fecha_final_promedios')->get()->last();
     }
 
     public function valor_ibc()

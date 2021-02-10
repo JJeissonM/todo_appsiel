@@ -6,6 +6,7 @@ use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\ParametrosRetefuenteEmpleado;
+use App\Nomina\NomConcepto;
 
 class Retefuente implements Estrategia
 {
@@ -126,17 +127,30 @@ class Retefuente implements Estrategia
 	public function get_total_pagos_empleado( $pagos_empleado )
 	{
         // A Sumatoria de los salarios básicos pagados durante los 12 meses anteriores (dinero o especie). Entran las incapacidades  y TNL
-		$salario_basico = $pagos_empleado->whereIn( 'nom_concepto_id', [1,2,19,20,21,22,25,28,32,33,41,58,59,60,71,77,79] )->sum( 'valor_devengo' );
+        $conceptos_salario = NomConcepto::where( 'forma_parte_basico', 1)->get()->pluck('id')->toArray();
+		$salario_basico = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_salario )->sum( 'valor_devengo' );
 		$this->tabla_resumen['salario_basico'] = $salario_basico;
 		
 		// B Horas extras, bonificaciones y comisiones pagadas durante los 12 meses anteriores (sean o no factor salarial)
-		$otros_devengos = $pagos_empleado->whereIn( 'nom_concepto_id', [3,4,5,6,7,8,9,11,12,13,14,26,30,42,43,44,57,80,81,82,83] )->sum( 'valor_devengo' );
+		/*
+				modo_liquidacion_id: [ 2: Manual, 3: Cuota, 4: Préstamo, 6: Auxilio de transporte ]
+		*/
+		$conceptos_otros_devengos = NomConcepto::whereIn( 'modo_liquidacion_id', [2,3,4,6] )
+												->where( [['forma_parte_basico', '<>', 1]] )
+												->get()->pluck('id')->toArray();
+		$otros_devengos = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_otros_devengos )->sum( 'valor_devengo' );
 		$this->tabla_resumen['otros_devengos'] = $otros_devengos;
 
 		//C	Auxilios y subsidios pagados durante los 12 meses anteriores (directo o indirecto)
 		
 		//D	Cesantía, intereses sobre cesantía, prima mínima legal de servicios (sector privado) o de navidad (sector público) y vacaciones pagados durante los 12 meses anteriores
-		$prestaciones_sociales = $pagos_empleado->whereIn( 'nom_concepto_id', [15,16,17,27,45,46,66,67] )->sum( 'valor_devengo' );
+		/*
+				modo_liquidacion_id: [ 14: Prima Legal, 16: Intereses de cesantías, 17: Cesantías pagadas ]
+		*/
+		$conceptos_prestaciones_sociales = NomConcepto::whereIn( 'modo_liquidacion_id', [ 14, 16, 17 ] )
+														->where( [['forma_parte_basico', '<>', 1]] )
+														->get()->pluck('id')->toArray();
+		$prestaciones_sociales = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_prestaciones_sociales )->sum( 'valor_devengo' );
 		$this->tabla_resumen['prestaciones_sociales'] = $prestaciones_sociales;
 
 		// E	Demás pagos ordinario o extraordinario realizados durante los 12 meses anteriores
@@ -148,8 +162,23 @@ class Retefuente implements Estrategia
 		return $total_pagos;
 	}
 
-	public function get_total_deducciones_empleado( $pagos_empleado )
+	public function get_total_deducciones_empleado( $pagos_empleado, $empleado )
 	{
+		$parametros_retencion = $empleado->parametros_retefuente();
+		$aportes_pension_voluntaria = 0;
+		$ahorros_cuentas_afc = 0;
+		$rentas_trabajo_exentas = 0;
+		$intereses_vivienda = 0;
+		$salud_prepagada = 0;
+
+        if ( !is_null( $parametros_retencion ) )  // falta validar a qué empleados se aplicará
+        {
+            $aportes_pension_voluntaria = $parametros_retencion->deduccion_aportes_pension_voluntaria;
+			$ahorros_cuentas_afc = $parametros_retencion->deduccion_ahorros_cuentas_afc;
+			$rentas_trabajo_exentas = $parametros_retencion->deduccion_rentas_trabajo_exentas;
+			$intereses_vivienda = $parametros_retencion->deduccion_intereses_vivienda;
+			$salud_prepagada = $parametros_retencion->deduccion_salud_prepagada;
+        }
 
 		/**  Ingresos no constitutivos de renta ni ganancia ocasional  **/
 		// G	Pagos a terceros por concepto de alimentación (limitado según artículo 387-1 ET)
@@ -162,15 +191,33 @@ class Retefuente implements Estrategia
 		//$medios_transporte = 0;
 
 		// J	Aportes obligatorios a salud efectuados por el trabajador
-		$aportes_salud_obligatoria = $pagos_empleado->whereIn( 'nom_concepto_id', [64] )->sum( 'valor_deduccion' );
+		/*
+				modo_liquidacion_id: [ 12: Salud obligatoria ]
+		*/
+		$conceptos_salud_obligatoria = NomConcepto::whereIn( 'modo_liquidacion_id', [ 12 ] )
+														->where( [ ['forma_parte_basico', '<>', 1] ] )
+														->get()->pluck('id')->toArray();
+		$aportes_salud_obligatoria = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_salud_obligatoria )->sum( 'valor_deduccion' );
 		$this->tabla_resumen['aportes_salud_obligatoria'] = $aportes_salud_obligatoria;
 		
 		// K	Aportes obligatorios a fondos de pensiones
-		$aportes_pension_obligatoria = $pagos_empleado->whereIn( 'nom_concepto_id', [65,75] )->sum( 'valor_deduccion' );
+		/*
+				modo_liquidacion_id: [ 13: Pensión obligatoria, 10: FondoSolidaridadPensional ]
+		*/
+		$conceptos_pension_obligatoria = NomConcepto::whereIn( 'modo_liquidacion_id', [ 10, 13 ] )
+														->where( [ ['forma_parte_basico', '<>', 1] ] )
+														->get()->pluck('id')->toArray();
+		$aportes_pension_obligatoria = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_pension_obligatoria )->sum( 'valor_deduccion' );
 		$this->tabla_resumen['aportes_pension_obligatoria'] = $aportes_pension_obligatoria;
 
 		// L	Cesantía e intereses sobre cesantía. Pagos expresamente excluidos por el artículo 386 estatuto tributario.
-		$pagos_cesantias_e_intereses = $pagos_empleado->whereIn( 'nom_concepto_id', [18,69,78] )->sum( 'valor_devengo' );
+		/*
+				modo_liquidacion_id: [ 16: Intereses de cesantías, 17: Cesantías pagadas ]
+		*/
+		$conceptos_cesantias_e_intereses = NomConcepto::whereIn( 'modo_liquidacion_id', [ 16, 17 ] )
+														->where( [ ['forma_parte_basico', '<>', 1] ] )
+														->get()->pluck('id')->toArray();
+		$pagos_cesantias_e_intereses = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_cesantias_e_intereses )->sum( 'valor_devengo' );
 		$this->tabla_resumen['pagos_cesantias_e_intereses'] = $pagos_cesantias_e_intereses;
 		
 		// M	Demás pagos que no incrementan el patrimonio del trabajador
@@ -183,15 +230,12 @@ class Retefuente implements Estrategia
 
 		/**  Rentas exentas  **/
 		// O	Aportes voluntarios a fondos de pensiones
-		$aportes_pension_voluntaria = 0;
 		$this->tabla_resumen['aportes_pension_voluntaria'] = $aportes_pension_voluntaria;
 
 		// P	Ahorros cuentas AFC
-		$ahorros_cuentas_afc = 0;
 		$this->tabla_resumen['ahorros_cuentas_afc'] = $ahorros_cuentas_afc;
 		
 		// Q	Rentas de trabajo exentas numerales del 1 al 9 artículo 206 ET
-		$rentas_trabajo_exentas = 0;
 		$this->tabla_resumen['rentas_trabajo_exentas'] = $rentas_trabajo_exentas;
 		
 		// R	Total rentas exentas de los 12 meses anteriores (O + P +Q)
@@ -201,13 +245,11 @@ class Retefuente implements Estrategia
 		/**  Deducciones particulares  **/
 
 		// S	Intereses o corrección monetaria en préstamos para adquisición de vivienda
-		$intereses_vivienda = 0;
 		$this->tabla_resumen['intereses_vivienda'] = $intereses_vivienda;
 		// T	Pagos a salud (medicina prepagada y pólizas de seguros)
 		/*
 			esto debe ser traido del parametro del empleado.
 		*/
-		$salud_prepagada = 0;
 		$this->tabla_resumen['salud_prepagada'] = $salud_prepagada;
 
 		// U	Deducción por dependientes (artículo 387-1 ET) (máximo 10%)

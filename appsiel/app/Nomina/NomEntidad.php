@@ -43,7 +43,9 @@ class NomEntidad extends Model
                 'nom_entidades.descripcion AS NOMBRE_ENTIDAD',
                 'nom_entidades.codigo_nacional AS CÓDIGO_NACIONAL',
                 'nom_entidades.tipo_entidad AS TIPO_ENTIDAD',
-                'nom_entidades.estado AS ESTADO'
+                'nom_entidades.estado AS ESTADO',
+                'nom_entidades.id AS ID',
+                'core_terceros.id AS TERCERO_ID'
             )
             ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")

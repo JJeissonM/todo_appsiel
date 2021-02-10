@@ -62,7 +62,7 @@ class RetefuenteController extends TransaccionController
         $vista = '';
         foreach ($empleados_documento as $empleado) 
         {
-            $parametros_retencion = ParametrosRetefuenteEmpleado::where('nom_contrato_id',$empleado->id)->orderBy('fecha_final_promedios')->get()->last();
+            $parametros_retencion = $empleado->parametros_retefuente();
 
             if ( is_null( $parametros_retencion ) )  // falta validar a qué empleados se aplicará
             {
@@ -100,7 +100,7 @@ class RetefuenteController extends TransaccionController
 
         if ( $vista == '' )
         {
-            return '<h3> Ninguna ReteFuente fue aplicada. <small> Verifique en Catálogos los parámetros de ReteFuente de Empleados. </small> </h3>';
+            return '<h3> Ninguna ReteFuente fue aplicada. <br> <small> Tal vez el empleado no tiene parámetros de ReteFuente (Verifique en Catálogos).<br> O el empleado no tiene devengos ni deducciones en el lapso selecionado. </small> </h3>';
         }
         
         return $vista;

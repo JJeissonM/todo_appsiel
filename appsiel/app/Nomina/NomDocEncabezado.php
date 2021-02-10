@@ -184,11 +184,13 @@ class NomDocEncabezado extends Model
     {
         $string = NomDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_doc_encabezados.core_tipo_doc_app_id')
             ->select(
+                'nom_doc_encabezados.id AS ID',
                 'nom_doc_encabezados.fecha AS FECHA',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_doc_encabezados.consecutivo) AS DOCUMENTO'),
                 'nom_doc_encabezados.descripcion AS DESCRIPCIÓN',
                 'nom_doc_encabezados.total_devengos AS TOTAL_DEVENGOS',
                 'nom_doc_encabezados.total_deducciones AS TOTAL_DEDUCCIONES',
+                'nom_doc_encabezados.tipo_liquidacion AS tipo_liquidacion',
                 'nom_doc_encabezados.estado AS ESTADO'
             )
             ->where("nom_doc_encabezados.fecha", "LIKE", "%$search%")
@@ -196,6 +198,7 @@ class NomDocEncabezado extends Model
             ->orWhere("nom_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("nom_doc_encabezados.total_devengos", "LIKE", "%$search%")
             ->orWhere("nom_doc_encabezados.total_deducciones", "LIKE", "%$search%")
+            ->orWhere("nom_doc_encabezados.tipo_liquidacion", "LIKE", "%$search%")
             ->orWhere("nom_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('nom_doc_encabezados.created_at', 'DESC')
             ->toSql();
