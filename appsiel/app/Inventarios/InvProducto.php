@@ -145,8 +145,9 @@ class InvProducto extends Model
                                             'inv_productos.estado',
                                             'inv_productos.imagen',
                                             'inv_productos.mostrar_en_pagina_web',
-                                            'inv_productos.codigo_barras')
-                                ->orderBy('inv_productos.id','ASC')
+                                            'inv_productos.codigo_barras',
+                                            'inv_productos.inv_grupo_id')
+                                ->orderBy('inv_productos.inv_grupo_id','ASC')
                                 ->get();
 
         foreach ($registros as $item)
