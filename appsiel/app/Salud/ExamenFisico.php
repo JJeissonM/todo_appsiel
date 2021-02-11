@@ -19,7 +19,7 @@ class ExamenFisico extends ModeloEavValor
 	
 	protected $crud_model_id = 96; // Es el mismo $modelo_padre_id, la variable no se puede usar en métodos estáticos
 
-	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"consultorio_medico/pacientes/id_fila"}';
+	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"consultorio_medico/pacientes/id_fila","update":"core/eav/id_fila"}';
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Campo', 'Valor'];
 

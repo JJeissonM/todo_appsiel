@@ -227,7 +227,8 @@ class ConsultaController extends Controller
         $examenes = '';
         $opciones = ExamenMedico::where('estado','Activo')->get();
         $i = 0;
-        foreach ($opciones as $opcion){
+        foreach ($opciones as $opcion)
+        {
             $esta = DB::table('salud_resultados_examenes')->where( ['examen_id'=>$opcion->id, 'paciente_id'=>$paciente_id,'consulta_id'=>$consulta_id] )->first();
             if ( !empty($esta) )
             {

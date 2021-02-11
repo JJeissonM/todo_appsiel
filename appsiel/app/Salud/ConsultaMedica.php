@@ -17,7 +17,7 @@ class ConsultaMedica extends Model
 
     public function formulas()
     {
-        return $this->hasMany('App\Salud\FormulaOptica','consulta_id');
+        return $this->hasMany( 'App\Salud\FormulaOptica', 'consulta_id' );
     }
 
     public function paciente()

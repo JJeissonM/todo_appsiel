@@ -35,6 +35,11 @@ Route::get('form_agregar_formula_factura', 'Salud\FormulaOpticaController@form_a
 
 Route::resource('consultorio_medico/anamnesis', 'Salud\AnamnesisController');
 
+
+//		SALUD OCUPACIONAL
+Route::get('salud_imprimir_historia_medica_ocupacional', 'Salud\SaludOcupacionalController@imprimir_historia_medica_ocupacional');
+
+
 //CITAS MEDICAS
 Route::resource('citas_medicas', 'Salud\CitasController');
 Route::get('citas_medicas/{id}/delete', 'Salud\CitasController@destroy')->name('citas_medicas.delete');

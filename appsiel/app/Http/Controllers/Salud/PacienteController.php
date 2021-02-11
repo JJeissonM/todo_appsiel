@@ -26,6 +26,8 @@ use App\Salud\Paciente;
 
 use App\Ventas\Cliente;
 
+use App\Core\ModeloEavValor;
+
 class PacienteController extends Controller
 {
     public function __construct()
@@ -42,6 +44,8 @@ class PacienteController extends Controller
      */
     public function store(Request $request)
     {
+        $datos = $request->all();
+
         // Almacenar algunos datos del paciente
         $general = new ModeloController();
         $registro_creado = $general->crear_nuevo_registro( $request );
@@ -73,7 +77,10 @@ class PacienteController extends Controller
                              );
             $cliente->save();
         }
-        
+
+        // Llenar campos tipo EAV
+        $obj_eav = new ModeloEavValor();
+        $obj_eav->almacenar_registros_eav( $datos, $request->url_id_modelo, $registro_creado->id );
 
         return redirect( 'consultorio_medico/pacientes/'.$registro_creado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
     }
@@ -94,9 +101,7 @@ class PacienteController extends Controller
         $reg_anterior = app($modelo->name_space)->where('id', '<', $registro->id)->max('id');
         $reg_siguiente = app($modelo->name_space)->where('id', '>', $registro->id)->min('id');
         
-        
         $datos_historia_clinica = Paciente::datos_basicos_historia_clinica( $id );
-        
 
         $miga_pan = MigaPan::get_array( Aplicacion::find( Input::get('id') ), $modelo, 'Historia Clínica' );
 
@@ -113,8 +118,6 @@ class PacienteController extends Controller
         
         $consultas = ConsultaMedica::where('paciente_id', $id)->orderBy('fecha','DESC')->get();
 
-        //dd($consultas);
-
         $modelo_formulas_opticas = Modelo::where('modelo','salud_formulas_opticas   ')->first();
         
         return view('consultorio_medico.pacientes_show',compact('secciones_consulta','miga_pan','registro','url_crear','url_edit','reg_anterior','reg_siguiente','consultas','modelo_consultas','datos_historia_clinica','modelo_formulas_opticas','id'));
@@ -130,6 +133,8 @@ class PacienteController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $datos = $request->all();
+
         $modelo = Modelo::find($request->url_id_modelo);
 
         // Se obtinene el registro a modificar del modelo
@@ -164,7 +169,8 @@ class PacienteController extends Controller
                     }
             }
             // Cuando se edita una transacción
-            if ($lista_campos[$i]['name']=='movimiento') {
+            if ($lista_campos[$i]['name']=='movimiento')
+            {
                 $lista_campos[$i]['value']=1;
             }
         }
@@ -188,9 +194,7 @@ class PacienteController extends Controller
 
             $nuevo_nombre = uniqid().'.'.$extension;
 
-            Storage::put('fotos_terceros/'.$nuevo_nombre,
-                file_get_contents( $archivo->getRealPath() ) 
-                );
+            Storage::put( 'fotos_terceros/' . $nuevo_nombre, file_get_contents( $archivo->getRealPath() ) );
 
             // Guardar nombre en la BD
             $registro2->tercero->$key = $nuevo_nombre;
@@ -201,6 +205,13 @@ class PacienteController extends Controller
         // Actualizar datos del Tercero
         $registro->tercero->fill( $request->all() );
         $registro->tercero->save();
+
+        // Llenar campos tipo EAV
+        $obj_eav = new ModeloEavValor();
+        $datos['modelo_padre_id'] = $request->url_id_modelo;
+        $datos['registro_modelo_padre_id'] = $id;
+        $datos['modelo_entidad_id'] = 0;
+        $obj_eav->update_adicional( $datos, $id );
 
         return redirect('consultorio_medico/pacientes/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Registro MODIFICADO correctamente.');
     }

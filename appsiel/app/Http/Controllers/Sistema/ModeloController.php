@@ -76,8 +76,6 @@ class ModeloController extends Controller
 
         $id_transaccion = TipoTransaccion::where('core_modelo_id', (int) Input::get('id_modelo'))->where('estado', 'Activo')->value('id');
 
-        //dd( $id_transaccion );
-
         // Se le asigna a cada variable url, su valor en el modelo correspondiente
         $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
 

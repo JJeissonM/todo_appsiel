@@ -85,4 +85,5 @@ return [
                                         "orden":1
                                     } 
     						}',
+    'mostrar_datos_laborales_paciente' => '1'
 ];

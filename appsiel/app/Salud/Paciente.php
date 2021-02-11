@@ -5,7 +5,9 @@ namespace App\Salud;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
+use App\Core\ModeloEavValor;
 
+// modelo_id = 95
 class Paciente extends Model
 {
     protected $table = 'salud_pacientes';
@@ -31,6 +33,15 @@ class Paciente extends Model
     public function consultas()
     {
         return $this->hasMany('App\Salud\ConsultaMedica', 'paciente_id');
+    }
+
+    public function datos_laborales()
+    {
+        return ModeloEavValor::where( [
+                                        [ 'modelo_padre_id', '=', 95 ],
+                                        [ 'registro_modelo_padre_id', '=', $this->id ]
+                                    ] )
+                                ->get();
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -99,6 +110,13 @@ class Paciente extends Model
         $registro->telefono1 = $registro->tercero->telefono1;
         $registro->email = $registro->tercero->email;
 
+        // Llamar campos tipo EAV
+        $obj_eav = new ModeloEavValor();
+        $obj_eav->crud_model_id = 95; // Modelo Paciente
+        $registro->registro_modelo_padre_id = $registro->id;
+        $registro->modelo_entidad_id = 0;
+        $lista_campos = $obj_eav->get_campos_adicionales_edit( $lista_campos, $registro );
+
         return $lista_campos;
     }
 
@@ -126,26 +144,29 @@ class Paciente extends Model
     public static function datos_basicos_historia_clinica($paciente_id)
     {
         return Paciente::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_pacientes.core_tercero_id')
-            ->where('salud_pacientes.id', $paciente_id)
-            ->select(
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombres'),
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2) AS apellidos'),
-                'salud_pacientes.codigo_historia_clinica AS codigo',
-                'salud_pacientes.fecha_nacimiento',
-                'salud_pacientes.genero',
-                'salud_pacientes.estado_civil',
-                'salud_pacientes.grupo_sanguineo',
-                'salud_pacientes.remitido_por',
-                'salud_pacientes.nivel_academico',
-                'salud_pacientes.ocupacion',
-                'core_terceros.direccion1',
-                'core_terceros.telefono1',
-                'core_terceros.numero_identificacion',
-                'core_terceros.email',
-                'core_terceros.imagen'
-            )
-            ->get()
-            ->first();
+                            ->where('salud_pacientes.id', $paciente_id)
+                            ->select(
+                                        'salud_pacientes.id',
+                                        'salud_pacientes.core_tercero_id',
+                                        'salud_pacientes.codigo_historia_clinica',
+                                        DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombres'),
+                                        DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2) AS apellidos'),
+                                        'salud_pacientes.codigo_historia_clinica AS codigo',
+                                        'salud_pacientes.fecha_nacimiento',
+                                        'salud_pacientes.genero',
+                                        'salud_pacientes.estado_civil',
+                                        'salud_pacientes.grupo_sanguineo',
+                                        'salud_pacientes.remitido_por',
+                                        'salud_pacientes.nivel_academico',
+                                        'salud_pacientes.ocupacion',
+                                        'core_terceros.direccion1',
+                                        'core_terceros.telefono1',
+                                        'core_terceros.numero_identificacion',
+                                        'core_terceros.email',
+                                        'core_terceros.imagen'
+                                    )
+                            ->get()
+                            ->first();
     }
 
 

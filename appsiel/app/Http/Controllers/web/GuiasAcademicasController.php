@@ -20,7 +20,7 @@ class GuiasAcademicasController extends Controller
     {
         $planes = PlanClaseEncabezado::consultar_guias_estudiantes( $curso_id, $asignatura_id );
 
-        $curso = Curso::find($curso_id);
+        $curso = Curso::find( $curso_id );
         
         $asignatura = Asignatura::find($asignatura_id);
 
