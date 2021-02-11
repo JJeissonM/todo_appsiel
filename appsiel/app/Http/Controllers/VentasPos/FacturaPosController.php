@@ -1240,7 +1240,7 @@ class FacturaPosController extends TransaccionController
         $medios_recaudo = RecaudoController::get_medios_recaudo();
         $cajas = RecaudoController::get_cajas();
         $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
-
+ 
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Crear: ' . $this->transaccion->descripcion);
 
         $productos = InvProducto::get_datos_basicos('', 'Activo');
