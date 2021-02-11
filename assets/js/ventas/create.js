@@ -95,7 +95,6 @@ $(document).ready(function(){
 				{
 					return false;
 				}
-
 				var item = $('a.list-group-item.active');
 				
 				if( item.attr('data-cliente_id') === undefined )
