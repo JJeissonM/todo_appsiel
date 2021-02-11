@@ -383,17 +383,21 @@ class InventarioController extends TransaccionController
         return $doc_encabezado;
     }
 
-
     /*
         Nota los costos son llamados del costo promedio
     */
     public static function crear_registros_remision_ventas( $doc_encabezado, $lineas_registros )
     {
-
         $cantidad_registros = count($lineas_registros);
 
         foreach( $lineas_registros AS $linea )
         {
+            $item = InvProducto::find( $linea->inv_producto_id );
+            if ( is_null($item) )
+            {
+                continue;
+            }
+
             $costo_unitario = InvCostoPromProducto::get_costo_promedio($doc_encabezado->inv_bodega_id, $linea->inv_producto_id );
             $cantidad = $linea->cantidad * -1; // Salida de inventarios
             $costo_total = $cantidad * $costo_unitario;
@@ -412,10 +416,10 @@ class InventarioController extends TransaccionController
 
             InvDocRegistro::create( $datos + $linea_datos );
 
-            if ( InvProducto::find( $linea->inv_producto_id )->tipo == 'producto')
+            if ( $item->tipo == 'producto')
             {
                 InvMovimiento::create( $datos + $linea_datos );
-            }
+            }  
         }
     }
 

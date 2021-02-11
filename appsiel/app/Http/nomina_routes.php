@@ -22,6 +22,8 @@ Route::get('get_fecha_final_vacaciones/{grupo_empleado_id}/{fecha_inicial_tnl}/{
 
 Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/{contrato_id}/{novedad_id}', 'Nomina\NovedadesTnlController@validar_fecha_otras_novedades');
 
+Route::get('nom_get_options_incapacidades_anteriores/{fecha_inicial_tnl}/{fecha_final_tnl}/{contrato_id}/{novedad_id}', 'Nomina\NovedadesTnlController@get_options_incapacidades_anteriores');
+
 
 // LIQUIDACION DE PRESTACIONES SOCIALES
 Route::post('nom_liquidar_prestaciones_sociales', 'Nomina\PrestacionesSocialesController@liquidacion');
@@ -33,6 +35,8 @@ Route::get('nom_pdf_prestaciones_liquidadas/{registro_id}', 'Nomina\Prestaciones
 // RETEFUENTE
 Route::post('nom_liquidar_retefuente', 'Nomina\RetefuenteController@liquidacion');
 Route::get('nom_retirar_retefuente/{doc_encabezado_id}', 'Nomina\RetefuenteController@retirar_liquidacion');
+
+Route::post('nom_calcular_porcentaje_fijo_retefuente', 'Nomina\RetefuenteController@calcular_porcentaje_fijo_retefuente');
 
 
 // INFORMES Y LISTADOS
@@ -61,6 +65,7 @@ Route::post('nom_almacenar_registros_via_interface','Nomina\ProcesosController@a
 
 Route::post('nom_calcular_acumulados_seguridad_social_parafiscales','Nomina\ProcesosController@calcular_acumulados_seguridad_social_parafiscales');
 Route::post('nom_almacenar_acumulados_seguridad_social_parafiscales','Nomina\ProcesosController@almacenar_acumulados_seguridad_social_parafiscales');
+Route::post('nom_generar_archivo_consignar_cesantias','Nomina\ProcesosController@generar_archivo_consignar_cesantias');
 
 
 // PLANILLA INTEGRADA

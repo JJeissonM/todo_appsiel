@@ -5,6 +5,8 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\AgrupacionConcepto;
+use App\Nomina\ParametrosRetefuenteEmpleado;
+use App\Nomina\NomConcepto;
 
 class Retefuente implements Estrategia
 {
@@ -35,22 +37,41 @@ class Retefuente implements Estrategia
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
-		$parametros_retefuente_empleado = (object)[
-													'procedimiento' => 2,
-													'porcentaje_fijo' => 3.23
-												];
+		$parametros_retefuente_empleado = ParametrosRetefuenteEmpleado::where('nom_contrato_id', $liquidacion['empleado']->id)->orderBy('fecha_final_promedios')->get()->last();
+
+        if ( is_null( $parametros_retefuente_empleado ) )  // falta validar a qué empleados se aplicará
+        {
+            $parametros_retefuente_empleado = (object)[
+														'procedimiento' => 0,
+														'porcentaje_fijo' => 0
+													];
+        }
+			
 
 		switch ( $parametros_retefuente_empleado->procedimiento )
 		{
 			case '1': // Calculo mensual del porcentaje que corresponda según el monto del salario devengado
-				//$ = $this->get_porcentaje();
-				$valor_base_retencion = $this->get_valor_base_retencion( $total_devengos_gravados, );
-				$valor_liquidacion = $this->determinar_valor_liquidacion_tabla( $valor_base_retencion, $valor_base_retencion, $valor_uvt );
+
+				/*
+						PROCESO PENDIENTE
+				*/
+				$valor_liquidacion = 0;
 				break;
 			
 			
 			case '2': // Porcentaje fijo mensual, ya calculado semestralmente 
-				$valor_base_depurada = $this->get_valor_base_depurada( $liquidacion['documento_nomina'], $liquidacion['empleado'] ); // subtotal
+
+				$vec_fecha = explode( "-", $liquidacion['documento_nomina']->fecha );
+				if ( $liquidacion['fecha_final_promedios'] != '' )
+				{
+					$vec_fecha = explode( "-", $liquidacion['fecha_final_promedios'] );
+				}
+				$mes = $vec_fecha[1];
+				$anio = $vec_fecha[0];
+				$fecha_inicial = $anio.'-'.$mes.'-01';
+				$fecha_final = $anio.'-'.$mes.'-30';
+
+				$valor_base_depurada = $this->get_valor_base_depurada( $fecha_inicial, $fecha_final, $liquidacion['empleado'] ); // subtotal
 
 				// X	Renta de trabajo exenta del 25% numeral 10 del artículo 206 ET (W X 25%)
 				$renta_trabajo_exenta = $valor_base_depurada * 25 / 100;
@@ -64,12 +85,12 @@ class Retefuente implements Estrategia
 				$this->tabla_resumen['porcentaje_aplicado'] = $porcentaje_aplicado;
 
 				$valor_liquidacion = $base_retencion * $porcentaje_aplicado / 100;
-				$this->tabla_resumen['valor_liquidacion'] = $valor_liquidacion;
+				$this->tabla_resumen['valor_liquidacion'] = $this->redondear_a_unidad_seguida_ceros( $valor_liquidacion, 100, 'superior' );
 
 				break;
 			
 			default:
-				
+				$valor_liquidacion = 0;
 				break;
 		}
 
@@ -86,19 +107,15 @@ class Retefuente implements Estrategia
 
 	}
 
-	public function get_valor_base_depurada( $documento_nomina, $empleado )
+	public function get_valor_base_depurada( $fecha_inicial, $fecha_final, $empleado )
 	{
-		$vec_fecha = explode("-", $documento_nomina->fecha);
-		$mes = $vec_fecha[1];
-		$anio = $vec_fecha[0];
-
 		//$conceptos_de_la_agrupacion = AgrupacionConcepto::find( $liquidacion['concepto']->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-		$registros_liquidados_empleado = $empleado->get_registros_documentos_nomina_entre_fechas( $anio.'-'.$mes.'-01', $anio.'-'.$mes.'-30');
+		$registros_liquidados_empleado = $empleado->get_registros_documentos_nomina_entre_fechas( $fecha_inicial, $fecha_final);
 
 		$total_pagos = $this->get_total_pagos_empleado( $registros_liquidados_empleado );
 
-		$total_deducciones = $this->get_total_deducciones_empleado( $registros_liquidados_empleado );
+		$total_deducciones = $this->get_total_deducciones_empleado( $registros_liquidados_empleado, $empleado );
 
 		// W	Subtotal 1 (F – N – R - V)
 		$subtotal = $total_pagos - $total_deducciones;
@@ -110,17 +127,30 @@ class Retefuente implements Estrategia
 	public function get_total_pagos_empleado( $pagos_empleado )
 	{
         // A Sumatoria de los salarios básicos pagados durante los 12 meses anteriores (dinero o especie). Entran las incapacidades  y TNL
-		$salario_basico = $pagos_empleado->whereIn( 'nom_concepto_id', [1,2,19,20,21,22,25,28,32,33,41,58,59,60,71,77,79] )->sum( 'valor_devengo' );
+        $conceptos_salario = NomConcepto::where( 'forma_parte_basico', 1)->get()->pluck('id')->toArray();
+		$salario_basico = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_salario )->sum( 'valor_devengo' );
 		$this->tabla_resumen['salario_basico'] = $salario_basico;
 		
 		// B Horas extras, bonificaciones y comisiones pagadas durante los 12 meses anteriores (sean o no factor salarial)
-		$otros_devengos = $pagos_empleado->whereIn( 'nom_concepto_id', [3,4,5,6,7,8,9,11,12,13,14,26,30,42,43,44,57,80,81,82,83] )->sum( 'valor_devengo' );
+		/*
+				modo_liquidacion_id: [ 2: Manual, 3: Cuota, 4: Préstamo, 6: Auxilio de transporte ]
+		*/
+		$conceptos_otros_devengos = NomConcepto::whereIn( 'modo_liquidacion_id', [2,3,4,6] )
+												->where( [['forma_parte_basico', '<>', 1]] )
+												->get()->pluck('id')->toArray();
+		$otros_devengos = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_otros_devengos )->sum( 'valor_devengo' );
 		$this->tabla_resumen['otros_devengos'] = $otros_devengos;
 
 		//C	Auxilios y subsidios pagados durante los 12 meses anteriores (directo o indirecto)
 		
 		//D	Cesantía, intereses sobre cesantía, prima mínima legal de servicios (sector privado) o de navidad (sector público) y vacaciones pagados durante los 12 meses anteriores
-		$prestaciones_sociales = $pagos_empleado->whereIn( 'nom_concepto_id', [15,16,17,27,45,46,66,67] )->sum( 'valor_devengo' );
+		/*
+				modo_liquidacion_id: [ 14: Prima Legal, 16: Intereses de cesantías, 17: Cesantías pagadas ]
+		*/
+		$conceptos_prestaciones_sociales = NomConcepto::whereIn( 'modo_liquidacion_id', [ 14, 16, 17 ] )
+														->where( [['forma_parte_basico', '<>', 1]] )
+														->get()->pluck('id')->toArray();
+		$prestaciones_sociales = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_prestaciones_sociales )->sum( 'valor_devengo' );
 		$this->tabla_resumen['prestaciones_sociales'] = $prestaciones_sociales;
 
 		// E	Demás pagos ordinario o extraordinario realizados durante los 12 meses anteriores
@@ -132,8 +162,23 @@ class Retefuente implements Estrategia
 		return $total_pagos;
 	}
 
-	public function get_total_deducciones_empleado( $pagos_empleado )
+	public function get_total_deducciones_empleado( $pagos_empleado, $empleado )
 	{
+		$parametros_retencion = $empleado->parametros_retefuente();
+		$aportes_pension_voluntaria = 0;
+		$ahorros_cuentas_afc = 0;
+		$rentas_trabajo_exentas = 0;
+		$intereses_vivienda = 0;
+		$salud_prepagada = 0;
+
+        if ( !is_null( $parametros_retencion ) )  // falta validar a qué empleados se aplicará
+        {
+            $aportes_pension_voluntaria = $parametros_retencion->deduccion_aportes_pension_voluntaria;
+			$ahorros_cuentas_afc = $parametros_retencion->deduccion_ahorros_cuentas_afc;
+			$rentas_trabajo_exentas = $parametros_retencion->deduccion_rentas_trabajo_exentas;
+			$intereses_vivienda = $parametros_retencion->deduccion_intereses_vivienda;
+			$salud_prepagada = $parametros_retencion->deduccion_salud_prepagada;
+        }
 
 		/**  Ingresos no constitutivos de renta ni ganancia ocasional  **/
 		// G	Pagos a terceros por concepto de alimentación (limitado según artículo 387-1 ET)
@@ -146,15 +191,33 @@ class Retefuente implements Estrategia
 		//$medios_transporte = 0;
 
 		// J	Aportes obligatorios a salud efectuados por el trabajador
-		$aportes_salud_obligatoria = $pagos_empleado->whereIn( 'nom_concepto_id', [64] )->sum( 'valor_deduccion' );
+		/*
+				modo_liquidacion_id: [ 12: Salud obligatoria ]
+		*/
+		$conceptos_salud_obligatoria = NomConcepto::whereIn( 'modo_liquidacion_id', [ 12 ] )
+														->where( [ ['forma_parte_basico', '<>', 1] ] )
+														->get()->pluck('id')->toArray();
+		$aportes_salud_obligatoria = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_salud_obligatoria )->sum( 'valor_deduccion' );
 		$this->tabla_resumen['aportes_salud_obligatoria'] = $aportes_salud_obligatoria;
 		
 		// K	Aportes obligatorios a fondos de pensiones
-		$aportes_pension_obligatoria = $pagos_empleado->whereIn( 'nom_concepto_id', [65,75] )->sum( 'valor_deduccion' );
+		/*
+				modo_liquidacion_id: [ 13: Pensión obligatoria, 10: FondoSolidaridadPensional ]
+		*/
+		$conceptos_pension_obligatoria = NomConcepto::whereIn( 'modo_liquidacion_id', [ 10, 13 ] )
+														->where( [ ['forma_parte_basico', '<>', 1] ] )
+														->get()->pluck('id')->toArray();
+		$aportes_pension_obligatoria = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_pension_obligatoria )->sum( 'valor_deduccion' );
 		$this->tabla_resumen['aportes_pension_obligatoria'] = $aportes_pension_obligatoria;
 
 		// L	Cesantía e intereses sobre cesantía. Pagos expresamente excluidos por el artículo 386 estatuto tributario.
-		$pagos_cesantias_e_intereses = $pagos_empleado->whereIn( 'nom_concepto_id', [18,69,78] )->sum( 'valor_devengo' );
+		/*
+				modo_liquidacion_id: [ 16: Intereses de cesantías, 17: Cesantías pagadas ]
+		*/
+		$conceptos_cesantias_e_intereses = NomConcepto::whereIn( 'modo_liquidacion_id', [ 16, 17 ] )
+														->where( [ ['forma_parte_basico', '<>', 1] ] )
+														->get()->pluck('id')->toArray();
+		$pagos_cesantias_e_intereses = $pagos_empleado->whereIn( 'nom_concepto_id', $conceptos_cesantias_e_intereses )->sum( 'valor_devengo' );
 		$this->tabla_resumen['pagos_cesantias_e_intereses'] = $pagos_cesantias_e_intereses;
 		
 		// M	Demás pagos que no incrementan el patrimonio del trabajador
@@ -167,15 +230,12 @@ class Retefuente implements Estrategia
 
 		/**  Rentas exentas  **/
 		// O	Aportes voluntarios a fondos de pensiones
-		$aportes_pension_voluntaria = 0;
 		$this->tabla_resumen['aportes_pension_voluntaria'] = $aportes_pension_voluntaria;
 
 		// P	Ahorros cuentas AFC
-		$ahorros_cuentas_afc = 0;
 		$this->tabla_resumen['ahorros_cuentas_afc'] = $ahorros_cuentas_afc;
 		
 		// Q	Rentas de trabajo exentas numerales del 1 al 9 artículo 206 ET
-		$rentas_trabajo_exentas = 0;
 		$this->tabla_resumen['rentas_trabajo_exentas'] = $rentas_trabajo_exentas;
 		
 		// R	Total rentas exentas de los 12 meses anteriores (O + P +Q)
@@ -185,13 +245,11 @@ class Retefuente implements Estrategia
 		/**  Deducciones particulares  **/
 
 		// S	Intereses o corrección monetaria en préstamos para adquisición de vivienda
-		$intereses_vivienda = 0;
 		$this->tabla_resumen['intereses_vivienda'] = $intereses_vivienda;
 		// T	Pagos a salud (medicina prepagada y pólizas de seguros)
 		/*
 			esto debe ser traido del parametro del empleado.
 		*/
-		$salud_prepagada = 0;
 		$this->tabla_resumen['salud_prepagada'] = $salud_prepagada;
 
 		// U	Deducción por dependientes (artículo 387-1 ET) (máximo 10%)
@@ -214,9 +272,10 @@ class Retefuente implements Estrategia
         $registro->delete();
 	}
 
-	public function determinar_valor_liquidacion_tabla( $valor_comparacion, $valor_base_liquidacion, $valor_uvt )
+	public function get_rango_tabla_uvts( $valor_uvt )
 	{
 		/*
+			ARTíCULO 383.  Del Estatuto Tributario ( Modificado por LEY-2010-DEL-27-DE-DICIEMBRE-DE-2019 )
 		   Rangos en UVT	   Porcentaje a liquidar
 			0 a 95						0%
 			>95  a 150					19%
@@ -227,43 +286,132 @@ class Retefuente implements Estrategia
 			>2300 en adelante			39%
 		*/
 
+		if ( $valor_uvt <= 95 ) // 1%
+    	{
+    		return (object)[ 
+        						'fila_rango' => 1,
+        						'uvts_iniciales' => 0,
+        						'uvts_finales' => 95,
+        						'uvts_finales_rango_anterior' => 0,
+        						'tarifa_marginal' => 0,
+        						'uvts_marginales' => 0
+        					];
+    	}
 
-			// PENDIENTE
-			//
-			//
+		if ( $valor_uvt > 95 && $valor_uvt <= 150  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 2,
+        						'uvts_iniciales' => 95,
+        						'uvts_finales' => 150,
+        						'uvts_finales_rango_anterior' => 95,
+        						'tarifa_marginal' => 19 / 100,
+        						'uvts_marginales' => 0
+        					];
+    	}
 
-		if ( $valor_comparacion >= ($valor_uvt * 4) )
+		if ( $valor_uvt > 150 && $valor_uvt <= 360  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 3,
+        						'uvts_iniciales' => 150,
+        						'uvts_finales' => 360,
+        						'uvts_finales_rango_anterior' => 150,
+        						'tarifa_marginal' => 28 / 100,
+        						'uvts_marginales' => 10
+        					];
+    	}
+
+		if ( $valor_uvt > 360 && $valor_uvt <= 640  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 4,
+        						'uvts_iniciales' => 360,
+        						'uvts_finales' => 640,
+        						'uvts_finales_rango_anterior' => 360,
+        						'tarifa_marginal' => 33 / 100,
+        						'uvts_marginales' => 69
+        					];
+    	}
+
+		if ( $valor_uvt > 640 && $valor_uvt <= 945  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 5,
+        						'uvts_iniciales' => 640,
+        						'uvts_finales' => 945,
+        						'uvts_finales_rango_anterior' => 640,
+        						'tarifa_marginal' => 35 / 100,
+        						'uvts_marginales' => 162
+        					];
+    	}
+
+		if ( $valor_uvt > 945 && $valor_uvt <= 2300  )
+    	{
+    		return (object)[ 
+        						'fila_rango' => 6,
+        						'uvts_iniciales' => 945,
+        						'uvts_finales' => 2300,
+        						'uvts_finales_rango_anterior' => 945,
+        						'tarifa_marginal' => 37 / 100,
+        						'uvts_marginales' => 268
+        					];
+    	}
+
+    	// > 2300 UVTs
+    	return (object)[ 
+    						'fila_rango' => 7,
+    						'uvts_iniciales' => 2300,
+    						'uvts_finales' => 999999,
+    						'uvts_finales_rango_anterior' => 2300,
+    						'tarifa_marginal' => 39 / 100,
+    						'uvts_marginales' => 770
+    					];
+	}
+
+	public function redondear_a_unidad_seguida_ceros( $numero, $valor_unidad_seguida_ceros, $tipo_redondeo)
+    {
+        if ( $numero == 0 )
         {
-        	if ( $valor_comparacion < ($valor_uvt * 16) ) // 1%
-        	{
-				return ( $valor_base_liquidacion * 1 / 100 );
-        	}
+            return 0;
+        }
+        
+        $valor_redondeado = $numero;
 
-        	if ( $valor_comparacion < ($valor_uvt * 17) ) // 1.2%
-        	{
-				return ( $valor_base_liquidacion * 1.2 / 100 );
-        	}
+        if ( $valor_unidad_seguida_ceros != 0 )
+        {
+            $decimal = $numero / $valor_unidad_seguida_ceros;
+            $aux = (string) $decimal;
+            // Si, no existe el punto en el string $aux, $numero no necesita ser redondeado
+            if ( (int)strpos( $aux, "." ) == 0 )
+            {
+                return $numero;
+            }
 
-        	if ( $valor_comparacion < ($valor_uvt * 18) ) // 1.4%
-        	{
-				return ( $valor_base_liquidacion * 1.4 / 100 );
-        	}
+            // Extraer la parte decimal
+            $residuo = substr( $aux, strpos( $aux, "." ) );
 
-        	if ( $valor_comparacion < ($valor_uvt * 19) ) // 1.6%
-        	{
-				return ( $valor_base_liquidacion * 1.6 / 100 );
-        	}
+            $valor_residuo_tipo_unidad = $residuo * $valor_unidad_seguida_ceros;
 
-        	if ( $valor_comparacion < ($valor_uvt * 20) ) // 1.8%
-        	{
-				return ( $valor_base_liquidacion * 1.8 / 100 );
-        	}
-
-        	// >= 20SMMLV 2%
-        	return ( $valor_base_liquidacion * 2 / 100 );
+            switch ( $tipo_redondeo )
+            {
+                case 'superior':
+                    $diferecia = $valor_unidad_seguida_ceros - $valor_residuo_tipo_unidad;
+                    $valor_redondeado = $numero + $diferecia;
+                    break;
+                
+                case 'inferior':
+                    $valor_redondeado = $numero - $valor_residuo_tipo_unidad;
+                    break;
+                
+                default:
+                    $valor_redondeado = $numero;
+                    break;
+            }
+                    
         }
 
-        return 0;
-	}
+        return $valor_redondeado;
+    }
 
 }

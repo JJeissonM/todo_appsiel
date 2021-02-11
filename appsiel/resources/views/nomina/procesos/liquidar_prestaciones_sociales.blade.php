@@ -25,12 +25,13 @@
 						</h4>
 						<hr>
 						{{ Form::open(['url'=>'nom_liquidar_prestaciones_sociales','id'=>'formulario_inicial','files' => true]) }}
+							
 							<div class="row" style="padding:5px;">
 								<label class="control-label col-sm-4" > <b> *Documento de liquidación: </b> </label>
 
 								<div class="col-sm-8">
 									{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
-								</div>					 
+								</div>
 							</div>
 
 							<div class="row" style="padding:5px;">
@@ -64,6 +65,19 @@
 								<label class="checkbox-inline"><input name="prestaciones[]" type="checkbox" value="prima_legal" class="check_prestacion">Prima de servicios</label>
 								<label class="checkbox-inline"><input name="prestaciones[]" type="checkbox" value="cesantias" class="check_prestacion">Cesantías</label>
 								<label class="checkbox-inline"><input name="prestaciones[]" type="checkbox" value="intereses_cesantias" class="check_prestacion">Intereses de cesantías</label>
+							</div>
+
+							<br>
+							<div class="row well" style="padding:5px; display: none;" id="div_conceptos_cesantias">
+								<label class="control-label col-sm-2" > <b> Concepto de cesantías: </b> </label>
+
+								<div class="col-sm-4">
+									{{ Form::select( 'concepto_cesantias_id', App\Nomina\NomConceptoCesantias::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'concepto_cesantias_id' ]) }}
+								</div>
+
+								<div class="col-sm-6">
+									&nbsp;
+								</div>
 							</div>
 
 							<div class="row" style="padding:5px; text-align: center;">
@@ -116,8 +130,23 @@
 				if ( $(this).is(':checked') )
 				{
 					opcion_seleccionada++;
+					
+					if ( $(this).val() == 'cesantias' )
+					{ 
+						$('#div_conceptos_cesantias').fadeIn(500);
+						$('#concepto_cesantias_id').prop('required',true);
+					}
+
 				}else{
+					
 					opcion_seleccionada--;
+
+					if ( $(this).val() == 'cesantias' )
+					{ 
+						$('#div_conceptos_cesantias').hide();
+						$('#concepto_cesantias_id').prop('required',false);
+					}
+
 				}
 			  });
 

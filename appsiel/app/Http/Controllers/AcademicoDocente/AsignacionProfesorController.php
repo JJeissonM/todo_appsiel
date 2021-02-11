@@ -67,14 +67,14 @@ class AsignacionProfesorController extends Controller
      * Muestra el formulario para asignar la carga académica al profesor.
      *
      */
-    public function create_asignacion($id)
+    public function create_asignacion( $user_id )
     {
         $this->set_variables_globales();       
 
-        $profesor = User::findOrFail($id);
+        $profesor = User::findOrFail( $user_id );
         $periodo_lectivo = PeriodoLectivo::get_actual();
         
-        $listado_asignaciones = AsignacionProfesor::get_asignaturas_x_curso( $id, $periodo_lectivo->id );
+        $listado_asignaciones = AsignacionProfesor::get_asignaturas_x_curso( $user_id, $periodo_lectivo->id );
 
         //dd($listado_asignaciones);
 
@@ -149,9 +149,9 @@ class AsignacionProfesorController extends Controller
      * Elimina una asignación y genera el listado de las asignaciones restantes para el profesor.
      *
      */
-    public function eliminar_asignacion($id)
+    public function eliminar_asignacion($user_id)
     {
-        $asignacion = AsignacionProfesor::find( $id );
+        $asignacion = AsignacionProfesor::find( $user_id );
 
         $ih = CursoTieneAsignatura::intensidad_horaria_asignatura_curso( $asignacion->periodo_lectivo_id, $asignacion->curso_id, $asignacion->id_asignatura );
 

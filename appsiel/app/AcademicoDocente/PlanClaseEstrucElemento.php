@@ -10,6 +10,8 @@ class PlanClaseEstrucElemento extends Model
 	protected $fillable = ['plantilla_plan_clases_id', 'descripcion', 'orden', 'estado'];
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Plan de clases', 'Descripción', 'Orden', 'Estado'];
 
+	public $urls_acciones = '{"cambiar_estado":"a_i/id_fila"}';
+
 	public static function consultar_registros($nro_registros, $search)
 	{
 		return PlanClaseEstrucElemento::leftJoin('sga_plan_clases_struc_plantillas', 'sga_plan_clases_struc_plantillas.id', '=', 'sga_plan_clases_struc_elementos.plantilla_plan_clases_id')

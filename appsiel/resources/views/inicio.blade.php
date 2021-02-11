@@ -61,6 +61,7 @@
 
 			@include('layouts.mensajes')
 
+
 			<input id="myInput" type="text" placeholder="Buscar..." class="form-control">
 			<br/><br/>
 			<div id="myDIV">

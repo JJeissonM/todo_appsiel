@@ -172,7 +172,7 @@ class PagoController extends TransaccionController
 
             // Datos la caja o el la cuenta bancaria
             // Tambien se asigna el ID de la cuenta contable para el movimiento CREDITO
-            $vec_3 = explode('-',$request->teso_medio_recaudo_id);
+            $vec_3 = explode( '-', $request->teso_medio_recaudo_id );
             $teso_medio_recaudo_id = $vec_3[0];
 
 

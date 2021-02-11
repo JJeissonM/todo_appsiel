@@ -259,7 +259,7 @@ class GestionDocumentalController extends ModeloController
 
     public static function get_select_estudiantes_del_curso( $curso_id )
     {
-        $registros = Matricula::estudiantes_matriculados( $curso_id, null, null );
+        $registros = Matricula::estudiantes_matriculados( $curso_id, null, null, null );
 
         $opciones = '<option value=""></option>';
         foreach ($registros as $campo) {

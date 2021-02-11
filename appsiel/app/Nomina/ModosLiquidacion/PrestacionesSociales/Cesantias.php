@@ -291,7 +291,9 @@ class Cesantias implements Estrategia
             return 0;
         }
 
-        if ( $registro->nom_concepto_id == $parametros_prestacion->nom_concepto_id )
+
+        // 15: Cesantías consignadas, 17: Cesantías pagadas
+        if ( in_array( $registro->concepto->modo_liquidacion_id, [15,17] ) )
         {
             PrestacionesLiquidadas::where(
                                             ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 

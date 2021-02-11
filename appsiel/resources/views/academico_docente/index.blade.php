@@ -1,13 +1,21 @@
 @extends('layouts.principal')
 
+@section('estilos_1')
+	<style type="text/css">
+		.btn-block{
+			font-size: 12px;
+		}
+	</style>
+@endsection
+
 @section('content')
-{{ Form::bsMigaPan($miga_pan) }}
+	{{ Form::bsMigaPan($miga_pan) }}
 <hr>
 
 @include('layouts.mensajes')
 
 <div class="row">
-	<div class="col-lg-10 col-lg-offset-1">
+	<div class="col-lg-12">
 		<div class="panel panel-success">
 			<div class="panel-heading" align="center" style="background: #42A3DC !important;">
 				<h4 style="color: #fff;">
@@ -17,148 +25,163 @@
 				</h4>
 			</div>
 			<div class="panel-body">
-				@if( !is_null($listado) )
-				<?php
-				$modelo_preinforme_academico_id = 192;
-				?>
+				<div class="row">
+					<div class="col-md-4">
+						@if( !is_null($listado) )
+							<?php
+								$modelo_preinforme_academico_id = 192;
+							?>
+							<table class="table table-responsive">
+								<thead>
+									<tr>
+										<th><i class="fa fa-check-square-o"></i></th>
+										<th>#</th>
+										<th>CURSO O GRUPO</th>
+										<th>ASIGNATURA</th>
+									</tr>
+								</thead>
+								<tbody>
+									<?php
+									$contador = 1;
+									?>
+									@foreach ($listado as $fila)
+									<tr>
+										<td><input type="checkbox" value="{{$fila->curso_id.';'.$fila->id_asignatura}}" class="btn-gmail-check"></td>
+										<td>{{$contador}}</td>
+										<td>{{ $fila->Curso }}</td>
+										<td>{{ $fila->Asignatura }}</td>
+									</tr>
+									<?php
+									$contador++;
+									?>
+									@endforeach
+								</tbody>
+							</table>
+						@else
+							<h3><i class="fa fa-warning"> </i> Aún no tiene carga académica asignada.</h3>
+						@endif
+					</div>
 
-				<div class="col-md-12 botones-gmail">
-					<!-- ASISTENCIA A CLASE -->
-					<div class="col-md-4">
-						<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_asistencia" aria-expanded="false" aria-controls="collapse_asistencia">
-							ASISTENCIA A CLASE <i class="fa fa-arrow-down"></i></a>
-						<div class="collapse" id="collapse_asistencia">
-							<div class="well">
-								<ul style="list-style: none;">
-									<li><a style="cursor: pointer;" onclick="asistencia()" title="Asistencia"><i class="fa fa-list"></i> Asistencia</a></li>
-								</ul>
+					<div class="col-md-8">
+						<table class="table table-responsive">
+							<thead>
+								<tr>
+									<th>ACCIONES</th>
+								</tr>
+							</thead>
+						</table>
+						<div class="col-md-12 botones-gmail">
+							<!-- ASISTENCIA A CLASE -->
+							<div class="col-md-4">
+								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_asistencia" aria-expanded="false" aria-controls="collapse_asistencia">
+									ASISTENCIA A CLASE <i class="fa fa-arrow-down"></i></a>
+								<div class="collapse" id="collapse_asistencia">
+									<div class="well">
+										<ul style="list-style: none;">
+											<li><a style="cursor: pointer;" onclick="asistencia()" title="Asistencia"><i class="fa fa-list"></i> Asistencia</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- PLANES DE CLASES Y GUÍAS ACADÉMICAS -->
+							<div class="col-md-4">
+								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_planes" aria-expanded="false" aria-controls="collapse_planes">
+									PLAN DE CLASE Y GUÍAS ACADÉMICAS <i class="fa fa-arrow-down"></i></a>
+								<div class="collapse" id="collapse_planes">
+									<div class="well">
+										<ul style="list-style: none;">
+											<li><a style="cursor: pointer;" onclick="planClaseCrear()" title="Ingresar Plan de Clases"><i class="fa fa-plus"></i> Ingresar Plan de Clases</a></li>
+											<li><a href="{{url('web')}}?id={{Input::get('id')}}&id_modelo={{$modelo_plan_clases_id}}" title="Consultar Plan de clases"><i class="fa fa-search"></i> Consultar Plan de clases</a></li>
+											<li><a style="cursor: pointer;" onclick="guiaCrear()" title="Ingresar Guía Académica"><i class="fa fa-book"></i> Ingresar Guía Académica</a></li>
+											<li><a href="{{url('web')}}?id={{Input::get('id')}}&id_modelo={{$modelo_guia_academica_id}}" title="Consultar Guía Académica"><i class="fa fa-search"></i> Consultar Guía Académica</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- CALIFICACIONES -->
+							<div class="col-md-4">
+								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_calificaciones" aria-expanded="false" aria-controls="collapse_calificaciones">
+									CALIFICACIONES <i class="fa fa-arrow-down"></i></a>
+								<div class="collapse" id="collapse_calificaciones">
+									<div class="well">
+										<ul style="list-style: none;">
+											<li><a style="cursor: pointer;" onclick="calificacionesCrear()" title="Ingresar Calificaciones"><i class="fa fa-list-ol"></i> Ingresar Calificaciones</a></li>
+											<li><a style="cursor: pointer;" onclick="calificacionesConsultar()" title="Consultar Calificaciones"><i class="fa fa-search"></i> Consultar Calificaciones</a></li>
+											@if( config('calificaciones.manejar_preinformes_academicos') == 'Si' )
+											<li><a style="cursor: pointer;" onclick="preinformeCrear()" title="Ingresar Pre-Informe"><i class="fa fa-file-pdf-o"></i> Ingresar Pre-Informe</a></li>
+											<li><a style="cursor: pointer;" onclick="preinformeConsultar()" title="Consultar Pre-Informe"><i class="fa fa-search"></i> Consultar Pre-Informe</a></li>
+											@endif
+											<li><a style="cursor: pointer;" onclick="nivelacionesCrear()" title="Ingresar Nivelaciones"><i class="fa fa-check"></i> Ingresar Nivelaciones</a></li>
+											<li><a style="cursor: pointer;" onclick="nivelacionesConsultar()" title="Consultar Nivelaciones"><i class="fa fa-search"></i> Consultar Nivelaciones</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- LOGROS -->
+							<div class="col-md-4">
+								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_logros" aria-expanded="false" aria-controls="collapse_logros">
+									LOGROS <i class="fa fa-arrow-down"></i></a>
+								<div class="collapse" id="collapse_logros">
+									<div class="well">
+										<ul style="list-style: none;">
+											<li><a style="cursor: pointer;" onclick="logrosCrear()" title="Crear Logros"><i class="fa fa-bookmark-o"></i> Crear Logros</a></li>
+											<li><a style="cursor: pointer;" onclick="logrosConsultar()" title="Consultar Logros"><i class="fa fa-search"></i> Consultar Logros</a></li>
+											<li><a style="cursor: pointer;" onclick="logrosAdicionalesCrear()" title="Crear Logros Adicionales"><i class="fa fa-tag"></i> Crear Logros Adicionales</a></li>
+											<li><a style="cursor: pointer;" onclick="logrosAdicionalesConsultar()" title="Consultar Logros Adicionales"><i class="fa fa-search"></i> Consultar Logros Adicionales</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							<!-- PROPÓSITOS -->
+							@if( config('calificaciones.colegio_maneja_metas') == 'Si' )
+							@can('ACDO_metas_propositos')
+							<div class="col-md-4">
+								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_metas" aria-expanded="false" aria-controls="collapse_metas">
+									METAS O PROPÓSITOS <i class="fa fa-arrow-down"></i></a>
+								<div class="collapse" id="collapse_metas">
+									<div class="well">
+										<ul style="list-style: none;">
+											<li><a style="cursor: pointer;" onclick="propositoCrear()" title="Crear Meta o Propósito"><i class="fa fa-check-square-o"></i> Crear Meta o Propósito</a></li>
+											<li><a style="cursor: pointer;" onclick="propositoConsultar()" title="Consultar Meta o Propósito"><i class="fa fa-search"></i> Consultar Meta o Propósito</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							@endcan
+							@endif
+							@can('ACDO_control_disciplinario')
+							<div class="col-md-4">
+								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_control" aria-expanded="false" aria-controls="collapse_control">
+									CONTROL DISCIPLINARIO <i class="fa fa-arrow-down"></i></a>
+								<div class="collapse" id="collapse_control">
+									<div class="well">
+										<ul style="list-style: none;">
+											<li><a style="cursor: pointer;" onclick="controlDisciplinarioCrear()" title="Crear Control Disciplinario"><i class="fa fa-eye"></i> Crear Control Disciplinario</a></li>
+											<li><a style="cursor: pointer;" onclick="controlDisciplinarioConsultar()" title="Consultar Control Disciplinario"><i class="fa fa-search"></i> Consultar Control Disciplinario</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+							@endcan
+							<!-- LISTADO DE ESTUDIANTES Y FOROS -->
+							<div class="col-md-4">
+								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_foros" aria-expanded="false" aria-controls="collapse_foros">
+									ESTUDIANTES Y FOROS <i class="fa fa-arrow-down"></i></a>
+								<div class="collapse" id="collapse_foros">
+									<div class="well">
+										<ul style="list-style: none;">
+											<li><a style="cursor: pointer;" onclick="listarEstudiantes()" title="Listado de Estudiante"><i class="fa fa-users"></i> Listado de Estudiante</a></li>
+											<li><a style="cursor: pointer;" onclick="foros()" title="Foros de Discusión"><i class="fa fa-bullhorn"></i> Foros de Discusión</a></li>
+										</ul>
+									</div>
+								</div>
 							</div>
 						</div>
-					</div>
-					<!-- PLANES DE CLASES Y GUÍAS ACADÉMICAS -->
-					<div class="col-md-4">
-						<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_planes" aria-expanded="false" aria-controls="collapse_planes">
-							PLAN DE CLASE Y GUÍAS ACADÉMICAS <i class="fa fa-arrow-down"></i></a>
-						<div class="collapse" id="collapse_planes">
-							<div class="well">
-								<ul style="list-style: none;">
-									<li><a style="cursor: pointer;" onclick="planClaseCrear()" title="Ingresar Plan de Clases"><i class="fa fa-plus"></i> Ingresar Plan de Clases</a></li>
-									<li><a href="{{url('web')}}?id={{Input::get('id')}}&id_modelo={{$modelo_plan_clases_id}}" title="Consultar Plan de clases"><i class="fa fa-search"></i> Consultar Plan de clases</a></li>
-									<li><a style="cursor: pointer;" onclick="guiaCrear()" title="Ingresar Guía Académica"><i class="fa fa-book"></i> Ingresar Guía Académica</a></li>
-									<li><a href="{{url('web')}}?id={{Input::get('id')}}&id_modelo={{$modelo_guia_academica_id}}" title="Consultar Guía Académica"><i class="fa fa-search"></i> Consultar Guía Académica</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<!-- CALIFICACIONES -->
-					<div class="col-md-4">
-						<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_calificaciones" aria-expanded="false" aria-controls="collapse_calificaciones">
-							CALIFICACIONES <i class="fa fa-arrow-down"></i></a>
-						<div class="collapse" id="collapse_calificaciones">
-							<div class="well">
-								<ul style="list-style: none;">
-									<li><a style="cursor: pointer;" onclick="calificacionesCrear()" title="Ingresar Calificaciones"><i class="fa fa-list-ol"></i> Ingresar Calificaciones</a></li>
-									<li><a style="cursor: pointer;" onclick="calificacionesConsultar()" title="Consultar Calificaciones"><i class="fa fa-search"></i> Consultar Calificaciones</a></li>
-									@if( config('calificaciones.manejar_preinformes_academicos') == 'Si' )
-									<li><a style="cursor: pointer;" onclick="preinformeCrear()" title="Ingresar Pre-Informe"><i class="fa fa-file-pdf-o"></i> Ingresar Pre-Informe</a></li>
-									<li><a style="cursor: pointer;" onclick="preinformeConsultar()" title="Consultar Pre-Informe"><i class="fa fa-search"></i> Consultar Pre-Informe</a></li>
-									@endif
-									<li><a style="cursor: pointer;" onclick="nivelacionesCrear()" title="Ingresar Nivelaciones"><i class="fa fa-check"></i> Ingresar Nivelaciones</a></li>
-									<li><a style="cursor: pointer;" onclick="nivelacionesConsultar()" title="Consultar Nivelaciones"><i class="fa fa-search"></i> Consultar Nivelaciones</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<!-- LOGROS -->
-					<div class="col-md-4">
-						<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_logros" aria-expanded="false" aria-controls="collapse_logros">
-							LOGROS <i class="fa fa-arrow-down"></i></a>
-						<div class="collapse" id="collapse_logros">
-							<div class="well">
-								<ul style="list-style: none;">
-									<li><a style="cursor: pointer;" onclick="logrosCrear()" title="Crear Logros"><i class="fa fa-bookmark-o"></i> Crear Logros</a></li>
-									<li><a style="cursor: pointer;" onclick="logrosConsultar()" title="Consultar Logros"><i class="fa fa-search"></i> Consultar Logros</a></li>
-									<li><a style="cursor: pointer;" onclick="logrosAdicionalesCrear()" title="Crear Logros Adicionales"><i class="fa fa-tag"></i> Crear Logros Adicionales</a></li>
-									<li><a style="cursor: pointer;" onclick="logrosAdicionalesConsultar()" title="Consultar Logros Adicionales"><i class="fa fa-search"></i> Consultar Logros Adicionales</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					<!-- PROPÓSITOS -->
-					@if( config('calificaciones.colegio_maneja_metas') == 'Si' )
-					@can('ACDO_metas_propositos')
-					<div class="col-md-4">
-						<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_metas" aria-expanded="false" aria-controls="collapse_metas">
-							METAS O PROPÓSITOS <i class="fa fa-arrow-down"></i></a>
-						<div class="collapse" id="collapse_metas">
-							<div class="well">
-								<ul style="list-style: none;">
-									<li><a style="cursor: pointer;" onclick="propositoCrear()" title="Crear Meta o Propósito"><i class="fa fa-check-square-o"></i> Crear Meta o Propósito</a></li>
-									<li><a style="cursor: pointer;" onclick="propositoConsultar()" title="Consultar Meta o Propósito"><i class="fa fa-search"></i> Consultar Meta o Propósito</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					@endcan
-					@endif
-					@can('ACDO_control_disciplinario')
-					<div class="col-md-4">
-						<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_control" aria-expanded="false" aria-controls="collapse_control">
-							CONTROL DISCIPLINARIO <i class="fa fa-arrow-down"></i></a>
-						<div class="collapse" id="collapse_control">
-							<div class="well">
-								<ul style="list-style: none;">
-									<li><a style="cursor: pointer;" onclick="controlDisciplinarioCrear()" title="Crear Control Disciplinario"><i class="fa fa-eye"></i> Crear Control Disciplinario</a></li>
-									<li><a style="cursor: pointer;" onclick="controlDisciplinarioConsultar()" title="Consultar Control Disciplinario"><i class="fa fa-search"></i> Consultar Control Disciplinario</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
-					@endcan
-					<!-- LISTADO DE ESTUDIANTES Y FOROS -->
-					<div class="col-md-4">
-						<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_foros" aria-expanded="false" aria-controls="collapse_foros">
-							ESTUDIANTES Y FOROS <i class="fa fa-arrow-down"></i></a>
-						<div class="collapse" id="collapse_foros">
-							<div class="well">
-								<ul style="list-style: none;">
-									<li><a style="cursor: pointer;" onclick="listarEstudiantes()" title="Listado de Estudiante"><i class="fa fa-users"></i> Listado de Estudiante</a></li>
-									<li><a style="cursor: pointer;" onclick="foros()" title="Foros de Discusión"><i class="fa fa-bullhorn"></i> Foros de Discusión</a></li>
-								</ul>
-							</div>
-						</div>
-					</div>
+					</div> <!-- columna botones gmail -->
+
 				</div>
-				<table class="table table-responsive">
-					<thead>
-						<tr>
-							<th><i class="fa fa-check-square-o"></i></th>
-							<th>#</th>
-							<th>CURSO O GRUPO</th>
-							<th>ASIGNATURA</th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php
-						$contador = 1;
-						?>
-						@foreach ($listado as $fila)
-						<tr>
-							<td><input type="checkbox" value="{{$fila->curso_id.';'.$fila->id_asignatura}}" class="btn-gmail-check"></td>
-							<td>{{$contador}}</td>
-							<td>{{ $fila->Curso }}</td>
-							<td>{{ $fila->Asignatura }}</td>
-						</tr>
-						<?php
-						$contador++;
-						?>
-						@endforeach
-					</tbody>
-				</table>
-				@else
-				<h3><i class="fa fa-warning"> </i> Aún no tiene carga académica asignada.</h3>
-				@endif
-			</div>
+				
+			</div> <!-- panel body -->
 		</div>
 	</div>
 </div>

@@ -139,10 +139,15 @@ class TerceroController extends Controller
         $html .=            '" data-telefono1="'.$tercero->telefono1;
         $html .=            '" data-email="'.$tercero->email;
 
-        if ( Aplicacion::where('app','contratos_transporte')->get()->first()->estado == 'Activo' )
+        $aplicacion_contratos_transporte = Aplicacion::where('app','contratos_transporte')->get()->first();
+
+        if ( !is_null($aplicacion_contratos_transporte) )
         {
-            $html .=            '" data-vehiculo_id="'.$tercero->vehiculo_id;
-        }
+            if ( $aplicacion_contratos_transporte->estado == 'Activo' )
+            {
+                $html .= '" data-vehiculo_id="'.$tercero->vehiculo_id;
+            }
+        }            
 
         return $html;
     }
@@ -151,9 +156,14 @@ class TerceroController extends Controller
     {
         $label = $tercero->descripcion.' ('.number_format($tercero->numero_identificacion,0,',','.').')';
 
-        if ( Aplicacion::where('app','contratos_transporte')->get()->first()->estado == 'Activo' )
+        $aplicacion_contratos_transporte = Aplicacion::where('app','contratos_transporte')->get()->first();
+
+        if ( !is_null($aplicacion_contratos_transporte) )
         {
-            $label .= ' (' . $tercero->placa . ')';
+            if ( Aplicacion::where('app','contratos_transporte')->get()->first()->estado == 'Activo' )
+            {
+                $label .= ' (' . $tercero->placa . ')';
+            }
         }
 
         return $label;
@@ -176,10 +186,10 @@ class TerceroController extends Controller
                             [ 'core_terceros.'.$campo_busqueda, 'LIKE', $cadena_busqueda ]
                         ];
 
-        $app_contratos_transporte = Aplicacion::where('app','contratos_transporte')->get()->first();
-        if ( !is_null( $app_contratos_transporte ) )
+        $aplicacion_contratos_transporte = Aplicacion::where('app','contratos_transporte')->get()->first();
+        if ( !is_null( $aplicacion_contratos_transporte ) )
         {
-            if ( $app_contratos_transporte->estado == 'Activo' )
+            if ( $aplicacion_contratos_transporte->estado == 'Activo' )
             {
                 $vehiculos = \App\Contratotransporte\Vehiculo::leftJoin('cte_propietarios','cte_propietarios.id','=','cte_vehiculos.propietario_id')
                                 ->leftJoin('core_terceros','core_terceros.id','=','cte_propietarios.tercero_id')
@@ -237,7 +247,7 @@ class TerceroController extends Controller
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
-        foreach ($datos as $linea) 
+        foreach ($datos as $linea)
         {
             $clase = '';
             if ($es_el_primero) {

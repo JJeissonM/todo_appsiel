@@ -38,7 +38,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$SMMLV = 877803; // Valor año 2020 
+								$SMMLV = 908526; // Valor año 2021
 								if( isset($parametros['SMMLV'] ) )
 								{
 									$SMMLV = $parametros['SMMLV'];
@@ -62,6 +62,7 @@
 					</div>
 
 				</div>
+
 				<div class="row">
 
 					<div class="col-md-6">
@@ -79,7 +80,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php
+								$valor_uvt_actual = 36308; // Año 2021 
+								if( isset($parametros['valor_uvt_actual'] ) )
+								{
+									$valor_uvt_actual = $parametros['valor_uvt_actual'];
+								}
+							?>
+							{{ Form::bsText('valor_uvt_actual', $valor_uvt_actual, 'Valor UVT año actual', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

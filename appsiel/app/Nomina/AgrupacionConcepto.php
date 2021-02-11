@@ -33,7 +33,8 @@ class AgrupacionConcepto extends Model
         $string = AgrupacionConcepto::select(
             'nom_agrupaciones_conceptos.descripcion AS DESCRIPCIÓN',
             'nom_agrupaciones_conceptos.nombre_corto AS NOMBRE_CORTO',
-            'nom_agrupaciones_conceptos.estado AS ESTADO'
+            'nom_agrupaciones_conceptos.estado AS ESTADO',
+            'nom_agrupaciones_conceptos.id AS ID'
         )
             ->where("nom_agrupaciones_conceptos.descripcion", "LIKE", "%$search%")
             ->orWhere("nom_agrupaciones_conceptos.nombre_corto", "LIKE", "%$search%")

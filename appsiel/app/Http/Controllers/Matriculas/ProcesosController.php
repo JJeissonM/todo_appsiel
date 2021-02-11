@@ -27,6 +27,8 @@ use App\Calificaciones\CursoTieneAsignatura;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\NotaNivelacion;
 
+use App\Calificaciones\EscalaValoracion;
+
 class ProcesosController extends ModeloController
 {
     public function promocion_academica_cargar_listado( Request $request )
@@ -39,8 +41,8 @@ class ProcesosController extends ModeloController
                                         ['estado','=','Activo']
                                     ])
                                 ->get();
-        $matriculas = collect([]);
 
+        $matriculas = collect([]);
         foreach ( $listado as $matricula )
         {
             $matricula->periodo_final = $matricula->periodo_lectivo->periodo_final_del_anio_lectivo();
@@ -56,7 +58,16 @@ class ProcesosController extends ModeloController
         $opciones_cursos = Curso::opciones_campo_select();
         $cantidad_estudiantes = $listado->count();
 
-        $vista = View::make('matriculas.procesos.promocion_academica_lista_estudiantes_promover',compact('matriculas','opciones_cursos','cantidad_estudiantes'))->render();
+        $escala_valoracion_minima = EscalaValoracion::where( 'periodo_lectivo_id', $request->periodo_lectivo_id )
+                                                        ->orderBy('calificacion_minima','ASC')
+                                                        ->first();
+        $tope_escala_valoracion_minima = 0;
+        if ( !is_null( $escala_valoracion_minima ) )
+        {
+            $tope_escala_valoracion_minima = $escala_valoracion_minima->calificacion_maxima;
+        }
+
+        $vista = View::make('matriculas.procesos.promocion_academica_lista_estudiantes_promover',compact( 'matriculas', 'opciones_cursos', 'cantidad_estudiantes', 'tope_escala_valoracion_minima' ) )->render();
 
         return $vista;
     }

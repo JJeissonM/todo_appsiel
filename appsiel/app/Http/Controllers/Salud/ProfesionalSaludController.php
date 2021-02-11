@@ -69,11 +69,20 @@ class ProfesionalSaludController extends Controller
         // Crear Como usuario del sistema y asociar al Tercero
         $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
         $email = $request->email;
-        $user = User::crear_y_asignar_role( $name, $email, 14); // 14 = Role "Profesional Salud"
-        $tercero->user_id = $user->id;
+        $password = str_random(7);
+        $user = User::crear_y_asignar_role( $name, $email, 14, $password ); // 14 = Role "Profesional Salud"
+        
+        if ( is_null( $user ) )
+        {
+            $user_id = 0;
+        }else{
+            $user_id = $user->id;
+        }
+
+        $tercero->user_id = $user_id;
         $tercero->save();
 
-        return redirect( 'consultorio_medico/profesionales/'.$registro_creado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
+        return redirect( 'consultorio_medico/profesionales/'.$registro_creado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente. DATOS DE ACCESO > Usuario: ' . $email . ' / Contraseña: ' . $password );
     }
 
     /**

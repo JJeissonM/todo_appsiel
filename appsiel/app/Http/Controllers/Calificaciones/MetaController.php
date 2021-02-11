@@ -313,32 +313,15 @@ class MetaController extends Controller
 
 
     // Almacenar nuevo logro creado 
-    public function guardar_meta(Request $request, $id = null)
+    public function guardar_meta(Request $request, $logro_id = null)
     {
-        // $id se envía desde la ruta web/$id/edit
-        if (!is_null($id)) {
-            $request['logro_id'] = $id;
+        // $logro_id se envía desde la ruta web/$logro_id/edit
+        if (!is_null($logro_id))
+        {
+            $request['logro_id'] = $logro_id;
         }
 
         $modelo = Modelo::find($this->modelo_id);
-
-        // Obtener la table de ese modelo
-        /*$any_registro = New $modelo->name_space;
-        $nombre_tabla = $any_registro->getTable();       
-
-        // LLamar a los campos del modelo para verificar los que son requeridos
-        $lista_campos = $modelo->campos->toArray();
-        for ($i=0; $i < count($lista_campos); $i++) 
-        { 
-            if ($lista_campos[$i]['requerido']) 
-            {
-                $this->validate($request,[$lista_campos[$i]['name']=>'required']);
-            }
-            if ($lista_campos[$i]['unico']) 
-            {
-                $this->validate($request,[$lista_campos[$i]['name']=>'unique:'.$nombre_tabla]);
-            }
-        }*/
 
         $datos = $request->all();
 

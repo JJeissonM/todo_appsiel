@@ -1,5 +1,1676 @@
 <?php
  return array (
+  'migrations' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'migration' => '2014_10_12_000000_create_users_table',
+      'batch' => 1,
+    ),
+    1 => 
+    array (
+      'id' => 2,
+      'migration' => '2014_10_12_100000_create_password_resets_table',
+      'batch' => 1,
+    ),
+    2 => 
+    array (
+      'id' => 3,
+      'migration' => '2016_07_16_155014_tabla_estudiantes',
+      'batch' => 1,
+    ),
+    3 => 
+    array (
+      'id' => 4,
+      'migration' => '2016_07_16_163147_tabla_boletin_contenidos',
+      'batch' => 1,
+    ),
+    4 => 
+    array (
+      'id' => 5,
+      'migration' => '2016_07_16_163159_tabla_boletin_encabezados',
+      'batch' => 1,
+    ),
+    5 => 
+    array (
+      'id' => 6,
+      'migration' => '2016_07_16_164443_tabla_grados',
+      'batch' => 1,
+    ),
+    6 => 
+    array (
+      'id' => 7,
+      'migration' => '2016_07_16_164603_tabla_periodos',
+      'batch' => 1,
+    ),
+    7 => 
+    array (
+      'id' => 8,
+      'migration' => '2016_07_16_164705_tabla_matriculas',
+      'batch' => 1,
+    ),
+    8 => 
+    array (
+      'id' => 9,
+      'migration' => '2016_07_16_164815_tabla_asignaturas',
+      'batch' => 1,
+    ),
+    9 => 
+    array (
+      'id' => 10,
+      'migration' => '2016_07_16_165155_tabla_niveles',
+      'batch' => 1,
+    ),
+    10 => 
+    array (
+      'id' => 11,
+      'migration' => '2016_07_16_193527_tabla_logros',
+      'batch' => 2,
+    ),
+    11 => 
+    array (
+      'id' => 12,
+      'migration' => '2016_07_23_064653_tabla_datoscolegio',
+      'batch' => 3,
+    ),
+    12 => 
+    array (
+      'id' => 13,
+      'migration' => '2016_08_08_221803_tabla_matriculas',
+      'batch' => 4,
+    ),
+    13 => 
+    array (
+      'id' => 14,
+      'migration' => '2016_10_01_033532_create_existencias_table',
+      'batch' => 5,
+    ),
+    14 => 
+    array (
+      'id' => 15,
+      'migration' => '2017_03_13_155945_crear_tabla_boletines',
+      'batch' => 5,
+    ),
+    15 => 
+    array (
+      'id' => 16,
+      'migration' => '2017_03_13_163246_crear_tabla_calificaciones',
+      'batch' => 5,
+    ),
+    16 => 
+    array (
+      'id' => 17,
+      'migration' => '2017_03_13_163627_crear_tabla_logros_calificaciones',
+      'batch' => 5,
+    ),
+    17 => 
+    array (
+      'id' => 18,
+      'migration' => '2017_03_14_015409_crear_tabla_consecutivo_logros',
+      'batch' => 6,
+    ),
+    18 => 
+    array (
+      'id' => 19,
+      'migration' => '2017_10_29_163430_crear_tabla_calificaciones',
+      'batch' => 7,
+    ),
+    19 => 
+    array (
+      'id' => 20,
+      'migration' => '2018_02_27_221431_create_permission_tables',
+      'batch' => 8,
+    ),
+    20 => 
+    array (
+      'id' => 21,
+      'migration' => '2018_03_05_210435_create_posts_table',
+      'batch' => 9,
+    ),
+    21 => 
+    array (
+      'id' => 22,
+      'migration' => '2018_03_15_225958_create_colegios_table',
+      'batch' => 10,
+    ),
+    22 => 
+    array (
+      'id' => 23,
+      'migration' => '2018_04_15_171547_create_cursos_table',
+      'batch' => 11,
+    ),
+    23 => 
+    array (
+      'id' => 24,
+      'migration' => '2018_04_17_225106_create_asignacions_table',
+      'batch' => 12,
+    ),
+    24 => 
+    array (
+      'id' => 25,
+      'migration' => '2018_06_22_093041_create_teso_libretas_pagos_table',
+      'batch' => 13,
+    ),
+    25 => 
+    array (
+      'id' => 26,
+      'migration' => '2018_07_09_123312_create_difo_formatos_table',
+      'batch' => 14,
+    ),
+    26 => 
+    array (
+      'id' => 27,
+      'migration' => '2018_07_09_123336_create_difo_seccions_table',
+      'batch' => 14,
+    ),
+    27 => 
+    array (
+      'id' => 28,
+      'migration' => '2018_07_11_103257_create_core_firmas_autorizadas_table',
+      'batch' => 15,
+    ),
+    28 => 
+    array (
+      'id' => 29,
+      'migration' => '2018_07_16_112040_create_teso_recaudos_libretas_table',
+      'batch' => 16,
+    ),
+    29 => 
+    array (
+      'id' => 30,
+      'migration' => '2018_07_19_050606_create_sga_configuracions_table',
+      'batch' => 17,
+    ),
+    30 => 
+    array (
+      'id' => 31,
+      'migration' => '2018_07_19_123906_create_difo_campos_seccions_table',
+      'batch' => 18,
+    ),
+    31 => 
+    array (
+      'id' => 32,
+      'migration' => '2018_07_26_010921_create_teso_cartera_estudiantes_table',
+      'batch' => 19,
+    ),
+    32 => 
+    array (
+      'id' => 33,
+      'migration' => '2018_08_02_153604_create_escala_valoracions_table',
+      'batch' => 20,
+    ),
+    33 => 
+    array (
+      'id' => 34,
+      'migration' => '2018_08_03_051123_create_sga_novedades_observadors_table',
+      'batch' => 20,
+    ),
+    34 => 
+    array (
+      'id' => 35,
+      'migration' => '2018_08_03_052455_create_sga_foda_estudiantes_table',
+      'batch' => 20,
+    ),
+    35 => 
+    array (
+      'id' => 36,
+      'migration' => '2018_08_03_052513_create_sga_aspectos_observadors_table',
+      'batch' => 20,
+    ),
+    36 => 
+    array (
+      'id' => 37,
+      'migration' => '2018_08_03_052552_create_sga_catalogo_aspectos_table',
+      'batch' => 20,
+    ),
+    37 => 
+    array (
+      'id' => 38,
+      'migration' => '2018_08_03_052606_create_sga_tipos_aspectos_table',
+      'batch' => 20,
+    ),
+    38 => 
+    array (
+      'id' => 39,
+      'migration' => '2018_08_08_231720_create_asistencia_clases_table',
+      'batch' => 21,
+    ),
+    39 => 
+    array (
+      'id' => 40,
+      'migration' => '2018_08_29_223224_create_core_campos_table',
+      'batch' => 22,
+    ),
+    40 => 
+    array (
+      'id' => 41,
+      'migration' => '2018_08_29_232020_create_core_modelos_table',
+      'batch' => 23,
+    ),
+    41 => 
+    array (
+      'id' => 42,
+      'migration' => '2019_03_22_081508_create_codigo_discipliarios_table',
+      'batch' => 24,
+    ),
+    42 => 
+    array (
+      'id' => 43,
+      'migration' => '2019_03_22_082351_create_semanas_calendarios_table',
+      'batch' => 24,
+    ),
+    43 => 
+    array (
+      'id' => 44,
+      'migration' => '2019_03_22_083007_create_control_disciplinarios_table',
+      'batch' => 24,
+    ),
+    44 => 
+    array (
+      'id' => 45,
+      'migration' => '2019_04_28_064829_create_nom_contratos_table',
+      'batch' => 25,
+    ),
+    45 => 
+    array (
+      'id' => 46,
+      'migration' => '2019_04_28_064853_create_nom_conceptos_table',
+      'batch' => 25,
+    ),
+    46 => 
+    array (
+      'id' => 47,
+      'migration' => '2019_04_28_064919_create_nom_modo_liquidacions_table',
+      'batch' => 25,
+    ),
+    47 => 
+    array (
+      'id' => 48,
+      'migration' => '2019_04_28_065007_create_nom_cargos_table',
+      'batch' => 25,
+    ),
+    48 => 
+    array (
+      'id' => 49,
+      'migration' => '2019_04_28_071128_create_nom_doc_encabezados_table',
+      'batch' => 25,
+    ),
+    49 => 
+    array (
+      'id' => 50,
+      'migration' => '2019_04_28_071140_create_nom_doc_registros_table',
+      'batch' => 25,
+    ),
+    50 => 
+    array (
+      'id' => 51,
+      'migration' => '2019_04_28_071200_create_nom_cuotas_table',
+      'batch' => 25,
+    ),
+    51 => 
+    array (
+      'id' => 52,
+      'migration' => '2019_04_28_071209_create_nom_prestamos_table',
+      'batch' => 25,
+    ),
+    52 => 
+    array (
+      'id' => 53,
+      'migration' => '2019_04_28_071516_create_nom_entidads_table',
+      'batch' => 25,
+    ),
+    53 => 
+    array (
+      'id' => 54,
+      'migration' => '2019_06_06_225155_create_modelo_relacionados_table',
+      'batch' => 26,
+    ),
+    54 => 
+    array (
+      'id' => 55,
+      'migration' => '2019_06_06_225525_create_valor_registro_modelo_relacionados_table',
+      'batch' => 27,
+    ),
+    55 => 
+    array (
+      'id' => 56,
+      'migration' => '2019_06_06_225700_create_consultorios_table',
+      'batch' => 27,
+    ),
+    56 => 
+    array (
+      'id' => 57,
+      'migration' => '2019_06_06_225716_create_profesional_saluds_table',
+      'batch' => 27,
+    ),
+    57 => 
+    array (
+      'id' => 58,
+      'migration' => '2019_06_06_225735_create_codigo_cies_table',
+      'batch' => 27,
+    ),
+    58 => 
+    array (
+      'id' => 59,
+      'migration' => '2019_06_06_225741_create_pacientes_table',
+      'batch' => 27,
+    ),
+    59 => 
+    array (
+      'id' => 60,
+      'migration' => '2019_06_06_225754_create_consulta_medicas_table',
+      'batch' => 27,
+    ),
+    60 => 
+    array (
+      'id' => 61,
+      'migration' => '2019_06_06_225810_create_organo_del_cuerpos_table',
+      'batch' => 27,
+    ),
+    61 => 
+    array (
+      'id' => 62,
+      'migration' => '2019_06_06_225826_create_variable_examens_table',
+      'batch' => 27,
+    ),
+    62 => 
+    array (
+      'id' => 63,
+      'migration' => '2019_06_06_225837_create_examen_medicos_table',
+      'batch' => 27,
+    ),
+    63 => 
+    array (
+      'id' => 64,
+      'migration' => '2019_06_06_225854_create_resultado_examen_medicos_table',
+      'batch' => 27,
+    ),
+    64 => 
+    array (
+      'id' => 65,
+      'migration' => '2019_06_06_225910_create_formula_opticas_table',
+      'batch' => 27,
+    ),
+    65 => 
+    array (
+      'id' => 66,
+      'migration' => '2019_06_19_090050_create_tipo_lentes_table',
+      'batch' => 28,
+    ),
+    66 => 
+    array (
+      'id' => 67,
+      'migration' => '2019_06_19_090353_create_material_lentes_table',
+      'batch' => 28,
+    ),
+    67 => 
+    array (
+      'id' => 68,
+      'migration' => '2019_07_02_063033_create_min_stocks_table',
+      'batch' => 29,
+    ),
+    68 => 
+    array (
+      'id' => 69,
+      'migration' => '2019_07_04_074322_create_carousels_table',
+      'batch' => 30,
+    ),
+    69 => 
+    array (
+      'id' => 70,
+      'migration' => '2019_07_09_040341_create_encabezado_calificacions_table',
+      'batch' => 30,
+    ),
+    70 => 
+    array (
+      'id' => 71,
+      'migration' => '2019_07_12_094903_create_seccions_table',
+      'batch' => 30,
+    ),
+    71 => 
+    array (
+      'id' => 72,
+      'migration' => '2019_07_16_155803_create_reportes_table',
+      'batch' => 30,
+    ),
+    72 => 
+    array (
+      'id' => 73,
+      'migration' => '2019_08_13_184943_create_tipo_modulos_table',
+      'batch' => 31,
+    ),
+    73 => 
+    array (
+      'id' => 74,
+      'migration' => '2019_08_13_185026_create_modulos_table',
+      'batch' => 31,
+    ),
+    74 => 
+    array (
+      'id' => 75,
+      'migration' => '2019_09_15_221915_create_descuento_pp_encabezados_table',
+      'batch' => 32,
+    ),
+    75 => 
+    array (
+      'id' => 76,
+      'migration' => '2019_09_15_221947_create_descuento_pp_detalles_table',
+      'batch' => 32,
+    ),
+    76 => 
+    array (
+      'id' => 77,
+      'migration' => '2019_09_15_221958_create_lista_precio_encabezados_table',
+      'batch' => 32,
+    ),
+    77 => 
+    array (
+      'id' => 78,
+      'migration' => '2019_09_15_222007_create_lista_precio_detalles_table',
+      'batch' => 32,
+    ),
+    78 => 
+    array (
+      'id' => 79,
+      'migration' => '2019_09_15_222018_create_lista_dcto_encabezados_table',
+      'batch' => 32,
+    ),
+    79 => 
+    array (
+      'id' => 80,
+      'migration' => '2019_09_15_222029_create_lista_dcto_detalles_table',
+      'batch' => 32,
+    ),
+    80 => 
+    array (
+      'id' => 81,
+      'migration' => '2019_09_15_222055_create_clase_vendedors_table',
+      'batch' => 32,
+    ),
+    81 => 
+    array (
+      'id' => 82,
+      'migration' => '2019_09_15_222116_create_equipo_ventas_table',
+      'batch' => 32,
+    ),
+    82 => 
+    array (
+      'id' => 83,
+      'migration' => '2019_09_15_222133_create_vendedors_table',
+      'batch' => 32,
+    ),
+    83 => 
+    array (
+      'id' => 84,
+      'migration' => '2019_09_15_222148_create_zonas_table',
+      'batch' => 32,
+    ),
+    84 => 
+    array (
+      'id' => 85,
+      'migration' => '2019_09_15_222203_create_condicion_pagos_table',
+      'batch' => 32,
+    ),
+    85 => 
+    array (
+      'id' => 86,
+      'migration' => '2019_09_15_222214_create_clase_clientes_table',
+      'batch' => 32,
+    ),
+    86 => 
+    array (
+      'id' => 87,
+      'migration' => '2019_09_15_222230_create_clientes_table',
+      'batch' => 32,
+    ),
+    87 => 
+    array (
+      'id' => 88,
+      'migration' => '2019_09_17_190053_create_impuestos_table',
+      'batch' => 33,
+    ),
+    88 => 
+    array (
+      'id' => 89,
+      'migration' => '2019_10_07_081832_create_precio_proveedors_table',
+      'batch' => 34,
+    ),
+    89 => 
+    array (
+      'id' => 90,
+      'migration' => '2019_10_07_081837_create_compradors_table',
+      'batch' => 34,
+    ),
+    90 => 
+    array (
+      'id' => 91,
+      'migration' => '2019_10_07_081847_create_clase_proveedors_table',
+      'batch' => 34,
+    ),
+    91 => 
+    array (
+      'id' => 92,
+      'migration' => '2019_10_07_081913_create_condicion_pago_provs_table',
+      'batch' => 34,
+    ),
+    92 => 
+    array (
+      'id' => 93,
+      'migration' => '2019_10_07_081936_create_proveedors_table',
+      'batch' => 34,
+    ),
+    93 => 
+    array (
+      'id' => 94,
+      'migration' => '2019_10_07_081943_create_compras_doc_encabezados_table',
+      'batch' => 34,
+    ),
+    94 => 
+    array (
+      'id' => 95,
+      'migration' => '2019_10_07_081951_create_compras_doc_registros_table',
+      'batch' => 34,
+    ),
+    95 => 
+    array (
+      'id' => 96,
+      'migration' => '2019_10_15_040106_create_resolucion_facturacions_table',
+      'batch' => 35,
+    ),
+    96 => 
+    array (
+      'id' => 97,
+      'migration' => '2019_10_29_051416_create_arqueo_cajas_table',
+      'batch' => 36,
+    ),
+    97 => 
+    array (
+      'id' => 98,
+      'migration' => '2019_12_20_105855_create_grupo_empleados_table',
+      'batch' => 36,
+    ),
+    98 => 
+    array (
+      'id' => 99,
+      'migration' => '2019_12_23_052205_create_agrupacion_tiene_conceptos_table',
+      'batch' => 36,
+    ),
+    99 => 
+    array (
+      'id' => 100,
+      'migration' => '2019_12_23_052241_create_agrupacion_conceptos_table',
+      'batch' => 36,
+    ),
+    100 => 
+    array (
+      'id' => 101,
+      'migration' => '2019_12_23_052421_create_equivalencia_contables_table',
+      'batch' => 36,
+    ),
+    101 => 
+    array (
+      'id' => 102,
+      'migration' => '2020_01_24_064002_create_plan_clase_estruc_plantillas_table',
+      'batch' => 37,
+    ),
+    102 => 
+    array (
+      'id' => 103,
+      'migration' => '2020_01_24_064017_create_plan_clase_estruc_elementos_table',
+      'batch' => 37,
+    ),
+    103 => 
+    array (
+      'id' => 104,
+      'migration' => '2020_01_24_064341_create_plan_clase_encabezados_table',
+      'batch' => 37,
+    ),
+    104 => 
+    array (
+      'id' => 105,
+      'migration' => '2020_01_24_064351_create_plan_clase_registros_table',
+      'batch' => 37,
+    ),
+    105 => 
+    array (
+      'id' => 106,
+      'migration' => '2020_01_26_043452_create_slugs_table',
+      'batch' => 38,
+    ),
+    106 => 
+    array (
+      'id' => 107,
+      'migration' => '2020_02_05_091424_Componente',
+      'batch' => 39,
+    ),
+    107 => 
+    array (
+      'id' => 108,
+      'migration' => '2020_02_05_094004_Seccion',
+      'batch' => 39,
+    ),
+    108 => 
+    array (
+      'id' => 109,
+      'migration' => '2020_02_05_094818_Widget',
+      'batch' => 39,
+    ),
+    109 => 
+    array (
+      'id' => 110,
+      'migration' => '2020_02_06_092207_Navegacion',
+      'batch' => 39,
+    ),
+    110 => 
+    array (
+      'id' => 111,
+      'migration' => '2020_02_06_221421_Menunavegacion',
+      'batch' => 39,
+    ),
+    111 => 
+    array (
+      'id' => 112,
+      'migration' => '2020_02_09_004455_remove_column_to_table_pw_paginas',
+      'batch' => 40,
+    ),
+    112 => 
+    array (
+      'id' => 113,
+      'migration' => '2020_02_10_100426_add_column_to_seccion',
+      'batch' => 40,
+    ),
+    113 => 
+    array (
+      'id' => 114,
+      'migration' => '2020_02_11_085301_add_column_tipo_to_seccion',
+      'batch' => 40,
+    ),
+    114 => 
+    array (
+      'id' => 115,
+      'migration' => '2020_02_20_080110_create_aboutuses_table',
+      'batch' => 40,
+    ),
+    115 => 
+    array (
+      'id' => 116,
+      'migration' => '2020_02_21_102319_create_galerias_table',
+      'batch' => 41,
+    ),
+    116 => 
+    array (
+      'id' => 117,
+      'migration' => '2020_02_21_103118_create_albums_table',
+      'batch' => 41,
+    ),
+    117 => 
+    array (
+      'id' => 118,
+      'migration' => '2020_02_21_103150_create_fotos_table',
+      'batch' => 41,
+    ),
+    118 => 
+    array (
+      'id' => 119,
+      'migration' => '2020_02_23_110336_AddColumnFechaEntrega',
+      'batch' => 42,
+    ),
+    119 => 
+    array (
+      'id' => 120,
+      'migration' => '2020_02_21_101627_create_icons_table',
+      'batch' => 43,
+    ),
+    120 => 
+    array (
+      'id' => 121,
+      'migration' => '2020_02_23_113642_create_slider_table',
+      'batch' => 43,
+    ),
+    121 => 
+    array (
+      'id' => 122,
+      'migration' => '2020_02_23_114254_create_itemSlider_table',
+      'batch' => 43,
+    ),
+    122 => 
+    array (
+      'id' => 123,
+      'migration' => '2020_02_24_073639_create_articlesetups_table',
+      'batch' => 43,
+    ),
+    123 => 
+    array (
+      'id' => 124,
+      'migration' => '2020_02_24_115116_create_articles_table',
+      'batch' => 43,
+    ),
+    124 => 
+    array (
+      'id' => 125,
+      'migration' => '2020_02_24_202845_create_servicios_table',
+      'batch' => 43,
+    ),
+    125 => 
+    array (
+      'id' => 126,
+      'migration' => '2020_02_24_204148_create_itemservicios_table',
+      'batch' => 43,
+    ),
+    126 => 
+    array (
+      'id' => 127,
+      'migration' => '2020_02_25_095419_create_redesSociales_table',
+      'batch' => 43,
+    ),
+    127 => 
+    array (
+      'id' => 128,
+      'migration' => '2020_02_27_073711_create_contactenos_table',
+      'batch' => 44,
+    ),
+    128 => 
+    array (
+      'id' => 130,
+      'migration' => '2020_02_28_104225_create_formcontactenos_table',
+      'batch' => 44,
+    ),
+    129 => 
+    array (
+      'id' => 131,
+      'migration' => '2020_02_29_161413_AddColumnOrdenMenuNavigation',
+      'batch' => 45,
+    ),
+    130 => 
+    array (
+      'id' => 132,
+      'migration' => '2020_03_01_051359_create_preinforme_academicos_table',
+      'batch' => 46,
+    ),
+    131 => 
+    array (
+      'id' => 133,
+      'migration' => '2020_03_02_104702_create_archivos_table',
+      'batch' => 47,
+    ),
+    132 => 
+    array (
+      'id' => 134,
+      'migration' => '2020_03_02_105008_create_archivoitems_table',
+      'batch' => 47,
+    ),
+    133 => 
+    array (
+      'id' => 135,
+      'migration' => '2020_02_27_115119_create_footer_table',
+      'batch' => 48,
+    ),
+    134 => 
+    array (
+      'id' => 136,
+      'migration' => '2020_02_27_122302_create_categoria_footer_table',
+      'batch' => 48,
+    ),
+    135 => 
+    array (
+      'id' => 137,
+      'migration' => '2020_02_28_074631_create_enlace_footer_table',
+      'batch' => 48,
+    ),
+    136 => 
+    array (
+      'id' => 138,
+      'migration' => '2020_03_03_120406_AddColumnImagenArticulo',
+      'batch' => 49,
+    ),
+    137 => 
+    array (
+      'id' => 139,
+      'migration' => '2020_03_03_135120_AddColumnDescripcionArticulo',
+      'batch' => 50,
+    ),
+    138 => 
+    array (
+      'id' => 140,
+      'migration' => '2020_03_04_091524_AddColumnTituloGaleria',
+      'batch' => 51,
+    ),
+    139 => 
+    array (
+      'id' => 141,
+      'migration' => '2020_03_04_095949_AddColumnTituloArchivo',
+      'batch' => 51,
+    ),
+    140 => 
+    array (
+      'id' => 142,
+      'migration' => '2020_03_04_100743_AddColumnOrdenArchivo',
+      'batch' => 52,
+    ),
+    141 => 
+    array (
+      'id' => 143,
+      'migration' => '2020_03_05_033939_AddColumnFixedNavegacion',
+      'batch' => 53,
+    ),
+    142 => 
+    array (
+      'id' => 144,
+      'migration' => '2020_03_05_041305_AddColumnBackgroundtoNavegacion',
+      'batch' => 53,
+    ),
+    143 => 
+    array (
+      'id' => 145,
+      'migration' => '2020_03_09_125843_create_pw_configuracion_general_table',
+      'batch' => 54,
+    ),
+    144 => 
+    array (
+      'id' => 146,
+      'migration' => '2020_03_10_111935_create_preguntas_table',
+      'batch' => 55,
+    ),
+    145 => 
+    array (
+      'id' => 147,
+      'migration' => '2020_03_11_084817_create_pedidowebs_table',
+      'batch' => 55,
+    ),
+    146 => 
+    array (
+      'id' => 148,
+      'migration' => '2020_03_13_095234_create_RenameColumnPreguntas_table',
+      'batch' => 56,
+    ),
+    147 => 
+    array (
+      'id' => 149,
+      'migration' => '2020_03_13_101740_create_itempreguntas_table',
+      'batch' => 56,
+    ),
+    148 => 
+    array (
+      'id' => 150,
+      'migration' => '2020_03_15_033321_AgregarCamposTablaContratos',
+      'batch' => 56,
+    ),
+    149 => 
+    array (
+      'id' => 151,
+      'migration' => '2020_03_15_102923_AgregarCamposTablaEncabezadoNomina',
+      'batch' => 56,
+    ),
+    150 => 
+    array (
+      'id' => 152,
+      'migration' => '2020_03_16_085712_create_foros_table',
+      'batch' => 56,
+    ),
+    151 => 
+    array (
+      'id' => 153,
+      'migration' => '2020_03_16_085734_create_fororespuestas_table',
+      'batch' => 56,
+    ),
+    152 => 
+    array (
+      'id' => 154,
+      'migration' => '2020_03_19_053043_AddColumnAdjuntoRespuestasCuestionario',
+      'batch' => 57,
+    ),
+    153 => 
+    array (
+      'id' => 155,
+      'migration' => '2020_03_17_082556_create_testimoniales_table',
+      'batch' => 58,
+    ),
+    154 => 
+    array (
+      'id' => 156,
+      'migration' => '2020_03_17_082715_create_itemtestimonials_table',
+      'batch' => 58,
+    ),
+    155 => 
+    array (
+      'id' => 157,
+      'migration' => '2020_03_19_084311_create_propietarios_table',
+      'batch' => 58,
+    ),
+    156 => 
+    array (
+      'id' => 158,
+      'migration' => '2020_03_19_085636_create_vehiculos_table',
+      'batch' => 58,
+    ),
+    157 => 
+    array (
+      'id' => 159,
+      'migration' => '2020_03_19_085819_create_conductors_table',
+      'batch' => 58,
+    ),
+    158 => 
+    array (
+      'id' => 160,
+      'migration' => '2020_03_19_085902_create_documentosconductors_table',
+      'batch' => 58,
+    ),
+    159 => 
+    array (
+      'id' => 161,
+      'migration' => '2020_03_19_085913_create_documentosvehiculos_table',
+      'batch' => 58,
+    ),
+    160 => 
+    array (
+      'id' => 162,
+      'migration' => '2020_03_19_085938_create_plantillas_table',
+      'batch' => 58,
+    ),
+    161 => 
+    array (
+      'id' => 163,
+      'migration' => '2020_03_19_085952_create_plantillaarticulos_table',
+      'batch' => 58,
+    ),
+    162 => 
+    array (
+      'id' => 164,
+      'migration' => '2020_03_19_090002_create_plantillaarticulonumerals_table',
+      'batch' => 58,
+    ),
+    163 => 
+    array (
+      'id' => 165,
+      'migration' => '2020_03_19_090003_create_numeraltablas_table',
+      'batch' => 58,
+    ),
+    164 => 
+    array (
+      'id' => 166,
+      'migration' => '2020_03_19_090010_create_contratantes_table',
+      'batch' => 58,
+    ),
+    165 => 
+    array (
+      'id' => 167,
+      'migration' => '2020_03_19_090020_create_contratos_table',
+      'batch' => 58,
+    ),
+    166 => 
+    array (
+      'id' => 168,
+      'migration' => '2020_03_19_090021_create_contratogrupous_table',
+      'batch' => 58,
+    ),
+    167 => 
+    array (
+      'id' => 169,
+      'migration' => '2020_03_19_111927_create_planillacs_table',
+      'batch' => 58,
+    ),
+    168 => 
+    array (
+      'id' => 170,
+      'migration' => '2020_03_19_111928_create_planillaconductors_table',
+      'batch' => 58,
+    ),
+    169 => 
+    array (
+      'id' => 171,
+      'migration' => '2020_03_19_111942_create_anios_table',
+      'batch' => 58,
+    ),
+    170 => 
+    array (
+      'id' => 172,
+      'migration' => '2020_03_19_111950_create_anioperiodos_table',
+      'batch' => 58,
+    ),
+    171 => 
+    array (
+      'id' => 173,
+      'migration' => '2020_03_19_112003_create_mantenimientos_table',
+      'batch' => 58,
+    ),
+    172 => 
+    array (
+      'id' => 174,
+      'migration' => '2020_03_19_112036_create_mantreportes_table',
+      'batch' => 58,
+    ),
+    173 => 
+    array (
+      'id' => 175,
+      'migration' => '2020_03_19_112106_create_mantobs_table',
+      'batch' => 58,
+    ),
+    174 => 
+    array (
+      'id' => 176,
+      'migration' => '2020_03_21_015004_AddColumnAdjuntoPlanClasesEncabezado',
+      'batch' => 59,
+    ),
+    175 => 
+    array (
+      'id' => 177,
+      'migration' => '2020_03_24_130207_AddColumnEstadoPropietario',
+      'batch' => 60,
+    ),
+    176 => 
+    array (
+      'id' => 178,
+      'migration' => '2020_03_18_114434_header',
+      'batch' => 61,
+    ),
+    177 => 
+    array (
+      'id' => 179,
+      'migration' => '2020_03_26_135554_create_tiendas_table',
+      'batch' => 61,
+    ),
+    178 => 
+    array (
+      'id' => 180,
+      'migration' => '2020_03_27_124954_create_correos_table',
+      'batch' => 61,
+    ),
+    179 => 
+    array (
+      'id' => 181,
+      'migration' => '2020_03_27_125033_create_itemcorreos_table',
+      'batch' => 61,
+    ),
+    180 => 
+    array (
+      'id' => 182,
+      'migration' => '2020_04_01_111343_AddColumnsDescuento',
+      'batch' => 61,
+    ),
+    181 => 
+    array (
+      'id' => 183,
+      'migration' => '2020_04_01_111343_AddColumnsDescuentoCompras',
+      'batch' => 61,
+    ),
+    182 => 
+    array (
+      'id' => 184,
+      'migration' => '2020_04_06_084243_create_AddColumnsAboutus_table',
+      'batch' => 62,
+    ),
+    183 => 
+    array (
+      'id' => 185,
+      'migration' => '2020_04_06_103708_create_AddColumnsSlider_table',
+      'batch' => 62,
+    ),
+    184 => 
+    array (
+      'id' => 186,
+      'migration' => '2020_04_06_105746_create_AddColumnsServicio_table',
+      'batch' => 62,
+    ),
+    185 => 
+    array (
+      'id' => 187,
+      'migration' => '2020_04_01_091539_AddColumnVehiculoMantenimiento',
+      'batch' => 63,
+    ),
+    186 => 
+    array (
+      'id' => 188,
+      'migration' => '2020_05_01_082924_TablaPwCustomHtml',
+      'batch' => 64,
+    ),
+    187 => 
+    array (
+      'id' => 189,
+      'migration' => '2020_05_02_090003_TablaWidgetsElementsDesign',
+      'batch' => 65,
+    ),
+    188 => 
+    array (
+      'id' => 190,
+      'migration' => '2020_05_04_043046_TablaPwPqr',
+      'batch' => 66,
+    ),
+    189 => 
+    array (
+      'id' => 191,
+      'migration' => '2020_05_31_161234_CreateAddColumnsContratoTable',
+      'batch' => 67,
+    ),
+    190 => 
+    array (
+      'id' => 192,
+      'migration' => '2020_06_01_114853_AddColumnContratoTable',
+      'batch' => 67,
+    ),
+    191 => 
+    array (
+      'id' => 193,
+      'migration' => '2020_06_04_101956_AddColumnPlanillacTable',
+      'batch' => 67,
+    ),
+    192 => 
+    array (
+      'id' => 194,
+      'migration' => '2020_06_07_064713_AddColumnDocumentosconductorTable',
+      'batch' => 67,
+    ),
+    193 => 
+    array (
+      'id' => 195,
+      'migration' => '2020_06_07_070425_AddColumnMantenimientoTable',
+      'batch' => 67,
+    ),
+    194 => 
+    array (
+      'id' => 196,
+      'migration' => '2020_06_14_182406_AddColumnNavegacionTable',
+      'batch' => 68,
+    ),
+    195 => 
+    array (
+      'id' => 197,
+      'migration' => '2020_06_15_095128_create_comparallaxes_table',
+      'batch' => 68,
+    ),
+    196 => 
+    array (
+      'id' => 198,
+      'migration' => '2020_06_15_151324_create_stickies_table',
+      'batch' => 68,
+    ),
+    197 => 
+    array (
+      'id' => 199,
+      'migration' => '2020_06_15_151920_create_stickybotons_table',
+      'batch' => 68,
+    ),
+    198 => 
+    array (
+      'id' => 200,
+      'migration' => '2020_06_25_090727_create_articlecategories_table',
+      'batch' => 69,
+    ),
+    199 => 
+    array (
+      'id' => 201,
+      'migration' => '2020_07_06_114925_create_pdvs_table',
+      'batch' => 70,
+    ),
+    200 => 
+    array (
+      'id' => 202,
+      'migration' => '2020_07_06_114954_create_apertura_encabezados_table',
+      'batch' => 70,
+    ),
+    201 => 
+    array (
+      'id' => 203,
+      'migration' => '2020_07_06_115001_create_cierre_encabezados_table',
+      'batch' => 70,
+    ),
+    202 => 
+    array (
+      'id' => 204,
+      'migration' => '2020_07_06_115010_create_factura_pos_table',
+      'batch' => 71,
+    ),
+    203 => 
+    array (
+      'id' => 205,
+      'migration' => '2020_07_06_115018_create_doc_registros_table',
+      'batch' => 71,
+    ),
+    204 => 
+    array (
+      'id' => 206,
+      'migration' => '2020_07_06_115028_create_movimientos_table',
+      'batch' => 71,
+    ),
+    205 => 
+    array (
+      'id' => 207,
+      'migration' => '2020_08_11_163412_create_tiporesponsables_table',
+      'batch' => 72,
+    ),
+    206 => 
+    array (
+      'id' => 208,
+      'migration' => '2020_08_11_163433_create_responsableestudiantes_table',
+      'batch' => 72,
+    ),
+    207 => 
+    array (
+      'id' => 209,
+      'migration' => '2020_11_17_105719_create_resultado_envio_documentos_table',
+      'batch' => 73,
+    ),
+    208 => 
+    array (
+      'id' => 210,
+      'migration' => '2020_11_19_111059_addcolumnfootertable',
+      'batch' => 74,
+    ),
+    209 => 
+    array (
+      'id' => 211,
+      'migration' => '2020_11_19_151905_addcolumn2footertable',
+      'batch' => 74,
+    ),
+    210 => 
+    array (
+      'id' => 212,
+      'migration' => '2020_11_23_142004_addcolumnnavegaciontable',
+      'batch' => 75,
+    ),
+    211 => 
+    array (
+      'id' => 213,
+      'migration' => '2020_11_25_102938_Addcolumnitemslidertable',
+      'batch' => 75,
+    ),
+    212 => 
+    array (
+      'id' => 214,
+      'migration' => '2020_11_25_145835_Addcolumnlogintable',
+      'batch' => 75,
+    ),
+    213 => 
+    array (
+      'id' => 215,
+      'migration' => '2020_11_26_103601_Changecolumnenlacefootertable',
+      'batch' => 75,
+    ),
+    214 => 
+    array (
+      'id' => 216,
+      'migration' => '2020_11_26_134434_Addcolumnservicetable',
+      'batch' => 75,
+    ),
+    215 => 
+    array (
+      'id' => 217,
+      'migration' => '2020_11_26_175012_Addcolumnpropietariostable',
+      'batch' => 75,
+    ),
+    216 => 
+    array (
+      'id' => 218,
+      'migration' => '2020_11_27_084520_Addcolumnvehiculotable',
+      'batch' => 75,
+    ),
+    217 => 
+    array (
+      'id' => 219,
+      'migration' => '2020_11_27_120001_create_vehiculoconductors_table',
+      'batch' => 76,
+    ),
+    218 => 
+    array (
+      'id' => 220,
+      'migration' => '2020_11_27_151930_Addcolumncontratostable',
+      'batch' => 76,
+    ),
+    219 => 
+    array (
+      'id' => 221,
+      'migration' => '2020_11_30_071315_Changecolumnitemserviciostable',
+      'batch' => 76,
+    ),
+    220 => 
+    array (
+      'id' => 222,
+      'migration' => '2020_11_30_123715_create_teams_table',
+      'batch' => 76,
+    ),
+    221 => 
+    array (
+      'id' => 223,
+      'migration' => '2020_11_30_124957_create_teamitems_table',
+      'batch' => 76,
+    ),
+    222 => 
+    array (
+      'id' => 224,
+      'migration' => '2020_12_02_070728_Addcolumnteamstable',
+      'batch' => 76,
+    ),
+    223 => 
+    array (
+      'id' => 225,
+      'migration' => '2020_12_02_094930_create_prices_table',
+      'batch' => 76,
+    ),
+    224 => 
+    array (
+      'id' => 226,
+      'migration' => '2020_12_02_095101_create_priceitems_table',
+      'batch' => 76,
+    ),
+    225 => 
+    array (
+      'id' => 227,
+      'migration' => '2020_12_02_144030_Addcolumnpreguntastable',
+      'batch' => 76,
+    ),
+    226 => 
+    array (
+      'id' => 228,
+      'migration' => '2020_12_02_162717_Addcolumnitempreguntastable',
+      'batch' => 76,
+    ),
+    227 => 
+    array (
+      'id' => 230,
+      'migration' => '2020_12_03_130256_Addcolumnabouttable',
+      'batch' => 76,
+    ),
+    228 => 
+    array (
+      'id' => 231,
+      'migration' => '2020_12_03_155548_Addcolumnarticlesetuptable',
+      'batch' => 76,
+    ),
+    229 => 
+    array (
+      'id' => 232,
+      'migration' => '2020_12_04_081841_Addcolumntestimonialestable',
+      'batch' => 77,
+    ),
+    230 => 
+    array (
+      'id' => 233,
+      'migration' => '2020_12_04_111423_create_fuentes_table',
+      'batch' => 77,
+    ),
+    231 => 
+    array (
+      'id' => 234,
+      'migration' => '2020_12_04_120540_create_configuracionfuentes_table',
+      'batch' => 77,
+    ),
+    232 => 
+    array (
+      'id' => 235,
+      'migration' => '2020_12_07_080035_create_sga_estudiante_reconocimientos_table',
+      'batch' => 78,
+    ),
+    233 => 
+    array (
+      'id' => 237,
+      'migration' => '2020_02_28_093619_create_pw_clientes_table',
+      'batch' => 79,
+    ),
+    234 => 
+    array (
+      'id' => 238,
+      'migration' => '2020_12_02_184020_create_clienteitems_table',
+      'batch' => 79,
+    ),
+    235 => 
+    array (
+      'id' => 239,
+      'migration' => '2020_12_07_074520_Addcolumnandchangecontratostable',
+      'batch' => 80,
+    ),
+    236 => 
+    array (
+      'id' => 240,
+      'migration' => '2020_12_10_060839_create_nomina_novedad_tnls_table',
+      'batch' => 81,
+    ),
+    237 => 
+    array (
+      'id' => 241,
+      'migration' => '2020_12_10_060941_create_nomina_movimiento_ibc_empleados_table',
+      'batch' => 81,
+    ),
+    238 => 
+    array (
+      'id' => 242,
+      'migration' => '2020_12_10_060953_create_nomina_clase_riesgo_laborals_table',
+      'batch' => 81,
+    ),
+    239 => 
+    array (
+      'id' => 243,
+      'migration' => '2020_12_12_071858_create_nivelacions_table',
+      'batch' => 82,
+    ),
+    240 => 
+    array (
+      'id' => 244,
+      'migration' => '2020_12_14_144217_Addcolumnfuentenavegaciontable',
+      'batch' => 83,
+    ),
+    241 => 
+    array (
+      'id' => 245,
+      'migration' => '2020_12_14_152338_Addcolumnfuenteslidertable',
+      'batch' => 83,
+    ),
+    242 => 
+    array (
+      'id' => 246,
+      'migration' => '2020_12_14_152539_Addcolumnfuenteserviciostable',
+      'batch' => 83,
+    ),
+    243 => 
+    array (
+      'id' => 247,
+      'migration' => '2020_12_14_152705_Addcolumnfuenteteamtable',
+      'batch' => 83,
+    ),
+    244 => 
+    array (
+      'id' => 248,
+      'migration' => '2020_12_14_152826_Addcolumnfuenepricetable',
+      'batch' => 83,
+    ),
+    245 => 
+    array (
+      'id' => 249,
+      'migration' => '2020_12_14_152935_Addcolumnfuentepreguntastable',
+      'batch' => 83,
+    ),
+    246 => 
+    array (
+      'id' => 250,
+      'migration' => '2020_12_14_153041_Addcolumnfuenteclientestable',
+      'batch' => 83,
+    ),
+    247 => 
+    array (
+      'id' => 251,
+      'migration' => '2020_12_14_153134_Addcolumnfuentetestimonialestable',
+      'batch' => 83,
+    ),
+    248 => 
+    array (
+      'id' => 252,
+      'migration' => '2020_12_14_153244_Addcolumnfuentefootertable',
+      'batch' => 83,
+    ),
+    249 => 
+    array (
+      'id' => 253,
+      'migration' => '2020_12_14_153354_Addcolumnfuenteabouttable',
+      'batch' => 83,
+    ),
+    250 => 
+    array (
+      'id' => 254,
+      'migration' => '2020_12_14_153512_Addcolumnfuentearticlesetuptable',
+      'batch' => 83,
+    ),
+    251 => 
+    array (
+      'id' => 255,
+      'migration' => '2020_12_14_153626_Addcolumnfuentecontactenostable',
+      'batch' => 83,
+    ),
+    252 => 
+    array (
+      'id' => 256,
+      'migration' => '2020_12_14_153730_Addcolumnfuentemodaltable',
+      'batch' => 83,
+    ),
+    253 => 
+    array (
+      'id' => 257,
+      'migration' => '2021_01_03_054830_create_libro_vacacions_table',
+      'batch' => 84,
+    ),
+    254 => 
+    array (
+      'id' => 258,
+      'migration' => '2021_01_04_062715_create_cambio_salarios_table',
+      'batch' => 85,
+    ),
+    255 => 
+    array (
+      'id' => 259,
+      'migration' => '2021_01_05_062252_create_dia_festivos_table',
+      'batch' => 86,
+    ),
+    256 => 
+    array (
+      'id' => 266,
+      'migration' => '2021_01_07_031835_create_planilla_generadas_table',
+      'batch' => 87,
+    ),
+    257 => 
+    array (
+      'id' => 267,
+      'migration' => '2021_01_07_031958_create_tipo_cotizantes_table',
+      'batch' => 87,
+    ),
+    258 => 
+    array (
+      'id' => 268,
+      'migration' => '2021_01_07_032017_create_pila_datos_empresas_table',
+      'batch' => 87,
+    ),
+    259 => 
+    array (
+      'id' => 269,
+      'migration' => '2021_01_07_032032_create_pila_novedades_table',
+      'batch' => 87,
+    ),
+    260 => 
+    array (
+      'id' => 270,
+      'migration' => '2021_01_07_032044_create_pila_parafiscales_table',
+      'batch' => 87,
+    ),
+    261 => 
+    array (
+      'id' => 271,
+      'migration' => '2021_01_07_032057_create_pila_pensions_table',
+      'batch' => 87,
+    ),
+    262 => 
+    array (
+      'id' => 272,
+      'migration' => '2021_01_07_032114_create_pila_riesgo_laborals_table',
+      'batch' => 87,
+    ),
+    263 => 
+    array (
+      'id' => 273,
+      'migration' => '2021_01_07_032123_create_pila_saluds_table',
+      'batch' => 87,
+    ),
+    264 => 
+    array (
+      'id' => 274,
+      'migration' => '2021_01_07_064059_create_empleado_planillas_table',
+      'batch' => 88,
+    ),
+    265 => 
+    array (
+      'id' => 275,
+      'migration' => '2020_12_23_152217_Agendasalud',
+      'batch' => 89,
+    ),
+    266 => 
+    array (
+      'id' => 276,
+      'migration' => '2020_12_23_152240_Citamedica',
+      'batch' => 89,
+    ),
+    267 => 
+    array (
+      'id' => 277,
+      'migration' => '2020_12_24_100134_Changecolumnscontratostable',
+      'batch' => 89,
+    ),
+    268 => 
+    array (
+      'id' => 278,
+      'migration' => '2021_01_17_172349_Addcolumnpwitemserviciostable',
+      'batch' => 89,
+    ),
+    269 => 
+    array (
+      'id' => 279,
+      'migration' => '2021_01_18_070958_Addcolumnpwaboutusestable',
+      'batch' => 89,
+    ),
+    270 => 
+    array (
+      'id' => 280,
+      'migration' => '2021_01_19_104027_create_prestaciones_liquidadas_table',
+      'batch' => 90,
+    ),
+    271 => 
+    array (
+      'id' => 281,
+      'migration' => '2021_01_22_072814_Addcolumnspwgaleriastable',
+      'batch' => 91,
+    ),
+    272 => 
+    array (
+      'id' => 282,
+      'migration' => '2021_01_22_165049_Addcolumnspwarchivostable',
+      'batch' => 91,
+    ),
+    273 => 
+    array (
+      'id' => 283,
+      'migration' => '2021_01_23_005130_Addcolumspwstickiestable',
+      'batch' => 91,
+    ),
+    274 => 
+    array (
+      'id' => 284,
+      'migration' => '2021_01_23_015901_Addcolumspwpqrformtable',
+      'batch' => 91,
+    ),
+    275 => 
+    array (
+      'id' => 285,
+      'migration' => '2021_01_26_194117_addalphapwstickybotontable',
+      'batch' => 91,
+    ),
+    276 => 
+    array (
+      'id' => 286,
+      'migration' => '2021_02_07_063812_create_programacion_aula_virtuals_table',
+      'batch' => 91,
+    ),
+    277 => 
+    array (
+      'id' => 287,
+      'migration' => '2021_02_09_121422_create_parametros_retefuente_empleados_table',
+      'batch' => 92,
+    ),
+  ),
   'permissions' => 
   array (
     0 => 
@@ -6382,15 +8053,15 @@
       'id' => 451,
       'core_app_id' => 17,
       'modelo_id' => 0,
-      'name' => 'nom_proc_parafiscales',
-      'descripcion' => 'Cálculo seg. soc. y parafiscales',
-      'url' => 'index_procesos/nomina.procesos.generar_parafiscales',
+      'name' => 'nom_proc_porcentaje_fijo_retefuente',
+      'descripcion' => 'Cálculo porcentaje fijo ReteFuente (P2)',
+      'url' => 'index_procesos/nomina.procesos.calcular_porcentaje_fijo_procedimiento_2_retefuente',
       'parent' => 448,
       'orden' => 4,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-10-27 16:24:30',
-      'updated_at' => '2020-12-02 03:32:03',
+      'updated_at' => '2021-02-09 06:48:27',
     ),
     426 => 
     array (
@@ -7030,12 +8701,12 @@
       'name' => 'nom_consolidados_prestaciones_sociales',
       'descripcion' => 'Consolidados de prestaciones sociales',
       'url' => 'web',
-      'parent' => 448,
-      'orden' => 2,
+      'parent' => 225,
+      'orden' => 30,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-12-23 07:15:17',
-      'updated_at' => '2020-12-23 07:22:51',
+      'updated_at' => '2021-02-09 16:51:34',
     ),
     469 => 
     array (
@@ -7106,11 +8777,11 @@
       'descripcion' => 'Planilla integrada',
       'url' => 'nom_pila_catalogos/499',
       'parent' => 448,
-      'orden' => 26,
+      'orden' => 3,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2021-01-07 05:50:51',
-      'updated_at' => '2021-01-07 05:52:04',
+      'updated_at' => '2021-02-09 16:56:43',
     ),
     474 => 
     array (
@@ -7411,6 +9082,51 @@
       'fa_icon' => 'list',
       'created_at' => '2021-02-05 10:14:16',
       'updated_at' => '2021-02-05 10:15:03',
+    ),
+    494 => 
+    array (
+      'id' => 520,
+      'core_app_id' => 5,
+      'modelo_id' => 284,
+      'name' => 'sga_programacion_eventos_aula_virtual',
+      'descripcion' => 'Programación de eventos Aula Virtual',
+      'url' => 'web',
+      'parent' => 334,
+      'orden' => 10,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2021-02-07 07:26:51',
+      'updated_at' => '2021-02-07 07:26:51',
+    ),
+    495 => 
+    array (
+      'id' => 521,
+      'core_app_id' => 17,
+      'modelo_id' => 285,
+      'name' => 'nom_parametros_retefuente_empleados',
+      'descripcion' => 'Parámetros de ReteFuente empleados',
+      'url' => 'web',
+      'parent' => 225,
+      'orden' => 27,
+      'enabled' => 1,
+      'fa_icon' => 'calendar',
+      'created_at' => '2021-02-09 12:24:50',
+      'updated_at' => '2021-02-09 12:27:29',
+    ),
+    496 => 
+    array (
+      'id' => 522,
+      'core_app_id' => 17,
+      'modelo_id' => 0,
+      'name' => 'nom_proc_generar_archivo_consignacion_cesantias',
+      'descripcion' => 'Generar archivo consignación Cesantías',
+      'url' => 'index_procesos/nomina.procesos.generar_archivo_consignacion_cesantias',
+      'parent' => 448,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2021-02-09 16:54:01',
+      'updated_at' => '2021-02-09 17:11:08',
     ),
   ),
   'roles' => 
@@ -18342,6 +20058,54 @@
       'orden' => 0,
       'permission_id' => 519,
       'role_id' => 20,
+    ),
+    1794 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 520,
+      'role_id' => 1,
+    ),
+    1795 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 520,
+      'role_id' => 9,
+    ),
+    1796 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 521,
+      'role_id' => 1,
+    ),
+    1797 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 521,
+      'role_id' => 3,
+    ),
+    1798 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 521,
+      'role_id' => 9,
+    ),
+    1799 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 522,
+      'role_id' => 1,
+    ),
+    1800 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 522,
+      'role_id' => 3,
+    ),
+    1801 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 522,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -34663,10 +36427,10 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'atributos' => '',
       'definicion' => '',
       'requerido' => 0,
-      'editable' => 1,
+      'editable' => 0,
       'unico' => 0,
       'created_at' => '2020-12-14 03:16:06',
-      'updated_at' => '2020-12-14 03:16:34',
+      'updated_at' => '2021-02-09 14:41:45',
     ),
     1013 => 
     array (
@@ -34679,10 +36443,10 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'atributos' => '',
       'definicion' => '',
       'requerido' => 0,
-      'editable' => 1,
+      'editable' => 0,
       'unico' => 0,
       'created_at' => '2020-12-14 03:17:19',
-      'updated_at' => '2020-12-14 03:18:03',
+      'updated_at' => '2021-02-09 14:21:27',
     ),
     1014 => 
     array (
@@ -36699,6 +38463,310 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'unico' => 0,
       'created_at' => '2021-02-02 23:52:22',
       'updated_at' => '2021-02-03 00:01:49',
+    ),
+    1140 => 
+    array (
+      'id' => 1146,
+      'descripcion' => 'Tipo de evento',
+      'tipo' => 'select',
+      'name' => 'tipo_evento',
+      'opciones' => '{"clase_normal":"Clase normal","descanso":"Descanso","otro":"Otro"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 11:31:46',
+    ),
+    1141 => 
+    array (
+      'id' => 1147,
+      'descripcion' => 'Día de la semana',
+      'tipo' => 'select',
+      'name' => 'dia_semana',
+      'opciones' => '{"":"","lunes":"Lunes","martes":"Martes","miercoles":"Miércoles","jueves":"Jueves","viernes":"Viernes","sabado":"Sábado","domingo":"Domingo"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 08:36:22',
+    ),
+    1142 => 
+    array (
+      'id' => 1148,
+      'descripcion' => 'Hora inicio',
+      'tipo' => 'hora',
+      'name' => 'hora_inicio',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 09:46:22',
+    ),
+    1143 => 
+    array (
+      'id' => 1149,
+      'descripcion' => 'Guía académica',
+      'tipo' => 'select',
+      'name' => 'guia_academica_id',
+      'opciones' => '{"":""}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 11:31:38',
+    ),
+    1144 => 
+    array (
+      'id' => 1150,
+      'descripcion' => 'Actividad escolar',
+      'tipo' => 'select',
+      'name' => 'actividad_escolar_id',
+      'opciones' => '{"":""}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 0,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 11:31:31',
+    ),
+    1145 => 
+    array (
+      'id' => 1151,
+      'descripcion' => 'Enlace reunión virtual',
+      'tipo' => 'bsTextArea',
+      'name' => 'enlace_reunion_virtual',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 09:46:22',
+      'updated_at' => '2021-02-07 09:50:15',
+    ),
+    1146 => 
+    array (
+      'id' => 1152,
+      'descripcion' => 'Descripción',
+      'tipo' => 'bsText',
+      'name' => 'descripcion',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 11:07:47',
+      'updated_at' => '2021-02-07 11:07:55',
+    ),
+    1147 => 
+    array (
+      'id' => 1153,
+      'descripcion' => 'Fecha',
+      'tipo' => 'fecha',
+      'name' => 'fecha',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-07 11:10:31',
+      'updated_at' => '2021-02-07 11:10:43',
+    ),
+    1148 => 
+    array (
+      'id' => 1154,
+      'descripcion' => 'Procedimiento',
+      'tipo' => 'select',
+      'name' => 'procedimiento',
+      'opciones' => '{"1":"Procedimiento 1","2":"Procedimiento 2"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1149 => 
+    array (
+      'id' => 1155,
+      'descripcion' => 'Ded. pago alimentación terceros',
+      'tipo' => 'bsText',
+      'name' => 'deduccion_pago_terceros_alimentacion',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1150 => 
+    array (
+      'id' => 1156,
+      'descripcion' => 'Ded. viaticos ocacionales',
+      'tipo' => 'bsText',
+      'name' => 'deduccion_viaticos_ocacionales',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1151 => 
+    array (
+      'id' => 1157,
+      'descripcion' => 'Ded. medios transporte',
+      'tipo' => 'bsText',
+      'name' => 'deduccion_medios_transporte',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1152 => 
+    array (
+      'id' => 1158,
+      'descripcion' => 'Ded. aportes pension voluntaria',
+      'tipo' => 'bsText',
+      'name' => 'deduccion_aportes_pension_voluntaria',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1153 => 
+    array (
+      'id' => 1159,
+      'descripcion' => 'Ded. ahorros cuentas afc',
+      'tipo' => 'bsText',
+      'name' => 'deduccion_ahorros_cuentas_afc',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1154 => 
+    array (
+      'id' => 1160,
+      'descripcion' => 'Ded. rentas trabajo exentas',
+      'tipo' => 'bsText',
+      'name' => 'deduccion_rentas_trabajo_exentas',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1155 => 
+    array (
+      'id' => 1161,
+      'descripcion' => 'Ded. intereses vivienda',
+      'tipo' => 'bsText',
+      'name' => 'deduccion_intereses_vivienda',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1156 => 
+    array (
+      'id' => 1162,
+      'descripcion' => 'Ded. salud prepagada',
+      'tipo' => 'bsText',
+      'name' => 'deduccion_salud_prepagada',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1157 => 
+    array (
+      'id' => 1163,
+      'descripcion' => 'Ded. por dependientes',
+      'tipo' => 'select',
+      'name' => 'deduccion_por_dependientes',
+      'opciones' => '{"1":"Si aplica (10%)","0":"No aplica"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
+    ),
+    1158 => 
+    array (
+      'id' => 1164,
+      'descripcion' => 'Porcentaje fijo',
+      'tipo' => 'bsText',
+      'name' => 'porcentaje_fijo',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-02-09 09:46:22',
+      'updated_at' => '2021-02-09 09:46:22',
     ),
   ),
   'sys_modelos' => 
@@ -42708,6 +44776,50 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2021-01-21 12:18:04',
       'updated_at' => '2021-01-21 12:18:33',
+    ),
+    273 => 
+    array (
+      'id' => 284,
+      'descripcion' => 'Programación de eventos Aula Virtual',
+      'modelo' => 'ProgramacionAulaVirtual',
+      'name_space' => 'App\\AcademicoEstudiante\\ProgramacionAulaVirtual',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2021-02-07 09:13:22',
+      'updated_at' => '2021-02-07 09:13:22',
+    ),
+    274 => 
+    array (
+      'id' => 285,
+      'descripcion' => 'Parametros de Retefuente empleados',
+      'modelo' => 'ParametrosRetefuenteEmpleado',
+      'name_space' => 'App\\Nomina\\ParametrosRetefuenteEmpleado',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2021-02-09 09:13:22',
+      'updated_at' => '2021-02-09 09:13:22',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -58902,6 +61014,216 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 20,
       'core_modelo_id' => 83,
       'core_campo_id' => 1145,
+    ),
+    2313 => 
+    array (
+      'id' => 2650,
+      'orden' => 2,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1146,
+    ),
+    2314 => 
+    array (
+      'id' => 2652,
+      'orden' => 6,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1147,
+    ),
+    2315 => 
+    array (
+      'id' => 2653,
+      'orden' => 8,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1148,
+    ),
+    2316 => 
+    array (
+      'id' => 2656,
+      'orden' => 14,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1149,
+    ),
+    2317 => 
+    array (
+      'id' => 2657,
+      'orden' => 16,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1150,
+    ),
+    2318 => 
+    array (
+      'id' => 2658,
+      'orden' => 18,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1151,
+    ),
+    2319 => 
+    array (
+      'id' => 2659,
+      'orden' => 20,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 22,
+    ),
+    2320 => 
+    array (
+      'id' => 2660,
+      'orden' => 99,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 94,
+    ),
+    2321 => 
+    array (
+      'id' => 2661,
+      'orden' => 99,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 95,
+    ),
+    2322 => 
+    array (
+      'id' => 2663,
+      'orden' => 12,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 600,
+    ),
+    2323 => 
+    array (
+      'id' => 2664,
+      'orden' => 10,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 311,
+    ),
+    2324 => 
+    array (
+      'id' => 2665,
+      'orden' => 3,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 123,
+    ),
+    2325 => 
+    array (
+      'id' => 2666,
+      'orden' => 99,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 319,
+    ),
+    2326 => 
+    array (
+      'id' => 2667,
+      'orden' => 4,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1152,
+    ),
+    2327 => 
+    array (
+      'id' => 2668,
+      'orden' => 5,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 1153,
+    ),
+    2328 => 
+    array (
+      'id' => 2670,
+      'orden' => 11,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 329,
+    ),
+    2329 => 
+    array (
+      'id' => 2671,
+      'orden' => 13,
+      'core_modelo_id' => 284,
+      'core_campo_id' => 97,
+    ),
+    2330 => 
+    array (
+      'id' => 2672,
+      'orden' => 2,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 999,
+    ),
+    2331 => 
+    array (
+      'id' => 2673,
+      'orden' => 4,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1154,
+    ),
+    2332 => 
+    array (
+      'id' => 2674,
+      'orden' => 6,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1164,
+    ),
+    2333 => 
+    array (
+      'id' => 2675,
+      'orden' => 8,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1155,
+    ),
+    2334 => 
+    array (
+      'id' => 2676,
+      'orden' => 10,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1156,
+    ),
+    2335 => 
+    array (
+      'id' => 2677,
+      'orden' => 12,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1157,
+    ),
+    2336 => 
+    array (
+      'id' => 2678,
+      'orden' => 14,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1158,
+    ),
+    2337 => 
+    array (
+      'id' => 2679,
+      'orden' => 16,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1159,
+    ),
+    2338 => 
+    array (
+      'id' => 2680,
+      'orden' => 18,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1160,
+    ),
+    2339 => 
+    array (
+      'id' => 2681,
+      'orden' => 20,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1161,
+    ),
+    2340 => 
+    array (
+      'id' => 2682,
+      'orden' => 22,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1162,
+    ),
+    2341 => 
+    array (
+      'id' => 2683,
+      'orden' => 7,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 1163,
+    ),
+    2342 => 
+    array (
+      'id' => 2684,
+      'orden' => 24,
+      'core_modelo_id' => 285,
+      'core_campo_id' => 22,
     ),
   ),
   'sys_reportes' => 

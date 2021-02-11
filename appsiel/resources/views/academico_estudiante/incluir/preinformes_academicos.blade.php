@@ -1,4 +1,4 @@
-<div class="well">
+<div class="well" style="background-color: #d2d2d2; padding: 10px; border-radius: 5px;">
 	
 	<h3>Consultar preinformes</h3>
 	<hr>

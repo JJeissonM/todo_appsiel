@@ -28,26 +28,26 @@ class ProfesorController extends Controller
      * Elimina un profesor.
      *
      */
-    public function eliminar_profesor($id)
+    public function eliminar_profesor( $user_id )
     {
-        $registro = User::find($id);
+        $registro = User::find( $user_id );
         
         // Verificación 1: Tiene carga académica
-        $cantidad = AsignacionProfesor::where('id_user',$id )->count();
+        $cantidad = AsignacionProfesor::where('id_user', $user_id )->count();
 
         if($cantidad != 0){
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Profesor NO puede ser eliminado. Tiene carga académica asignada.');
         }
         
         // Verificación 2: Tiene curso asignado como director de grupo
-        $cantidad = CursoTieneDirectorGrupo::where('user_id',$id )->count();
+        $cantidad = CursoTieneDirectorGrupo::where('user_id', $user_id )->count();
 
         if($cantidad != 0){
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Profesor NO puede ser eliminado. Está a asignado a un curso como director de grupo.');
         }
         
         // Verificación 3
-        $cantidad = Acl::where('user_id',$id )->count();
+        $cantidad = Acl::where('user_id', $user_id )->count();
 
         if($cantidad != 0){
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Profesor NO puede ser eliminado. Tiene restricciones de control de acceso (ACL) asignadas.');
@@ -55,7 +55,7 @@ class ProfesorController extends Controller
         
         // Verificación 4: Planes de clases
 
-        $cantidad = Acl::where('user_id',$id )->count();
+        $cantidad = Acl::where('user_id', $user_id )->count();
 
         if($cantidad != 0){
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Profesor NO puede ser eliminado. Tiene restricciones de control de acceso (ACL) asignadas.');

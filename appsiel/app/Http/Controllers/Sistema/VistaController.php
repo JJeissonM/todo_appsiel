@@ -716,7 +716,8 @@ class VistaController extends Controller
 
         $texto_opciones = $campo['opciones'];
         $vec['']='';
-        switch (substr($texto_opciones,0,strpos($texto_opciones, '_'))) {
+        switch (substr($texto_opciones,0,strpos($texto_opciones, '_')))
+        {
             case 'table':
                 $tabla = substr($texto_opciones,6,strlen($texto_opciones)-1);
 
@@ -746,7 +747,7 @@ class VistaController extends Controller
                 
                 break;
         }
-
+        
         if ( isset($registro) ) 
         {
             if (count($registro)==0) {

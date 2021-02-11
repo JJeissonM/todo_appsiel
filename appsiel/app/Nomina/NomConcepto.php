@@ -86,8 +86,9 @@ class NomConcepto extends Model
                 'nom_conceptos.valor_fijo AS VLR_FIJO',
                 'nom_conceptos.naturaleza AS NATURALEZA',
                 'nom_agrupaciones_conceptos.descripcion AS AGRUPACIÓN',
+                'nom_conceptos.forma_parte_basico AS FORMA_PARTE_BASICO',
                 'nom_conceptos.estado AS ESTADO',
-                'nom_conceptos.id AS campo9'
+                'nom_conceptos.id AS ID'
             )
             ->where("nom_modos_liquidacion.descripcion", "LIKE", "%$search%")
             ->orWhere("nom_conceptos.descripcion", "LIKE", "%$search%")

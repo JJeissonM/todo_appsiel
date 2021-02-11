@@ -6,10 +6,10 @@
 
 
 // Asignaciones de Carga Académica
-Route::get('academico_docente/profesores/create_asignacion/{id}', 'AcademicoDocente\AsignacionProfesorController@create_asignacion');
+Route::get('academico_docente/profesores/create_asignacion/{user_id}', 'AcademicoDocente\AsignacionProfesorController@create_asignacion');
 Route::get('academico_docente/profesores/buscar_asignaturas/{curso_id}/{user_id}', 'AcademicoDocente\AsignacionProfesorController@buscar_asignaturas');
 Route::post('academico_docente/profesores/guardar_asignacion', 'AcademicoDocente\AsignacionProfesorController@guardar_asignacion');
-Route::get('academico_docente/profesores/eliminar_asignacion/{id}', 'AcademicoDocente\AsignacionProfesorController@eliminar_asignacion');
+Route::get('academico_docente/profesores/eliminar_asignacion/{user_id}', 'AcademicoDocente\AsignacionProfesorController@eliminar_asignacion');
 Route::get('academico_docente/profesores/revisar_asignaciones', 'AcademicoDocente\AsignacionProfesorController@revisar_asignaciones');
 Route::get('academico_docente/get_tabla_carga_academica/{user_id}/{periodo_lectivo_id}', 'AcademicoDocente\AsignacionProfesorController@get_tabla_carga_academica');
 
@@ -21,7 +21,7 @@ Route::get('academico_docente/periodo_lectivo_tiene_carga_academica/{periodo_lec
 Route::get('academico_docente/get_carga_academica/{user_id}', 'AcademicoDocente\AsignacionProfesorController@get_carga_academica');
 
 
-Route::get('academico_docente/profesores/eliminar_profesor/{id}', 'AcademicoDocente\ProfesorController@eliminar_profesor');
+Route::get('academico_docente/profesores/eliminar_profesor/{user_id}', 'AcademicoDocente\ProfesorController@eliminar_profesor');
 Route::resource('academico_docente/profesores', 'AcademicoDocente\ProfesorController', ['except' => ['show']]);
 
 
@@ -53,7 +53,7 @@ Route::get('academico_docente/ingresar_metas/{curso_id}/{asignatura_id}','Califi
 Route::get('academico_docente/eliminar_metas/{curso_id}/{asignatura_id}/{logro_id}','Calificaciones\MetaController@eliminar_metas');
 Route::get('academico_docente/revisar_metas/{curso_id}/{asignatura_id}','Calificaciones\MetaController@revisar_metas');
 Route::get('academico_docente/modificar_metas/{curso_id}/{asignatura_id}/{logro_id}','Calificaciones\MetaController@modificar_metas');
-Route::put('academico_docente_guardar_meta/{id}','Calificaciones\MetaController@guardar_meta');
+Route::put('academico_docente_guardar_meta/{logro_id}','Calificaciones\MetaController@guardar_meta');
 Route::post('academico_docente_guardar_meta','Calificaciones\MetaController@guardar_meta');
 
 // Estudiantes
@@ -86,7 +86,14 @@ Route::post( 'sga_resumen_planes_clases', 'AcademicoDocente\ReportesController@r
 Route::post( 'sga_resumen_actividades_academicas', 'AcademicoDocente\ReportesController@resumen_actividades_academicas');
 
 
+
+// 				GUIAS ACADEMICAS
+Route::get('sga_get_options_guias_academicas/{curso_id}/{asignatura_id}/{user_id}', 'AcademicoDocente\GuiasAcademicasController@get_options_guias_academicas');
+
 Route::resource('sga_guias_academicas', 'AcademicoDocente\GuiasAcademicasController');
+
+// 				ACTIVIDADES ESCOLARES
+Route::get('sga_get_options_actividades_escolares/{curso_id}/{asignatura_id}/{user_id}', 'ActividadesEscolares\ActividadesEscolaresController@get_options_actividades_escolares');
 
 // El resource debe estar al final
 Route::resource('academico_docente', 'AcademicoDocente\AcademicoDocenteController');

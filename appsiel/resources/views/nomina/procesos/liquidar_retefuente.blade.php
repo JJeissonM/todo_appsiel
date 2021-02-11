@@ -1,13 +1,13 @@
 @extends('core.procesos.layout')
 
-@section( 'titulo', 'Liquidar prestaciones sociales' )
+@section( 'titulo', 'Liquidar ReteFuente' )
 
 @section('detalles')
 	<p>
 		Por esta opción, el sistema revisa todo pago laboral que debe incluirse en la base sujeta a retención en la fuente y procede a realizar el respectivo calculo según los procedimientos parametrizados y la tabla de retención configurada.
 	</p>
-	
 	<br>
+	<span class="text-info"> Si no se escoge una fecha final de promedios, se asume la fecha del Documento de liquidación. </span>
 @endsection
 
 @section('formulario')
@@ -19,6 +19,22 @@
 				<div class="col-sm-8">
 					{{ Form::select( 'nom_doc_encabezado_id', App\Nomina\NomDocEncabezado::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'nom_doc_encabezado_id', 'required' => 'required' ]) }}
 				</div>					 
+			</div>
+							
+			<div class="row" style="padding:5px;">
+				<label class="control-label col-sm-4" > <b> *Opciones de liquidación: </b> </label>
+
+				<div class="col-sm-8">
+					{{ Form::select( 'almacenar_registros', ['Previsualizar','Almacenar registros'],null, [ 'class' => 'form-control', 'id' => 'almacenar_registros' ]) }}
+				</div>
+			</div>
+
+			<div class="row" style="padding:5px;">
+				<label class="control-label col-sm-4" > <b> Fecha final para promedios: </b> </label>
+
+				<div class="col-sm-8">
+					{{ Form::date( 'fecha_final_promedios',null, [ 'class' => 'form-control', 'id' => 'fecha_final_promedios' ]) }}
+				</div>
 			</div>
 
 			<div class="row" style="padding:5px;">

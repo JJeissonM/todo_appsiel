@@ -224,14 +224,16 @@ class MatriculaController extends ModeloController
             $password = str_random(7);
             $user = User::crear_y_asignar_role($name, $email, 4, $password); // 4 = Role Estudiante
 
-            // Se almacena la contraseña temporalmente; cuando el usuario la cambie, se eliminará
-            PasswordReset::insert([
-                                    'email' => $email,
-                                    'token' => $password ]);
+            if ( is_null( $user ) )
+            {
+                $user_id = 0;
+            }else{
+                $user_id = $user->id;
+            }
 
             $datos = array_merge(
                                     $request->all(),
-                                    ['user_id' => $user->id]
+                                    ['user_id' => $user_id]
                                 );
 
             $estudiante = Estudiante::create( $datos );
