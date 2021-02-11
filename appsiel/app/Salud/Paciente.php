@@ -64,7 +64,7 @@ class Paciente extends Model
             ->orWhere("salud_pacientes.fecha_nacimiento", "LIKE", "%$search%")
             ->orWhere("salud_pacientes.genero", "LIKE", "%$search%")
             ->orWhere("salud_pacientes.grupo_sanguineo", "LIKE", "%$search%")
-            ->orderBy('salud_pacientes.created_at', 'DESC')
+            ->orderBy('salud_pacientes.codigo_historia_clinica', 'DESC')
             ->paginate($nro_registros);
     }
 
@@ -87,7 +87,7 @@ class Paciente extends Model
             ->orWhere("salud_pacientes.fecha_nacimiento", "LIKE", "%$search%")
             ->orWhere("salud_pacientes.genero", "LIKE", "%$search%")
             ->orWhere("salud_pacientes.grupo_sanguineo", "LIKE", "%$search%")
-            ->orderBy('salud_pacientes.created_at', 'DESC')
+            ->orderBy('salud_pacientes.codigo_historia_clinica', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
