@@ -155,7 +155,7 @@ class ActividadesEscolaresController extends ModeloController
 
         if ( is_null( $actividad ) )
         {
-            $actividad = (object)[ 'id' => 0, 'curso_id' => 0, 'asignatura_id' => 0, 'descripcion' => '', 'cuestionario_id' => 0 ]
+            $actividad = (object)[ 'id' => 0, 'curso_id' => 0, 'asignatura_id' => 0, 'descripcion' => '', 'cuestionario_id' => 0 ];
         }
 
         $periodo_lectivo = PeriodoLectivo::get_actual();
@@ -230,7 +230,7 @@ class ActividadesEscolaresController extends ModeloController
 
         if ( is_null( $actividad ) )
         {
-            $actividad = (object)[ 'id' => 0, 'curso_id' => 0, 'asignatura_id' => 0, 'descripcion' => '', 'cuestionario_id' => 0 ]
+            $actividad = (object)[ 'id' => 0, 'curso_id' => 0, 'asignatura_id' => 0, 'descripcion' => '', 'cuestionario_id' => 0 ];
         }
 
         $curso = Curso::find( $actividad->curso_id );
