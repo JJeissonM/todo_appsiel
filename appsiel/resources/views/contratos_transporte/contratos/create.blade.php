@@ -3,11 +3,11 @@
 @section('webstyle')
 <style>
 	.page {
-		padding: 50px;
+		padding: 5px;
 		-webkit-box-shadow: 0px 0px 20px -3px rgba(0, 0, 0, 0.9);
 		-moz-box-shadow: 0px 0px 20px -3px rgba(0, 0, 0, 0.9);
 		box-shadow: 0px 0px 20px -3px rgba(0, 0, 0, 0.9);
-		font-size: 16px;
+		font-size: 14px;
 	}
 
 	.border {
@@ -28,10 +28,10 @@
 		&nbsp;
 		<div class="row" style="padding: 20px;">
 			<div class="col-md-12">
-				<div class="panel panel-primary">
+				<!-- <div class="panel panel-primary"> -->
 					<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Crear Contrato</h4>
-					<div class="panel-body">
-						<div class="col-md-12 page">
+					<!-- <div class="panel-body"> -->
+						<div class="col-md-12 page"><!-- -->
 							{{ Form::open(['route'=>'cte_contratos.store','method'=>'post','class'=>'form-horizontal']) }}
 							<input type="hidden" name="variables_url" value="{{$variables_url}}" />
 							<input type="hidden" name="source" value="{{$source}}" />
@@ -178,8 +178,8 @@
 							</div>
 							</form>
 						</div>
-					</div>
-				</div>
+					<!-- </div> --> <!-- Panel Body -->
+				<!-- </div> -->
 			</div>
 		</div>
 	</div>

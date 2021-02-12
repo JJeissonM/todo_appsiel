@@ -203,12 +203,19 @@ class CalificacionController extends Controller
      */
     public function calificar2(Request $request)
     {
+        //determinar la cantidad de registros a mostrar
+        $nro_registros = 10;
+        //determinar la busqueda
+        $search = "";
+
         // Validación del ingreso de calificaciones
         $parametros = config('calificaciones');
 
-        if ($parametros['permitir_calificaciones_sin_logros'] == 'No') {
-            $logros = Logro::get_logros($this->colegio->id, $request->curso_id, $request->id_asignatura, $request->id_periodo);
-            if (empty($logros)) {
+        if ($parametros['permitir_calificaciones_sin_logros'] == 'No')
+        {
+            $logros = Logro::get_logros($this->colegio->id, $request->curso_id, $request->id_asignatura, $request->id_periodo, $nro_registros, $search);
+            if ( empty($logros) )
+            {
                 return redirect(url()->previous())->with('mensaje_error', 'No se permite ingresar calificaciones para las asignaturas que aún no tienen logros en el periodo seleccionado.');
             }
         }

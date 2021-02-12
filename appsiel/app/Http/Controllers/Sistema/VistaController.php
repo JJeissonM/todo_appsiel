@@ -263,8 +263,9 @@ class VistaController extends Controller
 
             case 'imagen':
                 // Si se manda como valor la ubicación de la imagen, se muestra
-                if ($campo['value']==null) {
-                    $imagen = '<img alt="foto.jpg" src="'.asset($url).'" style="width: 150px; height: 150px;" />';
+                if ($campo['value']==null)
+                {
+                    $imagen = '';
                 }else{
                     $url = $campo['value'];
                     $imagen = '<img alt="foto.jpg" src="'.asset($url).'" style="width: 150px; height: 150px;" />';

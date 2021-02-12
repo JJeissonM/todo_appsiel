@@ -288,12 +288,17 @@
 		}
 
 		var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
-		function validar_requeridos() {
+		function validar_requeridos()
+		{
 			control_requeridos = true;
 			$("*[required]").each(function() {
-				if ($(this).val() == "") {
+				if ($(this).val() == "")
+				{
 					$(this).focus();
-					alert('Este campo es requerido: ' + $(this).attr('name'));
+					//alert( 'Este campo es requerido: ' + $(this).attr('name') );
+
+					alert( 'Este campo es requerido: ' + $(this).parent().prev('label').text() );
+
 					control_requeridos = false;
 					return false;
 				}
@@ -303,7 +308,8 @@
 		}
 
 
-		function validar_input_numerico(obj) {
+		function validar_input_numerico(obj)
+		{
 			var control = true;
 			var valor = obj.val();
 
@@ -319,7 +325,8 @@
 			return control;
 		}
 
-		function get_fecha_hoy() {
+		function get_fecha_hoy()
+		{
 			var today = new Date();
 			var dd = today.getDate();
 			var mm = today.getMonth() + 1; //January is 0!
@@ -363,6 +370,22 @@
 				results = regex.exec(location.search);
 			return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 		}
+
+
+		function ocultar_campo_formulario( obj_input, valor_requerido )
+		{
+			obj_input.prop( 'required', valor_requerido);
+			obj_input.hide();
+			obj_input.parent().prev('label').text('');
+		}
+
+		function mostrar_campo_formulario( obj_input, texto_lbl, valor_requerido )
+		{
+			obj_input.prop( 'required', valor_requerido );
+			obj_input.show();
+			obj_input.parent().prev('label').text( texto_lbl );
+		}
+
 
 		var email_inicial = $("#email").val();
 

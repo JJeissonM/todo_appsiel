@@ -146,12 +146,17 @@ class ActividadesEscolaresController extends ModeloController
      * Vista Para la Aplicación Académico Docente
      *
      */
-    public function ver_actividad($actividad_id)
+    public function ver_actividad( $actividad_id )
     {
         $app = Aplicacion::find(Input::get('id'));
         $modelo = Modelo::find(Input::get('id_modelo'));
 
-        $actividad = ActividadEscolar::find($actividad_id);
+        $actividad = ActividadEscolar::find( $actividad_id );
+
+        if ( is_null( $actividad ) )
+        {
+            $actividad = (object)[ 'id' => 0, 'curso_id' => 0, 'asignatura_id' => 0, 'descripcion' => '', 'cuestionario_id' => 0 ]
+        }
 
         $periodo_lectivo = PeriodoLectivo::get_actual();
 
@@ -199,7 +204,7 @@ class ActividadesEscolaresController extends ModeloController
             $asignatura = (object)[ 'id' => 0, 'descripcion' => '' ];
         }
 
-        return view('calificaciones.actividades_escolares.ver_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','modelo','respuestas','estudiantes','estudiante', 'asignatura'));
+        return view('calificaciones.actividades_escolares.ver_actividad',compact( 'actividad','cuestionario', 'preguntas','miga_pan','modelo','respuestas','estudiantes','estudiante', 'asignatura', 'actividad_id') );
         
     }
 
@@ -207,7 +212,7 @@ class ActividadesEscolaresController extends ModeloController
      * Vista Para la Aplicación Académico Estudiante
      *
      */
-    public function hacer_actividad($actividad_id)
+    public function hacer_actividad( $actividad_id )
     {
         $user = Auth::user();
 
@@ -221,7 +226,12 @@ class ActividadesEscolaresController extends ModeloController
 
         $modelo = Modelo::where('modelo', 'actividades_escolares')->get()->first();
 
-        $actividad = ActividadEscolar::find($actividad_id);
+        $actividad = ActividadEscolar::find( $actividad_id );
+
+        if ( is_null( $actividad ) )
+        {
+            $actividad = (object)[ 'id' => 0, 'curso_id' => 0, 'asignatura_id' => 0, 'descripcion' => '', 'cuestionario_id' => 0 ]
+        }
 
         $curso = Curso::find( $actividad->curso_id );
         if (is_null($curso) )
@@ -270,7 +280,7 @@ class ActividadesEscolaresController extends ModeloController
             $respuesta = (object)['id'=>0,'respuesta_enviada'=>'','calificacion'=>'','adjunto'=>'','updated_at'=>''];
         }
 
-        return view('calificaciones.actividades_escolares.hacer_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','estudiante','modelo','respuestas','respuesta','asignatura'));        
+        return view('calificaciones.actividades_escolares.hacer_actividad',compact('actividad','cuestionario', 'preguntas','miga_pan','estudiante','modelo','respuestas','respuesta','asignatura','actividad_id'));        
     }
 
     /**

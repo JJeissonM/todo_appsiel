@@ -17,6 +17,13 @@
 	
 	<div class="container-fluid">
 		<div class="marco_formulario">
+
+			@if( $actividad->id == 0)
+				<?php
+					dd( 'La actividad ha sido eliminada o está inactiva. Por favor, consulte con el administrador. ID actividad = ' . $actividad_id );
+				?>
+			@endif
+			
 		    <h4>{{$actividad->descripcion}}</h4>
 		    <hr>
 

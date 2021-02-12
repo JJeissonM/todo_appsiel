@@ -21,9 +21,9 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 
-			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', ['estudiante' => $matricula_estudiante->estudiante ])
+			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', [ 'estudiante' => $matricula_estudiante->estudiante ])
 
-			@include('tesoreria.libretas_pagos.tabla_resumen_libreta_pagos', ['libreta' => $libreta ])
+			@include('tesoreria.libretas_pagos.tabla_resumen_libreta_pagos', [ 'libreta' => $libreta ])
 			
 			<h3>
 				Plan de pagos

@@ -132,8 +132,8 @@
 
 			var LineaNum = 0;
 
-			$('#teso_caja_id').parent().parent().hide();
-			$('#teso_cuenta_bancaria_id').parent().parent().hide();
+			ocultar_campo_formulario( $('#teso_caja_id'), false );
+			ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 
 			$('#cliente_input').focus();
 
@@ -223,7 +223,6 @@
 
 		    function seleccionar_cliente(item_sugerencia)
 		    {
-
 				// Asignar descripción al TextInput
 		        $('#cliente_input').val( item_sugerencia.html() );
 		        $('#cliente_input').css( 'background-color','white ' );
@@ -232,31 +231,6 @@
 		        $('#cliente_id').val( item_sugerencia.attr('data-tercero_id') );
 		        $('#referencia_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
 		        $('#core_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
-
-		        /*
-
-		        var forma_pago = 'contado';
-		        var dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
-		        if ( dias_plazo > 0 ) { forma_pago = 'credito'; }
-
-		        // Para llenar la fecha de vencimiento
-		        var fecha = new Date( $('#fecha').val() );
-				fecha.setDate( fecha.getDate() + (dias_plazo + 1) );
-				
-				var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
-				var dia = fecha.getDate();// + 1; // Se le suma 1,
-
-		        if( mes < 10 )
-		        {
-		        	mes = '0' + mes;
-		        }
-
-		        if( dia < 10 )
-		        {
-		        	dia = '0' + dia;
-		        }
-		        $('#fecha_vencimiento').val( fecha.getFullYear() + '-' +  mes + '-' + dia );
-				*/
 
 		        //Hacemos desaparecer el resto de sugerencias
 		        $('#clientes_suggestions').html('');
@@ -283,7 +257,6 @@
 		                $('#div_documentos_pendientes').html(data);
 		                $('.td_boton').show();
 		                $('.btn_agregar_documento').show();
-
 					});
 		    }
 
@@ -295,13 +268,8 @@
 
 				var input_valor_agregar = fila.find("input:text");
 
-				//$('#tabla_registros_documento').find('tbody:last').append( '<tr><td colspan="9"> vamos </td></tr>' );
-
 				if( validar_valor_aplicar( input_valor_agregar ) )
 				{
-					//var celda_borrar = "<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_documento'><i class='fa fa-btn fa-trash'></i></button> </td>";
-					//var celda_borrar = "<td> &nbsp; </td>";
-
 					// Se reemplaza al input caja de texto por el valor ingresado en ella misma 
 					var valor = input_valor_agregar.val();
 					fila.find("td:last").text( valor );
@@ -312,9 +280,7 @@
 					$('#tabla_registros_documento').find('tbody:last').append( fila );
 
 					$("#div_documentos_pendientes input:text").first().select();
-					calcular_totales();	
-
-					//fila.remove();	
+					calcular_totales();
 				}		
 			});
 
@@ -332,11 +298,8 @@
 				valor = parseFloat( valor );
 
 				var saldo_pendiente = fila.find('td.col_saldo_pendiente').attr('data-saldo_pendiente');
-				//console.log( "aja: " + saldo_pendiente );
+
 				saldo_pendiente = parseFloat( saldo_pendiente );
-
-				//console.log(valor);
-
 
 				if( valor > 0  && valor <= saldo_pendiente) {
 					input_valor_agregar.attr('style','background-color:white;');
@@ -355,21 +318,26 @@
 				$('#fecha').focus();
 			});
 
-			$('#teso_medio_recaudo_id').change(function(){
-				var valor = $(this).val().split('-');
-				if (valor!='') {
-					if (valor[1]=='Tarjeta bancaria'){
-						$('#teso_caja_id').parent().parent().hide();
-						$('#teso_cuenta_bancaria_id').parent().parent().show();
-					}else{
-						$('#teso_cuenta_bancaria_id').parent().parent().hide();
-						$('#teso_caja_id').parent().parent().show();
-					}
-				}else{
-					$('#teso_cuenta_bancaria_id').parent().parent().hide();
-					$('#teso_caja_id').parent().parent().hide();
+			$('#teso_medio_recaudo_id').change(function()
+			{
+				if ( $(this).val() == '' )
+				{
+					ocultar_campo_formulario( $('#teso_caja_id'), false );
+					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 					$(this).focus();
-				}			
+					return false;
+				}
+
+				var valor = $(this).val().split('-');
+
+				if (valor[1]=='Tarjeta bancaria')
+				{
+					ocultar_campo_formulario( $('#teso_caja_id'), false );
+					mostrar_campo_formulario( $('#teso_cuenta_bancaria_id'), '*Cuenta bancaria:', true );
+				}else{
+					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
+					mostrar_campo_formulario( $('#teso_caja_id'), '*Caja:', true );
+				}
 			});
 
 			/*
@@ -399,11 +367,14 @@
 
 			// GUARDAR 
 			$('#btn_guardar').click(function(event){
-				event.preventDefault();			
+				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}		
 
 				var total_valor = parseFloat( $('#total_valor').text().substring(1) );
-
-				console.log( total_valor );
 
 				if ( total_valor <= 0 ) {
 					alert('No ha seleccionado documentos a pagar.');
@@ -411,36 +382,27 @@
 				}
 
 				// Se obtienen todos los datos del formulario y se envían
-				// Se validan nuevamente los campos requeridos
-				
+				// Desactivar el click del botón
+				$( this ).off( event );
 
-				if ( validar_requeridos() )
-				{
-
-					// Desactivar el click del botón
-					$( this ).off( event );
-
-					// Eliminar fila de ingreso de registro vacia
-					var object = $('#combobox_motivos').val();	
-					if( typeof object == typeof undefined){
-						// Si no hay linea de ingreso de registros
-						// Todo bien
-						//alert('Todo bien.');
-					}else{
-						var fila = $('#combobox_motivos').closest("tr");
-						fila.remove();
-					}
-
-					// Se asigna la tabla de ingreso de registros a un campo hidden
-					var lineas_registros = $('#tabla_registros_documento').tableToJSON();
-					$('#lineas_registros').val( JSON.stringify(lineas_registros) );
-
-					// Enviar formulario
-					habilitar_campos_form_create();
-					$('#form_create').submit();
+				// Eliminar fila de ingreso de registro vacia
+				var object = $('#combobox_motivos').val();	
+				if( typeof object == typeof undefined){
+					// Si no hay linea de ingreso de registros
+					// Todo bien
+					//alert('Todo bien.');
 				}else{
-					alert('Faltan campos por llenar.');
+					var fila = $('#combobox_motivos').closest("tr");
+					fila.remove();
 				}
+
+				// Se asigna la tabla de ingreso de registros a un campo hidden
+				var lineas_registros = $('#tabla_registros_documento').tableToJSON();
+				$('#lineas_registros').val( JSON.stringify(lineas_registros) );
+
+				// Enviar formulario
+				habilitar_campos_form_create();
+				$('#form_create').submit();
 					
 			});
 
@@ -521,20 +483,6 @@
 			function deshabilitar_text($control){
 				$control.attr('style','background-color:#ECECE5;');
 				$control.attr('disabled','disabled');
-			}
-
-			function validar_requeridos(){
-				$( "*[required]" ).each(function() {
-					if ( $(this).val() == "" ) {
-					  $(this).focus();
-					  control = false;
-					  alert('Este campo es requerido.' + $(this).prev('label').text() );
-					  return false;
-					}else{
-					  control = true;
-					}
-				});
-				return control;
 			}
 
 			function deshabilitar_campos_form_create()
