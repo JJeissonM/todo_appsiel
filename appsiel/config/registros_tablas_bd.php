@@ -24055,11 +24055,11 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
-      'requerido' => 0,
+      'requerido' => 1,
       'editable' => 0,
       'unico' => 0,
       'created_at' => '2018-11-29 12:02:53',
-      'updated_at' => '2021-01-30 08:28:54',
+      'updated_at' => '2021-02-12 05:44:27',
     ),
     245 => 
     array (
@@ -45587,7 +45587,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     88 => 
     array (
       'id' => 91,
-      'orden' => 10,
+      'orden' => 12,
       'core_modelo_id' => 54,
       'core_campo_id' => 8,
     ),
@@ -49500,28 +49500,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     647 => 
     array (
       'id' => 687,
-      'orden' => 11,
+      'orden' => 14,
       'core_modelo_id' => 54,
       'core_campo_id' => 248,
     ),
     648 => 
     array (
       'id' => 688,
-      'orden' => 12,
+      'orden' => 16,
       'core_modelo_id' => 54,
       'core_campo_id' => 249,
     ),
     649 => 
     array (
       'id' => 689,
-      'orden' => 14,
+      'orden' => 20,
       'core_modelo_id' => 54,
       'core_campo_id' => 250,
     ),
     650 => 
     array (
       'id' => 690,
-      'orden' => 15,
+      'orden' => 22,
       'core_modelo_id' => 54,
       'core_campo_id' => 251,
     ),
@@ -51523,7 +51523,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     936 => 
     array (
       'id' => 1070,
-      'orden' => 10,
+      'orden' => 12,
       'core_modelo_id' => 150,
       'core_campo_id' => 8,
     ),
@@ -51593,21 +51593,21 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     946 => 
     array (
       'id' => 1083,
-      'orden' => 11,
+      'orden' => 14,
       'core_modelo_id' => 150,
       'core_campo_id' => 248,
     ),
     947 => 
     array (
       'id' => 1084,
-      'orden' => 12,
+      'orden' => 18,
       'core_modelo_id' => 150,
       'core_campo_id' => 249,
     ),
     948 => 
     array (
       'id' => 1085,
-      'orden' => 14,
+      'orden' => 22,
       'core_modelo_id' => 150,
       'core_campo_id' => 250,
     ),
@@ -52076,14 +52076,14 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     1015 => 
     array (
       'id' => 1157,
-      'orden' => 12,
+      'orden' => 14,
       'core_modelo_id' => 153,
       'core_campo_id' => 249,
     ),
     1016 => 
     array (
       'id' => 1158,
-      'orden' => 14,
+      'orden' => 18,
       'core_modelo_id' => 153,
       'core_campo_id' => 250,
     ),
@@ -61438,6 +61438,62 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 34,
       'core_modelo_id' => 95,
       'core_campo_id' => 1166,
+    ),
+    2353 => 
+    array (
+      'id' => 2696,
+      'orden' => 10,
+      'core_modelo_id' => 54,
+      'core_campo_id' => 329,
+    ),
+    2354 => 
+    array (
+      'id' => 2697,
+      'orden' => 15,
+      'core_modelo_id' => 54,
+      'core_campo_id' => 97,
+    ),
+    2355 => 
+    array (
+      'id' => 2698,
+      'orden' => 18,
+      'core_modelo_id' => 54,
+      'core_campo_id' => 446,
+    ),
+    2356 => 
+    array (
+      'id' => 2699,
+      'orden' => 21,
+      'core_modelo_id' => 54,
+      'core_campo_id' => 123,
+    ),
+    2357 => 
+    array (
+      'id' => 2701,
+      'orden' => 16,
+      'core_modelo_id' => 150,
+      'core_campo_id' => 123,
+    ),
+    2358 => 
+    array (
+      'id' => 2702,
+      'orden' => 20,
+      'core_modelo_id' => 150,
+      'core_campo_id' => 329,
+    ),
+    2359 => 
+    array (
+      'id' => 2703,
+      'orden' => 12,
+      'core_modelo_id' => 153,
+      'core_campo_id' => 97,
+    ),
+    2360 => 
+    array (
+      'id' => 2704,
+      'orden' => 16,
+      'core_modelo_id' => 153,
+      'core_campo_id' => 123,
     ),
   ),
   'sys_reportes' => 
