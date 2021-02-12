@@ -218,10 +218,10 @@ class RetefuenteController extends TransaccionController
 
             $base_retencion_pesos = 0;
             $base_retencion_uvts = 0;
-            if ( $numero_meses != 0 )
+            if ( $numero_meses > 0 )
             {
                 // AA Base en pesos para determinar porcentaje fijo de retención
-                $base_retencion_pesos = $sub_total / $numero_meses;
+                $base_retencion_pesos = $sub_total / ( $numero_meses + 1 ); // Se le suma 1 porque la prima pagada equivale a un mes de salario.
 
                 // AB Base en UVT (AA dividido valor_uvt_actual) (aplicar tabla artículo 383 ET)
                 $base_retencion_uvts = $base_retencion_pesos / $request->valor_uvt_actual;

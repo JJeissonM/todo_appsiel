@@ -450,7 +450,7 @@ class PlanClaseEncabezado extends Model
 
     public static function consultar_guias_estudiantes($curso_id, $asignatura_id)
     {
-        $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999]];
+        $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999], ['sga_plan_clases_encabezados.fecha', 'LIKE', date('Y').'%']];
         $array_wheres = array_merge(
             $array_wheres,
             ['sga_plan_clases_encabezados.curso_id' => $curso_id, 'sga_plan_clases_encabezados.asignatura_id' => $asignatura_id]

@@ -9,6 +9,13 @@
 <div class="container-fluid">
 	<div class="marco_formulario">
 		<div class="row">
+			@if( Auth::user()->hasRole('Vehículo (FUEC)') )
+				<div class="col-md-12 botones-gmail">
+    				{{ Form::bsBtnCreate( url( 'cte_contratos/create?id=19&id_modelo=197&id_transaccion=&source=MISCONTRATOS' ) ) }}
+    			</div>
+			@endif
+    	</div>
+		<div class="row">
 			<div class="col-md-12" style="padding-top: 30px;">
 				<div class="col-md-6">
 					<div class="panel panel-primary">

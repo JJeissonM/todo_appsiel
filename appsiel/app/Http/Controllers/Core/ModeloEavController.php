@@ -51,7 +51,7 @@ class ModeloEavController extends ModeloController
         {
             if ( is_array($value) )
             {
-                $request[$key] = implode(",", $value);
+                $request[$key] = implode( ",", $value);
             }
         }
 
@@ -127,7 +127,8 @@ class ModeloEavController extends ModeloController
         $cant = count($lista_campos);
         for ($i=0; $i < $cant; $i++) 
         {
-            if ( $lista_campos[$i]['tipo'] != 'bsCheckBox' ) {
+            if ( $lista_campos[$i]['tipo'] != 'bsCheckBox' )
+            {
                 $lista_campos[$i] = VistaController::mostrar_campo( $lista_campos[$i]['id'], 
                                                             app($modelo->name_space)->where( [ "modelo_padre_id" => Input::get('modelo_padre_id'), "registro_modelo_padre_id" => Input::get('registro_modelo_padre_id'), "modelo_entidad_id" => $id, "core_campo_id" => $lista_campos[$i]['id'] ] )->value('valor'),
                                                                 'edit' );

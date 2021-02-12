@@ -14,6 +14,8 @@
 ?>
 <br>
 
+{{ Form::bsBtnPrint('salud_imprimir_historia_medica_ocupacional') }}
+
 @foreach( $ids_modelos_relacionados AS $key => $value )
 	<?php 
 		$modelo_entidad_id = $value;

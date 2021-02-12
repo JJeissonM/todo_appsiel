@@ -257,7 +257,14 @@ class LibretaPagoController extends ModeloController
         // Si la libreta ya tiene recaudos, no se puede modificar.
         if ( isset($recaudos_libreta[0]) ) 
         {
-            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('mensaje_error','La Libreta ya tiene pagos aplicados. No puede ser modificada.' );
+            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','La Libreta ya tiene pagos aplicados. No puede ser modificada.' );
+        }
+        
+        $matricula_estudiante = Matricula::get_registro_impresion( $registro->matricula_id );
+
+        if( is_null( $matricula_estudiante->estudiante ) )
+        {
+            return redirect( 'web?id=3&id_modelo=31' )->with('mensaje_error','La matrícula no tiene un estudiante asociado. Por favor, consulte con el adminitrador del sistema.');
         }
 
         $lista_campos = ModeloController::get_campos_modelo($modelo,$registro,'edit');
@@ -265,8 +272,6 @@ class LibretaPagoController extends ModeloController
         /*
             Como el select de estudiantes solo muesta los que no tienen libreta, para la edición se coloca al estudiante de la libreta que se está editando
         */
-        $matricula_estudiante = Matricula::get_registro_impresion( $registro->matricula_id );
-
         $lista_campos[0]['opciones'][$matricula_estudiante->id] = $matricula_estudiante->numero_identificacion.' '.$matricula_estudiante->nombre_estudiante.' ('.$matricula_estudiante->nombre_curso.')';
 
         $form_create = [
@@ -513,6 +518,11 @@ class LibretaPagoController extends ModeloController
         $libreta = TesoLibretasPago::find($id_libreta);
 
         $matricula_estudiante = Matricula::get_registro_impresion( $libreta->matricula_id );
+
+        if( is_null( $matricula_estudiante->estudiante ) )
+        {
+            return redirect( 'web?id=3&id_modelo=31' )->with('mensaje_error','La matrícula no tiene un estudiante asociado. Por favor, consulte con el adminitrador del sistema.');
+        }
 
         $plan_pagos = TesoPlanPagosEstudiante::where('id_libreta',$id_libreta)->get();
 

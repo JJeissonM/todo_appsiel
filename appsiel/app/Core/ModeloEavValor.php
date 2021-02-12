@@ -14,6 +14,11 @@ class ModeloEavValor extends Model
 
 	public $encabezado_tabla = ['Modelo Padre', 'Descripcion registro mod. padre', 'Entidad', 'Atributo', 'Valor', 'Acción'];
 
+    public function campo()
+    {
+        return $this->belongsTo( 'App\Sistema\Campo', 'core_campo_id' );
+    }
+
     public static function consultar_registros($nro_registros)
     {
         return ModeloEavValor::leftJoin('sys_modelos', 'sys_modelos.id', '=', 'core_eav_valores.modelo_entidad_id')
@@ -50,15 +55,16 @@ class ModeloEavValor extends Model
     public function almacenar_registros_eav( $datos, $modelo_padre_id = null, $registro_modelo_padre_id = null )
     {
         // Se va a crear un registro por cada Atributo (campo) que tenga un Valor distinto a vacío 
-        foreach ( $datos as $key => $value) 
+        foreach ( $datos as $key => $value ) 
         {
+
             // Si el name del campo enviado tiene la palabra core_campo_id
             if ( strpos( $key, "core_campo_id") !== false ) 
             {
-                $core_campo_id = explode("-", $key)[1]; // Atributo
+                $core_campo_id = explode( "-", $key )[1]; // Atributo ( ID del campo )
                 $valor = $value; // Valor
                 
-                if ( is_array($value) )
+                if ( is_array($value) ) // Para tipos CheckBox
                 {
                     $valor = implode(",", $value);
                 }
@@ -74,14 +80,19 @@ class ModeloEavValor extends Model
                                                 "valor" => $valor 
                                             ] );
                 }else{
-                    // Para campos normales asociados a un modelo directamente
-                    ModeloEavValor::create( [ 
-                                                "modelo_padre_id" => $modelo_padre_id,
-                                                "registro_modelo_padre_id" => $registro_modelo_padre_id,
-                                                "modelo_entidad_id" => 0,
-                                                "core_campo_id" => $core_campo_id,
-                                                "valor" => $valor 
-                                            ] );
+                    // Para campos normales asociados a un modelo directamente. Ejemplo: Paciente
+
+                    if ( $valor != '' )
+                    {
+                        ModeloEavValor::create( [ 
+                                                    "modelo_padre_id" => $modelo_padre_id,
+                                                    "registro_modelo_padre_id" => $registro_modelo_padre_id,
+                                                    "modelo_entidad_id" => 0,
+                                                    "core_campo_id" => $core_campo_id,
+                                                    "valor" => $valor 
+                                                ] );
+                    }
+                        
                 }
 
                     
@@ -149,13 +160,17 @@ class ModeloEavValor extends Model
 
                 if ( is_null( $registro_eav ) )
                 {
-                    ModeloEavValor::create( [ 
-                                            "modelo_padre_id" => $datos['modelo_padre_id'],
-                                            "registro_modelo_padre_id" => $datos['registro_modelo_padre_id'],
-                                            "modelo_entidad_id" => $datos['modelo_entidad_id'],
-                                            "core_campo_id" => $core_campo_id,
-                                            "valor" => $valor 
-                                        ] );
+                    if ( $valor != '' )
+                    {
+                        ModeloEavValor::create( [ 
+                                                "modelo_padre_id" => $datos['modelo_padre_id'],
+                                                "registro_modelo_padre_id" => $datos['registro_modelo_padre_id'],
+                                                "modelo_entidad_id" => $datos['modelo_entidad_id'],
+                                                "core_campo_id" => $core_campo_id,
+                                                "valor" => $valor 
+                                            ] );
+                    }
+                        
                 }else{
                     $registro_eav->valor = $valor;
                     $registro_eav->save();

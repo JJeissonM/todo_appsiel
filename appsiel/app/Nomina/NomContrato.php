@@ -125,6 +125,12 @@ class NomContrato extends Model
         $coleccion = collect();
         foreach ($todos_los_registros as $registro)
         {
+            // Las Cesantías consignadas no se le pagan al empleado.
+            if( $registro->concepto->modo_liquidacion_id == 15 )
+            {
+                continue;
+            }
+
             if ($registro->fecha >= $fecha_inicial && $registro->fecha <= $fecha_final)
             {
                 $coleccion[] = $registro;

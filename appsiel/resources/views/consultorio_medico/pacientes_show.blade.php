@@ -52,6 +52,10 @@
 
 	        @include('consultorio_medico.pacientes_datos_historia_clinica_show')
 
+	        @if( (int)config('consultorio_medico.mostrar_datos_laborales_paciente') )
+	        	@include('consultorio_medico.pacientes.datos_laborales')
+	        @endif
+
 			<div>
 				<ul class="nav nav-tabs">
 					<li class="active"><a data-toggle="tab" href="#home">Consultas Médicas</a></li>

@@ -263,11 +263,12 @@ class VistaController extends Controller
 
             case 'imagen':
                 // Si se manda como valor la ubicación de la imagen, se muestra
-                if ($campo['value']==null) {
-                    $imagen='';
+                if ($campo['value']==null)
+                {
+                    $imagen = '';
                 }else{
                     $url = $campo['value'];
-                    $imagen='<img alt="foto.jpg" src="'.asset($url).'" style="width: 150px; height: 150px;" />';
+                    $imagen = '<img alt="foto.jpg" src="'.asset($url).'" style="width: 150px; height: 150px;" />';
                 }
 
                 $vec_tipos = explode(',', $campo['opciones']);
@@ -278,8 +279,10 @@ class VistaController extends Controller
                 }
 
                 $control = '<div class="well" style="margin-left: 17px; margin-right: 16px;">
-                                <label for="'.$campo['name'].'" class="control-label"> '.$campo['descripcion'].' </label>
-                                <br/>'.$imagen.'<br/>'.Form::file($campo['name'],['id'=>$campo['name'], 'accept'=>trim($tipos,",") ]).'
+                                <div class="row">
+                                    <label for="'.$campo['name'].'" class="control-label"> '.$campo['descripcion'].' </label>
+                                <br/>'.$imagen.'<br/>'.Form::file($campo['name'],['id'=>$campo['name'], 'accept'=>trim($tipos,",") ]).
+                                '</div> 
                             </div>';
                 break;
             case 'imagenes_multiples':

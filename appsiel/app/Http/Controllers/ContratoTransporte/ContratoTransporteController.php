@@ -38,10 +38,10 @@ class ContratoTransporteController extends Controller
         if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
             $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
             if (!is_null($vehiculo)) {
-                $cont = Contrato::where('vehiculo_id', $vehiculo->id)->get();
+                $cont = Contrato::where('vehiculo_id', $vehiculo->id)->orderBy('created_at', 'DESC')->get();
             }
         } else {
-            $cont = Contrato::all();
+            $cont = Contrato::orderBy('created_at', 'DESC')->get();
         }
 
         $contratos = null;
@@ -181,10 +181,10 @@ class ContratoTransporteController extends Controller
         $hoy = getdate();
         $mes_actual = $hoy['mon'];
         if ((int) $mes_fecha_fin > (int) $mes_actual) {
-            return $this->redirectTo($request->variables_url, 'mensaje_error', 'La fecha final debe estar en el mes actual', $request->source);
+            return $this->redirectTo($request->variables_url, 'mensaje_error', 'El NO fue guardado. La fecha final debe estar en el mes actual', $request->source);
         }
         if ($request->vehiculo_id == "0") {
-            return $this->redirectTo($request->variables_url, 'mensaje_error', 'Debe indicar el vehículo para guardar el contrato', $request->source);
+            return $this->redirectTo($request->variables_url, 'mensaje_error', 'El NO fue guardado. Debe indicar el vehículo para guardar el contrato', $request->source);
         }
         $contrato_id = $this->storeContract($request);
         if ($contrato_id > 0) {
@@ -473,7 +473,7 @@ class ContratoTransporteController extends Controller
         $v = Vehiculo::where('placa', $u->email)->first();
         if ($v != null) {
             $contratos = null;
-            $cont = $v->contratos;
+            $cont = $v->contratos->sortByDesc('created_at');
             if (count($cont) > 0) {
                 foreach ($cont as $c) {
                     $contratos[] = [

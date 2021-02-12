@@ -253,7 +253,8 @@ class Retefuente implements Estrategia
 		$this->tabla_resumen['salud_prepagada'] = $salud_prepagada;
 
 		// U	Deducción por dependientes (artículo 387-1 ET) (máximo 10%)
-		$deduccion_por_dependientes = $pagos_empleado->sum( 'valor_devengo' ) * 10 / 100;
+		$base_dependientes = $pagos_empleado->sum( 'valor_devengo' ) - $this->tabla_resumen['pagos_cesantias_e_intereses'];
+		$deduccion_por_dependientes = $base_dependientes * 10 / 100;
 		$this->tabla_resumen['deduccion_por_dependientes'] = $deduccion_por_dependientes;
 
 		// V	Total deducciones de los 12 meses anteriores (N + R + T)

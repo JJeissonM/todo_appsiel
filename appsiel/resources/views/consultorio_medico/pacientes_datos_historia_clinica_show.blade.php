@@ -2,7 +2,7 @@
 	<tr>
 		<td colspan="4">
 			<p align="center">
-				<span style="font-size: 15px; font-weight: bold;">Historia Clínica</span>
+				<span style="font-size: 1.6em; font-weight: bold;">Historia Clínica</span>
 				<br>
 				No. {{ $datos_historia_clinica->codigo }}
 			</p>

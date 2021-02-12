@@ -63,8 +63,8 @@
 
 		$(document).ready(function(){
 
-			$('#teso_caja_id').parent().parent().hide();
-			$('#teso_cuenta_bancaria_id').parent().parent().hide();
+			ocultar_campo_formulario( $('#teso_caja_id'), false );
+			ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 
 			calcular_totales();
 
@@ -129,20 +129,25 @@
 			});
 
 
-			$('#teso_medio_recaudo_id').change(function(){
-				var valor = $(this).val().split('-');
-				if (valor!='') {
-					if (valor[1]=='Tarjeta bancaria'){
-						$('#teso_caja_id').parent().parent().fadeOut();
-						$('#teso_cuenta_bancaria_id').parent().parent().fadeIn();
-					}else{
-						$('#teso_cuenta_bancaria_id').parent().parent().fadeOut();
-						$('#teso_caja_id').parent().parent().fadeIn();
-					}
-				}else{
-					$('#teso_cuenta_bancaria_id').parent().parent().fadeOut();
-					$('#teso_caja_id').parent().parent().fadeOut();
+			$('#teso_medio_recaudo_id').change(function()
+			{
+				if ( $(this).val() == '' )
+				{
+					ocultar_campo_formulario( $('#teso_caja_id'), false );
+					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 					$(this).focus();
+					return false;
+				}
+
+				var valor = $(this).val().split('-');
+
+				if (valor[1]=='Tarjeta bancaria')
+				{
+					ocultar_campo_formulario( $('#teso_caja_id'), false );
+					mostrar_campo_formulario( $('#teso_cuenta_bancaria_id'), '*Cuenta bancaria:', true );
+				}else{
+					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
+					mostrar_campo_formulario( $('#teso_caja_id'), '*Caja:', true );
 				}
 			});
 
@@ -232,6 +237,11 @@
 			// GUARDAR 
 			$('#btn_guardar').click(function(event){
 				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;	
+				}
 				
 				var valor_total = parseFloat( $('#valor_total').val() );
 
@@ -243,9 +253,6 @@
 				}
 
 				// Se obtienen todos los datos del formulario y se envían
-				// Se validan nuevamente los campos requeridos
-				if ( validar_requeridos() )
-				{
 
 						// Desactivar el click del botón
 						$( this ).off( event );
@@ -259,8 +266,7 @@
 
 						// Enviar formulario
 						habilitar_campos_form_create();
-						$('#form_create').submit();		
-				}
+						$('#form_create').submit();	
 					
 			});
 

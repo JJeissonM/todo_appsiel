@@ -98,8 +98,8 @@
 
 			var LineaNum = 0;
 
-			$('#teso_caja_id').parent().parent().hide();
-			$('#teso_cuenta_bancaria_id').parent().parent().hide();
+			ocultar_campo_formulario( $('#teso_caja_id'), false );
+			ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 
 			$('#proveedor_input').focus();
 
@@ -168,7 +168,6 @@
 		    	// Si la longitud es menor a dos, todavía no busca
 			    if ( $(this).val().length < 2 ) { return false; }
 
-		    	//var url = '../../compras_consultar_proveedores';
 		    	var url = "{{ url('core_consultar_terceros') }}";
 
 				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
@@ -198,30 +197,6 @@
 		        $('#proveedor_id').val( item_sugerencia.attr('data-tercero_id') );
 		        $('#referencia_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
 		        $('#core_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
-
-		        /*
-		        var forma_pago = 'contado';
-		        var dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
-		        if ( dias_plazo > 0 ) { forma_pago = 'credito'; }
-
-		        // Para llenar la fecha de vencimiento
-		        var fecha = new Date( $('#fecha').val() );
-				fecha.setDate( fecha.getDate() + (dias_plazo + 1) );
-				
-				var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
-				var dia = fecha.getDate();// + 1; // Se le suma 1,
-
-		        if( mes < 10 )
-		        {
-		        	mes = '0' + mes;
-		        }
-
-		        if( dia < 10 )
-		        {
-		        	dia = '0' + dia;
-		        }
-		        $('#fecha_vencimiento').val( fecha.getFullYear() + '-' +  mes + '-' + dia );
-				*/
 
 		        //Hacemos desaparecer el resto de sugerencias
 		        $('#proveedores_suggestions').html('');
@@ -317,21 +292,26 @@
 				$('#fecha').focus();
 			});
 
-			$('#teso_medio_recaudo_id').change(function(){
-				var valor = $(this).val().split('-');
-				if (valor!='') {
-					if (valor[1]=='Tarjeta bancaria'){
-						$('#teso_caja_id').parent().parent().hide();
-						$('#teso_cuenta_bancaria_id').parent().parent().show();
-					}else{
-						$('#teso_cuenta_bancaria_id').parent().parent().hide();
-						$('#teso_caja_id').parent().parent().show();
-					}
-				}else{
-					$('#teso_cuenta_bancaria_id').parent().parent().hide();
-					$('#teso_caja_id').parent().parent().hide();
+			$('#teso_medio_recaudo_id').change(function()
+			{
+				if ( $(this).val() == '' )
+				{
+					ocultar_campo_formulario( $('#teso_caja_id'), false );
+					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 					$(this).focus();
-				}			
+					return false;
+				}
+
+				var valor = $(this).val().split('-');
+
+				if (valor[1]=='Tarjeta bancaria')
+				{
+					ocultar_campo_formulario( $('#teso_caja_id'), false );
+					mostrar_campo_formulario( $('#teso_cuenta_bancaria_id'), '*Cuenta bancaria:', true );
+				}else{
+					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
+					mostrar_campo_formulario( $('#teso_caja_id'), '*Caja:', true );
+				}
 			});
 
 			/*
@@ -361,7 +341,12 @@
 
 			// GUARDAR 
 			$('#btn_guardar').click(function(event){
-				event.preventDefault();				
+				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}	
 
 				var total_valor = parseFloat( $('#total_valor').text().substring(1) );
 
@@ -374,34 +359,28 @@
 				// Se validan nuevamente los campos requeridos
 				
 
-				if ( validar_requeridos() )
-				{
-					// Desactivar el click del botón
-					$( this ).off( event );
-					
-					// Eliminar fila de ingreso de registro vacia
-					var object = $('#combobox_motivos').val();	
-					if( typeof object == typeof undefined){
-						// Si no hay linea de ingreso de registros
-						// Todo bien
-						//alert('Todo bien.');
-					}else{
-						var fila = $('#combobox_motivos').closest("tr");
-						fila.remove();
-					}
 
-					// Se asigna la tabla de ingreso de registros a un campo hidden
-					var lineas_registros = $('#tabla_registros_documento').tableToJSON();
-					$('#lineas_registros').val( JSON.stringify(lineas_registros) );
-
-					// Enviar formulario
-					habilitar_campos_form_create();
-					$('#form_create').submit();
-
+				// Desactivar el click del botón
+				$( this ).off( event );
+				
+				// Eliminar fila de ingreso de registro vacia
+				var object = $('#combobox_motivos').val();	
+				if( typeof object == typeof undefined){
+					// Si no hay linea de ingreso de registros
+					// Todo bien
+					//alert('Todo bien.');
 				}else{
-					alert('Faltan campos por llenar.');
+					var fila = $('#combobox_motivos').closest("tr");
+					fila.remove();
 				}
-					
+
+				// Se asigna la tabla de ingreso de registros a un campo hidden
+				var lineas_registros = $('#tabla_registros_documento').tableToJSON();
+				$('#lineas_registros').val( JSON.stringify(lineas_registros) );
+
+				// Enviar formulario
+				habilitar_campos_form_create();
+				$('#form_create').submit();					
 			});
 
 
@@ -481,20 +460,6 @@
 			function deshabilitar_text($control){
 				$control.attr('style','background-color:#ECECE5;');
 				$control.attr('disabled','disabled');
-			}
-			
-			function validar_requeridos(){
-				$( "*[required]" ).each(function() {
-					if ( $(this).val() == "" ) {
-					  $(this).focus();
-					  control = false;
-					  alert('Este campo es requerido.' + $(this).prev('label').text() );
-					  return false;
-					}else{
-					  control = true;
-					}
-				});
-				return control;
 			}
 
 			function deshabilitar_campos_form_create()

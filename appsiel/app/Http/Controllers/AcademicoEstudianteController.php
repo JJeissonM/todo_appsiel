@@ -279,16 +279,16 @@ class AcademicoEstudianteController extends Controller
 
     public function guias_planes_clases($curso_id, $asignatura_id)
     {
-        $planes = PlanClaseEncabezado::consultar_guias_estudiantes($curso_id, $asignatura_id);
+        $planes = PlanClaseEncabezado::consultar_guias_estudiantes( $curso_id, $asignatura_id );
 
         $curso = Curso::find($curso_id);
         $asignatura = Asignatura::find($asignatura_id);
 
         $miga_pan = [
-            ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
-            ['url' => 'mis_asignaturas/' . $curso_id . '?id=' . Input::get('id'), 'etiqueta' => 'Mis asignaturas: ' . $curso->descripcion],
-            ['url' => 'NO', 'etiqueta' => 'Guías planes de clases: ' . $asignatura->descripcion]
-        ];
+                        ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
+                        ['url' => 'mis_asignaturas/' . $curso_id . '?id=' . Input::get('id'), 'etiqueta' => 'Mis asignaturas: ' . $curso->descripcion],
+                        ['url' => 'NO', 'etiqueta' => 'Guías planes de clases: ' . $asignatura->descripcion]
+                    ];
 
         return view('calificaciones.actividades_escolares.guias_planes_clases', compact('planes', 'asignatura', 'curso', 'miga_pan'));
     }

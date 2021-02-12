@@ -10,7 +10,7 @@ class Campo extends Model
 
     protected $fillable = ['tipo', 'name', 'descripcion', 'opciones', 'value', 'atributos', 'definicion', 'requerido', 'editable', 'unico'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tipo', 'Name', 'Descripción', 'Opciones', 'Valor', 'Atributos', 'Definición', 'Requerido', 'Editable', 'Único'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'ID', 'Tipo', 'Name', 'Descripción', 'Opciones', 'Valor', 'Atributos', 'Definición', 'Requerido', 'Editable', 'Único'];
 
     public function modelos()
     {
@@ -19,33 +19,33 @@ class Campo extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-        $registros = Campo::select(
-
-            'sys_campos.tipo AS campo1',
-            'sys_campos.name AS campo2',
-            'sys_campos.descripcion AS campo3',
-            'sys_campos.opciones AS campo4',
-            'sys_campos.value AS campo5',
-            'sys_campos.atributos AS campo6',
-            'sys_campos.definicion AS campo7',
-            'sys_campos.requerido AS campo8',
-            'sys_campos.editable AS campo9',
-            'sys_campos.unico AS campo10',
-            'sys_campos.id AS campo11'
-        )
-            ->where("sys_campos.id", "LIKE", "%$search%")
-            ->orWhere("sys_campos.tipo", "LIKE", "%$search%")
-            ->orWhere("sys_campos.name", "LIKE", "%$search%")
-            ->orWhere("sys_campos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sys_campos.opciones", "LIKE", "%$search%")
-            ->orWhere("sys_campos.value", "LIKE", "%$search%")
-            ->orWhere("sys_campos.atributos", "LIKE", "%$search%")
-            ->orWhere("sys_campos.definicion", "LIKE", "%$search%")
-            ->orWhere("sys_campos.requerido", "LIKE", "%$search%")
-            ->orWhere("sys_campos.editable", "LIKE", "%$search%")
-            ->orWhere("sys_campos.unico", "LIKE", "%$search%")
-            ->orderBy('sys_campos.created_at', 'DESC')
-            ->paginate($nro_registros);
+        $registros = Campo::select (
+                                    'sys_campos.id AS campo1',
+                                    'sys_campos.tipo AS campo2',
+                                    'sys_campos.name AS campo3',
+                                    'sys_campos.descripcion AS campo4',
+                                    'sys_campos.opciones AS campo5',
+                                    'sys_campos.value AS campo6',
+                                    'sys_campos.atributos AS campo7',
+                                    'sys_campos.definicion AS campo8',
+                                    'sys_campos.requerido AS campo9',
+                                    'sys_campos.editable AS campo10',
+                                    'sys_campos.unico AS campo11',
+                                    'sys_campos.id AS campo12'
+                                )
+                            ->where("sys_campos.id", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.tipo", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.name", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.descripcion", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.opciones", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.value", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.atributos", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.definicion", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.requerido", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.editable", "LIKE", "%$search%")
+                            ->orWhere("sys_campos.unico", "LIKE", "%$search%")
+                            ->orderBy('sys_campos.created_at', 'DESC')
+                            ->paginate($nro_registros);
 
         return $registros;
     }

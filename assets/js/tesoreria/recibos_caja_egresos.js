@@ -1,44 +1,51 @@
 $(document).ready(function(){
 
-	$('#teso_caja_id').parent().parent().hide();
-	$('#teso_cuenta_bancaria_id').parent().parent().hide();
-
-  var valor = $('#teso_medio_recaudo_id').val().split('-');
-  if ( valor[1] == 'Tarjeta bancaria' )
+  function ocultar_campo_formulario( obj_input, valor_requerido )
   {
-    $('#teso_cuenta_bancaria_id').parent().parent().fadeIn();
-    $('#teso_cuenta_bancaria_id').attr('required','required');
-  }else{
-    $('#teso_caja_id').parent().parent().fadeIn();
-    $('#teso_caja_id').attr('required','required');
+    obj_input.prop( 'required', valor_requerido);
+    obj_input.hide();
+    obj_input.parent().prev('label').text('');
   }
 
-	$('#teso_medio_recaudo_id').change(function(){
-		var valor = $(this).val().split('-');
-		if (valor!='') {
-			if (valor[1]=='Tarjeta bancaria'){
-				$('#teso_caja_id').parent().parent().fadeOut();
-        $('#teso_caja_id').removeAttr('required');
+  function mostrar_campo_formulario( obj_input, texto_lbl, valor_requerido )
+  {
+    obj_input.prop( 'required', valor_requerido );
+    obj_input.show();
+    obj_input.parent().prev('label').text( texto_lbl );
+  }
 
-				$('#teso_cuenta_bancaria_id').parent().parent().fadeIn();
-        $('#teso_cuenta_bancaria_id').attr('required','required');
-			}else{
-				
-        $('#teso_cuenta_bancaria_id').parent().parent().fadeOut();
-        $('#teso_cuenta_bancaria_id').removeAttr('required');
+	ocultar_campo_formulario( $('#teso_caja_id'), false );
+  ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 
-				$('#teso_caja_id').parent().parent().fadeIn();
-        $('#teso_caja_id').attr('required','required');
-			}
-		}else{
-			$('#teso_cuenta_bancaria_id').parent().parent().fadeOut();
-      $('#teso_cuenta_bancaria_id').removeAttr('required');
+  var valor = $('#teso_medio_recaudo_id').val().split('-');
+  if ( valor[1]=='Tarjeta bancaria' )
+  {
+    mostrar_campo_formulario( $('#teso_cuenta_bancaria_id'), '*Cuenta bancaria:', true );
+  }else{
+    mostrar_campo_formulario( $('#teso_caja_id'), '*Caja:', true );
+  }
 
-			$('#teso_caja_id').parent().parent().fadeOut();
-      $('#teso_caja_id').removeAttr('required');
-			$(this).focus();
-		}
-	});
+  $('#teso_medio_recaudo_id').change(function()
+  {
+    if ( $(this).val() == '' )
+    {
+      ocultar_campo_formulario( $('#teso_caja_id'), false );
+      ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
+      $(this).focus();
+      return false;
+    }
+
+    var valor = $(this).val().split('-');
+
+    if (valor[1]=='Tarjeta bancaria')
+    {
+      ocultar_campo_formulario( $('#teso_caja_id'), false );
+      mostrar_campo_formulario( $('#teso_cuenta_bancaria_id'), '*Cuenta bancaria:', true );
+    }else{
+      ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
+      mostrar_campo_formulario( $('#teso_caja_id'), '*Caja:', true );
+    }
+  });
 
 	CKEDITOR.replace('documento_soporte', {
 		toolbar: [{
