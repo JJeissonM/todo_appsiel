@@ -35,17 +35,14 @@ class ContratoTransporteController extends Controller
 
         $cont = [];
         $user = Auth::user();
-        if( $user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia') )
-        {
-            $vehiculo = Vehiculo::where( 'placa', $user->email )->get()->first();
-            if (!is_null($vehiculo))
-            {
-                $cont = Contrato::where('vehiculo_id',$vehiculo->id)->get();
+        if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
+            $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
+            if (!is_null($vehiculo)) {
+                $cont = Contrato::where('vehiculo_id', $vehiculo->id)->get();
             }
-                
-        }else{
+        } else {
             $cont = Contrato::all();
-        }        
+        }
 
         $contratos = null;
         if (count($cont) > 0) {
@@ -59,22 +56,19 @@ class ContratoTransporteController extends Controller
             $mes_actual = "0" . $mes_actual;
         }
         $mes_actual = $this->mes()[$mes_actual];
-        
+
         //valido documentos vencidos
 
-        if( $user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia') )
-        {
-            $vehiculo = Vehiculo::where( 'placa', $user->email )->get()->first();
-            if (!is_null($vehiculo))
-            {
+        if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
+            $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
+            if (!is_null($vehiculo)) {
                 $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $vehiculo->id)->get()->pluck('conductor_id')->toArray();
-                $docs = Documentosconductor::whereIn( 'conductor_id', $conductoresDelVehiculo )->get();
+                $docs = Documentosconductor::whereIn('conductor_id', $conductoresDelVehiculo)->get();
             }
-                
-        }else{
+        } else {
             $docs = Documentosconductor::all();
         }
-        
+
         $documentos = null;
         if (count($docs) > 0) {
             foreach ($docs as $d) {
@@ -204,7 +198,8 @@ class ContratoTransporteController extends Controller
                         $total = $total + 1;
                     }
                 }
-                if ($total >= 4) {
+                $limite = config('contrato_transporte.bloqueado_x_contratos');
+                if ($total >= $limite) {
                     $vehi = Vehiculo::find($request->vehiculo_id);
                     $vehi->bloqueado_cuatro_contratos = 'SI';
                     $vehi->save();
@@ -460,7 +455,7 @@ class ContratoTransporteController extends Controller
                 }
             }
         }
-        $documento_vista =  View::make('contratos_transporte.contratos.print', compact('c','conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'emp'))->render();
+        $documento_vista =  View::make('contratos_transporte.contratos.print', compact('c', 'conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'emp'))->render();
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
@@ -828,7 +823,7 @@ class ContratoTransporteController extends Controller
     public function verificarPlanilla($id)
     {
         //return $this->planillaimprimir($id);
-        return redirect('cte_contratos/planillas/'.$id.'/imprimir');
+        return redirect('cte_contratos/planillas/' . $id . '/imprimir');
     }
 
 
