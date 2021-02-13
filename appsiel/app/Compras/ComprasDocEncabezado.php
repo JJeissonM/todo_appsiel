@@ -30,6 +30,7 @@ class ComprasDocEncabezado extends Model
 	public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 25; // Facturas de compras
+        
         if ( $search == '' )
         {
             return ComprasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')

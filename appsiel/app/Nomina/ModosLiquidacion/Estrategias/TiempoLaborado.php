@@ -213,7 +213,7 @@ class TiempoLaborado implements Estrategia
                                     ['estado' => 'Activo'] + 
                                     ['creado_por' => Auth::user()->email] + 
                                     ['valor_devengo' => round( $valor_devengo, 0) ]+  
-                                    ['cantidad_horas' => $documento_nomina->tiempo_a_liquidar ]+ 
+                                    ['cantidad_horas' => $tiempo_a_liquidar ]+ 
                                     ['modificado_por' => '']
                                 );
 	}

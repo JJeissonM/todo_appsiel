@@ -96,6 +96,7 @@ class VtasDocEncabezado extends Model
     public static function consultar_registros2($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 23; // Facturas
+
         if ( $search == '' )
         {
             return VtasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
@@ -115,6 +116,7 @@ class VtasDocEncabezado extends Model
                     ->orderBy('vtas_doc_encabezados.fecha', 'DESC')
                     ->paginate($nro_registros);
         }
+        
         return VtasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)

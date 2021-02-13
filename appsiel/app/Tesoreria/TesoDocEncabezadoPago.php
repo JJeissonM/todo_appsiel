@@ -46,6 +46,25 @@ class TesoDocEncabezadoPago extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 17;
+
+        if ( $search == '' )
+        {
+            return TesoDocEncabezadoPago::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+                                        ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
+                                        ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+                                        ->where('teso_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+                                        ->select(
+                                            'teso_doc_encabezados.fecha AS campo1',
+                                            DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
+                                            DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                                            'teso_doc_encabezados.descripcion AS campo4',
+                                            'teso_doc_encabezados.valor_total AS campo5',
+                                            'teso_doc_encabezados.estado AS campo6',
+                                            'teso_doc_encabezados.id AS campo7'
+                                        )
+                                        ->orderBy('teso_doc_encabezados.created_at', 'DESC')
+                                        ->paginate($nro_registros);
+        }
         return TesoDocEncabezadoPago::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
             ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)

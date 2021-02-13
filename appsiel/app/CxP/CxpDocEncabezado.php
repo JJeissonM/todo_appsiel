@@ -38,6 +38,25 @@ class CxpDocEncabezado extends Model
     {
         $core_tipo_transaccion_id = 39; // Cruce de cxp
 
+        if ( $search == '' )
+        {
+            return CxpDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_doc_encabezados.core_tipo_doc_app_id')
+                                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_doc_encabezados.core_tercero_id')
+                                ->where('cxp_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('cxp_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+                                ->select(
+                                    'cxp_doc_encabezados.fecha AS campo1',
+                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxp_doc_encabezados.consecutivo) AS campo2'),
+                                    'core_terceros.descripcion as campo3',
+                                    'cxp_doc_encabezados.descripcion AS campo4',
+                                    'cxp_doc_encabezados.valor_total AS campo5',
+                                    'cxp_doc_encabezados.estado AS campo6',
+                                    'cxp_doc_encabezados.id AS campo7'
+                                )
+                                ->orderBy('cxp_doc_encabezados.created_at', 'DESC')
+                                ->paginate($nro_registros);
+        }
+
         return CxpDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxp_doc_encabezados.core_tercero_id')
             ->where('cxp_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
