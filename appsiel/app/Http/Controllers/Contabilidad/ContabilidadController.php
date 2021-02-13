@@ -418,17 +418,21 @@ class ContabilidadController extends TransaccionController
         // Elimimar movimientos de CxC y CxP, si los hubiere
         foreach ( $array_estado['ids_registros_cxc_eliminar'] as $key => $value)
         {
-            
-            $registro = CxcMovimiento::find( $value );;//;
-            $registro->delete();
+            $registro_cartera = CxcMovimiento::find( $value );
+            if ( !is_null( $registro_cartera ) )
+            {
+                $registro_cartera->delete();
+            }                
         }
 
         foreach ( $array_estado['ids_registros_cxp_eliminar'] as $key => $value)
         {
-            CxpMovimiento::find( $value )->delete();
+            $registro_cartera = CxpMovimiento::find( $value );
+            if ( !is_null( $registro_cartera ) )
+            {
+                $registro_cartera->delete();
+            }  
         }
-
-
 
         $array_wheres = ['core_empresa_id'=>$doc_encabezado->core_empresa_id, 
                             'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
