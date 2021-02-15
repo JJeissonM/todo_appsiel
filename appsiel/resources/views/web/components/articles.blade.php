@@ -276,7 +276,7 @@
                                         <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                                         @if($fonts!=null)
                                         {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
-                                        @endif
+                                        @endif 
                                     </div>
                                     <div class="form-group">
                                         <label>Formato (Solo aplica para categoría de artículos)</label>
