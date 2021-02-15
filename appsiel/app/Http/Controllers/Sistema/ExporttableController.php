@@ -75,8 +75,9 @@ class ExporttableController extends Controller
             $cabeceras = $this->cabeceras($data[0]);
             foreach ($data as $d) {
                 $reg = null;
-                foreach ($d as $key => $value) {
-                    $reg[] = strtoupper($value);
+                foreach ($d as $key => $value)
+                {
+                    $reg[] = $value;
                 }
                 $registros[] = $reg;
             }

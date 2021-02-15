@@ -24,7 +24,15 @@
 @section('filas_adicionales_encabezado')
     <tr>        
         <td colspan="2" style="border: solid 1px #ddd;">
-            <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+            <b>Cliente:</b> {{ $doc_encabezado->tercero->descripcion }} 
+            &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+            <b>Documento ID: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+            &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+            <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->tercero->direccion1 }}, {{ $doc_encabezado->tercero->ciudad->descripcion }} - {{ $doc_encabezado->tercero->ciudad->departamento->descripcion }}
+            &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
+            <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
+            <br/>
+            <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->detalle }}
         </td>
     </tr>
 @endsection

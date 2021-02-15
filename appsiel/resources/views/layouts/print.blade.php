@@ -133,7 +133,7 @@
                             foreach ($value as $t) {
                                 $i2 = $i2 + 1;
                                 $van2 = $van2 + 1;
-                                $html = $html . "<td>" . strtoupper($t) . "</td>";
+                                $html = $html . "<td>" . $t . "</td>";
                                 if ($i2 === 5 && $van2 != $total2) {
                                     $i2 = 0;
                                     if ($parastilo % 2 == 0) {

@@ -175,7 +175,6 @@ class PagoController extends TransaccionController
             $vec_3 = explode( '-', $request->teso_medio_recaudo_id );
             $teso_medio_recaudo_id = $vec_3[0];
 
-
             if ( $vec_3[1] == 'Tarjeta bancaria' ) 
             {
                 $banco = TesoCuentaBancaria::find($request->teso_cuenta_bancaria_id);
@@ -341,6 +340,8 @@ class PagoController extends TransaccionController
                                     </div>';
             $this->duplicado = false;
         }
+
+
         
         return view( 'tesoreria.pagos.create', compact( 'form_create','miga_pan', 'registro', 'archivo_js', 'lineas_tabla_ingreso_registros', 'linea_num', 'mensaje_duplicado' ) );
     }

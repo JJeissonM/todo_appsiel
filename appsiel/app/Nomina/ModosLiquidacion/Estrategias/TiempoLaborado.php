@@ -200,7 +200,9 @@ class TiempoLaborado implements Estrategia
 		// Liquidar concepto de sostenimiento y apoyo
 		$valor_devengo_mes = (float)config('nomina.SMMLV') * (float)config('nomina.porcentaje_liquidacon_pasante_sena') / 100;
 		$salario_x_hora = $valor_devengo_mes / 240;
-		$valor_devengo = $salario_x_hora * $documento_nomina->tiempo_a_liquidar;
+		$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $documento_nomina, $empleado );
+		$tiempo_a_liquidar = $this->get_tiempo_a_liquidar( $empleado, $documento_nomina, $horas_liquidadas_empleado );
+		$valor_devengo = $salario_x_hora * $tiempo_a_liquidar;
 		NomDocRegistro::create(
                                     ['nom_doc_encabezado_id' => $documento_nomina->id ] + 
                                     ['fecha' => $documento_nomina->fecha] + 
@@ -211,7 +213,7 @@ class TiempoLaborado implements Estrategia
                                     ['estado' => 'Activo'] + 
                                     ['creado_por' => Auth::user()->email] + 
                                     ['valor_devengo' => round( $valor_devengo, 0) ]+  
-                                    ['cantidad_horas' => $documento_nomina->tiempo_a_liquidar ]+ 
+                                    ['cantidad_horas' => $tiempo_a_liquidar ]+ 
                                     ['modificado_por' => '']
                                 );
 	}

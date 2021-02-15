@@ -23,7 +23,7 @@
 
                             <?php
 
-                            $fondos = json_decode($nav->background, true);
+                            $fondos = json_decode( $nav->background, true);
 
                             if (is_null($fondos)) {
                                 $fondos['background_0'] = $nav->background;

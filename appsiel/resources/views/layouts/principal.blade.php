@@ -374,14 +374,16 @@
 
 		function ocultar_campo_formulario( obj_input, valor_requerido )
 		{
-			obj_input.prop( 'required', valor_requerido);
+			obj_input.prop( 'required', false);
+			obj_input.prop( 'disabled', true );
 			obj_input.hide();
 			obj_input.parent().prev('label').text('');
 		}
 
 		function mostrar_campo_formulario( obj_input, texto_lbl, valor_requerido )
 		{
-			obj_input.prop( 'required', valor_requerido );
+			obj_input.prop( 'required', true );
+			obj_input.prop( 'disabled', false );
 			obj_input.show();
 			obj_input.parent().prev('label').text( texto_lbl );
 		}

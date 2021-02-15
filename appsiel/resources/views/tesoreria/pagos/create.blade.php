@@ -63,6 +63,9 @@
 
 		$(document).ready(function(){
 
+			$('#teso_medio_recaudo_id').prop( 'disabled', false );
+			$('#teso_medio_recaudo_id').prop( 'required', true );
+			
 			ocultar_campo_formulario( $('#teso_caja_id'), false );
 			ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 

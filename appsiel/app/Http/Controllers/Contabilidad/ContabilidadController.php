@@ -418,17 +418,21 @@ class ContabilidadController extends TransaccionController
         // Elimimar movimientos de CxC y CxP, si los hubiere
         foreach ( $array_estado['ids_registros_cxc_eliminar'] as $key => $value)
         {
-            
-            $registro = CxcMovimiento::find( $value );;//;
-            $registro->delete();
+            $registro_cartera = CxcMovimiento::find( $value );
+            if ( !is_null( $registro_cartera ) )
+            {
+                $registro_cartera->delete();
+            }                
         }
 
         foreach ( $array_estado['ids_registros_cxp_eliminar'] as $key => $value)
         {
-            CxpMovimiento::find( $value )->delete();
+            $registro_cartera = CxpMovimiento::find( $value );
+            if ( !is_null( $registro_cartera ) )
+            {
+                $registro_cartera->delete();
+            }  
         }
-
-
 
         $array_wheres = ['core_empresa_id'=>$doc_encabezado->core_empresa_id, 
                             'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
@@ -479,13 +483,15 @@ class ContabilidadController extends TransaccionController
 
                         if( is_null( $abono_cxc ) )
                         {
-
-                            $ids_registros_cxc_eliminar[] = CxcMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                                            ->where('consecutivo',$doc_encabezado->consecutivo)
-                                            ->get()
-                                            ->first()
-                                            ->id;
+                            $linea_movimiento = CxcMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                                                            ->where('consecutivo',$doc_encabezado->consecutivo)
+                                                            ->get()
+                                                            ->first();
+                            if ( !is_null( $linea_movimiento ) )
+                            {
+                                $ids_registros_cxc_eliminar[] = $linea_movimiento->id;
+                            }
                         }else{
                             $permitir_eliminar = false;
                         }
@@ -501,13 +507,16 @@ class ContabilidadController extends TransaccionController
 
                         if( is_null( $abono_cxp ) )
                         {
-
-                            $ids_registros_cxp_eliminar[] = CxpMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
-                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
-                                            ->where('consecutivo',$doc_encabezado->consecutivo)
-                                            ->get()
-                                            ->first()
-                                            ->id;
+                            $linea_movimiento = CxpMovimiento::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
+                                                            ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
+                                                            ->where('consecutivo',$doc_encabezado->consecutivo)
+                                                            ->get()
+                                                            ->first();
+                            if ( !is_null( $linea_movimiento ) )
+                            {
+                                $ids_registros_cxp_eliminar[] = $linea_movimiento->id;
+                            }
+                            
                         }else{
                             $permitir_eliminar = false;
                         }
