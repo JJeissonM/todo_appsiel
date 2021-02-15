@@ -52,7 +52,7 @@ Route::post('footerstoreCategoria', 'web\FooterController@footerstoreCategoria')
 Route::get('footer/{id}/categorias', 'web\FooterController@categorias');
 Route::put('footer/edit/categoria/{id}', 'web\FooterController@updateCategoria')->name('updateCategoria');
 Route::post('footer/categoria/enlace', 'web\FooterController@newEnlace')->name('newEnlace');
-Route::get('footer/eliminar/enlace/{id}', 'web\FooterController@eliminarEnlace');
+Route::get('footer/categoria/eliminar/enlace/{id}', 'web\FooterController@eliminarEnlace');
 Route::get('footer/eliminar/seccion/{id}', 'web\FooterController@eliminarSeccion');
 
 //SERVICIOS
