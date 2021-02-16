@@ -359,34 +359,6 @@ class ReporteController extends Controller
         return $sorted->values()->all();
     }
 
-    public function consolidado_prestaciones_sociales(Request $request)
-    {
-        $fecha_final_mes  = $request->fecha_final_mes;
-
-        $nom_contrato_id = (int)$request->nom_contrato_id;
-
-        if ( $nom_contrato_id != '' )
-        {
-            $lista_consolidados = ConsolidadoPrestacionesSociales::where( [
-                                                                        [ 'fecha_fin_mes', '=', $fecha_final_mes ],
-                                                                        [ 'nom_contrato_id', '=', $nom_contrato_id ]
-                                                                    ] )->get();
-        }else{
-            $lista_consolidados = ConsolidadoPrestacionesSociales::where( [
-                                                                        [ 'fecha_fin_mes', '=', $fecha_final_mes ]
-                                                                    ] )->get();
-        }
-        
-
-        $view = View::make('nomina.reportes.tabla_consolidados_prestaciones_sociales', compact( 'lista_consolidados', 'fecha_final_mes' ) )->render();
-
-        $vista_pdf = View::make('layouts.pdf3', compact( 'view' ) )->render();
-
-        Cache::forever( 'pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista_pdf);
-
-        return $view;
-    }
-
     public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
     {
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
@@ -736,4 +708,135 @@ class ReporteController extends Controller
 
         return $dias_totales_laborados;
     }
+
+
+
+    public function consolidado_prestaciones_sociales(Request $request)
+    {
+        $fecha_final_mes  = $request->fecha_final_mes;
+
+        $nom_contrato_id = (int)$request->nom_contrato_id;
+
+        $forma_visualizacion  = $request->forma_visualizacion;
+
+        if ( $nom_contrato_id != '' )
+        {
+            $lista_consolidados = ConsolidadoPrestacionesSociales::where( [
+                                                                        [ 'fecha_fin_mes', '=', $fecha_final_mes ],
+                                                                        [ 'nom_contrato_id', '=', $nom_contrato_id ]
+                                                                    ] )->get();
+        }else{
+            $lista_consolidados = ConsolidadoPrestacionesSociales::where( [
+                                                                        [ 'fecha_fin_mes', '=', $fecha_final_mes ]
+                                                                    ] )->get();
+        }
+
+        switch ($forma_visualizacion)
+        {
+            case 'empleados_conceptos':
+                    $view = View::make('nomina.reportes.tabla_consolidados_prestaciones_sociales', compact( 'lista_consolidados', 'fecha_final_mes' ) )->render();
+                break;
+            
+            
+            case 'grupo_empleados_conceptos':
+
+                    $lista_consolidados = ConsolidadoPrestacionesSociales::leftJoin( 'nom_contratos','nom_contratos.id','=','nom_consolidados_prestaciones_sociales.nom_contrato_id')
+                                                                    ->leftJoin('nom_grupos_empleados','nom_grupos_empleados.id','=','nom_contratos.grupo_empleado_id')
+                                                                    ->where( [
+                                                                                    [ 'nom_consolidados_prestaciones_sociales.fecha_fin_mes', '=', $fecha_final_mes ]
+                                                                                ] )
+                                                                    ->get();
+
+                    $movimiento = $this->get_datos_grupos_empleados_consolidados( $lista_consolidados );
+                    $view = View::make('nomina.reportes.consolidado_prestaciones_tabla_grupo_empleados', compact( 'movimiento' , 'fecha_final_mes' ) )->render();
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        $vista_pdf = View::make('layouts.pdf3', compact( 'view' ) )->render();
+
+        Cache::forever( 'pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista_pdf);
+
+        return $view;
+    }
+
+
+    public function get_datos_grupos_empleados_consolidados( $movimiento )
+    {
+        $empleados_con_movimiento = $movimiento->unique('nom_contrato_id')->values()->all();
+
+        $array_grupos_empleados = [];
+        $aux = [];
+        foreach ( $empleados_con_movimiento as $linea )
+        {
+            if ( !in_array( $linea->contrato->grupo_empleado_id, $aux ) )
+            {
+                $aux[] = $linea->contrato->grupo_empleado_id;
+                $array_grupos_empleados[] = GrupoEmpleado::find( $linea->contrato->grupo_empleado_id );
+            }            
+        }
+
+        $datos = [];
+        foreach ($array_grupos_empleados as $grupo_empleado)
+        {
+            $registros_grupo_empleado = [];
+            foreach ($movimiento as $registro_movimiento)
+            {
+                if ( $registro_movimiento->contrato->grupo_empleado_id == $grupo_empleado->id )
+                {
+                    $registros_grupo_empleado[] = $registro_movimiento;
+                }
+            }
+            $datos[] = (object)[ 'grupo_empleado' => $grupo_empleado, 'datos' => $registros_grupo_empleado];
+        }
+
+        $registros_grupo_empleado_2 = [];
+        foreach ($datos as $linea)
+        {
+            $array_conceptos = [];
+            $aux = [];
+            foreach ( $linea->datos as $registro_prestacion )
+            {
+                if( in_array( $registro_prestacion->tipo_prestacion, $aux ) )
+                {
+                    $array_conceptos[$registro_prestacion->tipo_prestacion]['valor_acumulado_mes_anterior'] += $registro_prestacion->valor_acumulado_mes_anterior;
+                    $array_conceptos[$registro_prestacion->tipo_prestacion]['valor_consolidado_mes'] += $registro_prestacion->valor_consolidado_mes;
+                    $array_conceptos[$registro_prestacion->tipo_prestacion]['valor_pagado_mes'] += $registro_prestacion->valor_pagado_mes;
+                    $array_conceptos[$registro_prestacion->tipo_prestacion]['valor_acumulado'] += $registro_prestacion->valor_acumulado;
+                }else{
+                    $aux[] = $registro_prestacion->tipo_prestacion;
+                    $array_conceptos[$registro_prestacion->tipo_prestacion]['tipo_prestacion'] = $registro_prestacion->tipo_prestacion;
+                    $array_conceptos[$registro_prestacion->tipo_prestacion]['valor_acumulado_mes_anterior'] = $registro_prestacion->valor_acumulado_mes_anterior;
+                    $array_conceptos[$registro_prestacion->tipo_prestacion]['valor_consolidado_mes'] = $registro_prestacion->valor_consolidado_mes;
+                    $array_conceptos[$registro_prestacion->tipo_prestacion]['valor_pagado_mes'] = $registro_prestacion->valor_pagado_mes;
+                    $array_conceptos[$registro_prestacion->tipo_prestacion]['valor_acumulado'] = $registro_prestacion->valor_acumulado;
+                }
+            }
+            
+            ksort($array_conceptos);
+            $registros_grupo_empleado_2[] = (object)[ 'grupo_empleado' => $linea->grupo_empleado, 'datos' => $array_conceptos];  
+        }
+
+        $datos_2 = [];
+        foreach ($registros_grupo_empleado_2 as $registro_grupo_empleado)
+        {
+            foreach ($registro_grupo_empleado->datos as $registro_prestacion)
+            {
+                $datos_2[] = (object)[ 
+                                        'grupo_empleado' => $registro_grupo_empleado->grupo_empleado->descripcion,
+                                        'tipo_prestacion' => $registro_prestacion['tipo_prestacion'],
+                                        'valor_acumulado_mes_anterior' => $registro_prestacion['valor_acumulado_mes_anterior'],
+                                        'valor_consolidado_mes' => $registro_prestacion['valor_consolidado_mes'],
+                                        'valor_pagado_mes' => $registro_prestacion['valor_pagado_mes'],
+                                        'valor_acumulado' => $registro_prestacion['valor_acumulado']
+                                    ];
+            }
+        }
+
+        return $datos_2;
+    }
+
 }
