@@ -276,11 +276,11 @@
                                         <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
                                         @if($fonts!=null)
                                         {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
-                                        @endif
+                                        @endif 
                                     </div>
                                     <div class="form-group">
                                         <label>Formato (Solo aplica para categoría de artículos)</label>
-                                        <span data-toggle="tooltip" title="Establece el estilo de vista de la sección. Formato Lista: <img src='{{asset('assets/img/articles-lista.png')}}' /> o Formato Blog: <img src='{{asset('assets/img/articles-blog.png')}}' />"> <i class="fa 
+                                        <span data-toggle="tooltip" title="Establece el estilo de vista de la sección. Formato Lista: <img src='{{asset('assets/img/articles-lista.png')}}' /> o Formato Blog: <img src='{{asset('assets/img/articles-blog.png')}}' />"> <i class="fa fa-question-circle"></i></span>
                                         <select class="form-control" name="formato">
                                             <option value="LISTA">ARTÍCULOS EN FORMATO DE LISTA</option>
                                             <option value="BLOG">ARTÍCULOS EN FORMATO DE BLOG</option>
@@ -303,7 +303,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group" id="mos">
-                                        <label>Indique el Artículo<span data-toggle="tooltip" title="Establece el articulo a mostrar de la sección."> <i class="fa fa-question-circle"></i></span></label>                                        
+                                        <label>Indique el Artículo<span data-toggle="tooltip" title="Establece el articulo a mostrar de la sección."> <i class="fa fa-question-circle"></i></span></label>
                                         <select style="width: 100%;" class="select2" name="article_id">
                                             @if(count($articulos)>0)
                                             @foreach($articulos as $ar)
@@ -410,7 +410,7 @@
             html = html + `Imagen de Fondo <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
             <input type='file' class='form-control' name='fondo' required>` +
                 `<label>Repetir <span data-toggle="tooltip" title="Establece si la imagen se repite en el fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>                
-                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>`+
+                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>` +
                 `<label>Orientación Imagen <span data-toggle="tooltip" title="Establece la orientacion de la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>
                 <select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>`;
         } else if (f == 'COLOR') {
@@ -420,7 +420,7 @@
             html = "";
         }
         $("#fondo_container").html(html);
-        
+
         $('[data-toggle="tooltip"]').tooltip({
             animated: 'fade',
             placement: 'right',
@@ -436,7 +436,7 @@
             html = html + `Imagen de Fondo <span data-toggle="tooltip" title="Establece la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>            
             <input type='file' class='form-control' name='fondo' required>` +
                 `<label>Repetir <span data-toggle="tooltip" title="Establece si la imagen se repite en el fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>                
-                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>`+
+                <select class='form-control' name='repetir' required><option value='repeat'>SI</option><option value='no-repeat'>NO</option></select>` +
                 `<label>Orientación Imagen <span data-toggle="tooltip" title="Establece la orientacion de la imagen de fondo de la sección."> <i class="fa fa-question-circle"></i></span></label>
                 <select class='form-control' name='direccion' required><option value='center'>COLOCAR EN EL CENTRO</option><option value='left'>IZQUIERDA</option><option value='right'>DERECHA</option><option value='top'>ARRIBA</option></select>`;
         } else if (f == 'COLOR') {

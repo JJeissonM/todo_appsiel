@@ -206,13 +206,15 @@ class FooterController extends Controller
         if ($flag) {
             $enlaces =  $categoria->enlaces;
             return response()->json([
-                'status' => 'ok',
-                'enlaces' => $enlaces
+                'status' => 200,
+                'enlaces' => $enlaces,
+                'estado' => 'ok'
             ]);
         } else {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Error inesperado, por favor intentelo más tarde.'
+                'status' => 500,
+                'message' => 'Error inesperado, por favor intentelo más tarde.',
+                'estado' => 'error'
             ]);
         }
     }

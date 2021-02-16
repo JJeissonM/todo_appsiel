@@ -151,7 +151,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Color del Texto</label>
-                                        <span data-toggle="tooltip" title="Establece el color del texto del area de Copyright."> <i class="fa fa-question-circle"></i></span>                                        
+                                        <span data-toggle="tooltip" title="Establece el color del texto del area de Copyright."> <i class="fa fa-question-circle"></i></span>
                                         <input type="color" class="form-control" required name="color" style="background-color: white;" value="{{$footer->color}}" onchange="selectColor(event)">
                                     </div>
                                     <div class="form-group">
@@ -221,7 +221,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Color del Texto</label>
-                                        <span data-toggle="tooltip" title="Establece el color del texto del area de Copyright."> <i class="fa fa-question-circle"></i></span> 
+                                        <span data-toggle="tooltip" title="Establece el color del texto del area de Copyright."> <i class="fa fa-question-circle"></i></span>
                                         <input type="color" class="form-control" required name="color" style="background-color: white;" value="#fff" onchange="selectColor(event)">
                                     </div>
                                     <div class="form-group">
@@ -320,7 +320,7 @@
                                             <div class="media-body">
                                                 <h6 style="font-size: 14px;" class="media-heading">{{$a->texto}}</h6>
                                             </div>
-                                            <div id="{{$a->id}}" onclick="eliminarSeccion(event,id)" title="Eliminar Sección">
+                                            <div id="{{$a->id}}" onclick="eliminarSeccion(event,this.id)" title="Eliminar Sección">
                                                 <i style="cursor: pointer; color: red" class="fa fa-trash-o"></i>
                                             </div>
                                         </div>
@@ -568,7 +568,7 @@
                     Swal.fire(
                         'Error!',
                         data.message,
-                        'danger'
+                        'error'
                     )
                 }
             });
@@ -667,10 +667,10 @@
 
     function eliminarEnlace(event, id) {
         event.preventDefault();
-        axios.get("{{url('footer/eliminar/enlace')}}" + "/" + id)
+        axios.get("{{url('footer/categoria/eliminar/enlace')}}" + "/" + id)
             .then(function(response) {
                 const data = response.data;
-                if (data.status == 'ok') {
+                if (data.estado == 'ok') {
                     llenarTabla(data.enlaces);
                     Swal.fire(
                         'Eliminado!',
@@ -681,7 +681,7 @@
                     Swal.fire(
                         'Error!',
                         data.message,
-                        'danger'
+                        'error'
                     )
                 }
             });
@@ -713,6 +713,6 @@
         animated: 'fade',
         placement: 'right',
         html: true
-    });     
+    });
 </script>
 @endsection
