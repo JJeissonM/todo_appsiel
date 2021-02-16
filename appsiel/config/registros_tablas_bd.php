@@ -62856,23 +62856,29 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     131 => 
     array (
+      'orden' => 6,
+      'core_reporte_id' => 40,
+      'core_campo_id' => 1137,
+    ),
+    132 => 
+    array (
       'orden' => 5,
       'core_reporte_id' => 43,
       'core_campo_id' => 1137,
     ),
-    132 => 
+    133 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 38,
       'core_campo_id' => 1143,
     ),
-    133 => 
+    134 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 43,
       'core_campo_id' => 1143,
     ),
-    134 => 
+    135 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 40,
