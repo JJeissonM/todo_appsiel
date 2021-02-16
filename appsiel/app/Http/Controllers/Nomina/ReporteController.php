@@ -763,7 +763,6 @@ class ReporteController extends Controller
         return $view;
     }
 
-
     public function get_datos_grupos_empleados_consolidados( $movimiento )
     {
         $empleados_con_movimiento = $movimiento->unique('nom_contrato_id')->values()->all();
