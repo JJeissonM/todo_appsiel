@@ -86,6 +86,21 @@ class NomContrato extends Model
         return ($this->sueldo / (int)config('nomina.horas_laborales')) * (int)config('nomina.horas_dia_laboral');
     }
 
+    public function fecha_liquidacion_contrato()
+    {
+        $todos_los_registros = $this->registros_documentos_nomina;
+
+        foreach ($todos_los_registros as $registro)
+        {
+            if ( $registro->encabezado_documento->tipo_liquidacion == 'terminacion_contrato' )
+            {
+                return $registro->encabezado_documento->fecha;
+            }
+        }
+
+        return null;
+    }
+
     public function salario_anterior()
     {
         $ultimo_cambio = CambioSalario::where( 'nom_contrato_id', $this->id )->orderBy('fecha_modificacion')->get()->last();

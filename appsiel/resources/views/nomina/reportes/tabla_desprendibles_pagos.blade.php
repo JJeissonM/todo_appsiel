@@ -78,10 +78,16 @@
                         {
                             $cantidad_horas = number_format( $registro->cantidad_horas,2,',','.');
                         }
+
+                        $detalle = '';
+                        if ( $registro->detalle != '' ) 
+                        {
+                            $detalle = $registro->detalle;
+                        }
                     ?>
 
                     <tr>
-                        <td> {{ $descripcion_concepto }} </td>
+                        <td> {{ $descripcion_concepto }} {{ $detalle }} </td>
                         <td style="text-align: center;"> {{ $cantidad_horas }} </td>
                         <td> {{ $devengo }} </td>
                         <td> {{ $deduccion }} </td>

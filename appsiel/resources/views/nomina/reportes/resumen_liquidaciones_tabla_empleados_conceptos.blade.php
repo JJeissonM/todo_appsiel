@@ -19,7 +19,7 @@
 			$hay_mas_registros = true;
 			$iteracion = 1;
 			$cantidad_registros = count( $movimiento );
-			foreach($movimiento AS $registro)
+			foreach( $movimiento AS $registro)
 			{
 				$cc_empleado_actual = $registro->empleado_numero_identificacion;
 
@@ -58,6 +58,11 @@
 				}
 
 				$iteracion++;
+
+				if ( $iteracion % 30 == 0 )
+				{
+					echo '<div class="page-break"></div>';
+				}
 
 			}
 

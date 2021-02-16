@@ -148,7 +148,7 @@ class NomDocRegistro extends Model
                                                             [ 'nom_doc_registros.nom_concepto_id', '=', $nom_concepto_id ]
                                                         ] );
         }
-
+        
         return NomDocRegistro::leftJoin('nom_agrupacion_tiene_conceptos', 'nom_agrupacion_tiene_conceptos.nom_concepto_id', '=', 'nom_doc_registros.nom_concepto_id')
                             ->where( $array_wheres )
                             ->whereBetween('nom_doc_registros.fecha', [ $fecha_desde, $fecha_hasta ] )

@@ -90,6 +90,8 @@ class Cesantias implements Estrategia
         $this->tabla_resumen['fecha_inicial_promedios'] = $fecha_inicial;
         $this->tabla_resumen['fecha_final_promedios'] = $fecha_final;
 
+        $nom_agrupacion_id = $parametros_prestacion->nom_agrupacion_id;
+
         $cantidad_dias = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $parametros_prestacion->nom_agrupacion_id );
 
         $this->tabla_resumen['cantidad_dias'] = $cantidad_dias;
@@ -98,7 +100,7 @@ class Cesantias implements Estrategia
 
         $this->tabla_resumen['cantidad_dias_salario'] = (int)config('nomina.horas_laborales') / (int)config('nomina.horas_dia_laboral');
 
-        switch ($parametros_prestacion->base_liquidacion)
+        switch ( $parametros_prestacion->base_liquidacion )
         {
             case 'sueldo':
                 
@@ -123,7 +125,7 @@ class Cesantias implements Estrategia
                     $valor_agrupacion_x_dia = $valor_acumulado_agrupacion / $cantidad_dias;
                 }
 
-                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find($parametros_prestacion->nom_agrupacion_id)->descripcion;
+                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find( $nom_agrupacion_id )->descripcion;
                 $this->tabla_resumen['valor_acumulado_salario'] = $empleado->sueldo;
                 $this->tabla_resumen['valor_acumulado_agrupacion'] = $valor_acumulado_agrupacion;
                 $this->tabla_resumen['valor_salario_x_dia'] = $empleado->salario_x_dia();
@@ -146,7 +148,7 @@ class Cesantias implements Estrategia
                     $valor_base_diaria = $valor_acumulado_agrupacion / $cantidad_dias;
                 }
 
-                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find($parametros_prestacion->nom_agrupacion_id)->descripcion;
+                $this->tabla_resumen['descripcion_agrupacion'] = AgrupacionConcepto::find( $nom_agrupacion_id )->descripcion;
                 $this->tabla_resumen['valor_acumulado_salario'] = 0;
                 $this->tabla_resumen['valor_acumulado_agrupacion'] = $valor_acumulado_agrupacion;
                 $this->tabla_resumen['valor_salario_x_dia'] = 0;
@@ -201,13 +203,11 @@ class Cesantias implements Estrategia
 
         $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            //->where( 'nom_concepto_id', '<>', 66 )
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'valor_devengo' );
 
         $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            //->where( 'nom_concepto_id', '<>', 66 )
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'valor_deduccion' );
 
@@ -253,9 +253,8 @@ class Cesantias implements Estrategia
                                             ->whereBetween( 'nom_doc_registros.fecha', [$fecha_inicial,$fecha_final] )
                                             ->whereIn( 'nom_doc_registros.nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'nom_conceptos.forma_parte_basico', 1 )
-                                            //->where( 'nom_conceptos.id', '<>', 66 )
                                             ->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
-                                            ->sum( 'nom_doc_registros.cantidad_horas' );/**/
+                                            ->sum( 'nom_doc_registros.cantidad_horas' );
 
         return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
     }

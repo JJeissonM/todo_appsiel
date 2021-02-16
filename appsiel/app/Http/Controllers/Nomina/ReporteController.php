@@ -39,6 +39,7 @@ use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
+use App\Nomina\ConsolidadoPrestacionesSociales;
 
 use App\Nomina\LibroVacacion;
 
@@ -271,7 +272,7 @@ class ReporteController extends Controller
                     $entidades_con_movimiento = $movimientos_entidades_afp->groupBy('entidad_pension_id')->toArray();
                     $coleccion_movimientos_afp = $this->crear_coleccion_movimientos_entidades( $entidades_con_movimiento );
 
-                    $vista = View::make('nomina.reportes.resumen_entidades', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
+                    $view = View::make('nomina.reportes.resumen_entidades', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
                 break;
 
             case 'detallar_empleados':
@@ -282,7 +283,7 @@ class ReporteController extends Controller
                     $entidades_con_movimiento = $movimientos_entidades_afp->groupBy('entidad_pension_id');
                     $coleccion_movimientos_afp = $this->crear_coleccion_movimientos_entidades_terceros( $entidades_con_movimiento );
                     
-                    $vista = View::make('nomina.reportes.resumen_entidades_detallar_empleados', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
+                    $view = View::make('nomina.reportes.resumen_entidades_detallar_empleados', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
                 break;
 
             default:
@@ -290,9 +291,13 @@ class ReporteController extends Controller
                 break;
         }
 
-                
+        
 
-        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+        $vista_pdf = View::make('layouts.pdf3', compact( 'view' ) )->render();
+
+        Cache::forever( 'pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista_pdf);
+
+        return $view;
 
         return $vista;
     }
@@ -356,90 +361,30 @@ class ReporteController extends Controller
 
     public function consolidado_prestaciones_sociales(Request $request)
     {
-        $fecha_desde = $request->fecha_desde;
-        $fecha_hasta  = $request->fecha_hasta;
+        $fecha_final_mes  = $request->fecha_final_mes;
 
         $nom_contrato_id = (int)$request->nom_contrato_id;
-        
-        $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, 0, $nom_contrato_id, 0);
 
-        $empleados_con_movimiento = $movimiento->unique('nom_contrato_id')->values()->all();
-
-        $dias_calendario = $this->calcular_dias_laborados_calendario_30_dias( $fecha_desde, $fecha_hasta );
-        $cantidad_meses_a_promediar = round( $dias_calendario / 30, 0);
-        
-        $prestaciones = ['vacaciones','prima_legal','cesantias','intereses_cesantias'];
-        $datos = [];
-        foreach ($empleados_con_movimiento as $registro_empleado)
+        if ( $nom_contrato_id != '' )
         {
-            foreach ($prestaciones as $key => $prestacion)
-            {
-                $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion',$prestacion )
-                                                                        ->where('grupo_empleado_id',$registro_empleado->contrato->grupo_empleado_id)
-                                                                        ->get()->first();
-                if ( is_null( $parametros_prestacion) )
-                {
-                    continue;
-                }
-
-                $parametros_prestacion->cantidad_meses_a_promediar = $cantidad_meses_a_promediar;
-
-                $dias_laborados = $this->calcular_dias_reales_laborados( $registro_empleado->contrato, $fecha_desde, $fecha_hasta, $parametros_prestacion->nom_agrupacion_id );
-                
-                switch ( $prestacion )
-                {
-                    case 'vacaciones':
-                        $descripcion_prestacion = 'Vacaciones';
-                        $dias_derecho = $dias_laborados * 15 / 360;
-                        $liquidacion_prestacion = new Vacaciones;
-                        $base_diaria = $liquidacion_prestacion->get_valor_base_diaria( $registro_empleado->contrato, $fecha_hasta, 'normal', $parametros_prestacion );
-                        break;
-                    
-                    case 'prima_legal':
-                        $descripcion_prestacion = 'Prima de servicios';
-                        $dias_derecho = $dias_laborados * 15 / 180;
-                        $liquidacion_prestacion = new PrimaServicios;
-                        $base_diaria = $liquidacion_prestacion->get_valor_base_diaria( $registro_empleado->contrato, $fecha_hasta, 'normal', $parametros_prestacion );
-                        break;
-                    
-                    case 'cesantias':
-                        $descripcion_prestacion = 'Cesantías';
-                        $dias_derecho = $dias_laborados * 30 / 360;
-                        $liquidacion_prestacion = new Cesantias;
-                        $base_diaria = $liquidacion_prestacion->get_valor_base_diaria( $registro_empleado->contrato, $fecha_hasta, 'normal', $parametros_prestacion );
-                        break;
-                    
-                    case 'intereses_cesantias':
-                        $descripcion_prestacion = 'Intereses de cesantías';
-                        $dias_derecho = $dias_laborados * 30 / 360;
-                        $liquidacion_prestacion = new Cesantias;
-                        $base_diaria = $liquidacion_prestacion->get_valor_base_diaria( $registro_empleado->contrato, $fecha_hasta, 'normal', $parametros_prestacion ) * ( 12 / 100 );
-                        break;
-                    
-                    default:
-                        # code...
-                        break;
-                }
-
-                $valor_provision = $dias_derecho * $base_diaria;
-
-                $datos[] = (object)[ 
-                                        'empleado_numero_identificacion' => $registro_empleado->tercero->numero_identificacion,
-                                        'empleado_descripcion' => $registro_empleado->tercero->descripcion,
-                                        'concepto' => $descripcion_prestacion,
-                                        'dias_laborados' => $dias_laborados,
-                                        'dias_derecho' => $dias_derecho,
-                                        'base_diaria' => $base_diaria,
-                                        'valor_provision' => $valor_provision
-                                    ];
-            }
+            $lista_consolidados = ConsolidadoPrestacionesSociales::where( [
+                                                                        [ 'fecha_fin_mes', '=', $fecha_final_mes ],
+                                                                        [ 'nom_contrato_id', '=', $nom_contrato_id ]
+                                                                    ] )->get();
+        }else{
+            $lista_consolidados = ConsolidadoPrestacionesSociales::where( [
+                                                                        [ 'fecha_fin_mes', '=', $fecha_final_mes ]
+                                                                    ] )->get();
         }
+        
 
-        $vista = View::make('nomina.reportes.consolidado_prestaciones_sociales', compact( 'datos', 'fecha_desde', 'fecha_hasta','cantidad_meses_a_promediar') )->render();
+        $view = View::make('nomina.reportes.tabla_consolidados_prestaciones_sociales', compact( 'lista_consolidados', 'fecha_final_mes' ) )->render();
 
-        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+        $vista_pdf = View::make('layouts.pdf3', compact( 'view' ) )->render();
 
-        return $vista;
+        Cache::forever( 'pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista_pdf);
+
+        return $view;
     }
 
     public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
@@ -520,13 +465,14 @@ class ReporteController extends Controller
                 # code...
                 break;
         }
-        
 
-        $vista = View::make('nomina.reportes.resumen_liquidaciones', compact( 'datos', 'fecha_desde', 'fecha_hasta', 'forma_visualizacion') )->render();
+        $view = View::make('nomina.reportes.resumen_liquidaciones', compact( 'datos', 'fecha_desde', 'fecha_hasta', 'forma_visualizacion') )->render();
 
-        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+        $vista_pdf = View::make('layouts.pdf3', compact( 'view' ) )->render();
 
-        return $vista;
+        Cache::forever( 'pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista_pdf);
+
+        return $view;
     }
 
     public function get_datos_empleados_conceptos( $movimiento )
@@ -703,8 +649,26 @@ class ReporteController extends Controller
 
                 case 'saldo_consolidado_fecha_corte':
                     // LLamar a los consolidados
-                    $vacaciones_pendientes[$vp]['datos']->valor_pendiente_por_pagar = 0;
-                    $vacaciones_pendientes[$vp]['datos']->valor_un_periodo_vacacion = $empleado->salario_x_dia() * 15;
+                    $aux_fecha = explode('-', $fecha_corte);
+                    $fecha_ini_corte = $aux_fecha[0].'-'.$aux_fecha[1].'-01';
+                    $consolidado_empleado = ConsolidadoPrestacionesSociales::where( [
+                                                                                        [ 'nom_contrato_id', '=', $empleado->id ],
+                                                                                        [ 'tipo_prestacion', '=', 'vacaciones' ]
+                                                                                ] )
+                                                                        ->whereBetween('fecha_fin_mes', [$fecha_ini_corte, $fecha_corte] )
+                                                                        ->get()->first();
+                    $valor_pendiente_por_pagar = 0;
+                    $salario_x_dia = 0;
+                    if ( !is_null( $consolidado_empleado ) )
+                    {
+                        $valor_pendiente_por_pagar = $consolidado_empleado->valor_acumulado;
+                        if ( $dias_pendientes > 0 )
+                        {
+                            $salario_x_dia = $valor_pendiente_por_pagar / $dias_pendientes;
+                        }
+                    }               
+                    $vacaciones_pendientes[$vp]['datos']->valor_pendiente_por_pagar = $valor_pendiente_por_pagar;
+                    $vacaciones_pendientes[$vp]['datos']->valor_un_periodo_vacacion = $salario_x_dia * 15;
                     break;
                 
                 default:

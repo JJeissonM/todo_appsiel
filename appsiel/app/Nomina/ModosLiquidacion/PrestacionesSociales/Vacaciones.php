@@ -83,7 +83,7 @@ class Vacaciones implements Estrategia
 
             return [ 
                         [
-                            'cantidad_horas' => $dias_pendientes * (int)config('nomina.horas_dia_laboral'), // pendiente
+                            'cantidad_horas' => 0, // No disfruta vacaciones
                             'valor_devengo' => $valores->devengo,
                             'valor_deduccion' => $valores->deduccion,
                             'tabla_resumen' => $this->tabla_resumen  
@@ -189,10 +189,6 @@ class Vacaciones implements Estrategia
         $valor_base_diaria_sueldo = 0;
 
         $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $fecha_final, $empleado );
-        if ( $fecha_inicial < $empleado->fecha_ingreso)
-        {
-            $fecha_inicial = $empleado->fecha_ingreso;
-        }
 
         $this->tabla_resumen['fecha_inicial_promedios'] = $fecha_inicial;
         $this->tabla_resumen['fecha_final_promedios'] = $fecha_final;
@@ -211,7 +207,7 @@ class Vacaciones implements Estrategia
 
         $this->tabla_resumen['cantidad_dias_salario'] = (int)config('nomina.horas_laborales') / (int)config('nomina.horas_dia_laboral');
 
-        switch ($parametros_prestacion->base_liquidacion)
+        switch ( $parametros_prestacion->base_liquidacion )
         {
             case 'sueldo':
                 
@@ -360,6 +356,7 @@ class Vacaciones implements Estrategia
                                                             ['periodo_pagado_hasta','<>','0000-00-00']
                                                         ])
                                                 ->sum('dias_pagados');
+
         if ( is_null($dias_pagados_vacaciones) )
         {
             $dias_pagados_vacaciones = 0;
@@ -452,11 +449,11 @@ class Vacaciones implements Estrategia
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
         $cantidad_horas_laboradas = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
-                                            ->where( 'nom_conceptos.forma_parte_basico', 1 )
-                                            ->whereIn( 'nom_doc_registros.nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
                                             ->whereBetween( 'nom_doc_registros.fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'nom_doc_registros.cantidad_horas' );/**/
+                                            ->whereIn( 'nom_doc_registros.nom_concepto_id', $conceptos_de_la_agrupacion )
+                                            ->where( 'nom_conceptos.forma_parte_basico', 1 )
+                                            ->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
+                                            ->sum( 'nom_doc_registros.cantidad_horas' );
 
         return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
     }

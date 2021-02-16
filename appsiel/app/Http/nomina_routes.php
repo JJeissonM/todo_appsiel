@@ -16,6 +16,10 @@ Route::get('nomina/liquidacion/{id}', 'Nomina\NominaController@liquidacion');
 Route::get('nomina/retirar_liquidacion/{id}', 'Nomina\NominaController@retirar_liquidacion');
 Route::get('nomina_print/{id}', 'Nomina\NominaController@nomina_print');
 
+// LIQUIDACIONES INDIVIDUALES
+Route::get('nom_liquidar_prima_antiguedad/{id}', 'Nomina\LiquidacionPorModosController@liquidar_prima_antiguedad');
+Route::get('nom_retirar_prima_antiguedad/{id}', 'Nomina\LiquidacionPorModosController@retirar_prima_antiguedad');
+
 
 Route::get('get_datos_contrato/{contrato_id}', 'Nomina\NominaController@get_datos_contrato');
 Route::get('get_fecha_final_vacaciones/{grupo_empleado_id}/{fecha_inicial_tnl}/{cantidad_dias_tomados}/{dias_compensados}', 'Nomina\PrestacionesSocialesController@get_fecha_final_vacaciones');
@@ -31,6 +35,9 @@ Route::get('nom_retirar_prestaciones_sociales/{doc_encabezado_id}/{prestaciones}
 Route::get('nom_prestaciones_liquidadas_show/{registro_id}', 'Nomina\PrestacionesSocialesController@prestaciones_liquidadas_show');
 Route::get('nom_pdf_prestaciones_liquidadas/{registro_id}', 'Nomina\PrestacionesSocialesController@pdf_prestaciones_liquidadas');
 
+// 		CONSOLIDADO DE PRESTACIONES
+Route::post('nom_consolidar_prestaciones', 'Nomina\ConsolidadoPrestacionesController@consolidar_prestaciones');
+Route::get('nom_retirar_consolidado_prestaciones/{fecha_final_promedios}', 'Nomina\ConsolidadoPrestacionesController@retirar_consolidado_prestaciones');
 
 // RETEFUENTE
 Route::post('nom_liquidar_retefuente', 'Nomina\RetefuenteController@liquidacion');

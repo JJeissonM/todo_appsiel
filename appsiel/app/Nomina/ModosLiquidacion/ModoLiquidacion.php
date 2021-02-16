@@ -12,6 +12,7 @@ use App\Nomina\ModosLiquidacion\Estrategias\FondoSolidaridadPensional;
 use App\Nomina\ModosLiquidacion\Estrategias\Retefuente;
 use App\Nomina\ModosLiquidacion\Estrategias\SaludObligatoria;
 use App\Nomina\ModosLiquidacion\Estrategias\PensionObligatoria;
+use App\Nomina\ModosLiquidacion\Estrategias\PrimaAntiguedad;
 
 use App\Nomina\NomDocRegistro;
 
@@ -28,7 +29,8 @@ class ModoLiquidacion
 													10 => FondoSolidaridadPensional::class,
 													11 => Retefuente::class,
 													12 => SaludObligatoria::class,
-													13 => PensionObligatoria::class
+													13 => PensionObligatoria::class,
+													19 => PrimaAntiguedad::class
 												];
 
 

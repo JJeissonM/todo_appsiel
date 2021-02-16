@@ -23,11 +23,15 @@
 		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Liquidar', 'primary', 'cogs', 
 		          [ 
 		            ['link' => 'nomina/liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
-		            'etiqueta' => 'Registros automáticos (todo)']
+		            'etiqueta' => 'Registros automáticos (todo)'],
+		            ['link' => 'nom_liquidar_prima_antiguedad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
+		            'etiqueta' => 'Primas de antigüedad']
 		          ] ) }}
 		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Retirar', 'warning', 'history', 
 		          [ 
-		            ['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 'etiqueta' => 'Registros automáticos (todo)' ]
+		            ['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 'etiqueta' => 'Registros automáticos (todo)' ],
+		            ['link' => 'nom_retirar_prima_antiguedad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
+		            'etiqueta' => 'Primas de antigüedad']
 		          ] ) }}
 	@else
 		<small>(Documento está <b>{{ $encabezado_doc->estado }}</b>)</small>
