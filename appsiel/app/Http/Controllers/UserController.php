@@ -319,7 +319,7 @@ class UserController extends ModeloController
 
                 
 
-                $password = str_random(7);
+                $password = str_random(8);
 
                 $usuario = User::crear_y_asignar_role( $descripcion, $placa, 22, $password); // 22 = Vehículo (FUEC)
 

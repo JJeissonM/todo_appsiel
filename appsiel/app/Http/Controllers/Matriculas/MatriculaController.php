@@ -226,7 +226,7 @@ class MatriculaController extends ModeloController
                 $name = $tercero->descripcion;
             }
             $email = $request->email;
-            $password = str_random(7);
+            $password = str_random(8);
             $user = User::crear_y_asignar_role($name, $email, 4, $password); // 4 = Role Estudiante
 
             if ( is_null( $user ) )

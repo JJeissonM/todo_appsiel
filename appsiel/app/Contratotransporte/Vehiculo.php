@@ -118,7 +118,7 @@ class Vehiculo extends Model
 
         $placa = str_replace(" ", "", $registro->placa);
 
-        $password = str_random(7);
+        $password = str_random(8);
 
         User::crear_y_asignar_role($descripcion, $placa, 22, $password); // 22 = Vehículo (FUEC)
     }
