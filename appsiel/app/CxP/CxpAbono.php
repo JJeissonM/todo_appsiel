@@ -73,7 +73,7 @@ class CxpAbono extends Model
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO DE DOCUMENTOS ABONADOS";
+        return "LISTADO DE DOCUMENTOS ABONADOS DE CXP";
     }
 
     /*

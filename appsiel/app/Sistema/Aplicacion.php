@@ -73,7 +73,7 @@ class Aplicacion extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = Aplicacion::where('estado', '=', 'Activo')->get();
+        $opciones = Aplicacion::all();//where('estado', '=', 'Activo')->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
