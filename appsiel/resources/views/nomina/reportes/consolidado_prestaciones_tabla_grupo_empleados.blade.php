@@ -26,85 +26,85 @@
 			</div>
 		</td>
 	</tr>
-</table>
+	<tr>
+		<td colspan="2">
+			<div class="marco_formulario">
+				<div class="container-fluid">		
+					<h4 style="width: 100%;text-align: center;">
+						<strong> Consolidado de prestaciones sociales </strong>
+						<br>
+						<b> Fecha: </b> {{ $fecha_final_mes }}
+					</h4>
 
-<br><br>
-<div class="marco_formulario">
-	<div class="container-fluid">		
-		<h4 style="width: 100%;text-align: center;">
-			<strong> Consolidado de prestaciones sociales </strong>
-			<br>
-			<b> Fecha: </b> {{ $fecha_final_mes }}
-		</h4>
-
-		<table class="table table-bordered table-striped">
-			<thead>
-				<tr>
-					<th> Grupo Empleados </th>
-					<th> Prestación </th>
-					<th> Vlr. consol. mes </th>
-					<th> Vlr. acumulado </th>
-				</tr>
-			</thead>
-			<tbody>
-				<?php 
-					$total_valor_consolidado_mes = 0;
-					$total_valor_acumulado = 0;
-					$grupo_empleado_anterior = '';
-					$es_primer_registro = true;
-					$hay_mas_registros = true;
-					$iteracion = 1;
-					$cantidad_registros = count( $movimiento );
-					foreach( $movimiento AS $registro )
-					{
-						$grupo_empleado_actual = $registro->grupo_empleado;
-
-						if( $grupo_empleado_anterior != $grupo_empleado_actual )
-						{
-
-							if ( !$es_primer_registro ) 
-							{
-								echo dibujar_totales2( $total_valor_consolidado_mes, $total_valor_acumulado );
+					<table class="table table-bordered table-striped">
+						<thead>
+							<tr>
+								<th> Grupo Empleados </th>
+								<th> Prestación </th>
+								<th> Vlr. consol. mes </th>
+								<th> Vlr. acumulado </th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php 
 								$total_valor_consolidado_mes = 0;
 								$total_valor_acumulado = 0;
-							}
-							
-							$es_primer_registro = false;
-							$grupo_empleado_anterior = $grupo_empleado_actual;
-							
-							//if ( $hay_mas_registros )
-							//{
-								echo dibujar_etiquetas2( $registro );
-							//}
-							
-							$total_valor_consolidado_mes += (float)$registro->valor_consolidado_mes;
-							$total_valor_acumulado += (float)$registro->valor_acumulado;
+								$grupo_empleado_anterior = '';
+								$es_primer_registro = true;
+								$hay_mas_registros = true;
+								$iteracion = 1;
+								$cantidad_registros = count( $movimiento );
+								foreach( $movimiento AS $registro )
+								{
+									$grupo_empleado_actual = $registro->grupo_empleado;
 
-						}else{
-							echo dibujar_etiquetas2( $registro );
-							$total_valor_consolidado_mes += (float)$registro->valor_consolidado_mes;
-							$total_valor_acumulado += (float)$registro->valor_acumulado;
-							$grupo_empleado_anterior = $grupo_empleado_actual;
-							$es_primer_registro = false;
-						}
+									if( $grupo_empleado_anterior != $grupo_empleado_actual )
+									{
 
-						if ( $iteracion == $cantidad_registros )
-						{
-							$hay_mas_registros = false;
-						}
+										if ( !$es_primer_registro ) 
+										{
+											echo dibujar_totales2( $total_valor_consolidado_mes, $total_valor_acumulado );
+											$total_valor_consolidado_mes = 0;
+											$total_valor_acumulado = 0;
+										}
+										
+										$es_primer_registro = false;
+										$grupo_empleado_anterior = $grupo_empleado_actual;
+										
+										//if ( $hay_mas_registros )
+										//{
+											echo dibujar_etiquetas2( $registro );
+										//}
+										
+										$total_valor_consolidado_mes += (float)$registro->valor_consolidado_mes;
+										$total_valor_acumulado += (float)$registro->valor_acumulado;
 
-						$iteracion++;
+									}else{
+										echo dibujar_etiquetas2( $registro );
+										$total_valor_consolidado_mes += (float)$registro->valor_consolidado_mes;
+										$total_valor_acumulado += (float)$registro->valor_acumulado;
+										$grupo_empleado_anterior = $grupo_empleado_actual;
+										$es_primer_registro = false;
+									}
 
-					}
+									if ( $iteracion == $cantidad_registros )
+									{
+										$hay_mas_registros = false;
+									}
 
-					echo dibujar_totales2( $total_valor_consolidado_mes, $total_valor_acumulado );
-				?>
-			</tbody>
-		</table>
-	</div>
-</div>
+									$iteracion++;
 
+								}
 
+								echo dibujar_totales2( $total_valor_consolidado_mes, $total_valor_acumulado );
+							?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</td>
+	</tr>
+</table>
 
 <?php 
 	
