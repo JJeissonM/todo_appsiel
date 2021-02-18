@@ -621,14 +621,13 @@ class ReporteController extends Controller
 
                 case 'saldo_consolidado_fecha_corte':
                     // LLamar a los consolidados
-                    $aux_fecha = explode('-', $fecha_corte);
-                    $fecha_ini_corte = $aux_fecha[0].'-'.$aux_fecha[1].'-01';
                     $consolidado_empleado = ConsolidadoPrestacionesSociales::where( [
                                                                                         [ 'nom_contrato_id', '=', $empleado->id ],
-                                                                                        [ 'tipo_prestacion', '=', 'vacaciones' ]
+                                                                                        [ 'tipo_prestacion', '=', 'vacaciones' ],
+                                                                                        [ 'fecha_fin_mes', '<=', $fecha_corte ]
                                                                                 ] )
-                                                                        ->whereBetween('fecha_fin_mes', [$fecha_ini_corte, $fecha_corte] )
-                                                                        ->get()->first();
+                                                                        ->orderBy('fecha_fin_mes')
+                                                                        ->get()->last();
                     $valor_pendiente_por_pagar = 0;
                     $salario_x_dia = 0;
                     if ( !is_null( $consolidado_empleado ) )
@@ -719,16 +718,19 @@ class ReporteController extends Controller
 
         $forma_visualizacion  = $request->forma_visualizacion;
 
+        $aux_fecha = explode('-', $fecha_final_mes);
+        $fecha_ini_corte = $aux_fecha[0].'-'.$aux_fecha[1].'-01';
+
         if ( $nom_contrato_id != '' )
         {
             $lista_consolidados = ConsolidadoPrestacionesSociales::where( [
-                                                                        [ 'fecha_fin_mes', '=', $fecha_final_mes ],
-                                                                        [ 'nom_contrato_id', '=', $nom_contrato_id ]
-                                                                    ] )->get();
+                                                                            [ 'nom_contrato_id', '=', $nom_contrato_id ]
+                                                                        ] )
+                                                                    ->whereBetween( 'fecha_fin_mes', [ $fecha_ini_corte, $fecha_final_mes ] )
+                                                                    ->get();
         }else{
-            $lista_consolidados = ConsolidadoPrestacionesSociales::where( [
-                                                                        [ 'fecha_fin_mes', '=', $fecha_final_mes ]
-                                                                    ] )->get();
+            $lista_consolidados = ConsolidadoPrestacionesSociales::whereBetween( 'fecha_fin_mes', [ $fecha_ini_corte, $fecha_final_mes ] )
+                                                                    ->get();
         }
 
         switch ($forma_visualizacion)
@@ -742,9 +744,7 @@ class ReporteController extends Controller
 
                     $lista_consolidados = ConsolidadoPrestacionesSociales::leftJoin( 'nom_contratos','nom_contratos.id','=','nom_consolidados_prestaciones_sociales.nom_contrato_id')
                                                                     ->leftJoin('nom_grupos_empleados','nom_grupos_empleados.id','=','nom_contratos.grupo_empleado_id')
-                                                                    ->where( [
-                                                                                    [ 'nom_consolidados_prestaciones_sociales.fecha_fin_mes', '=', $fecha_final_mes ]
-                                                                                ] )
+                                                                    ->whereBetween( 'nom_consolidados_prestaciones_sociales.fecha_fin_mes', [ $fecha_ini_corte, $fecha_final_mes ] )
                                                                     ->get();
 
                     $movimiento = $this->get_datos_grupos_empleados_consolidados( $lista_consolidados );

@@ -15,6 +15,8 @@ use App\Nomina\CambioSalario;
 use App\Nomina\ProgramacionVacacion;
 use App\Nomina\PrestacionesLiquidadas;
 
+use App\Nomina\ModosLiquidacion\Estrategias\PrestacionSocial;
+
 class Vacaciones implements Estrategia
 {
     const DIAS_BASE_LEGALES = 360;
@@ -199,7 +201,7 @@ class Vacaciones implements Estrategia
             $nom_agrupacion_id = $parametros_prestacion->nom_agrupacion2_id;
         }
 
-        $cantidad_dias = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id );
+        $cantidad_dias = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final );
 
         $this->tabla_resumen['cantidad_dias'] = $cantidad_dias;
 
@@ -225,7 +227,7 @@ class Vacaciones implements Estrategia
                 
                 $valor_agrupacion_x_dia = 0;                
 
-                $valor_acumulado_agrupacion = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $fecha_final );
+                $valor_acumulado_agrupacion = PrestacionSocial::get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $fecha_final );
                 
                 if ( $cantidad_dias != 0 )
                 {
@@ -248,7 +250,7 @@ class Vacaciones implements Estrategia
             
             case 'promedio_agrupacion':
 
-                $valor_acumulado_agrupacion = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $fecha_final );
+                $valor_acumulado_agrupacion = PrestacionSocial::get_valor_acumulado_agrupacion_entre_meses( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $fecha_final );
 
                 if ( $cantidad_dias != 0 )
                 {
@@ -277,49 +279,6 @@ class Vacaciones implements Estrategia
         return $valor_base_diaria;
     }
 
-    public function get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
-    {
-
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
-
-        $vec_conceptos = [];
-        foreach ($conceptos_de_la_agrupacion as $concepto)
-        {
-            if (!$concepto->forma_parte_basico)
-            {
-                $vec_conceptos[] = $concepto->id;
-            }
-        }
-        $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_devengo' );
-
-        $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_deduccion' );
-
-        return ( $total_devengos - $total_deducciones );
-    }
-
-    public function get_valor_acumulado_agrupacion_entre_meses( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
-    {
-
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
-
-        $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_devengo' );
-
-        $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_deduccion' );
-
-        return ( $total_devengos - $total_deducciones );
-    }
 
     public function get_cantidad_dias_amortizar( $programacion_vacaciones, $documento_nomina )
     {
@@ -444,19 +403,7 @@ class Vacaciones implements Estrategia
         }
     }
 
-    public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
-    {
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-        $cantidad_horas_laboradas = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
-                                            ->whereBetween( 'nom_doc_registros.fecha', [$fecha_inicial,$fecha_final] )
-                                            ->whereIn( 'nom_doc_registros.nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'nom_conceptos.forma_parte_basico', 1 )
-                                            ->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
-                                            ->sum( 'nom_doc_registros.cantidad_horas' );
-
-        return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
-    }
 
     public function calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final )
     {

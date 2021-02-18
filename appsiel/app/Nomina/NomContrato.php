@@ -260,7 +260,6 @@ class NomContrato extends Model
     public static function opciones_campo_select_2()
     {
         $opciones = NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
-                                ->where('nom_contratos.estado', 'Activo')
                                 ->select('nom_contratos.id', 'core_terceros.descripcion', 'core_terceros.numero_identificacion')
                                 ->orderby('core_terceros.descripcion')
                                 ->get();

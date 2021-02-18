@@ -24,7 +24,7 @@
 				
 				<label class="control-label col-sm-4" >
 					<span data-toggle="tooltip" title="Escoger día 30 del mes. Para febrero, escoger siempre día 28."> <i class="fa fa-question-circle"></i></span>
-					<b> Fecha fin de MES: </b> 
+					<b> *Fecha fin de MES: </b> 
 				</label>
 
 				<div class="col-sm-8">

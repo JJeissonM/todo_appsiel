@@ -43,36 +43,38 @@
 			</div>
 		</td>
 	</tr>
+	<tr>
+		<td colspan="2">
+			<h3 style="width: 100%; text-align: center;">
+			    RESUMEN DE LIQUIDACIONES DE NÓMINA
+			</h3>
+			<p style="width: 100%; text-align: center;">
+			    Desde: {{ $fecha_desde }} | Hasta: {{ $fecha_hasta }}
+			</p>
+
+
+			<table class="table table-bordered">
+				<tbody>
+					<tr>
+						<td>
+							@if( $forma_visualizacion == 'empleados_conceptos' )
+								@include('nomina.reportes.resumen_liquidaciones_tabla_empleados_conceptos',['movimiento' => $datos])
+							@endif
+							@if( $forma_visualizacion == 'grupo_empleados_conceptos' )
+								@include('nomina.reportes.resumen_liquidaciones_tabla_grupo_empleados_conceptos',['movimiento' => $datos])
+							@endif
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</td>
+	</tr>
 </table>
 
-<h3 style="width: 100%; text-align: center;">
-    RESUMEN DE LIQUIDACIONES DE NÓMINA
-</h3>
-<p style="width: 100%; text-align: center;">
-    Desde: {{ $fecha_desde }} | Hasta: {{ $fecha_hasta }}
-</p>
-
-
-	<table class="table table-bordered">
-		<tbody>
-			<tr>
-				<td>
-					@if( $forma_visualizacion == 'empleados_conceptos' )
-						@include('nomina.reportes.resumen_liquidaciones_tabla_empleados_conceptos',['movimiento' => $datos])
-					@endif
-					@if( $forma_visualizacion == 'grupo_empleados_conceptos' )
-						@include('nomina.reportes.resumen_liquidaciones_tabla_grupo_empleados_conceptos',['movimiento' => $datos])
-					@endif
-				</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<div style="width: 100%; position: fixed; bottom: 0;">
-		<hr>
-		{!! generado_por_appsiel() !!}
-	</div>	
-
+<div style="width: 100%; position: fixed; bottom: 0;">
+	<hr>
+	{!! generado_por_appsiel() !!}
+</div>
 
 <?php 
 	

@@ -15,6 +15,8 @@ use App\Nomina\CambioSalario;
 use App\Nomina\ProgramacionVacacion;
 use App\Nomina\PrestacionesLiquidadas;
 
+use App\Nomina\ModosLiquidacion\Estrategias\PrestacionSocial;
+
 class PrimaServicios implements Estrategia
 {
     const DIAS_BASE_LEGALES = 180;
@@ -60,7 +62,7 @@ class PrimaServicios implements Estrategia
         $this->tabla_resumen['valor_total_liquidacion'] = $dias_totales_liquidacion * $valor_base_diaria;
 
         $valores = get_valores_devengo_deduccion( 'devengo', $this->tabla_resumen['valor_total_liquidacion'] );
-
+        
         return [
                     [
                         'cantidad_horas' => $dias_totales_liquidacion * (int)config('nomina.horas_dia_laboral'), // pendiente
@@ -91,7 +93,7 @@ class PrimaServicios implements Estrategia
         $this->tabla_resumen['fecha_final_promedios'] = $fecha_final;
 
         $fecha_inicial_liquidacion = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
-        $cantidad_dias = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial_liquidacion, $this->fecha_final_liquidacion, $parametros_prestacion->nom_agrupacion_id );
+        $cantidad_dias = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial_liquidacion, $this->fecha_final_liquidacion );
 
         $this->tabla_resumen['cantidad_dias'] = $cantidad_dias;
 
@@ -117,7 +119,7 @@ class PrimaServicios implements Estrategia
                 
                 $valor_agrupacion_x_dia = 0;                
 
-                $valor_acumulado_agrupacion = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_variables( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $fecha_final );
+                $valor_acumulado_agrupacion = PrestacionSocial::get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $fecha_final );
                 
                 if ( $cantidad_dias != 0 )
                 {
@@ -140,7 +142,7 @@ class PrimaServicios implements Estrategia
             
             case 'promedio_agrupacion':
 
-                $valor_acumulado_agrupacion_variables = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_variables( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $this->fecha_final_promedios );
+                $valor_acumulado_agrupacion_variables = PrestacionSocial::get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $this->fecha_final_promedios );
 
                 $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
                 $valor_acumulado_agrupacion_salario = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_solo_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $this->fecha_final_liquidacion );
@@ -174,77 +176,46 @@ class PrimaServicios implements Estrategia
         return $valor_base_diaria;
     }
 
-    public function get_valor_acumulado_agrupacion_entre_meses_conceptos_variables( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
-    {
 
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
-
-        $vec_conceptos = [];
-        foreach ($conceptos_de_la_agrupacion as $concepto)
-        {
-            if (!$concepto->forma_parte_basico)
-            {
-                $vec_conceptos[] = $concepto->id;
-            }
-        }
-        $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_devengo' );
-
-        $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_deduccion' );
-
-        return ( $total_devengos - $total_deducciones );
-    }
-
+    /*
+        Se deben excluir las Vacaciones pagadas en documentos de liquidación de contratos.
+        La vacaciones disfrutadas si se incluyen.
+    */
     public function get_valor_acumulado_agrupacion_entre_meses_conceptos_solo_salario( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
     {
-
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
 
         $vec_conceptos = [];
         foreach ($conceptos_de_la_agrupacion as $concepto)
         {
-            if ($concepto->forma_parte_basico)
+            if ( $concepto->forma_parte_basico )
             {
                 $vec_conceptos[] = $concepto->id;
             }
         }
-        $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_devengo' );
 
-        $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
+        $registros = NomDocRegistro::whereIn( 'nom_concepto_id', $vec_conceptos )
                                             ->where( 'core_tercero_id', $empleado->core_tercero_id )
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_deduccion' );
+                                            ->get();
+
+        $total_devengos = 0;
+        $total_deducciones = 0;
+        $concepto_vacaciones_id = PrestacionSocial::get_concepto_vacaciones_id( $empleado );
+        foreach ( $registros as $registro )
+        {
+            if ( ($registro->nom_concepto_id == $concepto_vacaciones_id) && ( $registro->encabezado_documento->tipo_liquidacion == 'terminacion_contrato' ) )
+            {
+                continue;
+            }
+
+            $total_devengos += $registro->valor_devengo;
+            $total_deducciones += $registro->valor_deduccion;
+        }
 
         return ( $total_devengos - $total_deducciones );
     }
 
-    public function get_valor_acumulado_agrupacion_entre_meses( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
-    {
-
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
-
-        $total_devengos = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            //->where( 'nom_concepto_id', '<>', 66 )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_devengo' );
-
-        $total_deducciones = NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                            //->where( 'nom_concepto_id', '<>', 66 )
-                                            ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
-                                            ->sum( 'valor_deduccion' );
-
-        return ( $total_devengos - $total_deducciones );
-    }
 
     public function formatear_numero_a_texto_dos_digitos( $numero )
     {
@@ -265,7 +236,7 @@ class PrimaServicios implements Estrategia
 
         $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
 
-        $dias_totales_laborados = $this->calcular_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion, $parametros_prestacion->nom_agrupacion_id );
+        $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion );
 
         $dias_totales_liquidacion = $dias_totales_laborados * $parametros_prestacion->dias_a_liquidar / self::DIAS_BASE_LEGALES;
 
@@ -277,20 +248,7 @@ class PrimaServicios implements Estrategia
         return $dias_totales_liquidacion;
     }
 
-    public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
-    {
-        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos->pluck('id')->toArray();
 
-        $cantidad_horas_laboradas = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
-                                            ->whereBetween( 'nom_doc_registros.fecha', [$fecha_inicial,$fecha_final] )
-                                            ->whereIn( 'nom_doc_registros.nom_concepto_id', $conceptos_de_la_agrupacion )
-                                            ->where( 'nom_conceptos.forma_parte_basico', 1 )
-                                            //->where( 'nom_conceptos.id', '<>', 66 )
-                                            ->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
-                                            ->sum( 'nom_doc_registros.cantidad_horas' );/**/
-
-        return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
-    }
 
     public function get_valor_acumulado_provision()
     {

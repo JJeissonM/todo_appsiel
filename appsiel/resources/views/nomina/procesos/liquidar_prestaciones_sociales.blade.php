@@ -7,7 +7,14 @@
 		La liquidacónes de la Prima de servicios, las Vacaciones, las Cesantías e Intereses tienen una liquidación especial con base en acumulados y parametrizaciones específicas.
 	</p>
 	
-	Por esta opción puede liquidar todos estos conceptos.
+	<h6>
+		<span class="text-info">
+			NOTA: El sistema va a realizar los cálculos desde las FECHAS FINALES seleccionadas hasta "Tantos meses" <u>hacia atrás</u> como lo  indiquen los parámetros de cada préstación.
+			<br>
+			Por ejemplo: para la Prima, se van a calcular los acumulados de seis (6) meses hacia atrás desde las fechas seleccionadas.
+		</span>
+	</h6>
+		
 	
 	<br>
 @endsection
