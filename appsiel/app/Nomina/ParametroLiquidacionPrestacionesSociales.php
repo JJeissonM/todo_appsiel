@@ -98,6 +98,16 @@ class ParametroLiquidacionPrestacionesSociales extends Model
 
     public function get_fecha_inicial_promedios( $fecha_final, $empleado )
     {
+        if ( $empleado->estado == 'Retirado' )
+        {
+            $fecha_ultima_liquidacion = $this->get_fecha_ultima_liquidacion( $empleado, $this->concepto_prestacion );
+
+            if ( !is_null( $fecha_ultima_liquidacion ) )
+            {
+                return $this->sumar_dias_calendario_30_dias_a_fecha( $fecha_ultima_liquidacion, 1 );
+            }
+        }            
+
         $vec_fecha_documento = explode("-", $fecha_final);
         
         $anio_final = (int)$vec_fecha_documento[0];
@@ -119,8 +129,6 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         {
             $dia_inicial = '01';
         }
-
-
 
         $mes_anterior = $mes_final;// + 1;
         for ( $i = $this->cantidad_meses_a_promediar; $i > 1; $i--)
@@ -157,6 +165,31 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         return $fecha_inicial;
     }
 
+    
+    public function get_fecha_ultima_liquidacion( $empleado, $prestacion )
+    {
+        $prestaciones_liquidadas_empleado = PrestacionesLiquidadas::where( 'nom_contrato_id', $empleado->id )->get();
+
+        $fecha_ultima_liquidacion = null;
+        foreach ( $prestaciones_liquidadas_empleado as $registro )
+        {
+            $prestacion_liquidada = json_decode( $registro->prestaciones_liquidadas )[0];
+            if( $prestacion_liquidada->prestacion == $prestacion  )
+            {
+                $tabla_resumen = (array)$prestacion_liquidada->tabla_resumen;
+                if ( $prestacion == 'vacaciones' )
+                {
+                    $fecha_ultima_liquidacion = $tabla_resumen['periodo_pagado_hasta'];
+                }else{
+                    $fecha_ultima_liquidacion = $tabla_resumen['fecha_liquidacion'];
+                }                
+            }
+        }
+        
+        return $fecha_ultima_liquidacion;
+    }
+    /**/
+
     public function formatear_numero_a_texto_dos_digitos( $numero )
     {
         if ( strlen($numero) == 1 )
@@ -189,5 +222,37 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         }
 
         return 'ok';
+    }
+
+    public function sumar_dias_calendario_a_fecha( string $fecha, int $cantidad_dias )
+    {
+        $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
+
+        return $fecha_aux->addDays( $cantidad_dias )->format('Y-m-d');
+    }
+
+    public function sumar_dias_calendario_30_dias_a_fecha( string $fecha, int $cantidad_dias )
+    {
+        $fecha_aux = $this->sumar_dias_calendario_a_fecha( $fecha, $cantidad_dias );
+
+        $vec_fecha = explode('-', $fecha_aux);
+        $anio = (int)$vec_fecha[0];
+        $mes = (int)$vec_fecha[1];
+        $dia = (int)$vec_fecha[2];
+
+        if ( $dia == 31 )
+        {
+            $dia = 1;
+
+            if ( $mes == 12 ) // Si es Diciembre
+            {
+                $anio++;
+                $mes = 1;
+            }else{
+                $mes++;
+            }
+        }
+        
+        return $anio . '-' . $this->formatear_numero_a_texto_dos_digitos( $mes ) . '-' . $this->formatear_numero_a_texto_dos_digitos( $dia );
     }
 }

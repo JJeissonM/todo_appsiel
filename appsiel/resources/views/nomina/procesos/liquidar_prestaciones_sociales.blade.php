@@ -9,7 +9,7 @@
 	
 	<h6>
 		<span class="text-info">
-			NOTA: El sistema va a realizar los cálculos desde las FECHAS FINALES seleccionadas hasta "Tantos meses" <u>hacia atrás</u> como lo  indiquen los parámetros de cada préstación.
+			NOTA: El sistema va a realizar los cálculos desde las FECHAS FINALES seleccionadas hasta "Tantos meses" <u>hacia atrás</u> como lo indiquen los parámetros de cada préstación. <b> <u> No aplica en liquidaciones de contrato. </u> </b>
 			<br>
 			Por ejemplo: para la Prima, se van a calcular los acumulados de seis (6) meses hacia atrás desde las fechas seleccionadas.
 		</span>
