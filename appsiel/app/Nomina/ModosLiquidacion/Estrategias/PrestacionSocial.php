@@ -46,6 +46,22 @@ class PrestacionSocial
         return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
     }
 
+    public static function calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final )
+    {
+        $vec_fecha_inicial = explode("-", $fecha_inicial);
+        $vec_fecha_final = explode("-", $fecha_final);
+
+        // Días iniciales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
+        $dias_iniciales = ( (int)$vec_fecha_inicial[0] * 360 ) + ( ( (int)$vec_fecha_inicial[1] - 1 ) * 30) + (int)$vec_fecha_inicial[2];
+
+        // Días finales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
+        $dias_finales = ( (int)$vec_fecha_final[0] * 360 ) + ( ( (int)$vec_fecha_final[1] - 1 ) * 30) + (int)$vec_fecha_final[2];
+
+        $dias_totales_laborados = ($dias_finales - $dias_iniciales) + 1;
+
+        return $dias_totales_laborados;
+    }
+
 
    /*
         Se deben excluir las Vacaciones pagadas en documentos de liquidación de contratos.

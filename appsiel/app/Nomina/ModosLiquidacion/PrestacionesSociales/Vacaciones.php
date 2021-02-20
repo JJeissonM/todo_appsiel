@@ -31,6 +31,7 @@ class Vacaciones implements Estrategia
     */
 	public function calcular(LiquidacionPrestacionSocial $liquidacion)
 	{
+
         $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion',$liquidacion['prestacion'])
                                                                         ->where('grupo_empleado_id',$liquidacion['empleado']->grupo_empleado_id)
                                                                         ->get()->first();
@@ -40,6 +41,27 @@ class Vacaciones implements Estrategia
         if( is_null( $parametros_prestacion ) )
         {
             $this->tabla_resumen['mensaje_error'] = 'No están configurados los parámetros de Vacaciones para el grupo de empleado ' . $liquidacion['empleado']->grupo_empleado->descripcion;
+
+            return [
+                        [
+                            'cantidad_horas' => 0,
+                            'valor_devengo' => 0,
+                            'valor_deduccion' => 0,
+                            'tabla_resumen' => $this->tabla_resumen
+                        ]
+                    ];
+        }
+
+        $registro_concepto = NomDocRegistro::where(
+                                                    ['nom_doc_encabezado_id' => $liquidacion['documento_nomina']->id ] + 
+                                                    ['nom_contrato_id' => $liquidacion['empleado']->id ] + 
+                                                    ['nom_concepto_id' => $parametros_prestacion->nom_concepto_id ]
+                                                )
+                                            ->get()->first();
+
+        if ( !is_null($registro_concepto) )
+        {
+            $this->tabla_resumen['mensaje_error'] = '<br>Vacaciones. La prestación ya está liquidada en el documento.';
 
             return [
                         [
@@ -162,21 +184,21 @@ class Vacaciones implements Estrategia
     {
         if ( $this->tabla_resumen['vlr_dias_no_habiles'] > 0 )
         {
-            $registro = NomDocRegistro::create(
-                                                [ 'nom_doc_encabezado_id' => $documento_nomina->id ] + 
-                                                [ 'fecha' => $documento_nomina->fecha] + 
-                                                [ 'core_empresa_id' => $documento_nomina->core_empresa_id] +  
-                                                [ 'nom_concepto_id' => (int)config('nomina.concepto_vacaciones_dias_no_habiles') ] + 
-                                                [ 'core_tercero_id' => $empleado->core_tercero_id ] + 
-                                                [ 'nom_contrato_id' => $empleado->id ] +
-                                                [ 'estado' => 'Activo' ] + 
-                                                [ 'creado_por' => Auth::user()->email ] + 
-                                                [ 'modificado_por' => '' ] +
-                                                [ 'cantidad_horas' => $cantidad_horas_a_liquidar ] +
-                                                [ 'valor_devengo' => round( $this->tabla_resumen['vlr_dias_no_habiles'], 0) ] +
-                                                [ 'valor_deduccion' => 0 ] +
-                                                [ 'novedad_tnl_id' => $novedad_tnl_id ]
-                                            );
+            NomDocRegistro::create(
+                                    [ 'nom_doc_encabezado_id' => $documento_nomina->id ] + 
+                                    [ 'fecha' => $documento_nomina->fecha] + 
+                                    [ 'core_empresa_id' => $documento_nomina->core_empresa_id] +  
+                                    [ 'nom_concepto_id' => (int)config('nomina.concepto_vacaciones_dias_no_habiles') ] + 
+                                    [ 'core_tercero_id' => $empleado->core_tercero_id ] + 
+                                    [ 'nom_contrato_id' => $empleado->id ] +
+                                    [ 'estado' => 'Activo' ] + 
+                                    [ 'creado_por' => Auth::user()->email ] + 
+                                    [ 'modificado_por' => '' ] +
+                                    [ 'cantidad_horas' => $cantidad_horas_a_liquidar ] +
+                                    [ 'valor_devengo' => round( $this->tabla_resumen['vlr_dias_no_habiles'], 0) ] +
+                                    [ 'valor_deduccion' => 0 ] +
+                                    [ 'novedad_tnl_id' => $novedad_tnl_id ]
+                                );
         }
     }
 
@@ -321,8 +343,12 @@ class Vacaciones implements Estrategia
             $dias_pagados_vacaciones = 0;
         }
 
-        $dias_totales_laborados = $this->calcular_dias_laborados_calendario_30_dias( $empleado->fecha_ingreso, $documento_nomina->fecha );
+        $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $empleado->fecha_ingreso, $documento_nomina->fecha );
 
+        $dias_calendario_laborados = PrestacionSocial::calcular_dias_laborados_calendario_30_dias( $empleado->fecha_ingreso, $documento_nomina->fecha );
+
+        $dias_totales_no_laborados = $dias_calendario_laborados - $dias_totales_laborados;
+        
         /*
             Falta calcular los días no laborados
         */
@@ -334,7 +360,7 @@ class Vacaciones implements Estrategia
         $this->tabla_resumen['fecha_ingreso'] = $empleado->fecha_ingreso;
         $this->tabla_resumen['fecha_liquidacion'] = $documento_nomina->fecha;
         $this->tabla_resumen['dias_totales_laborados'] = $dias_totales_laborados;
-        $this->tabla_resumen['dias_totales_no_laborados'] = 0;
+        $this->tabla_resumen['dias_totales_no_laborados'] = $dias_totales_no_laborados;
         $this->tabla_resumen['dias_totales_vacaciones'] = $dias_totales_vacaciones;
         $this->tabla_resumen['dias_pagados_vacaciones'] = $dias_pagados_vacaciones;
         $this->tabla_resumen['dias_pendientes'] = $dias_pendientes;
@@ -371,7 +397,6 @@ class Vacaciones implements Estrategia
             $periodo_pagado_hasta = $this->sumar_dias_calendario_a_fecha( $periodo_pagado_desde, ($dias_calendario_vacaciones ) );
         }
 
-
         $this->tabla_resumen['periodo_pagado_desde'] = $periodo_pagado_desde;
         $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
     }
@@ -380,6 +405,7 @@ class Vacaciones implements Estrategia
     {
         if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' )
         {
+            // Se crea un registro en el Libro de vacaciones
             LibroVacacion::create(
                                     [ 'nom_contrato_id' => $empleado->id ] +
                                     [ 'nom_doc_encabezado_id' => $documento_nomina->id ] +
@@ -395,6 +421,7 @@ class Vacaciones implements Estrategia
                                     [ 'valor_vacaciones' => $this->tabla_resumen['valor_total_vacaciones'] ]
                                 );
         }else{
+            // Ya el registro en el libro de vacaciones se creó al programar la Vacación.
             $libro_vacaciones->nom_doc_encabezado_id = $documento_nomina->id;
             $libro_vacaciones->periodo_pagado_desde = $this->tabla_resumen['periodo_pagado_desde'];
             $libro_vacaciones->periodo_pagado_hasta = $this->tabla_resumen['periodo_pagado_hasta'];
@@ -403,23 +430,6 @@ class Vacaciones implements Estrategia
         }
     }
 
-
-
-    public function calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final )
-    {
-        $vec_fecha_inicial = explode("-", $fecha_inicial);
-        $vec_fecha_final = explode("-", $fecha_final);
-
-        // Días iniciales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
-        $dias_iniciales = ( (int)$vec_fecha_inicial[0] * 360 ) + ( ( (int)$vec_fecha_inicial[1] - 1 ) * 30) + (int)$vec_fecha_inicial[2];
-
-        // Días finales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
-        $dias_finales = ( (int)$vec_fecha_final[0] * 360 ) + ( ( (int)$vec_fecha_final[1] - 1 ) * 30) + (int)$vec_fecha_final[2];
-
-        $dias_totales_laborados = ($dias_finales - $dias_iniciales) + 1;
-
-        return $dias_totales_laborados;
-    }
 
     public function get_valor_acumulado_provision()
     {
@@ -441,6 +451,10 @@ class Vacaciones implements Estrategia
         return $fecha_aux->addDays( $cantidad_dias )->format('Y-m-d');
     }
 
+    /*
+        Este método se ejecuta por cada registro del documento de nómina.
+        Pueden haber liquidaciones de conceptos distintos a vacaciones 
+    */
     public function retirar( NomDocRegistro $registro )
     {
         if ( $registro->encabezado_documento->tipo_liquidacion == 'terminacion_contrato' )
@@ -461,13 +475,12 @@ class Vacaciones implements Estrategia
                 return 0;
             }
 
-
             if ( $registro->nom_concepto_id != $parametros_prestacion->nom_concepto_id )
             {
                 return 0;
             }
             
-            // Borrar registro prestaciones liquidads
+            // Borrar registro prestaciones liquidadas
             PrestacionesLiquidadas::where(
                                             ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
                                             ['nom_contrato_id' => $registro->nom_contrato_id ]

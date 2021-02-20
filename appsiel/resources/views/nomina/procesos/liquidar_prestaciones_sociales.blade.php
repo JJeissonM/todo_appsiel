@@ -168,6 +168,14 @@
 
 		    	if ( opcion_seleccionada == 0) { alert('Debe seleccionar al menos una prestación.'); return false; }
 
+		    	if ( $('#almacenar_registros').val() == 1 )
+		    	{
+		    		// Desactivar el click del botón
+					$( this ).off( event );
+					$( this ).prop( 'disabled', true );
+		    	}
+			    	
+
 
 		 		$("#div_spin").show();
 		 		$("#div_cargando").show();

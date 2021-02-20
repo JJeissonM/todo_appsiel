@@ -50,6 +50,27 @@ class Cesantias implements Estrategia
                 ];
         }
 
+        $registro_concepto = NomDocRegistro::where(
+                                                    ['nom_doc_encabezado_id' => $liquidacion['documento_nomina']->id ] + 
+                                                    ['nom_contrato_id' => $liquidacion['empleado']->id ] + 
+                                                    ['nom_concepto_id' => $parametros_prestacion->nom_concepto_id ]
+                                                )
+                                            ->get()->first();
+
+        if ( !is_null($registro_concepto) )
+        {
+            $this->tabla_resumen['mensaje_error'] = '<br>Cesantías. La prestación ya está liquidada en el documento.';
+
+            return [
+                        [
+                            'cantidad_horas' => 0,
+                            'valor_devengo' => 0,
+                            'valor_deduccion' => 0,
+                            'tabla_resumen' => $this->tabla_resumen
+                        ]
+                    ];
+        }
+
         $this->fecha_final_promedios = $liquidacion['fecha_final_promedios'];
         $this->fecha_final_liquidacion = $liquidacion['fecha_final_liquidacion'];
 
@@ -65,7 +86,7 @@ class Cesantias implements Estrategia
 
         return [
                     [
-                        'cantidad_horas' => $dias_totales_liquidacion * (int)config('nomina.horas_dia_laboral'), // pendiente
+                        'cantidad_horas' => $dias_totales_liquidacion * (int)config('nomina.horas_dia_laboral'),
                         'valor_devengo' => $valores->devengo,
                         'valor_deduccion' => $valores->deduccion,
                         'tabla_resumen' => $this->tabla_resumen
@@ -194,11 +215,15 @@ class Cesantias implements Estrategia
 
         $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion );
 
+        $dias_calendario_laborados = PrestacionSocial::calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $this->fecha_final_liquidacion );
+
+        $dias_totales_no_laborados = $dias_calendario_laborados - $dias_totales_laborados;
+
         $dias_totales_liquidacion = $dias_totales_laborados * $parametros_prestacion->dias_a_liquidar / self::DIAS_BASE_LEGALES;
 
         $this->tabla_resumen['fecha_liquidacion'] = $this->fecha_final_liquidacion;
         $this->tabla_resumen['dias_totales_laborados'] = $dias_totales_laborados;
-        $this->tabla_resumen['dias_totales_no_laborados'] = 0;
+        $this->tabla_resumen['dias_totales_no_laborados'] = $dias_totales_no_laborados;
         $this->tabla_resumen['dias_totales_liquidacion'] = $dias_totales_liquidacion;
 
         return $dias_totales_liquidacion;
