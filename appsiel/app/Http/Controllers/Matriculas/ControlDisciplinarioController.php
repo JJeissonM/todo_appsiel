@@ -182,7 +182,7 @@ class ControlDisciplinarioController extends Controller
                         ['url'=>'NO','etiqueta'=>'Ingresar control disciplinario']
                     ];
 
-        $semanas = SemanasCalendario::get_array_to_select();
+        $semanas = SemanasCalendario::opciones_campo_select();
 
         if ( $curso_id != 0) 
         {

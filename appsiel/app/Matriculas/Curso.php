@@ -13,6 +13,7 @@ use App\Calificaciones\Area;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\CursoTieneAsignatura;
 use App\Core\Foro;
+use App\AcademicoDocente\AsignacionProfesor;
 
 class Curso extends Model
 {
@@ -119,7 +120,33 @@ class Curso extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = Curso::where('estado','=','Activo')
+        $user = Auth::user();
+
+        if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
+        {
+            $carga_academica_profesor = AsignacionProfesor::get_asignaturas_x_curso( $user->id );
+
+            $vec_cursos = $carga_academica_profesor->pluck('curso_id')->toArray();
+
+            $opciones = Curso::where('estado','=','Activo')
+                                ->whereIn('id', $vec_cursos)
+                                ->orderBy('descripcion')
+                                ->get();
+        } else {
+            $opciones = Curso::where('estado','=','Activo')
+                                ->orderBy('descripcion')
+                                ->get();
+        }
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+        
+        return $vec;
+
+        /*$opciones = Curso::where('estado','=','Activo')
                             ->orderBy('descripcion')
                             ->get();
 
@@ -134,9 +161,9 @@ class Curso extends Model
                 $user_id = $user->id;
             }
 
-            /*
+            
               * Verificar ACL, para algunos modelos, se usa permiso_denegado == true (implica que hay que agregar true por defecto para todos los usuarios que vaya a utilizar el recurso), para otros se valida si permiso_denegado == false ( usuarios con restricciones al acceso del recurso)
-            */
+            
             $permiso_denegado = DB::table('core_acl')->where( 'modelo_recurso_id', 1 )
                             ->where( 'recurso_id', $opcion->id )
                             ->where( 'user_id', $user_id )
@@ -148,7 +175,7 @@ class Curso extends Model
             }
         }
         
-        return $vec;
+        return $vec;*/
     }
 
     public static function get_registros_estado_activo()

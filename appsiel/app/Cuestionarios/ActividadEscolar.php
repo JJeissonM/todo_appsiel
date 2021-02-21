@@ -20,7 +20,7 @@ class ActividadEscolar extends Model
 
     protected $fillable = ['descripcion','tematica','instrucciones','tipo_recurso','url_recurso','cuestionario_id','fecha_entrega','fecha_desde','fecha_hasta','periodo_id','curso_id','asignatura_id','estado','created_by'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Título', 'Temática', 'Fecha de entrega', 'Periodo', 'Curso', 'Asignatura', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Título', 'Temática', 'Fecha programada', 'Fecha de entrega', 'Periodo', 'Curso', 'Asignatura', 'Estado'];
 
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/calificaciones/actividades_escolares/actividades.js';
@@ -53,20 +53,14 @@ class ActividadEscolar extends Model
             ->select(
                 'sga_actividades_escolares.descripcion AS campo1',
                 'sga_actividades_escolares.tematica AS campo2',
-                'sga_actividades_escolares.fecha_entrega AS campo3',
-                'sga_periodos.descripcion AS campo4',
-                'sga_cursos.descripcion AS campo5',
-                'sga_asignaturas.descripcion AS campo6',
-                'sga_actividades_escolares.estado AS campo7',
-                'sga_actividades_escolares.id AS campo8'
+                'sga_actividades_escolares.fecha_desde AS campo3',
+                'sga_actividades_escolares.fecha_entrega AS campo4',
+                'sga_periodos.descripcion AS campo5',
+                'sga_cursos.descripcion AS campo6',
+                'sga_asignaturas.descripcion AS campo7',
+                'sga_actividades_escolares.estado AS campo8',
+                'sga_actividades_escolares.id AS campo9'
             )
-            ->where("sga_actividades_escolares.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_actividades_escolares.tematica", "LIKE", "%$search%")
-            ->orWhere("sga_actividades_escolares.fecha_entrega", "LIKE", "%$search%")
-            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_actividades_escolares.estado", "LIKE", "%$search%")
             ->distinct('core_acl.user_id')
             ->orderBy('sga_actividades_escolares.created_at', 'DESC')
             ->paginate($nro_registros);

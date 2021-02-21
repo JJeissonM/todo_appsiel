@@ -9,5 +9,7 @@
   'formato_boletin_default' => 'pdf_boletines_3',
   'estudiante_revisar_guia_academicas' => 'Si',
   'estudiante_activar_foros_discucion' => 'No',
+  'activar_aula_virtual' => '1',
+  'url_correo_institucional' => '',
   'url_id_modelo' => '0',
 ) ;

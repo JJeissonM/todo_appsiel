@@ -91,9 +91,9 @@ class AcademicoEstudianteController extends Controller
     public function horario()
     {
         $miga_pan = [
-            ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
-            ['url' => 'NO', 'etiqueta' => 'Horario']
-        ];
+                        ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
+                        ['url' => 'NO', 'etiqueta' => 'Horario']
+                    ];
 
         $matricula = Matricula::get_matricula_activa_un_estudiante($this->estudiante->id);
         $curso = Curso::find($matricula->curso_id);
@@ -127,10 +127,12 @@ class AcademicoEstudianteController extends Controller
 
         $libreta_pago = $estudiante->matricula_activa()->libretas_pagos->where('estado', 'Activo')->first();
 
-        if (!is_null($libreta_pago)) {
+        if (!is_null($libreta_pago))
+        {
             $cantidad_facturas_vencidas = $libreta_pago->lineas_registros_plan_pagos->where('estado', 'Vencida')->count();
 
-            if ($cantidad_facturas_vencidas > config('matriculas.cantidad_facturas_vencidas_permitidas')) {
+            if ($cantidad_facturas_vencidas > config('matriculas.cantidad_facturas_vencidas_permitidas'))
+            {
                 return redirect('academico_estudiante/mi_plan_de_pagos/' . $libreta_pago->id . '?id=6')->with('mensaje_error', 'El estudiante tiene más de ' . config('matriculas.cantidad_facturas_vencidas_permitidas') . ' facturas vencidas. Debe ponerse al día para consultar Calificaciones y Boletines.');
             }
         }
@@ -379,21 +381,46 @@ class AcademicoEstudianteController extends Controller
     {
         $dia_semana = $this->get_dia_semana( Input::get('fecha') );
         $eventos = ProgramacionAulaVirtual::where([
-                                                                    [ 'dia_semana', '=', $dia_semana ]
-                                                                ])
-                                                        ->orWhere('fecha', Input::get('fecha'))
-                                                        ->orderBy('hora_inicio')
-                                                        ->get();
+                                                    [ 'dia_semana', '=', $dia_semana ],
+                                                    [ 'curso_id', '=', $curso_id ]
+                                                ])
+                                        ->orWhere('fecha', Input::get('fecha'))
+                                        ->orderBy('hora_inicio')
+                                        ->get();
 
-        //dd( $eventos );
+        foreach( $eventos as $evento )
+        {
+            $actividad = ActividadEscolar::where([
+                                                    [ 'asignatura_id', '=', $evento->asignatura_id ],
+                                                    [ 'fecha_desde', '=', Input::get('fecha') ]
+                                                ])
+                                                ->get()
+                                                ->first();
+            if ( !is_null($actividad) )
+            {
+                $evento->actividad_escolar_id = $actividad->id;
+            }
+
+
+            $guia_academica = PlanClaseEncabezado::where([
+                                                            [ 'asignatura_id', '=', $evento->asignatura_id ],
+                                                            [ 'fecha', '=', Input::get('fecha') ],
+                                                            [ 'plantilla_plan_clases_id', '=', 99999]
+                                                        ])
+                                                ->get()
+                                                ->first();
+            if ( !is_null($guia_academica) )
+            {
+                $evento->guia_academica_id = $guia_academica->id;
+            }
+        }
 
         $miga_pan = [
-            ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
-            ['url' => 'NO', 'etiqueta' => 'Aula virtual']
-        ];
+                        ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
+                        ['url' => 'NO', 'etiqueta' => 'Aula virtual']
+                    ];
 
-        $curso = Curso::find($curso_id);
-
+        $curso = Curso::find( $curso_id );
 
         return view( 'academico_estudiante.aula_virtual', compact( 'eventos', 'dia_semana', 'curso', 'miga_pan' ) );
     }

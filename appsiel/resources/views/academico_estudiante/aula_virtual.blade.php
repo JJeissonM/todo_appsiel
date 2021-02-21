@@ -107,7 +107,8 @@
 
 		    	<div class="col-md-4">		    		
 		    		<form action="#" class="ws-validate">
-					    <h4 class="text-info" style="width: 100%; text-align: left; color: #9c27b0"> <small> <i class="fa fa-calendar"></i> </small> CALENDARIO</h4>
+					    <h4 class="text-info" style="width: 100%; text-align: left; color: #9c27b0"> <small> <i class="fa fa-calendar"></i> </small> CALENDARIO </h4>
+					    <span class="text-success"> Haga click en cualquier día para revisar el horario correspondiente. </span>
 					    <hr>
 					    <div class="form-row">
 					        <input type="date" class="hide-replaced" id="fecha" />

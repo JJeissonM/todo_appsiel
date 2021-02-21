@@ -249,11 +249,12 @@ class AsignacionProfesorController extends Controller
         }
 
         $asignaciones = AsignacionProfesor::get_asignaturas_x_curso( $user_id );
-
+        
         $datos = '{';
         $primero = true;
         $i = 0;
-        foreach ($asignaciones as $fila) {
+        foreach ($asignaciones as $fila)
+        {
             if ( $primero) {
                 $datos .= '"'.$i.'":{"curso_id":"'.$fila->curso_id.'","asignatura_id":"'.$fila->asignatura_id.'"}';
                 $primero = false;

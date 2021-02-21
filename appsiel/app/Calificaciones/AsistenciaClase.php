@@ -28,26 +28,20 @@ class AsistenciaClase extends Model
         }
 
         return AsistenciaClase::where($array_wheres)
-            ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
-            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_asistencia_clases.curso_id')
-            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_asistencia_clases.asignatura_id')
-            ->select(
-                'sga_asistencia_clases.fecha AS campo1',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo2'),
-                'sga_cursos.descripcion AS campo3',
-                'sga_asignaturas.descripcion AS campo4',
-                'sga_asistencia_clases.asistio AS campo5',
-                'sga_asistencia_clases.anotacion AS campo6',
-                'sga_asistencia_clases.id AS campo7'
-            )->where("sga_asistencia_clases.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres)'), "LIKE", "%$search%")
-            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_asistencia_clases.asistio", "LIKE", "%$search%")
-            ->orWhere("sga_asistencia_clases.anotacion", "LIKE", "%$search%")
-            ->orderBy('sga_asistencia_clases.created_at', 'DESC')
-            ->paginate($nro_registros);
+                                ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
+                                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+                                ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_asistencia_clases.curso_id')
+                                ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_asistencia_clases.asignatura_id')
+                                ->select(
+                                    'sga_asistencia_clases.fecha AS campo1',
+                                    DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo2'),
+                                    'sga_cursos.descripcion AS campo3',
+                                    'sga_asignaturas.descripcion AS campo4',
+                                    'sga_asistencia_clases.asistio AS campo5',
+                                    'sga_asistencia_clases.anotacion AS campo6',
+                                    'sga_asistencia_clases.id AS campo7'
+                                )->orderBy('sga_asistencia_clases.created_at', 'DESC')
+                                ->paginate($nro_registros);
     }
 
     public static function sqlString($search)

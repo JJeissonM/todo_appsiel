@@ -86,6 +86,7 @@ class PeriodoLectivo extends Model
         $opciones = PeriodoLectivo::where('id_colegio',$colegio->id)
                                 ->where('estado','Activo')
                                 ->where('cerrado',0)
+                                ->orderBy('fecha_desde')
                                 ->get();
 
         $vec['']='';
@@ -128,6 +129,7 @@ class PeriodoLectivo extends Model
         return PeriodoLectivo::where('id_colegio',$colegio->id)
                             ->where('estado','Activo')
                             ->where('cerrado',0)
+                            ->orderBy('fecha_desde')
                             ->get()
                             ->last();
     }

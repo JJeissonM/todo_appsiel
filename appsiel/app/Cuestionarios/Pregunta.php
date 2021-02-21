@@ -17,24 +17,45 @@ class Pregunta extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Tipo', 'Opciones', 'Estado'];
 
+    public $urls_acciones = '{"cambiar_estado":"a_i/id_fila"}';
+
+    // El archivo js debe estar en la carpeta public
+    public $archivo_js = 'assets/js/calificaciones/actividades_escolares/preguntas.js';
+
+    public function cuestionarios()
+    {
+        return $this->belongsToMany('App\Cuestionarios\Cuestionario','sga_cuestionario_tiene_preguntas');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
-        return Pregunta::where('created_by', Auth::user()->id)
-            ->select(
-                'sga_preguntas.descripcion AS campo1',
-                'sga_preguntas.tipo AS campo2',
-                'sga_preguntas.opciones AS campo3',
-                'sga_preguntas.estado AS campo4',
-                'sga_preguntas.id AS campo5'
+        $user = Auth::user();
 
-            )
-            ->orWhere("sga_preguntas.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_preguntas.tipo", "LIKE", "%$search%")
-            ->orWhere("sga_preguntas.opciones", "LIKE", "%$search%")
-            ->orWhere("sga_preguntas.estado", "LIKE", "%$search%")
-            ->orderBy('sga_preguntas.created_at', 'DESC')
-            ->orderBy('sga_preguntas.created_at', 'DESC')
-            ->paginate($nro_registros);
+        if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
+        {
+            return Pregunta::where('created_by', $user->id)
+                            ->select(
+                                'sga_preguntas.descripcion AS campo1',
+                                'sga_preguntas.tipo AS campo2',
+                                'sga_preguntas.opciones AS campo3',
+                                'sga_preguntas.estado AS campo4',
+                                'sga_preguntas.id AS campo5'
+
+                            )
+                            ->orderBy('sga_preguntas.created_at', 'DESC')
+                            ->paginate($nro_registros);
+        }
+
+        return Pregunta::select(
+                            'sga_preguntas.descripcion AS campo1',
+                            'sga_preguntas.tipo AS campo2',
+                            'sga_preguntas.opciones AS campo3',
+                            'sga_preguntas.estado AS campo4',
+                            'sga_preguntas.id AS campo5'
+
+                        )
+                        ->orderBy('sga_preguntas.created_at', 'DESC')
+                        ->paginate($nro_registros);            
     }
 
     public static function sqlString($search)
@@ -59,13 +80,5 @@ class Pregunta extends Model
     public static function tituloExport()
     {
         return "LISTADO DE PREGUNTAS";
-    }
-
-    // El archivo js debe estar en la carpeta public
-    public $archivo_js = 'assets/js/calificaciones/actividades_escolares/preguntas.js';
-
-    public function cuestionarios()
-    {
-        return $this->belongsToMany('App\Cuestionarios\Cuestionario','sga_cuestionario_tiene_preguntas');
     }
 }

@@ -113,7 +113,7 @@ class AsistenciaClaseController extends Controller
     public function continuar_creacion(Request $request)
     {
 
-        $registros = Matricula::estudiantes_matriculados($request->curso_id, PeriodoLectivo::get_actual()->id, 'Activo');
+        $registros = Matricula::estudiantes_matriculados( $request->curso_id, PeriodoLectivo::get_actual()->id, 'Activo');
 
         $fecha = $request->fecha;
         $curso = Curso::find($request->curso_id);

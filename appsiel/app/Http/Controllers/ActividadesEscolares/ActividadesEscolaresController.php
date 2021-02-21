@@ -162,16 +162,11 @@ class ActividadesEscolaresController extends ModeloController
 
         $estudiantes = Matricula::estudiantes_matriculados( $actividad->curso_id, $periodo_lectivo->id, 'Activo' );
 
-        //$reg_anterior = ActividadEscolar::where('id', '<', $actividad->id)->max('id');
-        //$reg_siguiente = ActividadEscolar::where('id', '>', $actividad->id)->min('id');
-
         $miga_pan = [
                 ['url'=> $app->app.'?id='.Input::get('id'), 'etiqueta'=> $app->descripcion ],
                 ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $modelo->descripcion],
                 ['url'=>'NO','etiqueta'=> $actividad->descripcion]
             ];
-
-        //$calificacion = (object) array('calificacion' => 0);
 
         $cuestionario = (object)[];
         $preguntas = (object)[];
