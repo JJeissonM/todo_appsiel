@@ -287,7 +287,7 @@ class NominaController extends TransaccionController
 
             $this->pos = 0;
             foreach ($conceptos as $un_concepto)
-            {          
+            {
                 $valor = $this->get_valor_celda( NomDocRegistro::where('nom_doc_encabezado_id',$this->encabezado_doc->id)
                                                                 ->where('core_tercero_id',$empleado->core_tercero_id)
                                                                 ->where('nom_concepto_id',$un_concepto->nom_concepto_id)
@@ -358,16 +358,26 @@ class NominaController extends TransaccionController
     {
         if ( count($registro) > 0) 
         {
+            $valor = 0;
+            $total_devengos = 0;
+            $total_deducciones = 0;
+            foreach ($registro as $linea )
+            {
+                $total_devengos += $linea->valor_devengo;
+                $total_deducciones += $linea->valor_deduccion;
+                $valor +=  $linea->valor_devengo + $linea->valor_deduccion;
+            }
+
             // Se suma devengo y deduccion (alguno de los dos es cero)
-            $valor = Form::TextoMoneda( $registro[0]->valor_devengo + $registro[0]->valor_deduccion );
+            $lbl_valor = Form::TextoMoneda( $valor );
 
             switch ($un_concepto->naturaleza) 
             {
                 case 'devengo':
-                    $this->total_devengos_empleado += $registro[0]->valor_devengo;
+                    $this->total_devengos_empleado += $total_devengos;
                     break;
                 case 'deduccion':
-                    $this->total_deducciones_empleado += $registro[0]->valor_deduccion;
+                    $this->total_deducciones_empleado += $total_deducciones;
                     break;
                 
                 default:
@@ -375,12 +385,12 @@ class NominaController extends TransaccionController
                     break;
             }
 
-            $this->vec_totales[$this->pos] += $registro[0]->valor_devengo + $registro[0]->valor_deduccion;
+            $this->vec_totales[$this->pos] += $total_devengos + $total_deducciones;
         }else{
-            $valor = '';
+            $lbl_valor = '';
         }
 
-        return $valor;
+        return $lbl_valor;
     }
 
     // Retiro de conceptos con modo liquidacion automatica

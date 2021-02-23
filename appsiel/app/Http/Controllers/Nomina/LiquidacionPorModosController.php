@@ -80,8 +80,7 @@ class LiquidacionPorModosController extends TransaccionController
     }
 
     /*
-        Por cada empleado activo liquida los conceptos automáticos, las cuotas y préstamos
-        Además actualiza el total de devengos y deducciones en el documento de nómina
+        Por cada empleado activo liquida los conceptos asignados al array de modos de liquidación.
     */
     public function liquidacion( $id )
     {

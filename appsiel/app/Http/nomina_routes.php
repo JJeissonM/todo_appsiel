@@ -16,11 +16,12 @@ Route::get('nomina/liquidacion/{id}', 'Nomina\NominaController@liquidacion');
 Route::get('nomina/retirar_liquidacion/{id}', 'Nomina\NominaController@retirar_liquidacion');
 Route::get('nomina_print/{id}', 'Nomina\NominaController@nomina_print');
 
-// LIQUIDACIONES INDIVIDUALES
-Route::get('nom_liquidar_prima_antiguedad/{id}', 'Nomina\LiquidacionPorModosController@liquidar_prima_antiguedad');
-Route::get('nom_retirar_prima_antiguedad/{id}', 'Nomina\LiquidacionPorModosController@retirar_prima_antiguedad');
+// 			LIQUIDACIONES INDIVIDUALES
+Route::get('nom_liquidar_prima_antiguedad/{nom_doc_encabezado_id}', 'Nomina\LiquidacionPorModosController@liquidar_prima_antiguedad');
+Route::get('nom_retirar_prima_antiguedad/{nom_doc_encabezado_id}', 'Nomina\LiquidacionPorModosController@retirar_prima_antiguedad');
 
 
+// 			TRANSACCIONES VARIAS 
 Route::get('get_datos_contrato/{contrato_id}', 'Nomina\NominaController@get_datos_contrato');
 Route::get('get_fecha_final_vacaciones/{grupo_empleado_id}/{fecha_inicial_tnl}/{cantidad_dias_tomados}/{dias_compensados}', 'Nomina\PrestacionesSocialesController@get_fecha_final_vacaciones');
 

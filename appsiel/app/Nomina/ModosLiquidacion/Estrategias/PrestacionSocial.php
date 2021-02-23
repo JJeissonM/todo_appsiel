@@ -35,6 +35,7 @@ class PrestacionSocial
         $concepto_vacaciones_id = self::get_concepto_vacaciones_id( $empleado );
         foreach ( $registros as $registro )
         {
+            // Se salta el concepto de vacaciones en liquidación de contratos
         	if ( ($registro->nom_concepto_id == $concepto_vacaciones_id) && ( $registro->encabezado_documento->tipo_liquidacion == 'terminacion_contrato' ) )
         	{
         		continue;

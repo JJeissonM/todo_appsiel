@@ -42,6 +42,7 @@ class TiempoNoLaborado implements Estrategia
 								->get();
 
 		$valores_novedades = [];
+        
         foreach( $novedades as $novedad )
         {			
 			// NO se puede liquidar más tiempo del que tiene el documento en el lapso
@@ -51,9 +52,17 @@ class TiempoNoLaborado implements Estrategia
 				continue;
 			}
 
-			// Si ya se liquidaron vacaciones en el documento, se salta
+			
 			if ( $novedad->tipo_novedad_tnl == 'vacaciones' )
 			{
+				// Si aún no se han amortizado días de vacaciones, se salta; pues la primera amortización se debe hacer desde el mismo documento de vacaciones
+				if ( $novedad->cantidad_dias_amortizados == 0 )
+				{
+					continue;
+				}
+
+				// Si ya se liquidaron vacaciones en el documento, se salta. Pues, quiere decir, que se está en el mismo documento de vacaciones.
+				// Solo se liquidan días pendientes por amortizar en los documentos que NO son de vacaciones
 				$registro_vacacion_liquidada = NomDocRegistro::where([
 																		['nom_doc_encabezado_id','=',$liquidacion['documento_nomina']->id],
 																		['nom_contrato_id','=',$liquidacion['empleado']->id],
@@ -101,6 +110,7 @@ class TiempoNoLaborado implements Estrategia
 										'novedad_tnl_id' => $novedad_id
                                 	];
         }
+
         return $valores_novedades;
 	}
 
@@ -301,7 +311,6 @@ class TiempoNoLaborado implements Estrategia
 		if ( $fecha_ini_novedad >= $fecha_ini_documento && $fecha_ini_novedad < $fecha_fin_documento && $fecha_fin_novedad > $fecha_fin_documento )
 		{
 			$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $novedad->fecha_inicial_tnl, $lapso_documento->fecha_final );
-
 			return ( ( $diferencia_en_dias + 1 ) * self::CANTIDAD_HORAS_DIA_LABORAL ); // Se suma 1, pues se debe incluir el mismo día inicial.
 		}
 
@@ -313,8 +322,16 @@ class TiempoNoLaborado implements Estrategia
 				// Caso 3.1: liquidar todo el tiempo del lapso
 				$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $lapso_documento->fecha_inicial, $lapso_documento->fecha_final );
 			}else{
-				// Caso 3.2: liquidar hasta el tiempo final de la novedad
-				$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $lapso_documento->fecha_inicial, $novedad->fecha_final_tnl );
+				// Si la fecha final de la novedad es menor a la fecha del documento
+				if( $novedad->fecha_final_tnl < $lapso_documento->fecha_inicial )
+				{
+					// Caso 3.2: liquidar desde la Fecha inicial del LAPSO ANTERIOR del documento hasta el tiempo final de la novedad
+					$fecha_inicial_lapso_anterior = $this->get_fecha_inicial_lapso_anterior( $lapso_documento );
+					$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $fecha_inicial_lapso_anterior, $novedad->fecha_final_tnl ); // Sumar el mismo día de la fecha final de la TNL
+				}else{
+					// Caso 3.3: liquidar desde la Fecha inicial del Documento hasta el tiempo final de la novedad
+					$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $lapso_documento->fecha_inicial, $novedad->fecha_final_tnl );
+				}		
 			}
 
 			return ( ( $diferencia_en_dias + 1 ) * self::CANTIDAD_HORAS_DIA_LABORAL ); // Se suma 1, pues se debe incluir el mismo día inicial.
@@ -328,6 +345,56 @@ class TiempoNoLaborado implements Estrategia
 
 		return abs( $fecha_ini->diffInDays($fecha_fin) );
 	}
+
+	public function get_fecha_inicial_lapso_anterior( $lapso_documento )
+	{
+		$array_fecha = explode( '-', $lapso_documento->fecha_inicial );
+
+		$anio_anterior = (int)$array_fecha[0];
+        $mes_anterior = (int)$array_fecha[1];
+
+		$anio_lapso = (int)$array_fecha[0];
+        $mes_lapso = (int)$array_fecha[1];
+        $dia_lapso = (int)$array_fecha[2];
+
+        switch ( $dia_lapso)
+        {
+        	case '01':
+        		$dia_anterior = '16';
+        		$mes_anterior = $mes_lapso - 1;
+        		
+        		if ( $mes_lapso == 1 ) // Enero
+        		{
+        			$mes_anterior = '12';
+        			$anio_anterior = $anio_lapso - 1;
+        		}
+        		
+        		break;
+        	
+        	
+        	case '16': // queda en el mismo mes y año
+        		$dia_anterior = '01';
+        		break;
+        	
+        	default:
+        		# code...
+        		break;
+        }          
+
+        return ( $anio_anterior . '-' . $this->formatear_numero_a_texto_dos_digitos( $mes_anterior ) . '-' . $dia_anterior );
+	}
+
+
+
+    public function formatear_numero_a_texto_dos_digitos( $numero )
+    {
+        if ( strlen($numero) == 1 )
+        {
+            return "0" . $numero;
+        }
+
+        return $numero;
+    }
 
 	public function retirar(NomDocRegistro $registro)
 	{
