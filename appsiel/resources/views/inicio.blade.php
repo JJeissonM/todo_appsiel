@@ -152,8 +152,7 @@
 				$("#btnPaula").html("<button class='btn btn-danger' onclick='paula()'>¡Ayuda con Paula!</button>");
 				$("#paula").fadeOut();
 				verPaula = true;
-			}
-			
-		}
+			}	
+		} 
 	</script>
 @endsection
