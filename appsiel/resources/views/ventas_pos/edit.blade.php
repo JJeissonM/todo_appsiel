@@ -135,7 +135,7 @@
 				<input type="hidden" name="caja_id" id="saldo_original" value="0">
 
 				<input type="hidden" name="valor_total_cambio" id="valor_total_cambio" value="0">
-            	<<input type="hidden" name="total_efectivo_recibido" id="total_efectivo_recibido">
+            	<input type="hidden" name="total_efectivo_recibido" id="total_efectivo_recibido">
 
 				<div id="popup_alerta"> </div>
 				
@@ -152,9 +152,8 @@
 
 						Productos ingresados: <span id="numero_lineas"> {{ $numero_linea - 1 }} </span>
                         <br/><br/>
-                        <div class="well">
-                            {!! $vista_medios_recaudo !!}
-                        </div>
+                        {!! $vista_medios_recaudo !!}
+						{!! $contenido_modal !!}
 					</div>
 
 					<div class="col-md-4 well" style="font-size: 1.2em;">
@@ -314,8 +313,8 @@
 		</tr>
 	</table>
 
-	<!-- La ventana contiene la variable contenido_modal -->
-	@include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
+	<!-- La ventana contiene la variable contenido_modal. Agregar include para que funcione @incl -->
+	<!-- ('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>'']) -->
 
 
 	@include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>'', 'clase_tamanio' => 'modal-lg'])
@@ -327,8 +326,6 @@
 @endsection
 
 @section('scripts')
-	
-	<script type="text/javascript" src="{{asset('assets/js/ventas_pos/facturas.js')}}"></script>
 
 	<script type="text/javascript">
 
@@ -1294,5 +1291,6 @@
 		});
 
 	</script>
+	<script type="text/javascript" src="{{asset('assets/js/ventas_pos/facturas.js')}}"></script>
 	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
 @endsection

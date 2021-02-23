@@ -1,5 +1,5 @@
 <div class="row">
-	<h4 style="text-align: center;">Selecciona la categoría luego indica el producto dando clic en COMRPRAR</h4>
+	<h4 style="text-align: center;">Selecciona la categoría luego indica el producto dando clic en COMPRAR</h4>
 	<div class="col-md-12">
 		<div class="accordion" id="accordionExample">
 			<?php $i = 0; ?>
@@ -24,7 +24,7 @@
 								<img style="width: 100%;" src="{{url('')}}/assets/img/box.png">
 								@endif
 								<p style="text-align: center;">{{ $item->descripcion }}</p>
-								<button onclick="mandar_codigo({{ $item->id }})" class="btn btn-block btn-primary btn-xs"><i class="fa fa-check"></i> COMPRAR</button>
+								<button onclick="mandar_codigo2({{ $item->id }})" class="btn btn-block btn-primary btn-xs"><i class="fa fa-check"></i> COMPRAR</button>
 								<br>
 							</div>
 						</div>

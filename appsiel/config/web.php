@@ -122,8 +122,8 @@ return array(
         ],
         '17' => [
             'id' => 20,
-            'nombre' => 'Guías academicas',
-            'descripcion' => 'Esta es una sección especial para las instituciones educativas donde se visualizan en la página web las guías académicas cargadas por los docentes. ',
+            'nombre' => 'Guías académicas',
+            'descripcion' => 'Esta es una sección especial para las instituciones educativas donde se visualizan en la página web las guías académicas cargadas por los docentes.',
             'preview' => 'assets/web/componentes/guias-academicas.png',
             'tipo' => 'GENERICO'
         ],
