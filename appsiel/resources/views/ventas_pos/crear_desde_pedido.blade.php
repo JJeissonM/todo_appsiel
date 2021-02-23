@@ -196,10 +196,9 @@ use App\Http\Controllers\Sistema\VistaController;
 
                         Productos ingresados: <span id="numero_lineas"> {{ $numero_linea - 1 }} </span>
                         <br/><br/>
-
-                        <div class="well">
-                            @include('tesoreria.incluir.medios_recaudos')
-                        </div>
+                        
+                        @include('tesoreria.incluir.medios_recaudos')
+                        {!! $contenido_modal !!}
                     </div>
 
                     <div class="col-md-4 well" style="font-size: 1.2em;">
@@ -373,8 +372,8 @@ use App\Http\Controllers\Sistema\VistaController;
         </tr>
     </table>
 
-    <!-- La ventana contiene la variable contenido_modal -->
-    @include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
+    <!-- La ventana contiene la variable contenido_modal. Hacer include para que funcione @incl-->
+    <!-- ('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])-->
 
 
     @include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>'', 'clase_tamanio' => 'modal-lg'])
@@ -389,8 +388,6 @@ use App\Http\Controllers\Sistema\VistaController;
 @endsection
 
 @section('scripts')
-    
-    <script type="text/javascript" src="{{asset('assets/js/ventas_pos/facturas.js')}}"></script>
 
     <script type="text/javascript">
 
@@ -1387,5 +1384,6 @@ use App\Http\Controllers\Sistema\VistaController;
             
 
     </script>
+    <script type="text/javascript" src="{{asset('assets/js/ventas_pos/facturas.js')}}"></script>
     <script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
 @endsection

@@ -101,7 +101,7 @@ class FacturaPosController extends TransaccionController
 
         if (is_null($tabla)) {
             $tabla = '';
-        }
+        } 
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
         $cantidad_campos = count($lista_campos);

@@ -7,7 +7,7 @@ var valor_impuesto_unitario = 0;
 var valor_unitario_descuento = 0;
 var total_cambio = 0;
 var valor_ajuste_al_peso = 0;
-var ventana_factura;
+var ventana_factura; 
 
 $('#teso_motivo_id').val( 1 );
 $('#teso_caja_id').val( $('#caja_pdv_default_id').val() );
