@@ -57,8 +57,6 @@ class AsignacionProfesor extends Model
             }            
         }
 
-        //dd($array_wheres);
-
         return AsignacionProfesor::leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_asignaciones_profesores.periodo_lectivo_id')
                             ->leftJoin('sga_cursos','sga_cursos.id','=','sga_asignaciones_profesores.curso_id')
                             ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_asignaciones_profesores.id_asignatura')

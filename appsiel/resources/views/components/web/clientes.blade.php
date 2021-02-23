@@ -72,8 +72,11 @@
                 <div class="col-sm-12">
                     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
                         <div class="carousel-inner" role="listbox">
-                            <?php $i=0; $primero=true; $total=count($clientes->clienteitems); $van=0; ?>
-                            @foreach($clientes->clienteitems as $item)
+                            <?php 
+                                $i=0; $primero=true; $total=count($clientes->clienteitems); $van=0;
+                                $clientes_ordenados = $clientes->clienteitems()->orderBy('created_at','DESC')->get();
+                            ?>
+                            @foreach( $clientes_ordenados as $item)
                             @if($i == 0)
                             @if($primero)
                             <div class="carousel-item active">

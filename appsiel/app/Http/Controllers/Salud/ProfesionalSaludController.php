@@ -69,7 +69,7 @@ class ProfesionalSaludController extends Controller
         // Crear Como usuario del sistema y asociar al Tercero
         $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
         $email = $request->email;
-        $password = str_random(7);
+        $password = str_random(8);
         $user = User::crear_y_asignar_role( $name, $email, 14, $password ); // 14 = Role "Profesional Salud"
         
         if ( is_null( $user ) )

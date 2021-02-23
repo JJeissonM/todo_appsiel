@@ -76,7 +76,7 @@ class PrestacionesSocialesController extends TransaccionController
             $array_prestaciones_liquidadas->prestaciones = [];
 
             $p = 0;
-            foreach ($request->prestaciones as $key => $prestacion)
+            foreach ($request->prestaciones as $key => $prestacion )
             {
                 $array_aux_prestacion = (object)[];
                 
@@ -98,36 +98,25 @@ class PrestacionesSocialesController extends TransaccionController
                 {
                     $valores[0]['valor_devengo'] = round( $valores[0]['valor_devengo'], 0);
                     $valores[0]['valor_deduccion'] = round( $valores[0]['valor_deduccion'], 0);
-                    
-                    $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion',$prestacion)
-                                                                        ->where('grupo_empleado_id',$empleado->grupo_empleado_id)
-                                                                        ->get()->first();
-
-                    $concepto = NomConcepto::find( $parametros_prestacion->nom_concepto_id );
-                    if ( $request->concepto_cesantias_id != '' )
-                    {
-                        $concepto = NomConcepto::find( $request->concepto_cesantias_id );
-                    }
 
                     if ( $request->almacenar_registros )
                     {
+                        $parametros_prestacion = ParametroLiquidacionPrestacionesSociales::where('concepto_prestacion',$prestacion)
+                                                                            ->where('grupo_empleado_id',$empleado->grupo_empleado_id)
+                                                                            ->get()->first();
+
+                        $concepto = NomConcepto::find( $parametros_prestacion->nom_concepto_id );
+                        if ( ( $prestacion == 'cesantias') && ($request->concepto_cesantias_id != '') )
+                        {
+                            $concepto = NomConcepto::find( $request->concepto_cesantias_id );
+                        }
+
                         if ( is_null($concepto) )
                         {
-                            dd('Favor revisar la parametrización para la prestación ' . $prestacion);
-                        }
-
-                        // Validar que el conceto no esté registrado
-                        $cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
-                                        ->where('nom_contrato_id', $empleado->id)
-                                        ->where('nom_concepto_id', $concepto->id)
-                                        ->count();                            
-
-                        if ( $cant != 0 ) 
-                        {
-                            continue;
+                            return $prestacion . '. La prestación no tiene un Concepto asociado. Favor revisar su parametrización';
                         }
                         
-                        $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $valores[0], $usuario);
+                        $this->almacenar_linea_registro_documento( $documento_nomina, $empleado, $concepto, $valores[0], $usuario, $prestacion);
                         $array_aux_prestacion->prestacion = $prestacion;
                         $array_aux_prestacion->tabla_resumen = $tabla_resumen;
                         $array_prestaciones_liquidadas->prestaciones[$p] = $array_aux_prestacion;
@@ -168,20 +157,20 @@ class PrestacionesSocialesController extends TransaccionController
                                     );
     }
 
-    public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $valores, $usuario)
+    public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $valores, $usuario, $prestacion)
     {
         NomDocRegistro::create(
-                                    ['nom_doc_encabezado_id' => $documento_nomina->id ] + 
-                                    ['fecha' => $documento_nomina->fecha] + 
-                                    ['core_empresa_id' => $documento_nomina->core_empresa_id] +  
-                                    ['nom_concepto_id' => $concepto->id ] + 
-                                    ['core_tercero_id' => $empleado->core_tercero_id ] + 
-                                    ['nom_contrato_id' => $empleado->id ] + 
-                                    ['estado' => 'Activo'] + 
-                                    ['creado_por' => $usuario->email] + 
-                                    ['modificado_por' => ''] +
-                                    $valores
-                                );
+                                ['nom_doc_encabezado_id' => $documento_nomina->id ] + 
+                                ['fecha' => $documento_nomina->fecha] + 
+                                ['core_empresa_id' => $documento_nomina->core_empresa_id] +  
+                                ['nom_concepto_id' => $concepto->id ] + 
+                                ['core_tercero_id' => $empleado->core_tercero_id ] + 
+                                ['nom_contrato_id' => $empleado->id ] + 
+                                ['estado' => 'Activo'] + 
+                                ['creado_por' => $usuario->email] + 
+                                ['modificado_por' => ''] +
+                                $valores
+                            );
     }
 
 
@@ -326,7 +315,7 @@ class PrestacionesSocialesController extends TransaccionController
             $prestacion = $linea->prestacion;
             $tabla_resumen = (array)$linea->tabla_resumen;
             
-            $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen' ) )->render() . '<div class="page-break"></div>';
+            $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen' ) )->render();
 
             if ( $tipo_vista = 'imprimir' )
             {
@@ -346,7 +335,10 @@ class PrestacionesSocialesController extends TransaccionController
 
         $encabezado = View::make( 'nomina.incluir.encabezado_transaccion', ['encabezado_doc' => $documento_nomina, 'empresa' => $documento_nomina->empresa , 'descripcion_transaccion' => $documento_nomina->tipo_documento_app->descripcion ] )->render();
 
-        $vista = $encabezado . '<h3 style="width:100%; text-aling:center;">Comprobante de liquidación de prestaciones sociales</h3>' . $this->generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas, 'imprimir' );
+        $view = $encabezado . '<h3 style="width:100%; text-aling:center;">Comprobante de liquidación de prestaciones sociales</h3>' . $this->generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas, 'imprimir' );
+
+        $font_size = '14';
+        $vista = View::make( 'layouts.pdf3', compact('view','font_size') );
 
         $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
         $orientacion='portrait';//landscape

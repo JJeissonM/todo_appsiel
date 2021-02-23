@@ -45,8 +45,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label class="customFile" for="customFile">Icono(opcional)</label>
-                                <span data-toggle="tooltip" title="Establece un icono para esta pagina."> <i class="fa fa-question-circle"></i></span>
+                                <label class="customFile" for="customFile"> Favicon (opcional)</label>
+                                <span data-toggle="tooltip" title="Establece un icono para la barra de títulos del navegador.  <img src='{{asset('assets/img/preview_favicon.png')}}' />"> <i class="fa fa-question-circle"></i></span>
                                 <input type="file" class="form-control" id="" name="favicon">
                             </div>
                         </div>

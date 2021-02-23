@@ -219,9 +219,14 @@ class MatriculaController extends ModeloController
         if ( $request->estudiante_existe == 0 )
         {
             /**/
-            $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
+            $tercero = Tercero::find( $request->core_tercero_id );
+            $name = $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2;
+            if ( $name == '' )
+            {
+                $name = $tercero->descripcion;
+            }
             $email = $request->email;
-            $password = str_random(7);
+            $password = str_random(8);
             $user = User::crear_y_asignar_role($name, $email, 4, $password); // 4 = Role Estudiante
 
             if ( is_null( $user ) )

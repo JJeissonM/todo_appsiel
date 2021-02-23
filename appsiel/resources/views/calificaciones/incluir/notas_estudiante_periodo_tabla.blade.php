@@ -1,6 +1,13 @@
 <?php 
     $periodo = App\Calificaciones\Periodo::find($periodo_id);
-    $nota_reprobar = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
+    
+    $reg_nota_reprobar = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->first();
+    if ( is_null($nota_reprobar) )
+    {
+        $reg_nota_reprobar = 0;
+    }else{
+        $nota_reprobar = $reg_nota_reprobar->calificacion_maxima;
+    }        
 ?>
 
 <input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
@@ -74,7 +81,8 @@
                             }
 
                             $style="color: #000000;";
-                            if($texto_calificacion<=$nota_reprobar){
+                            if( $texto_calificacion <= $nota_reprobar )
+                            {
                                 $style="color: #f00;";
                             }
                             

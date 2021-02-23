@@ -169,6 +169,19 @@ class TiempoLaborado implements Estrategia
 		if ( $empleado->contrato_hasta >= $fecha_inicial && $empleado->contrato_hasta <= $fecha_final )
 		{
 			$tiempo_a_descontar_2 = $this->diferencia_en_dias_entre_fechas( $empleado->contrato_hasta, $fecha_final ) * self::CANTIDAD_HORAS_DIA_LABORAL;
+
+			$aux_fecha = explode('-', $fecha_final);
+
+			if ( (int)$aux_fecha[1] == 2 ) // Mes de febrero, completar 30 días
+			{
+				$tiempo_a_descontar_2 += 2 * self::CANTIDAD_HORAS_DIA_LABORAL;
+
+				if ( (int)$aux_fecha[2] == 29 ) // Año Bisiesto, solo falta un día para 30
+				{
+					$tiempo_a_descontar_2 += self::CANTIDAD_HORAS_DIA_LABORAL;
+				}
+				
+			}
 		}
 		
         $tiempo_a_liquidar = $documento_nomina->tiempo_a_liquidar - $tiempo_a_descontar_1 - $tiempo_a_descontar_2 - $horas_liquidadas_empleado;

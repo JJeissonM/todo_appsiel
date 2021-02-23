@@ -1,7 +1,7 @@
 <?php 
     $total_recaudo=0;
     $i=0;
-    $vec_motivos;
+    $vec_motivos = [];
 ?>
 @if(isset($nombre))
     <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Detalles del traslado
@@ -55,7 +55,7 @@
     <table class="table table-bordered">
         {{ Form::bsTableHeader(['Motivo','Valor']) }}
         <tbody>
-            @foreach ($vec_motivos as $registro)
+            @foreach ( $vec_motivos as $registro )
                 <tr>
                     <td> {{ $registro['descripcion'] }} </td>
                     <td> ${{ number_format( $registro['total_motivo'], 0, ',', '.') }} </td>

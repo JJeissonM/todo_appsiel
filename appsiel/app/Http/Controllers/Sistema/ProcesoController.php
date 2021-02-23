@@ -271,7 +271,7 @@ class ProcesoController extends ModeloController
                 PasswordReset::where('email',$usuario->email)->delete();
 
                 // Almacenar nueva contraseña en 
-                $token = str_random(7);
+                $token = str_random(8);
                 PasswordReset::insert([
                                         'email' => $usuario->email,
                                         'token' => $token ]);

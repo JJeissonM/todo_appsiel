@@ -49,7 +49,8 @@ class ContabCuenta extends Model
                 'contab_cuenta_grupos.descripcion AS GRUPO',
                 'contab_cuentas.codigo AS CÓDIGO',
                 'contab_cuentas.descripcion AS DESCRIPCIÓN',
-                'sys_aplicaciones.descripcion AS APLICACIÓN_ASOCIADA'
+                'sys_aplicaciones.descripcion AS APLICACIÓN_ASOCIADA',
+                'contab_cuentas.id AS ID'
             )
             ->orWhere("contab_cuenta_clases.descripcion", "LIKE", "%$search%")
             ->orWhere("contab_cuenta_grupos.descripcion", "LIKE", "%$search%")

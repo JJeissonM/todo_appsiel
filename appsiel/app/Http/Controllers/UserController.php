@@ -255,7 +255,6 @@ class UserController extends ModeloController
 
     public function cambiar_mi_passwd(Request $request)
     {
-
         $this->validate($request,[
             'password'=>'required',
             'password_new'=>'required',
@@ -268,8 +267,9 @@ class UserController extends ModeloController
         if (Hash::check($request->password, $usuario->password)) {
             
             //Se verifca que coincidan las nuevas contraseñas
-            if ($request->password_new!=$request->password_retype) {
-                return redirect('/core/usuario/perfil/cambiar_mi_passwd?id=7&id_modelo=5&ruta='.$request->ruta.'?id=7&id_modelo=5')->with('mensaje_error','La nuevas contraseñas no coinciden, por favor intente nuevamente.');
+            if ($request->password_new!=$request->password_retype)
+            {
+                return redirect('/core/usuario/perfil/cambiar_mi_passwd?id=7&ruta='.$request->ruta.'?id=7')->with('mensaje_error','La nuevas contraseñas no coinciden, por favor intente nuevamente.');
             }
             
             $usuario->password = Hash::make($request->password_new);
@@ -278,9 +278,9 @@ class UserController extends ModeloController
             // Eliminar contraseña si ha sido reseteada con anteioridad.
             PasswordReset::where('email',$usuario->email)->delete();
 
-            return redirect('/core/usuario/perfil?id=7&id_modelo=5')->with('flash_message','Se cambió correctamente la contraseña.');
+            return redirect('/core/usuario/perfil?id=7')->with('flash_message','Se cambió correctamente la contraseña.');
         }else{
-            return redirect('/core/usuario/perfil/cambiar_mi_passwd?id=7&id_modelo=5&ruta='.$request->ruta.'?id=7&id_modelo=5')->with('mensaje_error','La contraseña actual no es correcta, por favor intente nuevamente.');
+            return redirect('/core/usuario/perfil/cambiar_mi_passwd?id=7&ruta='.$request->ruta.'?id=7&id_modelo=5')->with('mensaje_error','La contraseña actual no es correcta, por favor intente nuevamente.');
         }
         
         
@@ -319,7 +319,7 @@ class UserController extends ModeloController
 
                 
 
-                $password = str_random(7);
+                $password = str_random(8);
 
                 $usuario = User::crear_y_asignar_role( $descripcion, $placa, 22, $password); // 22 = Vehículo (FUEC)
 

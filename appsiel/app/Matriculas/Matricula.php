@@ -150,6 +150,8 @@ class Matricula extends Model
                 'sga_matriculas.id_estudiante AS id',
                 'sga_matriculas.acudiente',
                 'sga_matriculas.curso_id',
+                'sga_matriculas.periodo_lectivo_id',
+                'sga_matriculas.estado',
                 'sga_cursos.descripcion AS curso_descripcion',
                 'sga_estudiantes.genero',
                 'sga_estudiantes.imagen',

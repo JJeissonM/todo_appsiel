@@ -73,24 +73,26 @@
 					<td><strong>Días Laborados / No Laborados: </strong> {{ number_format( $tabla_resumen['dias_totales_laborados'],0,',','.' ) }} / {{ number_format( $tabla_resumen['dias_totales_no_laborados'],0,',','.' ) }} </td>
 					<td><strong>Días vacac. pendientes: </strong> {{ number_format( $tabla_resumen['dias_pendientes'],2,',','.' ) }} </td>
 				</tr>
-				<tr>
-					<td colspan="3" style="text-align: center; background-color: #ddd;"><strong>Disfrute de vacaciones</strong></td>
-				</tr>
-				<tr>
-					<td><strong>Fecha: </strong> {{ $tabla_resumen['fecha_inicial_disfrute'] }} </td>
-					<td><strong>Hasta: </strong> {{ $tabla_resumen['fecha_final_disfrute'] }} </td>
-					<td>&nbsp;</td>
-				</tr>
-				<tr>
-					<td><strong>Días hábiles: </strong> {{ number_format( $tabla_resumen['dias_habiles'],0,',','.' ) }} </td>
-					<td><strong>Días No hábiles: </strong> {{ number_format( $tabla_resumen['dias_no_habiles'],0,',','.' ) }} </td>
-					<td>&nbsp;</td>
-				</tr>
-				<tr>
-					<td><strong>Vlr. días hábiles: </strong> ${{ number_format( $tabla_resumen['vlr_dias_habiles'],'0',',','.' ) }} </td>
-					<td><strong>Vlr. días No hábiles: </strong>{{ number_format( $tabla_resumen['vlr_dias_no_habiles'],'0',',','.' ) }}</td>
-					<td>&nbsp;</td>
-				</tr>
+				@if( $tabla_resumen['fecha_inicial_disfrute'] != '0000-00-00' )
+					<tr>
+						<td colspan="3" style="text-align: center; background-color: #ddd;"><strong>Disfrute de vacaciones</strong></td>
+					</tr>
+					<tr>
+						<td><strong>Fecha: </strong> {{ $tabla_resumen['fecha_inicial_disfrute'] }} </td>
+						<td><strong>Hasta: </strong> {{ $tabla_resumen['fecha_final_disfrute'] }} </td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td><strong>Días hábiles: </strong> {{ number_format( $tabla_resumen['dias_habiles'],0,',','.' ) }} </td>
+						<td><strong>Días No hábiles: </strong> {{ number_format( $tabla_resumen['dias_no_habiles'],0,',','.' ) }} </td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<td><strong>Vlr. días hábiles: </strong> ${{ number_format( $tabla_resumen['vlr_dias_habiles'],'0',',','.' ) }} </td>
+						<td><strong>Vlr. días No hábiles: </strong>{{ number_format( $tabla_resumen['vlr_dias_no_habiles'],'0',',','.' ) }}</td>
+						<td>&nbsp;</td>
+					</tr>
+				@endif
 				<tr>
 					<td colspan="3">&nbsp;</td>
 				</tr>
@@ -101,5 +103,3 @@
 		</table>
 	</div>
 </div>
-
-<div class="page-break"></div>

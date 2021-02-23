@@ -35,9 +35,10 @@ class PlanClaseEncabezado extends Model
     {
         $user = Auth::user();
 
-        $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '<>', 99999]];
+        $array_wheres = [ ['sga_plan_clases_encabezados.plantilla_plan_clases_id', '<>', 99999] ];
 
-        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
+        if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
+        {
             $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);
         }
 
@@ -47,7 +48,7 @@ class PlanClaseEncabezado extends Model
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
             ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
             ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
-            ->where($array_wheres)
+            ->where( $array_wheres )
             ->select(
                 'sga_plan_clases_struc_plantillas.descripcion AS campo1',
                 'sga_plan_clases_encabezados.fecha AS campo2',
@@ -58,14 +59,7 @@ class PlanClaseEncabezado extends Model
                 'users.name AS campo7',
                 'sga_plan_clases_encabezados.estado AS campo8',
                 'sga_plan_clases_encabezados.id AS campo9'
-            )->where("sga_plan_clases_struc_plantillas.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_plan_clases_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere("sga_semanas_calendario.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
-            ->orWhere("users.name", "LIKE", "%$search%")
-            ->orWhere("sga_plan_clases_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('sga_plan_clases_encabezados.created_at', 'DESC')
+            )->orderBy('sga_plan_clases_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
@@ -450,7 +444,7 @@ class PlanClaseEncabezado extends Model
 
     public static function consultar_guias_estudiantes($curso_id, $asignatura_id)
     {
-        $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999], ['sga_plan_clases_encabezados.fecha', 'LIKE', date('Y').'%']];
+        $array_wheres = [ ['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999], ['sga_plan_clases_encabezados.fecha', 'LIKE', date('Y').'%'] ];
         $array_wheres = array_merge(
             $array_wheres,
             ['sga_plan_clases_encabezados.curso_id' => $curso_id, 'sga_plan_clases_encabezados.asignatura_id' => $asignatura_id]

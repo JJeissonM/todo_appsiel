@@ -18,20 +18,44 @@ class Cuestionario extends Model
 
     protected $fillable = ['colegio_id','descripcion','detalle','activar_resultados','estado','created_by'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Resultados activados (Bloqueado al estudiante)', 'Estado'];
 
     public static function consultar_registros($nro_registros, $search)
     {
-        return Cuestionario::where('created_by', Auth::user()->id)
-            ->select(
-                'sga_cuestionarios.descripcion AS campo1',
-                'sga_cuestionarios.estado AS campo2',
-                'sga_cuestionarios.id AS campo3'
-            )
-            ->orWhere("sga_cuestionarios.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_cuestionarios.estado", "LIKE", "%$search%")
-            ->orderBy('sga_cuestionarios.created_at', 'DESC')
-            ->paginate($nro_registros);
+        $user = Auth::user();
+
+        if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
+        {
+            $collection = Cuestionario::where('created_by', Auth::user()->id)
+                                    ->select(
+                                            'sga_cuestionarios.descripcion AS campo1',
+                                            'sga_cuestionarios.activar_resultados AS campo2',
+                                            'sga_cuestionarios.estado AS campo3',
+                                            'sga_cuestionarios.id AS campo4'
+                                        )->paginate($nro_registros);
+        } else {
+            $collection = Cuestionario::select(
+                                                'sga_cuestionarios.descripcion AS campo1',
+                                                'sga_cuestionarios.activar_resultados AS campo2',
+                                                'sga_cuestionarios.estado AS campo3',
+                                                'sga_cuestionarios.id AS campo4'
+                                            )->paginate( $nro_registros );
+        }       
+
+        if (count($collection) > 0)
+        {
+            foreach ($collection as $c)
+            {
+                $c->campo2 = 'No';
+
+                if ( $c->campo2 )
+                {
+                    $c->campo2 = 'Si';
+                }
+            }
+        }
+        
+        return $collection;
     }
 
     public static function sqlString($search)
@@ -106,6 +130,7 @@ class Cuestionario extends Model
     {
         $vec['']='';
         $opciones = Pregunta::where( 'created_by', Auth::user()->id )
+                                ->where( 'estado', 'Activo' )
                                 ->get();
         foreach ($opciones as $opcion)
         {

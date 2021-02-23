@@ -310,7 +310,7 @@ class EstudianteController extends ModeloController
                 if (is_null($usuario)) {
                     $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
                     $email = $request->email;
-                    $password = str_random(7);
+                    $password = str_random(8);
                     $usuario = User::crear_y_asignar_role($name, $email, 4, $password ); // 4 = Role Estudiante
 
                     if ( is_null( $usuario ) )

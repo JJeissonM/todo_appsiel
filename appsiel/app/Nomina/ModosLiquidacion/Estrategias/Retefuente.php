@@ -84,8 +84,8 @@ class Retefuente implements Estrategia
 				$porcentaje_aplicado = $parametros_retefuente_empleado->porcentaje_fijo;
 				$this->tabla_resumen['porcentaje_aplicado'] = $porcentaje_aplicado;
 
-				$valor_liquidacion = $base_retencion * $porcentaje_aplicado / 100;
-				$this->tabla_resumen['valor_liquidacion'] = $this->redondear_a_unidad_seguida_ceros( $valor_liquidacion, 100, 'superior' );
+				$valor_liquidacion = $this->redondear_a_unidad_seguida_ceros( $base_retencion * $porcentaje_aplicado / 100, 100, 'superior' );
+				$this->tabla_resumen['valor_liquidacion'] = $valor_liquidacion;
 
 				break;
 			
@@ -109,8 +109,6 @@ class Retefuente implements Estrategia
 
 	public function get_valor_base_depurada( $fecha_inicial, $fecha_final, $empleado )
 	{
-		//$conceptos_de_la_agrupacion = AgrupacionConcepto::find( $liquidacion['concepto']->nom_agrupacion_id )->conceptos->pluck('id')->toArray();
-
 		$registros_liquidados_empleado = $empleado->get_registros_documentos_nomina_entre_fechas( $fecha_inicial, $fecha_final);
 
 		$total_pagos = $this->get_total_pagos_empleado( $registros_liquidados_empleado );

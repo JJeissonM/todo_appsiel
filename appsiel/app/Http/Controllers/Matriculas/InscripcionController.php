@@ -77,7 +77,6 @@ class InscripcionController extends ModeloController
             // OJO!!!!! Datos manuales
             $tipo = 'Persona natural';
 
-
             $tercero = Tercero::create( array_merge($request->all(),
                                         [   'codigo_ciudad' => $request->codigo_ciudad, 
                                             'core_empresa_id' => $empresa_id, 

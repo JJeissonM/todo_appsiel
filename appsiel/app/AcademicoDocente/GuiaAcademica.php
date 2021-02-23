@@ -14,6 +14,7 @@ use Input;
 use Auth;
 
 use App\Matriculas\Curso;
+use App\Matriculas\PeriodoLectivo;
 
 use App\Calificaciones\Asignatura;
 
@@ -34,9 +35,14 @@ class GuiaAcademica extends Model
     {
         $user = Auth::user();
 
+        $periodo_lectivo_actual = PeriodoLectivo::get_actual();
+
+        $periodos = $periodo_lectivo_actual->periodos->pluck('id')->toArray();
+
         $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999]];
 
-        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
+        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo'))
+        {
             $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);
         }
 
@@ -46,6 +52,7 @@ class GuiaAcademica extends Model
             ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
             ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
             ->where($array_wheres)
+            ->whereIn('sga_plan_clases_encabezados.periodo_id',$periodos)
             ->select(
                 'sga_plan_clases_encabezados.fecha AS campo1',
                 'sga_plan_clases_encabezados.descripcion AS campo2',
@@ -57,14 +64,6 @@ class GuiaAcademica extends Model
                 'sga_plan_clases_encabezados.estado AS campo8',
                 'sga_plan_clases_encabezados.id AS campo9'
             )
-            ->where("sga_plan_clases_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere("sga_plan_clases_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_semanas_calendario.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
-            ->orWhere("users.name", "LIKE", "%$search%")
-            ->orWhere("sga_plan_clases_encabezados.estado", "LIKE", "%$search%")
             ->paginate($nro_registros);
     }
 

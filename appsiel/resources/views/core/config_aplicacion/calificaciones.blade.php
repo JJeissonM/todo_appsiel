@@ -166,6 +166,38 @@
 
 				</div>
 
+				<h4> Académico Estudiantes  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$activar_aula_virtual = 1;
+								if( isset($parametros['activar_aula_virtual'] ) )
+								{
+									$activar_aula_virtual = $parametros['activar_aula_virtual'];
+								}
+							?>
+							{{ Form::bsSelect('activar_aula_virtual', $activar_aula_virtual, 'Activar Aula Virtual', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$url_correo_institucional = 'https://gmail.com'; 
+								if( isset($parametros['url_correo_institucional'] ) )
+								{
+									$url_correo_institucional = $parametros['url_correo_institucional'];
+								}
+							?>
+							{{ Form::bsText('url_correo_institucional', $url_correo_institucional, 'URL Correo institucional', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

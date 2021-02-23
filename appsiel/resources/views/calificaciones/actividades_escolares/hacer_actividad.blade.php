@@ -29,6 +29,13 @@
 				<br>
 				<p><b>Fecha de entrega: </b> {{$actividad->fecha_entrega}}</p>
 				<?php
+
+					$fecha_entrega_vencida = 0;
+					if ( date('Y-m-d') > $actividad->fecha_entrega )
+					{
+						$fecha_entrega_vencida = 1;
+					}
+
 					$mostrar = '';
 					switch ($actividad->tipo_recurso) {
 						case 'Imagen':
@@ -73,7 +80,7 @@
 					<hr>
 					<p> {!! $cuestionario->detalle !!} </p>
 					<div style="border: solid 1px; border-bottom: solid 2px; border-right: solid 2px; border-radius: 5px; padding: 10px;">
-						@if( $cuestionario->activar_resultados )
+						@if( $cuestionario->activar_resultados || $fecha_entrega_vencida )
 							<br>
 							<!-- Mostrar resultados, ya no se puede modificar preguntas -->
 							@include('calificaciones.actividades_escolares.resultados_cuestionario')
@@ -96,58 +103,12 @@
 									{{ Form::hidden('actividad_id', $actividad->id ) }}
 									{{ Form::hidden('respuesta_id', $respuesta->id, ['id' => 'respuesta_id'] ) }}
 
-									@if( $respuesta->calificacion == '')
-										<textarea class="form-control" rows="4" name="respuesta_enviada_2" id="respuesta_enviada_2" cols="250" required="required">{{ $respuesta->respuesta_enviada }}</textarea>
-
-										<br><br>
-										@if( $respuesta->adjunto == '')
-											<h4>Adjuntar un archivo</h4>
-											<input type="file" name="adjunto" id="adjunto" accept=".xlsx,.pdf,.docx,.ppt,.pptx,.doc,.xls,.jpg,.png,.jpeg" class="form-control">
-											<b style="color: red;"> El tamaño máximo del archivo debe ser de 20M </b>
-										@else
-											<div class="row">
-												<div class="col-md-8">
-													<b>Archivo adjunto: </b>
-													&nbsp;&nbsp;
-													<a href="{{ config('configuracion.url_instancia_cliente').'/storage/app/img/adjuntos_respuestas_estudiantes/'.$respuesta->adjunto }}" class="btn btn-success btn-sm" target="_blank"> <i class="fa fa-file"></i> {{ $respuesta->adjunto }} </a>
-
-												</div>
-												<div class="col-md-4">
-													<a href="{{ url('remover_archivo_adjunto/'.$respuesta->id.'?id='.Input::get('id') ) }}" class="btn btn-danger btn-xs"> <i class="fa fa-trash"></i>&nbsp;Remover adjunto</a>
-													<br>
-													<b style="color: red;">NOTA: Guarde primero su respuesta antes de eliminar el archivo. Si quita el archivo adjunto <u>SIN GUARDAR</u> se borra también todo lo ingresado. </b>
-												</div>
-											</div>
-											
-										@endif
-										<br><br>
-
-										<div class="form-group">
-											<a href="#" class="btn btn-primary btn-xs" id="btn_guardar"> <i class="fa fa-save"></i>&nbsp;Guardar respuesta</a>
-										</div>
+									@if( $respuesta->calificacion == '' && !$fecha_entrega_vencida )
+										@include('calificaciones.actividades_escolares.hacer_actividad_ingresar_respuesta')
 									@else
-
-										<div style="border: solid 1px; border-bottom: solid 2px; border-right: solid 2px; border-radius: 5px; padding: 10px; margin: 10px;">
-												<h4> <b> La actividad ya ha sido calificada </b> </h4>
-												<hr>
-												<b> Respuesta enviada: </b> {!! $respuesta->respuesta_enviada !!}
-												<br>
-												<b>Archivo adjunto: </b>
-												@if( $respuesta->adjunto != '' )
-													&nbsp;&nbsp;
-													<a href="{{ config('configuracion.url_instancia_cliente').'/storage/app/img/adjuntos_respuestas_estudiantes/'.$respuesta->adjunto }}" class="btn btn-success btn-sm" target="_blank"> <i class="fa fa-file"></i> {{ $respuesta->adjunto }} </a>
-												@endif
-
-												<br><br>
-												<hr>
-												<div class="well">
-													<b> Anotación del profesor: </b>
-													<br>
-													{{ $respuesta->calificacion }}
-												</div>
-											</div>
-										
+										@include('calificaciones.actividades_escolares.hacer_actividad_revisar_respuesta')
 									@endif
+
 									@if( $respuesta->updated_at != '')
 
 										<br>

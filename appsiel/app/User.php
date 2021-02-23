@@ -114,7 +114,7 @@ class User extends Authenticatable
         return "LISTADO DE USUARIOS";
     }
 
-    public static function crear_y_asignar_role($name, $email, $role_id, $password)
+    public static function crear_y_asignar_role( $name, $email, $role_id, $password )
     {
         if ( !is_null( User::where('email',$email)->get()->first() ) )
         {
