@@ -46,6 +46,20 @@
 			/*{ {asset('assets/images/fondo_inicio.jpg')}}*/
 		}
 
+		#paula{
+			right: 10px;
+			bottom: 5px;
+			position: fixed;
+			display: none;
+		}
+
+		#btnPaula{
+			right: 20px;
+			bottom: 15px;
+			position: fixed;
+			z-index: 1000;
+		}
+
 	</style>
 @endsection
 
@@ -103,6 +117,12 @@
 			        @endforeach
 			</div>
 		</div>
+		<div id="btnPaula">
+			<button class="btn btn-danger" onclick="paula()">¡Ayuda con Paula!</button>
+		</div>
+		<div id="paula">
+			<img width="230px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
+		</div>
 	</div>
 	<br/><br/>
 @endsection
@@ -118,5 +138,22 @@
 		    });
 		  });
 		});
+
+		var verPaula = true;
+
+		function paula(){
+			if(verPaula){
+				//ver paula
+				$("#btnPaula").html("<button class='btn btn-danger' onclick='paula()'>Ocultar Paula</button>");
+				$("#paula").fadeIn();
+				verPaula = false;
+			}else{
+				//ocultar paula
+				$("#btnPaula").html("<button class='btn btn-danger' onclick='paula()'>¡Ayuda con Paula!</button>");
+				$("#paula").fadeOut();
+				verPaula = true;
+			}
+			
+		}
 	</script>
 @endsection
