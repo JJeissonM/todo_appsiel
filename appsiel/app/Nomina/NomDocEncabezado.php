@@ -120,8 +120,6 @@ class NomDocEncabezado extends Model
     }
 
 
-
-    // Se asume liquidaciones quincenales
     public function lapso()
     {
         $array_fecha = explode('-', $this->fecha);
@@ -313,7 +311,6 @@ class NomDocEncabezado extends Model
         }
         $tabla .= '</thead>
                     <tbody>';
-        //                    dd($registros_asignados);
         foreach ($registros_asignados as $fila) {
             $orden = DB::table('nom_empleados_del_documento')
                 ->where('nom_doc_encabezado_id', '=', $registro_modelo_padre->id)
