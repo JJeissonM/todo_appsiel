@@ -24,7 +24,7 @@ class InvProducto extends Model
 
     protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por', 'detalle'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Descripción', 'UM-1', 'Grupo inventario', 'Precio compra', 'Precio venta', 'IVA', 'Tipo', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código',  'Referencia', 'Descripción', 'U.M.', 'Grupo inventario', 'IVA', 'Tipo', 'Mostrar en Página Web', 'Estado'];
 
     public function grupo_inventario()
     {
@@ -43,18 +43,18 @@ class InvProducto extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-        return InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+        $collection =  InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
             ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
             ->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
             ->select(
                 'inv_productos.id AS campo1',
-                'inv_productos.descripcion AS campo2',
-                'inv_productos.unidad_medida1 AS campo3',
-                'inv_grupos.descripcion AS campo4',
-                'inv_productos.precio_compra AS campo5',
-                'inv_productos.precio_venta AS campo6',
-                'contab_impuestos.tasa_impuesto AS campo7',
-                'inv_productos.tipo AS campo8',
+                'inv_productos.referencia AS campo2',
+                'inv_productos.descripcion AS campo3',
+                'inv_productos.unidad_medida1 AS campo4',
+                'inv_grupos.descripcion AS campo5',
+                'contab_impuestos.tasa_impuesto AS campo6',
+                'inv_productos.tipo AS campo7',
+                'inv_productos.mostrar_en_pagina_web AS campo8',
                 'inv_productos.estado AS campo9',
                 'inv_productos.id AS campo10'
             )
@@ -69,6 +69,23 @@ class InvProducto extends Model
             ->orWhere("inv_productos.estado", "LIKE", "%$search%")
             ->orderBy('inv_productos.created_at', 'DESC')
             ->paginate($nro_registros);
+
+        if (count($collection) > 0)
+        {
+            foreach ($collection as $c)
+            {
+                if ( $c->campo8 )
+                {
+                    $c->campo8 = 'Si';
+                }else{
+                    $c->campo8 = 'No';
+                }
+
+                $c->campo6 = $c->campo6 . '%';
+            }
+        }
+        
+        return $collection;
     }
 
     public static function sqlString($search)

@@ -99,7 +99,8 @@ class Tercero extends Model
                 'core_terceros.telefono2 AS TELÉFONO_2',
                 'core_terceros.email AS EMAIL',
                 'core_terceros.pagina_web AS PAGINA_WEB',
-                'core_terceros.estado AS ESTADO'
+                'core_terceros.estado AS ESTADO',
+                'core_terceros.id AS ID'
             )->where(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
