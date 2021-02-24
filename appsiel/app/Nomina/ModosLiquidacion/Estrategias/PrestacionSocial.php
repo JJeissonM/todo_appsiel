@@ -25,8 +25,7 @@ class PrestacionSocial
     */
     public static function get_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final )
     {
-
-        $registros = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
+        /*$registros = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
                                             ->whereBetween( 'nom_doc_registros.fecha', [ $fecha_inicial, $fecha_final ] )
                                             ->where( 'nom_conceptos.forma_parte_basico', 1 )
                                             ->where( 'nom_doc_registros.nom_contrato_id', $empleado->id )
@@ -44,7 +43,38 @@ class PrestacionSocial
         	$cantidad_horas_laboradas += $registro->cantidad_horas;
         }
 
-        return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
+        return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );*/
+
+        $dias_calendario = self::calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final );
+
+        $registros = NomDocRegistro::whereBetween( 'nom_doc_registros.fecha', [ $fecha_inicial, $fecha_final ] )
+                                            ->where( [
+                                                        ['nom_doc_registros.nom_contrato_id', '=', $empleado->id],
+                                                        ['nom_doc_registros.novedad_tnl_id', '<>', NULL]
+                                                    ] )
+                                            ->get();
+
+        $cantidad_horas_laboradas = 0;
+        $concepto_vacaciones_id = self::get_concepto_vacaciones_id( $empleado );
+        foreach ( $registros as $registro )
+        {
+            // Se salta el concepto de Vacaciones, que es una TNL y puede tener valores en Cero
+            if ( $registro->nom_concepto_id == $concepto_vacaciones_id )
+            {
+                continue;
+            }
+
+            // Los Tiempos No Laborados Con Valor Cero son Suspenciones y Permisos No Remunerados
+            $suma = round( $registro->valor_devengo + $registro->valor_deduccion, 0 );
+            // Se salta el concepto de vacaciones en liquidación de contratos
+            if ( $suma == 0 )
+            {
+                $cantidad_horas_laboradas += $registro->cantidad_horas;
+            }            
+        }
+
+        return ( $dias_calendario - $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
+
     }
 
     public static function calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final )

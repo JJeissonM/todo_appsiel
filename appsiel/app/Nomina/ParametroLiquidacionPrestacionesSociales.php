@@ -115,7 +115,7 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         $dia_final = (int)$vec_fecha_documento[2];
 
         $anio_inicial = $anio_final;
-        $mes_inicial = 0;
+        $mes_inicial = $mes_final - 1; // Un mes atrás
 
         /*
             El día inicial es un día después del dia final, si se pasa de treinta, 31 o 28 para febrero, día incial es 01
@@ -124,14 +124,17 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         if ( $dia_final >= 30 )
         {
             $dia_inicial = '01';
+            $mes_inicial++;
         }
         if ( ($mes_final == 2) && ($dia_final >= 28) ) // Febrero
         {
             $dia_inicial = '01';
+            $mes_inicial++;
         }
 
+        /*
         $mes_anterior = $mes_final;// + 1;
-        for ( $i = $this->cantidad_meses_a_promediar; $i > 1; $i--)
+        for ( $i = $this->cantidad_meses_a_promediar; $i >= 1; $i--)
         {
             $mes_iteracion = $mes_anterior - 1;
             if ( $mes_iteracion <= 0 )
@@ -142,6 +145,19 @@ class ParametroLiquidacionPrestacionesSociales extends Model
                 $mes_inicial = $mes_iteracion;
             }
             $mes_anterior = $mes_iteracion;
+        }
+        */
+
+        //$mes_anterior = $mes_final;// + 1;
+        for ( $i = $this->cantidad_meses_a_promediar; $i > 1; $i--)
+        {
+            if ( $mes_inicial == 0 ) // $i = 10     $mes_inicial = 9
+            {
+                $mes_inicial = 11;
+                $anio_inicial = $anio_final - 1;
+            }else{
+                $mes_inicial--;
+            }
         }
 
         if ( $mes_inicial == 0 )

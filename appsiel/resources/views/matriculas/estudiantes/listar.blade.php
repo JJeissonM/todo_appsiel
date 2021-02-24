@@ -12,7 +12,9 @@
 				</div>
 				
 				<div class="panel-body">
-					{{Form::open(array('route'=>array('matriculas.estudiantes.update','listado'),'method'=>'PUT'))}}
+					<!-- { {Form::open(array('route'=>array('matriculas.estudiantes.update','listado'),'method'=>'PUT'))}} -->
+
+					{{ Form::open(['url'=>'matriculas_estudiantes_generar_listado','id'=>'formulario_inicial']) }}
 					
 						<div class="row" style="padding:5px;">
                             {{ Form::bsSelect('tipo_listado', null, 'Tipo de listado', ['1'=>'Listado de estudiantes', '2'=>'Ficha de datos básicos', '3'=>'Listado de datos básicos', '4'=>'Listado de usuarios'], []) }}
@@ -43,25 +45,31 @@
 						<div class="row" style="padding:5px;">
 							{{ Form::bsSelect('tam_letra',3.5,'Tamaño Letra',['2.5'=>'09','3'=>'10','3.5'=>'11','4'=>'12','4.5'=>'13','5'=>'14','5.5'=>'15'],[]) }}
 						</div>
-						
-						<div class="form-group">
-							<div class="col-sm-offset-3 col-sm-6">
-								<br/>
-								<button type="submit" class="btn btn-primary">
-									<i class="fa fa-btn fa-list"></i>Generar listado
-								</button>
-							</div>
-						</div>
 					{{Form::close()}}
+
+					<div class="col-sm-offset-3 col-sm-6">
+						<button class="btn btn-success" id="btn_generar"> <i class="fa fa-list"></i> Generar listado </button>
+						{{ Form::Spin(48) }}
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
+
+	{{ Form::bsBtnExcelV2( 'listado_estudiantes' ) }}
+	{{ Form::bsBtnPdf( 'listado_estudiantes' ) }}
+
+	<div class="row" id="div_resultado">
+			
+	</div>
+
+	<br><br><br>
 @endsection
 
 @section('scripts')
 	<script type="text/javascript">
-		$(document).ready(function(){	
+		$(document).ready(function(){
+
 			$('#sga_grado_id').change( function(){
 				var grado_id = $('#sga_grado_id').val();
 				$('#div_cargando').fadeIn();
@@ -82,6 +90,58 @@
 					$('#orientacion').val('portrait');
 				}
 			});
+
+
+			var url_pdf_ori = $('#btn_pdf').attr('href');
+			$("#btn_generar").on('click',function(event){
+		    	event.preventDefault();
+
+		    	if ( !validar_requeridos() )
+		    	{
+		    		return false;
+		    	}
+
+				$('#btn_excel_v2').hide();
+				$('#btn_pdf').hide();
+
+				$('#btn_pdf').attr('href', url_pdf_ori);
+
+		 		$("#div_spin").show();
+		 		$("#div_cargando").show();
+				$("#div_resultado").html('');
+
+				var form = $('#formulario_inicial');
+				var url = form.attr('action');
+				var datos = new FormData(document.getElementById("formulario_inicial"));
+
+				$.ajax({
+				    url: url,
+				    type: "post",
+				    dataType: "html",
+				    data: datos,
+				    cache: false,
+				    contentType: false,
+				    processData: false
+				})
+			    .done(function( respuesta ){
+			        $('#div_cargando').hide();
+        			$("#div_spin").hide();
+
+        			$("#div_resultado").html( respuesta );
+        			$("#div_resultado").fadeIn( 1000 );
+        			
+					$('#btn_excel_v2').show(500);
+					$('#btn_pdf').show(500);
+
+					var url_pdf = $('#btn_pdf').attr('href');
+					var n = url_pdf.search('a3p0');
+					if ( n > 0) {
+						var new_url = url_pdf.replace( 'a3p0', 'generar_pdf/' + $("#reporte_id").val() + '?tam_hoja=' + $("#tam_hoja").val() + '&orientacion=' + $("#orientacion").val() );
+					}
+					
+					$('#btn_pdf').attr('href', new_url);
+			    });
+		    });
 		});
 	</script>
 @endsection

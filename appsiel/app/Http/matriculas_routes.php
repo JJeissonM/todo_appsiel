@@ -34,6 +34,8 @@ Route::get('matriculas/estudiantes/importar_excel', 'Matriculas\EstudianteContro
 Route::post('matriculas/estudiantes/importar_excel/import-excel', 'Matriculas\ExcelEstudianteController@importFile');
 Route::post('/matriculas/estudiantes/importar_excel/guardar', 'Matriculas\ExcelEstudianteController@store');
 
+Route::post('matriculas_estudiantes_generar_listado', 'Matriculas\EstudianteController@generar_listado');
+
 
 Route::resource('matriculas/estudiantes', 'Matriculas\EstudianteController', ['except' => ['show']]);
 

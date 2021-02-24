@@ -96,6 +96,7 @@ class PrimaServicios implements Estrategia
 
     /*
             PARA LOS ACUMULADOS
+            $fecha_final = fecha_final_promedios
     */
     public function get_valor_base_diaria( $empleado, $fecha_final, $tipo_liquidacion, $parametros_prestacion )
     {

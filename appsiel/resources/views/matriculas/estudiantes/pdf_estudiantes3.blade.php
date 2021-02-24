@@ -32,12 +32,17 @@ div.recuadro{
 <div class="container">
 	@for($k=0;$k < count($estudiantes) ;$k++)
 		<!-- TITULOS -->
-		<div align="center"> <b> Lista de datos básicos de estudiantes </b> </div>
-		<b>Grado: </b> {{ $estudiantes[$k]['grado'] }}
-		<b>Curso: </b> {{ $estudiantes[$k]['curso'] }}
+		
 
-		<table class="table">
-			<thead>	
+		<table class="table table-bordered table-striped" id="tbDatos">
+			<thead>
+				<tr>
+					<th colspan="5">
+						<div align="center"> <b> Lista de datos básicos de estudiantes </b> </div>
+						<b>Grado: </b> {{ $estudiantes[$k]['grado'] }}
+						<b>Curso: </b> {{ $estudiantes[$k]['curso'] }}
+					</th>
+				</tr>
 				<tr>
 					<th>Nombre completo</th>
 					<th>Doc. Identidad</th>

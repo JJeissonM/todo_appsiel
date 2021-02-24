@@ -204,6 +204,22 @@ $(document).ready(function () {
 		*/
 	});
 
+
+	$('#btn_excel_v2').click(function (event) {
+		event.preventDefault();
+		var nombre_listado = $(this).attr('title');
+		$tabla = document.querySelector("#tbDatos");
+		let tableExport = new TableExport($tabla, {
+			exportButtons: false, // No queremos botones
+			filename: nombre_listado, //Nombre del archivo de Excel
+			sheetname: nombre_listado, //Título de la hoja
+		});
+		let datos = tableExport.getExportData();
+		let preferenciasDocumento = datos.tbDatos.xlsx;
+		tableExport.export2file(preferenciasDocumento.data, preferenciasDocumento.mimeType, preferenciasDocumento.filename, preferenciasDocumento.fileExtension, preferenciasDocumento.merges, preferenciasDocumento.RTL, preferenciasDocumento.sheetname);
+		/**/
+	});
+
 	$(document).on('change', '#tipo', function () {
 
 		switch ($(this).val()) {
