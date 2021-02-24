@@ -114,6 +114,11 @@ class TiempoLaborado implements Estrategia
 	// Cuando las vacaciones terminan en el lapso, NO se liquida el tiempo después del tiempo final de las mismas
 	public function get_horas_descontar_por_vacaciones( $horas_liquidadas_empleado, $documento_nomina, $empleado )
 	{
+		if ( $horas_liquidadas_empleado >= $documento_nomina->tiempo_a_liquidar )
+		{
+			return 0;
+		}
+		
 		$dias_a_descontar = 0;
 		$lapso = $documento_nomina->lapso();
 
