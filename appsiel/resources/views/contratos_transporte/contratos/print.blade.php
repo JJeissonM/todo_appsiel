@@ -414,7 +414,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 						<td class="border" style="width: 32%; font-weight: bold; font-size: 12px;">NOMBRES Y APELLIDOS</td>
 						<td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">No CÉDULA</td>
 						<td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">DIRECCIÓN</td>
-						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">TELÉFONO</td>
+						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">TELÉFONO</td> 
 					</tr>
 					<tr>
 						<td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center; border-top: none;">RESPONSABLE DEL CONTRATANTE</td>
