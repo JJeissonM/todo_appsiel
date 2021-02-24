@@ -128,7 +128,8 @@ class Matricula extends Model
             $array_wheres = array_merge($array_wheres, ['sga_matriculas.periodo_lectivo_id' => $periodo_lectivo_id]);
         }
 
-        if ($estado_matricula != null) {
+        if ($estado_matricula != null)
+        {
             $array_wheres = array_merge($array_wheres, ['sga_matriculas.estado' => $estado_matricula]);
         }
 

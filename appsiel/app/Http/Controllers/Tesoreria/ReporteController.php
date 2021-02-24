@@ -669,7 +669,7 @@ class ReporteController extends TesoreriaController
                     $aplico_mes = false; // aplicó mes, es decir, si hay valor de pensión en ese mes
                     $mes_columna = str_repeat(0, 2-strlen($i) ).$i;
 
-                    foreach ($cartera_pension as $linea_cartera) 
+                    foreach ( $cartera_pension as $linea_cartera ) 
                     {
                         $mes_libreta =explode("-", $linea_cartera->fecha_vencimiento)[1];
 
@@ -705,6 +705,10 @@ class ReporteController extends TesoreriaController
                             $tabla.='<td align="center">'.$subtabla.'</td>';
                             $aplico_mes = true;
 
+                            if ( !isset( $total_columna[$num_columna] ) )
+                            {
+                                dd( [ 'No existe datos para la columna: ' $num_columna, $linea_cartera, $linea_cartera->estudiante->tercero->descripcion ] );
+                            }
 		                    $total_columna[$num_columna] += $saldo_pendiente;
 		                    $num_columna++;
                         }
