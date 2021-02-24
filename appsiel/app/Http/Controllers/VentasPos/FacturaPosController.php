@@ -116,7 +116,8 @@ class FacturaPosController extends TransaccionController
         $pdv = Pdv::find(Input::get('pdv_id'));
 
         //Personalización de la lista de campos
-        for ($i = 0; $i < $cantidad_campos; $i++) {
+        for ($i = 0; $i < $cantidad_campos; $i++)
+        {
             switch ($lista_campos[$i]['name']) {
 
                 case 'core_tipo_doc_app_id':
@@ -128,7 +129,7 @@ class FacturaPosController extends TransaccionController
                     break;
 
                 case 'vendedor_id':
-                    array_shift($lista_campos[$i]['opciones']);
+                    //array_shift($lista_campos[$i]['opciones']);
                     $lista_campos[$i]['value'] = [$pdv->cliente->vendedor_id];
                     //$lista_campos[$i]['opciones'] = [ $pdv->cliente->vendedor->id => $pdv->cliente->vendedor->tercero->descripcion];
                     break;
@@ -162,7 +163,8 @@ class FacturaPosController extends TransaccionController
         $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista($pdv->cliente->lista_precios_id);
         $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista($pdv->cliente->lista_descuentos_id);
         $productosTemp = null;
-        foreach ($productos as $pr) {
+        foreach ($productos as $pr)
+        {
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
@@ -1213,7 +1215,7 @@ class FacturaPosController extends TransaccionController
                     break;
 
                 case 'vendedor_id':
-                    array_shift($lista_campos[$i]['opciones']);
+                    //array_shift($lista_campos[$i]['opciones']);
                     $lista_campos[$i]['value'] = [$pedido->vendedor->id];
                     //$lista_campos[$i]['opciones'] = [ $pdv->cliente->vendedor->id => $pdv->cliente->vendedor->tercero->descripcion];
                     break;

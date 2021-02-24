@@ -116,9 +116,6 @@
         <td width="50px"> </td>
     </tr>
 </table>
-
-<footer>
-    <i>Formato generado por appsiel</i>
-</footer>
+{!! generado_por_appsiel() !!}
 </body>
 </html>

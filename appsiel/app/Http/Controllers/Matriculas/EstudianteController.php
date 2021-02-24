@@ -14,6 +14,7 @@ use View;
 use Auth;
 use Storage;
 use Input;
+use Cache;
 
 use App\Sistema\Modelo;
 use App\Sistema\Html\Boton;
@@ -208,6 +209,68 @@ class EstudianteController extends ModeloController
         return view('matriculas.estudiantes.listar', compact('periodos_lectivos', 'grados', 'miga_pan'));
     }
 
+    public function generar_listado( Request $request )
+    {
+        if ($request->sga_grado_id == "Todos")
+        {
+            $grados = Grado::where('estado', 'Activo')->get();
+        } else {
+            // Un grado específico
+            $grados = Grado::where('id', $request->sga_grado_id)->get();
+        }
+
+        $i = 0;
+        foreach ($grados as $fila_grado) {
+
+            $grado = Grado::find($fila_grado->id);
+
+            if ($request->curso_id == "Todos")
+            {
+                $cursos = Curso::where('sga_grado_id', $grado->id)->where('estado', 'Activo')->get();
+            } else {
+                $cursos = Curso::where('id', $request->curso_id)->get();
+            }
+
+            foreach ($cursos as $fila_curso)
+            {
+                $estudiantes[$i]['grado'] = $grado->descripcion;
+
+                $curso = Curso::find($fila_curso->id);
+                $estudiantes[$i]['curso'] = $curso->descripcion;
+
+                $estudiantes[$i]['listado'] = Matricula::estudiantes_matriculados( $curso->id, $request->periodo_lectivo_id, 'Activo', null );
+                $i++;
+            }
+        }
+
+        $orientacion = $request->orientacion;
+
+        /*
+            Formato 1 = Listado por asignaturas
+            Formato 2 = Ficha Datos básicos
+            Formato 3 = Lista Datos básicos
+            Formato 4 = Lista de usuarios
+        */
+        $formato = 'pdf_estudiantes' . $request->tipo_listado;
+
+        $tam_letra = $request->tam_letra;
+
+        $view =  View::make('matriculas/estudiantes/' . $formato, compact('estudiantes', 'tam_letra'))->render();
+
+        $vista = View::make( 'layouts.pdf3', compact('view') )->render();
+
+        Cache::forever( 'pdf_reporte_' . $formato, $vista );
+
+        return $view;
+        //crear PDF
+        /*
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML(($view))->setPaper($request->tam_hoja, $orientacion);
+
+        return $pdf->download('listado_estudiantes.pdf');
+        */
+    }
+
     /**
      * Muestra formulario para importar estudiantes
      *
@@ -228,57 +291,7 @@ class EstudianteController extends ModeloController
         switch ($id) {
             case 'listado':
 
-                if ($request->sga_grado_id == "Todos")
-                {
-                    $grados = Grado::where('estado', 'Activo')->get();
-                } else {
-                    // Un grado específico
-                    $grados = Grado::where('id', $request->sga_grado_id)->get();
-                }
-
-                $i = 0;
-                foreach ($grados as $fila_grado) {
-
-                    $grado = Grado::find($fila_grado->id);
-
-                    if ($request->curso_id == "Todos")
-                    {
-                        $cursos = Curso::where('sga_grado_id', $grado->id)->where('estado', 'Activo')->get();
-                    } else {
-                        $cursos = Curso::where('id', $request->curso_id)->get();
-                    }
-
-                    foreach ($cursos as $fila_curso)
-                    {
-                        $estudiantes[$i]['grado'] = $grado->descripcion;
-
-                        $curso = Curso::find($fila_curso->id);
-                        $estudiantes[$i]['curso'] = $curso->descripcion;
-
-                        $estudiantes[$i]['listado'] = Matricula::estudiantes_matriculados( $curso->id, $request->periodo_lectivo_id, 'Activo', null );
-                        $i++;
-                    }
-                }
-
-                $orientacion = $request->orientacion;
-
-                /*
-					Formato 1 = Listado por asignaturas
-					Formato 2 = Ficha Datos básicos
-					Formato 3 = Lista Datos básicos
-					Formato 4 = Lista de usuarios
-				*/
-                $formato = 'pdf_estudiantes' . $request->tipo_listado;
-
-                $tam_letra = $request->tam_letra;
-
-                $view =  View::make('matriculas/estudiantes/' . $formato, compact('estudiantes', 'tam_letra'))->render();
-
-                //crear PDF
-                $pdf = \App::make('dompdf.wrapper');
-                $pdf->loadHTML(($view))->setPaper($request->tam_hoja, $orientacion);
-
-                return $pdf->download('listado_estudiantes.pdf');
+                
 
                 break;
 

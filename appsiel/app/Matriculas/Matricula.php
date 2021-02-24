@@ -128,7 +128,8 @@ class Matricula extends Model
             $array_wheres = array_merge($array_wheres, ['sga_matriculas.periodo_lectivo_id' => $periodo_lectivo_id]);
         }
 
-        if ($estado_matricula != null) {
+        if ($estado_matricula != null)
+        {
             $array_wheres = array_merge($array_wheres, ['sga_matriculas.estado' => $estado_matricula]);
         }
 
@@ -144,7 +145,9 @@ class Matricula extends Model
             ->select(
                 DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo'),
                 'sga_matriculas.id AS matricula_id',
+                'sga_matriculas.id',
                 'sga_matriculas.codigo',
+                'sga_matriculas.fecha_matricula',
                 'sga_matriculas.id_colegio',
                 'sga_matriculas.id_estudiante',
                 'sga_matriculas.id_estudiante AS id',
@@ -157,6 +160,7 @@ class Matricula extends Model
                 'sga_estudiantes.imagen',
                 'sga_estudiantes.fecha_nacimiento',
                 DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS tipo_y_numero_documento_identidad'),
+                'core_tipos_docs_id.abreviatura as tipo_documento',
                 'core_terceros.nombre1',
                 'core_terceros.otros_nombres',
                 'core_terceros.apellido1',

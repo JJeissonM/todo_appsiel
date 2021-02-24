@@ -51,6 +51,7 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsBtnNext', 'components.form.btn_next', ['url']);
         Form::component('bsBtnEstado', 'components.form.btn_estado', ['url']);
         Form::component('bsBtnExcel', 'components.form.btn_excel', ['nombre_listado']);
+        Form::component('bsBtnExcelV2', 'components.form.btn_excel_v2', ['nombre_listado']);
         Form::component('bsBtnPdf', 'components.form.btn_pdf', ['nombre_listado']);
         Form::component('bsBtnDropdown', 'components.form.btn_dropdown', ['etiqueta', 'clase', 'icono', 'urls']);
 

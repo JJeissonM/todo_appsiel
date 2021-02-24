@@ -66,6 +66,12 @@ $(document).ready(function(){
 
 	$('#cantidad_dias_tomados').on( 'keyup', function(){
 
+
+		if( $('#fecha_inicial_tnl').val() == '' )
+		{
+			return false;
+		}
+
 		if ( !validar_input_numerico( $('#cantidad_dias_tomados') ) )
 		{
 			alert('Debe ingresar una cantidad de días tomados válida.');

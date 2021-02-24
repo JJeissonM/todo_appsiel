@@ -224,7 +224,6 @@ class Vacaciones implements Estrategia
         }
 
         $cantidad_dias = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final );
-
         $this->tabla_resumen['cantidad_dias'] = $cantidad_dias;
 
         $this->tabla_resumen['base_liquidacion'] = $parametros_prestacion->base_liquidacion;

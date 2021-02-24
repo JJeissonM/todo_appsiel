@@ -42,11 +42,14 @@ class TiempoNoLaborado implements Estrategia
 								->get();
 
 		$valores_novedades = [];
+
         
+
         foreach( $novedades as $novedad )
         {			
 			// NO se puede liquidar más tiempo del que tiene el documento en el lapso
 			$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+
 			if ( $horas_liquidadas_empleado >= $liquidacion['documento_nomina']->tiempo_a_liquidar )
 			{
 				continue;

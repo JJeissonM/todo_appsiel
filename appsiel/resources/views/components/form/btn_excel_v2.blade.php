@@ -1,0 +1,1 @@
+<a class="btn-gmail btn-excel" id="btn_excel_v2" style="display: none;" title="{{$nombre_listado}}"><i class="fa fa-file-excel-o"></i></a>

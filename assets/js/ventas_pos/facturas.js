@@ -83,7 +83,7 @@ $.fn.checkCookie = function () {
 		$('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_ajuste_al_peso));
 	}
 
-	$("html, body").animate({ scrollTop: $(document).height() + "px" });
+	//$("html, body").animate({ scrollTop: $(document).height() + "px" });
 };
 
 
@@ -332,7 +332,7 @@ function agregar_la_linea2() {
 	deshabilitar_campos_encabezado2();
 
 	// Bajar el Scroll hasta el final de la página
-	$("html, body").animate({ scrollTop: $(document).height() + "px" });
+	//$("html, body").animate({ scrollTop: $(document).height() + "px" });
 
 	reset_linea_ingreso_default2();
 	reset_efectivo_recibido2();

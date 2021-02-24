@@ -774,7 +774,7 @@ use App\Http\Controllers\Sistema\VistaController;
                     });
 
                 // Bajar el Scroll hasta el final de la página
-                $("html, body").animate({scrollTop: $(document).height() + "px"});
+                //$("html, body").animate({scrollTop: $(document).height() + "px"});
             }
 
             function agregar_nueva_linea() 
@@ -819,7 +819,7 @@ use App\Http\Controllers\Sistema\VistaController;
                 deshabilitar_campos_encabezado();
 
                 // Bajar el Scroll hasta el final de la página
-                $("html, body").animate( { scrollTop: $(document).height() + "px"} );
+                //$("html, body").animate( { scrollTop: $(document).height() + "px"} );
 
                 reset_linea_ingreso_default();
                 reset_efectivo_recibido();
@@ -839,7 +839,7 @@ use App\Http\Controllers\Sistema\VistaController;
                 deshabilitar_campos_encabezado();
 
                 // Bajar el Scroll hasta el final de la página
-                $("html, body").animate( { scrollTop: $(document).height() + "px"} );
+                //$("html, body").animate( { scrollTop: $(document).height() + "px"} );
 
                 reset_linea_ingreso_default();
                 reset_efectivo_recibido();
