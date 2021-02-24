@@ -14,6 +14,7 @@ use View;
 use Auth;
 use Storage;
 use Input;
+use Cache;
 
 use App\Sistema\Modelo;
 use App\Sistema\Html\Boton;
@@ -255,6 +256,10 @@ class EstudianteController extends ModeloController
         $tam_letra = $request->tam_letra;
 
         $view =  View::make('matriculas/estudiantes/' . $formato, compact('estudiantes', 'tam_letra'))->render();
+
+        $vista = View::make( 'layouts.pdf3', compact('view') )->render();
+
+        Cache::forever( 'pdf_reporte_' . $formato, $vista );
 
         return $view;
         //crear PDF

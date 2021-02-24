@@ -6,13 +6,13 @@
 	&nbsp;&nbsp;&nbsp;
 	<div class="btn-group">
 		
-		<a class="btn btn-primary btn-xs btn-detail" href="{{ url( $acciones->create ) }}" title="Crear"><i class="fa fa-btn fa-plus"></i>&nbsp;Crear</a>
+		<a class="btn-gmail" href="{{ url( $acciones->create ) }}" title="Nueva inscripción"><i class="fa fa-btn fa-plus"></i></a>
 
 		{{ Form::bsBtnEdit( str_replace('id_fila', $id, $acciones->edit ) ) }}
 		
 		{{ Form::bsBtnPrint( str_replace('id_fila', $id, $acciones->imprimir ) ) }}
 		
-		<a class="btn btn-success btn-xs btn-detail" href="{{ url( 'inscripciones_crear_matricula/' . $id .'?id='.Input::get('id').'&id_modelo=19' ) }}" title="Crear"><i class="fa fa-btn fa-check"></i>&nbsp; Matrícular </a>
+		<a class="btn-gmail" href="{{ url( 'inscripciones_crear_matricula/' . $id .'?id='.Input::get('id').'&id_modelo=19' ) }}" title="Matrícular"><i class="fa fa-btn fa-book"></i></a>
 
 	</div>
 
@@ -36,8 +36,8 @@
 				echo $view_pdf;
 			?>
 			
+			{!! generado_por_appsiel() !!}
 		</div>
 	</div>
-	<br/><br/>	
 
 @endsection

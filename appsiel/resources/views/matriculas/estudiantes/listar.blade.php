@@ -5,19 +5,17 @@
 	<hr>
 
 	<div class="row">
-		<div class="col-sm-offset-3 col-sm-6">
-			<div class="panel panel-success">
+		<div class="col-sm-4">
+			<div class="panel panel-primary">
 				<div class="panel-heading" align="center">
-					<h4>Generar listados de estudiantes</h4>
+					<h5>Generar listados de estudiantes</h5>
 				</div>
 				
 				<div class="panel-body">
-					<!-- { {Form::open(array('route'=>array('matriculas.estudiantes.update','listado'),'method'=>'PUT'))}} -->
-
 					{{ Form::open(['url'=>'matriculas_estudiantes_generar_listado','id'=>'formulario_inicial']) }}
 					
 						<div class="row" style="padding:5px;">
-                            {{ Form::bsSelect('tipo_listado', null, 'Tipo de listado', ['1'=>'Listado de estudiantes', '2'=>'Ficha de datos básicos', '3'=>'Listado de datos básicos', '4'=>'Listado de usuarios'], []) }}
+                            {{ Form::bsSelect('tipo_listado', null, 'Tipo de listado', ['1'=>'Listado de estudiantes', '2'=>'Ficha de datos básicos', '3'=>'Listado de datos básicos', '4'=>'Listado de usuarios', '5'=>'Datos de matrículas y pensiones'], []) }}
                         </div>
 
 						<div class="row" style="padding:5px;">
@@ -31,8 +29,6 @@
 						<div class="row" style="padding:5px;">
                             {{ Form::bsSelect('curso_id', null, 'Curso', ['Todos'=>'Todos'], []) }}
                         </div>
-
-                        {{--<option value="4">Cumpleaños</option>--}}
 
 						<div class="row" style="padding:5px;">
                             {{ Form::bsSelect('tam_hoja', null, 'Tamaño hoja', ['Letter'=>'Carta','Legal'=>'Oficio'], []) }}
@@ -48,22 +44,21 @@
 					{{Form::close()}}
 
 					<div class="col-sm-offset-3 col-sm-6">
-						<button class="btn btn-success" id="btn_generar"> <i class="fa fa-list"></i> Generar listado </button>
+						<button class="btn btn-primary" id="btn_generar"> <i class="fa fa-list"></i> Generar listado </button>
 						{{ Form::Spin(48) }}
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<div class="col-sm-8">
+			{{ Form::bsBtnExcelV2( 'listado_estudiantes' ) }}
+			{{ Form::bsBtnPdf( 'listado_estudiantes' ) }}
+
+			<div class="marco_formulario" id="div_resultado" style="width: 100%; overflow: auto; white-space: nowrap;">
+			</div>			
+		</div>
 	</div>
-
-	{{ Form::bsBtnExcelV2( 'listado_estudiantes' ) }}
-	{{ Form::bsBtnPdf( 'listado_estudiantes' ) }}
-
-	<div class="row" id="div_resultado">
-			
-	</div>
-
-	<br><br><br>
 @endsection
 
 @section('scripts')
@@ -136,7 +131,7 @@
 					var url_pdf = $('#btn_pdf').attr('href');
 					var n = url_pdf.search('a3p0');
 					if ( n > 0) {
-						var new_url = url_pdf.replace( 'a3p0', 'generar_pdf/' + $("#reporte_id").val() + '?tam_hoja=' + $("#tam_hoja").val() + '&orientacion=' + $("#orientacion").val() );
+						var new_url = url_pdf.replace( 'a3p0', 'generar_pdf/' + 'pdf_estudiantes' + $("#tipo_listado").val() + '?tam_hoja=' + $("#tam_hoja").val() + '&orientacion=' + $("#orientacion").val() );
 					}
 					
 					$('#btn_pdf').attr('href', new_url);

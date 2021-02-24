@@ -119,4 +119,35 @@ class TesoLibretasPago extends Model
 
         return $registros;
     }
+
+    public function get_campos_adicionales_create( $lista_campos )
+    {
+        $inv_producto_id_default_matricula = (int)config('matriculas.inv_producto_id_default_matricula');
+        $inv_producto_id_default_pension = config('matriculas.inv_producto_id_default_pension');
+
+        if( $inv_producto_id_default_matricula == 0 ||   $inv_producto_id_default_pension == 0 )
+        {
+            return [
+                [
+                    "id" => 999,
+                    "descripcion" => "Label.",
+                    "tipo" => "personalizado",
+                    "name" => "lbl",
+                    "opciones" => "",
+                    "value" => '<div class="form-group">                    
+                                                    <label class="control-label col-sm-3" style="color: red;" > <b> No se han configurado  los servicios para facturar Matrícula y Pensión. </b> </label>
+                                                    <br>
+                                                    <a href="' . url('config?id=1&id_modelo=0') . '" class="btn btn-sm btn-info"> <i class="fa fa-th-large"></i> Ir a la configuración. </a>      
+                                                </div>',
+                    "atributos" => [],
+                    "definicion" => "",
+                    "requerido" => 0,
+                    "editable" => 1,
+                    "unico" => 0
+                ]
+            ];
+        }
+
+        return $lista_campos;
+    }
 }
