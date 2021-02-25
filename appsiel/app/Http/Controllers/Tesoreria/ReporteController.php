@@ -707,7 +707,7 @@ class ReporteController extends TesoreriaController
 
                             if ( !isset( $total_columna[$num_columna] ) )
                             {
-                                dd( [ 'No existe datos para la columna: ' $num_columna, $linea_cartera, $linea_cartera->estudiante->tercero->descripcion ] );
+                                dd( [ 'No existe datos para la columna: ' . $num_columna, $linea_cartera, $linea_cartera->estudiante->tercero->descripcion ] );
                             }
 		                    $total_columna[$num_columna] += $saldo_pendiente;
 		                    $num_columna++;

@@ -127,7 +127,12 @@
 									$descripcion_evento = $evento->descripcion;
 									if ( $evento->tipo_evento == 'clase_normal' )
 									{
-										$descripcion_evento = $evento->asignatura->descripcion;
+										$descripcion_evento = 'No Asignatura';
+										if ( !is_null( $evento->asignatura ) )
+										{
+											$descripcion_evento = $evento->asignatura->descripcion;
+										}
+											
 									}
 								?>
 

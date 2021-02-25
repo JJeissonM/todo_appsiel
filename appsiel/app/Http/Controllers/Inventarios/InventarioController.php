@@ -393,6 +393,7 @@ class InventarioController extends TransaccionController
         foreach( $lineas_registros AS $linea )
         {
             $item = InvProducto::find( $linea->inv_producto_id );
+            
             if ( is_null($item) )
             {
                 continue;

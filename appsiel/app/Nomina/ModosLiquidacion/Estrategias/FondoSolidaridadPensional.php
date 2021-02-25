@@ -31,7 +31,7 @@ class FondoSolidaridadPensional implements Estrategia
 		$valor_liquidacion = 0;
 
 		$es_primera_quincena = true;
-		if ( explode("-", $lapso_documento->fecha_final)[2] == '30' )
+		if ( (int)explode("-", $lapso_documento->fecha_final)[2] >= 28 )
 		{
 			$es_primera_quincena = false;
 		}
