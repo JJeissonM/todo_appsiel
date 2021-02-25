@@ -382,7 +382,7 @@ class AcademicoEstudianteController extends Controller
         $dia_semana = $this->get_dia_semana( Input::get('fecha') );
         $eventos = ProgramacionAulaVirtual::where([
                                                     [ 'dia_semana', '=', $dia_semana ],
-                                                    [ 'curso_id', '=', $curso_id ]
+                                                    [ 'curso_id', '=', (int)$curso_id ]
                                                 ])
                                         ->orWhere('fecha', Input::get('fecha'))
                                         ->orderBy('hora_inicio')
@@ -420,7 +420,7 @@ class AcademicoEstudianteController extends Controller
                         ['url' => 'NO', 'etiqueta' => 'Aula virtual']
                     ];
 
-        $curso = Curso::find( $curso_id );
+        $curso = Curso::find( (int)$curso_id );
 
         return view( 'academico_estudiante.aula_virtual', compact( 'eventos', 'dia_semana', 'curso', 'miga_pan' ) );
     }

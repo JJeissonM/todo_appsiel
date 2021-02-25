@@ -46,25 +46,54 @@ class GuiaAcademica extends Model
             $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);
         }
 
+        if ( $search == '' )
+        {
+            return GuiaAcademica::leftJoin('sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')
+                ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
+                ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
+                ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
+                ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
+                ->where($array_wheres)
+                ->whereIn('sga_plan_clases_encabezados.periodo_id',$periodos)
+                ->select(
+                    'sga_plan_clases_encabezados.fecha AS campo1',
+                    'sga_plan_clases_encabezados.descripcion AS campo2',
+                    'sga_semanas_calendario.descripcion AS campo3',
+                    'sga_periodos.descripcion AS campo4',
+                    'sga_cursos.descripcion AS campo5',
+                    'sga_asignaturas.descripcion AS campo6',
+                    'users.name AS campo7',
+                    'sga_plan_clases_encabezados.estado AS campo8',
+                    'sga_plan_clases_encabezados.id AS campo9'
+                )
+                ->paginate($nro_registros);
+        }
+
         return GuiaAcademica::leftJoin('sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')
-            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
-            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
-            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
-            ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
-            ->where($array_wheres)
-            ->whereIn('sga_plan_clases_encabezados.periodo_id',$periodos)
-            ->select(
-                'sga_plan_clases_encabezados.fecha AS campo1',
-                'sga_plan_clases_encabezados.descripcion AS campo2',
-                'sga_semanas_calendario.descripcion AS campo3',
-                'sga_periodos.descripcion AS campo4',
-                'sga_cursos.descripcion AS campo5',
-                'sga_asignaturas.descripcion AS campo6',
-                'users.name AS campo7',
-                'sga_plan_clases_encabezados.estado AS campo8',
-                'sga_plan_clases_encabezados.id AS campo9'
-            )
-            ->paginate($nro_registros);
+                ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
+                ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
+                ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
+                ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
+                ->select(
+                    'sga_plan_clases_encabezados.fecha AS campo1',
+                    'sga_plan_clases_encabezados.descripcion AS campo2',
+                    'sga_semanas_calendario.descripcion AS campo3',
+                    'sga_periodos.descripcion AS campo4',
+                    'sga_cursos.descripcion AS campo5',
+                    'sga_asignaturas.descripcion AS campo6',
+                    'users.name AS campo7',
+                    'sga_plan_clases_encabezados.estado AS campo8',
+                    'sga_plan_clases_encabezados.id AS campo9'
+                )
+                ->orWhere("sga_plan_clases_encabezados.fecha", "LIKE", "%$search%")
+                ->orWhere("sga_plan_clases_encabezados.descripcion", "LIKE", "%$search%")
+                ->orWhere("sga_semanas_calendario.descripcion", "LIKE", "%$search%")
+                ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
+                ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+                ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+                ->orWhere("users.name", "LIKE", "%$search%")
+                ->orWhere("sga_plan_clases_encabezados.estado", "LIKE", "%$search%")
+                ->paginate($nro_registros);            
     }
 
     public static function sqlString($search)
