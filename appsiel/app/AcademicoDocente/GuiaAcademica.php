@@ -17,6 +17,8 @@ use App\Matriculas\Curso;
 use App\Matriculas\PeriodoLectivo;
 
 use App\Calificaciones\Asignatura;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class GuiaAcademica extends Model
 {
@@ -41,59 +43,79 @@ class GuiaAcademica extends Model
 
         $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999]];
 
-        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo'))
-        {
+        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
             $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);
         }
 
-        if ( $search == '' )
-        {
-            return GuiaAcademica::leftJoin('sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')
-                ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
-                ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
-                ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
-                ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
-                ->where($array_wheres)
-                ->whereIn('sga_plan_clases_encabezados.periodo_id',$periodos)
-                ->select(
-                    'sga_plan_clases_encabezados.fecha AS campo1',
-                    'sga_plan_clases_encabezados.descripcion AS campo2',
-                    'sga_semanas_calendario.descripcion AS campo3',
-                    'sga_periodos.descripcion AS campo4',
-                    'sga_cursos.descripcion AS campo5',
-                    'sga_asignaturas.descripcion AS campo6',
-                    'users.name AS campo7',
-                    'sga_plan_clases_encabezados.estado AS campo8',
-                    'sga_plan_clases_encabezados.id AS campo9'
-                )
-                ->paginate($nro_registros);
+        $collection = GuiaAcademica::leftJoin('sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')
+            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
+            ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
+            ->where($array_wheres)
+            ->whereIn('sga_plan_clases_encabezados.periodo_id', $periodos)
+            ->select(
+                'sga_plan_clases_encabezados.fecha AS campo1',
+                'sga_plan_clases_encabezados.descripcion AS campo2',
+                'sga_semanas_calendario.descripcion AS campo3',
+                'sga_periodos.descripcion AS campo4',
+                'sga_cursos.descripcion AS campo5',
+                'sga_asignaturas.descripcion AS campo6',
+                'users.name AS campo7',
+                'sga_plan_clases_encabezados.estado AS campo8',
+                'sga_plan_clases_encabezados.id AS campo9'
+            )->get();
+
+        //hacemos el filtro de $search si $search tiene contenido
+        $nuevaColeccion = [];
+        if (count($collection) > 0) {
+            if (strlen($search) > 0) {
+                $nuevaColeccion = $collection->filter(function ($c) use ($search) {
+                    if (GuiaAcademica::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                        return $c;
+                    }
+                });
+            } else {
+                $nuevaColeccion = $collection;
+            }
         }
 
-        return GuiaAcademica::leftJoin('sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')
-                ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
-                ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
-                ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
-                ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
-                ->select(
-                    'sga_plan_clases_encabezados.fecha AS campo1',
-                    'sga_plan_clases_encabezados.descripcion AS campo2',
-                    'sga_semanas_calendario.descripcion AS campo3',
-                    'sga_periodos.descripcion AS campo4',
-                    'sga_cursos.descripcion AS campo5',
-                    'sga_asignaturas.descripcion AS campo6',
-                    'users.name AS campo7',
-                    'sga_plan_clases_encabezados.estado AS campo8',
-                    'sga_plan_clases_encabezados.id AS campo9'
-                )
-                ->orWhere("sga_plan_clases_encabezados.fecha", "LIKE", "%$search%")
-                ->orWhere("sga_plan_clases_encabezados.descripcion", "LIKE", "%$search%")
-                ->orWhere("sga_semanas_calendario.descripcion", "LIKE", "%$search%")
-                ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
-                ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
-                ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
-                ->orWhere("users.name", "LIKE", "%$search%")
-                ->orWhere("sga_plan_clases_encabezados.estado", "LIKE", "%$search%")
-                ->paginate($nro_registros);            
+        //obtenemos el numero de la página actual, por defecto 1
+        $page = 1;
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+        $request = request(); //obtenemos el Request para obtener la url y la query builder
+        $total = count($nuevaColeccion); //Total para contar los registros mostrados
+        $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
+        $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
+        $array = new LengthAwarePaginator($array, $total, $nro_registros, $page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]); //finalmente se pagina y organiza la coleccion a devolver con todos los datos
+
+        return $array;
+    }
+
+    /**
+     * SQL Like operator in PHP.
+     * Returns TRUE if match else FALSE.
+     * @param array $array de campos donde se busca
+     * @param string $searchTerm termino de busqueda
+     * @return bool
+     */
+    public static function likePhp($array, $searchTerm)
+    {
+        $encontrado = false;
+        $searchTerm = strtolower($searchTerm);
+        foreach ($array as $a) {
+            $str = strtolower($a);
+            $pos = strpos($str, $searchTerm);
+            if ($pos !== false) {
+                $encontrado = true;
+            }
+        }
+        return $encontrado;
     }
 
     public static function sqlString($search)
@@ -122,7 +144,7 @@ class GuiaAcademica extends Model
                 'users.name AS PROFESOR',
                 'sga_plan_clases_encabezados.estado AS ESTADO'
             )
-            ->where("sga_plan_clases_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere("sga_plan_clases_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere("sga_plan_clases_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_semanas_calendario.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
