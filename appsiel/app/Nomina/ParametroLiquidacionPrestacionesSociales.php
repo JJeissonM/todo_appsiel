@@ -151,7 +151,7 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         //$mes_anterior = $mes_final;// + 1;
         for ( $i = $this->cantidad_meses_a_promediar; $i > 1; $i--)
         {
-            if ( $mes_inicial == 0 ) // $i = 10     $mes_inicial = 9
+            if ( $mes_inicial == 0 )
             {
                 $mes_inicial = 11;
                 $anio_inicial = $anio_final - 1;

@@ -18,7 +18,6 @@ class ContabCuenta extends Model
         $registros = ContabCuenta::leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuentas.contab_cuenta_clase_id')
             ->leftJoin('contab_cuenta_grupos', 'contab_cuenta_grupos.id', '=', 'contab_cuentas.contab_cuenta_grupo_id')
             ->leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'contab_cuentas.core_app_id')
-            ->where('contab_cuentas.core_empresa_id', Auth::user()->empresa_id)
             ->select(
                 'contab_cuenta_clases.descripcion AS campo1',
                 'contab_cuenta_grupos.descripcion AS campo2',
