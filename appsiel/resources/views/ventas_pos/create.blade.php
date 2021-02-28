@@ -1206,7 +1206,8 @@ use App\Http\Controllers\Sistema\VistaController;
             $(document).on('click', '#myModal2 .btn_save_modal', function (event) {
                 event.preventDefault();
 
-                if ($('#combobox_motivos').val() == '') {
+                if ($('#combobox_motivos').val() == '')
+                {
                     $('#combobox_motivos').focus();
                     alert('Debe ingresar un Motivo');
                     return false;
@@ -1222,6 +1223,11 @@ use App\Http\Controllers\Sistema\VistaController;
                     alert('No ha ingresado una valor para la transacción.');
                     return false;
                 }
+
+                
+                // Desactivar el click del botón
+                $( this ).off( event );
+                $( this ).attr( 'disabled', 'disabled' );
 
                 var url = $("#form_registrar_ingresos_gastos").attr('action');
                 var data = $("#form_registrar_ingresos_gastos").serialize();
