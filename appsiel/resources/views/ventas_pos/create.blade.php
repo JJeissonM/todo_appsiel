@@ -194,7 +194,7 @@ use App\Http\Controllers\Sistema\VistaController;
                         <br/><br/>
                         @include('tesoreria.incluir.medios_recaudos')
 
-                        {!! $contenido_modal !!}
+                        {!! $vista_categorias_productos !!}
                     </div>
 
                     <div class="col-md-4 well" style="font-size: 1.2em;">
@@ -363,7 +363,7 @@ use App\Http\Controllers\Sistema\VistaController;
     </table>
 
     <!-- La ventana contiene la variable contenido_modal hacer un @incl para que funcione-->
-    <!-- ('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>'']) -->
+    @include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>'']) <!-- -->
 
 
     @include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>'', 'clase_tamanio' => 'modal-lg'])

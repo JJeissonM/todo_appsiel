@@ -168,19 +168,19 @@ class FacturaPosController extends TransaccionController
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
-        $contenido_modal = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
-        //$contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
+        $vista_categorias_productos = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
+        $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
 
 
         $redondear_centena = config('ventas_pos.redondear_centena');
 
-        return view('ventas_pos.create', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'productos', 'precios', 'descuentos', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias'));
+        return view('ventas_pos.create', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'productos', 'precios', 'descuentos', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias'));
     }
 
     /**
-     * ALMACENA FACTURA POS
+     * ALMACENA FACTURA POS - ES LLAMADO VÍA AJAX
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -194,7 +194,8 @@ class FacturaPosController extends TransaccionController
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
-        if ($doc_encabezado->core_tercero_id == 0) {
+        if ($doc_encabezado->core_tercero_id == 0)
+        {
             $pdv = Pdv::find($doc_encabezado->pdv_id);
             $doc_encabezado->core_tercero_id = $pdv->cliente->tercero->id;
             $doc_encabezado->save();
@@ -204,7 +205,8 @@ class FacturaPosController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
-        if (isset($request->pedido_id)) {
+        if (isset($request->pedido_id))
+        {
             $pedido = VtasPedido::find($request->pedido_id);
             $pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
             $pedido->estado = 'Facturado';
@@ -250,7 +252,13 @@ class FacturaPosController extends TransaccionController
 
         $cantidad_registros = count($lineas_registros);
 
-        for ($i = 0; $i < $cantidad_registros; $i++) {
+        for ($i = 0; $i < $cantidad_registros; $i++)
+        {
+            if ( (int)$lineas_registros[$i]->inv_producto_id == 0)
+            {
+                continue; // Evitar guardar registros con productos NO validos
+            }
+            
             $linea_datos = ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
                 ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
                 ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
@@ -316,7 +324,8 @@ class FacturaPosController extends TransaccionController
 
         $vista = 'ventas_pos.show';
 
-        if (!is_null(Input::get('vista'))) {
+        if ( !is_null(Input::get('vista') ) )
+        {
             $vista = Input::get('vista');
         }
 
@@ -743,10 +752,12 @@ class FacturaPosController extends TransaccionController
 
         $lineas_desarme = '[{"inv_producto_id":"","Producto":"","motivo":"","costo_unitario":"","cantidad":"","costo_total":""}';
 
-        foreach ($items_desarme_automatico as $parametros_item_desarme) {
+        foreach ($items_desarme_automatico as $parametros_item_desarme)
+        {
             $motivo = InvMotivo::find($parametros['motivo_salida_id']);
             $cantidad_proporcional = $parametros_item_desarme->cantidad_proporcional;
-            if ($cantidad_proporcional == null && $cantidad_proporcional == 0) {
+            if ($cantidad_proporcional == null && $cantidad_proporcional == 0)
+            {
                 $cantidad_proporcional = 1;
             }
 
@@ -754,7 +765,7 @@ class FacturaPosController extends TransaccionController
 
             $existencia_item_producir = InvMovimiento::get_existencia_producto($parametros_item_desarme->item_producir_id, $bodega_default_id, $fecha);
 
-            $cantidad_consumir = intdiv(($cantidad_facturada - $existencia_item_producir->Cantidad), $cantidad_proporcional) + 1; // La parte entera de la división más 1 unidad adicional
+            $cantidad_consumir = intdiv( (int)($cantidad_facturada - $existencia_item_producir->Cantidad), $cantidad_proporcional) + 1; // La parte entera de la división más 1 unidad adicional
 
             $existencia_item_consumir = InvMovimiento::get_existencia_producto($parametros_item_desarme->item_consumir_id, $bodega_default_id, $fecha);
 
