@@ -168,7 +168,7 @@ class FacturaPosController extends TransaccionController
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
-        $vista_categorias_productos = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
+        $vista_categorias_productos = '';//View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
@@ -484,15 +484,15 @@ class FacturaPosController extends TransaccionController
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
-        $contenido_modal = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
-        
-        //$contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
+
+        $vista_categorias_productos = '';//View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
+        $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
 
         $redondear_centena = config('ventas_pos.redondear_centena');
 
-        return view('ventas_pos.edit', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'precios', 'descuentos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido'));
+        return view('ventas_pos.edit', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'precios', 'descuentos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos'));
     }
 
 
@@ -1139,7 +1139,7 @@ class FacturaPosController extends TransaccionController
             CxcMovimiento::create($this->datos);
         }
 
-        return '<h4>Registro almacenado correctamente</h4><br><span style="background-color: #5cb85c; color: white; padding: 10px; border-radius: 4px;">Documento: ' . $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo . '</span><hr><a class="btn btn-info btn-lg" href="' . url('/') . '/tesoreria/pagos_imprimir/' . $doc_encabezado->id . '?id=3&id_modelo=' . $request->id_modelo . '&id_transaccion=' . $request->id_transaccion . '" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;</a>';
+        return '<h4>Registro almacenado correctamente<br><span class="text-info">Documento: ' . $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo . '</span></h4><hr><a class="btn-gmail" href="' . url('/') . '/tesoreria/pagos_imprimir/' . $doc_encabezado->id . '?id=3&id_modelo=' . $request->id_modelo . '&id_transaccion=' . $request->id_transaccion . '" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i></a>';
     }
 
     public function get_etiquetas()
@@ -1261,12 +1261,12 @@ class FacturaPosController extends TransaccionController
         $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista($cliente->lista_descuentos_id);
 
         $productosTemp = null;
-        foreach ($productos as $pr) {
+        foreach ($productos as $pr){
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
-        $contenido_modal = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
-        //$contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
+        $vista_categorias_productos = '';//View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
+        $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
 
@@ -1274,6 +1274,6 @@ class FacturaPosController extends TransaccionController
 
         $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($pedido->lineas_registros);
 
-        return view('ventas_pos.crear_desde_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'productos', 'precios', 'descuentos', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente'));
+        return view('ventas_pos.crear_desde_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'productos', 'precios', 'descuentos', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos'));
     }
 }

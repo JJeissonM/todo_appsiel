@@ -153,7 +153,8 @@
 						Productos ingresados: <span id="numero_lineas"> {{ $numero_linea - 1 }} </span>
                         <br/><br/>
                         {!! $vista_medios_recaudo !!}
-						{!! $contenido_modal !!}
+
+                        {!! $vista_categorias_productos !!}
 					</div>
 
 					<div class="col-md-4 well" style="font-size: 1.2em;">
@@ -314,7 +315,7 @@
 	</table>
 
 	<!-- La ventana contiene la variable contenido_modal. Agregar include para que funcione @incl -->
-	<!-- ('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>'']) -->
+    @include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
 
 
 	@include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>'', 'clase_tamanio' => 'modal-lg'])
