@@ -54,8 +54,6 @@ class ComprasDocEncabezado extends Model
 
         return ComprasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_doc_encabezados.core_tercero_id')
-            ->where('compras_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('compras_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->select(
                 'compras_doc_encabezados.fecha AS campo1',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS campo2'),
@@ -70,7 +68,10 @@ class ComprasDocEncabezado extends Model
             ->orWhere("compras_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," ",compras_doc_encabezados.doc_proveedor_consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("compras_doc_encabezados.doc_proveedor_prefijo", "LIKE", "%$search%")
+            ->orWhere("compras_doc_encabezados.doc_proveedor_consecutivo", "LIKE", "%$search%")
             ->orWhere("compras_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("compras_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("compras_doc_encabezados.forma_pago", "LIKE", "%$search%")
@@ -84,8 +85,8 @@ class ComprasDocEncabezado extends Model
         $core_tipo_transaccion_id = 25; // Facturas de compras
         $string = ComprasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'compras_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_doc_encabezados.core_tercero_id')
-            ->where('compras_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('compras_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            //->where('compras_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            //->where('compras_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->select(
                 'compras_doc_encabezados.fecha AS FECHA',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS DOCUMENTO_COMPRA'),

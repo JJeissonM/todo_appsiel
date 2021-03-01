@@ -70,12 +70,15 @@ class ReporteController extends Controller
         }
         $empleados = $vec2;
 
-        $miga_pan = [
-                ['url' => $app->app.'?id='.Input::get('id'),'etiqueta'=> $app->descripcion],
-                ['url'=>$app->app.'?id='.Input::get('id'),'etiqueta'=>'Informes y listados']
-            ];
+        $grupos_empleados = GrupoEmpleado::opciones_campo_select();
 
-        return view('nomina.reportes.desprendibles_de_pago', compact('miga_pan', 'documentos', 'empleados') );
+        $miga_pan = [
+                        [ 'url' => $app->app . '?id=' . Input::get('id'), 'etiqueta' => $app->descripcion ],
+                        [ 'url' => $app->app .'?id=' . Input::get('id'), 'etiqueta' => 'Informes y listados' ],
+                        [ 'url' => 'NO', 'etiqueta' => 'Desprendibles de pago' ]
+                    ];
+
+        return view('nomina.reportes.desprendibles_de_pago', compact( 'miga_pan', 'documentos', 'empleados', 'grupos_empleados' ) );
     }
 
     /**
@@ -84,7 +87,7 @@ class ReporteController extends Controller
      */
     public function ajax_reporte_desprendibles_de_pago(Request $request)
     {
-        return $this->generar_reporte_desprendibles_de_pago($request->nom_doc_encabezado_id,  $request->core_tercero_id);
+        return $this->generar_reporte_desprendibles_de_pago($request->nom_doc_encabezado_id,  $request->core_tercero_id, $request->grupo_empleado_id, 'show' );
     }
 
     /**
@@ -93,7 +96,7 @@ class ReporteController extends Controller
      */
     public function nomina_pdf_reporte_desprendibles_de_pago()
     {
-        $tabla = $this->generar_reporte_desprendibles_de_pago(Input::get('nom_doc_encabezado_id'), Input::get('core_tercero_id') );
+        $tabla = $this->generar_reporte_desprendibles_de_pago(Input::get('nom_doc_encabezado_id'), Input::get('core_tercero_id'), Input::get('grupo_empleado_id'), '' );
 
         $vista = '<html>
                     <head>
@@ -131,7 +134,7 @@ class ReporteController extends Controller
     }
 
 
-    public function generar_reporte_desprendibles_de_pago($nom_doc_encabezado_id, $core_tercero_id )
+    public function generar_reporte_desprendibles_de_pago($nom_doc_encabezado_id, $core_tercero_id, $grupo_empleado_id, $vista )
     {  
         $documento = NomDocEncabezado::find( $nom_doc_encabezado_id );
 
@@ -142,7 +145,15 @@ class ReporteController extends Controller
             $empleados = NomContrato::where('nom_contratos.core_tercero_id', $core_tercero_id)->get();
         }
 
-        $vista = '';
+        if ( !is_null( $grupo_empleado_id ) && $grupo_empleado_id != '' ) 
+        {
+            $empleados = $documento->empleados()->where('grupo_empleado_id',$grupo_empleado_id)->get();
+        }
+
+        if ( $vista == 'show' )
+        {
+            $vista = '<h5>Se generaron <span class="badge">' . count( $empleados->toArray() ) . '</span> desprendibles.</h5>';
+        }
         foreach ($empleados as $empleado)
         {
             $vista .= View::make('nomina.reportes.tabla_desprendibles_pagos', compact('documento', 'empleado') )->render();
@@ -166,6 +177,11 @@ class ReporteController extends Controller
             $empleados = NomContrato::where('nom_contratos.core_tercero_id', $request->core_tercero_id2)->get();
         }
 
+        if ( !is_null( $grupo_empleado_id2 ) && $grupo_empleado_id2 != '' ) 
+        {
+            $empleados = $documento->empleados()->where( 'grupo_empleado_id', $grupo_empleado_id2 )->get();
+        }
+
         $enviados = 0;
         foreach ($empleados as $empleado)
         {
@@ -180,7 +196,7 @@ class ReporteController extends Controller
 
                 $vec = EmailController::enviar_por_email_documento( $empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $vista );                
 
-                if ($vec['tipo_mensaje'] == 'flash_message' )
+                if ( $vec['tipo_mensaje'] == 'flash_message' )
                 {
                     $enviados++;
                 }

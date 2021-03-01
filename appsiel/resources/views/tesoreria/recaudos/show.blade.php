@@ -11,7 +11,7 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
         {{ Form::bsBtnCreate( 'tesoreria/recaudos/create'.$variables_url ) }}
     @endif
     @if($doc_encabezado->estado != 'Anulado')
-        <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-close"></i> Anular</button>
+        <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
     @endif
 @endsection
 

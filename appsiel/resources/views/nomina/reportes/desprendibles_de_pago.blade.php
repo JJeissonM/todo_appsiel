@@ -4,6 +4,18 @@
 	use App\Http\Controllers\Sistema\VistaController;
 ?>
 
+@section('estilos_1')
+	<style type="text/css">
+		#grupo_empleado_id {
+			border: 1px solid #c5c5c5;
+			border-radius: 3px;
+			margin-left: 15px;
+			padding: 5px 10px;
+			background: #f6f6f6;
+		}
+	</style>
+@endsection
+
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
 
@@ -16,12 +28,15 @@
 						&nbsp;
 					</div>
 					<div class="col-sm-2">
-						&nbsp;
-					</div>
-					<div class="col-sm-3">
 						{{ Form::label('nom_doc_encabezado_id','Documento de Nómina') }}
 						<br/>
 						{{ Form::select('nom_doc_encabezado_id',$documentos,null, [ 'class' => 'combobox', 'id' => 'nom_doc_encabezado_id' ]) }}
+					</div>
+					<div class="col-sm-3">
+						{{ Form::label('grupo_empleado_id','Grupo de Empleados') }}
+						<br/>
+						{{ Form::select('grupo_empleado_id',$grupos_empleados,null, [ 'id' => 'grupo_empleado_id' ]) }}
+
 					</div>
 					<div class="col-sm-3">
 						{{ Form::label('core_tercero_id','Empleados') }}
@@ -51,6 +66,7 @@
 				{{ Form::open(['url'=>'nom_enviar_por_email_desprendibles_de_pago','id'=>'form_enviar_email']) }}
 					<input type="hidden" name="nom_doc_encabezado_id2" id="nom_doc_encabezado_id2">
 					<input type="hidden" name="core_tercero_id2" id="core_tercero_id2">
+					<input type="hidden" name="grupo_empleado_id2" id="grupo_empleado_id2">
 				{{ Form::close() }}
 			</div>
 
@@ -74,6 +90,16 @@
 
 			$('#btn_ir').click(function(event){
 				$('#form_consulta').submit();
+			});
+
+
+			$('#grupo_empleado_id').change( function(event){
+				if ( $(this).val() != '' )
+				{
+					$('#core_tercero_id').parent().fadeOut(500);
+				}else{
+					$('#core_tercero_id').parent().fadeIn(500);
+				}
 			});
 
 			// Click para generar la consulta

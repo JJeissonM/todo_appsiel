@@ -14,14 +14,14 @@
 
 @section('botones_acciones')
 	@if($doc_encabezado->estado != 'Anulado')
-        <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-close"></i> Anular </button>
+        <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
     @endif
 
     @if( $doc_encabezado->estado == 'Sin enviar' )
 		<?php 
 			$color = 'red';
 		?>
-		<a class="btn btn-warning btn-xs btn-detail" href="{{ url( 'fe_nota_credito_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar por correo" id="btn_email"><i class="fa fa-btn fa-envelope"></i> Enviar </a>
+		<a class="btn-gmail" href="{{ url( 'fe_nota_credito_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar por correo" id="btn_email"><i class="fa fa-btn fa-envelope"></i></a>
 	@endif
 
 @endsection
