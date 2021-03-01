@@ -177,9 +177,9 @@ class ReporteController extends Controller
             $empleados = NomContrato::where('nom_contratos.core_tercero_id', $request->core_tercero_id2)->get();
         }
 
-        if ( !is_null( $grupo_empleado_id2 ) && $grupo_empleado_id2 != '' ) 
+        if ( $request->grupo_empleado_id2 != '' ) 
         {
-            $empleados = $documento->empleados()->where( 'grupo_empleado_id', $grupo_empleado_id2 )->get();
+            $empleados = $documento->empleados()->where( 'grupo_empleado_id', $request->grupo_empleado_id2 )->get();
         }
 
         $enviados = 0;
