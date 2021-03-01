@@ -165,6 +165,7 @@
 
 				$('#nom_doc_encabezado_id2').val( $('#nom_doc_encabezado_id').val() );
 				$('#core_tercero_id2').val( $('#core_tercero_id').val() );
+				$('#grupo_empleado_id2').val( $('#grupo_empleado_id').val() );
 
 				// Preparar datos de los controles para enviar formulario
 				var form_consulta = $('#form_enviar_email');
