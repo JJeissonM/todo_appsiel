@@ -50,7 +50,6 @@ class HomeController extends Controller
 	    	$url = asset(config('configuracion.url_instancia_cliente').'/storage/app/'.$model_empresa->ruta_storage_imagen.$empresa->imagen);
 	    	
 	        $logo = $url.'?'.rand(1,1000);
-
     		return view('inicio',compact('aplicaciones','empresa','logo'));
     	}else{
     		// Si no existe empresa, se debe crear

@@ -24,6 +24,7 @@ Route::get('dashboard', 'HomeController@index');
 Route::get('custom_route', 'HomeController@index');
 Route::get('inicio', 'HomeController@inicio'); // Cambiar la palabra "inicio" por "appsiel"... o crear automatización de rutas, vistas, acciones
 
+Route::get('ayuda/videos', 'AyudaController@videos')->name('ayuda.videos');
 
 
 //Route::get('tipo_vista={tipo_vista}', 'Sistema\VistaController@dibujar_vista');

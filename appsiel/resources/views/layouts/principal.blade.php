@@ -81,10 +81,10 @@
 		@font-face {
 			font-family: 'Gotham-Narrow-Medium';
 			src: url("{{url('')}}/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff") format('woff'),
-				url("{{url('')}}/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff2") format('woff2'),
-				url("{{url('')}}/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot"),
-				url("{{url('')}}/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot?#iefix") format('embedded-opentype'),
-				url("{{url('')}}/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.otf") format('truetype');
+			url("{{url('')}}/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.woff2") format('woff2'),
+			url("{{url('')}}/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot"),
+			url("{{url('')}}/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.eot?#iefix") format('embedded-opentype'),
+			url("{{url('')}}/fonts/Gotham-Narrow-Medium/Gotham-Narrow-Medium.otf") format('truetype');
 
 			font-weight: normal;
 			font-style: normal;
@@ -206,6 +206,29 @@
 			font-size: 1.3rem;
 		}
 
+		#paula {
+			right: 10px;
+			bottom: 70px;
+			position: fixed;
+			display: none;
+		}
+
+		#btnPaula {
+			right: 20px;
+			bottom: 15px;
+			position: fixed;
+			z-index: 1000;
+		}
+
+		.paula {
+			background-color: #fff;
+			width: 300px;
+			height: auto;
+			text-align: center;
+			-webkit-box-shadow: -10px 10px 10px 0px rgba(0, 0, 0, 0.41);
+			-moz-box-shadow: -10px 10px 10px 0px rgba(0, 0, 0, 0.41);
+			box-shadow: -10px 10px 10px 0px rgba(0, 0, 0, 0.41);
+		}
 	</style>
 
 	@yield('webstyle')
@@ -227,12 +250,27 @@
 
 		@if( app()->environment() != 'demo' || !in_array( Input::get('id'), $aplicaciones_inactivas_demo ) )
 
-		@yield('content')	
+		@yield('content')
 
 		@else
-			@include('layouts.demo_pagina_bloqueo_aplicaciones')
+		@include('layouts.demo_pagina_bloqueo_aplicaciones')
 		@endif
 	</div>
+
+	<div id="paula" class="paula">
+		<div class="col-md-12">
+			<img width="220px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
+		</div>
+		<div class="col-md-12" style="margin-bottom: 20px; margin-top: 20px;">
+			<a href="{{route('ayuda.videos')}}" class="btn btn-block btn-primary">Tutoriales en Video <i class="fa fa-arrow-right"></i></a>
+		</div>
+	</div>
+	<div id="btnPaula">
+		<button onclick="paula()" style="border-radius: 50%;" class="btn btn-danger">¿Ayuda?</button>
+	</div>
+	<!--<div id="paula">
+			<img width="230px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
+		</div>-->
 
 
 
@@ -288,16 +326,14 @@
 		}
 
 		var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
-		function validar_requeridos()
-		{
+		function validar_requeridos() {
 			control_requeridos = true;
 			$("*[required]").each(function() {
-				if ($(this).val() == "")
-				{
+				if ($(this).val() == "") {
 					$(this).focus();
 					//alert( 'Este campo es requerido: ' + $(this).attr('name') );
 
-					alert( 'Este campo es requerido: ' + $(this).parent().prev('label').text() );
+					alert('Este campo es requerido: ' + $(this).parent().prev('label').text());
 
 					control_requeridos = false;
 					return false;
@@ -307,9 +343,24 @@
 			return control_requeridos;
 		}
 
+		var verPaula = true;
 
-		function validar_input_numerico(obj)
-		{
+		function paula() {
+			if (verPaula) {
+				//ver paula
+				$("#btnPaula").html("<button class='btn btn-danger' style='border-radius: 50%;' onclick='paula()'>Ocultar Paula</button>");
+				$("#paula").fadeIn();
+				verPaula = false;
+			} else {
+				//ocultar paula
+				$("#btnPaula").html("<button class='btn btn-danger' style='border-radius: 50%;' onclick='paula()'>¿Ayuda?</button>");
+				$("#paula").fadeOut();
+				verPaula = true;
+			}
+		}
+
+
+		function validar_input_numerico(obj) {
 			var control = true;
 			var valor = obj.val();
 
@@ -325,8 +376,7 @@
 			return control;
 		}
 
-		function get_fecha_hoy()
-		{
+		function get_fecha_hoy() {
 			var today = new Date();
 			var dd = today.getDate();
 			var mm = today.getMonth() + 1; //January is 0!
@@ -363,8 +413,7 @@
 			return hora + ':' + minutos + ':' + segundos;
 		}
 
-		function getParameterByName(name)
-		{
+		function getParameterByName(name) {
 			name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
 				results = regex.exec(location.search);
@@ -372,20 +421,18 @@
 		}
 
 
-		function ocultar_campo_formulario( obj_input, valor_requerido )
-		{
-			obj_input.prop( 'required', false);
-			obj_input.prop( 'disabled', true );
+		function ocultar_campo_formulario(obj_input, valor_requerido) {
+			obj_input.prop('required', false);
+			obj_input.prop('disabled', true);
 			obj_input.hide();
 			obj_input.parent().prev('label').text('');
 		}
 
-		function mostrar_campo_formulario( obj_input, texto_lbl, valor_requerido )
-		{
-			obj_input.prop( 'required', true );
-			obj_input.prop( 'disabled', false );
+		function mostrar_campo_formulario(obj_input, texto_lbl, valor_requerido) {
+			obj_input.prop('required', true);
+			obj_input.prop('disabled', false);
 			obj_input.show();
-			obj_input.parent().prev('label').text( texto_lbl );
+			obj_input.parent().prev('label').text(texto_lbl);
 		}
 
 
@@ -578,7 +625,7 @@
 
 			});
 
-			$('.enlace_dropdown').on('click',function(){
+			$('.enlace_dropdown').on('click', function() {
 				$('#div_cargando').show();
 			});
 
