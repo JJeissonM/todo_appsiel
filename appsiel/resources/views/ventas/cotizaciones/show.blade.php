@@ -8,7 +8,7 @@
 	{{ Form::bsBtnCreate( 'vtas_cotizacion/create'.$variables_url ) }}
 	@if($doc_encabezado->estado != 'Anulado')
 		{{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'vtas_cotizacion/id_fila/edit'.$variables_url ),'Editar') }}
-        <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
+        <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
     @endif
 @endsection
 

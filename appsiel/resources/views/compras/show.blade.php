@@ -6,11 +6,11 @@
 
 @section('botones_acciones')
 	@if($doc_encabezado->estado != 'Anulado')
-        <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-close"></i> Anular </button>
+        <button class="btn-gmail" id="btn_anular"><i class="fa fa-close"></i> Anular </button>
 
         @if(!$docs_relacionados[1])
         	<!-- WARNING: Solo se hacen notas para facturas con una sola éntrada de almacén -->
-        	<a class="btn btn-default btn-xs" href="{{ url('compras_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=166&id_transaccion=36') }}"><i class="fa fa-file-o"></i> Nota crédito </a>
+        	<a class="btn-gmail" href="{{ url('compras_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=166&id_transaccion=36') }}"><i class="fa fa-file-text"></i> Nota crédito </a>
         @endif
     @endif
 @endsection

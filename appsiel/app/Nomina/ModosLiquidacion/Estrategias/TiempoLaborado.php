@@ -151,6 +151,7 @@ class TiempoLaborado implements Estrategia
 		$vacaciones_programadas = ProgramacionVacacion::where([
 																['tipo_novedad_tnl','=','vacaciones'],
 																['nom_contrato_id','=',$empleado->id],
+																['fecha_inicial_tnl','>=',$lapso->fecha_inicial],
 																['fecha_inicial_tnl','<=',$lapso->fecha_final]
 															])
 														->get()->first();

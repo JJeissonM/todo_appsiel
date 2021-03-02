@@ -7,7 +7,7 @@
 @section('botones_acciones')
 	{{ Form::bsBtnCreate( 'doc_cruce_cxp/create'.$variables_url ) }}
 	@if($doc_encabezado->estado != 'Anulado')
-        <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-close"></i> Anular </button>
+        <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
     @endif
 @endsection
 

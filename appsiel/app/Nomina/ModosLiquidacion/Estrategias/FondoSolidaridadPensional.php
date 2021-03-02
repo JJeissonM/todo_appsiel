@@ -35,7 +35,6 @@ class FondoSolidaridadPensional implements Estrategia
 		{
 			$es_primera_quincena = false;
 		}
-        
         if ( (int)config('nomina.calcular_valor_proyectado_fondo_solidaridad') == 1 )
 		{
 			$valor_base_neto_documento = $liquidacion['documento_nomina']->get_valor_neto_empleado_segun_grupo_conceptos( $conceptos_de_la_agrupacion, $liquidacion['empleado']->core_tercero_id );
@@ -62,10 +61,7 @@ class FondoSolidaridadPensional implements Estrategia
 			    $valor_liquidado_primera_quincena = $this->get_valor_liquidado_primera_quincena( $lapso_documento, $liquidacion['empleado'], $liquidacion['concepto'] );
 
 			    $valor_liquidacion = $valor_liquidacion_real_mes - $valor_liquidado_primera_quincena;
-			}
-
-			//
-			
+			}		
 		}else{
 			// Si no se proyectó el calculo del concepto, todo se liquida en la segunda quincena (cero en la primera quincena)
 			if ( !$es_primera_quincena )
@@ -95,7 +91,9 @@ class FondoSolidaridadPensional implements Estrategia
 	public function get_valor_neto_mes_completo( $empleado, $lapso_documento, $conceptos_de_la_agrupacion )
 	{
 		$fecha_final = $lapso_documento->fecha_final;
-		$fecha_inicial = str_replace('30', '01', $fecha_final);
+		$dia_final = explode('-', $fecha_final)[2];
+		$fecha_inicial = str_replace($dia_final, '01', $fecha_final);
+
 		$registros_liquidacion = $empleado->get_registros_documentos_nomina_entre_fechas( $fecha_inicial, $fecha_final);
 
 		// Todo lo liquidado en el mes

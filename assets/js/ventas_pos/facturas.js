@@ -39,7 +39,7 @@ $.fn.actualizar_medio_recaudo = function () {
 // 
 $.fn.calcular_total_cambio = function (efectivo_recibido) {
 
-	total_cambio = ($.fn.redondear_a_centena(parseFloat($('#valor_total_factura').val())) - parseFloat(efectivo_recibido)) * -1;
+	total_cambio = ( $.fn.redondear_a_centena( parseFloat( $('#valor_total_factura').val() ) ) - parseFloat(efectivo_recibido) ) * -1;
 
 	// Label
 	$('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format(total_cambio.toFixed(0)));
@@ -103,7 +103,8 @@ $.fn.getCookie = function (cname) {
 };
 
 $.fn.redondear_a_centena = function (numero, aproximacion_superior = false) {
-	if (!redondear_centena) {
+	if ( !redondear_centena )
+	{
 		return numero.toFixed(0);
 	}
 
@@ -456,7 +457,7 @@ function calcular_valor_descuento2() {
 
 $(document).ready(function () {
 
-	$.fn.checkCookie();
+	//$.fn.checkCookie();
 
 	$('#btn_guardar').hide();
 

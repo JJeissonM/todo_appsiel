@@ -20,7 +20,7 @@
   'modo_liquidacion_precio' => 'lista_de_precios',
   'permitir_venta_menor_costo' => '1',
   'permitir_inventarios_negativos' => '1',
-  'encabezado_linea_1' => '@simple.cheff',
+  'encabezado_linea_1' => 'SERVIMOS CON CALIDAD',
   'encabezado_linea_2' => '',
   'encabezado_linea_3' => '',
   'pie_pagina_linea_1' => 'GRACIAS POR SU COMPRA.',

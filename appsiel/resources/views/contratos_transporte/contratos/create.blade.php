@@ -47,12 +47,12 @@
 								<div class="form-group">
 									<label>Contratante</label>
 									<select class="form-control select2" id="contratante" name="contratante_id" onchange="manual()" required>
-										<option value="MANUAL">-- Seleccione una opción --</option>
+										<option value="">-- Seleccione una opción --</option>
 										<option value="MANUAL">INTRODUCCIÓN MANUAL</option>
 										@if($contratantes!=null)
-										@foreach($contratantes as $key=>$value)
-										<option value="{{$key}}">{!!$value!!}</option>
-										@endforeach
+											@foreach($contratantes as $key=>$value)
+												<option value="{{$key}}">{!!$value!!}</option>
+											@endforeach
 										@endif
 									</select>
 									<input type="text" name="contratanteText" id="contratanteText" class="form-control" style="display: none; margin-top: 20px; margin-bottom: 20px;" placeholder="Nombres y apellidos del contratante">
@@ -72,14 +72,14 @@
 								</div>
 								<div class="form-group">
 									<label>Vehículo</label>
-									<select class="form-control select2" name="vehiculo_id" id="vehiculo_id" required onchange="conductores()">
+									<select class="form-control select2" name="vehiculo_id" id="vehiculo_id" required="required" onchange="conductores()">
 										@if($vehiculos!=null)
-										<option value="0">-- Seleccione vehículo --</option>
+										<option value="">-- Seleccione vehículo --</option>
 										@foreach($vehiculos as $key=>$value)
 										<option value="{{$key}}">{!!$value!!}</option>
 										@endforeach
 										@else
-										<option value="0">No hay vehículos con documentos en regla habilitados. Si continúa, el contrato no será guardado.</option>
+										<option value="">No hay vehículos con documentos en regla habilitados. Si continúa, el contrato no será guardado.</option>
 										@endif
 									</select>
 								</div>
@@ -135,7 +135,7 @@
 								<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Información de la Planilla FUEC</h4>
 								<div class="form-group">
 									<label>Conductor 1</label>
-									<select name="conductor_id[]" id="conductor1" class="form-control select2">
+									<select name="conductor_id[]" id="conductor1" required="required" class="form-control select2">
 										<option value="">-- Seleccione opción --</option>
 									</select>
 								</div>
@@ -203,18 +203,55 @@
 		$('#' + tabla + ' tr:last').after(html);
 	}
 
-	function manual() {
-		if ($("#contratante").val() == 'MANUAL') {
-			$("#contratanteText").fadeIn();
-			$("#contratanteIdentificacion").fadeIn();
-			$("#contratanteDireccion").fadeIn();
-			$("#contratanteTelefono").fadeIn();
-		} else {
-			$("#contratanteText").fadeOut();
-			$("#contratanteIdentificacion").fadeOut();
-			$("#contratanteDireccion").fadeOut();
-			$("#contratanteTelefono").fadeOut();
+	function manual()
+	{
+		if ($("#contratante").val() == '')
+		{
+			remove_requeridos();
+			ocultar_campos_manuales();
+			return false;
 		}
+
+		if ($("#contratante").val() == 'MANUAL')
+		{
+			mostrar_campos_manuales();
+			set_requeridos();
+		} else {
+			remove_requeridos();
+			ocultar_campos_manuales();
+		}
+	}
+
+	function mostrar_campos_manuales()
+	{
+		$("#contratanteText").fadeIn();
+		$("#contratanteIdentificacion").fadeIn();
+		$("#contratanteDireccion").fadeIn();
+		$("#contratanteTelefono").fadeIn();
+	}
+
+	function ocultar_campos_manuales()
+	{
+		$("#contratanteText").fadeOut();
+		$("#contratanteIdentificacion").fadeOut();
+		$("#contratanteDireccion").fadeOut();
+		$("#contratanteTelefono").fadeOut();
+	}
+
+	function set_requeridos()
+	{
+		$("#contratanteText").prop('required',true);
+		$("#contratanteIdentificacion").prop('required',true);
+		$("#contratanteDireccion").prop('required',true);
+		$("#contratanteTelefono").prop('required',true);
+	}
+
+	function remove_requeridos()
+	{
+		$("#contratanteText").prop('required',false);
+		$("#contratanteIdentificacion").prop('required',false);
+		$("#contratanteDireccion").prop('required',false);
+		$("#contratanteTelefono").prop('required',false);
 	}
 
 

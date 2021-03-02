@@ -42,7 +42,7 @@
 								<th>Vigencia</th>
 								<th>Contratante</th>
 								<th>Vehículo</th>
-								<th>Planillas FUEC</th>
+								<th width="150px">Planillas FUEC</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -60,13 +60,15 @@
 								<td>{{"INTERNO: ".$c['vehiculo']->int." - PLACA: ".$c['vehiculo']->placa." - MODELO: ".$c['vehiculo']->modelo." - MARCA: ".$c['vehiculo']->marca." - CLASE: ".$c['vehiculo']->clase}}</td>
 								<td>
 									@if($c['contrato']->estado=='ACTIVO')
-									@if($c['bloqueado']=='NO')
-									<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn-gmail" title="Continuar"><i class="fa fa-arrow-right"></i></a>
+										@if($c['bloqueado']=='NO')
+											<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn-gmail" title="Consultar"><i class="fa fa-eye"></i></a>
+
+											<a target="_blank" href="{{route('cte_contratos.imprimir',$c['contrato']->id)}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
+										@else
+										-- Usted no puede generar planillas --
+										@endif
 									@else
-									-- Usted no puede generar planillas --
-									@endif
-									@else
-									-- ANULADO --
+										-- ANULADO --
 									@endif
 								</td>
 							</tr>
