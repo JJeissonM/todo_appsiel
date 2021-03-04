@@ -923,7 +923,7 @@ class ReporteController extends Controller
         $font_size = 10;
         $vista = View::make( 'layouts.pdf3',compact('view','font_size') )->render();
 
-        $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
+        $tam_hoja = 'folio';//array(0, 0, 612.00, 390.00);//'folio';
         $orientacion='portrait';
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);

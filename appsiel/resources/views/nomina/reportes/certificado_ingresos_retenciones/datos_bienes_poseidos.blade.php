@@ -15,7 +15,7 @@
 	<tbody>
 		@for( $i=1; $i < 7; $i++ )
 			<tr>
-				<td>
+				<td class="celda_numero_indicador">
 					<b>{{ $i }}</b>
 				</td>
 				<td colspan="2">
@@ -33,11 +33,11 @@
 			<td style="background-color: #396395; color: white;" width="80%">
 				Deudas vigentes a 31 de Diciembre de 2020
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				74
 			</td>
 			<td>
-				${{ number_format(0,0,',','.') }}
+				&nbsp;
 			</td>
 		</tr>
 	</tbody>

@@ -14,7 +14,7 @@
 			<td>
 				Aportes obligatorios por salud a cargo del trabajador
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				49
 			</td>
 			<td class="celda_valor">
@@ -25,7 +25,7 @@
 			<td>
 				Aportes obligatorios a fondos de pensiones y solidaridad pensional a cargo del trabajador
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				50
 			</td>
 			<td class="celda_valor">
@@ -36,7 +36,7 @@
 			<td>
 				Cotizaciones voluntarias al régimen de ahorro individual con solidaridad - RAIS
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				51
 			</td>
 			<td class="celda_valor">
@@ -47,7 +47,7 @@
 			<td>
 				Aportes voluntarios al impuesto solidario por COVID 19
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				52
 			</td>
 			<td class="celda_valor">
@@ -58,7 +58,7 @@
 			<td>
 				Aportes voluntarios a fondos de pensiones
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				53
 			</td>
 			<td class="celda_valor">
@@ -69,7 +69,7 @@
 			<td>
 				Aportes a cuentas AFC
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				54
 			</td>
 			<td class="celda_valor">
@@ -80,7 +80,7 @@
 			<td style="background-color: #396395; color: white;">
 				Valor de la retención en la fuente por ingresos laborales y de pensiones
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				55
 			</td>
 			<td class="celda_valor">
@@ -91,7 +91,7 @@
 			<td>
 				Retenciones por aportes obligatorios al impuesto solidario por COVID 19
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				56
 			</td>
 			<td class="celda_valor">

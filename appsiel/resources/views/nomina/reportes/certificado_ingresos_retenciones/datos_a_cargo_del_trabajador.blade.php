@@ -22,13 +22,13 @@
 			<td>
 				Arrendamientos
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				57
 			</td>
 			<td class="celda_valor">
 				${{ number_format(0,0,',','.') }}
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				64
 			</td>
 			<td class="celda_valor">
@@ -39,13 +39,13 @@
 			<td>
 				Honorarios, comisiones y servicios
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				58
 			</td>
 			<td class="celda_valor">
 				${{ number_format(0,0,',','.') }}
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				65
 			</td>
 			<td class="celda_valor">
@@ -56,13 +56,13 @@
 			<td>
 				Intereses y rendimientos financieros
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				59
 			</td>
 			<td class="celda_valor">
 				${{ number_format(0,0,',','.') }}
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				66
 			</td>
 			<td class="celda_valor">
@@ -73,13 +73,13 @@
 			<td>
 				Enajenación de activos fijos
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				60
 			</td>
 			<td class="celda_valor">
 				${{ number_format(0,0,',','.') }}
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				67
 			</td>
 			<td class="celda_valor">
@@ -90,13 +90,13 @@
 			<td>
 				Loterías, rifas, apuestas y similares
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				61
 			</td>
 			<td class="celda_valor">
 				${{ number_format(0,0,',','.') }}
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				57
 			</td>
 			<td class="celda_valor">
@@ -107,13 +107,13 @@
 			<td>
 				Otros
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				62
 			</td>
 			<td class="celda_valor">
 				${{ number_format(0,0,',','.') }}
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				69
 			</td>
 			<td class="celda_valor">
@@ -124,13 +124,13 @@
 			<td>
 				<b>Totales:</b> (<b>Valor recibido:</b> Sume 57 a 62), (<b>Valor retenido:</b> Sume 64 a 69)
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				63
 			</td>
 			<td class="celda_valor">
 				${{ number_format(0,0,',','.') }}
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				70
 			</td>
 			<td class="celda_valor">
@@ -141,11 +141,11 @@
 			<td colspan="3">
 				<b>Total retenciones año gravable 2020</b> (Sume 55 + 56 + 70)
 			</td>
-			<td style="width: 40px;">
+			<td class="celda_numero_indicador">
 				71
 			</td>
 			<td class="celda_valor">
-				${{ number_format(0,0,',','.') }}
+				${{ number_format( $retefuente_descontada, 0, ',', '.' ) }}
 			</td>
 		</tr>
 	</tbody>

@@ -11,6 +11,11 @@
 	.celda_valor{
 		text-align: right;
 	}
+
+	.celda_numero_indicador{
+		width: 30px;
+		text-align: center;
+	}
 </style>
 
 <br>
@@ -46,7 +51,7 @@
 
 @include('nomina.reportes.certificado_ingresos_retenciones.datos_identificacion_dependiente_economico')
 
-<table class="table table-bordered" style="font-size: 9px;">
+<table class="table table-bordered" style="font-size: 10px;">
 	<tr>
 		<td width="60%">
 			Certifico que durante el año gravable 2020:
@@ -71,7 +76,10 @@
 	</tr>
 </table>
 
-<p>
+<p style="font-size: 10px;">
 	<b>NOTA:</b> este certificado sustituye para todos los efectos legales la declaración de Renta y Complementario para el trabajador o pensionado que lo firme.
 Para aquellos trabajadores independientes contribuyentes del impuesto unificado deberán presentar la declaración anual consolidada del Régimen Simple de Tributación (SIMPLE).
 </p>
+<!-- 
+<iframe src="{ {asset('assets/nomina/anexo_certificado_ingresos_retencion_fmto_220_2020.pdf')}}" style="width: 100%;"></iframe>
+-->
