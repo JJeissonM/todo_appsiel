@@ -34,14 +34,15 @@ class PlanillaGenerada extends Model
 
         $dia_fin = '30';
         // Mes de febrero
-        if ($array_fecha[1] == '02') {
+        if ($array_fecha[1] == '02')
+        {
             $dia_fin = '28';
         }
 
         return (object)[
-            'fecha_inicial' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_inicio,
-            'fecha_final' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_fin
-        ];
+                            'fecha_inicial' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_inicio,
+                            'fecha_final' => $array_fecha[0] . '-' . $array_fecha[1] . '-' . $dia_fin
+                        ];
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -175,13 +176,13 @@ class PlanillaGenerada extends Model
 
             if ( !is_null( $registro_documentos_nomina->novedad_tnl_id ) )
             {
-                // Solo se permite una linea de novedad al mes
-                $novedad_empleado = EmpleadoPlanilla::where([
-                                                    [ 'planilla_generada_id', '=', $planilla_generada->id ],
-                                                    [ 'nom_contrato_id', '=', $contrato->id ],
-                                                    [ 'novedad_tnl_id', '=', $registro_documentos_nomina->novedad_tnl_id ]
-                                                ])
-                                        ->get()->first();
+                // Solo se permite una linea de novedad al mes; es decir un concepto de TNL puede estar en varios documentos de nómina del mes, pero solo se creará una línea por ese concepto y se acumularán los tiempo de los distintos documentos 
+                $novedad_empleado = EmpleadoPlanilla::where( [
+                                                                [ 'planilla_generada_id', '=', $planilla_generada->id ],
+                                                                [ 'nom_contrato_id', '=', $contrato->id ],
+                                                                [ 'novedad_tnl_id', '=', $registro_documentos_nomina->novedad_tnl_id ]
+                                                            ] )
+                                                    ->get()->first();
 
                 if ( is_null( $novedad_empleado ) ) // Si aún no se ha creado la linea para esa novedad
                 {

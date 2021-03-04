@@ -829,6 +829,16 @@ class PlanillaIntegradaController extends Controller
                     [ 'empleado_planilla_id' => $this->empleado_planilla_id ] +
                     [ 'estado' => 'Activo' ];/**/
 
+        if( $this->cantidad_dias_laborados <= 0 )
+        {
+            EmpleadoPlanilla::where( [
+                                        ['planilla_generada_id', '=', $linea_empleado_planilla->planilla_generada_id],
+                                        ['nom_contrato_id', '=', $linea_empleado_planilla->nom_contrato_id],
+                                        ['orden', '=', $linea_empleado_planilla->orden]
+                                    ] )->delete();
+            return 0;
+        }
+
         PilaNovedades::create($datos);
 
         $this->almacenar_datos_salud( $planilla, $empleado );
@@ -849,11 +859,12 @@ class PlanillaIntegradaController extends Controller
     // PARA LÍNEAS ADICIONALES
     public function cambiar_ibc_salud( $novedad_tnl, $linea_empleado_planilla )
     {
-        // Se excluyen Vacaciones días NO HABILES (cpto 84) (se tratan como salario - linea_principal)
+        // Se excluyen Vacaciones días NO HABILES (cpto 84) (se tratan como salario: linea_principal)
         $registros_asociados_novedad = NomDocRegistro::where([
                                                                 ['novedad_tnl_id','=',$novedad_tnl->id],
                                                                 ['nom_concepto_id','<>',84]
                                                             ])
+                                                    ->whereBetween( 'fecha', [ $this->fecha_inicial, $this->fecha_final ] )
                                                     ->get();
 
         $this->cantidad_dias_laborados = round( $registros_asociados_novedad->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
