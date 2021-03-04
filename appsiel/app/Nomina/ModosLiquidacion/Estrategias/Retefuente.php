@@ -10,7 +10,7 @@ use App\Nomina\NomConcepto;
 
 class Retefuente implements Estrategia
 {
-	protected $tabla_resumen = [
+	public $tabla_resumen = [
 									'salario_basico' => 0,
 									'otros_devengos' => 0,
 									'prestaciones_sociales' => 0,

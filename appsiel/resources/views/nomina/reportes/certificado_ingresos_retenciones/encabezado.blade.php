@@ -1,14 +1,14 @@
 <table class="table table-bordered">
 	<tr>
-		<td width="10%">
-			<img src="{{ asset('assets/images/logo_dian.jpg') }}" width="150px">
+		<td style="width: 110px; text-align: center;">
+			<img src="{{ asset('assets/images/logo_dian.jpg') }}" style="display: inline; width: 100%; padding: 5px;">
 		</td>
 		<td>
-			<h5 style="width: 100%;text-align: center; font-size: 1.1em;"> Certificado de Ingresos y Retenciones por Rentas de Trabajo y de Pensiones
-Año gravable 2020 </h5>
+			<div style="width: 100%;text-align: center; font-size: 1.4em;"> Certificado de Ingresos y Retenciones por Rentas de Trabajo y de Pensiones
+Año gravable 2020 </div>
 		</td>
-		<td width="10%">
-			<div style="background-color: #396395; color: white; border-radius: 4px; width: 100%; font-size: 2em; text-align: center;">
+		<td style="width: 100px;">
+			<div style="background-color: #396395; color: white; border-radius: 4px; width: 100%; font-family: Segoe UI; font-size: 2.5em; text-align: center;">
 				220
 			</div>
 		</td>

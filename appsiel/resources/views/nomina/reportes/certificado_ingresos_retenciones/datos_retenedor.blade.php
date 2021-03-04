@@ -2,7 +2,7 @@
 	<tr>
 		<td style="width: 10px;" rowspan="2">
 			<div style="vertical-align: center;">
-				<span style="writing-mode: vertical-lr;transform: rotate(270deg);"> Retenedor </span>
+				<span style="writing-mode: vertical-rl;"> Retenedor </span>
 			</div>
 		</td>
 		<td style="width: 230px;">

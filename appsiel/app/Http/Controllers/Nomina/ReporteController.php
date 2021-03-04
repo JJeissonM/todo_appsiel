@@ -30,6 +30,8 @@ use App\Nomina\ModosLiquidacion\PrestacionesSociales\Vacaciones;
 use App\Nomina\ModosLiquidacion\PrestacionesSociales\PrimaServicios;
 use App\Nomina\ModosLiquidacion\PrestacionesSociales\Cesantias;
 
+use App\Nomina\ModosLiquidacion\Estrategias\Retefuente;
+
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomConcepto;
 use App\Nomina\GrupoEmpleado;
@@ -890,9 +892,27 @@ class ReporteController extends Controller
 
         $empleado =  NomContrato::find( $nom_contrato_id );
 
+        $retefuente = new Retefuente();
+
+        $retefuente->get_valor_base_depurada( $fecha_inicio_periodo, $fecha_fin_periodo, $empleado );
+
+        $concepto_retencion_id = 0;
+        $concepto_retencion = NomConcepto::where('modo_liquidacion_id',11)->get()->first(); // 11: ReteFuente
+        if ( !is_null($concepto_retencion) )
+        {
+            $concepto_retencion_id = $concepto_retencion->id;
+        }
+
+        $retefuente_descontada = NomDocRegistro::where( [
+                                                            ['nom_concepto_id', '=', $concepto_retencion_id],
+                                                            ['nom_contrato_id', '=', $empleado->id]
+                                                    ] )
+                                                ->whereBetween( 'fecha', [$fecha_inicio_periodo,$fecha_fin_periodo] )
+                                                ->sum( 'valor_deduccion' );
+
         $ciudad = Ciudad::find( $lugar_donde_se_practico );
 
-        $vista = View::make( 'nomina.reportes.certificado_ingresos_retenciones.formato_1', compact('empresa','empleado','fecha_inicio_periodo','fecha_fin_periodo','fecha_expedicion', 'ciudad') )->render();
+        $vista = View::make( 'nomina.reportes.certificado_ingresos_retenciones.formato_1', compact('empresa','empleado','fecha_inicio_periodo','fecha_fin_periodo','fecha_expedicion', 'ciudad','retefuente','retefuente_descontada') )->render();
                                                     
         return $vista;
     }
@@ -900,11 +920,11 @@ class ReporteController extends Controller
     public function pdf_certificado_ingresos_y_retenciones()
     {
         $view = $this->tabla_certificado_ingresos_y_retenciones(Input::get('fecha_inicio_periodo'), Input::get('fecha_fin_periodo'), Input::get('fecha_expedicion'), Input::get('nom_contrato_id'), Input::get('lugar_donde_se_practico') );
-        $font_size = 12;
+        $font_size = 10;
         $vista = View::make( 'layouts.pdf3',compact('view','font_size') )->render();
 
         $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
-        $orientacion='landscape';
+        $orientacion='portrait';
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
 
