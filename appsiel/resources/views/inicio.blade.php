@@ -46,29 +46,6 @@
 		/*{ {asset('assets/images/fondo_inicio.jpg')}}*/
 	}
 
-	#paula {
-		right: 10px;
-		bottom: 70px;
-		position: fixed;
-		display: none;
-	}
-
-	#btnPaula {
-		right: 20px;
-		bottom: 15px;
-		position: fixed;
-		z-index: 1000;
-	}
-
-	.paula {
-		background-color: #fff;
-		width: 300px;
-		height: auto;
-		text-align: center;
-		-webkit-box-shadow: -10px 10px 10px 0px rgba(0,0,0,0.41);
-		-moz-box-shadow: -10px 10px 10px 0px rgba(0,0,0,0.41);
-		box-shadow: -10px 10px 10px 0px rgba(0,0,0,0.41);
-	}
 </style>
 @endsection
 
@@ -126,20 +103,6 @@
 			@endforeach
 		</div>
 	</div>
-	<div id="paula" class="paula">
-		<div class="col-md-12">
-			<img width="220px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
-		</div>
-		<div class="col-md-12" style="margin-bottom: 20px; margin-top: 20px;">
-			<a class="btn btn-block btn-default"><i class="fa fa-arrow-right"></i> Tutoriales en Video</a>
-		</div>
-	</div>
-	<div id="btnPaula">
-		<button onclick="paula()" style="border-radius: 50%;" class="btn btn-danger">¿Ayuda?</button>
-	</div>
-	<!--<div id="paula">
-			<img width="230px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
-		</div>-->
 </div>
 <br /><br />
 @endsection
@@ -156,20 +119,5 @@
 		});
 	});
 
-	var verPaula = true;
-
-	function paula(){
-		if(verPaula){
-			//ver paula
-			$("#btnPaula").html("<button class='btn btn-danger' style='border-radius: 50%;' onclick='paula()'>Ocultar Paula</button>");
-			$("#paula").fadeIn();
-			verPaula = false;
-		}else{
-			//ocultar paula
-			$("#btnPaula").html("<button class='btn btn-danger' style='border-radius: 50%;' onclick='paula()'>¿Ayuda?</button>");
-			$("#paula").fadeOut();
-			verPaula = true;
-		}	
-	} 
 </script>
 @endsection
