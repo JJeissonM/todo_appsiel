@@ -142,8 +142,8 @@ class NavegacionController extends Controller
 
         if (is_null($logo)) {
             $logo['imagen_logo'] = $nav->logo;
-            $logo['altura_logo'] = 100;
-            $logo['anchura_logo'] = 100;
+            $logo['altura_logo'] = 50;
+            $logo['anchura_logo'] = 80;
         }
 
         if ($nav != null) {
@@ -180,8 +180,7 @@ class NavegacionController extends Controller
                             "anchura_logo":"' . $request->all()['anchura_logo'] . '" 
                           }';
 
-            $nav->fixed = $request->fixed == 'on' ? 1 : 0;
-
+            $nav->fixed = $request->fixed == 'on' ? 1 : 0;            
             $flag = $nav->save();
 
             if ($flag) {
@@ -192,6 +191,7 @@ class NavegacionController extends Controller
         }
     }
 
+    
     public function storeNav(Request $request)
     {
 
@@ -212,7 +212,7 @@ class NavegacionController extends Controller
                 $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
 
                 if ($flag !== false) {
-                    $nav->fill(['icono' => $filename]);
+                    $logo['imagen_logo'] = $filename;
                 } else {
                     $message = 'Error inesperado al intentar guardar el logo, por favor intente nuevamente más tarde';
                     return redirect()->back()->withInput($request->input())
@@ -220,8 +220,23 @@ class NavegacionController extends Controller
                 }
             }
 
-            $nav->fill($request->all());
+            // PARÁMETROS LOGO
+            $nav->background = '{
+                "background_0":"' . $request->background[0] . '",
+                "background_1":"' . $request->background[1] . '" 
+              }';
+
+            // PARÁMETROS LOGO
+            $nav->logo = '{
+                "imagen_logo":"' . $logo['imagen_logo'] . '",
+                "altura_logo":"' . $request->all()['altura_logo'] . '",
+                "anchura_logo":"' . $request->all()['anchura_logo'] . '" 
+              }';
+                
+
+            #$nav->fill($request->all());
             $nav->fixed = $request->fixed == 'on' ? 1 : 0;
+            #
             $flag = $nav->save();
 
             if ($flag) {

@@ -52,7 +52,7 @@
             @foreach($Price->priceitems as $item)
             <!-- Price member -->
             <div class="col-xs-12 col-sm-6 col-md-4 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
-                <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
+                <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px var(--color-terciario); -moz-box-shadow: 1px 1px 100px var(--color-terciario); box-shadow: 1px 1px 100px var(--color-terciario);">
                     <div style="background-color: {{$item->background_color}}; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><img style="width: 100%;" src="{{asset($item->imagen_cabecera)}}"></div>
                     <div style="background-color: {{$item->background_color}}; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
                         <h4 class="media-heading price-font" style="margin-top: 0px; color: {{$item->text_color}} !important;">{{$item->precio}}</h4>

@@ -19,8 +19,8 @@
 
 </style>
 
-<div class="container">
-    <h1 class="my-2 text-center">Consulta de guías académicas</h1>
+<div class="container" style="min-height: 500px">
+    <h1 class="my-2 text-center mt-5">Consulta de guías académicas</h1>
     <hr>
 
     <form class="form-inline" action="/action_page.php">
