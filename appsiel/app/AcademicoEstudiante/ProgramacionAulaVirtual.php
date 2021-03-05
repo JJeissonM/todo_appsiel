@@ -10,6 +10,8 @@ use Auth;
 use App\Calificaciones\CursoTieneAsignatura;
 
 use App\AcademicoDocente\AsignacionProfesor;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class ProgramacionAulaVirtual extends Model
 {
@@ -20,7 +22,7 @@ class ProgramacionAulaVirtual extends Model
     */
     protected $fillable = ['curso_id', 'descripcion', 'tipo_evento', 'dia_semana', 'hora_inicio', 'fecha', 'asignatura_id', 'guia_academica_id', 'actividad_escolar_id', 'enlace_reunion_virtual', 'creado_por', 'modificado_por', 'estado'];
     
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Curso', 'Tipo de evento', 'Descripción', 'Fecha', 'Día de la semana', 'Hora inicio', 'Asignatura', 'Creado por', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tipo de evento','Curso', 'Asignatura', 'Día de la semana', 'Hora inicio', 'Descripción', 'Fecha', 'Creado por', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
@@ -52,61 +54,112 @@ class ProgramacionAulaVirtual extends Model
 
         $user = Auth::user();
 
-        if( $user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector') || $user->hasRole('Administrador') )
+        if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
         {
-            $collection = ProgramacionAulaVirtual::leftJoin('sga_cursos','sga_cursos.id','=','sga_programacion_aula_virtual.curso_id')
-                                            ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_programacion_aula_virtual.asignatura_id')
-                                            ->select(
-                                                    'sga_cursos.descripcion AS campo1',
-                                                    'sga_programacion_aula_virtual.tipo_evento AS campo2',
-                                                    'sga_programacion_aula_virtual.descripcion AS campo3',
-                                                    'sga_programacion_aula_virtual.fecha AS campo4',
-                                                    'sga_programacion_aula_virtual.dia_semana AS campo5',
-                                                    'sga_programacion_aula_virtual.hora_inicio AS campo6',
-                                                    'sga_asignaturas.descripcion AS campo7',
-                                                    'sga_programacion_aula_virtual.creado_por AS campo8',
-                                                    'sga_programacion_aula_virtual.estado AS campo9',
-                                                    'sga_programacion_aula_virtual.id AS campo10')
-                                            ->paginate($nro_registros);
-        } else {
-
             $carga_academica_profesor = AsignacionProfesor::get_asignaturas_x_curso( $user->id );
+
+            $curso_id = 0;
+            if ( !is_null( $carga_academica_profesor->first() ) )
+            {
+                $curso_id =  $carga_academica_profesor->first()->curso_id;
+            }
 
             $vec_asignaturas = $carga_academica_profesor->pluck('id_asignatura')->toArray();
 
             $collection = ProgramacionAulaVirtual::leftJoin('sga_cursos','sga_cursos.id','=','sga_programacion_aula_virtual.curso_id')
                                             ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_programacion_aula_virtual.asignatura_id')
+                                            ->where('sga_programacion_aula_virtual.curso_id',$curso_id)
                                             ->whereIn('sga_programacion_aula_virtual.asignatura_id',$vec_asignaturas)
                                             ->select(
-                                                    'sga_cursos.descripcion AS campo1',
-                                                    'sga_programacion_aula_virtual.tipo_evento AS campo2',
-                                                    'sga_programacion_aula_virtual.descripcion AS campo3',
-                                                    'sga_programacion_aula_virtual.fecha AS campo4',
-                                                    'sga_programacion_aula_virtual.dia_semana AS campo5',
-                                                    'sga_programacion_aula_virtual.hora_inicio AS campo6',
-                                                    'sga_asignaturas.descripcion AS campo7',
+                                                    'sga_programacion_aula_virtual.tipo_evento AS campo1',
+                                                    'sga_cursos.descripcion AS campo2',
+                                                    'sga_asignaturas.descripcion AS campo3',
+                                                    'sga_programacion_aula_virtual.dia_semana AS campo4',
+                                                    'sga_programacion_aula_virtual.hora_inicio AS campo5',
+                                                    'sga_programacion_aula_virtual.descripcion AS campo6',
+                                                    'sga_programacion_aula_virtual.fecha AS campo7',
                                                     'sga_programacion_aula_virtual.creado_por AS campo8',
                                                     'sga_programacion_aula_virtual.estado AS campo9',
                                                     'sga_programacion_aula_virtual.id AS campo10')
-                                            ->paginate($nro_registros);
+                                            ->get();
+        } else {
+            $collection = ProgramacionAulaVirtual::leftJoin('sga_cursos','sga_cursos.id','=','sga_programacion_aula_virtual.curso_id')
+                                            ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_programacion_aula_virtual.asignatura_id')
+                                            ->select(
+                                                    'sga_programacion_aula_virtual.tipo_evento AS campo1',
+                                                    'sga_cursos.descripcion AS campo2',
+                                                    'sga_asignaturas.descripcion AS campo3',
+                                                    'sga_programacion_aula_virtual.dia_semana AS campo4',
+                                                    'sga_programacion_aula_virtual.hora_inicio AS campo5',
+                                                    'sga_programacion_aula_virtual.descripcion AS campo6',
+                                                    'sga_programacion_aula_virtual.fecha AS campo7',
+                                                    'sga_programacion_aula_virtual.creado_por AS campo8',
+                                                    'sga_programacion_aula_virtual.estado AS campo9',
+                                                    'sga_programacion_aula_virtual.id AS campo10')
+                                            ->get();
+        }
+        
+        //hacemos el filtro de $search si $search tiene contenido
+        $nuevaColeccion = [];
+        if (count($collection) > 0) {
+            if (strlen($search) > 0) {
+                $nuevaColeccion = $collection->filter(function ($c) use ($search) {
+                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                        return $c;
+                    }
+                });
+            } else {
+                $nuevaColeccion = $collection;
+            }
         }
 
-            
+        $request = request(); //obtenemos el Request para obtener la url y la query builder
 
-        /* $collection->items()[0]->forget('asignatura_id');
-        dd( $collection->items() );
-        if (count($collection) > 0)
+        if ( empty($nuevaColeccion) )
         {
-            foreach ($collection as $c)
-            {
-                $c->campo7 = $c->asignatura->descripcion;
-            }
-
-            $collection->forget('curso_id');
-            $collection->forget('asignatura_id');
-        }*/
+            return $array = new LengthAwarePaginator([], 1, 1, 1, [
+                                                                    'path' => $request->url(),
+                                                                    'query' => $request->query(),
+                                                                ]);
+        }
         
-        return $collection;
+        //obtenemos el numero de la página actual, por defecto 1
+        $page = 1;
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+        $total = count($nuevaColeccion); //Total para contar los registros mostrados
+        $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
+        $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
+        $array = new LengthAwarePaginator($array, $total, $nro_registros, $page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]); //finalmente se pagina y organiza la coleccion a devolver con todos los datos
+
+        return $array;
+    }
+
+    /**
+     * SQL Like operator in PHP.
+     * Returns TRUE if match else FALSE.
+     * @param array $valores_campos_seleccionados de campos donde se busca
+     * @param string $searchTerm termino de busqueda
+     * @return bool
+     */
+    public static function likePhp($valores_campos_seleccionados, $searchTerm)
+    {
+        $encontrado = false;
+        $searchTerm = str_slug($searchTerm); // Para eliminar acentos
+        foreach ($valores_campos_seleccionados as $valor_campo)
+        {
+            $str = str_slug($valor_campo);
+            $pos = strpos($str, $searchTerm);
+            if ($pos !== false)
+            {
+                $encontrado = true;
+            }
+        }
+        return $encontrado;
     }
 
     public static function sqlString($search)

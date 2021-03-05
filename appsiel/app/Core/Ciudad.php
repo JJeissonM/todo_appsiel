@@ -15,8 +15,7 @@ class Ciudad extends Model
     public $encabezado_tabla = ['Ciudad','Departamento/Estado','Pais','Acción'];
 
     public static function consultar_registros()
-    {
-    	
+    {    	
     	return Ciudad::leftJoin('core_departamentos','core_departamentos.id','=','core_ciudades.core_departamento_id')
                             ->leftJoin('core_paises','core_paises.id','=','core_departamentos.codigo_pais')
                             ->select(

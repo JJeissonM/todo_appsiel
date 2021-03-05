@@ -19,6 +19,8 @@ use App\Matriculas\Curso;
 use App\Calificaciones\Asignatura;
 
 use App\Matriculas\PeriodoLectivo;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class PlanClaseEncabezado extends Model
 {
@@ -42,25 +44,87 @@ class PlanClaseEncabezado extends Model
             $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);
         }
 
-        return PlanClaseEncabezado::leftJoin('sga_plan_clases_struc_plantillas', 'sga_plan_clases_struc_plantillas.id', '=', 'sga_plan_clases_encabezados.plantilla_plan_clases_id')
-            ->leftJoin('sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')
-            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
-            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
-            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
-            ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
-            ->where( $array_wheres )
-            ->select(
-                'sga_plan_clases_struc_plantillas.descripcion AS campo1',
-                'sga_plan_clases_encabezados.fecha AS campo2',
-                'sga_semanas_calendario.descripcion AS campo3',
-                'sga_periodos.descripcion AS campo4',
-                'sga_cursos.descripcion AS campo5',
-                'sga_asignaturas.descripcion AS campo6',
-                'users.name AS campo7',
-                'sga_plan_clases_encabezados.estado AS campo8',
-                'sga_plan_clases_encabezados.id AS campo9'
-            )->orderBy('sga_plan_clases_encabezados.created_at', 'DESC')
-            ->paginate($nro_registros);
+        $collection = PlanClaseEncabezado::leftJoin('sga_plan_clases_struc_plantillas', 'sga_plan_clases_struc_plantillas.id', '=', 'sga_plan_clases_encabezados.plantilla_plan_clases_id')
+                                ->leftJoin('sga_semanas_calendario', 'sga_semanas_calendario.id', '=', 'sga_plan_clases_encabezados.semana_calendario_id')
+                                ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
+                                ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_plan_clases_encabezados.curso_id')
+                                ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_plan_clases_encabezados.asignatura_id')
+                                ->leftJoin('users', 'users.id', '=', 'sga_plan_clases_encabezados.user_id')
+                                ->where( $array_wheres )
+                                ->select(
+                                    'sga_plan_clases_struc_plantillas.descripcion AS campo1',
+                                    'sga_plan_clases_encabezados.fecha AS campo2',
+                                    'sga_semanas_calendario.descripcion AS campo3',
+                                    'sga_periodos.descripcion AS campo4',
+                                    'sga_cursos.descripcion AS campo5',
+                                    'sga_asignaturas.descripcion AS campo6',
+                                    'users.name AS campo7',
+                                    'sga_plan_clases_encabezados.estado AS campo8',
+                                    'sga_plan_clases_encabezados.id AS campo9'
+                                )->orderBy('sga_plan_clases_encabezados.created_at', 'DESC')
+                                ->get();
+
+        //hacemos el filtro de $search si $search tiene contenido
+        $nuevaColeccion = [];
+        if (count($collection) > 0) {
+            if (strlen($search) > 0) {
+                $nuevaColeccion = $collection->filter(function ($c) use ($search) {
+                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                        return $c;
+                    }
+                });
+            } else {
+                $nuevaColeccion = $collection;
+            }
+        }
+
+        $request = request(); //obtenemos el Request para obtener la url y la query builder
+
+        if ( empty($nuevaColeccion) )
+        {
+            return $array = new LengthAwarePaginator([], 1, 1, 1, [
+                                                                    'path' => $request->url(),
+                                                                    'query' => $request->query(),
+                                                                ]);
+        }
+        
+        //obtenemos el numero de la página actual, por defecto 1
+        $page = 1;
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+        $total = count($nuevaColeccion); //Total para contar los registros mostrados
+        $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
+        $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
+        $array = new LengthAwarePaginator($array, $total, $nro_registros, $page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]); //finalmente se pagina y organiza la coleccion a devolver con todos los datos
+
+        return $array;
+    }
+
+    /**
+     * SQL Like operator in PHP.
+     * Returns TRUE if match else FALSE.
+     * @param array $valores_campos_seleccionados de campos donde se busca
+     * @param string $searchTerm termino de busqueda
+     * @return bool
+     */
+    public static function likePhp($valores_campos_seleccionados, $searchTerm)
+    {
+        $encontrado = false;
+        $searchTerm = str_slug($searchTerm); // Para eliminar acentos
+        foreach ($valores_campos_seleccionados as $valor_campo)
+        {
+            $str = str_slug($valor_campo);
+            $pos = strpos($str, $searchTerm);
+            if ($pos !== false)
+            {
+                $encontrado = true;
+            }
+        }
+        return $encontrado;
     }
 
     public static function sqlString($search)

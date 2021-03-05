@@ -86,12 +86,12 @@
 							<!-- PLANES DE CLASES Y GUÍAS ACADÉMICAS -->
 							<div class="col-md-4">
 								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_planes" aria-expanded="false" aria-controls="collapse_planes">
-									PLAN DE CLASE Y GUÍAS ACADÉMICAS <i class="fa fa-arrow-down"></i></a>
+									PLANES DE CLASES Y GUÍAS ACADÉMICAS <i class="fa fa-arrow-down"></i></a>
 								<div class="collapse" id="collapse_planes">
 									<div class="well">
 										<ul style="list-style: none;">
 											<li><a style="cursor: pointer;" onclick="planClaseCrear()" title="Ingresar Plan de Clases"><i class="fa fa-plus"></i> Ingresar Plan de Clases</a></li>
-											<li><a href="{{url('web')}}?id={{Input::get('id')}}&id_modelo={{$modelo_plan_clases_id}}" title="Consultar Plan de clases"><i class="fa fa-search"></i> Consultar Plan de clases</a></li>
+											<li><a href="{{url('web')}}?id={{Input::get('id')}}&id_modelo={{$modelo_plan_clases_id}}" title="Consultar Plan de clases"><i class="fa fa-search"></i> Consultar Planes de clases</a></li>
 											<li><a style="cursor: pointer;" onclick="guiaCrear()" title="Ingresar Guía Académica"><i class="fa fa-book"></i> Ingresar Guía Académica</a></li>
 											<li><a href="{{url('web')}}?id={{Input::get('id')}}&id_modelo={{$modelo_guia_academica_id}}" title="Consultar Guía Académica"><i class="fa fa-search"></i> Consultar Guía Académica</a></li>
 										</ul>

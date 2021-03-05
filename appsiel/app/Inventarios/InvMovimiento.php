@@ -319,7 +319,6 @@ class InvMovimiento extends Model
     }
 
 
-
     public static function get_movimiento_transacciones_ventas( $fecha_inicial, $fecha_final )
     {
         /*              MOTIVOS DE INVENTARIOS

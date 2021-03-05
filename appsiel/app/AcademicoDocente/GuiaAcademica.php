@@ -43,7 +43,8 @@ class GuiaAcademica extends Model
 
         $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999]];
 
-        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
+        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo'))
+        {
             $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);
         }
 
@@ -71,7 +72,7 @@ class GuiaAcademica extends Model
         if (count($collection) > 0) {
             if (strlen($search) > 0) {
                 $nuevaColeccion = $collection->filter(function ($c) use ($search) {
-                    if (GuiaAcademica::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
                         return $c;
                     }
                 });
@@ -80,12 +81,21 @@ class GuiaAcademica extends Model
             }
         }
 
+        $request = request(); //obtenemos el Request para obtener la url y la query builder
+
+        if ( empty($nuevaColeccion) )
+        {
+            return $array = new LengthAwarePaginator([], 1, 1, 1, [
+                                                                    'path' => $request->url(),
+                                                                    'query' => $request->query(),
+                                                                ]);
+        }
+        
         //obtenemos el numero de la página actual, por defecto 1
         $page = 1;
         if (isset($_GET['page'])) {
             $page = $_GET['page'];
         }
-        $request = request(); //obtenemos el Request para obtener la url y la query builder
         $total = count($nuevaColeccion); //Total para contar los registros mostrados
         $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
         $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
@@ -100,18 +110,20 @@ class GuiaAcademica extends Model
     /**
      * SQL Like operator in PHP.
      * Returns TRUE if match else FALSE.
-     * @param array $array de campos donde se busca
+     * @param array $valores_campos_seleccionados de campos donde se busca
      * @param string $searchTerm termino de busqueda
      * @return bool
      */
-    public static function likePhp($array, $searchTerm)
+    public static function likePhp($valores_campos_seleccionados, $searchTerm)
     {
         $encontrado = false;
-        $searchTerm = strtolower($searchTerm);
-        foreach ($array as $a) {
-            $str = strtolower($a);
+        $searchTerm = str_slug($searchTerm); // Para eliminar acentos
+        foreach ($valores_campos_seleccionados as $valor_campo)
+        {
+            $str = str_slug($valor_campo);
             $pos = strpos($str, $searchTerm);
-            if ($pos !== false) {
+            if ($pos !== false)
+            {
                 $encontrado = true;
             }
         }

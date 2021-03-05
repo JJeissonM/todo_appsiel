@@ -145,37 +145,6 @@ class Curso extends Model
         }
         
         return $vec;
-
-        /*$opciones = Curso::where('estado','=','Activo')
-                            ->orderBy('descripcion')
-                            ->get();
-
-        $vec['']='';
-        foreach ($opciones as $opcion)
-        {
-
-            $user_id = 0;
-            $user = Auth::user();
-            if ( !is_null($user) )
-            {
-                $user_id = $user->id;
-            }
-
-            
-              * Verificar ACL, para algunos modelos, se usa permiso_denegado == true (implica que hay que agregar true por defecto para todos los usuarios que vaya a utilizar el recurso), para otros se valida si permiso_denegado == false ( usuarios con restricciones al acceso del recurso)
-            
-            $permiso_denegado = DB::table('core_acl')->where( 'modelo_recurso_id', 1 )
-                            ->where( 'recurso_id', $opcion->id )
-                            ->where( 'user_id', $user_id )
-                            ->value( 'permiso_denegado' );
-
-            if ( !$permiso_denegado ) 
-            {
-                $vec[$opcion->id] = $opcion->descripcion;
-            }
-        }
-        
-        return $vec;*/
     }
 
     public static function get_registros_estado_activo()
