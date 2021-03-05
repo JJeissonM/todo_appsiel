@@ -20,7 +20,15 @@ class GuiasAcademicasComponent implements IDrawComponent
 
     function DrawComponent()
     {
-        $cursos = Curso::opciones_campo_select();
+        $opciones = Curso::where('estado','=','Activo')
+                                ->orderBy('descripcion')
+                                ->get();
+
+        $cursos['']='';
+        foreach ($opciones as $opcion)
+        {
+            $cursos[$opcion->id] = $opcion->descripcion;
+        }
 
         return Form::guias_academicas( $cursos );
     }
