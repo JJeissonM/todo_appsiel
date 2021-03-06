@@ -8,9 +8,11 @@
     @endif
 }
 
+
+
 </style>
 <link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
-<div class="container-wrapper contactenos-font" style="padding-top: 100px;">
+<div class="container-wrapper contactenos-font" style="padding-top: 100px; padding-bottom: 100px;">
     <div class="container">
         @if($contactenos != null)
         <div class="row contactenos-font">
@@ -21,7 +23,7 @@
                 </div>
             </div>
             <div class="col-md-3"></div>
-            <div class="col-md-6" style="padding: 20px; margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
+            <div class="col-md-6" style="padding: 20px; margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px var(--color-terciario); -moz-box-shadow: 1px 1px 100px var(--color-terciario); box-shadow: 1px 1px 100px var(--color-terciario);">
                 <div class="" style="padding: 5px;">
                     <address style="color: black; text-align: center; font-size: 16px;">
                         @if( $contactenos->empresa != '' )
@@ -32,7 +34,7 @@
                         @endif
                         @if( $contactenos->correo != '' )
                         <a href="mailto:{{ $contactenos->correo }}">
-                            <span class="contactenos-font" style="font-size: 22px;" title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
+                            <span class="contactenos-font" style="font-size: 22px; color: var(--color-terciario)" title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
                         </a>
                         @endif
                         @if( $contactenos->direccion != '' )

@@ -103,7 +103,7 @@
                 @if($a->estado=='VISIBLE')
                 <!-- TIPO SANTILLANA -->
                 <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
-                    <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
+                    <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px var(--color-terciario); -moz-box-shadow: 1px 1px 100px var(--color-terciario); box-shadow: 1px 1px 100px var(--color-terciario);">
                         <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><center><i class="my-4 fa fa-file-o" title="{{$a->titulo}}" style="width: 100%; height: 100px; font-size: 120px;"></i></center></div>
                         <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
                             <h4 class="media-heading servicios-font" style="margin-top: 0px;">{{$a->titulo}}</h4>

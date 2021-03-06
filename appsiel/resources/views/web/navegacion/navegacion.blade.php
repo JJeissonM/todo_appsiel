@@ -5,12 +5,14 @@
 <div class="title" style="margin: 0 0 20px 20px;">
     <h1>Vista Previa del Menú de Navegación</h1>
 </div>
-
+<div class="position-relative border" style="height: 100px;">
 @if($nav != null)
 {{Form::navegacion($nav)}}
 @endif
+</div>
 
-<main style="margin-top: 150px">
+
+<main style="margin-top: 50px">
     <section id="">
         <div class="container-fluid">
             <div class="row">
@@ -23,7 +25,55 @@
 
                             <?php
 
-                            $fondos = json_decode( $nav->background, true);
+if (is_null($nav)) {
+    $fondos['background_0'] = "#574696";
+    $fondos['background_1'] = "#42A3DC"; 
+    
+    $logo['imagen_logo'] = 'generic-logo-pngpng-5f09af84834b6.png';
+    $logo['altura_logo'] = 50;
+    $logo['anchura_logo'] = 80;
+
+    $clase_header = 'no-fixed';
+
+    $textcolor = '#fff';
+
+    $fontfamily = 'sans-serif';
+
+    $alpha = '10';
+}else{
+    if($nav->background != ''){
+        $fondos = json_decode($nav->background, true);
+    }else{
+        $fondos['background_0'] = "#574696";
+        $fondos['background_1'] = "#42A3DC"; 
+    }
+    if($nav->logo != ''){
+        $logo = json_decode($nav->logo, true);
+    }else{
+        $logo['imagen_logo'] = '';
+        $logo['altura_logo'] = 50;
+        $logo['anchura_logo'] = 80;
+    }
+    
+    $textcolor = $nav->color;
+    $alpha = $nav->alpha;
+
+    if ($nav->fixed) {
+        $clase_header = 'fixed-top';
+    } else {
+        $clase_header = 'no-fixed';
+    }
+
+    if(!is_null($nav->configuracionfuente)){
+        $fontfamily = $nav->configuracionfuente->fuente->font;
+    }else {
+        $fontfamily = 'sans-serif';
+    }
+
+
+}
+
+                            /*$fondos = json_decode( $nav->background, true);
 
                             if (is_null($fondos)) {
                                 $fondos['background_0'] = $nav->background;
@@ -34,40 +84,43 @@
 
                             if (is_null($logo)) {
                                 $logo['imagen_logo'] = $nav->logo;
-                                $logo['altura_logo'] = 100;
-                                $logo['anchura_logo'] = 100;
-                            }
+                                $logo['altura_logo'] = 50;
+                                $logo['anchura_logo'] = 80;
+                            }*/
 
 
                             // FORMULARIO
                             if ($nav == null) {
                                 echo Form::open(['url' => route('navegacion.storenav'), 'method' => 'POST', 'files' => 'true']);
+                                $checked = '';
                             } else {
                                 echo Form::open(['url' => route('navegacion.update', $nav->id), 'method' => 'put', 'files' => 'true']);
 
                                 $checked = '';
-                                if ($nav->fixed == true) {
-                                    $checked = 'checked';
+                                if(!is_null($nav)){
+                                    if ($nav->fixed == true) {
+                                        $checked = 'checked';
+                                    }
                                 }
                             }
                             ?>
 
                             <div class="form-group">
                                 <label for="">Color Fondo</label>
-                                <span data-toggle="tooltip" title="Establece en color de fondo de la navegacion."> <i class="fa fa-question-circle"></i></span>
-                                <input type="text" name="background[]" id="background" style="display: none;" value="{{ $fondos['background_0'] }}">
+                                <span data-toggle="tooltip" title="Establece en color de fondo de la navegacion."> <i class="fa fa-question-circle"></i></span>                               
+                                <input type="color" id="background" onchange="selectColor(event)" class="form-control" name="background[]" value="{{ $fondos['background_0'] }}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="">Color Fondo 2</label>
-                                <span data-toggle="tooltip" title="Establece el color que se muestra al pasar el mouse por los elemetos de la navegación."> <i class="fa fa-question-circle"></i></span>
-                                <input type="text" name="background[]" id="background2" style="display: none;" value="{{ $fondos['background_1'] }}">
+                                <span data-toggle="tooltip" title="Establece el color que se muestra al pasar el mouse por los elementos de la navegación."> <i class="fa fa-question-circle"></i></span>                               
+                                <input type="color" id="background2" onchange="selectColor(event)" class="form-control" name="background[]" value="{{ $fondos['background_1'] }}" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="">Color texto</label>
                                 <span data-toggle="tooltip" title="Establece el color del texto de la navegación."> <i class="fa fa-question-circle"></i></span>
-                                <input type="color" id="color" onchange="selectColor(event)" class="form-control" name="color" value="{{ $nav->color }}" required>
+                                <input type="color" id="color" onchange="selectColor(event)" class="form-control" name="color" value="{{ $textcolor }}" required>
                             </div>
 
                             <div class="form-group">
@@ -82,13 +135,13 @@
                             <div class="form-group">
                                 <label for="altura_logo">Altura Logo (px)</label>
                                 <span data-toggle="tooltip" title="Establece establece la altura en pixeles de la imagen(logo) de la navegación."> <i class="fa fa-question-circle"></i></span>
-                                <input type="number" min="0" class="form-control" name="altura_logo" value="{{$logo['altura_logo']}}">
+                                <input type="number" min="50" max="80" class="form-control" name="altura_logo" value="{{$logo['altura_logo']}}">
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" style="display: none"
                                 <label for="anchura_logo">Anchura Logo (px)</label>
                                 <span data-toggle="tooltip" title="Establece establece la anchura en pixeles de la imagen(logo) de la navegación."> <i class="fa fa-question-circle"></i></span>
-                                <input type="number" min="0" class="form-control" name="anchura_logo" value="{{$logo['anchura_logo']}}">
+                                <input type="number" min="50" max="80" class="form-control" name="anchura_logo" value="{{$logo['anchura_logo']}}">
                             </div>
 
                             <div class="form-group">
@@ -102,13 +155,15 @@
                             <div class="form-group">
                                 <label for="anchura_logo">Grado de Transparencia (solo para fixed)</label>
                                 <span data-toggle="tooltip" title="Establece el grado de tranparencia de la navegación, esta caracteristica solo funciona si esta activada la funcion fixed."> <i class="fa fa-question-circle"></i></span>
-                                <input type="range" min="1" max="10" class="form-control" name="alpha" value="{{$nav->alpha}}">
+                                <input type="range" min="1" max="10" class="form-control" name="alpha" value="{{$alpha}}">
                             </div>
 
                             <div class="form-group">
                                 <label for="">Fuente Para el Componente</label>
                                 <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span>
-                                @if($fonts!=null)
+                                @if(is_null($nav))
+                                {!! Form::select('configuracionfuente_id',$fonts,'',['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                                @elseif($fonts!= null )
                                 {!! Form::select('configuracionfuente_id',$fonts,$nav->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                                 @endif
                             </div>
@@ -139,6 +194,7 @@
                                     <th>Acciones</th>
                                 </thead>
                                 <tbody>
+                                    @if(!is_null($nav))
                                     @foreach($nav->menus as $item)
                                     @if($item->parent_id == 0)
                                     <tr>
@@ -153,6 +209,7 @@
                                     </tr>
                                     @endif
                                     @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
@@ -291,8 +348,10 @@
         rellenarSelect(select);
         const color = document.getElementById('color');
         color.style.backgroundColor = color.getAttribute('value');
-        /*const background = document.getElementById('background');
-        background.style.backgroundColor = background.getAttribute('value');*/
+        const background = document.getElementById('background');
+        background.style.backgroundColor = background.getAttribute('value');
+        const background2 = document.getElementById('background2');
+        background2.style.backgroundColor = background2.getAttribute('value');
     });
 
     function newItem(event) {
