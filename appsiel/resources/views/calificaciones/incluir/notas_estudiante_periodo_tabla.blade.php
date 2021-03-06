@@ -1,10 +1,10 @@
 <?php 
     $periodo = App\Calificaciones\Periodo::find($periodo_id);
-    
+
     $reg_nota_reprobar = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->first();
-    if ( is_null($nota_reprobar) )
+    if ( is_null($reg_nota_reprobar) )
     {
-        $reg_nota_reprobar = 0;
+        $nota_reprobar = 0;
     }else{
         $nota_reprobar = $reg_nota_reprobar->calificacion_maxima;
     }        

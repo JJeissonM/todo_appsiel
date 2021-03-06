@@ -40,6 +40,19 @@ class Ciudad extends Model
         return $vec;
     }
 
+    public static function opciones_campo_select_2()
+    {
+        $opciones = Ciudad::all();
+
+        $vec[''] = '';
+        foreach ($opciones as $opcion)
+        {
+            $vec[ $opcion->descripcion . ', ' . $opcion->departamento->descripcion ] = $opcion->descripcion . ', ' . $opcion->departamento->descripcion;
+        }
+
+        return $vec;
+    }
+
     public function departamento()
     {
         return $this->belongsTo(Departamento::class,'core_departamento_id');

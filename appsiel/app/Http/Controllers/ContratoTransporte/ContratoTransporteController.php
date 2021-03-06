@@ -163,6 +163,17 @@ class ContratoTransporteController extends Controller
             }
         }
         $p = Plantilla::where('estado', 'SI')->first();
+
+        $ciudades = \App\Core\Ciudad::opciones_campo_select_2();
+        /*
+        $contratantes = null;
+        $cont = Contratante::all();
+        if (count($cont) > 0) {
+            foreach ($cont as $c) {
+                $contratantes[$c->id] = "<b>" . $c->tercero->descripcion . "</b> identificado con cedula <b>N° " . $c->tercero->numero_identificacion;
+            }
+        }*/
+
         return view('contratos_transporte.contratos.create')
             ->with('variables_url', $variables_url)
             ->with('miga_pan', $miga_pan)
@@ -170,6 +181,7 @@ class ContratoTransporteController extends Controller
             ->with('contratantes', $contratantes)
             ->with('vehiculos', $vehiculos)
             ->with('source', $source)
+            ->with('ciudades', $ciudades)
             ->with('v', $p);
     }
 
