@@ -6,11 +6,11 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
 
 @section('botones_acciones')
 	@if($doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado=='Pendiente')
-		<button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-close"></i> Anular </button>
+		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
 	@endif
 	
 	@if( $doc_encabezado->estado!='Cumplida' && $doc_encabezado->estado!='Anulado')
-		<button onclick="enviar()" class="btn btn-success btn-xs" id="btn_entradaalmacen"><i class="fa fa-send"></i> Crear Entrada Almacén </button>
+		<button onclick="enviar()" class="btn-gmail" id="btn_entradaalmacen" title="Crear Entrada Almacén"><i class="fa fa-send"></i></button>
 	@endif
 @endsection
 
