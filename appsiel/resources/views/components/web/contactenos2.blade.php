@@ -34,7 +34,7 @@
                         @endif
                         @if( $contactenos->correo != '' )
                         <a href="mailto:{{ $contactenos->correo }}">
-                            <span class="contactenos-font" style="font-size: 22px; color: var(--color-terciario)" title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
+                            <span class="contactenos-font" style="font-size: 22px; color: var(--color-secundario)" title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
                         </a>
                         @endif
                         @if( $contactenos->direccion != '' )
