@@ -169,8 +169,10 @@ class CalificacionController extends Controller
             $url_eliminar = '';
 
             $source = "INDEX2";
+            $curso = new Curso();
+            $asignatura = new Asignatura();
 
-            return view('layouts.index', compact('registros', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_app', 'id_modelo', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar'));
+            return view('layouts.index', compact('registros', 'asignatura', 'curso', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_app', 'id_modelo', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar'));
         } else {
             echo "La Empresa asociada al Usuario actual no tiene ningún Colegio asociado.";
         }
@@ -211,11 +213,9 @@ class CalificacionController extends Controller
         // Validación del ingreso de calificaciones
         $parametros = config('calificaciones');
 
-        if ($parametros['permitir_calificaciones_sin_logros'] == 'No')
-        {
+        if ($parametros['permitir_calificaciones_sin_logros'] == 'No') {
             $logros = Logro::get_logros($this->colegio->id, $request->curso_id, $request->id_asignatura, $request->id_periodo, $nro_registros, $search);
-            if ( empty($logros) )
-            {
+            if (empty($logros)) {
                 return redirect(url()->previous())->with('mensaje_error', 'No se permite ingresar calificaciones para las asignaturas que aún no tienen logros en el periodo seleccionado.');
             }
         }
