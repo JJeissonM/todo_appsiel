@@ -11,7 +11,7 @@ use App\Salud\ConsultaMedica;
 
 use DB;
 
-class ExamenFisico extends ModeloEavValor
+class Conclusiones extends ModeloEavValor
 {
     protected $table = 'core_eav_valores';
 
@@ -25,7 +25,7 @@ class ExamenFisico extends ModeloEavValor
 
     public static function consultar_registros($nro_registros)
     {
-        $modelo_padre_id = 241; // Exámen Físico
+        $modelo_padre_id = 287; // Conclusiones
         return ExamenFisico::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
             ->where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
             ->select(
@@ -51,8 +51,6 @@ class ExamenFisico extends ModeloEavValor
                                 ]
                             )
                         ->delete();
-
-
 
         $datos2 = array_shift($datos); // Eliminar primer campo del request: _token
 

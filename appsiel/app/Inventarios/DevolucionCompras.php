@@ -13,7 +13,7 @@ class DevolucionCompras extends InvDocEncabezado
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Bodega', 'Tercero', 'Detalle'];
 
-    public static function consultar_registros($nro_registros)
+    public static function consultar_registros( $nro_registros, $search )
     {
         $core_tipo_transaccion_id = 37; // Devolución Compras
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2';

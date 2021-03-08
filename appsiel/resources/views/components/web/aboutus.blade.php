@@ -97,8 +97,8 @@
                                href="{ {route('aboutus.leer_institucional',$aboutus->id)}}">Leer todo</a></center> -->
             </div>
             <div class="row">
-                <div class="col-sm-6 wow fadeInLeft animated" style="visibility: visible; animation-name: fadeInLeft; text-align: center; padding-top: 100px !important;">
-                    <img class="img-responsive" src="{{url($aboutus->imagen)}}" alt="">
+                <div class="col-sm-6 wow fadeInLeft animated d-flex justify-content-center align-items-center" style="visibility: visible; animation-name: fadeInLeft; text-align: center; !important;">
+                    <img class="img-fluid" src="{{url($aboutus->imagen)}}" alt="">
                 </div>
                 <div class="col-sm-6">
                     <div class="media service-box wow fadeInRight animated" style="visibility: visible; animation-name: fadeInRight; border-radius: 20px; border: 1px solid; padding: 15px;">

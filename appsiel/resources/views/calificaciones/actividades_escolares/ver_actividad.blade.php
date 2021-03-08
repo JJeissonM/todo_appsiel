@@ -4,10 +4,10 @@
 	{{ Form::bsMigaPan($miga_pan) }}
 	<div style="padding-left: 10px;">
 		{{ Form::formEliminar( '/actividades_escolares/eliminar_actividad', $actividad->id ) }}
-		<a href="{{ url('actividades_escolares/'.$actividad->id.'/edit?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion=0') }}" class="btn-gmail"> <i class="fa fa-btn fa-edit"></i> </a>
+		<a href="{{ url('actividades_escolares/'.$actividad->id.'/edit?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion=0') }}" class="btn-gmail" title="Modificar"><i class="fa fa-btn fa-edit"></i></a>
 
 		@can('acdo_cambiar_estado_actividades_escolares')
-			<a class="btn-gmail" href="{{ url('a_i') . '/' . $actividad->id . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion=' }}"><b> Activar/Inactivar </b></a>
+			<a class="btn-gmail" href="{{ url('a_i') . '/' . $actividad->id . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion=' }}" title="Activar/Inactivar"><b>A/I</b></a>
 		@endcan
 
 	</div>

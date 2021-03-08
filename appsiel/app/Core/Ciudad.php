@@ -15,8 +15,7 @@ class Ciudad extends Model
     public $encabezado_tabla = ['Ciudad','Departamento/Estado','Pais','Acción'];
 
     public static function consultar_registros()
-    {
-    	
+    {    	
     	return Ciudad::leftJoin('core_departamentos','core_departamentos.id','=','core_ciudades.core_departamento_id')
                             ->leftJoin('core_paises','core_paises.id','=','core_departamentos.codigo_pais')
                             ->select(
@@ -36,6 +35,19 @@ class Ciudad extends Model
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion . ', ' . $opcion->departamento->descripcion;
+        }
+
+        return $vec;
+    }
+
+    public static function opciones_campo_select_2()
+    {
+        $opciones = Ciudad::all();
+
+        $vec[''] = '';
+        foreach ($opciones as $opcion)
+        {
+            $vec[ $opcion->descripcion . ', ' . $opcion->departamento->descripcion ] = $opcion->descripcion . ', ' . $opcion->departamento->descripcion;
         }
 
         return $vec;

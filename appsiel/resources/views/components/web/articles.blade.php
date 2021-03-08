@@ -65,7 +65,7 @@
 
             @if( $setup->article_id != null)
             <!-- SE MUESTRA SOLO UN ARTÍCULO -->
-                <div class="content-txt" style="padding: 20px; margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
+                <div class="content-txt" style="padding: 20px; margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px var(--color-terciario); -moz-box-shadow: 1px 1px 100px var(--color-terciario); box-shadow: 1px 1px 100px var(--color-terciario); background-color: #fff">
                     <div class="blog-post blog-media" style="border: none;">
                         <article class="media clearfix">
                             <div class="media-body">
@@ -97,7 +97,7 @@
                 @if($setup->formato=='LISTA')
                     @foreach($articles as $a)
                         <div class="col-md-12 wow fadeInUp animated service-info"  data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
-                            <div class="media service-box" style="margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
+                            <div class="media service-box" style="margin: 10px !important; font-size: 14px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px var(--color-terciario); -moz-box-shadow: 1px 1px 100px var(--color-terciario); box-shadow: 1px 1px 100px var(--color-terciario);">
                                 <div class="media-body">
                                     <div class="row">
                                         <div class="col-md-4" style="text-align: center;">
@@ -126,14 +126,14 @@
                         @foreach($articles as $a)
                         <!-- TIPO SANTILLANA -->
                         <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
-                            <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
+                            <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px var(--color-terciario); -moz-box-shadow: 1px 1px 100px var(--color-terciario); box-shadow: 1px 1px 100px var(--color-terciario);">
                                 <?php
                                     $url_imagen = 'assets/img/blog-default.jpg';
                                     if ($a->imagen != '') {
                                         $url_imagen = $a->imagen;
                                     }
                                 ?>    
-                                <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><img style="width: 100%;" src="{{asset($url_imagen)}}"></div>
+                                <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><img style="width: 100%; border-radius: 20px 20px 0 0;" src="{{asset($url_imagen)}}"></div>
                                 <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
                                     <h4 class="media-heading article-font" style="margin-top: 0px;">{{$a->titulo}}</h4>
                                     <p class="article-font">{!! str_limit($a->descripcion,90,'...') !!} </p>

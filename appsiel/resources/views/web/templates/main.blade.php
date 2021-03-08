@@ -247,7 +247,7 @@
     </script>
 
     <script type="text/javascript">
-      $(document).ready(function(){
+     /* $(document).ready(function(){
 
         $("#background").spectrum({
                 showAlpha: true,
@@ -259,7 +259,7 @@
                 preferredFormat: "rgb"
             });
 
-      });
+      });*/
     </script>
 
 </body>

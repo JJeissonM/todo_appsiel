@@ -86,7 +86,7 @@
                         @foreach($servicios->itemservicios as $item)
                         @if($servicios->disposicion=='ICONO')
                         <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
-                            <div style="background-color: #f8f8f8; padding: 20px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3; opacity: 0.8;" class="col-md-12">
+                            <div style="background-color: #f8f8f8; padding: 20px; border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px var(--color-terciario); -moz-box-shadow: 1px 1px 100px var(--color-terciario); box-shadow: 1px 1px 100px var(--color-terciario); opacity: 0.8;" class="col-md-12">
                                 <div style="border-top: 10px solid; border-color: #7bb0e7; top: 0;"></div>
                                 <div class="media service-box" style="height: 150px;margin: 20px 0;">
                                     <div class="pull-left">
@@ -109,8 +109,8 @@
                         @else
                         <!-- TIPO SANTILLANA -->
                         <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
-                            <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px #cf9ec3; -moz-box-shadow: 1px 1px 100px #cf9ec3; box-shadow: 1px 1px 100px #cf9ec3;">
-                                <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><img style="width: 100%;" src="{{asset($item->icono)}}"></div>
+                            <div style="border-radius: 20px !important; -webkit-box-shadow: 1px 1px 100px var(--color-terciario); -moz-box-shadow: 1px 1px 100px var(--color-terciario); box-shadow: 1px 1px 100px var(--color-terciario);">
+                                <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;"><img style="width: 100%; border-radius: 20px 20px 0 0" src="{{asset($item->icono)}}"></div>
                                 <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
                                     <h4 class="media-heading servicios-font" style="margin-top: 0px;">{{$item->titulo}}</h4>
                                     <p class="servicios-font">{!! str_limit($item->descripcion,90) !!} </p>

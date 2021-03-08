@@ -106,11 +106,21 @@
 								</div>
 								<div class="form-group">
 									<label>Origen</label>
-									<input type="text" class="form-control" name="origen" required />
+									<!-- <input type="text" class="form-control" name="origen" required /> -->
+									<select class="form-control select2" name="origen" id="origen" required="required">
+										@foreach($ciudades as $key=>$value)
+											<option value="{{$key}}">{!!$value!!}</option>
+										@endforeach
+									</select>
 								</div>
 								<div class="form-group">
 									<label>Destino</label>
-									<input type="text" class="form-control" name="destino" required />
+									<!-- <input type="text" class="form-control" name="destino" required /> -->
+									<select class="form-control select2" name="destino" id="destino" required="required">
+										@foreach($ciudades as $key=>$value)
+											<option value="{{$key}}">{!!$value!!}</option>
+										@endforeach
+									</select>
 								</div>
 								<div class="form-group">
 									<label>Fecha de Inicio</label>

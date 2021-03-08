@@ -172,54 +172,40 @@
             border-color: #ddd;
         }
 
-        .section-header .section-title:after {
-            background-color: @if($configuracion !=null) {
-                    {
-                    $configuracion->color_primario
-                }
-            }
+        :root{
+            --color-primario: #574696;
+            --color-secundario: #42A3DC;
+            --color-terciario: #50B794;
 
-            @else #000 @endif  !important;
+            @if ($configuracion !=null) 
+            --color-primario: {{$configuracion->color_primario}};
+            --color-secundario: {{$configuracion->color_segundario}};
+            --color-terciario: {{$configuracion->color_terciario}};
+            @endif
+            
+           
+        }
+
+        .section-header .section-title:after {
+            background-color: var(--color-primario) !important;
         }
 
         .btn.btn-primary {
-            background: @if($configuracion !=null) {{$configuracion->color_primario}}
-
-            @else #000 @endif  !important;
-
-            border-color: @if($configuracion !=null) {{$configuracion->color_terciari}}
-            @else #000 @endif  !important;
+            background: var(--color-primario) !important;
+            border-color: var(--color-secundario) !important;
         }
 
         .media.service-box .pull-left>i {
-            color: @if($configuracion !=null) {
-                    {
-                    $configuracion->color_primario
-                }
-            }
-
-            @else #000 @endif  !important;
+            color: var(--color-primario) !important;
         }
 
         .media.service-box .pull-left>i:after {
-            background-color: @if($configuracion !=null) {
-                    {
-                    $configuracion->color_primario
-                }
-            }
-
-            @else #000 @endif  !important;
+            background-color: var(--color-primario) !important;
         }
 
         .pagination>li>a,
         .pagination>li>span {
-            color: @if($configuracion !=null) {
-                    {
-                    $configuracion->color_primario
-                }
-            }
-
-            @else #000 @endif  !important;
+            color: var(--color-primario) !important;
         }
 
         .pagination>.active>a,
@@ -228,40 +214,14 @@
         .pagination>.active>span:hover,
         .pagination>.active>a:focus,
         .pagination>.active>span:focus {
-            color: @if($configuracion !=null) {
-                    {
-                    $configuracion->color_segundario
-                }
-            }
-
-            @else #000 @endif  !important;
+            color: var(--color-secundario) !important;
             cursor: default;
-
-            background-color: @if($configuracion !=null) {
-                    {
-                    $configuracion->color_primario
-                }
-            }
-
-            @else #000 @endif;
-
-            border-color: @if($configuracion !=null) {
-                    {
-                    $configuracion->color_primario
-                }
-            }
-
-            @else #000 @endif;
+            background-color: var(--color-primario) !important;
+            border-color: var(--color-primario) !important;
         }
 
         .column-title:after {
-            border-bottom: 1px solid @if($configuracion !=null) {
-                    {
-                    $configuracion->color_terciario
-                }
-            }
-
-            @else #000 @endif  !important;
+            border-bottom: 1px solid var(--color-terciario) !important;
         }
 
         #formulario_pqr .control-label {
@@ -284,23 +244,18 @@
         .sticky+.content {
             padding-top: 102px;
         }
-
         @foreach($estilos as $key => $value)
             {!! $value !!}
         @endforeach
         
+        
     </style>
 </head>
 
-<body style="padding:0;">
-
-    <main id="contenedor_principal">
-
+<body>
         @foreach($view as $item)
-            {!! $item !!}
+            {!! $item !!} 
         @endforeach
-
-    </main>
 
     <!-- End main content -->
 
@@ -370,19 +325,35 @@
     </script>
 
     <script>
-        window.onscroll = function() {
-            myFunction()
-        };
+        
+                    
 
-        var header = document.getElementById("myHeader");
+        //parallax
+        var imgH = 550;
+        var prevScrollpos = window.pageYOffset;
+        const header = document.getElementById("nav");
         var sticky = header.offsetTop;
+        window.onscroll = function() {
 
-        function myFunction() {
             if (window.pageYOffset > sticky) {
                 header.classList.add("sticky");
             } else {
                 header.classList.remove("sticky");
             }
+
+            const pllx = document.querySelectorAll(".parallax");
+            pllx.forEach(function(item,index) {
+                if(item.getBoundingClientRect().top <= 0){
+                    item.style.backgroundPositionY = (-item.getBoundingClientRect().top/2)+"px";
+                }else       
+                if((window.innerHeight - item.getBoundingClientRect().top) >= 0  && (window.innerHeight - item.getBoundingClientRect().top) <= imgH){
+                    console.log(item.style.backgroundPositionY)
+                    item.style.backgroundPositionY = ((imgH/2)+((window.innerHeight - item.getBoundingClientRect().top)/2))+"px";
+                    
+                }else{
+                    item.style.backgroundPositionY = item.style.backgroundPositionY+"0px";
+                }
+            });
         }
     </script>
 

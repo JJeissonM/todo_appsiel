@@ -15,6 +15,8 @@
 				@endif
 	        }
 
+	        @page { margin: 15px; }
+
 	        .fa-btn {
 	            margin-right: 6px;
 	        }
@@ -37,8 +39,6 @@
 				-moz-text-align-last: center; /* Code for Firefox */
 				text-align-last: center;
 			}
-
-
 			
 		    img {
 		        padding-left:30px;
