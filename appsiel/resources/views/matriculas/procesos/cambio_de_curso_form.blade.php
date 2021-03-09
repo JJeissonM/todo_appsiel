@@ -1,14 +1,14 @@
 @extends('core.procesos.layout')
 
-@section( 'titulo', 'Promoción Académica' )
+@section( 'titulo', 'Cambio de curso de estudiantes' )
 
 @section('detalles')
 	<p>
 		Este proceso permite TRASLADAR toda la información relacionada con el <b>curso actual</b> de un estudiante hacía un <b>nuevo curso</b>.
 		<br>
-		<span style="color: red;"> NOTA: Solo se permite hacer traslados entre cursos del mismo grado. Si quiere cambiar al estudiante de grado, debe realizar una nueva matrícula. </span>
+		<span style="color: red;"> NOTA: Solo se permite hacer traslados entre cursos del mismo grado. Si se quiere cambiar al estudiante de grado, debe realizar una nueva matrícula. </span>
 		<br>
-		Se movera de un curso a otro la siguiente información:
+		Este proceso moverá de un curso a otro la siguiente información:
 	</p>
 
 	<ul class="list-group">
@@ -207,7 +207,7 @@
 		    	event.preventDefault();
 
 
-		    	if ( !confirm('¿Está seguro de promover todos los estudiantes seleccionados al nuevo curso ' + $('#curso_promover_id option:selected').text() + '?') )
+		    	if ( !confirm('¿Está seguro de trasladar a todos los estudiantes seleccionados hacia nuevo curso ' + $('#curso_promover_id option:selected').text() + '?') )
 		    	{
 			 		$("#div_spin").hide();
 			 		$("#div_cargando").hide();
