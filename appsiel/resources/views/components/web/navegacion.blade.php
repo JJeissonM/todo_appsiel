@@ -75,6 +75,7 @@ if (is_null($nav)) {
         background: <?php echo $fondos['background_0'];   ?>;
         z-index: 1000;
         box-shadow: 0px 5px 5px 0px rgb(0 0 0 / 25%);
+        position: relative;
     }
 
     .sticky {
@@ -114,7 +115,7 @@ if (is_null($nav)) {
         ?>px;
         /*width: <?php echo $logo['anchura_logo'];
         ?>px;*/
-        filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.7));
+        filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));
     }
 
 
@@ -143,10 +144,11 @@ if (is_null($nav)) {
     }
 
     #myHeader .mu-navbar-nav li.active a, .mu-navbar-nav li a:hover, .mu-navbar-nav li a:focus {
-        background-color: var(--color-secundario);
+        background-color: <?php echo $fondos['background_1'];?> !important;
         color: <?php echo $textcolor;   ?> !important;
     }
     #myHeader .mu-navbar-nav li a {
+        background-color:<?php echo $fondos['background_0'];?> !important;
         color: <?php echo $textcolor;   ?> !important;
     }
 

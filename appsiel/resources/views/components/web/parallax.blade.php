@@ -16,8 +16,8 @@
                 <p class="text-center wow fadeInDown animated h3" style="color: {{$parallax->textcolor}}; text-shadow: 2px 2px 5px #777777; visibility: visible; animation-name: fadeInDown;">{{$parallax->descripcion}}</p>
             </div>
             <div class="row">
-                <div class="col-md-12 text-center text" style="color: {{$parallax->textcolor}}; text-shadow: 1px 1px 5px #777777;">
-                    {!!$parallax->content_html!!}
+                <div class="col-md-12 text-center " style="color: {{$parallax->textcolor}}; text-shadow: 1px 1px 4px #777777;">
+                    <big>{!!$parallax->content_html!!}</big>
                 </div>
             </div>
             <!--/.row-->
