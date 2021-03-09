@@ -53,6 +53,12 @@ Route::resource('matriculas', 'Matriculas\MatriculaController', ['except' => ['s
  Route::post('sga_promocion_academica_cargar_listado', 'Matriculas\ProcesosController@promocion_academica_cargar_listado');
  Route::post('sga_promocion_academica_generar', 'Matriculas\ProcesosController@promocion_academica_generar');
 
+// Cambio de curso
+ Route::post('sga_cambio_de_curso_cargar_listado', 'Matriculas\ProcesosController@cambio_de_curso_cargar_listado');
+ Route::post('sga_cambio_de_curso_generar', 'Matriculas\ProcesosController@cambio_de_curso_generar');
+
+
+
 // FACTURACION ESTUDIANTES
 Route::resource('facturas_estudiantes', 'Matriculas\FacturaEstudianteController');
 

@@ -107,7 +107,7 @@ $(document).ready( function(){
 				$.get( url, { texto_busqueda: $(this).val() } )
 					.done(function( data ) {
 			    		$('#div_cargando').hide();
-						// Se llena el DIV con las sugerencias que arooja la consulta
+						// Se llena el DIV con las sugerencias que aroja la consulta
 		                $('#lista_sugerencias').show().html(data);
 		                
 		                $('a.list-group-item.active').focus();

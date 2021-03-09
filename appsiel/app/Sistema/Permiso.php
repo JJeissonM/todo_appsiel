@@ -10,7 +10,7 @@ class Permiso extends Permission
 {
     protected $fillable = ['core_app_id', 'modelo_id', 'name', 'descripcion', 'url', 'parent', 'orden', 'enabled', 'fa_icon'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'App', 'Modelo', 'Name', 'Descripción (Menú)', 'URL', 'Menú padre', 'Ordén', 'Mostrar en menú', 'Icono'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'ID', 'App', 'Modelo', 'Name', 'Descripción (Menú)', 'URL', 'Menú padre', 'Ordén', 'Mostrar en menú', 'Icono'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 
@@ -28,30 +28,31 @@ class Permiso extends Permission
     public static function consultar_registros($nro_registros, $search)
     {
         return Permission::leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'permissions.core_app_id')
-            ->leftJoin('sys_modelos', 'sys_modelos.id', '=', 'permissions.modelo_id')
-            ->select(
-                'sys_aplicaciones.descripcion AS campo1',
-                DB::raw('CONCAT(sys_modelos.descripcion," (",sys_modelos.id,")") AS campo2'),
-                'permissions.name AS campo3',
-                'permissions.descripcion AS campo4',
-                'permissions.url AS campo5',
-                'permissions.parent AS campo6',
-                'permissions.orden AS campo7',
-                'permissions.enabled AS campo8',
-                'permissions.fa_icon AS campo9',
-                'permissions.id AS campo10'
-            )
-            ->where("sys_aplicaciones.descripcion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(sys_modelos.descripcion," (",sys_modelos.id,")")'), "LIKE", "%$search%")
-            ->orWhere("permissions.name", "LIKE", "%$search%")
-            ->orWhere("permissions.descripcion", "LIKE", "%$search%")
-            ->orWhere("permissions.url", "LIKE", "%$search%")
-            ->orWhere("permissions.parent", "LIKE", "%$search%")
-            ->orWhere("permissions.orden", "LIKE", "%$search%")
-            ->orWhere("permissions.enabled", "LIKE", "%$search%")
-            ->orWhere("permissions.fa_icon", "LIKE", "%$search%")
-            ->orderBy('permissions.created_at', 'DESC')
-            ->paginate($nro_registros);
+                                ->leftJoin('sys_modelos', 'sys_modelos.id', '=', 'permissions.modelo_id')
+                                ->select(
+                                    'permissions.id AS campo1',
+                                    'sys_aplicaciones.descripcion AS campo2',
+                                    DB::raw('CONCAT(sys_modelos.descripcion," (",sys_modelos.id,")") AS campo3'),
+                                    'permissions.name AS campo4',
+                                    'permissions.descripcion AS campo5',
+                                    'permissions.url AS campo6',
+                                    'permissions.parent AS campo7',
+                                    'permissions.orden AS campo8',
+                                    'permissions.enabled AS campo9',
+                                    'permissions.fa_icon AS campo10',
+                                    'permissions.id AS campo11'
+                                )
+                                ->where("sys_aplicaciones.descripcion", "LIKE", "%$search%")
+                                ->orWhere(DB::raw('CONCAT(sys_modelos.descripcion," (",sys_modelos.id,")")'), "LIKE", "%$search%")
+                                ->orWhere("permissions.name", "LIKE", "%$search%")
+                                ->orWhere("permissions.descripcion", "LIKE", "%$search%")
+                                ->orWhere("permissions.url", "LIKE", "%$search%")
+                                ->orWhere("permissions.parent", "LIKE", "%$search%")
+                                ->orWhere("permissions.orden", "LIKE", "%$search%")
+                                ->orWhere("permissions.enabled", "LIKE", "%$search%")
+                                ->orWhere("permissions.fa_icon", "LIKE", "%$search%")
+                                ->orderBy('permissions.created_at', 'DESC')
+                                ->paginate($nro_registros);
     }
 
     public static function sqlString($search)
@@ -59,6 +60,7 @@ class Permiso extends Permission
         $string = Permission::leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'permissions.core_app_id')
             ->leftJoin('sys_modelos', 'sys_modelos.id', '=', 'permissions.modelo_id')
             ->select(
+                'permissions.id AS ID',
                 'sys_aplicaciones.descripcion AS APP',
                 DB::raw('CONCAT(sys_modelos.descripcion," (",sys_modelos.id,")") AS MODELO'),
                 'permissions.name AS NAME',

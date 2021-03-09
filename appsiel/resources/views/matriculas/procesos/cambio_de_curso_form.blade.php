@@ -1,11 +1,26 @@
 @extends('core.procesos.layout')
 
-@section( 'titulo', 'Promoción Académica' )
+@section( 'titulo', 'Cambio de curso de estudiantes' )
 
 @section('detalles')
 	<p>
-		Este proceso permite generar masivamente las NUEVAS MATRÍCULAS de estudiantes para el Nuevo Año Lectivo.
+		Este proceso permite TRASLADAR toda la información relacionada con el <b>curso actual</b> de un estudiante hacía un <b>nuevo curso</b>.
+		<br>
+		<span style="color: red;"> NOTA: Solo se permite hacer traslados entre cursos del mismo grado. Si se quiere cambiar al estudiante de grado, debe realizar una nueva matrícula. </span>
+		<br>
+		Este proceso moverá de un curso a otro la siguiente información:
 	</p>
+
+	<ul class="list-group">
+	  <li class="list-group-item">Matrícula</li>
+	  <li class="list-group-item">Asistencia a clases</li>
+	  <li class="list-group-item">Control disciplinario</li>
+	  <li class="list-group-item">Reconocimientos del estudiante</li>
+	  <li class="list-group-item">Calificaciones</li>
+	  <li class="list-group-item">Preinformes académicos</li>
+	  <li class="list-group-item">Observaciones de boletines</li>
+	  <li class="list-group-item">Notas de nivelaciones</li>
+	</ul>
 	
 	<br>
 @endsection
@@ -22,7 +37,7 @@
 							Parámetros de selección
 						</h4>
 						<hr>
-						{{ Form::open(['url'=>'sga_promocion_academica_cargar_listado','id'=>'formulario_inicial','files' => true]) }}
+						{{ Form::open(['url'=>'sga_cambio_de_curso_cargar_listado','id'=>'formulario_inicial','files' => true]) }}
 							<div class="row">
 								<div class="col-sm-4">
 									<div class="row">
@@ -61,20 +76,18 @@
 			
 	</div>
 
-	{{ Form::open(['url'=>'sga_promocion_academica_generar','id'=>'formulario_lista_estudiantes','files' => true]) }}
+	{{ Form::open(['url'=>'sga_cambio_de_curso_generar','id'=>'formulario_lista_estudiantes','files' => true]) }}
 		<input type="hidden" name="cantidad_estudiantes" id="cantidad_estudiantes" value="0">
 		<input type="hidden" name="lineas_estudiantes" id="lineas_estudiantes" value="0">
 
-		<input type="hidden" name="nuevo_periodo_lectivo_id" id="nuevo_periodo_lectivo_id" value="0">
 		<input type="hidden" name="nuevo_curso_id" id="nuevo_curso_id" value="0">
-		<input type="hidden" name="fecha_matricula" id="fecha_matricula" value="0">
 		
-		<div style="display: none; text-align: center;width: 100%;" id="div_form_promover">
-			<span class="text-danger">Nota: Al presionar este botón se crearán nuevas matrículas para los estudiantes seleccionados y se inactivarán las matrículas actuales.</span>
+		<div style="display: none; text-align: center;width: 100%;" id="div_form_cambiar">
+			<span class="text-danger">Nota: Al presionar este botón, para los estudiantes seleccionados, se moverá toda la información del curso actual hacia el nuevo curso.</span>
 			
 			<br><br>
 
-			<button class="btn btn-info btn-lg" id="btn_promover"> <i class="fa fa-rocket"></i> Promover <br> estudiantes </button>
+			<button class="btn btn-info btn-lg" id="btn_promover"> <i class="fa fa-rocket"></i> Cambiar de <br> curso </button>
 		</div>
 		
 	{{ Form::close() }}
@@ -124,7 +137,7 @@
 		    		return false;
 		    	}
 
-		    	$('#div_form_promover').hide();
+		    	$('#div_form_cambiar').hide();
 
 		 		$("#div_spin").show();
 		 		$("#div_cargando").show();
@@ -172,19 +185,11 @@
 
 		    	if ( $('#curso_id').val() == $('#curso_promover_id').val() )
 		    	{ 
-		    		alert('No se pueden promover los estudiantes hacia el mismo curso actual: ' + $('#curso_promover_id option:selected').text() );
+		    		alert('No se pueden cambiar los estudiantes hacia el mismo curso actual: ' + $('#curso_promover_id option:selected').text() );
 		    		return false;
 		    	}
 
-		    	if ( $('#periodo_lectivo_id').val() == $('#periodo_lectivo_promover_id').val() )
-		    	{ 
-		    		alert('No se pueden promover los estudiantes hacia el mismo Año lectivo: ' + $('#periodo_lectivo_promover_id option:selected').text() );
-		    		return false;
-		    	}
-
-		 		$('#nuevo_periodo_lectivo_id').val( $('#periodo_lectivo_promover_id').val() );
 		 		$('#nuevo_curso_id').val( $('#curso_promover_id').val() );
-		 		$('#fecha_matricula').val( $('#fecha').val() );
 
         		var table = $('#tabla_lista_estudiantes').tableToJSON();
 				// Se asigna el objeto JSON a un campo oculto del formulario
@@ -193,18 +198,16 @@
 		 		$('#btn_promover_check').prop('disabled',true);
 		 		$("#checkbox_head").prop('disabled',true);
 		 		$(".checkbox_fila").prop('disabled',true);
-		 		$("#fecha").prop('disabled',true);
-		 		$("#periodo_lectivo_promover_id").prop('disabled',true);
 		 		$("#curso_promover_id").prop('disabled',true);
 
-				$('#div_form_promover').fadeIn(1000);
+				$('#div_form_cambiar').fadeIn(1000);
 		    });
 
 			$(document).on('click',"#btn_promover",function(event){
 		    	event.preventDefault();
 
 
-		    	if ( !confirm('¿Está seguro de promover todos los estudiantes seleccionados al nuevo curso ' + $('#curso_promover_id option:selected').text() + '?') )
+		    	if ( !confirm('¿Está seguro de trasladar a todos los estudiantes seleccionados hacia nuevo curso ' + $('#curso_promover_id option:selected').text() + '?') )
 		    	{
 			 		$("#div_spin").hide();
 			 		$("#div_cargando").hide();

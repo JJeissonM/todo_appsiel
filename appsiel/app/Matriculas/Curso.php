@@ -147,14 +147,34 @@ class Curso extends Model
         return $vec;
     }
 
+    public static function select_curso_del_grado( $grado_id, $curso_id = 0 )
+    {
+
+        $opciones = Curso::where([
+                                    ['estado','=','Activo'],
+                                    ['sga_grado_id','=', $grado_id]
+                                ])
+                            ->orderBy('descripcion')
+                            ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            if ( $opcion->id != $curso_id )
+            {
+                $vec[$opcion->id] = $opcion->descripcion;
+            }                
+        }
+        
+        return $vec;
+    }
+
     public static function get_registros_estado_activo()
     {
         return Curso::where('estado', 'Activo')
                     ->OrderBy('descripcion')
                     ->get();
     }
-
-
 
     public static function get_registros_del_periodo_lectivo( $periodo_lectivo_id )
     {
