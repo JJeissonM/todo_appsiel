@@ -47,6 +47,10 @@
         height: 550px;
     }
 
+    .carousel-item{
+        height: 100% !important;
+    }
+
     @media (max-width: 468px) {
         .container h2 {
             font-size: 28px !important;
@@ -59,7 +63,7 @@
     }
 </style>
 @if($clientes!=null)
-<section id="clientes" style="padding: 100px;" class="clientes-font">
+<section id="clientes" style="padding: 80px 0 10px 0;" class="clientes-font">
     <div class="container" id="contenedor_seccion_clientes2">
         @if($clientes!=null)
         <div class="section-header">
@@ -84,7 +88,7 @@
                             @else
                             <div class="carousel-item">
                             @endif
-                            <div class="row">
+                            <div class="row justify-content-center" style="padding: 0 100px">
                                 <div class="col-sm-3">
                                     <img class="d-block img-fluid" src="{{$item->logo}}" alt="First slide">
                                     <div class="text-center">
