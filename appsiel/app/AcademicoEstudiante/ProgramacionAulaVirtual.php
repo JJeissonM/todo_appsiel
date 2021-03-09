@@ -58,17 +58,12 @@ class ProgramacionAulaVirtual extends Model
         {
             $carga_academica_profesor = AsignacionProfesor::get_asignaturas_x_curso( $user->id );
 
-            $curso_id = 0;
-            if ( !is_null( $carga_academica_profesor->first() ) )
-            {
-                $curso_id =  $carga_academica_profesor->first()->curso_id;
-            }
-
+            $vec_cursos = $carga_academica_profesor->pluck('curso_id')->toArray();
             $vec_asignaturas = $carga_academica_profesor->pluck('id_asignatura')->toArray();
 
             $collection = ProgramacionAulaVirtual::leftJoin('sga_cursos','sga_cursos.id','=','sga_programacion_aula_virtual.curso_id')
                                             ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_programacion_aula_virtual.asignatura_id')
-                                            ->where('sga_programacion_aula_virtual.curso_id',$curso_id)
+                                            ->whereIn('sga_programacion_aula_virtual.curso_id',$vec_cursos)
                                             ->whereIn('sga_programacion_aula_virtual.asignatura_id',$vec_asignaturas)
                                             ->select(
                                                     'sga_programacion_aula_virtual.tipo_evento AS campo1',
