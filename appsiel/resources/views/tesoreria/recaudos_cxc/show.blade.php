@@ -13,7 +13,7 @@
 			<div class="btn-group">
 				{{ Form::bsBtnCreate( 'tesoreria/recaudos_cxc/create'.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion ) }}
 				@if($doc_encabezado->estado != 'Anulado')
-	                <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
+	                <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
 	            @endif
 	        </div>
 		</div>

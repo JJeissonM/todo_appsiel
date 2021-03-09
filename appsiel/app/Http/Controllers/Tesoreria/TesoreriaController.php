@@ -135,12 +135,14 @@ class TesoreriaController extends TransaccionController
     {
         $texto_busqueda_codigo = (int)Input::get('texto_busqueda');
 
+        // Si es un texto numérico, $texto_busqueda_codigo arojja un valor númerico, sino arroja cero (0)
+        // Si es un string
         if( $texto_busqueda_codigo == 0 )
         {
             $campo_busqueda = 'descripcion';
             $texto_busqueda = '%' . str_replace( " ", "%", Input::get('texto_busqueda') ) . '%';
         }else{
-            $campo_busqueda = 'codigo';
+            $campo_busqueda = 'id';
             $texto_busqueda = Input::get('texto_busqueda').'%';
         }
 

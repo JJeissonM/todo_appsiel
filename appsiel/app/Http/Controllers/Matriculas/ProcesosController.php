@@ -76,6 +76,8 @@ class ProcesosController extends ModeloController
     {
         $lineas_estudiantes = json_decode($request->lineas_estudiantes);
 
+        $nuevo_curso = Curso::find( (int)$request->nuevo_curso_id );
+        
         $cantidad_registros = count($lineas_estudiantes);
         $nuevas_matriculas = 0;
         for ($i=0; $i < $cantidad_registros; $i++) 
@@ -88,7 +90,6 @@ class ProcesosController extends ModeloController
             $requisitos = "on-on-on-on-on-on";
             $matricula = Matricula::find( (int)$lineas_estudiantes[$i]->matricula_id );
 
-            $nuevo_curso = Curso::find( (int)$request->nuevo_curso_id );
             $nuevo_codigo = SecuenciaCodigo::get_codigo('matriculas', (object)['grado_id' => $nuevo_curso->grado->id ]);
 
             $linea_datos = [ 'periodo_lectivo_id' => (int)$request->nuevo_periodo_lectivo_id ] +
@@ -114,27 +115,59 @@ class ProcesosController extends ModeloController
     }
 
 
-    /* 
-        PENDIENTE POR TERMINAR
-    */
-    public function form_cambiar_de_curso()
+    public function cambio_de_curso_cargar_listado( Request $request )
     {
+        $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
 
-        $miga_pan = [
-                        ['url' => $this->aplicacion->app.'?id='.Input::get('id'), 'etiqueta'=> $this->aplicacion->descripcion ],
-                        ['url' => 'NO','etiqueta'=> 'Proceso: Generar promedio de notas periodo final']
-                    ];
+        $matriculas = Matricula::where([
+                                        ['periodo_lectivo_id','=',$request->periodo_lectivo_id],
+                                        ['curso_id','=',$request->curso_id],
+                                        ['estado','=','Activo']
+                                    ])
+                                ->get();
+        
+        $curso_actual = Curso::find( $request->curso_id );
 
-        $periodos_lectivos = PeriodoLectivo::get_array_activos();
+        $opciones_cursos = Curso::select_curso_del_grado( $curso_actual->sga_grado_id, $request->curso_id );
 
-        return view( 'calificaciones.procesos.generar_promedio_notas_periodo_final', compact( 'miga_pan', 'periodos_lectivos') );
+        $cantidad_estudiantes = $matriculas->count();
+
+        $vista = View::make('matriculas.procesos.cambio_de_curso_lista_estudiantes_cambiar',compact( 'matriculas', 'opciones_cursos', 'cantidad_estudiantes' ) )->render();
+
+        return $vista;
+    }
+
+    public function cambio_de_curso_generar( Request $request )
+    {
+        $lineas_estudiantes = json_decode($request->lineas_estudiantes);
+
+        $nuevo_curso = Curso::find( (int)$request->nuevo_curso_id );
+
+        $cantidad_registros = count($lineas_estudiantes);
+        $cantidad_estudiantes_trasladados = 0;
+        for ($i=0; $i < $cantidad_registros; $i++) 
+        {
+            if ( (int)$lineas_estudiantes[$i]->checkbox == 0 )
+            {
+                continue;
+            }
+
+            $matricula = Matricula::find( (int)$lineas_estudiantes[$i]->matricula_id );
+
+            $this->cambiar_de_curso( $matricula->id_estudiante, $matricula->curso_id, (int)$request->nuevo_curso_id );
+
+            $cantidad_estudiantes_trasladados++;
+
+        } // Fin por cada registro
+
+        return redirect( 'web?id=1&id_modelo=19&&search=' . $nuevo_curso->descripcion )->with( 'flash_message', 'Cambio de curso exitoso. Se trasladaron ' . $cantidad_estudiantes_trasladados . ' estudiantes.' );
     }
 
 
     /* 
         PENDIENTE POR TERMINAR
     */
-    public function cambiar_de_curso( $estudiante_id, $curso_actual_id, $curso_futuro_id )
+    public function cambiar_de_curso( $estudiante_id, $curso_actual_id, $curso_nuevo_id )
     {
         $tablas_relacionadas = '{
                             "0":{
@@ -171,19 +204,28 @@ class ProcesosController extends ModeloController
                                     "tabla":"sga_preinformes_academicos",
                                     "llave_foranea":"id_estudiante",
                                     "mensaje":"Tiene registros en preinformes académicos."   
+                                },
+                            "7":{
+                                    "tabla":"sga_estudiante_reconocimientos",
+                                    "llave_foranea":"estudiante_id",
+                                    "mensaje":"Tiene registros en preinformes académicos."   
+                                },
+                            "8":{
+                                    "tabla":"sga_notas_nivelaciones",
+                                    "llave_foranea":"estudiante_id",
+                                    "mensaje":"Tiene registros en preinformes académicos."   
                                 }
                         }';
 
         $tablas = json_decode( $tablas_relacionadas );
-        foreach($tablas AS $una_tabla)
+        foreach( $tablas AS $una_tabla )
         { 
             // UPDATE `sga_asistencia_clases` SET curso_id = 12 WHERE `id_estudiante` = 249 AND `curso_id` = 11
-            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
-
-            if ( !empty($registro) )
-            {
-                return $una_tabla->mensaje;
-            }
+            $registros = DB::table( $una_tabla->tabla )->where( [
+                                                                [ $una_tabla->llave_foranea, '=', $estudiante_id],
+                                                                [ 'curso_id', '=', $curso_actual_id]
+                                                            ] )
+                                                    ->update(['curso_id' => $curso_nuevo_id]);
         }
 
         
