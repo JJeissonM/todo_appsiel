@@ -37,7 +37,7 @@ Route::resource('consultorio_medico/anamnesis', 'Salud\AnamnesisController');
 
 
 //		SALUD OCUPACIONAL
-Route::get('salud_imprimir_historia_medica_ocupacional', 'Salud\SaludOcupacionalController@imprimir_historia_medica_ocupacional');
+Route::get('salud_imprimir_historia_medica_ocupacional/{consulta_id}', 'Salud\SaludOcupacionalController@imprimir_historia_medica_ocupacional');
 
 
 //CITAS MEDICAS

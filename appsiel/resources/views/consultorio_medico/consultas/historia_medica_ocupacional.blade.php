@@ -6,15 +6,12 @@
     $modelo_padre_id = 96; // Consultas Médicas
     $registro_modelo_padre_id = $consulta->id;
 
-    $ids_modelos_relacionados = [ 237, 238, 239, 240, 241 ];
-	//$modelo_entidad_id = 237; // Antecedentes ocupacionales
-
-	//$datos = ModeloEavController::show_datos_entidad( $modelo_padre_id, $registro_modelo_padre_id, $modelo_entidad_id );
+    $ids_modelos_relacionados = [ 237, 238, 239, 240, 241, 286, 287, 288 ];
 
 ?>
 <br>
 
-{{ Form::bsBtnPrint('salud_imprimir_historia_medica_ocupacional') }}
+{{ Form::bsBtnPrint('salud_imprimir_historia_medica_ocupacional/' . $consulta->id ) }}
 
 @foreach( $ids_modelos_relacionados AS $key => $value )
 	<?php 

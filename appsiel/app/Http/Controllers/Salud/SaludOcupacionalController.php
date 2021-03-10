@@ -10,6 +10,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 
+use App\Http\Controllers\Core\ModeloEavController;
+
 use Input;
 use DB;
 use Auth;
@@ -32,45 +34,23 @@ use App\Salud\TipoLente;
 class SaludOcupacionalController extends ModeloController
 {
     
-    public function imprimir_historia_medica_ocupacional( $id )
+    public function imprimir_historia_medica_ocupacional( $consulta_id )
     {
-        $paciente_id = Input::get('paciente_id');
-        $consulta_id = $id;
+        $consulta = ConsultaMedica::find( $consulta_id );
 
-        $consulta = ConsultaMedica::find($consulta_id);
+        $datos_historia_clinica = Paciente::datos_basicos_historia_clinica( $consulta->paciente_id );
 
-        $datos_historia_clinica = Paciente::datos_basicos_historia_clinica( $paciente_id );
-
-        // EXÁMENES
-        $examenes = '';
-        $opciones = ExamenMedico::where('estado','Activo')->get();
-        $i = 0;
-        foreach ($opciones as $opcion)
+        $ids_modelos_relacionados = [ 237, 238, 239, 240, 241 ];//, 286, 287, 288 ];
+        $vistas_secciones = '';
+        foreach ( $ids_modelos_relacionados as $key => $modelo_id )
         {
-            $esta = DB::table('salud_resultados_examenes')->where( ['examen_id'=>$opcion->id, 'paciente_id'=>$paciente_id,'consulta_id'=>$consulta_id] )->first();
-            if ( !empty($esta) )
-            {
-              $examen_id = $opcion->id;
+            $secuencia_campo = 1;
+            $modelo_sys = Modelo::find( $modelo_id );
+            $modelo_seccion_historia_clinica = app( $modelo_sys->name_space );
+            $vistas_secciones .= View::make( $modelo_seccion_historia_clinica->vista_imprimir, compact( 'consulta', 'modelo_sys', 'modelo_seccion_historia_clinica') )->render();
 
-              $organos = ExamenTieneOrganos::leftJoin('salud_organos_del_cuerpo','salud_organos_del_cuerpo.id','=','salud_examen_tiene_organos.organo_id')->where( 'examen_id', $examen_id )->select('salud_organos_del_cuerpo.id','salud_organos_del_cuerpo.descripcion')->orderBy('salud_examen_tiene_organos.orden')->get();
-
-              $variables = ExamenTieneVariables::leftJoin('salud_catalogo_variables_examenes','salud_catalogo_variables_examenes.id','=','salud_examen_tiene_variables.variable_id')->where( 'examen_id', $examen_id )->select('salud_catalogo_variables_examenes.id','salud_catalogo_variables_examenes.descripcion','salud_examen_tiene_variables.tipo_campo')->orderBy('salud_examen_tiene_variables.orden')->get();
-
-              $examenes .= '<h4>'.$opcion->descripcion.'</h4>'.View::make('consultorio_medico.resultado_examen_show_tabla', compact('variables','organos','paciente_id','consulta_id','examen_id'))->render();
-            }
+            //dd( $vistas_secciones );
         }
-        
-        // Anamnesis
-        $modelo_padre_id = 96; // Consultas Médicas
-        $registro_modelo_padre_id = $consulta->id;
-        $modelo_entidad_id = 110; // Anamnesis
-        $anamnesis = ModeloEavController::show_datos_entidad( $modelo_padre_id, $registro_modelo_padre_id, $modelo_entidad_id );
-
-        // Resultados
-        $modelo_padre_id = 96; // Consultas Médicas
-        $registro_modelo_padre_id = $consulta->id;
-        $modelo_entidad_id = 111; // Resultados de la consulta
-        $resultados = ModeloEavController::show_datos_entidad( $modelo_padre_id, $registro_modelo_padre_id, $modelo_entidad_id );
 
         // PROFESIONAL DE LA SALUD
         $raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo';
@@ -81,13 +61,13 @@ class SaludOcupacionalController extends ModeloController
         $tam_hoja = 'Letter';
         $orientacion='portrait';
 
-        $view =  View::make('consultorio_medico_salud_ocupacional.formato_1_historia_clinica', compact('consulta','datos_historia_clinica','examenes','anamnesis','resultados','profesional_salud','empresa'))->render();
+        $view =  View::make('consultorio_medico.salud_ocupacional.historia_medica_ocupacional_1', compact( 'consulta', 'datos_historia_clinica', 'vistas_secciones', 'profesional_salud', 'empresa'))->render();
 
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
 
-        //return $view;
-        return $pdf->stream( 'historia_clinica.pdf');//stream();
+        return $view;
+        //return $pdf->stream( 'historia_clinica.pdf');//stream();
     }
 
 

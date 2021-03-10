@@ -51,20 +51,13 @@ class ProgramacionAulaVirtual extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-
         $user = Auth::user();
 
         if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
         {
-            $carga_academica_profesor = AsignacionProfesor::get_asignaturas_x_curso( $user->id );
-
-            $vec_cursos = $carga_academica_profesor->pluck('curso_id')->toArray();
-            $vec_asignaturas = $carga_academica_profesor->pluck('id_asignatura')->toArray();
-
             $collection = ProgramacionAulaVirtual::leftJoin('sga_cursos','sga_cursos.id','=','sga_programacion_aula_virtual.curso_id')
                                             ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_programacion_aula_virtual.asignatura_id')
-                                            ->whereIn('sga_programacion_aula_virtual.curso_id',$vec_cursos)
-                                            ->whereIn('sga_programacion_aula_virtual.asignatura_id',$vec_asignaturas)
+                                            ->where( 'sga_programacion_aula_virtual.creado_por', $user->email )
                                             ->select(
                                                     'sga_programacion_aula_virtual.tipo_evento AS campo1',
                                                     'sga_cursos.descripcion AS campo2',

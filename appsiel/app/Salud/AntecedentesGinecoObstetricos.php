@@ -11,7 +11,7 @@ use App\Salud\ConsultaMedica;
 
 use DB;
 
-class AntecedentesGinecoObstetricos extends Model
+class AntecedentesGinecoObstetricos extends ModeloEavValor
 {
     protected $table = 'core_eav_valores';
 
@@ -20,6 +20,8 @@ class AntecedentesGinecoObstetricos extends Model
 	protected $crud_model_id = 96; // Consultas
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"consultorio_medico/pacientes/id_fila","update":"core/eav/id_fila"}';
+
+    public $vista_imprimir = 'consultorio_medico.salud_ocupacional.antecedentes_gineco_obstetricos';
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Campo', 'Valor'];
 

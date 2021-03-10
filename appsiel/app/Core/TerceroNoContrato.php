@@ -14,7 +14,6 @@ class TerceroNoContrato extends Tercero
     public static function opciones_campo_select()
     {
         $opciones = Tercero::leftJoin('nom_contratos','nom_contratos.core_tercero_id','=','core_terceros.id')
-                        ->whereNull('nom_contratos.core_tercero_id')
                         ->where('core_terceros.core_empresa_id',Auth::user()->empresa_id)
                         ->select(
                                     'core_terceros.id',
@@ -24,13 +23,19 @@ class TerceroNoContrato extends Tercero
                                     'core_terceros.apellido1',
                                     'core_terceros.apellido2',
                                     'core_terceros.razon_social',
-                                    'core_terceros.numero_identificacion'
+                                    'core_terceros.numero_identificacion',
+                                    'nom_contratos.estado'
                                 )
                         ->get();
 
         $vec['']='';
         foreach ($opciones as $opcion)
         {
+            if ($opcion->estado == 'Activo' )
+            {
+                continue;
+            }
+            
             $nombre_completo = $opcion->descripcion;
 
             if ( $nombre_completo == '' )

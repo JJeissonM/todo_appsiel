@@ -16,28 +16,8 @@
 	        	@include('consultorio_medico.pacientes.datos_laborales')
 	        @endif
 
-			<br>
-			<h3>Anamnesis</h3>
-			{!! $anamnesis !!}
-
-			<br>
-			<!-- Datos de Exámenes--> 
-			<h3>Exámenes</h3>
-			{!! $examenes !!}
-
-			<br>
-			<h3>Fórmula</h3>
-			<?php
-				$formula = App\Salud\FormulaOptica::where('paciente_id', $consulta->paciente_id)->where('consulta_id', $consulta->id)->first();
-			?>
-
-			@include('consultorio_medico.formula_optica_show_tabla' )
-
-			<br>
-			<h3>Resultados</h3>
-			{!! $resultados !!}
-
 			<br><br>
+			{!! $vistas_secciones !!}
 
 			<p class="pull-right">
 				_________________________________ <br>
