@@ -1,4 +1,4 @@
-2. {{ $modelo_sys->descripcion }}
+<b>2. {{ $modelo_sys->descripcion }}</b>
 
 <?php 
 	$modelo_padre_id = 96; // Consulta Médica
@@ -21,6 +21,8 @@
 					<td> {{ $datos[$i]->valor }} </td>
 				@endfor
 			</tr>
+			<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
+			<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td></tr>
 		</tbody>
 	</table>
 @endif

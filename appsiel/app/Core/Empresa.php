@@ -23,6 +23,11 @@ class Empresa extends Model
         return $this->hasOne('App\Core\Colegio');
     }
 
+    public function ciudad()
+    {
+        return $this->belongsTo('App\Core\Ciudad', 'codigo_ciudad');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = Empresa::select(
@@ -69,12 +74,5 @@ class Empresa extends Model
     public static function tituloExport()
     {
         return "LISTADO DE EMPRESAS";
-    }
-
-
-
-    public function ciudad()
-    {
-        return $this->belongsTo('App\Core\Ciudad', 'codigo_ciudad');
     }
 }

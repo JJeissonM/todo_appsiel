@@ -1,5 +1,5 @@
-<table class="table">
-	<tr>
+<table class="table" style="border: none !important;">
+	<tr style="border: none !important;">
 		<td width="20%">
 			<img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen }}" height="{{ config('configuracion.alto_logo_formatos') }}" width="{{ config('configuracion.ancho_logo_formatos') }}" style="padding: 2px 10px;" />
 		</td>
@@ -15,22 +15,11 @@
 	</tr>
 </table>
 <h3 style="width: 100%; text-align: center; margin: -10px;">
-	HISTORIA MÉDICA OCUPACIONAL
+	CERTIFICADO DE APTITUD
 </h3>
 <!-- Datos básicos del paciente -->
-@include('consultorio_medico.salud_ocupacional.datos_paciente')
-
-<!-- Datos básicos del Consulta 
-@ include( 'consultorio_medico.consultas.datos_consulta' )-->
-
+@include('consultorio_medico.salud_ocupacional.datos_paciente_aptitud')
 
 <br><br>
 
 {!! $vistas_secciones !!}
-
-<br/>
-
-<footer>
-	<hr>
-	{{ $empresa->descripcion }}, Dirección: {{ $empresa->direccion1 }} Tel. {{ $empresa->telefono1 }}
-</footer>

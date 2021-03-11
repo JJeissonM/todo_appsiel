@@ -9,8 +9,23 @@ use DB;
 class ProfesionalSalud extends Model
 {
     protected $table = 'salud_profesionales';
-    protected $fillable = ['core_tercero_id', 'especialidad', 'numero_carnet_licencia', 'estado'];
+
+    protected $fillable = ['core_tercero_id', 'especialidad', 'numero_carnet_licencia', 'licencia_salud_ocupacional', 'estado'];
+    
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre completo', 'Especialidad', 'Registro médico', 'Estado'];
+    
+    // El archivo js debe estar en la carpeta public
+    public $archivo_js = 'assets/js/consultorio_medico/profesional_salud.js';
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
+    }
+
+    public function citamedicas()
+    {
+        return $this->hasMany(Citamedica::class);
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -58,14 +73,6 @@ class ProfesionalSalud extends Model
         return "LISTADO DE PROFESIONALES DE LA SALUD";
     }
 
-    // El archivo js debe estar en la carpeta public
-    public $archivo_js = 'assets/js/consultorio_medico/profesional_salud.js';
-
-    public function tercero()
-    {
-        return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
-    }
-
     public static function opciones_campo_select()
     {
         $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
@@ -79,10 +86,5 @@ class ProfesionalSalud extends Model
         }
 
         return $vec;
-    }
-
-    public function citamedicas()
-    {
-        return $this->hasMany(Citamedica::class);
     }
 }

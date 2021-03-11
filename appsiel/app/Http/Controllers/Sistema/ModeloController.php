@@ -700,7 +700,8 @@ class ModeloController extends Controller
                 $lista_campos[$i]['opciones'] = 'table_asignaturas';
             }
 
-            if ($lista_campos[$i]['tipo'] == 'imagen') {
+            if ($lista_campos[$i]['tipo'] == 'imagen')
+            {
                 if ($registro->$nombre_campo == '' && $nombre_campo == 'imagen') {
                     $campo_imagen = 'avatar.png';
                     $btn_quitar_img = '';

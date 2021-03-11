@@ -77,7 +77,7 @@
 						<b>Carnet/Licencia:</b> {{ $lista_campos['numero_carnet_licencia'] }}
 					</td>
 					<td>
-						&nbsp;
+						<b>Licencia Salud Ocupacional:</b> {{ $lista_campos['licencia_salud_ocupacional'] }}
 					</td>
 				</tr>
 			</table>

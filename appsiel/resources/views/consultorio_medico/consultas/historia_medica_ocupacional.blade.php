@@ -11,7 +11,9 @@
 ?>
 <br>
 
-{{ Form::bsBtnPrint('salud_imprimir_historia_medica_ocupacional/' . $consulta->id ) }}
+<a class="btn btn-info" href="{{ url( 'salud_imprimir_historia_medica_ocupacional/' . $consulta->id ) }}" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i> Historia </a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a class="btn btn-info" href="{{ url( 'salud_imprimir_certificado_aptitud/' . $consulta->id ) }}" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i> Certificado </a>
 
 @foreach( $ids_modelos_relacionados AS $key => $value )
 	<?php 
