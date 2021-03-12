@@ -1670,6 +1670,12 @@
       'migration' => '2021_02_09_121422_create_parametros_retefuente_empleados_table',
       'batch' => 92,
     ),
+    278 => 
+    array (
+      'id' => 0,
+      'migration' => '2021_03_12_060203_create_suscripcions_table',
+      'batch' => 93,
+    ),
   ),
   'permissions' => 
   array (
@@ -9202,6 +9208,21 @@
       'fa_icon' => '',
       'created_at' => '2021-03-10 05:32:25',
       'updated_at' => '2021-03-10 05:33:09',
+    ),
+    502 => 
+    array (
+      'id' => 528,
+      'core_app_id' => 13,
+      'modelo_id' => 289,
+      'name' => 'vtas_suscripciones',
+      'descripcion' => 'Suscripciones',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => 'clock-o',
+      'created_at' => '2021-03-12 06:12:40',
+      'updated_at' => '2021-03-12 06:31:08',
     ),
   ),
   'roles' => 
@@ -20728,6 +20749,24 @@
       'orden' => 0,
       'permission_id' => 527,
       'role_id' => 14,
+    ),
+    1892 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 528,
+      'role_id' => 1,
+    ),
+    1893 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 528,
+      'role_id' => 3,
+    ),
+    1894 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 528,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -40878,6 +40917,54 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-03-11 08:59:22',
       'updated_at' => '2021-03-11 08:59:52',
     ),
+    1252 => 
+    array (
+      'id' => 1258,
+      'descripcion' => 'Cliente',
+      'tipo' => 'select',
+      'name' => 'cliente_id',
+      'opciones' => 'model_App\\Ventas\\Cliente',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-03-12 05:57:45',
+      'updated_at' => '2021-03-12 05:57:54',
+    ),
+    1253 => 
+    array (
+      'id' => 1259,
+      'descripcion' => 'Plantilla suscripción',
+      'tipo' => 'select',
+      'name' => 'plantilla_suscripcion_id',
+      'opciones' => 'model_App\\Ventas\\PlantillaSuscripcion',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-03-12 09:46:22',
+      'updated_at' => '2021-03-12 09:46:22',
+    ),
+    1254 => 
+    array (
+      'id' => 1260,
+      'descripcion' => 'Plan suscripción',
+      'tipo' => 'select',
+      'name' => 'inv_producto_id',
+      'opciones' => 'model_App\\Inventarios\\Servicio',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-03-12 09:46:22',
+      'updated_at' => '2021-03-12 06:21:28',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -46996,6 +47083,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2021-03-02 09:13:22',
       'updated_at' => '2021-03-10 11:35:45',
+    ),
+    278 => 
+    array (
+      'id' => 289,
+      'descripcion' => 'Suscripciones',
+      'modelo' => 'Suscripcion',
+      'name_space' => 'App\\Ventas\\Suscripcion',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2021-03-12 09:13:22',
+      'updated_at' => '2021-03-12 09:13:22',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -64310,6 +64419,55 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 179,
       'core_modelo_id' => 286,
       'core_campo_id' => 903,
+    ),
+    2473 => 
+    array (
+      'id' => 2820,
+      'orden' => 99,
+      'core_modelo_id' => 289,
+      'core_campo_id' => 94,
+    ),
+    2474 => 
+    array (
+      'id' => 2821,
+      'orden' => 99,
+      'core_modelo_id' => 289,
+      'core_campo_id' => 95,
+    ),
+    2475 => 
+    array (
+      'id' => 2822,
+      'orden' => 2,
+      'core_modelo_id' => 289,
+      'core_campo_id' => 1258,
+    ),
+    2476 => 
+    array (
+      'id' => 2823,
+      'orden' => 4,
+      'core_modelo_id' => 289,
+      'core_campo_id' => 62,
+    ),
+    2477 => 
+    array (
+      'id' => 2824,
+      'orden' => 6,
+      'core_modelo_id' => 289,
+      'core_campo_id' => 63,
+    ),
+    2478 => 
+    array (
+      'id' => 2825,
+      'orden' => 8,
+      'core_modelo_id' => 289,
+      'core_campo_id' => 1260,
+    ),
+    2479 => 
+    array (
+      'id' => 2826,
+      'orden' => 14,
+      'core_modelo_id' => 289,
+      'core_campo_id' => 22,
     ),
   ),
   'sys_reportes' => 

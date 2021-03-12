@@ -34,6 +34,11 @@ use App\Salud\TipoLente;
 class SaludOcupacionalController extends ModeloController
 {
     
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function imprimir_historia_medica_ocupacional( $consulta_id )
     {
         $consulta = ConsultaMedica::find( $consulta_id );

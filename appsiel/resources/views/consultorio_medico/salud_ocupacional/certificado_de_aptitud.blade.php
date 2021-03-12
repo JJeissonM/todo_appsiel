@@ -14,6 +14,7 @@
 		</td>
 	</tr>
 </table>
+<br>
 <h3 style="width: 100%; text-align: center; margin: -10px;">
 	CERTIFICADO DE APTITUD
 </h3>

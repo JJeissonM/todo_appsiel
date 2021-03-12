@@ -98,8 +98,11 @@ class TransaccionController extends Controller
     {
         $this->set_variables_globales();
 
-        $permisos = Permission::where( 'core_app_id', $this->app->id )
-                                ->where('parent',0)
+        $permisos = Permission::where( [
+                                        ['core_app_id', '=', $this->app->id],
+                                        ['parent','=',0],
+                                        ['modelo_id','<>',0]
+                                    ] )
                                 ->orderBy('orden','ASC')
                                 ->get()
                                 ->toArray();
