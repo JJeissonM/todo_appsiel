@@ -195,4 +195,46 @@ class ModeloEavValor extends Model
                                     ] )
                             ->value('valor');
     }
+
+    public function get_pares_campos_valores( $modelo_sys, $modelo_padre_id, $registro_modelo_padre_id )
+    {
+        $campos = $modelo_sys->campos()->where('name','core_campo_id-ID')->orderBy('id')->get();
+        
+        $valores_entidades = app($modelo_sys->name_space)->where(
+                                                            [   'modelo_padre_id' => $modelo_padre_id,
+                                                                'registro_modelo_padre_id' => $registro_modelo_padre_id,
+                                                                'modelo_entidad_id' => $modelo_sys->id
+                                                            ]
+                                                        )
+                                                    ->get();
+
+
+        $datos = [];
+        if ( empty( $valores_entidades->toArray() )  )
+        {
+            $datos[] = (object)[ 'descripcion' => '--', 'valor' => '--' ];
+        }
+
+        foreach ( $campos as $linea ) 
+        {
+            $datos[] = (object)[ 'descripcion' => $linea->descripcion, 'valor' => $this->get_valor_desde_valores_entidades( $valores_entidades, $linea->id ) ];
+        }
+
+        return $datos;
+    }
+
+    public function get_valor_desde_valores_entidades( $valores_entidades, $core_campo_id )
+    {
+        $valor = '--';
+
+        foreach ($valores_entidades as $linea )
+        {
+            if( $linea->core_campo_id == $core_campo_id )
+            {
+                $valor = $linea->valor;
+            }
+        }
+
+        return $valor;
+    }
 }

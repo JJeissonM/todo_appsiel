@@ -6,15 +6,14 @@
     $modelo_padre_id = 96; // Consultas Médicas
     $registro_modelo_padre_id = $consulta->id;
 
-    $ids_modelos_relacionados = [ 237, 238, 239, 240, 241 ];
-	//$modelo_entidad_id = 237; // Antecedentes ocupacionales
-
-	//$datos = ModeloEavController::show_datos_entidad( $modelo_padre_id, $registro_modelo_padre_id, $modelo_entidad_id );
+    $ids_modelos_relacionados = [ 237, 238, 239, 240, 241, 286, 287, 288 ];
 
 ?>
 <br>
 
-{{ Form::bsBtnPrint('salud_imprimir_historia_medica_ocupacional') }}
+<a class="btn btn-info" href="{{ url( 'salud_imprimir_historia_medica_ocupacional/' . $consulta->id ) }}" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i> Historia </a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a class="btn btn-info" href="{{ url( 'salud_imprimir_certificado_aptitud/' . $consulta->id ) }}" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i> Certificado </a>
 
 @foreach( $ids_modelos_relacionados AS $key => $value )
 	<?php 
