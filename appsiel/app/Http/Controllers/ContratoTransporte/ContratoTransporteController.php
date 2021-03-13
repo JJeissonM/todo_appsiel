@@ -430,7 +430,7 @@ class ContratoTransporteController extends Controller
         if ($c->estado == 'ANULADO') {
             return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
         }
-        $contratante = $c->contratante;
+
         $vehiculo = $c->vehiculo;
         $p = Planillac::where('contrato_id', $id)->first();
         $conductores = $p->planillaconductors;
@@ -467,11 +467,16 @@ class ContratoTransporteController extends Controller
                 }
             }
         }
-        $representante_legal_contratante = $contratante->tercero->representante_legal();
-        if ( is_null($representante_legal_contratante) )
+
+        $representante_legal_contratante = '';
+        if ( !is_null($contratante) )
         {
-            $representante_legal_contratante = $contratante->tercero;
-        }
+            $representante_legal_contratante = $contratante->tercero->representante_legal();
+            if ( is_null($representante_legal_contratante) )
+            {
+                $representante_legal_contratante = $contratante->tercero;
+            }
+        }            
         
         $documento_vista =  View::make('contratos_transporte.contratos.print', compact('c', 'conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'emp', 'representante_legal_contratante'))->render();
 
