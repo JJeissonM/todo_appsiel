@@ -211,25 +211,31 @@ class ServicioController extends Controller
     public function modificar(Request $request, $id)
     {
         $item = Itemservicio::find($id);
+        
         $item->titulo = strtoupper($request->titulo);
         $item->descripcion = $request->descripcion;
+        
+        
         $item->url = null;
         if ($request->url != "") {
             $item->url = $request->url;
         }
         if ($request->disposicion == 'IMAGEN') {
             //el fondo es una imagen
-            $file = $request->file('icono');
-            $name = time() . $file->getClientOriginalName();
-            $filename = "img/" . $name;
-            $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
-            if ($flag !== false) {
-                $item->icono = $filename;
-            } else {
-                $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
-                return redirect()->back()->withInput($request->input())
-                    ->with('mensaje_error', $message);
+            if($request->icono != ''){
+                $file = $request->file('icono');
+                $name = time() . $file->getClientOriginalName();
+                $filename = "img/" . $name;
+                $flag = file_put_contents($filename, file_get_contents($file->getRealPath()), LOCK_EX);
+                if ($flag !== false) {
+                    $item->icono = $filename;
+                } else {
+                    $message = 'Error inesperado al intentar guardar la imagen de fondo, por favor intente nuevamente mas tarde';
+                    return redirect()->back()->withInput($request->input())
+                        ->with('mensaje_error', $message);
+                }
             }
+            
         } else {
             $item->icono = $request->icono;
         }

@@ -40,7 +40,15 @@ return array(
         ],
         '5' => [
             'app' => 'academico_estudiante',
-            'urls' => array()
+            'urls' => array(                
+                '0' => array(
+                    'label' => 'Tour Academico Estudiante',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Estudiantes/1_tour_estudiante.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Estudiantes/1_tour_estudiante.mp4',
+                    'duracion' => '10:20',
+                    'publicacion' => '12 de Marzo de 2021'
+                )
+            )
         ],
         '6' => [
             'app' => 'configuracion',
