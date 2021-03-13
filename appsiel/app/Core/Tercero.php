@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 use Storage;
+use Schema;
 
 use App\Matriculas\Estudiante;
 use App\Sistema\Modelo;
@@ -57,6 +58,38 @@ class Tercero extends Model
     public function cliente()
     {
         return Cliente::where('core_tercero_id', $this->id)->get()->first();
+    }
+
+    public function propietario()
+    {
+        return $this->hasOne(Propietario::class);
+    }
+
+    public function conductor()
+    {
+        return $this->hasOne(Conductor::class);
+    }
+
+    public function contratantes()
+    {
+        return $this->hasMany(Contratante::class);
+    }
+
+    public function responsableestudiantes()
+    {
+        return $this->hasMany(Responsableestudiante::class);
+    }
+
+    public function representante_legal()
+    {
+        $representante_legal_actual = DB::table('core_tercero_tiene_representante_legal')->where('tercero_id', '=', $this->id)->get();
+
+        if( empty( $representante_legal_actual ) )
+        {
+            return null;
+        }
+
+        return Tercero::find( $representante_legal_actual[0]->representante_legal_id );
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -193,6 +226,98 @@ class Tercero extends Model
 
         return $vec;
     }
+
+
+
+    public function store_adicional($datos, $registro)
+    {
+        if( (int)$datos['representante_legal_id'] != 0 )
+        {
+            DB::table('core_tercero_tiene_representante_legal')->insert([
+                                                                            'tercero_id' => $registro->id,
+                                                                            'representante_legal_id' => (int)$datos['representante_legal_id']
+                                                                        ]);
+        }
+    }
+
+    public static function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+        //dd($lista_campos);
+        foreach ($lista_campos as $key => $campo)
+        {
+            if( $campo['name'] == 'representante_legal_id' )
+            {
+                $representante_legal_actual = DB::table('core_tercero_tiene_representante_legal')->where('tercero_id', '=', $registro->id)->get();
+                if( !empty( $representante_legal_actual ) )
+                {
+                    $lista_campos[$key]['value'] = $representante_legal_actual[0]->representante_legal_id;
+                }
+            }
+        }
+
+        return $lista_campos;
+    }
+
+    public function update_adicional($datos, $id)
+    {
+        $tercero = Tercero::find( $id );
+
+        $representante_legal_actual = DB::table('core_tercero_tiene_representante_legal')->where('tercero_id', '=', $tercero->id)->get();
+
+        // Ya tiene rep. legal asociado
+        if( !empty( $representante_legal_actual ) )
+        {
+            $representante_legal_actual_id = $representante_legal_actual[0]->representante_legal_id;
+
+            // Cambió el rep. legal
+            if ( $representante_legal_actual_id != (int)$datos['representante_legal_id'] )
+            {
+                // Cambió por uno vacío
+                if ( (int)$datos['representante_legal_id'] == 0 )
+                {
+                    // Se elimina
+                    DB::table( 'core_tercero_tiene_representante_legal' )->where( 'tercero_id', '=', $id)->delete();
+                }else{
+                    // Se actualiza
+                    DB::table( 'core_tercero_tiene_representante_legal' )->where( 'tercero_id', '=', $id)
+                                                                    ->update( [ 
+                                                                                'representante_legal_id' => (int)$datos['representante_legal_id'] 
+                                                                            ] );
+                }
+                    
+            }
+        }else{
+            // Si no tiene rep. legal
+
+            if ( (int)$datos['representante_legal_id'] != 0 )
+            {
+                // Se crea uno nuevo
+                DB::table('core_tercero_tiene_representante_legal')->insert([
+                                                                            'tercero_id' => $tercero->id,
+                                                                            'representante_legal_id' => (int)$datos['representante_legal_id']
+                                                                        ]);
+            }
+        }
+    }
+
+    public function show_adicional($lista_campos, $registro)
+    {
+        //dd($lista_campos);
+        foreach ($lista_campos as $key => $campo)
+        {
+            if( $campo['name'] == 'representante_legal_id' )
+            {
+                $representante_legal_actual = DB::table('core_tercero_tiene_representante_legal')->where('tercero_id', '=', $registro->id)->get();
+                if( !empty( $representante_legal_actual ) )
+                {
+                    $lista_campos[$key]['value'] = $representante_legal_actual[0]->representante_legal_id;
+                }
+            }
+        }
+
+        return $lista_campos;
+    }
+
 
     public function validar_eliminacion($id)
     {
@@ -384,7 +509,7 @@ class Tercero extends Model
                                 },
                             "37":{
                                     "tabla":"sga_responsableestudiantes",
-                                    "llave_foranea":"core_tercero_id",
+                                    "llave_foranea":"tercero_id",
                                     "mensaje":"Está relacionado en tabla de Responsables de Estudiantes."
                                 },
                             "38":{
@@ -411,37 +536,29 @@ class Tercero extends Model
                                     "tabla":"cte_propietarios",
                                     "llave_foranea":"tercero_id",
                                     "mensaje":"Está asociado un Propietario en la aplicación Contratos de transporte."
+                                },
+                            "43":{
+                                    "tabla":"core_tercero_tiene_representante_legal",
+                                    "llave_foranea":"tercero_id",
+                                    "mensaje":"Tiene un Representante Legal asociado."
                                 }
                         }';
         $tablas = json_decode($tablas_relacionadas);
-        foreach ($tablas as $una_tabla) {
+        foreach ($tablas as $una_tabla)
+        {
+            if ( !Schema::hasTable( $una_tabla->tabla ) )
+            {
+                continue;
+            }
+            
             $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
 
-            if (!empty($registro)) {
+            if (!empty($registro))
+            {
                 return $una_tabla->mensaje;
             }
         }
 
         return 'ok';
-    }
-
-    public function propietario()
-    {
-        return $this->hasOne(Propietario::class);
-    }
-
-    public function conductor()
-    {
-        return $this->hasOne(Conductor::class);
-    }
-
-    public function contratantes()
-    {
-        return $this->hasMany(Contratante::class);
-    }
-
-    public function responsableestudiantes()
-    {
-        return $this->hasMany(Responsableestudiante::class);
     }
 }
