@@ -418,10 +418,37 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 					</tr>
 					<tr>
 						<td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center; border-top: none;">RESPONSABLE DEL CONTRATANTE</td>
-						<td class="border" style="width: 32%; font-weight: bold; font-size: 10px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} @endif</td>
-						<td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteIdentificacion}} @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
-						<td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteDireccion}} @else {{$c->contratante->tercero->direccion1}} @endif</td>
-						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteTelefono}} @else {{$c->contratante->tercero->telefono1}} @endif</td>
+						<td class="border" style="width: 32%; font-weight: bold; font-size: 10px;">
+							@if($c->contratante_id==null || $c->contratante_id=='null') 
+								{{$c->contratanteText}}
+							@else 
+								{{$representante_legal_contratante->descripcion}}
+							@endif
+						</td>
+						<td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">
+							@if($c->contratante_id==null || $c->contratante_id=='null')
+								{{$c->contratanteIdentificacion}}
+							@else 
+								{{$representante_legal_contratante->numero_identificacion}}
+								@if($representante_legal_contratante->tipo!='Persona natural') 
+									{{"-".$representante_legal_contratante->digito_verificacion}} 
+								@endif 
+							@endif
+						</td>
+						<td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">
+							@if($c->contratante_id==null || $c->contratante_id=='null')
+								{{$c->contratanteDireccion}}
+							@else 
+								{{$representante_legal_contratante->direccion1}} 
+							@endif
+						</td>
+						<td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">
+							@if($c->contratante_id==null || $c->contratante_id=='null') 
+								{{$c->contratanteTelefono}} 
+							@else 
+								{{$representante_legal_contratante->telefono1}} 
+							@endif
+						</td>
 					</tr>
 				</tbody>
 			</table>

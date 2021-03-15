@@ -21,6 +21,10 @@ class Conclusiones extends ModeloEavValor
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"consultorio_medico/pacientes/id_fila","update":"core/eav/id_fila"}';
 
+    public $vista_imprimir = 'consultorio_medico.salud_ocupacional.conclusiones';
+
+    public $vista_imprimir_aptitud = 'consultorio_medico.salud_ocupacional.conclusiones_aptitud';
+
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Campo', 'Valor'];
 
     public static function consultar_registros($nro_registros)

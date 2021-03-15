@@ -282,7 +282,7 @@
                 <table id="myTable" class="table table-responsive table-striped">
                     <thead>
                         <th>Nombre</th>
-                        <th>Correo</th>
+                        <th>Correo | Numero de Telefono</th>
                         <th>Asunto</th>
                         <th>Estado</th>
                         <th>Leer</th>

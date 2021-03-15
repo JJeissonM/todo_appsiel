@@ -34,7 +34,7 @@
                         @endif
                         @if( $contactenos->correo != '' )
                         <a href="mailto:{{ $contactenos->correo }}">
-                            <span class="contactenos-font" style="font-size: 22px; color: var(--color-secundario)" title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
+                            <span class="contactenos-font" style="font-size: 22px; color: var(--color-primario)" title="{{ $contactenos->correo }}"> {{$contactenos->correo}}<br> </span>
                         </a>
                         @endif
                         @if( $contactenos->direccion != '' )
@@ -56,6 +56,9 @@
                         </div>
                         <div class="form-group">
                             <input type="email" name="email" class="form-control" id="email" placeholder="Email" required="">
+                        </div>
+                        <div class="form-group">
+                            <input type="number" name="numtel" class="form-control" id="numtel" placeholder="Numero de Telefono" required="">
                         </div>
                         <div class="form-group">
                             <input type="text" name="subject" class="form-control" id="subject" placeholder="Asunto" required="">
@@ -80,10 +83,11 @@
     function guardar() {
         var nam = $("#names").val();
         var asu = $("#subject").val();
-        var corr = $("#email").val();
+        var ntel = $("#numtel").val();
+        var corr = $("#email").val()+" | "+ntel;
         var msj = $("#message").val();
-        if (nam.length <= 0 || asu.length <= 0 || corr.length <= 0 || msj.length <= 0) {
-            alert("complete");
+        if (nam.length <= 0 || asu.length <= 0 || corr.length <= 0 || msj.length <= 0 || ntel.length <= 0) {
+            alert("Complete los campos.");
             return;
         } else {
             $.ajax({

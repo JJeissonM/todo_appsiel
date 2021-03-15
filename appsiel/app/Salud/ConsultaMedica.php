@@ -25,6 +25,10 @@ class ConsultaMedica extends Model
         return $this->belongsTo(Paciente::class);
     }
 
+    public function profesional_salud()
+    {
+        return $this->belongsTo(ProfesionalSalud::class,'profesional_salud_id');
+    }
 
 	public static function consultar_registros($nro_registros)
 	{

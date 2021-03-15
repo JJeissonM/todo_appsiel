@@ -317,8 +317,6 @@ class ReporteController extends Controller
         Cache::forever( 'pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista_pdf);
 
         return $view;
-
-        return $vista;
     }
 
     public function crear_coleccion_movimientos_entidades( $entidades_con_movimiento )
