@@ -21,6 +21,7 @@ use App\Calificaciones\EscalaValoracion;
 
 use App\Matriculas\Matricula;
 use App\Calificaciones\Area;
+use App\Calificaciones\EncabezadoCalificacion;
 use App\Calificaciones\Logro;
 
 use App\Core\Colegio;
@@ -272,7 +273,7 @@ class CalificacionController extends Controller
                 ->get()
                 ->first();
 
-            // Si el estudiante tiene calificacion se envian los datos de esta para editar
+            // Si el estudiante tiene calificacion se envian los datos de esta para editarp
             if (!is_null($calificacion_est)) {
                 $creado_por = $calificacion_est->creado_por;
                 $modificado_por = Auth::user()->email;
@@ -367,6 +368,7 @@ class CalificacionController extends Controller
 
     public static function almacenar_calificacion(Request $request)
     {
+
         $id_calificacion = $request->id_calificacion;
         $calificacion_texto = $request->calificacion;
         $id_calificacion_aux = $request->id_calificacion_aux;
@@ -461,5 +463,30 @@ class CalificacionController extends Controller
         }
 
         return $opciones;
+    }
+
+    //verificar si el promedio es por pesos o normal
+    public function verificar_peso($curso, $periodo, $asignatura)
+    {
+        $tienePeso = "false";
+        $ec = EncabezadoCalificacion::where([['curso_id', $curso], ['asignatura_id', $asignatura], ['periodo_id', $periodo]])->get();
+        if (count($ec) > 0) {
+            foreach ($ec as $e) {
+                if ($e->peso > 0) {
+                    $tienePeso = "true";
+                }
+            }
+        }
+        return $tienePeso;
+    }
+
+    //verificar si el promedio es por pesos o normal
+    public function get_peso($curso, $periodo, $asignatura, $celda)
+    {
+        $ec = EncabezadoCalificacion::where([['curso_id', $curso], ['asignatura_id', $asignatura], ['periodo_id', $periodo], ['columna_calificacion', 'C' . $celda]])->first();
+        if ($ec != null) {
+            return $ec->peso;
+        }
+        return "false";
     }
 }

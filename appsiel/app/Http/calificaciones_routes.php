@@ -68,6 +68,8 @@ Route::resource('calificaciones/boletines', 'Calificaciones\BoletinController', 
 
 Route::get('calificaciones/index2', 'Calificaciones\CalificacionController@index2')->name('calificaciones.index2');
 Route::post('calificaciones/almacenar_calificacion','Calificaciones\CalificacionController@almacenar_calificacion');
+Route::get('calificaciones/pesos/{curso}/{periodo}/{asignatura}/verificar', 'Calificaciones\CalificacionController@verificar_peso')->name('calificaciones.verificar_peso');
+Route::get('calificaciones/pesos/{curso}/{periodo}/{asignatura}/{celda}/listar', 'Calificaciones\CalificacionController@get_peso')->name('calificaciones.get_peso');
 
 
 // ENCABEZADOS CALIFICACIONES
