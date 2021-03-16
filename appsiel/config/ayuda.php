@@ -71,6 +71,13 @@ return array(
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/1_recorrido_por_el_gestor.mp4',
                     'duracion' => '04:09',
                     'publicacion' => '15 de Marzo de 2021'
+                ),
+                '1' => array(
+                    'label' => 'Configuraciones generales',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/2_configuraciones_generales.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/2_configuraciones_generales.mp4',
+                    'duracion' => '02:23',
+                    'publicacion' => '16   de Marzo de 2021'
                 )
             )
         ],
