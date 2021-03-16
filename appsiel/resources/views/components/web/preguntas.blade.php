@@ -149,7 +149,7 @@ if($pregunta!=null){
                         </div>
                         <div id="collapse{{$item->id}}" class="collapse" role="tabpanel" aria-labelledby="faq{{$item->id}}" data-parent="#accordion" style="">
                             <div class="card-body pregunta-font">
-                                <p>{{$item->respuesta}}</p>
+                                {{$item->respuesta}}
                             </div>
                         </div>
                     </div>
