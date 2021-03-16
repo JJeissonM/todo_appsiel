@@ -216,9 +216,14 @@ class PensumController extends CalificacionController
 
     public function opciones_select_asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas )
     {
-        if ( $area_id = 'null' )
+        if ( $area_id == 'null' )
         {
             $area_id = null;
+        }
+
+        if ( $periodo_lectivo_id == 'null' )
+        {
+            $periodo_lectivo_id = null;
         }
 
         $registros = CursoTieneAsignatura::asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas );

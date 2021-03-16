@@ -85,6 +85,10 @@ Route::get('matriculas/estudiantes/eliminar_novedad_observador/{novedad_id}', 'M
 
 Route::resource('/matriculas/estudiantes/observador', 'Matriculas\ObservadorEstudianteController', ['except' => ['show']]);
 
+// EVALUACIÓN POR ASPECTOS
+Route::get('sga_observador_evaluacion_por_aspectos_ingresar_valoracion/{curso_id}/{asignatura_id}/{fecha_valoracion}', 'Matriculas\EvaluacionPorAspectosController@ingresar_valoracion');
+Route::post('sga_observador_evaluacion_por_aspectos_almacenar_valoracion', 'Matriculas\EvaluacionPorAspectosController@almacenar_valoracion');
+Route::post('sga_observador_evaluacion_por_aspectos_consolidar', 'Matriculas\EvaluacionPorAspectosController@consolidar');
 
 
 // Control disciplinario
@@ -97,7 +101,6 @@ Route::post('matriculas/control_disciplinario/crear', 'Matriculas\ControlDiscipl
 Route::get('matriculas/control_disciplinario/consultar/{curso_id}/{fecha}', 'Matriculas\ControlDisciplinarioController@consultar_control_disciplinario');
 
 Route::get('matriculas/control_disciplinario/imprimir/{curso_id}/{fecha}', 'Matriculas\ControlDisciplinarioController@imprimir_control_disciplinario');
-
 
 Route::get('matriculas/control_disciplinario/consultar2', 'Matriculas\ControlDisciplinarioController@consultar_control_disciplinario2');
 
