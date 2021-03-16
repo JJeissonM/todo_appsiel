@@ -78,6 +78,13 @@ return array(
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/2_configuraciones_generales.mp4',
                     'duracion' => '02:23',
                     'publicacion' => '16   de Marzo de 2021'
+                ),
+                '2' => array(
+                    'label' => 'Leer formularios de contacto',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/3_leer_formularios_de_contacto.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/3_leer_formularios_de_contacto.mp4',
+                    'duracion' => '02:23',
+                    'publicacion' => '16   de Marzo de 2021'
                 )
             )
         ],
