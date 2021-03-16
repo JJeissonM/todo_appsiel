@@ -4,8 +4,8 @@ return array(
         '0' => array(
             'label' => 'Ingresar al sistema',
             'preview' => 'https://appsiel.com.co/Ayudas/Videos/Generales/1_Ingresar_al_sistema.jpg',
-            'url' => 'https://appsiel.com.co/Ayudas/Videos/Generales/1_IngresaralSistema.mp4',
-            'duracion' => '1:14',
+            'url' => 'https://appsiel.com.co/Ayudas/Videos/Generales/1_Ingresar_al_sistema.mp4',
+            'duracion' => '1:15',
             'publicacion' => '1 de Marzo de 2021'
         )
     ),
@@ -40,7 +40,7 @@ return array(
         ],
         '5' => [
             'app' => 'academico_estudiante',
-            'urls' => array(                
+            'urls' => array(
                 '0' => array(
                     'label' => 'Tour Academico Estudiante',
                     'preview' => 'https://appsiel.com.co/Ayudas/Videos/Estudiantes/1_tour_estudiante.jpg',
@@ -67,17 +67,45 @@ return array(
             'urls' => array(
                 '0' => array(
                     'label' => 'Recorrido por el gestor de contenido',
-                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/preview.jpg',
-                    'url' => 'https://appsiel.com.co/',
-                    'duracion' => '00:00',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/1_recorrido_por_el_gestor.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/1_recorrido_por_el_gestor.mp4',
+                    'duracion' => '04:09',
                     'publicacion' => '1 de Marzo de 2021'
                 ),
                 '1' => array(
                     'label' => 'Configuraciones generales',
-                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/preview.jpg',
-                    'url' => 'https://appsiel.com.co/',
-                    'duracion' => '00:00',
-                    'publicacion' => '1 de Marzo de 2021'
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/2_configuraciones_generales.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/2_configuraciones_generales.mp4',
+                    'duracion' => '02:23',
+                    'publicacion' => '3 de Marzo de 2021'
+                ),
+                '2' => array(
+                    'label' => 'Leer formularios de contacto',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/3_leer_formularios_de_contacto.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/3_leer_formularios_de_contacto.mp4',
+                    'duracion' => '02:03',
+                    'publicacion' => '3 de Marzo de 2021'
+                ),
+                '3' => array(
+                    'label' => 'Artículos y categorías de artículos',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/4_articulos_y_categorias_de_articulos.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/4_articulos_y_categorias_de_articulos.mp4',
+                    'duracion' => '05:30',
+                    'publicacion' => '5 de Marzo de 2021'
+                ),
+                '4' => array(
+                    'label' => 'Administración de páginas',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/5_administracion_de_paginas.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/5_administracion_de_paginas.mp4',
+                    'duracion' => '04:11',
+                    'publicacion' => '8 de Marzo de 2021'
+                ),
+                '5' => array(
+                    'label' => 'Menú de navegación',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/6_menu_de_navegacion.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/6_menu_de_navegacion.mp4',
+                    'duracion' => '06:12',
+                    'publicacion' => '16 de Marzo de 2021'
                 )
             )
         ],
