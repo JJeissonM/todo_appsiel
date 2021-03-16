@@ -85,6 +85,13 @@ return array(
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/3_leer_formularios_de_contacto.mp4',
                     'duracion' => '02:23',
                     'publicacion' => '16   de Marzo de 2021'
+                ),
+                '3' => array(
+                    'label' => 'Artículos y categorías de artículos',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/4_articulos_y_categorias_de_articulos.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/4_articulos_y_categorias_de_articulos.mp4',
+                    'duracion' => '02:23',
+                    'publicacion' => '16   de Marzo de 2021'
                 )
             )
         ],
