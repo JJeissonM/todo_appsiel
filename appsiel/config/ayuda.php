@@ -4,8 +4,8 @@ return array(
         '0' => array(
             'label' => 'Ingresar al sistema',
             'preview' => 'https://appsiel.com.co/Ayudas/Videos/Generales/1_Ingresar_al_sistema.jpg',
-            'url' => 'https://appsiel.com.co/Ayudas/Videos/Generales/1_IngresaralSistema.mp4',
-            'duracion' => '1:14',
+            'url' => 'https://appsiel.com.co/Ayudas/Videos/Generales/1_Ingresar_al_sistema.mp4',
+            'duracion' => '1:15',
             'publicacion' => '1 de Marzo de 2021'
         )
     ),
@@ -67,17 +67,17 @@ return array(
             'urls' => array(
                 '0' => array(
                     'label' => 'Recorrido por el gestor de contenido',
-                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/preview.jpg',
-                    'url' => 'https://appsiel.com.co/',
-                    'duracion' => '00:00',
-                    'publicacion' => '1 de Marzo de 2021'
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/1_recorrido_por_el_gestor.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/1_recorrido_por_el_gestor.mp4',
+                    'duracion' => '04:09',
+                    'publicacion' => '15 de Marzo de 2021'
                 ),
                 '1' => array(
                     'label' => 'Configuraciones generales',
-                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/preview.jpg',
-                    'url' => 'https://appsiel.com.co/',
-                    'duracion' => '00:00',
-                    'publicacion' => '1 de Marzo de 2021'
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/2_configuraciones_generales.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/2_configuraciones_generales.mp4',
+                    'duracion' => '02:23',
+                    'publicacion' => '16   de Marzo de 2021'
                 )
             )
         ],

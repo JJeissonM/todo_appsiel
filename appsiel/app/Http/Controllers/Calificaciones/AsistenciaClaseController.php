@@ -23,7 +23,7 @@ use App\Calificaciones\AsistenciaClase;
 use App\Core\Colegio;
 
 class AsistenciaClaseController extends Controller
-{
+{ 
     
     public function __construct()
     {

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use Auth;
+use Schema;
 
 class ContabCuenta extends Model
 {
@@ -143,10 +144,18 @@ class ContabCuenta extends Model
                                 }
                         }';
         $tablas = json_decode($tablas_relacionadas);
-        foreach ($tablas as $una_tabla) {
+        foreach ($tablas as $una_tabla)
+        {
+
+            if ( !Schema::hasTable( $una_tabla->tabla ) )
+            {
+                continue;
+            }
+
             $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
 
-            if (!empty($registro)) {
+            if (!empty($registro))
+            {
                 return $una_tabla->mensaje;
             }
         }

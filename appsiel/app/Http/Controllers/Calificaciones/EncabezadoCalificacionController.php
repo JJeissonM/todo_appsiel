@@ -19,7 +19,7 @@ class EncabezadoCalificacionController extends Controller
     {
         //$this->middleware('auth');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -39,9 +39,9 @@ class EncabezadoCalificacionController extends Controller
     public function create()
     {
         // Verificar si ya hay encabezado ingresado para la columna enviada
-        $encabezado = EncabezadoCalificacion::where( [ 'columna_calificacion' => Input::get('columna_calificacion'), 'periodo_id' => Input::get('periodo_id'), 'curso_id' => Input::get('curso_id'), 'asignatura_id' => Input::get('asignatura_id')] )->get()->first();
+        $encabezado = EncabezadoCalificacion::where(['columna_calificacion' => Input::get('columna_calificacion'), 'periodo_id' => Input::get('periodo_id'), 'curso_id' => Input::get('curso_id'), 'asignatura_id' => Input::get('asignatura_id')])->get()->first();
 
-        if ( isset($encabezado->id) ) {
+        if (isset($encabezado->id)) {
             // Para editar
             $fecha = $encabezado->fecha;
             $descripcion = $encabezado->descripcion;
@@ -49,7 +49,8 @@ class EncabezadoCalificacionController extends Controller
             $id = $encabezado->id;
             $creado_por = $encabezado->creado_por;
             $modificado_por = Auth::user()->email;
-        }else{
+            $peso = $encabezado->peso;
+        } else {
             // Para crear nuevo
             $fecha = date('Y-m-d');
             $descripcion = '';
@@ -57,27 +58,33 @@ class EncabezadoCalificacionController extends Controller
             $id = 0;
             $creado_por = Auth::user()->email;
             $modificado_por = '';
-        }            
+            $peso = 0;
+        }
 
-        $formulario = '<h4>Actividad para la calificación '.Input::get('columna_calificacion').'</h4>'.Form::open( ['url'=>url( 'calificaciones_encabezados' ), 'id' => 'formulario_modal' ] ).'
+        $formulario = '<h4>Actividad para la calificación ' . Input::get('columna_calificacion') . '</h4>' . Form::open(['url' => url('calificaciones_encabezados'), 'id' => 'formulario_modal']) . '
                           <div class="form-group">
                             <label for="fecha">Fecha actividad:</label>
-                            <input name="fecha" type="date" class="form-control" id="fecha" value="'.$fecha.'" required="required">
+                            <input name="fecha" type="date" class="form-control" id="fecha" value="' . $fecha . '" required="required">
                           </div>
                           <div class="form-group">
                             <label for="descripcion">Descripción actividad:</label>
-                            <textarea name="descripcion" class="form-control" id="descripcion" rows="5" required="required">'.$descripcion.'</textarea>
+                            <textarea name="descripcion" class="form-control" id="descripcion" rows="5" required="required">' . $descripcion . '</textarea>
                           </div>
-                          <input type="hidden" name="opcion" value="'.$opcion.'" id="opcion">
-                          <input type="hidden" name="id" value="'.$id.'" id="id">
-                          <input type="hidden" name="columna_calificacion" value="'.Input::get('columna_calificacion').'" id="columna_calificacion">
-                          <input type="hidden" name="anio" value="'.Input::get('anio').'" id="anio">
-                          <input type="hidden" name="periodo_id" value="'.Input::get('periodo_id').'" id="periodo_id">
-                          <input type="hidden" name="curso_id" value="'.Input::get('curso_id').'" id="curso_id">
-                          <input type="hidden" name="asignatura_id" value="'.Input::get('asignatura_id').'" id="asignatura_id">
-                          <input type="hidden" name="creado_por" value="'.$creado_por.'" id="creado_por">
-                          <input type="hidden" name="modificado_por" value="'.$modificado_por.'" id="modificado_por">
-                        '.Form::close();
+                          <div class="form-group">
+                            <label for="fecha">Peso actividad (%)</label>
+                            <p><b>Nota:</b> Éste campo es opcional, sino escribe un peso el sistema asignará cero punto cero (0.0) y realizará promedio de calificación (sumar y dividir entre el numero de calificaciones). Si asigna un peso tenga en cuenta que todas las calificaciones deben tener peso y que todos los pesos deben sumar 100% para el período, de no hacerlo incurrirá en una falta que afecta la calificación del estudiante</p>
+                            <input name="peso" type="text" class="form-control" id="peso" value="' . $peso . '">
+                          </div>
+                          <input type="hidden" name="opcion" value="' . $opcion . '" id="opcion">
+                          <input type="hidden" name="id" value="' . $id . '" id="id">
+                          <input type="hidden" name="columna_calificacion" value="' . Input::get('columna_calificacion') . '" id="columna_calificacion">
+                          <input type="hidden" name="anio" value="' . Input::get('anio') . '" id="anio">
+                          <input type="hidden" name="periodo_id" value="' . Input::get('periodo_id') . '" id="periodo_id">
+                          <input type="hidden" name="curso_id" value="' . Input::get('curso_id') . '" id="curso_id">
+                          <input type="hidden" name="asignatura_id" value="' . Input::get('asignatura_id') . '" id="asignatura_id">
+                          <input type="hidden" name="creado_por" value="' . $creado_por . '" id="creado_por">
+                          <input type="hidden" name="modificado_por" value="' . $modificado_por . '" id="modificado_por">
+                        ' . Form::close();
 
         return $formulario;
     }
@@ -90,34 +97,33 @@ class EncabezadoCalificacionController extends Controller
      */
     public function guardar_encabezado()
     {
-        $datos = [ 'fecha' => Input::get('fecha') ] +
-                 [ 'descripcion' => Input::get('descripcion') ] +
-                 [ 'opcion' => Input::get('opcion') ] +
-                 [ 'id' => Input::get('id') ] +
-                 [ 'columna_calificacion' => Input::get('columna_calificacion') ] +
-                 [ 'anio' => Input::get('anio') ] +
-                 [ 'periodo_id' => Input::get('periodo_id') ] +
-                 [ 'curso_id' => Input::get('curso_id') ] +
-                 [ 'asignatura_id' => Input::get('asignatura_id') ] +
-                 [ 'creado_por' => Input::get('creado_por') ] +
-                 [ 'modificado_por' => Input::get('modificado_por') ];
+        $datos = ['fecha' => Input::get('fecha')] +
+            ['descripcion' => Input::get('descripcion')] +
+            ['opcion' => Input::get('opcion')] +
+            ['id' => Input::get('id')] +
+            ['columna_calificacion' => Input::get('columna_calificacion')] +
+            ['anio' => Input::get('anio')] +
+            ['periodo_id' => Input::get('periodo_id')] +
+            ['curso_id' => Input::get('curso_id')] +
+            ['asignatura_id' => Input::get('asignatura_id')] +
+            ['creado_por' => Input::get('creado_por')] +
+            ['modificado_por' => Input::get('modificado_por')];
 
-        dd( $datos );
+        dd($datos);
 
         $cerrar_modal = "true";
 
-        switch ( $datos['id'] )
-        {
+        switch ($datos['id']) {
             case '0':
                 // Crear
-                EncabezadoCalificacion::create( $datos );
+                EncabezadoCalificacion::create($datos);
                 $cerrar_modal = "true";
                 break;
-            
+
             default:
                 // Actualizar
-                $registro = EncabezadoCalificacion::find( $datos['id'] );
-                $registro->fill( $datos );
+                $registro = EncabezadoCalificacion::find($datos['id']);
+                $registro->fill($datos);
                 $registro->save();
                 $cerrar_modal = "false";
                 break;
@@ -137,17 +143,32 @@ class EncabezadoCalificacionController extends Controller
     {
         $cerrar_modal = "true";
 
-        switch ( $request->id ) {
+        //valido la sumatoria de todos los pesos
+        $encabezados = EncabezadoCalificacion::where([['curso_id', $request->curso_id], ['asignatura_id', $request->asignatura_id], ['periodo_id', $request->periodo_id]])->get();
+        $sumaPesos = 0;
+        if (count($encabezados) > 0) {
+            foreach ($encabezados as $e) {
+                $sumaPesos = $sumaPesos + $e->peso;
+            }
+        }
+
+        switch ($request->id) {
             case '0':
                 // Crear
-                EncabezadoCalificacion::create( $request->all() );
+                if (($sumaPesos + $request->peso) > 100) {
+                    return "pesos";
+                }
+                EncabezadoCalificacion::create($request->all());
                 $cerrar_modal = "true";
                 break;
-            
+
             default:
                 // Actualizar
-                $registro = EncabezadoCalificacion::find( $request->id );
-                $registro->fill( $request->all() );
+                $registro = EncabezadoCalificacion::find($request->id);
+                if ((($sumaPesos - $registro->peso) + $request->peso) > 100) {
+                    return "pesos";
+                }
+                $registro->fill($request->all());
                 $registro->save();
                 $cerrar_modal = "false";
                 break;
