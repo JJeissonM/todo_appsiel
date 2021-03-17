@@ -14,8 +14,9 @@ $nom_asignatura = App\Calificaciones\Asignatura::where('id','=',$id_asignatura)-
 @if (count($logros) > 0)
 	<div class="panel panel-default">
 		<div class="panel-heading" align="center">
-			<h3>Consulta de logros asignatura <b> {{$nom_asignatura}} </b> </h3>
-			<h4 style="color:red;">Haga clic en el código del logro para asignarlo a la asignatura correspondiente</h4>
+			<h3>Logros adicionales para la asignatura <b> {{$nom_asignatura}} </b> </h3>
+			<h4 style="color:red;">Haga clic en el código del logro para asignarlo al estudiante correspondiente.</h4>
+			<h5 style="color:purple;">Nota: Estos son logros particulares usados para estudiantes específicos.</h5>
 		</div>
 		<div class="panel-body">
 			<table class="table table-striped estudiante-table" border="1px" style="font-size:11;">

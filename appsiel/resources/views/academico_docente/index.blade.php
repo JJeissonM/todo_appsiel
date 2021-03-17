@@ -31,7 +31,7 @@
 							<?php
 								$modelo_preinforme_academico_id = 192;
 							?>
-							<table class="table table-responsive">
+							<table class="table table-responsive" id="myTable2">
 								<thead>
 									<tr>
 										<th><i class="fa fa-check-square-o"></i></th>
@@ -566,6 +566,22 @@
 			mensaje('Alerta!', 'Debe seleccionar al menos un registro', 'warning');
 		}
 	}
+
+	$('#myTable2').DataTable({
+				dom: 'Bfrtip',
+				"paging": false,
+				buttons: [],
+				order: [
+					[0, 'desc']
+				],
+				"language": {
+					            "search": "Buscar asignatura",
+					            "zeroRecords": "Ningún registro encontrado.",
+					            "info": "Mostrando página _PAGE_ de _PAGES_",
+					            "infoEmpty": "Tabla vacía.",
+					            "infoFiltered": "(filtrado de _MAX_ registros totales)"
+					        }
+			});
 
 </script>
 

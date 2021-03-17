@@ -13,7 +13,7 @@
 	}
 	table td {
 	    padding: 2px;
-	}
+	}z
 </style>
 
 <hr>
@@ -65,7 +65,7 @@
 								<tr>
 									<th>Estudiantes</th>
 									@foreach( $items_aspectos AS $item_aspecto )
-										<th class="celda_C{{$item_aspecto->id}}" align="center">
+										<th class="celda_C{{$item_aspecto->id}}" align="center" title="{{ $item_aspecto->descripcion }}">
 											{{$item_aspecto->descripcion}}
 										</th>
 									@endforeach
@@ -79,7 +79,7 @@
 
 								@for( $k = 0; $k < $cantidad_estudiantes; $k++)
 
-									<tr valign="{{$linea}}">									
+									<tr valign="{{$linea}}" title="{{$vec_estudiantes[$k]['nombre']}}">									
 
 										<td width="250px" style="font-size:12px">
 											<b> {{$linea}} {{ $vec_estudiantes[$k]['nombre'] }}</b>
@@ -124,6 +124,15 @@
 				event.preventDefault();
 
 				$('#form_create').submit();
+			});
+
+			$('td').hover(function(){
+				var fila_encabezado  = $('table thead tr').eq( 1 ); // La segunda fila del encabezado
+				//console.log( fila_encabezado.find('th').eq(2).html() );
+				//var celda_encabezado = $('table thead tr[1] th').eq( $(this).index() );
+				var celda_encabezado = fila_encabezado.find('th').eq( $(this).index() );
+				var etiqueta_mostrar = $(this).parent('tr').attr('title') + ": " + celda_encabezado.attr('title');
+				$(this).attr( 'title', etiqueta_mostrar );
 			});
 		});
 		
