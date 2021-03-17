@@ -106,6 +106,13 @@ return array(
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/6_menu_de_navegacion.mp4',
                     'duracion' => '06:12',
                     'publicacion' => '16 de Marzo de 2021'
+                ),
+                '6' => array(
+                    'label' => 'Pie de página',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/7_pie_de_pagina.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/7_pie_de_pagina.mp4',
+                    'duracion' => '04:55',
+                    'publicacion' => '16 de Marzo de 2021'
                 )
             )
         ],
