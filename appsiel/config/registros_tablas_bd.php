@@ -9224,6 +9224,21 @@
       'created_at' => '2021-03-12 06:12:40',
       'updated_at' => '2021-03-12 06:31:08',
     ),
+    503 => 
+    array (
+      'id' => 529,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'sga_consolidado_evaluacion_por_aspectos',
+      'descripcion' => 'Cambio de curso',
+      'url' => 'index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2021-03-16 14:33:19',
+      'updated_at' => '2021-03-16 14:34:01',
+    ),
   ),
   'roles' => 
   array (

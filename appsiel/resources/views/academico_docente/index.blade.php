@@ -176,6 +176,20 @@
 									</div>
 								</div>
 							</div>
+
+							<div class="col-md-4">
+								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_evaluacion_por_aspectos" aria-expanded="false" aria-controls="collapse_evaluacion_por_aspectos">
+									EVALUACIÓN POR ASPECTOS <i class="fa fa-arrow-down"></i></a>
+								<div class="collapse" id="collapse_evaluacion_por_aspectos">
+									<div class="well">
+										<ul style="list-style: none;">
+											<li>{{ Form::date('fecha_valoracion', date('Y-m-d'), ['class' => 'form-control','id' => 'fecha_valoracion'], [] ) }}</li>
+											<li><a style="cursor: pointer;" onclick="evaluacionAspectosCrear()" title="Ingresar evaluación por aspectos"><i class="fa fa-users"></i> Ingresar Evaluación </a></li>
+											<li><a style="cursor: pointer;" href="{{url('/index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos?id=' . Input::get('id') )}}" title="Generar consolidados"><i class="fa fa-users"></i> Generar consolidados </a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div> <!-- columna botones gmail -->
 
@@ -533,6 +547,26 @@
 			mensaje('Alerta!', 'Debe seleccionar al menos un registro', 'warning');
 		}
 	}
+
+	function evaluacionAspectosCrear()
+	{
+		let elementos = getElementos();
+		if (elementos.length > 0) {
+			var url = "{{url('')}}/sga_observador_evaluacion_por_aspectos_ingresar_valoracion/";
+			if (elementos.length == 1)
+			{
+				//procesar uno
+				var curso_asignatura = elementos[0].split(';');
+				url = url + curso_asignatura[0] + "/" + curso_asignatura[1] + "/" + $('#fecha_valoracion').val() + "?id={{Input::get('id')}}";
+				location.href = url;
+			} else {
+				mensaje('Alerta!', 'Solo puede procesar un curso a la vez', 'warning');
+			}
+		} else {
+			mensaje('Alerta!', 'Debe seleccionar al menos un registro', 'warning');
+		}
+	}
+
 </script>
 
 @endsection
