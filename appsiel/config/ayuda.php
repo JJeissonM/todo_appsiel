@@ -113,6 +113,13 @@ return array(
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/7_pie_de_pagina.mp4',
                     'duracion' => '04:55',
                     'publicacion' => '16 de Marzo de 2021'
+                ),
+                '7' => array(
+                    'label' => 'Redes Sociales',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/8_redes_sociales.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/8_redes_sociales.mp4',
+                    'duracion' => '04:55',
+                    'publicacion' => '16 de Marzo de 2021'
                 )
             )
         ],
