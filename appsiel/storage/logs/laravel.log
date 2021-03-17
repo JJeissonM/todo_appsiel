@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [2021-03-15 07:46:36] production.ERROR: PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'sga_calificaciones_encabezados.peso' in 'where clause' in C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Connection.php:333
 Stack trace:
 #0 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Database\Connection.php(333): PDO->prepare('select count(*)...')
@@ -702,3 +703,5 @@ Stack trace:
 #9 C:\xampp\htdocs\todo_appsiel\appsiel\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(152): Illuminate\Foundation\Application->make('App\\Http\\Middle...')
 #10 C:\xampp\htdocs\todo_appsiel\index.php(58): Illuminate\Foundation\Http\Kernel->terminate(Object(Illuminate\Http\Request), Object(Illuminate\Http\Response))
 #11 {main}  
+=======
+>>>>>>> bee49f98edcc5004df1cd6f8247f3fe919b4924b

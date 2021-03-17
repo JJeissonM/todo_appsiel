@@ -453,7 +453,14 @@
 				],
 				order: [
 					[0, 'desc']
-				]
+				],
+				"language": {
+					            "search": "Buscar",
+					            "zeroRecords": "Ningún registro encontrado.",
+					            "info": "Mostrando página _PAGE_ de _PAGES_",
+					            "infoEmpty": "Tabla vacía.",
+					            "infoFiltered": "(filtrado de _MAX_ registros totales)"
+					        }
 			});
 
 
