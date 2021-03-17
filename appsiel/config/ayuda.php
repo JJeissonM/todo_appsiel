@@ -105,20 +105,41 @@ return array(
                     'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/6_menu_de_navegacion.jpg',
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/6_menu_de_navegacion.mp4',
                     'duracion' => '06:12',
-                    'publicacion' => '16 de Marzo de 2021'
+                    'publicacion' => '10 de Marzo de 2021'
                 ),
                 '6' => array(
                     'label' => 'Pie de página',
                     'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/7_pie_de_pagina.jpg',
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/7_pie_de_pagina.mp4',
                     'duracion' => '04:55',
-                    'publicacion' => '16 de Marzo de 2021'
+                    'publicacion' => '11 de Marzo de 2021'
                 ),
                 '7' => array(
-                    'label' => 'Redes Sociales',
+                    'label' => 'Redes sociales',
                     'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/8_redes_sociales.jpg',
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/8_redes_sociales.mp4',
-                    'duracion' => '04:55',
+                    'duracion' => '01:08',
+                    'publicacion' => '11 de Marzo de 2021'
+                ),
+                '8' => array(
+                    'label' => 'Incrustar mapa de google en el pie de página',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/9_mapa_de_google.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/9_mapa_de_google.mp4',
+                    'duracion' => '03:33',
+                    'publicacion' => '12 de Marzo de 2021'
+                ),
+                '9' => array(
+                    'label' => 'Almacenamiento en la nube',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/10_nube.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/10_nube.mp4',
+                    'duracion' => '02:15',
+                    'publicacion' => '15 de Marzo de 2021'
+                ),
+                '10' => array(
+                    'label' => 'Introducción a las secciones',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/11_secciones.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/11_secciones.mp4',
+                    'duracion' => '02:15',
                     'publicacion' => '16 de Marzo de 2021'
                 )
             )
