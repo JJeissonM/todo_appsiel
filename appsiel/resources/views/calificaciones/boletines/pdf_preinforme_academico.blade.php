@@ -28,7 +28,11 @@
 		$item = 0;
 ?>
 
-@foreach($estudiantes as $estudiante)
+@foreach( $datos as $registro )
+	
+	<?php
+		$lineas_cuerpo_boletin = $registro->cuerpo_boletin->lineas;
+	?>
 
 	@include('calificaciones.boletines.pdf_preinforme_academico_un_boletin')
 

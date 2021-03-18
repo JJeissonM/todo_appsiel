@@ -220,6 +220,17 @@ class Calificacion extends Model
 
         return $la_calificacion;
     }
+    public static function get_la_calificacion2($periodo_id, $curso_id, $estudiante_id, $asignatura_id)
+    {
+        return Calificacion::where([
+                                    'id_periodo' => $periodo_id,
+                                    'curso_id' => $curso_id,
+                                    'id_estudiante' => $estudiante_id,
+                                    'id_asignatura' => $asignatura_id
+                                ])
+                            ->get()
+                            ->first();
+    }
 
 
     public static function get_calificacion_promedio_asignatura_estudiante_periodos($periodos_promediar, $curso_id, $estudiante_id, $asignatura_id)
