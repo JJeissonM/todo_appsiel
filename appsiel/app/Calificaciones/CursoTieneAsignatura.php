@@ -55,14 +55,10 @@ class CursoTieneAsignatura extends Model
             $array_wheres = array_merge( $array_wheres, [ 'sga_curso_tiene_asignaturas.curso_id' => $curso_id ] );
         }
 
-
-
         if ( $area_id != null) 
         {
             $array_wheres = array_merge( $array_wheres, [ 'sga_asignaturas.area_id' => $area_id ] );
         }
-
-
 
         if ( $periodo_lectivo_id == null)
         {
@@ -74,8 +70,6 @@ class CursoTieneAsignatura extends Model
                 $array_wheres = array_merge( $array_wheres, [ 'sga_curso_tiene_asignaturas.periodo_lectivo_id' => $periodo_lectivo_id ] );
             }            
         }
-
-
 
         if ( $estado_asignaturas == null) 
         {
@@ -236,6 +230,17 @@ class CursoTieneAsignatura extends Model
             $select.='<option value="'.$opcion->id.'">'.$opcion->descripcion.'</option>';
         }
 
+        return $select;
+    }
+
+    public static function opciones_select_asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas )
+    {
+        $opciones = self::asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas );
+        $select = [''];
+        foreach ($opciones as $opcion)
+        {
+            $select[$opcion->id] =  $opcion->descripcion;
+        }
         return $select;
     }
 }

@@ -90,6 +90,8 @@ Route::get('sga_observador_evaluacion_por_aspectos_ingresar_valoracion/{curso_id
 Route::post('sga_observador_evaluacion_por_aspectos_almacenar_valoracion', 'Matriculas\EvaluacionPorAspectosController@almacenar_valoracion');
 Route::post('sga_observador_evaluacion_por_aspectos_consolidar', 'Matriculas\EvaluacionPorAspectosController@consolidar');
 
+Route::post('sga_observador_evaluacion_por_aspectos_almacenar_consolidado', 'Matriculas\EvaluacionPorAspectosController@almacenar_consolidado');
+
 
 // Control disciplinario
 

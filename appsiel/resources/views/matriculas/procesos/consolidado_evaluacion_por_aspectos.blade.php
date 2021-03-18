@@ -1,10 +1,14 @@
 @extends('core.procesos.layout')
 
-@section( 'titulo', 'Cambio de curso de estudiantes' )
+@section( 'titulo', 'Consolidado de observación Académica-Comportamental' )
 
 @section('detalles')
 	<p>
-	</p>	
+		Este proceso consolida todas las valoraciones realizadas por cada asignatura en la distintas fechas y determina la escala de frecuencia obtenida por cada estudiante. 
+	</p>
+	<p class="text-info">
+		Nota: El sistema tomará las últimas tres valoraciones ingresadas dentro del rango de fechas.
+	</p>
 	<br>
 @endsection
 

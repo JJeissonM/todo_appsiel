@@ -30,12 +30,21 @@
 	    <hr>
 
 		<div class="row">
-			<div class="col-sm-12">
-				<b>Fecha:</b><code>{{ $fecha_valoracion }}</code>
-				<b>Curso:</b><code>{{ $curso->descripcion }}</code>
-				<b>Asignatura:</b><code>{{ $datos_asignatura->descripcion }}</code>
-			</div>							
+			<div class="col-md-3">
+				{{ Form::bsFecha( 'fecha_valoracion_aux' , $fecha_valoracion, 'Fecha', [], [] ) }}
+			</div>	
+			<div class="col-md-4">
+				{{ Form::bsSelect( 'curso_id_aux' , $curso->id, 'Curso', $cursos_profesor, [] ) }}
+			</div>	
+			<div class="col-md-3">
+				{{ Form::bsSelect( 'id_asignatura_aux' , $datos_asignatura->id, 'Asignatura', $asignaturas_curso, [] ) }}
+			</div>
+			<div class="col-md-2">
+				<a href="#" class="btn btn-primary btn-sm" id="btn_actualizar"> Actualizar </a>
+			</div>
 		</div>
+
+		<br><br>
 
 		<div class="row">
 			<div class="col-sm-12">
@@ -50,6 +59,7 @@
 						{{ Form::hidden('id_asignatura', $datos_asignatura->id, []) }}
 						{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, []) }}
 						{{ Form::hidden('cantidad_items_aspectos', $cantidad_items_aspectos, []) }}	
+						{{ Form::hidden('periodo_lectivo_id', $periodo_lectivo->id, [ 'id' => 'periodo_lectivo_id' ]) }}	
 
 						{{ Form::hidden('url_id',Input::get('id')) }}
 
@@ -134,6 +144,63 @@
 				var etiqueta_mostrar = $(this).parent('tr').attr('title') + ": " + celda_encabezado.attr('title');
 				$(this).attr( 'title', etiqueta_mostrar );
 			});
+
+
+
+			$('#fecha_valoracion_aux').change(function(event){
+				cambiar_enlace_boton();
+			});
+
+			$('#curso_id_aux').change(function(event){
+				cambiar_enlace_boton();
+			});
+
+			$('#id_asignatura_aux').change(function(event){
+				cambiar_enlace_boton();
+			});
+
+			function cambiar_enlace_boton()
+			{
+
+				if ( $('#curso_id_aux').val() == '' )
+				{
+					return false;
+				}
+
+				if ( $('#id_asignatura_aux').val() == '' )
+				{
+					return false;
+				}
+
+				var url = $('#curso_id_aux').val() + "/" + $('#id_asignatura_aux').val() + "/" + $('#fecha_valoracion_aux').val() + "?id={{Input::get('id')}}";
+
+				$('#btn_actualizar').attr( 'href', "{{ url('/sga_observador_evaluacion_por_aspectos_ingresar_valoracion')}}" + "/" + url );				
+			}
+
+			$('#curso_id_aux').on('change',function()
+			{
+				// Debe haber Select Asignatura
+				$('#id_asignatura_aux').html('<option value=""></option>');
+
+				if ( $(this).val() == '') { return false; }
+
+	    		$('#div_cargando').show();
+
+				var url = "{{ url('calificaciones_opciones_select_asignaturas_del_curso') }}" + "/" + $('#curso_id_aux').val() + "/null" + "/" + $('#periodo_lectivo_id').val() + "/Activo";
+
+				$.ajax({
+		        	url: url,
+		        	type: 'get',
+		        	success: function(datos){
+
+		        		$('#div_cargando').hide();
+	    				
+	    				$('#id_asignatura_aux').html( datos );
+						$('#id_asignatura_aux').focus();
+			        }
+			    });					
+			});
+
 		});
 		
 	</script>
