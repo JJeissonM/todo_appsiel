@@ -119,6 +119,10 @@
     .article-ls:focus {
         border-color: #9400d3;
     }
+
+    .cke_dialog {
+        z-index: 10055 !important;
+    }
 </style>
 
 @endsection
@@ -149,8 +153,12 @@
                         <tr>
                             <td>{{$c->titulo." (".$c->descripcion}}</td>
                             <td>
-                                <a data-toggle="tooltip" data-placement="top" title="Cargar Artículos" onclick="buscar(this.id)" id="{{$c->id}}" style="cursor: pointer; color: #fff;" class="btn btn-sm btn-primary"><i class="fa fa-check"></i></a>
-                                <a onclick="editor(this.id)" data-toggle="modal" data-target="#exampleModal" id="{{$c->id.';'.$c->titulo}}" style="cursor: pointer;  color: #fff;" class="btn btn-sm btn-success"><i class="fa fa-plus"></i></a>
+                                <a data-toggle="tooltip" data-placement="top" title="Cargar Artículos"
+                                    onclick="buscar(this.id)" id="{{$c->id}}" style="cursor: pointer; color: #fff;"
+                                    class="btn btn-sm btn-primary"><i class="fa fa-check"></i></a>
+                                <a onclick="editor(this.id)" data-toggle="modal" data-target="#exampleModal"
+                                    id="{{$c->id.';'.$c->titulo}}" style="cursor: pointer;  color: #fff;"
+                                    class="btn btn-sm btn-success"><i class="fa fa-plus"></i></a>
                             </td>
                         </tr>
                         @endforeach
@@ -182,7 +190,7 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -193,13 +201,15 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    {!! Form::open(['route'=>'article.articlestore','method'=>'POST','id'=>'form-article','class'=>'form-horizontal','files'=>'true'])!!}
+                    {!!
+                    Form::open(['route'=>'article.articlestore','method'=>'POST','id'=>'form-article','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <input type="hidden" name="articlecategory_id" id="articlecategory_id" />
                     <div class="row">
                         <div class="col-md-4">
                             <label class="col-form-label">Estado</label>
-                            <span data-toggle="tooltip" title="Establece el estado de visibilidad del articulo."> <i class="fa fa-question-circle"></i></span>
+                            <span data-toggle="tooltip" title="Establece el estado de visibilidad del articulo."> <i
+                                    class="fa fa-question-circle"></i></span>
                             <select class="form-control" name="estado">
                                 <option value="VISIBLE">ACTIVO (Visible en la web)</option>
                                 <option value="OCULTO">INACTIVO (Oculto en la web)</option>
@@ -207,14 +217,16 @@
                         </div>
                         <div class="col-md-8">
                             <label for="recipient-name" class="col-form-label">Título</label>
-                            <span data-toggle="tooltip" title="Establece el título del articulo."> <i class="fa fa-question-circle"></i></span>
+                            <span data-toggle="tooltip" title="Establece el título del articulo."> <i
+                                    class="fa fa-question-circle"></i></span>
                             <input name="titulo" type="text" class="form-control" id="recipient-name">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
                             <label class="col-form-label">Imágen</label>
-                            <span data-toggle="tooltip" title="Establece una imagen para el articulo."> <i class="fa fa-question-circle"></i></span>
+                            <span data-toggle="tooltip" title="Establece una imagen para el articulo."> <i
+                                    class="fa fa-question-circle"></i></span>
                             <input type="file" class="form-control" name="imagen" accept="image/*">
                         </div>
                     </div>
@@ -222,14 +234,16 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label class="col-form-label">Descripción</label>
-                            <span data-toggle="tooltip" title="Establece la descripcion del articulo."> <i class="fa fa-question-circle"></i></span>
+                            <span data-toggle="tooltip" title="Establece la descripcion del articulo."> <i
+                                    class="fa fa-question-circle"></i></span>
                             <textarea class="form-control" name="descripcion" maxlength="250"></textarea>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="message-text" class="col-form-label">Contenido</label>
-                        <span data-toggle="tooltip" title="Establece el contenido del articulo."> <i class="fa fa-question-circle"></i></span>
+                        <span data-toggle="tooltip" title="Establece el contenido del articulo."> <i
+                                class="fa fa-question-circle"></i></span>
                         <textarea name="contenido" class="form-control editor" id="contenido"></textarea>
                     </div>
                     {!! Form::close() !!}
@@ -245,7 +259,8 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -256,7 +271,8 @@
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    {!! Form::open(['route'=>'article.articleupdate','method'=>'POST','id'=>'form-article-edit','class'=>'form-horizontal','files'=>'true'])!!}
+                    {!!
+                    Form::open(['route'=>'article.articleupdate','method'=>'POST','id'=>'form-article-edit','class'=>'form-horizontal','files'=>'true'])!!}
                     <input type="hidden" name="variables_url" value="{{$variables_url}}">
                     <input type="hidden" name="article_id" id="article_id" />
                     <div class="row">
@@ -265,7 +281,8 @@
                         </div>
                         <div class="col-md-8">
                             <label for="recipient-name" class="col-form-label">Título</label>
-                            <span data-toggle="tooltip" title="Establece el título del articulo."> <i class="fa fa-question-circle"></i></span>
+                            <span data-toggle="tooltip" title="Establece el título del articulo."> <i
+                                    class="fa fa-question-circle"></i></span>
                             <input name="titulo" type="text" class="form-control" id="tituloe">
                         </div>
                     </div>
@@ -273,15 +290,18 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label class="col-form-label">Descripción</label>
-                            <span data-toggle="tooltip" title="Establece la descripcion del articulo."> <i class="fa fa-question-circle"></i></span>
-                            <textarea class="form-control" name="descripcion" id="descripcione" maxlength="250"></textarea>
+                            <span data-toggle="tooltip" title="Establece la descripcion del articulo."> <i
+                                    class="fa fa-question-circle"></i></span>
+                            <textarea class="form-control" name="descripcion" id="descripcione"
+                                maxlength="250"></textarea>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12">
                             <label class="col-form-label">Imágen</label>
-                            <span data-toggle="tooltip" title="Establece una imagen para el articulo."> <i class="fa fa-question-circle"></i></span>
+                            <span data-toggle="tooltip" title="Establece una imagen para el articulo."> <i
+                                    class="fa fa-question-circle"></i></span>
                             <input type="file" class="form-control" name="imagen" accept="image/*">
                         </div>
                     </div>
@@ -313,10 +333,15 @@
         var v = id.split(";");
         $("#articlecategory_id").val(v[0]);
         $("#txt").html(v[1]);
+try{
         CKEDITOR.replace('contenido', {
             height: 200,
-            removeButtons: ''
+            removeButtons: ''            
         });
+}catch(e){
+    console.log(e.msg)
+}
+        console.log("crear articulo")
     }
 
     function buscar(id) {
@@ -409,7 +434,7 @@
         $("#textestado").html(htmlestado);
         $("#estadoe option[value=" + i.estado + "]").attr("selected", true);
         var html = "<label for='message-text' class='col-form-label'>Contenido</label><span data-toggle='tooltip' title='Establece el contenido del articulo.'> <i class='fa fa-question-circle'></i></span><textarea" +
-            " name='contenido' class='form-control editor' id='contenidoe'>" + i.contenido + "</textarea>";
+            " name='contenidoe' class='form-control editor' id='contenidoe'>" + i.contenido + "</textarea>";
         $("#textarea").html(html);
         CKEDITOR.replace('contenidoe', {
             height: 200,
@@ -426,5 +451,7 @@
             placement: 'right',
             html: true
         });
+
+           
 </script>
 @endsection
