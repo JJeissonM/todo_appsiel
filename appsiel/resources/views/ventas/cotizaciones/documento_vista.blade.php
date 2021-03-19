@@ -15,7 +15,15 @@
             @foreach($doc_registros as $linea )
                 <tr>
                     <td> {{ $linea->producto_id }} </td>
-                    <td> {{ $linea->producto_descripcion }} </td>
+                    <?php 
+                        $descripcion_item = $linea->producto_descripcion;
+
+                        if( $linea->unidad_medida2 != '' )
+                        {
+                            $descripcion_item = $linea->producto_descripcion . ' - Talla: ' . $linea->unidad_medida2;
+                        }
+                    ?>
+                    <td> {{ $descripcion_item }} </td>
                     <td> {{ $linea->unidad_medida1 }} </td>
                     <td style="text-align: right;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->precio_unitario, 0, ',', '.') }} </td>

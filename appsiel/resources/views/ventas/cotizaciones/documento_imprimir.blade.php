@@ -97,7 +97,15 @@
             @foreach($doc_registros as $linea )
                 <tr>
                     <td> {{ $i }} </td>
-                    <td width="250px"> {{ $linea->producto_descripcion }} </td>
+                    <?php 
+                        $descripcion_item = $linea->producto_descripcion . ' (' . $linea->unidad_medida1 . ')';
+
+                        if( $linea->unidad_medida2 != '' )
+                        {
+                            $descripcion_item = $linea->producto_descripcion . ' (' . $linea->unidad_medida1 . ') - Talla: ' . $linea->unidad_medida2;
+                        }
+                    ?>
+                    <td width="250px"> {{ $descripcion_item }} </td>
                     <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                     <td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
                     <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
