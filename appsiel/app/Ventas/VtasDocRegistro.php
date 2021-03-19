@@ -68,6 +68,7 @@ class VtasDocRegistro extends Model
                                 'inv_productos.id AS producto_id',
                                 'inv_productos.descripcion AS producto_descripcion',
                                 'inv_productos.unidad_medida1',
+                                'inv_productos.unidad_medida2',
                                 'inv_productos.referencia',
                                 'inv_productos.codigo_barras',
                                 'vtas_doc_registros.inv_producto_id',

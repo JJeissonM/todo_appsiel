@@ -196,6 +196,9 @@
                 </td>
             </tr>
         @endif
+        <tr>
+            <td align="right"><div id="lbl_creado_por_fecha_y_hora"></div></td>
+        </tr>
     </table>
     
     <br><br>

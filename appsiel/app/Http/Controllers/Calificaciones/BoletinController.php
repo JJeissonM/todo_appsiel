@@ -21,6 +21,7 @@ use App\Calificaciones\Boletin;
 use App\Calificaciones\Calificacion;
 use App\Calificaciones\ObservacionesBoletin;
 use App\Calificaciones\ObservacionIngresada;
+use App\Calificaciones\PreinformeAcademico;
 
 use App\AcademicoDocente\CursoTieneDirectorGrupo;
 use App\AcademicoDocente\AsignacionProfesor;
@@ -135,6 +136,7 @@ class BoletinController extends Controller
         $colegio = Auth::user()->empresa->colegio;
         $curso = Curso::find( $request->curso_id );
         $periodo = Periodo::find( $request->periodo_id );
+        $anio = (int)explode("-",$periodo->fecha_desde)[0];
 
         $obj_matricula = new Matricula;
         $matriculas = $obj_matricula->get_segun_periodo_lectivo_y_curso( $periodo->periodo_lectivo_id, $request->curso_id );
@@ -147,6 +149,8 @@ class BoletinController extends Controller
         {
             $matriculas = $matriculas->where( 'id_estudiante', (int)$request->estudiante_id )->all();
         }
+
+        $asignaturas = CursoTieneAsignatura::asignaturas_del_curso($request->curso_id, null, null, null);
 
         // Parametros enviados        
         $convetir_logros_mayusculas = $request->convetir_logros_mayusculas;
@@ -169,7 +173,7 @@ class BoletinController extends Controller
 
         $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
 
-		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas','mostrar_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion') )->render();
+		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas','mostrar_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas') )->render();
         
         //echo $view;
         // Se prepara el PDF
@@ -220,6 +224,21 @@ class BoletinController extends Controller
                 $cuerpo_boletin->lineas[$a]->propositos = Meta::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id );
                 
                 $cuerpo_boletin->lineas[$a]->profesor_asignatura = AsignacionProfesor::get_profesor_de_la_asignatura( $curso->id, $asignacion->asignatura_id, $periodo->periodo_lectivo_id );
+
+                $anotacion = PreinformeAcademico::where([
+                                                            ['id_periodo', '=', $periodo->id],
+                                                            ['curso_id', '=', $curso->id],
+                                                            ['id_asignatura', '=', $asignacion->asignatura_id],
+                                                            ['id_estudiante', '=', $matricula->estudiante->id]
+                                                        ])
+                                                ->get()
+                                                ->first();
+                if ( !is_null($anotacion) ) 
+                {
+                    $cuerpo_boletin->lineas[$a]->anotacion = $anotacion->anotacion;
+                }else{
+                    $cuerpo_boletin->lineas[$a]->anotacion = '';
+                }
                 
                 $a++;
             }

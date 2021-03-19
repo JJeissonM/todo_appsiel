@@ -47,7 +47,7 @@ return array(
         ],
         '5' => [
             'app' => 'academico_estudiante',
-            'urls' => array(                
+            'urls' => array(
                 '0' => array(
                     'label' => 'Tour Academico Estudiante',
                     'preview' => 'https://appsiel.com.co/Ayudas/Videos/Estudiantes/1_tour_estudiante.jpg',
@@ -77,14 +77,126 @@ return array(
                     'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/1_recorrido_por_el_gestor.jpg',
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/1_recorrido_por_el_gestor.mp4',
                     'duracion' => '04:09',
-                    'publicacion' => '15 de Marzo de 2021'
+                    'publicacion' => '1 de Marzo de 2021'
                 ),
                 '1' => array(
                     'label' => 'Configuraciones generales',
                     'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/2_configuraciones_generales.jpg',
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/2_configuraciones_generales.mp4',
                     'duracion' => '02:23',
-                    'publicacion' => '16   de Marzo de 2021'
+                    'publicacion' => '3 de Marzo de 2021'
+                ),
+                '2' => array(
+                    'label' => 'Leer formularios de contacto',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/3_leer_formularios_de_contacto.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/3_leer_formularios_de_contacto.mp4',
+                    'duracion' => '02:03',
+                    'publicacion' => '3 de Marzo de 2021'
+                ),
+                '3' => array(
+                    'label' => 'Artículos y categorías de artículos',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/4_articulos_y_categorias_de_articulos.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/4_articulos_y_categorias_de_articulos.mp4',
+                    'duracion' => '05:30',
+                    'publicacion' => '5 de Marzo de 2021'
+                ),
+                '4' => array(
+                    'label' => 'Administración de páginas',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/5_administracion_de_paginas.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/5_administracion_de_paginas.mp4',
+                    'duracion' => '04:11',
+                    'publicacion' => '8 de Marzo de 2021'
+                ),
+                '5' => array(
+                    'label' => 'Menú de navegación',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/6_menu_de_navegacion.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/6_menu_de_navegacion.mp4',
+                    'duracion' => '06:12',
+                    'publicacion' => '10 de Marzo de 2021'
+                ),
+                '6' => array(
+                    'label' => 'Pie de página',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/7_pie_de_pagina.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/7_pie_de_pagina.mp4',
+                    'duracion' => '04:55',
+                    'publicacion' => '11 de Marzo de 2021'
+                ),
+                '7' => array(
+                    'label' => 'Redes sociales',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/8_redes_sociales.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/8_redes_sociales.mp4',
+                    'duracion' => '01:08',
+                    'publicacion' => '11 de Marzo de 2021'
+                ),
+                '8' => array(
+                    'label' => 'Incrustar mapa de google en el pie de página',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/9_mapa_de_google.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/9_mapa_de_google.mp4',
+                    'duracion' => '03:33',
+                    'publicacion' => '12 de Marzo de 2021'
+                ),
+                '9' => array(
+                    'label' => 'Almacenamiento en la nube',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/10_nube.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/10_nube.mp4',
+                    'duracion' => '02:15',
+                    'publicacion' => '15 de Marzo de 2021'
+                ),
+                '10' => array(
+                    'label' => 'Introducción a las secciones',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/11_secciones.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/11_secciones.mp4',
+                    'duracion' => '02:00',
+                    'publicacion' => '16 de Marzo de 2021'
+                ),
+                '11' => array(
+                    'label' => 'Sección navegación',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/12_seccion_navegacion.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/12_seccion_navegacion.mp4',
+                    'duracion' => '02:35',
+                    'publicacion' => '16 de Marzo de 2021'
+                ),
+                '12' => array(
+                    'label' => 'Sección slider',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/13_seccion_slider.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/13_seccion_slider.mp4',
+                    'duracion' => '05:09',
+                    'publicacion' => '16 de Marzo de 2021'
+                ),
+                '13' => array(
+                    'label' => 'Sección pie de página',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/14_seccion_pie_de_pagina.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/14_seccion_pie_de_pagina.mp4',
+                    'duracion' => '02:21',
+                    'publicacion' => '16 de Marzo de 2021'
+                ),
+                '14' => array(
+                    'label' => 'Sección quienes somos',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/15_seccion_quienes_somos.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/15_seccion_quienes_somos.mp4',
+                    'duracion' => '05:18',
+                    'publicacion' => '17 de Marzo de 2021'
+                ),
+                '15' => array(
+                    'label' => 'Sección servicios',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/16_seccion_servicios.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/16_seccion_servicios.mp4',
+                    'duracion' => '05:51',
+                    'publicacion' => '17 de Marzo de 2021'
+                ),
+                '16' => array(
+                    'label' => 'Sección artículos',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/17_seccion_articulos.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/17_seccion_articulos.mp4',
+                    'duracion' => '04:27',
+                    'publicacion' => '17 de Marzo de 2021'
+                ),
+                '17' => array(
+                    'label' => 'Sección contáctenos',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/18_seccion_contactenos.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestor_de_contenido/18_seccion_contactenos.mp4',
+                    'duracion' => '01:44',
+                    'publicacion' => '17 de Marzo de 2021'
                 )
             )
         ],

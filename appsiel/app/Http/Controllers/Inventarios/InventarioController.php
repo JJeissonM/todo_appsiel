@@ -601,9 +601,10 @@ class InventarioController extends TransaccionController
             $producto = InvProducto::where('estado', 'Activo')
                                 ->having('nueva_cadena', $operador, $texto_busqueda)
                                 ->select( 
-                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", unidad_medida2, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
+                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
+                                            'unidad_medida1',
                                             'unidad_medida2' )
                                 ->get()
                                 ->take(7);
@@ -611,9 +612,10 @@ class InventarioController extends TransaccionController
             $producto = InvProducto::where('estado', 'Activo')
                                     ->where($campo_busqueda, $operador, $texto_busqueda)
                                     ->select( 
-                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", unidad_medida2, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
+                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
+                                            'unidad_medida1',
                                             'unidad_medida2' )
                                     ->get()
                                     ->take(7);
@@ -641,11 +643,18 @@ class InventarioController extends TransaccionController
                 $ultimo_item = 1;
             }
 
-
             $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->nueva_cadena . '" data-producto_id="' . $linea->id . '" data-primer_item="'.$primer_item.
                                 '" data-accion="na" '.
-                                '" data-ultimo_item="'.$ultimo_item . '">' . $linea->id . ' ' . $linea->nueva_cadena  . '</a>';
+                                '" data-ultimo_item="'.$ultimo_item;// . '">' . $linea->id . ' ' . $linea->nueva_cadena  . '</a>';
 
+            $descripcion_item = $linea->nueva_cadena . ' (' . $linea->unidad_medida1 . ')';
+
+            if( $linea->unidad_medida2 != '' )
+            {
+                $descripcion_item = $linea->nueva_cadena . ' (' . $linea->unidad_medida1 . ') - Talla: ' . $linea->unidad_medida2;
+            }
+
+            $html .=            '" > '.$linea->id.' '.$descripcion_item.' </a>';
 
             $num_item++;
         }

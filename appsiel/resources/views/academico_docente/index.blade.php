@@ -31,7 +31,7 @@
 							<?php
 								$modelo_preinforme_academico_id = 192;
 							?>
-							<table class="table table-responsive">
+							<table class="table table-responsive" id="myTable2">
 								<thead>
 									<tr>
 										<th><i class="fa fa-check-square-o"></i></th>
@@ -172,6 +172,20 @@
 										<ul style="list-style: none;">
 											<li><a style="cursor: pointer;" onclick="listarEstudiantes()" title="Listado de Estudiante"><i class="fa fa-users"></i> Listado de Estudiante</a></li>
 											<li><a style="cursor: pointer;" onclick="foros()" title="Foros de Discusión"><i class="fa fa-bullhorn"></i> Foros de Discusión</a></li>
+										</ul>
+									</div>
+								</div>
+							</div>
+
+							<div class="col-md-4">
+								<a class="btn btn-default btn-block" style="margin-bottom: 30px; color: #000 !important; border: 2px solid; border-color: #999 !important;" role="button" data-toggle="collapse" href="#collapse_evaluacion_por_aspectos" aria-expanded="false" aria-controls="collapse_evaluacion_por_aspectos">
+									EVALUACIÓN POR ASPECTOS <i class="fa fa-arrow-down"></i></a>
+								<div class="collapse" id="collapse_evaluacion_por_aspectos">
+									<div class="well">
+										<ul style="list-style: none;">
+											<li>{{ Form::date('fecha_valoracion', date('Y-m-d'), ['class' => 'form-control','id' => 'fecha_valoracion'], [] ) }}</li>
+											<li><a style="cursor: pointer;" onclick="evaluacionAspectosCrear()" title="Ingresar evaluación por aspectos"><i class="fa fa-users"></i> Ingresar Evaluación </a></li>
+											<li><a style="cursor: pointer;" href="{{url('/index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos?id=' . Input::get('id') )}}" title="Generar consolidados"><i class="fa fa-users"></i> Generar consolidados </a></li>
 										</ul>
 									</div>
 								</div>
@@ -533,6 +547,42 @@
 			mensaje('Alerta!', 'Debe seleccionar al menos un registro', 'warning');
 		}
 	}
+
+	function evaluacionAspectosCrear()
+	{
+		let elementos = getElementos();
+		if (elementos.length > 0) {
+			var url = "{{url('')}}/sga_observador_evaluacion_por_aspectos_ingresar_valoracion/";
+			if (elementos.length == 1)
+			{
+				//procesar uno
+				var curso_asignatura = elementos[0].split(';');
+				url = url + curso_asignatura[0] + "/" + curso_asignatura[1] + "/" + $('#fecha_valoracion').val() + "?id={{Input::get('id')}}";
+				location.href = url;
+			} else {
+				mensaje('Alerta!', 'Solo puede procesar un curso a la vez', 'warning');
+			}
+		} else {
+			mensaje('Alerta!', 'Debe seleccionar al menos un registro', 'warning');
+		}
+	}
+
+	$('#myTable2').DataTable({
+				dom: 'Bfrtip',
+				"paging": false,
+				buttons: [],
+				order: [
+					[0, 'desc']
+				],
+				"language": {
+					            "search": "Buscar asignatura",
+					            "zeroRecords": "Ningún registro encontrado.",
+					            "info": "Mostrando página _PAGE_ de _PAGES_",
+					            "infoEmpty": "Tabla vacía.",
+					            "infoFiltered": "(filtrado de _MAX_ registros totales)"
+					        }
+			});
+
 </script>
 
 @endsection

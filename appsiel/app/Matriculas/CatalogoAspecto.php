@@ -10,7 +10,7 @@ class CatalogoAspecto extends Model
 {
     protected $table = 'sga_catalogo_aspectos';
 
-    protected $fillable = ['id_tipo_aspecto','descripcion','orden','estado'];
+    protected $fillable = [ 'id_tipo_aspecto', 'descripcion', 'orden', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Orden', 'Tipo de aspecto', 'Descripción', 'Estado'];
 

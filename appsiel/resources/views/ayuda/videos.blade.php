@@ -83,11 +83,11 @@
 												@if($value['urls']!=null)
 												@foreach($value['urls'] as $url)
 												<div class="col-md-12" style="padding: 10px; cursor: pointer; margin-bottom: 5px; border-bottom: 1px #d8d7d7 solid;" id="{{$url['url']}}" onclick="verVideo(this.id)">
-													<div class="col-md-4" style="padding-right: 0px; padding-left: 0px;">
+													<div class="col-md-5" style="padding-right: 0px; padding-left: 0px;">
 														<img width="100%" src="{{$url['preview']}}">
 													</div>
-													<div class="col-md-8" style="padding-right: 0px;">
-														<a>{{$url['label']}}</a>
+													<div class="col-md-7" style="padding-right: 0px; font-size: 12px !important;">
+														<a style="font-size: 14px !important;">{{$url['label']}}</a>
 														<p>Duración {{$url['duracion']}} <br>Publicación: {{$url['publicacion']}}</p>
 													</div>
 												</div>

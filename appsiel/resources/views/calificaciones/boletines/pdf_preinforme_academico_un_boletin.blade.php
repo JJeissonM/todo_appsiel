@@ -18,7 +18,7 @@
 	    		<div style="text-justify: auto; width: 100%; font-size: {{$tam_letra}}mm;">
 					PRE-INFORME DE RENDIMIENTO ACADÉMICO CORRESPONDIENTE AL PERIODO  <b>{{ $periodo->descripcion }}</b> de {{ $anio }}
 					<br>
-					<b>Estudiante:</b> {{ $estudiante->nombre_completo }} &nbsp;&nbsp; | &nbsp;&nbsp; <b>Curso:</b> {{ $curso->descripcion }}
+					<b>Estudiante:</b> {{ $registro->estudiante->tercero->descripcion }} &nbsp;&nbsp; | &nbsp;&nbsp; <b>Curso:</b> {{ $curso->descripcion }}
 				</div>
 	    	</td>
 	    </tr>
@@ -39,53 +39,23 @@
 				</tr> 
 			</thead>
 			<tbody>
-				@foreach($asignaturas as $asignatura)
-					<?php
-					// Se llama a la calificacion de cada asignatura
-					$calificacion = App\Calificaciones\Calificacion::get_la_calificacion($periodo->id, $curso->id, $estudiante->id_estudiante, $asignatura->id);
-						if( $fila % 2 == 0)
-						{
-							$class_fila = 'even';
-						}else{
-							$class_fila = 'odd';
-						}			
-					?>
+				@foreach( $lineas_cuerpo_boletin as $linea )
 
-					<tr class="{{$class_fila}}">
-						
-						<td> 
-							{{ $asignatura->descripcion }} 
+					<tr>
+						<td style="border: 0px;">
+							{{ $linea->asignacion_asignatura->asignatura->descripcion }}
 						</td>
-						
-						<td> 
-							@include('calificaciones.boletines.lbl_descripcion_calificacion')
+						<td style="border: 0px;" width="35%">
+							@if( !is_null( $linea->calificacion ) )
+								@if( $linea->calificacion->calificacion > 0)
+									<b>Cal: </b> @include('calificaciones.boletines.lbl_descripcion_calificacion')
+								@endif
+							@endif
 						</td>
-
 						<td>
-		                    <?php 
-
-								$anotacion = App\Calificaciones\PreinformeAcademico::where('id_periodo',$periodo->id)
-								->where('curso_id', $curso->id)
-								->where('id_asignatura', $asignatura->id)
-								->where('id_estudiante', $estudiante->id_estudiante)
-								->get()
-								->first();
-								if ( !is_null($anotacion) ) 
-								{
-									$anotacion = $anotacion->anotacion;
-								}else{
-									$anotacion = '';
-								}
-		                    ?>
-		                    {{ $anotacion }}
+							{{ $linea->anotacion }}
 						</td>
-
 					</tr>
-
-					<?php 
-						$area_anterior = $asignatura->area;
-						$fila++;
-					?>
 
 				@endforeach {{--  Asignaturas --}}
 			</tbody>
