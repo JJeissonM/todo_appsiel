@@ -36,7 +36,8 @@
 	<link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
 	<!-- Fonts -->
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css" integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css"
+		integrity="sha384-XdYbMnZ/QjLh6iI4ogqCTaIjrFk87ip+ekIjefZch0Y+PvJ8CDYtEs1ipDmPorQ+" crossorigin="anonymous">
 
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700">
 
@@ -262,7 +263,8 @@
 			<img width="220px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
 		</div>
 		<div class="col-md-12" style="margin-bottom: 20px; margin-top: 20px;">
-			<a href="{{route('ayuda.videos')}}" class="btn btn-block btn-primary">Tutoriales en Video <i class="fa fa-arrow-right"></i></a>
+			<a href="{{route('ayuda.videos')}}" class="btn btn-block btn-primary">Tutoriales en Video <i
+					class="fa fa-arrow-right"></i></a>
 		</div>
 	</div>
 	<div id="btnPaula">
@@ -275,15 +277,20 @@
 
 
 	<!-- JQuery -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"
+		integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous">
+	</script>
 
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 	<!-- Latest compiled and minified JavaScript -->
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+		integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">
+	</script>
 
 	<!-- Convertir tabla a JSON -->
-	<script src="https://cdn.jsdelivr.net/npm/table-to-json@0.13.0/lib/jquery.tabletojson.min.js" integrity="sha256-AqDz23QC5g2yyhRaZcEGhMMZwQnp8fC6sCZpf+e7pnw=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/table-to-json@0.13.0/lib/jquery.tabletojson.min.js"
+		integrity="sha256-AqDz23QC5g2yyhRaZcEGhMMZwQnp8fC6sCZpf+e7pnw=" crossorigin="anonymous"></script>
 
 	<!-- DataTable -->
 	<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
@@ -307,7 +314,7 @@
 
 	<!-- <script src="{ {asset('js/ckeditor/ckeditor.js')}}"></script> -->
 
-	<script src="https://cdn.ckeditor.com/4.11.4/standard-all/ckeditor.js"></script>
+	<script src="https://cdn.ckeditor.com/4.16.0/standard-all/ckeditor.js"></script>
 
 	<script src="{{asset('js/sweetAlert2.min.js')}}"></script>
 	<!-- Select2 -->

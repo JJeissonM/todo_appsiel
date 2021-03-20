@@ -325,23 +325,14 @@
 <script src="{{asset('assets/js/axios.min.js')}}"></script>
 
 <script type="text/javascript">
-    $(function() {
-
-    });
-
     function editor(id) {
         var v = id.split(";");
         $("#articlecategory_id").val(v[0]);
         $("#txt").html(v[1]);
-try{
         CKEDITOR.replace('contenido', {
             height: 200,
             removeButtons: ''            
         });
-}catch(e){
-    console.log(e.msg)
-}
-        console.log("crear articulo")
     }
 
     function buscar(id) {

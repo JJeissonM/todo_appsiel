@@ -7,12 +7,12 @@
         color: #3d6983;
     }
 
-    .icon > p {
+    .icon>p {
         font-size: 14px;
     }
 
     .icon:hover {
-        font-size: 40px;
+        transform: scale(.9);
         color: #9400d3 !important;
     }
 
@@ -33,6 +33,13 @@
     .buscar:focus {
         border-color: #9400d3;
     }
+
+    #txt {
+        display: grid;
+
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+
+    }
 </style>
 
 
@@ -49,16 +56,16 @@
         <div class="col-md-12">
             <div class="form-group">
                 <center><input class="buscar" type="text" id="buscar" placeholder="Buscar íconos..."
-                               onkeyup="buscar()"/></center>
+                        onkeyup="buscar()" /></center>
             </div>
         </div>
         <div class="col-md-12" id="txt">
             <input type="hidden" id="nombre">
             @foreach($iconos as $i)
-                <div class="col-md-3 icon" id="{{$i->icono}}" onclick="seticon(this.id)">
-                    <i class="fa fa-{{$i->icono}}"></i>
-                    <p id="icono">{{$i->icono}}</p>
-                </div>
+            <div class="icon" id="{{$i->icono}}" onclick="seticon(this.id)">
+                <i class="fa fa-{{$i->icono}}"></i>
+                <p id="icono">{{$i->icono}}</p>
+            </div>
             @endforeach
         </div>
     </div>
@@ -71,7 +78,8 @@
 
 
     function buscar() {
-        $("#txt").html("");
+        var html = `<input type='hidden' id='nombre' value="${$("#nombre").val()}">`;
+        $("#txt").html(html);
         var texto = $("#buscar").val();
         var nuevoArray = [];
         iconos.forEach(function (i) {
@@ -93,13 +101,14 @@
     }
 
     function arrayDraw(array) {
-        var html = "";
-        array.forEach(function (i) {
-            html = html + "<div class='col-md-3 icon'id='" + i.icono + "' onclick='seticon(this.id)'><i class='fa fa-" + i.icono + "'></i>" +
-                "<p id='icono'>" + i.icono + "</p></div>";
+        var html = `<input type='hidden' id='nombre' value="${$("#nombre").val()}">`;
+        array.forEach(function (i) {            
+            html = html + `<div class="icon" id="${i.icono}" onclick="seticon(this.id)">
+                                <i class="fa fa-${i.icono}"></i>
+                                <p id="icono">${i.icono}</p>
+                            </div>`;
         });
 
         $("#txt").html(html);
     }
 </script>
-
