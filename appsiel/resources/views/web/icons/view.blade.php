@@ -13,7 +13,8 @@
     <!-- Font Awesome -->
     <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+        integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <!-- Slick slider -->
     <link href="{{asset('assets/css/slick.css')}}" rel="stylesheet">
     <!-- Gallery Lightbox -->
@@ -67,6 +68,13 @@
         .buscar:focus {
             border-color: #9400d3;
         }
+
+        #txt {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+
+        }
     </style>
 
     @yield('style')
@@ -101,7 +109,9 @@
                     </a>
                     <!-- image based logo -->
                     <!-- <a class="navbar-brand mu-logo" href="index.html"><img src="assets/images/logo.png" alt="logo"></a> -->
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
                         <span class="fa fa-bars"></span>
                     </button>
 
@@ -114,7 +124,8 @@
                             @include('web.templates.menu', ['item' => $item])
                             @endforeach
                             <li class="nav-item">
-                                <a href="{{url('pagina_web/icons/view?id='.$id)}}"><i class="fa fa-exclamation-circle"></i> Íconos</a>
+                                <a href="{{url('pagina_web/icons/view?id='.$id)}}"><i
+                                        class="fa fa-exclamation-circle"></i> Íconos</a>
                             </li>
                             <li class="nav-item">
                                 <a href="{{url('pagina_web/nube/view?id='.$id)}}"><i class="fa fa-cloud"></i> Nube</a>
@@ -136,12 +147,13 @@
             </div>
             <div class="col-md-12">
                 <div class="form-group">
-                    <center><input class="buscar" type="text" id="buscar" placeholder="Buscar íconos..." onkeyup="buscar()" /></center>
+                    <center><input class="buscar" type="text" id="buscar" placeholder="Buscar íconos..."
+                            onkeyup="buscar()" /></center>
                 </div>
             </div>
             <div class="col-md-12" id="txt">
                 @foreach($iconos as $i)
-                <div class="col-md-3 icon">
+                <div class="icon">
                     <i class="fa fa-{{$i->icono}}"></i>
                     <p id="icono">{{$i->icono}}</p>
                 </div>
@@ -156,8 +168,12 @@
     <!-- JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous">
+    </script>
     <!-- Slick slider -->
     <script type="text/javascript" src="{{asset('assets/web/js/slick.min.js')}}"></script>
     <!-- Progress Bar -->
