@@ -25,7 +25,7 @@
 	    <h4 style="text-align: center;">
 	    	Ingreso de valoraciones de estudiantes 
 			<br> 
-			Año lectivo: {{ $periodo_lectivo->descripcion }}
+			Periodo de evaluacion: {{ $semana_calendario->descripcion }}
 	    </h4>
 	    <hr>
 
@@ -99,7 +99,8 @@
 										
 										@for ( $c=1; $c <= $cantidad_items_aspectos; $c++ )
 											<td class="celda_C{{$c}}">
-												{{ Form::select('valores_item_'.$c.'[]', $convenciones, $vec_estudiantes[$k]['valoraciones_aspectos']['valores_item_'.$c], array_merge( [ 'id' => 'valores_item_'.$c ], [] )) }}
+												{{ Form::select('valores_item_'.$c.'[]', $convenciones, $vec_estudiantes[$k]['valoraciones_aspectos']['valores_item_'.$c], array_merge( [ 'id' => 'valores_item_'.$c, 'title' => $vec_estudiantes[$k]['fechas_valoraciones_aspectos']['valores_item_'.$c] ], [] )) }}
+												{{ Form::hidden('fechas_valores_item_'.$c.'[]',$vec_estudiantes[$k]['fechas_valoraciones_aspectos']['valores_item_'.$c],[]) }}
 											</td>
 										@endfor
 									</tr>
