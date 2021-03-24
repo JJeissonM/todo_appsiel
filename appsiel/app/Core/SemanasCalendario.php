@@ -14,6 +14,11 @@ class SemanasCalendario extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año Lectivo', 'Número', 'Descripción', 'Fecha inicial', 'Fecha final', 'Estado'];
 
+    public function periodo_lectivo()
+    {
+        return $this->belongsTo( PeriodoLectivo::class, 'periodo_lectivo_id');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = SemanasCalendario::leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_semanas_calendario.periodo_lectivo_id')

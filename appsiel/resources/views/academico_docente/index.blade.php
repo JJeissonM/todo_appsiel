@@ -186,6 +186,7 @@
 											<li>{{ Form::date('fecha_valoracion', date('Y-m-d'), ['class' => 'form-control','id' => 'fecha_valoracion'], [] ) }}</li>
 											<li><a style="cursor: pointer;" onclick="evaluacionAspectosCrear()" title="Ingresar evaluación por aspectos"><i class="fa fa-users"></i> Ingresar Evaluación </a></li>
 											<li><a style="cursor: pointer;" href="{{url('/index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos?id=' . Input::get('id') )}}" title="Generar consolidados"><i class="fa fa-users"></i> Generar consolidados </a></li>
+											<li><a style="cursor: pointer;" href="{{url('/index_procesos/matriculas.procesos.listado_congratulations?id=' . Input::get('id') )}}" title="Listado de Congratulations"><i class="fa fa-list"></i> Listado de Congratulations </a></li>
 										</ul>
 									</div>
 								</div>
