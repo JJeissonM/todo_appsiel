@@ -16,7 +16,7 @@ class VtasDocEncabezado extends Model
 {
     //protected $table = 'vtas_doc_encabezados'; 
 
-    protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'orden_compras', 'valor_total'];
+    protected $fillable = ['id', 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'orden_compras', 'valor_total'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'Forma de pago', 'Estado'];
 
@@ -24,32 +24,32 @@ class VtasDocEncabezado extends Model
 
     public function tipo_documento_app()
     {
-        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
     }
 
     public function tercero()
     {
-        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+        return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
     }
 
     public function cliente()
     {
-        return $this->belongsTo( Cliente::class,'cliente_id');
+        return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
     public function vendedor()
     {
-        return $this->belongsTo( Vendedor::class,'vendedor_id');
+        return $this->belongsTo(Vendedor::class, 'vendedor_id');
     }
 
     public function lineas_registros()
     {
-        return $this->hasMany( VtasDocRegistro::class, 'vtas_doc_encabezado_id' );
+        return $this->hasMany(VtasDocRegistro::class, 'vtas_doc_encabezado_id');
     }
 
     public function movimientos()
     {
-        return $this->hasMany( VtasMovimiento::class );
+        return $this->hasMany(VtasMovimiento::class);
     }
 
     public static function sqlString($search)
@@ -91,28 +91,28 @@ class VtasDocEncabezado extends Model
         $core_tipo_transaccion_id = 23; // Facturas
 
         $collection = VtasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
-                                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
-                                ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-                                ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
-                                ->select(
-                                    'vtas_doc_encabezados.fecha AS campo1',
-                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
-                                    DB::raw('core_terceros.descripcion AS campo3'),
-                                    'vtas_doc_encabezados.descripcion AS campo4',
-                                    'vtas_doc_encabezados.valor_total AS campo5',
-                                    'vtas_doc_encabezados.forma_pago AS campo6',
-                                    'vtas_doc_encabezados.estado AS campo7',
-                                    'vtas_doc_encabezados.id AS campo8'
-                                )
-                                ->orderBy('vtas_doc_encabezados.fecha', 'DESC')
-                                ->get();
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
+            ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+            ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+            ->select(
+                'vtas_doc_encabezados.fecha AS campo1',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
+                DB::raw('core_terceros.descripcion AS campo3'),
+                'vtas_doc_encabezados.descripcion AS campo4',
+                'vtas_doc_encabezados.valor_total AS campo5',
+                'vtas_doc_encabezados.forma_pago AS campo6',
+                'vtas_doc_encabezados.estado AS campo7',
+                'vtas_doc_encabezados.id AS campo8'
+            )
+            ->orderBy('vtas_doc_encabezados.fecha', 'DESC')
+            ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
         $nuevaColeccion = [];
         if (count($collection) > 0) {
             if (strlen($search) > 0) {
                 $nuevaColeccion = $collection->filter(function ($c) use ($search) {
-                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
                         return $c;
                     }
                 });
@@ -123,14 +123,13 @@ class VtasDocEncabezado extends Model
 
         $request = request(); //obtenemos el Request para obtener la url y la query builder
 
-        if ( empty($nuevaColeccion) )
-        {
+        if (empty($nuevaColeccion)) {
             return $array = new LengthAwarePaginator([], 1, 1, 1, [
-                                                                    'path' => $request->url(),
-                                                                    'query' => $request->query(),
-                                                                ]);
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]);
         }
-        
+
         //obtenemos el numero de la página actual, por defecto 1
         $page = 1;
         if (isset($_GET['page'])) {
@@ -158,12 +157,10 @@ class VtasDocEncabezado extends Model
     {
         $encontrado = false;
         $searchTerm = str_slug($searchTerm); // Para eliminar acentos
-        foreach ($valores_campos_seleccionados as $valor_campo)
-        {
+        foreach ($valores_campos_seleccionados as $valor_campo) {
             $str = str_slug($valor_campo);
             $pos = strpos($str, $searchTerm);
-            if ($pos !== false)
-            {
+            if ($pos !== false) {
                 $encontrado = true;
             }
         }
@@ -232,22 +229,18 @@ class VtasDocEncabezado extends Model
 
         $lista = '';
         $primer = true;
-        for ($i=0; $i < $cant_registros; $i++)
-        { 
-            $un_documento = InvDocEncabezado::get_registro_impresion( $ids_documentos_relacionados[$i] );
-            if ( !is_null($un_documento) )
-            {
-                if ($primer)
-                {
-                    $lista .= '<a href="'.url( 'inventarios/'.$un_documento->id.'?id='.$app_id.'&id_modelo='.$modelo_doc_relacionado_id.'&id_transaccion='.$transaccion_doc_relacionado_id ).'" target="_blank">'.$un_documento->documento_transaccion_prefijo_consecutivo.'</a>';
+        for ($i = 0; $i < $cant_registros; $i++) {
+            $un_documento = InvDocEncabezado::get_registro_impresion($ids_documentos_relacionados[$i]);
+            if (!is_null($un_documento)) {
+                if ($primer) {
+                    $lista .= '<a href="' . url('inventarios/' . $un_documento->id . '?id=' . $app_id . '&id_modelo=' . $modelo_doc_relacionado_id . '&id_transaccion=' . $transaccion_doc_relacionado_id) . '" target="_blank">' . $un_documento->documento_transaccion_prefijo_consecutivo . '</a>';
                     $primer = false;
-                }else{
-                    $lista .= ', &nbsp; <a href="'.url( 'inventarios/'.$un_documento->id.'?id='.$app_id.'&id_modelo='.$modelo_doc_relacionado_id.'&id_transaccion='.$transaccion_doc_relacionado_id ).'" target="_blank">'.$un_documento->documento_transaccion_prefijo_consecutivo.'</a>';
+                } else {
+                    $lista .= ', &nbsp; <a href="' . url('inventarios/' . $un_documento->id . '?id=' . $app_id . '&id_modelo=' . $modelo_doc_relacionado_id . '&id_transaccion=' . $transaccion_doc_relacionado_id) . '" target="_blank">' . $un_documento->documento_transaccion_prefijo_consecutivo . '</a>';
                     $mas_de_uno = true;
                 }
             }
         }
-        return [$lista,$mas_de_uno];
+        return [$lista, $mas_de_uno];
     }
-
 }

@@ -73,3 +73,8 @@ Route::get('ventas_recontabilizar/{id}', 'Ventas\ProcesoController@recontabiliza
 Route::get('ventas_recontabilizar_nota/{id}', 'Ventas\ProcesoController@recontabilizar_documento_nota_credito');
 Route::get('actualizar_valor_total_vtas_encabezados_doc', 'Ventas\ProcesoController@actualizar_valor_total_vtas_encabezados_doc');
 Route::get('recontabilizar_documentos_ventas', 'Ventas\ProcesoController@recontabilizar_documentos_ventas');
+
+
+//Coneccion de todos los procesos de ventas: cotizacion, pedidos, remisiones, facturas de venta
+
+Route::post('ventas_conexion/procesos/procesar/masivo','Ventas\ProcesoController@conexion_procesos')->name('ventas.conexion_procesos');

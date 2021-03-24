@@ -166,7 +166,7 @@ class InventarioController extends TransaccionController
     public function store(Request $request)
     {        
         $lineas_registros = InventarioController::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
-
+        
         $doc_encabezado_id = InventarioController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
         return redirect('inventarios/' . $doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);

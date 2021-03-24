@@ -22,22 +22,22 @@ class VtasPedido extends VtasDocEncabezado
 
     public function tipo_documento_app()
     {
-        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
     }
 
     public function tercero()
     {
-        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+        return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
     }
 
     public function cliente()
     {
-        return $this->belongsTo( Cliente::class,'cliente_id');
+        return $this->belongsTo(Cliente::class, 'cliente_id');
     }
 
     public function vendedor()
     {
-        return $this->belongsTo( Vendedor::class,'vendedor_id');
+        return $this->belongsTo(Vendedor::class, 'vendedor_id');
     }
 
     public function lineas_registros()
@@ -47,25 +47,24 @@ class VtasPedido extends VtasDocEncabezado
 
     public static function consultar_registros($nro_registros, $search)
     {
-        $core_tipo_transaccion_id = 42;
+        $core_tipo_transaccion_id = 42; //pedido de venta
 
-        if ( $search == '' )
-        {
+        if ($search == '') {
             return VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
-                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
-                            ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-                            ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
-                            ->select(
-                                'vtas_doc_encabezados.fecha AS campo1',
-                                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
-                                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                                'vtas_doc_encabezados.fecha_entrega AS campo4',
-                                'vtas_doc_encabezados.descripcion AS campo5',
-                                'vtas_doc_encabezados.estado AS campo6',
-                                'vtas_doc_encabezados.id AS campo7'
-                            )
-                            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
-                            ->paginate($nro_registros);
+                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
+                ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+                ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+                ->select(
+                    'vtas_doc_encabezados.fecha AS campo1',
+                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
+                    DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                    'vtas_doc_encabezados.fecha_entrega AS campo4',
+                    'vtas_doc_encabezados.descripcion AS campo5',
+                    'vtas_doc_encabezados.estado AS campo6',
+                    'vtas_doc_encabezados.id AS campo7'
+                )
+                ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+                ->paginate($nro_registros);
         }
 
         return VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
@@ -126,6 +125,24 @@ class VtasPedido extends VtasDocEncabezado
     public static function consultar_registros2($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 42;
+
+        if ($search == '') {
+            return VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
+                ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
+                ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+                ->select(
+                    'vtas_doc_encabezados.fecha AS campo1',
+                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
+                    DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                    'vtas_doc_encabezados.fecha_entrega AS campo4',
+                    'vtas_doc_encabezados.descripcion AS campo5',
+                    'vtas_doc_encabezados.estado AS campo6',
+                    'vtas_doc_encabezados.id AS campo7'
+                )->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+                ->paginate($nro_registros);
+        }
+
         return VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
@@ -145,7 +162,6 @@ class VtasPedido extends VtasDocEncabezado
             ->orWhere("vtas_doc_encabezados.fecha_entrega", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
             ->paginate($nro_registros);
     }
