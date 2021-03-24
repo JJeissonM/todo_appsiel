@@ -1676,6 +1676,18 @@
       'migration' => '2021_03_12_060203_create_suscripcions_table',
       'batch' => 93,
     ),
+    279 => 
+    array (
+      'id' => 0,
+      'migration' => '2021_03_12_114606_modifycolumn_pwitempreguntas',
+      'batch' => 94,
+    ),
+    280 => 
+    array (
+      'id' => 0,
+      'migration' => '2021_03_15_075434_Changecolumnencabezadocalificaciontable',
+      'batch' => 94,
+    ),
   ),
   'permissions' => 
   array (
@@ -9230,14 +9242,29 @@
       'core_app_id' => 5,
       'modelo_id' => 0,
       'name' => 'sga_consolidado_evaluacion_por_aspectos',
-      'descripcion' => 'Cambio de curso',
+      'descripcion' => 'Consolidado evaluacion por aspectos',
       'url' => 'index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos',
       'parent' => 0,
       'orden' => 99,
       'enabled' => 0,
       'fa_icon' => '',
       'created_at' => '2021-03-16 14:33:19',
-      'updated_at' => '2021-03-16 14:34:01',
+      'updated_at' => '2021-03-22 07:52:53',
+    ),
+    504 => 
+    array (
+      'id' => 530,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'sga_listado_congratulations',
+      'descripcion' => 'Listado Congratulations',
+      'url' => 'index_procesos/matriculas.procesos.listado_congratulations',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2021-03-22 07:52:56',
+      'updated_at' => '2021-03-22 07:53:59',
     ),
   ),
   'roles' => 

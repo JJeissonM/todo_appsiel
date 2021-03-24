@@ -1,6 +1,6 @@
 
-<div class="alert alert-info alert-dismissible" style="display: none;" id="div_remisiones_pendientes">
-	<a href="#" class="close" id="btn_cerrar_alert">&times;</a>
+<div class="alert alert-success alert-dismissible" style="display: none; background-color: rgb(212 203 247) !important;" id="div_remisiones_pendientes">
+	<a style="color: #000;" href="#" class="close" id="btn_cerrar_alert">&times;</a>
 
 	<div id="listado_remisiones_pendientes">
 		
@@ -8,12 +8,12 @@
 
 </div>
 
-<div class="alert alert-success alert-dismissible" style="display: none;" id="alert_listado_remisiones_seleccionadas">
+<div class="alert alert-success alert-dismissible" style="display: none; background-color: rgb(212 203 247) !important;" id="alert_listado_remisiones_seleccionadas">
 
-		<h4 style="width: 100%; text-align: center;"> Documentos seleccionados </h4>
+		<h4 style="width: 100%; text-align: center; color: #000;"> Documentos seleccionados </h4>
 
 		<div class="table-responsive">
-			<table class="table table-striped" id="tabla_registros_documento">
+			<table class="table table-striped" id="tabla_registros_documento" style="color: #000;">
 			    <thead>
 			        <tr>
 			            <th style="display: none;" data-override="id_doc" > ID Encabezado Remisión/Devolución </th>

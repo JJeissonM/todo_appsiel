@@ -24,10 +24,13 @@ use App\Sistema\Aplicacion;
 use App\Sistema\Modelo;
 use App\Core\Empresa;
 use App\Core\Colegio;
+use App\Core\SemanasCalendario;
 
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\CatalogoAspecto;
 use App\Matriculas\ResultadoEvaluacionAspectoEstudiante;
+use App\Matriculas\ConsolidadoEvaluacionAspectoEstudiante;
+use App\Matriculas\CatalogoObservacionesEvaluacionAspecto;
 use App\Matriculas\TiposAspecto;
 
 use App\Matriculas\Curso;
@@ -46,7 +49,6 @@ use App\Calificaciones\Area;
 use App\Calificaciones\Logro;
 
 use App\AcademicoDocente\AsignacionProfesor;
-use App\AcademicoDocente\ConsolidadoEvaluacionAspectoEstudiante;
 
 class EvaluacionPorAspectosController extends Controller
 {
@@ -69,7 +71,16 @@ class EvaluacionPorAspectosController extends Controller
         $periodo_lectivo = PeriodoLectivo::get_actual();
 
         $estudiantes = Matricula::estudiantes_matriculados( $curso_id, $periodo_lectivo->id, null);
-
+        $semana_calendario = SemanasCalendario::where([
+                                                        ['fecha_inicio', '<=', $fecha_valoracion],
+                                                        ['fecha_fin', '>=', $fecha_valoracion]
+                                                    ])
+                                                ->get()->first();/*all();*/
+        //dd([$fecha_valoracion,$semana_calendario]);
+        if ( is_null($semana_calendario) )
+        {
+            $semana_calendario = (object)['fecha_inicio'=>'0000-00-00','fecha_fin'=>'0000-00-00','descripcion'=>'NO ENCONTRADA'];
+        }
         $curso = Curso::find( $curso_id );
         $asignatura = Asignatura::find( $asignatura_id );
 
@@ -99,14 +110,15 @@ class EvaluacionPorAspectosController extends Controller
             $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
 
             $valoraciones_aspectos = [];
+            $fechas_valoraciones_aspectos = [];
             foreach ( $items_aspectos as $item_aspecto )
             {
                 $item_valoracion_est = ResultadoEvaluacionAspectoEstudiante::where([
                                                                                     'estudiante_id' => $estudiante->id_estudiante,
                                                                                     'asignatura_id' => $asignatura->id,
-                                                                                    'item_aspecto_id' => $item_aspecto->id,
-                                                                                    'fecha_valoracion' => $fecha_valoracion,
+                                                                                    'item_aspecto_id' => $item_aspecto->id
                                                                                 ])
+                                                                            ->whereBetween('fecha_valoracion',[$semana_calendario->fecha_inicio,$semana_calendario->fecha_fin])
                                                                             ->get()
                                                                             ->first();
                 
@@ -115,15 +127,19 @@ class EvaluacionPorAspectosController extends Controller
                 if( !is_null($item_valoracion_est) )
                 {
                     $valoracion = $item_valoracion_est->convencion_valoracion_id;
+                    $fecha_valoracion_item = $item_valoracion_est->fecha_valoracion;
                 }else{
                     $valoracion = 0;
+                    $fecha_valoracion_item = $fecha_valoracion;
                 }
 
                 $key = "valores_item_" . $item_aspecto->id;
                 $valoraciones_aspectos[$key] = $valoracion;
+                $fechas_valoraciones_aspectos[$key] = $fecha_valoracion_item;
             }
 
             $vec_estudiantes[$i]['valoraciones_aspectos'] = $valoraciones_aspectos;
+            $vec_estudiantes[$i]['fechas_valoraciones_aspectos'] = $fechas_valoraciones_aspectos;
             $i++;
         }
 
@@ -148,6 +164,7 @@ class EvaluacionPorAspectosController extends Controller
                                                     'asignaturas_curso' => $asignaturas_curso,
                                                     'asignatura' => $asignatura,
                                                     'fecha_valoracion' => $fecha_valoracion,
+                                                    'semana_calendario' => $semana_calendario,
                                                     'periodo_lectivo' => $periodo_lectivo,
                                                     'datos_asignatura' => $datos_asignatura,
                                                     'miga_pan' => $miga_pan,
@@ -167,13 +184,15 @@ class EvaluacionPorAspectosController extends Controller
             for( $c=1; $c <= $request->cantidad_items_aspectos; $c++ )
             {
                 $variable_item = 'valores_item_'.$c;
+                $fechas_valores_item = 'fechas_valores_item_'.$c;
                 $valor_item = $request->$variable_item[$key];
+                $fecha_valoracion = $request->$fechas_valores_item[$key];
                 
                 $item_valoracion_est = ResultadoEvaluacionAspectoEstudiante::where([
                                                                                 'estudiante_id' => (int)$estudiante_id,
                                                                                 'asignatura_id' => $request->id_asignatura,
                                                                                 'item_aspecto_id' => $c,
-                                                                                'fecha_valoracion' => $request->fecha_valoracion,
+                                                                                'fecha_valoracion' => $fecha_valoracion,
                                                                             ])
                                                                         ->get()
                                                                         ->first();
@@ -186,7 +205,7 @@ class EvaluacionPorAspectosController extends Controller
                                                                         'estudiante_id' => (int)$estudiante_id,
                                                                         'asignatura_id' => $request->id_asignatura,
                                                                         'item_aspecto_id' => $c,
-                                                                        'fecha_valoracion' => $request->fecha_valoracion,
+                                                                        'fecha_valoracion' => $fecha_valoracion,
                                                                         'convencion_valoracion_id' => (int)$valor_item,
                                                                         'creado_por' => $request->creado_por
                                                                     ]);
@@ -211,7 +230,8 @@ class EvaluacionPorAspectosController extends Controller
 
     public function consolidar(Request $request)
     {
-        $periodo_lectivo = PeriodoLectivo::get_actual();
+        $semana_calendario = SemanasCalendario::find( $request->semana_calendario_id );
+        $periodo_lectivo = $semana_calendario->periodo_lectivo;
 
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo_lectivo->id, null);
 
@@ -244,7 +264,7 @@ class EvaluacionPorAspectosController extends Controller
             $valoraciones_aspectos_id = [];
             foreach ( $items_aspectos as $item_aspecto )
             {
-                $valoracion = $this->get_consolidado_valoracion( $estudiante->id_estudiante, $asignatura->id, $item_aspecto->id, $request->fecha_desde, $request->fecha_hasta );
+                $valoracion = $this->get_consolidado_valoracion( $estudiante->id_estudiante, $asignatura->id, $item_aspecto->id, $semana_calendario->fecha_inicio, $semana_calendario->fecha_fin );
 
                 $key = "valores_item_" . $item_aspecto->id;
                 $valoraciones_aspectos[$key] = $valoracion->lbl_valoracion;
@@ -253,6 +273,7 @@ class EvaluacionPorAspectosController extends Controller
 
             $vec_estudiantes[$i]['valoraciones_aspectos'] = $valoraciones_aspectos;
             $vec_estudiantes[$i]['valoraciones_aspectos_ids'] = $valoraciones_aspectos_id;
+            $vec_estudiantes[$i]['observacion_id'] = $this->get_observacion( $estudiante->id_estudiante, $asignatura->id, $semana_calendario->id );
             $i++;
         }
 
@@ -260,35 +281,8 @@ class EvaluacionPorAspectosController extends Controller
         $creado_por = Auth::user()->email;
         $modificado_por = Auth::user()->email;
 
-        $observaciones = [ '',
-                            'Aclara y construye ideas del docente', 
-                            'Analiza la información brindada, argumenta y genera debates*Asume sus deberes y responsabilidades con gusto y autonomía', 
-                            'Demuestra iniciativa para trabajar en clases', 
-                            'Emplea un lenguaje claro y preciso',
-                            'Entrega tareas y trabajos a tiempo',
-                            'Equilibra el equipo', 
-                            'Es receptivo a las orientaciones dadas por el docente', 
-                            'Está conectado con el grupo', 
-                            'Facilita el trabajo en equipo',
-                            'Hace uso correcto del micrófono y del chat', 
-                            'Ingresa puntual al aula virtual',
-                            'Mantiene el ambiente virtual sano', 
-                            'Mantiene la atención y concentración en el aula de clases', 
-                            'Mantiene la participación activa en el aula de clases', 
-                            'Mantiene una adecuada presentación en el aula virtual',
-                            'Muestra sentido de pertenecía por medio de actividades extracurriculares',
-                            'Participa constantemente en clases', 
-                            'Presenta el material de trabajo organizado',
-                            'Promueve la discusión inteligente', 
-                            'Respeta a la autoridad', 
-                            'Respeta el turno de participación de los compañeros',
-                            'Respeta las opiniones ajenas', 
-                            'Se destaca por ser empático con los docentes y compañeros', 
-                            'Se expresa correctamente', 
-                            'Se muestra colaborativo en el aula virtual', 
-                            'Se preocupa por la clase',
-                            'Utiliza un trato amable y respetuoso hacia los compañeros y docentes'];
-
+        $observaciones = CatalogoObservacionesEvaluacionAspecto::opciones_campo_select();
+        
         return view('matriculas.observador.evaluacion_por_aspectos.consolidados', [
                                                     'vec_estudiantes' => $vec_estudiantes,
                                                     'cantidad_estudiantes' => count($estudiantes),
@@ -299,14 +293,54 @@ class EvaluacionPorAspectosController extends Controller
                                                     'curso' => $curso,
                                                     'asignatura' => $asignatura,
                                                     'observaciones' => $observaciones,
-                                                    'fecha_desde' => $request->fecha_desde,
-                                                    'fecha_hasta' => $request->fecha_hasta,
+                                                    'semana_calendario' => $semana_calendario,
                                                     'periodo_lectivo' => $periodo_lectivo,
                                                     'datos_asignatura' => $datos_asignatura,
                                                     'creado_por' => $creado_por,
                                                     'modificado_por' => $modificado_por,
                                                     'id_colegio' => $this->colegio->id
                                                 ]);
+    }
+
+    public function congratulations(Request $request)
+    {
+        $semana_calendario = SemanasCalendario::find( $request->semana_calendario_id );
+        $periodo_lectivo = $semana_calendario->periodo_lectivo;
+
+        $vec_asignaturas_profesor = AsignacionProfesor::get_asignaturas_x_curso( Auth::user()->id, $periodo_lectivo->id )->pluck('id_asignatura');
+
+        $colegio = $this->colegio;
+
+        $valores_consolidados_estudiantes = ConsolidadoEvaluacionAspectoEstudiante::where([
+                                                                                            'valoracion_id_final' => 1,
+                                                                                            'semana_calendario_id' => $request->semana_calendario_id,
+                                                                                        ])
+                                                                                    ->whereIn('asignatura_id',$vec_asignaturas_profesor)
+                                                                                    ->orderBy('curso_id')
+                                                                                    ->orderBy('asignatura_id')
+                                                                                    ->get();
+
+        return view('matriculas.observador.evaluacion_por_aspectos.congratulations', [
+                                                    'valores_consolidados_estudiantes' => $valores_consolidados_estudiantes,
+                                                    'colegio' => $colegio,
+                                                ]);
+    }
+
+    public function get_observacion( $estudiante_id, $id_asignatura, $semana_calendario_id )
+    {
+        $valor_consolidado_estudiante = ConsolidadoEvaluacionAspectoEstudiante::where([
+                                                                            'estudiante_id' => (int)$estudiante_id,
+                                                                            'asignatura_id' => $id_asignatura,
+                                                                            'semana_calendario_id' => $semana_calendario_id,
+                                                                        ])
+                                                                    ->get()
+                                                                    ->first();
+        if ( is_null($valor_consolidado_estudiante) )
+        {
+            return '';
+        }
+
+        return $valor_consolidado_estudiante->observacion_id;
     }
 
     public function get_consolidado_valoracion( $estudiante_id, $asignatura_id, $item_aspecto_id, $fecha_desde, $fecha_hasta )
@@ -320,7 +354,6 @@ class EvaluacionPorAspectosController extends Controller
                                                                 ->orderBy('fecha_valoracion','DESC')
                                                                 ->take(3)  // Se toman las tres últimas valoraciones
                                                                 ->get();
-                                        //dd( $valoraciones_est );
         
         $array_valoracion = [];
         $title = '';
@@ -363,7 +396,7 @@ class EvaluacionPorAspectosController extends Controller
             $value_valoracion = 1;
         }
 
-        if ( ($hay_alto == 1 || $hay_alto == 2 || $hay_alto == 3 ) && ($hay_medio == 0 || $hay_bajo == 0 ) )
+        if ( ($hay_alto == 1 || $hay_alto == 2 || $hay_alto == 3 ) && $hay_medio == 0 && $hay_bajo == 0 )
         {
             $color_fondo = 'purple';
             $color_texto = 'white';
@@ -379,7 +412,7 @@ class EvaluacionPorAspectosController extends Controller
             $value_valoracion = 2;
         }
 
-        if ( ($hay_medio == 1 || $hay_medio == 2 || $hay_medio == 3 ) && ($hay_alto == 0 || $hay_bajo == 0 ) )
+        if ( ($hay_medio == 1 || $hay_medio == 2 || $hay_medio == 3 ) && $hay_alto == 0 && $hay_bajo == 0 )
         {
             $color_fondo = 'yellow';
             $color_texto = 'black';
@@ -427,7 +460,7 @@ class EvaluacionPorAspectosController extends Controller
             $value_valoracion = 3;
         }
 
-        if ( ($hay_bajo == 1 || $hay_bajo == 2 || $hay_bajo == 3 ) && ($hay_alto == 0 || $hay_medio == 0 ) )
+        if ( ($hay_bajo == 1 || $hay_bajo == 2 || $hay_bajo == 3 ) && $hay_alto == 0 && $hay_medio == 0 )
         {
             $color_fondo = 'red';
             $color_texto = 'white';
@@ -440,58 +473,57 @@ class EvaluacionPorAspectosController extends Controller
         return (object)[ 'lbl_valoracion' => $valoracion, 'value_valoracion' => $value_valoracion ];
     }
 
+    /*
+        valoracion_id_final = Frecuencia
+    */
     public function almacenar_consolidado(Request $request)
     {
         $estudiantes = $request->id_estudiante;
-
+        $fila = 0;
         foreach ($estudiantes as $key => $estudiante_id )
         {
-            for( $c=1; $c <= $request->cantidad_items_aspectos; $c++ )
+            $valoracion_id_final = (int)$request->valoracion_id_final[$fila];
+            $observacion_id = (int)$request->observacion_id[$fila];
+            
+            $valor_cosolidado_estudiante = ConsolidadoEvaluacionAspectoEstudiante::where([
+                                                                            'estudiante_id' => (int)$estudiante_id,
+                                                                            'asignatura_id' => $request->id_asignatura,
+                                                                            'curso_id' => $request->curso_id,
+                                                                            'semana_calendario_id' => $request->semana_calendario_id,
+                                                                        ])
+                                                                    ->get()
+                                                                    ->first();
+            if( is_null($valor_cosolidado_estudiante) )
             {
-                $variable_item = 'valores_item_'.$c;
-                $valor_item = $request->$frecuencia[$key];
-
-                //::create( [ 'estudiante_id', 'asignatura_id', 'convencion_valoracion_id_final', 'frecuencia', 'cantidad_dias', 'observacion', 'creado_por', 'modificado_por' ] );
-
-                
-                $valor_cosolidado_estudiante = ConsolidadoEvaluacionAspectoEstudiante::where([
-                                                                                'estudiante_id' => (int)$estudiante_id,
-                                                                                'asignatura_id' => $request->id_asignatura,
-                                                                                'item_aspecto_id' => $c,
-                                                                                'fecha_valoracion' => $request->fecha_valoracion,
-                                                                            ])
-                                                                        ->get()
-                                                                        ->first();
-                if( is_null($valor_cosolidado_estudiante) )
+                if ( $observacion_id != 0 )
                 {
-                    if ( (int)$valor_item != 0 )
-                    {
-                        // Crear nuevo
-                        ConsolidadoEvaluacionAspectoEstudiante::create([
-                                                                        'estudiante_id' => (int)$estudiante_id,
-                                                                        'asignatura_id' => $request->id_asignatura,
-                                                                        'item_aspecto_id' => $c,
-                                                                        'fecha_valoracion' => $request->fecha_valoracion,
-                                                                        'convencion_valoracion_id' => (int)$valor_item,
-                                                                        'creado_por' => $request->creado_por
-                                                                    ]);
-                    }
-                }else{
-                    if ( (int)$valor_item != 0 )
-                    {
-                        // Actualizar
-                        $valor_cosolidado_estudiante->convencion_valoracion_id = (int)$valor_item;
-                        $valor_cosolidado_estudiante->modificado_por = $request->modificado_por;
-                        $valor_cosolidado_estudiante->save();
-                    }else{
-                        $valor_cosolidado_estudiante->delete();
-                    }
+                    // Crear nuevo
+                    ConsolidadoEvaluacionAspectoEstudiante::create([
+                                                                    'estudiante_id' => (int)$estudiante_id,
+                                                                    'curso_id' => $request->curso_id,
+                                                                    'asignatura_id' => $request->id_asignatura,
+                                                                    'semana_calendario_id' => $request->semana_calendario_id,
+                                                                    'valoracion_id_final' => $valoracion_id_final,
+                                                                    'observacion_id' => $observacion_id,
+                                                                    'creado_por' => $request->creado_por
+                                                                ]);
                 }
-                
+            }else{
+                if ( $observacion_id != 0 )
+                {
+                    // Actualizar
+                    $valor_cosolidado_estudiante->valoracion_id_final = $valoracion_id_final;
+                    $valor_cosolidado_estudiante->observacion_id = $observacion_id;
+                    $valor_cosolidado_estudiante->modificado_por = $request->modificado_por;
+                    $valor_cosolidado_estudiante->save();
+                }else{
+                    $valor_cosolidado_estudiante->delete();
+                }
             }
+            $fila++;
         }       
 
-        return redirect( 'sga_observador_evaluacion_por_aspectos_ingresar_valoracion/' . $request->curso_id . '/' . $request->id_asignatura . '/' . $request->fecha_valoracion . '?id=5' )->with('flash_message', 'Evaluación por aspectos ingresada correctamente.');
+        return redirect( 'index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos?id=5&semana_calendario_id=' . $request->semana_calendario_id )->with('flash_message', 'Consolidado almacenado correctamente.'); // . '&curso_id=' . $request->curso_id . '&id_asignatura=' . $request->id_asignatura
     }
    
 }

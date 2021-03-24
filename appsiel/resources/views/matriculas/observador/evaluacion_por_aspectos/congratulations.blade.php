@@ -1,101 +1,58 @@
+<?php
+    $url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen;
+?>
 <div class="container-fluid">
 	<div class="marco_formulario">
-	    <h4 style="text-align: center;">
-	    	Ingreso de valoraciones de estudiantes 
-			<br> 
-			Año lectivo: {{ $periodo_lectivo->descripcion }}
-	    </h4>
-	    <hr>
-
-		<div class="row">
-			<div class="col-sm-12">
-				<b>Periodo de evaluacion:</b><code> {{ $semana_calendario->descripcion }} </code>
-				<b>Curso:</b><code>{{ $curso->descripcion }}</code>
-				<b>Asignatura:</b><code>{{ $datos_asignatura->descripcion }}</code>
-			</div>							
-		</div>
-
 		<div class="row">
 			<div class="col-sm-12">
 				<div class="table-responsive">
-					{{ Form::open( [ 'url' => 'sga_observador_evaluacion_por_aspectos_almacenar_consolidado', 'method'=> 'POST', 'class' => 'form-horizontal', 'id' => 'form_create'] ) }}
-
-						{{ Form::hidden('id_colegio', $id_colegio, []) }}
-						{{ Form::hidden('creado_por', $creado_por, []) }}
-						{{ Form::hidden('modificado_por', $modificado_por, []) }}
-						{{ Form::hidden('curso_id', $curso->id, []) }}
-						{{ Form::hidden('id_asignatura', $datos_asignatura->id, []) }}
-						{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, []) }}
-                        {{ Form::hidden('cantidad_items_aspectos', $cantidad_items_aspectos, []) }} 
-                        {{ Form::hidden('semana_calendario_id', $semana_calendario->id, []) }} 
-
-						{{ Form::hidden('url_id',Input::get('id')) }}
-
-						<table class="table table-striped" id="tabla_registros">
+						<table class="table table-bordered table-striped" id="tbDatos">
 							<thead>
-								<tr>
-									<th>&nbsp;</th>
-									@foreach( $tipos_aspectos AS $tipo_aspecto )
-										<?php $cant_items_del_tipo = $items_aspectos->where('id_tipo_aspecto', $tipo_aspecto->id )->count() ?>
-										<th colspan="{{$cant_items_del_tipo}}" align="center">{{$tipo_aspecto->descripcion}}</th>
-									@endforeach
-									<th> &nbsp; </th>
-									<th> &nbsp; </th>
+								<tr align="center">
+									<th>
+                                        <img src="{{ $url }}" width="{{ config('configuracion.ancho_logo_formatos') }}" height="{{ config('configuracion.alto_logo_formatos') }}" />
+                                    </th>
+									<th colspan="4">
+                                        <h4 style="text-align: center;">
+                                            LISTADO DE CONGRATULATIONS
+                                        </h4>
+                                    </th>
 								</tr>
 								<tr>
-									<th>Estudiantes</th>
-									@foreach( $items_aspectos AS $item_aspecto )
-										<th class="celda_C{{$item_aspecto->id}}" align="center" title="{{ $item_aspecto->descripcion }}">
-											{{$item_aspecto->descripcion}}
-										</th>
-									@endforeach
-									<th title="Frecuencia"> Frecuencia </th>
-									<th> Observación </th>
+                                    <th> Student Name <br> (Nombres y Apellidos Completos) </th>
+                                    <th> Date and time <br> (dd/mm/yyyy) </th>
+                                    <th> Class <br> (Curso) </th>
+                                    <th> Subject <br> (Asignatura) </th>
+                                    <th> Reason for praise <br> (Aspectos a resaltar del estudiante) </th>
 								</tr>
 							</thead>
 							<tbody>
-								<?php 
 
-									$linea=1;
-								?>
+								@foreach( $valores_consolidados_estudiantes AS $fila )
 
-								@for( $k = 0; $k < $cantidad_estudiantes; $k++)
+									<tr>
 
-									<tr valign="{{$linea}}" title="{{$vec_estudiantes[$k]['nombre']}}">									
-
-										<td width="250px" style="font-size:12px">
-											<b> {{$linea}} {{ $vec_estudiantes[$k]['nombre'] }}</b>
-											{{ Form::hidden('codigo_matricula[]',$vec_estudiantes[$k]['codigo_matricula'],[]) }}
-											{{ Form::hidden('id_estudiante[]',$vec_estudiantes[$k]['id_estudiante'],[]) }}
-										</td>				
+                                        <td>
+                                            {{ $fila->estudiante->tercero->descripcion }}
+                                        </td>
+                                        <td>
+                                            {{ $fila->semana_calendario->fecha_fin }}
+                                        </td>
+                                        <td>
+                                            {{ $fila->curso->descripcion }}
+                                        </td>
+                                        <td>
+                                            {{ $fila->asignatura->descripcion }}
+                                        </td>
+                                        <td width="40%">
+                                            {{ $fila->observacion->observacion }}
+                                        </td>
 										
-										@for ( $c=1; $c <= $cantidad_items_aspectos; $c++ )
-											<td class="celda_C{{$c}}" title="{{ $vec_estudiantes[$k]['nombre'] . ': ' . $items_aspectos->toArray()[$c-1]['descripcion'] }}">
-												{!! $vec_estudiantes[$k]['valoraciones_aspectos']['valores_item_'.$c] !!}
-											</td>
-										@endfor
-
-										<td title="{{ $vec_estudiantes[$k]['nombre'] . ': Frecuencia' }}">
-											<?php 
-												$valoracion = get_frecuencia( $vec_estudiantes[$k]['valoraciones_aspectos_ids'], $k );
-												echo $valoracion->lbl_valoracion;
-											?>
-											{{ Form::hidden('valoracion_id_final[]',$valoracion->value_valoracion,[]) }}
-										</td>
-										<td title="{{$vec_estudiantes[$k]['nombre']}}">
-											{{ Form::select( 'observacion_id[]', $observaciones, $vec_estudiantes[$k]['observacion_id'], array_merge( [ 'id' => 'observacion_'.$k ], [] )) }}
-										</td>
 									</tr>
-									<?php $linea++; ?>
-								@endfor
+								@endforeach
 								
 							</tbody>
 						</table>
-
-						<div style="text-align: center; width: 100%;">
-							<button class="btn btn-primary btn-xs" id="bs_boton_guardar">Guardar</button>
-						</div>
-					{{Form::close()}}
 				</div>				
 			</div>
 		</div>

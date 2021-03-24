@@ -45,6 +45,10 @@
 
 	</div>
 	<hr>
+	<div class="row">
+		@yield('cabecera')
+	</div>
+	<hr>
 
 	@include('layouts.mensajes')
 
@@ -114,6 +118,8 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$('#btn_print').focus();
+
+			$('.select2').select2();
 
 			$('#btn_print').animate( {  borderSpacing: 45 }, {
 			    step: function(now,fx) {
