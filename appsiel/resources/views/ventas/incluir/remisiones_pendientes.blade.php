@@ -1,6 +1,6 @@
-<h4 style="width: 100%; text-align: center;"> Remisiones/Devoluciones pendientes por facturar </h4>
+<h4 style="width: 100%; text-align: center; color: #000;"> Remisiones/Devoluciones pendientes por facturar </h4>
 <div class="table-responsive">
-    <table id="myTable" class="table table-bordered table-striped">
+    <table id="myTable" class="table table-bordered table-striped" style="color: #000;">
         <thead>
             <tr>
                 <th style="display: none;"> ID Encabezado Remisión </th>
@@ -55,10 +55,10 @@
     </table>
 </div>
 
-<h4 style="width: 100%; text-align: center;"> Detalles de productos a facturar </h4>
+<h4 style="width: 100%; text-align: center; color: #000;"> Detalles de productos a facturar </h4>
 <span style="color: red;"> « Los precios son traidos de la lista de precios del cliente.»</span>
 <div class="table-responsive">
-    <table class="table table-bordered" style="background-color: white;">
+    <table class="table table-bordered" style="background-color: white; color: #000;">
         <thead>
             <tr>
                 <th>Producto</th>

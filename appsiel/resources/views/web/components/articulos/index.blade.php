@@ -425,7 +425,7 @@
         $("#textestado").html(htmlestado);
         $("#estadoe option[value=" + i.estado + "]").attr("selected", true);
         var html = "<label for='message-text' class='col-form-label'>Contenido</label><span data-toggle='tooltip' title='Establece el contenido del articulo.'> <i class='fa fa-question-circle'></i></span><textarea" +
-            " name='contenidoe' class='form-control editor' id='contenidoe'>" + i.contenido + "</textarea>";
+            " name='contenido' class='form-control editor' id='contenidoe'>" + i.contenido + "</textarea>";
         $("#textarea").html(html);
         CKEDITOR.replace('contenidoe', {
             height: 200,
