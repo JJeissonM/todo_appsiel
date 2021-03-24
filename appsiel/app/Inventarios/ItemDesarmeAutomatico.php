@@ -22,6 +22,8 @@ class ItemDesarmeAutomatico extends Model
 {
     protected $table = 'inv_items_desarmes_automaticos'; 
 
+    // item_consumir_id: el que se compra
+    // item_producir_id: el que se vende
     protected $fillable = [ 'item_consumir_id', 'item_producir_id', 'cantidad_proporcional', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Item a consumir', 'Item a producir', 'Cantidad proporcional', 'Estado'];

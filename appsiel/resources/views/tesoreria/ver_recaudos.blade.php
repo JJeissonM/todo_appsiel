@@ -33,7 +33,7 @@
     								<td> {{ $recaudo_tesoreria->tipo_documento_app->prefijo }} {{ $recaudo_tesoreria->consecutivo }}</td>
     								<td> {{ $recaudo->elconcepto->descripcion }}</td>
     								<td> {{ $nombre_mes }}</td>
-    								<td> {{ number_format( $recaudo_tesoreria->valor_total, 0, ',', '.') }} </td>
+    								<td> {{ number_format( $recaudo->valor_recaudo, 0, ',', '.') }} </td>
     								<td>
                                         
                                         <a class="btn btn-info btn-xs btn-detail" href="{{ url( 'tesoreria_recaudos_cxc_imprimir/' . $recaudo_tesoreria->id . '?id=3&id_modelo=153&id_transaccion=32' ) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>

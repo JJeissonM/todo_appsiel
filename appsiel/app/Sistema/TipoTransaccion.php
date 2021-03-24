@@ -13,7 +13,7 @@ class TipoTransaccion extends Model
 
     protected $fillable = ['core_app_id', 'core_modelo_id', 'descripcion', 'orden', 'modelo_encabezados_documentos', 'modelo_registros_documentos', 'modelo_movimientos', 'estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'App', 'Descripción', 'Modelo CRUD', 'Model Encabezado Docs.', 'Model Registro Docs.', 'Model movimientos', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'ID', 'App', 'Descripción', 'Modelo CRUD', 'Model Encabezado Docs.', 'Model Registro Docs.', 'Model movimientos', 'Estado'];
 
     public function tipos_documentos()
     {
@@ -40,15 +40,15 @@ class TipoTransaccion extends Model
         $registros = TipoTransaccion::leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'sys_tipos_transacciones.core_app_id')
             ->leftJoin('sys_modelos', 'sys_modelos.id', '=', 'sys_tipos_transacciones.core_modelo_id')
             ->select(
-
-                'sys_aplicaciones.descripcion AS campo1',
-                'sys_tipos_transacciones.descripcion AS campo2',
-                'sys_modelos.descripcion AS Model campo3',
-                'sys_tipos_transacciones.modelo_encabezados_documentos AS campo4',
-                'sys_tipos_transacciones.modelo_registros_documentos AS campo5',
-                'sys_tipos_transacciones.modelo_movimientos AS campo6',
-                'sys_tipos_transacciones.estado AS campo7',
-                'sys_tipos_transacciones.id AS campo8'
+                'sys_tipos_transacciones.id AS campo1',
+                'sys_aplicaciones.descripcion AS campo2',
+                'sys_tipos_transacciones.descripcion AS campo3',
+                'sys_modelos.descripcion AS Model campo4',
+                'sys_tipos_transacciones.modelo_encabezados_documentos AS campo5',
+                'sys_tipos_transacciones.modelo_registros_documentos AS campo6',
+                'sys_tipos_transacciones.modelo_movimientos AS campo7',
+                'sys_tipos_transacciones.estado AS campo8',
+                'sys_tipos_transacciones.id AS campo9'
             )
             ->where("sys_aplicaciones.descripcion", "LIKE", "%$search%")
             ->orWhere("sys_tipos_transacciones.descripcion", "LIKE", "%$search%")
@@ -68,6 +68,7 @@ class TipoTransaccion extends Model
         $string = TipoTransaccion::leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'sys_tipos_transacciones.core_app_id')
             ->leftJoin('sys_modelos', 'sys_modelos.id', '=', 'sys_tipos_transacciones.core_modelo_id')
             ->select(
+                'sys_tipos_transacciones.id AS ID',
                 'sys_aplicaciones.descripcion AS APP',
                 'sys_tipos_transacciones.descripcion AS DESCRIPCIÓN',
                 'sys_modelos.descripcion AS MODELO_CRUD',

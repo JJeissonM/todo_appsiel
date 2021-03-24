@@ -11,6 +11,7 @@ use App\Tesoreria\TesoLibretasPago;
 
 class TesoRecaudosLibreta extends Model
 {
+    // concepto = inv_producto_id
     public $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'id_libreta', 'id_cartera', 'concepto', 'fecha_recaudo', 'teso_medio_recaudo_id', 'cantidad_cuotas', 'valor_recaudo', 'mi_token', 'creado_por', 'modificado_por'];
 
     public $urls_acciones = '{"show":"no"}';
@@ -47,41 +48,9 @@ class TesoRecaudosLibreta extends Model
 
     public function anular()
     {
-        $this->actualizar_plan_pagos_estudiante($this);
-        $this->actualizar_estado_libreta_pago($this->id_libreta);
+        $this->registro_cartera_estudiante->restar_abono_registro_cartera_estudiante( $this->valor_recaudo );
+        $this->libreta->actualizar_estado();
         $this->delete();
-    }
-
-    public function actualizar_estado_libreta_pago($id_libreta)
-    {
-        $suma_matriculas = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto($id_libreta, config('matriculas.inv_producto_id_default_matricula'));
-        $suma_pensiones = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto($id_libreta, config('matriculas.inv_producto_id_default_pension'));
-        $total_pagado = $suma_matriculas + $suma_pensiones;
-        $libreta = TesoLibretasPago::find($id_libreta);
-        $total_libreta = $libreta->valor_matricula + $libreta->valor_pension_anual;
-        if ($total_pagado == $total_libreta) {
-            $libreta->estado = "Inactivo";
-            $libreta->save();
-        }
-    }
-
-    public function actualizar_plan_pagos_estudiante(TesoRecaudosLibreta $recaudo_libreta)
-    {
-        $cartera = TesoPlanPagosEstudiante::find($recaudo_libreta->id_cartera);
-        $nuevo_valor_pagado = $cartera->valor_pagado - $recaudo_libreta->valor_recaudo;
-        $saldo_pendiente = $cartera->saldo_pendiente + $recaudo_libreta->valor_recaudo;
-        $estado = $cartera->estado;
-
-        if ($nuevo_valor_pagado == $cartera->valor_cartera) {
-            $estado = "Pagada";
-        } else {
-            $estado = "Pendiente";
-        }
-
-        $cartera->valor_pagado = $nuevo_valor_pagado;
-        $cartera->saldo_pendiente = $saldo_pendiente;
-        $cartera->estado = $estado;
-        $cartera->save();
     }
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Estudiante', 'No. Identificacion', 'Detalle', 'Valor'];

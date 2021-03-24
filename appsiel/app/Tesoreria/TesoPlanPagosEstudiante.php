@@ -47,6 +47,38 @@ class TesoPlanPagosEstudiante extends Model
         return $recaudo_libreta->recaudo_tesoreria();
     }
 
+    public function sumar_abono_registro_cartera_estudiante( $valor_recaudo )
+    {
+        $valor_pagado = $this->valor_pagado + $valor_recaudo;
+        $saldo_pendiente = $this->saldo_pendiente - $valor_recaudo;
+        $estado = $this->estado;
+        if( $valor_pagado == $this->valor_cartera )
+        {
+            $estado = "Pagada";
+        }
+        $this->valor_pagado = $valor_pagado;
+        $this->saldo_pendiente = $saldo_pendiente;
+        $this->estado = $estado;
+        $this->save();
+    }
+
+    public function restar_abono_registro_cartera_estudiante( $valor_recaudo )
+    {
+        $nuevo_valor_pagado = $this->valor_pagado - $valor_recaudo;
+        $saldo_pendiente = $this->saldo_pendiente + $valor_recaudo;
+        
+        $estado = "Pendiente";
+        if($nuevo_valor_pagado == $this->valor_cartera)
+        {
+            $estado = "Pagada";
+        }
+        
+        $this->valor_pagado = $nuevo_valor_pagado;
+        $this->saldo_pendiente = $saldo_pendiente;
+        $this->estado = $estado;
+        $this->save();
+    }
+
     public function get_registros_pendientes_o_vencidos_a_la_fecha( $fecha, $inv_producto_id = null )
     {
         if ( is_null( $inv_producto_id ) )

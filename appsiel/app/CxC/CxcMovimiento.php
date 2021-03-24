@@ -93,6 +93,7 @@ class CxcMovimiento extends Model
       ->where('cxc_movimientos.saldo_pendiente', '<>', 0)
       ->select('cxc_movimientos.id', 'cxc_movimientos.core_tipo_transaccion_id', 'cxc_movimientos.core_tipo_doc_app_id', 'cxc_movimientos.consecutivo', 'core_terceros.descripcion AS tercero', DB::raw($select_raw), 'cxc_movimientos.fecha', 'cxc_movimientos.fecha_vencimiento', 'cxc_movimientos.valor_documento', 'cxc_movimientos.valor_pagado', 'cxc_movimientos.saldo_pendiente', 'cxc_movimientos.core_tercero_id')
       ->orderBy('cxc_movimientos.core_tercero_id')
+      ->orderBy('cxc_movimientos.fecha')
       ->get()->toArray();
   }
 

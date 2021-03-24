@@ -24,6 +24,23 @@ class TesoLibretasPago extends Model
         return $this->hasMany( TesoPlanPagosEstudiante::class, 'id_libreta' );
     }
 
+    public function actualizar_estado()
+    {
+        $suma_matriculas = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $this->id, config('matriculas.inv_producto_id_default_matricula') );
+        $suma_pensiones = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $this->id, config('matriculas.inv_producto_id_default_pension') );
+        $total_pagado = $suma_matriculas + $suma_pensiones ;
+
+        $total_libreta = $this->valor_matricula + ($this->valor_pension_mensual * $this->numero_periodos);
+
+        $this->estado = "Activo";
+        if ( $total_pagado == $total_libreta )
+        {
+            $this->estado = "Inactivo";
+        }
+        
+        $this->save();
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return TesoLibretasPago::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'teso_libretas_pagos.id_estudiante')

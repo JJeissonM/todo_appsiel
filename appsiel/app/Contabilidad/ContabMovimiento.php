@@ -203,6 +203,25 @@ class ContabMovimiento extends Model
             ->get();
     }
 
+    public static function get_saldo_movimiento_clase_cuenta($fecha_desde, $fecha_hasta, $clase_cuenta_id )
+    {
+        $array_wheres = [
+            ['contab_movimientos.core_empresa_id', '=', Auth::user()->empresa_id]
+        ];
+
+        if( !is_null($clase_cuenta_id) )
+        {
+            $array_wheres = array_merge($array_wheres, ['contab_cuentas.contab_cuenta_clase_id' => $clase_cuenta_id]);
+        }
+
+        return ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
+                                        ->whereBetween('contab_movimientos.fecha', [$fecha_desde, $fecha_hasta])
+                                        ->where($array_wheres)
+                                        ->selectRaw('sum(contab_movimientos.valor_saldo) AS valor_saldo')
+                                        ->groupBy('contab_cuentas.id')
+                                        ->get();
+    }
+
 
 
     public static function get_movimiento_cuenta($fecha_inicial, $fecha_final, $contab_cuenta_id, $numero_identificacion, $operador, $codigo_referencia_tercero, $empresa_id)

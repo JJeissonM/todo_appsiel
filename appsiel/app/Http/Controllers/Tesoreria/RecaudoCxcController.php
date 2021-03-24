@@ -13,13 +13,13 @@ use Lava;
 use Input;
 use NumerosEnLetras;
 use Form;
+use Schema;
 
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Contabilidad\ContabilidadController;
-
 
 // Modelos
 use App\Sistema\TipoTransaccion;
@@ -37,11 +37,16 @@ use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoRecaudosLibreta;
+use App\Tesoreria\TesoPlanPagosEstudiante;
+
+use App\Matriculas\FacturaAuxEstudiante;
 
 use App\Contabilidad\ContabMovimiento;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
+
+use App\Ventas\VtasDocEncabezado;
 
 class RecaudoCxcController extends Controller
 {
@@ -122,7 +127,7 @@ class RecaudoCxcController extends Controller
 
     public function almacenar( Request $request )
     {
-        // Crear Documento de tesorería (PAGO)
+        // Crear Documento de tesorería (RECAUDO)
         $doc_encabezado = RecaudoCxcController::crear_encabezado_documento($request, $request->url_id_modelo);
 
         // NOTA: No se crean líneas de registros (teso_doc_registros) para este tipo de documentos
@@ -189,7 +194,13 @@ class RecaudoCxcController extends Controller
 
             $valor_total += $abono;
 
-          } // FIN FOR CADA LINEA DEL PAGO
+            // Cuando NO se esta haciendo un Recaudo desde Libreta de Pagos
+            if ( Schema::hasTable( 'sga_facturas_estudiantes' ) && !isset( $request->vtas_doc_encabezado_id ) )
+            {
+                $this->registrar_recaudo_cartera_estudiante( $doc_encabezado, $registro_documento_pendiente, $abono );
+            }
+
+        } // FIN FOR CADA LINEA DEL PAGO
 
         // Actualizar total del documento en el encabezado
         $doc_encabezado->valor_total = $valor_total;
@@ -280,40 +291,6 @@ class RecaudoCxcController extends Controller
             ];
         
         return view( 'tesoreria.recaudos_cxc.show', compact( 'id', 'reg_anterior', 'reg_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado') );
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-       //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 
 
@@ -476,21 +453,55 @@ class RecaudoCxcController extends Controller
         // Borrar movimiento contable generado por el documento de pago ( DB: Caja/Banco, CR: CxC )
         ContabMovimiento::where('core_tipo_transaccion_id',$recaudo->core_tipo_transaccion_id)->where('core_tipo_doc_app_id',$recaudo->core_tipo_doc_app_id)->where('consecutivo',$recaudo->consecutivo)->delete();
 
-        // Si es el recaudo de una factura asociada a un registro de Plan de Pagos libreta de pagos
-        $recaudo_libreta = TesoRecaudosLibreta::where([
+        // Si es el Recaudo de una o varias facturas asociadas a un registro de Plan de Pagos de una libreta de pagos
+        $recaudos_libreta = TesoRecaudosLibreta::where([
                                                     ['core_tipo_transaccion_id','=',$recaudo->core_tipo_transaccion_id],
                                                     ['core_tipo_doc_app_id','=',$recaudo->core_tipo_doc_app_id],
                                                     ['consecutivo','=',$recaudo->consecutivo]
-                                                ])->get()->first();
-        if ( !is_null($recaudo_libreta) )
+                                                ])->get();
+        foreach( $recaudos_libreta AS $recaudo_libreta )
         {
             $recaudo_libreta->anular();
-        }            
+        }
 
         // Marcar como anulado el encabezado
         $recaudo->update(['estado'=>'Anulado']);
 
         return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Recaudo de CxC ANULADO correctamente.');
         
+    }
+
+    // Por cada linea del Recaudo de CxC
+    public function registrar_recaudo_cartera_estudiante( $doc_encabezado_recaudo, $registro_cxc_pendiente, $abono  )
+    {
+        $factura = VtasDocEncabezado::where([
+                                                [ 'core_tipo_transaccion_id','=', $registro_cxc_pendiente->core_tipo_transaccion_id ],
+                                                [ 'core_tipo_doc_app_id','=', $registro_cxc_pendiente->core_tipo_doc_app_id ],
+                                                [ 'consecutivo','=', $registro_cxc_pendiente->consecutivo ]
+                                            ])->get()->first();
+
+        if ( is_null($factura) )
+        {
+            return false;
+        }
+
+        $aux_factura = FacturaAuxEstudiante::where('vtas_doc_encabezado_id', $factura->id )->get()->first();
+
+        $recaudo = TesoRecaudosLibreta::create( [
+                                    'core_tipo_transaccion_id' => (int)$doc_encabezado_recaudo->core_tipo_transaccion_id,
+                                    'core_tipo_doc_app_id' => (int)$doc_encabezado_recaudo->core_tipo_doc_app_id,
+                                    'consecutivo' => $doc_encabezado_recaudo->consecutivo,
+                                    'id_libreta' => $aux_factura->cartera_estudiante->id_libreta,
+                                    'id_cartera' => $aux_factura->cartera_estudiante_id,
+                                    'concepto' => $aux_factura->cartera_estudiante->inv_producto_id,
+                                    'fecha_recaudo' => $doc_encabezado_recaudo->fecha,
+                                    'teso_medio_recaudo_id' => $doc_encabezado_recaudo->teso_medio_recaudo_id,
+                                    'cantidad_cuotas' => 1,
+                                    'valor_recaudo' => $abono,
+                                    'creado_por' => $doc_encabezado_recaudo->creado_por
+                                ] );
+
+        $recaudo->registro_cartera_estudiante->sumar_abono_registro_cartera_estudiante( $abono );
+        $recaudo->libreta->actualizar_estado();
     }
 }

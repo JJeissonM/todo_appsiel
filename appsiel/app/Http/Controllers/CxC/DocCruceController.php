@@ -12,6 +12,7 @@ use View;
 use Lava;
 use Input;
 use NumerosEnLetras;
+use Schema;
 
 
 use App\Http\Controllers\Core\ConfiguracionController;
@@ -33,6 +34,8 @@ use App\Matriculas\Estudiante;
 use App\Core\Colegio;
 use App\Core\Empresa;
 
+use App\Ventas\VtasDocEncabezado;
+use App\Matriculas\FacturaAuxEstudiante;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcDocEncabezado;
@@ -108,14 +111,10 @@ class DocCruceController extends TransaccionController
      */
     public function store(Request $request)
     {
-        
       $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
       // esta tabla contiene documentos de cartera y de saldo_a_favor
       $tabla_documentos_a_cancelar = json_decode( $request->tabla_documentos_a_cancelar );
-
-      //dd( $tabla_documentos_a_cancelar );
-          
 
       // Se recorre la tabla enviada en el request, descartando la última fila
       // En este recorrido se va actualizando la tabla cxc_movimientos, el movimiento contable y se crean dos arrays: $vector_cartera y $vector_afavor con estos dos arrays luego se crearan registros en la tabla cxc_abonos
@@ -162,7 +161,6 @@ class DocCruceController extends TransaccionController
     // Esta funcion crea registros en la tabla cxc_abonos para cruzar todos los documentos de cartera con los documentos a favor (notas y anticipos) seleccionados
     public function creacion_abonos_cxc($doc_encabezado, $vector_cartera, $vector_afavor)
     {
-
       $detalle_operacion = $doc_encabezado->descripcion;
 
       // Se recorre el vector de carteras (cxc_movimiento_id y valor_aplicar)
@@ -224,6 +222,23 @@ class DocCruceController extends TransaccionController
 
       $this->contabilizar_debito( $movimiento_afavor, $valor_abono, $detalle_operacion);
       $this->contabilizar_credito( $movimiento_cartera, $valor_abono, $detalle_operacion);
+
+      // Para facturas de Libretas de Pago
+      if ( Schema::hasTable( 'sga_facturas_estudiantes' ) )
+      {
+        $doc_encabezado_recaudo = TesoDocEncabezadoRecaudo::where([
+                                                                    [ 'core_tipo_transaccion_id','=', $movimiento_afavor->core_tipo_transaccion_id ],
+                                                                    [ 'core_tipo_doc_app_id','=', $movimiento_afavor->core_tipo_doc_app_id ],
+                                                                    [ 'consecutivo','=', $movimiento_afavor->consecutivo ]
+                                                                ])->get()->first();
+        if ( is_null( $doc_encabezado_recaudo) )
+        {
+          return 0;
+        }
+        
+        $this->registrar_recaudo_cartera_estudiante( $doc_encabezado_recaudo, $movimiento_cartera, $valor_abono );
+      }
+
     }
 
     public function almacenar_abono_cxc($doc_encabezado, $movimiento_cartera, $movimiento_afavor, $abono)
@@ -443,7 +458,7 @@ class DocCruceController extends TransaccionController
       ContabMovimiento::where($array_wheres)->delete();
 
 
-      // 2do. Por cada abono, se reversar el valor que el doc. cruce descontó en el movimiento cartera y se elimina el abono
+      // 2do. Por cada abono, se reversa el valor que el doc. cruce descontó en el movimiento cartera y se elimina el abono
       $array_wheres = [
                       'core_empresa_id' => $documento->core_empresa_id, 
                       'doc_cruce_transacc_id' => $documento->core_tipo_transaccion_id,
@@ -476,6 +491,8 @@ class DocCruceController extends TransaccionController
                                                     ->first();
         $this->actualizar_mov_cxc( $mov_documento_afavor, $linea, 'afavor', $linea->abono ); // Para saldo afavor el movimiento es negativo, los abonos también deben ser negativos
 
+        $this->anular_recaudo_cartera_estudiante( $mov_documento_afavor, $linea->abono );
+
         // Se elimina el abono
         $linea->delete();
       }
@@ -484,6 +501,21 @@ class DocCruceController extends TransaccionController
       $documento->update( [ 'estado' => 'Anulado', 'modificado_por' => Auth::user()->email ] );
 
       return redirect( 'doc_cruce/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Documento de cruce anulado correctamente.');
+    }
+
+    public function anular_recaudo_cartera_estudiante( $movimiento_afavor, $abono )
+    {      
+      // Si es el Recaudo de una o varias facturas asociadas a un registro de Plan de Pagos de una libreta de pagos
+      $recaudo_libreta = TesoRecaudosLibreta::where([
+                                                  ['core_tipo_transaccion_id','=',$movimiento_afavor->core_tipo_transaccion_id],
+                                                  ['core_tipo_doc_app_id','=',$movimiento_afavor->core_tipo_doc_app_id],
+                                                  ['consecutivo','=',$movimiento_afavor->consecutivo],
+                                                  ['valor_recaudo','=',$abono]
+                                              ])->get()->first();
+      if( !is_null($recaudo_libreta) )
+      {
+          $recaudo_libreta->anular();
+      }
     }
 
     // valor_abono siempre es positivo
@@ -539,4 +571,36 @@ class DocCruceController extends TransaccionController
         $linea_movimiento->save();
     }
 
+    public function registrar_recaudo_cartera_estudiante( $doc_encabezado_recaudo, $registro_cxc_pendiente, $abono  )
+    {
+        $factura = VtasDocEncabezado::where([
+                                                [ 'core_tipo_transaccion_id','=', $registro_cxc_pendiente->core_tipo_transaccion_id ],
+                                                [ 'core_tipo_doc_app_id','=', $registro_cxc_pendiente->core_tipo_doc_app_id ],
+                                                [ 'consecutivo','=', $registro_cxc_pendiente->consecutivo ]
+                                            ])->get()->first();
+
+        if ( is_null($factura) )
+        {
+            return false;
+        }
+
+        $aux_factura = FacturaAuxEstudiante::where('vtas_doc_encabezado_id', $factura->id )->get()->first();
+
+        $recaudo = TesoRecaudosLibreta::create( [
+                                    'core_tipo_transaccion_id' => (int)$doc_encabezado_recaudo->core_tipo_transaccion_id,
+                                    'core_tipo_doc_app_id' => (int)$doc_encabezado_recaudo->core_tipo_doc_app_id,
+                                    'consecutivo' => $doc_encabezado_recaudo->consecutivo,
+                                    'id_libreta' => $aux_factura->cartera_estudiante->id_libreta,
+                                    'id_cartera' => $aux_factura->cartera_estudiante_id,
+                                    'concepto' => $aux_factura->cartera_estudiante->inv_producto_id,
+                                    'fecha_recaudo' => $doc_encabezado_recaudo->fecha,
+                                    'teso_medio_recaudo_id' => $doc_encabezado_recaudo->teso_medio_recaudo_id,
+                                    'cantidad_cuotas' => 1,
+                                    'valor_recaudo' => $abono,
+                                    'creado_por' => $doc_encabezado_recaudo->creado_por
+                                ] );
+
+        $recaudo->registro_cartera_estudiante->sumar_abono_registro_cartera_estudiante( $abono );
+        $recaudo->libreta->actualizar_estado();
+    }
 }

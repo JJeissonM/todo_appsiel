@@ -29,6 +29,9 @@
 				Plan de pagos
 				<a class="btn btn-primary btn-xs btn-detail pull-right" href="{{ url('tesoreria/ver_recaudos/'.$libreta->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}" title="Consultar recaudos"><i class="fa fa-btn fa-search"></i>&nbsp;Consultar recaudos</a>
 			</h3>
+
+			@include('tesoreria.libretas_pagos.datos_documentos_anticipo')
+
 			<div class="table-responsive">
 				<table class="table table-bordered table-striped">
 					{{ Form::bsTableHeader(['ID','Concepto','Mes','Vlr. a pagar','Vlr. pagado','Saldo pendiente','Fecha vencimiento','Estado','Acción']) }}
@@ -78,7 +81,6 @@
 								<td>{{$fila->fecha_vencimiento}}</td>
 								<td>{{$fila->estado}}</td>
 								<td>
-
 									@if( empty( $fila->facturas_estudiantes->toArray() ) )
 										<a class="btn btn-warning btn-xs btn-detail" href="{{ url( 'web/' . $fila->id . '/edit?id='.Input::get('id') . '&id_modelo=264' ) }}" title="Modificar"><i class="fa fa-edit"></i>&nbsp; </a>
 

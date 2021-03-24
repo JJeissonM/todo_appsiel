@@ -45,5 +45,7 @@ Route::get('reasignar_grupos_cuentas_form','Contabilidad\ContabReportesControlle
 Route::get('reasignar_grupos_cuentas_save/{cuenta_id}/{grupo_id}','Contabilidad\ContabReportesController@reasignar_grupos_cuentas_save');
 
 // PROCESOS
+Route::post('contab_generar_listado_cierre_ejercicio','Contabilidad\ProcesosController@generar_listado_cierre_ejercicio');
+
 Route::get('corregir_signo_a_movimientos','Contabilidad\ContabilidadController@corregir_signo_a_movimientos');
 Route::get('contab/proceso_1','Contabilidad\ContabReportesController@proceso_1');

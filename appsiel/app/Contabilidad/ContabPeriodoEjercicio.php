@@ -76,4 +76,24 @@ class ContabPeriodoEjercicio extends Model
     {
         return "LISTADO DE PERIODOS DE EJERCICIO";
     }
+
+
+
+    public static function opciones_campo_select()
+    {
+        $opciones = ContabPeriodoEjercicio::where([
+                                                    ['estado','=','Activo'],
+                                                    ['cerrado','=',0]
+                                                ])
+                                ->orderBy('descripcion')
+                                ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+        
+        return $vec;
+    }
 }

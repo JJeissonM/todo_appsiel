@@ -763,9 +763,9 @@ class FacturaPosController extends TransaccionController
 
             $cantidad_facturada = $cantidades_facturadas->where('inv_producto_id', $parametros_item_desarme->item_producir_id)->sum('cantidad_facturada');
 
-            $existencia_item_producir = InvMovimiento::get_existencia_producto($parametros_item_desarme->item_producir_id, $bodega_default_id, $fecha);
+            $existencia_item_facturado = InvMovimiento::get_existencia_producto($parametros_item_desarme->item_producir_id, $bodega_default_id, $fecha);
 
-            $cantidad_consumir = intdiv( (int)($cantidad_facturada - $existencia_item_producir->Cantidad), $cantidad_proporcional) + 1; // La parte entera de la división más 1 unidad adicional
+            $cantidad_consumir = intdiv( (int)($cantidad_facturada - $existencia_item_facturado->Cantidad), $cantidad_proporcional) + 1; // La parte entera de la división más 1 unidad adicional
 
             $existencia_item_consumir = InvMovimiento::get_existencia_producto($parametros_item_desarme->item_consumir_id, $bodega_default_id, $fecha);
 

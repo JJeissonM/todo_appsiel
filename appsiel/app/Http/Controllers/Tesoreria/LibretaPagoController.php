@@ -413,8 +413,6 @@ class LibretaPagoController extends ModeloController
     // Almacenar documentos de RECAUDO DE CARTERA DE ESTUDANTE
     public function guardar_recaudo_cartera(Request $request)
     {
-        //dd( $request->all() );
-
         $url_id_modelo = $request->url_id_modelo;
 
         $fecha = $request->fecha_recaudo;
@@ -427,10 +425,9 @@ class LibretaPagoController extends ModeloController
         // Se guarda el recaudo de la libreta
         $recaudo_libreta = TesoRecaudosLibreta::create( $datos );
 
-        $this->actualizar_registro_cartera_estudiante( $request->id_cartera, $request->valor_recaudo );
+        $recaudo_libreta->registro_cartera_estudiante->sumar_abono_registro_cartera_estudiante( $request->valor_recaudo );
 
-        // Se verifica si la libreta no tiene cartera pendiente y se inactiva
-        $this->actualizar_estado_libreta_pago( $request->id_libreta );
+        $recaudo_libreta->libreta->actualizar_estado();
 
         // Crear documento de recaudo de Tesorería, con todos sus procesos: teso_doc_encabezados, teso_doc_registros, teso_movimientos, cxc_abonos, cxc_movimientos, contab_movimientos
         $request['fecha'] = $request->fecha_recaudo;
@@ -440,11 +437,11 @@ class LibretaPagoController extends ModeloController
 
         $request['modificado_por'] = '';
         $request['creado_por'] = Auth::user()->email;
-        //$request['cliente_id'] = Cliente::where( 'core_tercero_id', $request->core_tercero_id )->get()->first()->id;
         $request['tipo_recaudo_aux'] = '';
         
         $request['lineas_registros'] = '[{"id_doc":"'. $request->id_doc .'","Cliente":"","Documento interno":"","Fecha":"","Fecha vencimiento":"","Valor Documento":"$0,00","Valor pagado":"$0,00","Saldo pendiente":"$00,00","abono":"' . $request->valor_recaudo . '"},{"id_doc":"","Cliente":"","Documento interno":"$0.00","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';
 
+        // Se crea un recaudo de Tesorería con su movimiento y contabilidad
         $request['url_id_modelo'] = 153; // Recaudo de CxC
         $recaudo_cxc = new RecaudoCxcController;
         $registro_recaudo_cxc = $recaudo_cxc->almacenar( $request );
@@ -453,36 +450,6 @@ class LibretaPagoController extends ModeloController
         $recaudo_libreta->save();
 
         return redirect( 'tesoreria/ver_plan_pagos/' . $request->id_libreta . '?id=' . $request->url_id . '&id_modelo=' . $url_id_modelo )->with( 'flash_message', 'Recaudo realizado correctamente.' );
-    }
-
-    public function actualizar_registro_cartera_estudiante( $id_cartera, $valor_recaudo )
-    {
-        $cartera = TesoPlanPagosEstudiante::find( $id_cartera );
-        $valor_pagado = $cartera->valor_pagado + $valor_recaudo;
-        $saldo_pendiente = $cartera->saldo_pendiente - $valor_recaudo;
-        $estado = $cartera->estado;
-        if( $valor_pagado == $cartera->valor_cartera )
-        {
-            $estado="Pagada";
-        }
-        $cartera->valor_pagado = $valor_pagado;
-        $cartera->saldo_pendiente = $saldo_pendiente;
-        $cartera->estado = $estado;
-        $cartera->save();
-    }
-
-    public function actualizar_estado_libreta_pago( $id_libreta )
-    {
-        $suma_matriculas = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $id_libreta, config('matriculas.inv_producto_id_default_matricula') );
-        $suma_pensiones = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $id_libreta, config('matriculas.inv_producto_id_default_pension') );
-        $total_pagado = $suma_matriculas + $suma_pensiones ;
-        $libreta = TesoLibretasPago::find( $id_libreta );
-        $total_libreta = $libreta->valor_matricula + $libreta->valor_pension_anual;
-        if ( $total_pagado == $total_libreta )
-        {
-            $libreta->estado = "Inactivo";
-            $libreta->save();
-        }
     }
 
     // consultar_recaudos
@@ -526,15 +493,17 @@ class LibretaPagoController extends ModeloController
 
         $plan_pagos = TesoPlanPagosEstudiante::where('id_libreta',$id_libreta)->get();
 
+        $responsable_financiero = $matricula_estudiante->estudiante->responsable_financiero();
+        $documentos_anticipos = CxcMovimiento::get_documentos_tercero( $responsable_financiero->tercero->id, date('Y-m-d') );
+
         $miga_pan = [
                 ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],
                 ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=>'Libretas de pagos'],
                 ['url'=>'NO','etiqueta'=>'Plan de pagos']
             ];
 
-        return view('tesoreria.ver_plan_pagos', compact('matricula_estudiante', 'libreta', 'plan_pagos', 'miga_pan') );
+        return view('tesoreria.ver_plan_pagos', compact( 'matricula_estudiante', 'libreta', 'plan_pagos', 'miga_pan','documentos_anticipos') );
     }
-
 
     public function aplicar_descuento( $cartera_id )
     {
@@ -595,67 +564,6 @@ class LibretaPagoController extends ModeloController
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
         return $pdf->stream('comprobante_recaudo.pdf');
     }
-
-
-    public function eliminar_recaudo_libreta($recaudo_id)
-    {
-        $recaudo = TesoRecaudosLibreta::find($recaudo_id);
-
-        // 1ro. Borrar registros contables
-        ContabMovimiento::where('core_empresa_id',Auth::user()->empresa_id)
-            ->where('core_tipo_transaccion_id', $recaudo->core_tipo_transaccion_id)
-            ->where('core_tipo_doc_app_id', $recaudo->core_tipo_doc_app_id)
-            ->where('consecutivo', $recaudo->consecutivo)
-            ->delete();
-
-        // 2do. Eliminar movimiento de tesorería
-        TesoMovimiento::where('core_empresa_id',Auth::user()->empresa_id)
-            ->where('core_tipo_transaccion_id', $recaudo->core_tipo_transaccion_id)
-            ->where('core_tipo_doc_app_id', $recaudo->core_tipo_doc_app_id)
-            ->where('consecutivo', $recaudo->consecutivo)
-            ->delete();
-
-        // 3ro. Reversar valor que el recaudo descontó en cartera
-        // Se Actualiza la cartera del estudiante
-        $cartera = TesoPlanPagosEstudiante::find($recaudo->id_cartera);
-        $nuevo_valor_pagado = $cartera->valor_pagado - $recaudo->valor_recaudo;
-        $saldo_pendiente = $cartera->saldo_pendiente + $recaudo->valor_recaudo;
-        $estado = $cartera->estado;
-        
-        if($nuevo_valor_pagado == $cartera->valor_cartera)
-        {
-            $estado="Pagada";
-        }else{
-            $estado="Pendiente";
-        }
-        
-        $cartera->valor_pagado = $nuevo_valor_pagado;
-        $cartera->saldo_pendiente = $saldo_pendiente;
-        $cartera->estado = $estado;
-        $cartera->save();
-
-        // Se verifica si la libreta no tiene cartera pendiente y se inactiva
-        $suma_matriculas = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $recaudo->id_libreta, config('matriculas.inv_producto_id_default_matricula') );
-        $suma_pensiones = TesoPlanPagosEstudiante::get_total_valor_pagado_concepto( $recaudo->id_libreta, config('matriculas.inv_producto_id_default_pension') );
-
-        $total_pagado = $suma_matriculas + $suma_pensiones ;
-        $libreta = TesoLibretasPago::find($recaudo->id_libreta);
-        $total_libreta = $libreta->valor_matricula + $libreta->valor_pension_anual;
-        if ($total_pagado==$total_libreta) 
-        {
-            $libreta->estado = "Inactivo";
-        }else{
-            $libreta->estado = "Activo";
-        }
-        $libreta->save();
-
-
-        // 4to. Se elimina el recaudo
-        $recaudo->delete();
-
-        return redirect('tesoreria/ver_recaudos/'.$recaudo->id_libreta.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('flash_message','Recaudo Eliminado correctamente.');
-
-   }
 
 
     // ELIMINAR LIBRETA

@@ -1,13 +1,16 @@
 @extends('core.procesos.layout')
 
-@section( 'titulo', 'Consolidado de observación Académica-Comportamental' )
+@section( 'titulo', 'Cierre del ejercicio del periodo contable: Traslado de utilidades' )
 
 @section('detalles')
 	<p>
-		Este proceso consolida todas las valoraciones realizadas por cada asignatura en la distintas fechas y determina la escala de frecuencia obtenida por cada estudiante. 
+		Este proceso realiza el traslado de las utilidades o pérdidas del periodo respectivo, para esto hace la cancelación de cuentas de resultado, mediante el cual se deja en $0 todos los valores acumulados en las cuentas de Ingresos (4xx), Egresos (5xx) y Costos (6xx y 7xx) afectadas a lo largo del ejercicio contable, trasladando todos estos valores a la cuenta “59xxxx Ganancias o Perdidas del ejercicio”.
+	</p>
+	<p>
+		Al final del proceso se crea un nota contable que contendrá los movimientos de cada cuenta afectada.
 	</p>
 	<p class="text-info">
-		Nota: El sistema tomará las últimas tres valoraciones ingresadas dentro del rango de fechas.
+		Nota: Luego de este proceso se debe generar una nota para cancelar el saldo de la cuenta “59xxxx Ganancias o Perdidas del ejercicio” contra la cuenta de patrimonio respectiva: "36xxxx Utilidad del ejercicio" o "36xxxx Perdida del ejercicio"
 	</p>
 	<br>
 @endsection
@@ -24,26 +27,22 @@
 							Parámetros de selección
 						</h4>
 						<hr>
-						{{ Form::open(['url'=>'sga_observador_evaluacion_por_aspectos_consolidar','id'=>'formulario_inicial']) }}
+						{{ Form::open(['url'=>'contab_generar_listado_cierre_ejercicio','id'=>'formulario_inicial']) }}
 							<div class="row">
 								<div class="col-sm-4">
-									{{ Form::label('semana_calendario_id','Semanas de evaluacion') }}
+									{{ Form::label('periodo_ejercicio_id','Periodo del ejercicio') }}
 									<br/>
-									{{ Form::select('semana_calendario_id',\App\Core\SemanasCalendario::opciones_campo_select(),null,[ 'class' => 'form-control', 'id' => 'semana_calendario_id', 'required' => 'required' ]) }}
+									{{ Form::select('periodo_ejercicio_id',\App\Contabilidad\ContabPeriodoEjercicio::opciones_campo_select(),null,[ 'class' => 'form-control', 'id' => 'periodo_ejercicio_id', 'required' => 'required' ]) }}
 								</div>
 								<div class="col-sm-3">
-									{{ Form::label('curso_id','Curso') }}
-									<br/>
-									{{ Form::select('curso_id',\App\Matriculas\Curso::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'curso_id', 'required' => 'required' ]) }}
+									&nbsp;
 								</div>
 								<div class="col-sm-3">
-									{{ Form::label('asignatura_id','Asignatura') }}
-									<br/>
-									{{ Form::select('asignatura_id',[],null, [ 'class' => 'form-control', 'id' => 'asignatura_id', 'required' => 'required' ]) }}
+									&nbsp;
 								</div>
 								<div class="col-sm-2">
 									{{ Form::label(' ','.') }}
-									<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar</a>
+									<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar listado</a>
 								</div>
 							</div>
 						{{ Form::close() }}
