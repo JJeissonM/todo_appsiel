@@ -154,6 +154,7 @@ class ArticleController extends Controller
     {
         $as = Articlesetup::find($id);
         $as->fill($request->all());
+        
         $variables_url = $request->variables_url;
         if ($request->mostrara2 == 'ARTICULO') {
             $as->article_id = $request->article_id;
@@ -193,6 +194,8 @@ class ArticleController extends Controller
                 $as->tipo_fondo = "COLOR";
             }
         }
+
+        dd($as);
         $result = $as->save();
         if ($result) {
             $message = 'La configuración de la sección fue modificada correctamente.';
@@ -286,7 +289,7 @@ class ArticleController extends Controller
         $a->estado = $request->estado;
         $a->contenido = $request->contenido;
         $a->descripcion = $request->descripcion;
-        $result = $a->save();
+        
         if ($request->hasFile('imagen')) {
             $file = $request->file('imagen');
             $name = str_slug($file->getClientOriginalName()) . '-' . time() . '.' . $file->clientExtension();
@@ -301,6 +304,7 @@ class ArticleController extends Controller
                 $a->fill(['imagen' => $filename])->save();
             }
         }
+        $result = $a->save();
         $variables_url = $request->variables_url;
         if ($result) {
             $message = 'El artículo fue modificado correctamente.';
