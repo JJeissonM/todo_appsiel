@@ -586,6 +586,11 @@ class DocCruceController extends TransaccionController
 
         $aux_factura = FacturaAuxEstudiante::where('vtas_doc_encabezado_id', $factura->id )->get()->first();
 
+        if ( is_null($aux_factura) )
+        {
+            return false;
+        }
+        
         $recaudo = TesoRecaudosLibreta::create( [
                                     'core_tipo_transaccion_id' => (int)$doc_encabezado_recaudo->core_tipo_transaccion_id,
                                     'core_tipo_doc_app_id' => (int)$doc_encabezado_recaudo->core_tipo_doc_app_id,
