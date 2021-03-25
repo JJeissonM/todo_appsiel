@@ -21,6 +21,26 @@ class ContabMovimiento extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
+    public function tercero()
+    {
+        return $this->belongsTo(Tercero::class, 'core_tercero_id');
+    }
+
+    public function cuenta()
+    {
+        return $this->belongsTo(ContabCuenta::class, 'contab_cuenta_id');
+    }
+
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo(TipoTransaccion::class, 'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo(TipoDocApp::class, 'core_tipo_doc_app_id');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
@@ -97,7 +117,7 @@ class ContabMovimiento extends Model
 
     public static function consultar_registros2($nro_registros, $search)
     {
-        return ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
+        $collection = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_movimientos.core_tercero_id')
             ->leftJoin('inv_productos', 'inv_productos.id', '=', 'contab_movimientos.inv_producto_id')
             ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
@@ -116,38 +136,67 @@ class ContabMovimiento extends Model
                 'contab_movimientos.valor_credito AS campo10',
                 'contab_movimientos.id AS campo11'
             )
-            ->orWhere("contab_movimientos.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(inv_productos.id," ",inv_productos.descripcion)'), "LIKE", "%$search%")
-            ->orWhere("contab_movimientos.detalle_operacion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
-            ->orWhere("contab_movimientos.tasa_impuesto", "LIKE", "%$search%")
-            ->orWhere("contab_movimientos.base_impuesto", "LIKE", "%$search%")
-            ->orWhere("contab_movimientos.valor_debito", "LIKE", "%$search%")
-            ->orWhere("contab_movimientos.valor_credito", "LIKE", "%$search%")
             ->orderBy('contab_movimientos.created_at', 'DESC')
-            ->paginate($nro_registros);
+            ->get();
+
+        //hacemos el filtro de $search si $search tiene contenido
+        $nuevaColeccion = [];
+        if (count($collection) > 0) {
+            if (strlen($search) > 0) {
+                $nuevaColeccion = $collection->filter(function ($c) use ($search) {
+                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                        return $c;
+                    }
+                });
+            } else {
+                $nuevaColeccion = $collection;
+            }
+        }
+
+        $request = request(); //obtenemos el Request para obtener la url y la query builder
+
+        if (empty($nuevaColeccion)) {
+            return $array = new LengthAwarePaginator([], 1, 1, 1, [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]);
+        }
+
+        //obtenemos el numero de la página actual, por defecto 1
+        $page = 1;
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+        $total = count($nuevaColeccion); //Total para contar los registros mostrados
+        $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
+        $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
+        $array = new LengthAwarePaginator($array, $total, $nro_registros, $page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]); //finalmente se pagina y organiza la coleccion a devolver con todos los datos
+
+        return $array;
     }
 
-    public function tercero()
+    /**
+     * SQL Like operator in PHP.
+     * Returns TRUE if match else FALSE.
+     * @param array $valores_campos_seleccionados de campos donde se busca
+     * @param string $searchTerm termino de busqueda
+     * @return bool
+     */
+    public static function likePhp($valores_campos_seleccionados, $searchTerm)
     {
-        return $this->belongsTo(Tercero::class, 'core_tercero_id');
-    }
-
-    public function cuenta()
-    {
-        return $this->belongsTo(ContabCuenta::class, 'contab_cuenta_id');
-    }
-
-    public function tipo_transaccion()
-    {
-        return $this->belongsTo(TipoTransaccion::class, 'core_tipo_transaccion_id');
-    }
-
-    public function tipo_documento_app()
-    {
-        return $this->belongsTo(TipoDocApp::class, 'core_tipo_doc_app_id');
+        $encontrado = false;
+        $searchTerm = str_slug($searchTerm); // Para eliminar acentos
+        foreach ($valores_campos_seleccionados as $valor_campo) {
+            $str = str_slug($valor_campo);
+            $pos = strpos($str, $searchTerm);
+            if ($pos !== false) {
+                $encontrado = true;
+            }
+        }
+        return $encontrado;
     }
 
 
@@ -217,7 +266,7 @@ class ContabMovimiento extends Model
         return ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
                                         ->whereBetween('contab_movimientos.fecha', [$fecha_desde, $fecha_hasta])
                                         ->where($array_wheres)
-                                        ->selectRaw('sum(contab_movimientos.valor_saldo) AS valor_saldo')
+                                        ->selectRaw('sum(contab_movimientos.valor_saldo) AS valor_saldo, contab_movimientos.contab_cuenta_id')
                                         ->groupBy('contab_cuentas.id')
                                         ->get();
     }

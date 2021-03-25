@@ -66,31 +66,6 @@
 
 		$(document).ready(function(){
 
-			$('#curso_id').on('change',function()
-			{
-				// Debe haber Select Asignatura
-				$('#asignatura_id').html('<option value=""></option>');
-
-				if ( $(this).val() == '') { return false; }
-
-	    		$('#div_cargando').show();
-
-				var url = "{{ url('calificaciones_opciones_select_asignaturas_del_curso') }}" + "/" + $('#curso_id').val() + "/null" + "/null" + "/Activo";
-
-				$.ajax({
-		        	url: url,
-		        	type: 'get',
-		        	success: function(datos){
-
-		        		$('#div_cargando').hide();
-	    				
-	    				$('#asignatura_id').html( datos );
-						$('#asignatura_id').focus();
-			        }
-			    });
-					
-			});
-
 			$("#btn_generar").on('click',function(event){
 		    	event.preventDefault();
 
@@ -128,14 +103,26 @@
 			    });
 		    });
 
-			$(document).on('hover','td',function(){
-				var fila_encabezado  = $('table thead tr').eq( 1 ); // La segunda fila del encabezado
-				//console.log( fila_encabezado.find('th').eq(2).html() );
-				//var celda_encabezado = $('table thead tr[1] th').eq( $(this).index() );
-				var celda_encabezado = fila_encabezado.find('th').eq( $(this).index() );
-				var etiqueta_mostrar = $(this).parent('tr').attr('title') + ": " + celda_encabezado.attr('title');
-				$(this).attr( 'title', etiqueta_mostrar );
-			});
+
+			$(document).on('click',"#btn_promover",function(event){
+		    	event.preventDefault();
+
+		    	if ( !validar_requeridos() )
+		    	{
+		    		return false;
+		    	}
+
+		    	$('#periodo_ejercicio_id2').val( $('#periodo_ejercicio_id').val() );
+
+		    	if ( !confirm('¿Está seguro de generar la Nota Contable para dejar en cero todas las cuentas de resultado del periodo contable ' + $('#periodo_ejercicio_id option:selected').text() + '?') )
+		    	{
+			 		$("#div_spin").hide();
+			 		$("#div_cargando").hide();
+		    		return false;
+		    	}
+
+		 		$('#form_create').submit();
+		    });
 
 		});
 	</script>
