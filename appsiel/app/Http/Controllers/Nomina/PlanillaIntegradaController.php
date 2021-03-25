@@ -456,7 +456,7 @@ class PlanillaIntegradaController extends Controller
         }        
             
         $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (int)config('nomina.horas_laborales') * (int)config('nomina.horas_dia_laboral');
-        if ( $this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal )
+        if ( ($this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal) && ($this->cantidad_dias_laborados != 0) )
         {
             $this->ibc_salud = ( $valor_ibc_un_dia_minimo_legal * $this->cantidad_dias_laborados );// + 10;// $10 para que alcance la siguiente decena más cercana
             $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
