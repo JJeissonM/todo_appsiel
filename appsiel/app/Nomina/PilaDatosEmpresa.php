@@ -21,7 +21,7 @@ class PilaDatosEmpresa extends Model
 
     public function representante_legal()
     {
-        return $this->belongsTo('App\Core\tercero', 'rep_legal_core_tercero_id');
+        return $this->belongsTo('App\Core\Tercero', 'rep_legal_core_tercero_id');
     }
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empresa', 'Tipo de aportante', 'Clase de aportante', 'Forma de presentación', 'Tipo de persona', 'Naturaleza jurídica', 'Tipo pagador pensiones', 'Tipo de acción', 'Administradora de riesgos laborales', 'Actividad económica (CIIU)', 'Representante Legal', '% SENA', '% ICBF', '% CCF', 'Estado'];
