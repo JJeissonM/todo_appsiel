@@ -408,7 +408,7 @@ class PlanillaIntegradaController extends Controller
 
 
     /*
-            LIQUIDACION PILA
+            LIQUIDACION PILA (Generar)
     */
     public function liquidar_planilla( $planilla_id )
     {

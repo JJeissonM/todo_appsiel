@@ -16,6 +16,7 @@
 	{{ Form::bsMigaPan($miga_pan) }}
 
 	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnCreate( 'web/create?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
+	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnPrint( 'nomina_print/'.$id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
 
 	@if ( $encabezado_doc->estado == 'Activo' )
 		{{ Form::bsBtnEdit2('web/'.$id.'/edit?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
