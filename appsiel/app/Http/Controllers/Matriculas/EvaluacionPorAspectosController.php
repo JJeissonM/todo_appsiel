@@ -317,13 +317,63 @@ class EvaluacionPorAspectosController extends Controller
                                                                                         ])
                                                                                     ->whereIn('asignatura_id',$vec_asignaturas_profesor)
                                                                                     ->orderBy('curso_id')
-                                                                                    ->orderBy('asignatura_id')
+                                                                                    ->orderBy('estudiante_id')
+                                                                                    //->orderBy('asignatura_id')
                                                                                     ->get();
 
         return view('matriculas.observador.evaluacion_por_aspectos.congratulations', [
                                                     'valores_consolidados_estudiantes' => $valores_consolidados_estudiantes,
                                                     'colegio' => $colegio,
                                                 ]);
+    }
+
+    public function estadisticas_por_curso(Request $request)
+    {
+        $semana_calendario = SemanasCalendario::find( $request->semana_calendario_id );
+        $periodo_lectivo = $semana_calendario->periodo_lectivo;
+
+        $vec_cursos_profesor = AsignacionProfesor::get_asignaturas_x_curso( Auth::user()->id, $periodo_lectivo->id )->pluck('curso_id');
+
+        $colegio = $this->colegio;
+
+        foreach ( $vec_cursos_profesor as $key => $curso_id )
+        {
+            $vce = ConsolidadoEvaluacionAspectoEstudiante::where( 'semana_calendario_id', $request->semana_calendario_id )
+                                                        ->where('curso_id', $curso_id)
+                                                        ->selectRaw('count(valoracion_id_final) AS cantidad_valoracion, valoracion_id_final, curso_id')
+                                                        ->groupBy('valoracion_id_final')
+                                                        ->get();
+            //if( $curso_id == 4 )
+            if( !empty($vce->toArray() ) )
+            {
+                $this->grafica_valoracion_x_curso( $vce );
+            }
+        }
+            
+
+        return view('matriculas.observador.evaluacion_por_aspectos.congratulations', [
+                                                    'valores_consolidados_estudiantes' => $valores_consolidados_estudiantes,
+                                                    'colegio' => $colegio,
+                                                ]);
+    }
+
+    public function grafica_valoracion_x_curso( $valores_consolidados )
+    {
+        $stocksTable = Lava::DataTable();
+        
+        $stocksTable->addStringColumn('Frecuencia')
+                    ->addNumberColumn('Cantidad');
+        
+        foreach( $valores_consolidados as $frecuencia )
+        {
+            $stocksTable->addRow([
+              $registro->Genero, (int)$registro->Cantidad
+            ]);
+        }
+
+        Lava::PieChart('Generos', $stocksTable);
+        
+        return $generos;
     }
 
     public function get_observacion( $estudiante_id, $id_asignatura, $semana_calendario_id )

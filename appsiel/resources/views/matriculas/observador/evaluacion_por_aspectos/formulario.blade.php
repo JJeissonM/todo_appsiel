@@ -22,6 +22,11 @@
 	
 <div class="container-fluid">
 	<div class="marco_formulario">
+
+		<div class="container-fluid">
+			<a class="btn btn-success btn-md" href="{{url('/index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos?id=' . Input::get('id') )}}" title="Generar consolidados"><i class="fa fa-users"></i> Generar consolidados </a>
+		</div>
+
 	    <h4 style="text-align: center;">
 	    	Ingreso de valoraciones de estudiantes 
 			<br> 

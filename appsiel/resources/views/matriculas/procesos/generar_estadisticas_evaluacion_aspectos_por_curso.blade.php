@@ -1,6 +1,6 @@
 @extends('core.procesos.layout')
 
-@section( 'titulo', 'Listado de Congratulations' )
+@section( 'titulo', 'Estadisticas de resultados de evaluación por aspectos' )
 
 @section('seccion_encabezado')
 
@@ -12,10 +12,10 @@
 
 @section('detalles')
 	<p>
-		Este proceso genera el listado de Congratulations de estudiantes, en un periodo determinado, de los cursos asignados al docente. 
+		Este proceso genera graficas de los resultados de evaluación por aspectos para los cursos asignados al docente. 
 	</p>
 	<p class="text-info">
-		Nota: El sistema mostrara las valoraciones y observaciones que tengan un calificacion Alta.
+		Nota: El sistema tomará los valores para los estudiantes que tengan registros de observación en los consolidados; es decir, si el estudiante no tiene almacenada una observacion en el consolidado no se tendrá en cuenta en la gráfica.
 	</p>
 	<br>
 @endsection
@@ -32,7 +32,7 @@
 							Parámetros de selección
 						</h4>
 						<hr>
-						{{ Form::open(['url'=>'sga_observador_evaluacion_por_aspectos_congratulations','id'=>'formulario_inicial']) }}
+						{{ Form::open(['url'=>'sga_observador_evaluacion_por_aspectos_estadisticas_por_curso','id'=>'formulario_inicial']) }}
 							<div class="row">
 								<div class="col-sm-4">
 									{{ Form::label('semana_calendario_id','Semanas de evaluacion') }}

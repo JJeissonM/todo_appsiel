@@ -9296,6 +9296,21 @@
       'created_at' => '2021-03-25 05:55:25',
       'updated_at' => '2021-03-25 05:55:53',
     ),
+    507 => 
+    array (
+      'id' => 533,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'sga_estadisticas_evaluacion_por_aspectos',
+      'descripcion' => 'Estadísticas por curso',
+      'url' => 'index_procesos/matriculas.procesos.generar_estadisticas_evaluacion_aspectos_por_curso',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2021-03-26 13:05:07',
+      'updated_at' => '2021-03-26 13:09:41',
+    ),
   ),
   'roles' => 
   array (

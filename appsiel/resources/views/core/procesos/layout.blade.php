@@ -12,6 +12,12 @@
 			<div class="container-fluid">
 	    		<br><br>
 
+	    		<div class="container-fluid">
+
+					@yield('seccion_encabezado')
+
+				</div>
+
 	    		<div class="well">
 					<h4 style="text-align: center; width: 100%;"> @yield('titulo') </h4>
 					

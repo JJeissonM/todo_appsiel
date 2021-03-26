@@ -94,6 +94,8 @@ Route::post('sga_observador_evaluacion_por_aspectos_almacenar_consolidado', 'Mat
 
 Route::post('sga_observador_evaluacion_por_aspectos_congratulations', 'Matriculas\EvaluacionPorAspectosController@congratulations');
 
+Route::post('sga_observador_evaluacion_por_aspectos_estadisticas_por_curso', 'Matriculas\EvaluacionPorAspectosController@estadisticas_por_curso');
+
 
 // Control disciplinario
 

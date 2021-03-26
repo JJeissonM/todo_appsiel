@@ -2,6 +2,15 @@
 
 @section( 'titulo', 'Consolidado de observación Académica-Comportamental' )
 
+@section('seccion_encabezado')
+
+	<a class="btn btn-info btn-md" href="{{url('/index_procesos/matriculas.procesos.listado_congratulations?id=' . Input::get('id') )}}" title="Listado de Congratulations"><i class="fa fa-list"></i> Listado de Congratulations </a>
+	<a class="btn btn-warning btn-md" href="{{url('/index_procesos/matriculas.procesos.generar_estadisticas_evaluacion_aspectos_por_curso?id=' . Input::get('id') )}}" title="Estadísticas por curso"><i class="fa fa-pie-chart"></i> Estadísticas por curso </a>
+
+	<br><br>
+
+@endsection
+
 @section('detalles')
 	<p>
 		Este proceso consolida todas las valoraciones realizadas por cada asignatura en la distintas fechas y determina la escala de frecuencia obtenida por cada estudiante. 
