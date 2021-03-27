@@ -324,14 +324,6 @@ class CompraController extends TransaccionController
             $cxp_id = Proveedor::get_cuenta_por_pagar( $datos['proveedor_id'] );
             ContabilidadController::contabilizar_registro2( $datos, $cxp_id, $detalle_operacion, 0, abs($total_documento) );
         }
-        
-        if ( $forma_pago == 'contado')
-        {
-            // Caja (CR)
-            // WARNING: Esta cuenta en realidad la debe tomar de la caja por defecto asociada al usuario,
-            // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-            
-        }
 
         if ( $forma_pago == 'contado')
         {
@@ -719,13 +711,16 @@ class CompraController extends TransaccionController
         // 3ro. Se elimina el documento del movimimeto de cuentas por pagar
         CxpMovimiento::where($array_wheres)->delete();
 
-        // 4to. Se elimina el movimiento de compras
+        // 4to. Se elimina el documento del movimimeto de Tesorería
+        TesoMovimiento::where($array_wheres)->delete();
+
+        // 5to. Se elimina el movimiento de compras
         ComprasMovimiento::where($array_wheres)->delete();
         
-        // 5to. Se marcan como anulados los registros del documento
+        // 6to. Se marcan como anulados los registros del documento
         ComprasDocRegistro::where( 'compras_doc_encabezado_id', $factura->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
 
-        // 6to. Se marca como anulado el documento
+        // 7mo. Se marca como anulado el documento
         $factura->update([ 'estado'=>'Anulado', 'entrada_almacen_id' => '', 'modificado_por' => $modificado_por]);
 
         return redirect( 'compras/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Factura de compra ANULADA correctamente.');
