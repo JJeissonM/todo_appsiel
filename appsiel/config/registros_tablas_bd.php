@@ -9311,6 +9311,21 @@
       'created_at' => '2021-03-26 13:05:07',
       'updated_at' => '2021-03-26 13:09:41',
     ),
+    508 => 
+    array (
+      'id' => 534,
+      'core_app_id' => 5,
+      'modelo_id' => 0,
+      'name' => 'sga_reporte_consolidados_evaluacion_por_aspectos',
+      'descripcion' => 'Reporte Consolidados',
+      'url' => 'index_procesos/matriculas.procesos.reporte_consolidados_evaluacion_por_aspectos',
+      'parent' => 0,
+      'orden' => 99,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2021-03-27 06:52:47',
+      'updated_at' => '2021-03-27 06:53:41',
+    ),
   ),
   'roles' => 
   array (

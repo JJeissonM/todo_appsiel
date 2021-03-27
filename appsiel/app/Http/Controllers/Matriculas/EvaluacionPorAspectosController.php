@@ -14,6 +14,7 @@ use Lava;
 use Input;
 use Form;
 use NumerosEnLetras;
+use Cache;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -302,6 +303,96 @@ class EvaluacionPorAspectosController extends Controller
                                                 ]);
     }
 
+    public function reporte_consolidados(Request $request)
+    {
+        $semana_calendario = SemanasCalendario::find( $request->semana_calendario_id );
+        $periodo_lectivo = $semana_calendario->periodo_lectivo;
+
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo_lectivo->id, null);
+
+        $curso = Curso::find( $request->curso_id );
+
+        $asignaturas_del_curso = CursoTieneAsignatura::asignaturas_del_curso( $curso->id, null, $periodo_lectivo->id, null );
+
+        if ( is_null($asignaturas_del_curso) )
+        {
+            return redirect()->back()->with('mensaje_error', 'Hay problemas en la asignación de la asignatura al curso. Consulte con el administrador.');
+        }
+
+        // Se crea un array con los valores de las evaluaciones de cada estudiante
+        $vec_estudiantes = array();
+        $i = 0;
+
+        $tipos_aspectos = TiposAspecto::where('estado', 'Activo')->get();
+        $items_aspectos = CatalogoAspecto::where('estado', 'Activo')->orderBy('id_tipo_aspecto')->orderBy('orden')->get();
+
+        $cantidad_items_aspectos = count( $items_aspectos->toArray() );
+
+        $view = '';
+        foreach( $asignaturas_del_curso as $asignacion )
+        {
+            $cantidad_estudiantes = count($estudiantes);
+            foreach ($estudiantes as $estudiante)
+            {
+                $observacion_id = $this->get_observacion( $estudiante->id_estudiante, $asignacion->asignatura->id, $semana_calendario->id );
+                
+                if ( $observacion_id == 0 )
+                {
+                    $cantidad_estudiantes--;
+                    continue;
+                }
+
+                $vec_estudiantes[$i]['observacion_descripcion'] = CatalogoObservacionesEvaluacionAspecto::find( $observacion_id )->observacion;
+                $vec_estudiantes[$i]['id_estudiante'] = $estudiante->id_estudiante;
+                $vec_estudiantes[$i]['nombre'] = $estudiante->nombre_completo; //." ".$estudiante->apellido2." ".$estudiante->nombres;
+                $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
+
+                $valoraciones_aspectos = [];
+                $valoraciones_aspectos_id = [];
+                foreach ( $items_aspectos as $item_aspecto )
+                {
+                    $valoracion = $this->get_consolidado_valoracion( $estudiante->id_estudiante, $asignacion->asignatura->id, $item_aspecto->id, $semana_calendario->fecha_inicio, $semana_calendario->fecha_fin );
+
+                    $key = "valores_item_" . $item_aspecto->id;
+                    $valoraciones_aspectos[$key] = $valoracion->lbl_valoracion . '<br>Fecha: ' . $valoracion->fecha_valoracion;
+                    if ( $valoracion->value_valoracion == 0 )
+                    {
+                        $valoraciones_aspectos[$key] = $valoracion->lbl_valoracion;
+                    }
+                    $valoraciones_aspectos_id[] = $valoracion->value_valoracion;
+                }
+
+                $vec_estudiantes[$i]['valoraciones_aspectos'] = $valoraciones_aspectos;
+                $vec_estudiantes[$i]['valoraciones_aspectos_ids'] = $this->get_frecuencia( $valoraciones_aspectos_id, $i )->lbl_valoracion;
+                $i++;
+            }
+
+            $convenciones = ['','Alto','Medio','Bajo'];
+            
+            $view .= View::make( 'matriculas.observador.evaluacion_por_aspectos.reporte_consolidados', [
+                                                        'vec_estudiantes' => $vec_estudiantes,
+                                                        'cantidad_estudiantes' => $cantidad_estudiantes,
+                                                        'tipos_aspectos' => $tipos_aspectos,
+                                                        'cantidad_items_aspectos' => $cantidad_items_aspectos,
+                                                        'items_aspectos' => $items_aspectos,
+                                                        'convenciones' => $convenciones,
+                                                        'curso' => $curso,
+                                                        'descripcion_asignatura' => $asignacion->asignatura->descripcion,
+                                                        'semana_calendario' => $semana_calendario,
+                                                        'periodo_lectivo' => $periodo_lectivo,
+                                                        'id_colegio' => $this->colegio->id
+                                                    ]) ->render();
+        }
+
+        $font_size = 11;
+
+        $vista = View::make( 'layouts.pdf3', compact('view','font_size') )->render();
+
+        Cache::forever( 'pdf_reporte_consolidados_evaluacion_por_aspectos', $vista ); // Siempre debe empzar por "pdf_reporte_"
+
+        return $view;
+    }
+
     public function congratulations(Request $request)
     {
         $semana_calendario = SemanasCalendario::find( $request->semana_calendario_id );
@@ -387,7 +478,7 @@ class EvaluacionPorAspectosController extends Controller
                                                                     ->first();
         if ( is_null($valor_consolidado_estudiante) )
         {
-            return '';
+            return 0;
         }
 
         return $valor_consolidado_estudiante->observacion_id;
@@ -407,12 +498,15 @@ class EvaluacionPorAspectosController extends Controller
         
         $array_valoracion = [];
         $title = '';
+        $una_fecha = '';
         $hay_alto = 0;
         $hay_medio = 0;
         $hay_bajo = 0;
-        foreach ($valoraciones_est as $valoracion )
+        foreach ( $valoraciones_est as $valoracion )
         {
-            $title .= '***Fecha: ' . $valoracion->fecha_valoracion . ', Valoración: ' . $this->array_convenciones[ $valoracion->convencion_valoracion_id ] . '    '; 
+            $title .= '***Fecha: ' . $valoracion->fecha_valoracion . ', Valoración: ' . $this->array_convenciones[ $valoracion->convencion_valoracion_id ] . '    ';
+            $una_fecha = $valoracion->fecha_valoracion;
+
             //$array_valoracion[] = $valoracion->convencion_valoracion_id;
             switch ( $valoracion->convencion_valoracion_id )
             {
@@ -518,9 +612,9 @@ class EvaluacionPorAspectosController extends Controller
             $value_valoracion = 3;
         }
 
-        $valoracion = '<span style="background: ' . $color_fondo . '; color:' . $color_texto . ';" title="' . $title . '">' . $lbl_valoracion . '</span>';
+        $valoracion_aux = '<span style="background: ' . $color_fondo . '; color:' . $color_texto . ';" title="' . $title . '">' . $lbl_valoracion . '</span>';
 
-        return (object)[ 'lbl_valoracion' => $valoracion, 'value_valoracion' => $value_valoracion ];
+        return (object)[ 'lbl_valoracion' => $valoracion_aux, 'value_valoracion' => $value_valoracion, 'fecha_valoracion' => $una_fecha ];
     }
 
     /*
@@ -574,6 +668,138 @@ class EvaluacionPorAspectosController extends Controller
         }       
 
         return redirect( 'index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos?id=5&semana_calendario_id=' . $request->semana_calendario_id )->with('flash_message', 'Consolidado almacenado correctamente.'); // . '&curso_id=' . $request->curso_id . '&id_asignatura=' . $request->id_asignatura
+    }
+
+    public function get_frecuencia( $valoraciones_est, $numero_fila )
+    {
+        $array_convenciones = ['','Alto','Medio','Bajo'];
+
+        $array_valoracion = [];
+        $title = '';
+        $hay_alto = 0;
+        $hay_medio = 0;
+        $hay_bajo = 0;
+        foreach ( $valoraciones_est as $key => $convencion_valoracion_id )
+        {
+            //
+
+            if ( $numero_fila == 1 )
+            {
+                //dd( $valoraciones_est, $convencion_valoracion_id );
+            }
+
+            switch ( $convencion_valoracion_id )
+            {
+                case '1':
+                    $hay_alto++;
+                break;
+              
+                case '2':
+                    $hay_medio++;
+                break;
+              
+                case '3':
+                    $hay_bajo++;
+                break;
+              
+                default:
+                    break;
+            }
+        }
+
+        if ( $numero_fila == 1 )
+        {
+            //dd([$hay_alto, $hay_medio, $hay_bajo]);
+        }
+            
+        $color_fondo = 'yellow';
+        $color_texto = 'black';
+        $lbl_valoracion = '';
+        $value_valoracion = 0;
+
+        if ( $hay_alto == 2 && $hay_medio == 1 )
+        {
+            $color_fondo = 'purple';
+            $color_texto = 'white';
+            $lbl_valoracion = $array_convenciones[ 1 ];
+            $value_valoracion = 1;
+        }
+
+        if ( ($hay_alto == 1 || $hay_alto == 2 || $hay_alto == 3 ) && $hay_medio == 0 && $hay_bajo == 0 )
+        {
+            $color_fondo = 'purple';
+            $color_texto = 'white';
+            $lbl_valoracion = $array_convenciones[ 1 ];
+            $value_valoracion = 1;
+        }
+
+        if ( $hay_alto == 1 && $hay_medio == 2 )
+        {
+            $color_fondo = 'yellow';
+            $color_texto = 'black';
+            $lbl_valoracion = $array_convenciones[ 2 ];
+            $value_valoracion = 2;
+        }
+
+        if ( ($hay_medio == 1 || $hay_medio == 2 || $hay_medio == 3 ) && $hay_alto == 0 && $hay_bajo == 0 )
+        {
+            $color_fondo = 'yellow';
+            $color_texto = 'black';
+            $lbl_valoracion = $array_convenciones[ 2 ];
+            $value_valoracion = 2;
+        }
+
+        if ( $hay_alto == 1 && $hay_medio == 1 && $hay_bajo == 1 )
+        {
+            $color_fondo = 'yellow';
+            $color_texto = 'black';
+            $lbl_valoracion = $array_convenciones[ 2 ];
+            $value_valoracion = 2;
+        }
+
+        if ( $hay_alto == 2 && $hay_bajo == 1 )
+        {
+            $color_fondo = 'yellow';
+            $color_texto = 'black';
+            $lbl_valoracion = $array_convenciones[ 2 ];
+            $value_valoracion = 2;
+        }
+
+        if ( $hay_medio == 2 && $hay_bajo == 1 )
+        {
+            $color_fondo = 'red';
+            $color_texto = 'white';
+            $lbl_valoracion = $array_convenciones[ 3 ];
+            $value_valoracion = 3;
+        }
+
+        if ( $hay_bajo == 2 && $hay_alto == 1 )
+        {
+            $color_fondo = 'red';
+            $color_texto = 'white';
+            $lbl_valoracion = $array_convenciones[ 3 ];
+            $value_valoracion = 3;
+        }
+
+        if ( $hay_bajo == 2 && $hay_medio == 1 )
+        {
+            $color_fondo = 'red';
+            $color_texto = 'white';
+            $lbl_valoracion = $array_convenciones[ 3 ];
+            $value_valoracion = 3;
+        }
+
+        if ( ($hay_bajo == 1 || $hay_bajo == 2 || $hay_bajo == 3 ) && $hay_alto == 0 && $hay_medio == 0 )
+        {
+            $color_fondo = 'red';
+            $color_texto = 'white';
+            $lbl_valoracion = $array_convenciones[ 3 ];
+            $value_valoracion = 3;
+        }
+
+        $valoracion = '<span style="background: ' . $color_fondo . '; color:' . $color_texto . ';" title="' . $title . '">' . $lbl_valoracion . '</span>';
+
+        return (object)[ 'lbl_valoracion' => $valoracion, 'value_valoracion' => $value_valoracion ];
     }
    
 }

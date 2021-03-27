@@ -92,6 +92,8 @@ Route::post('sga_observador_evaluacion_por_aspectos_consolidar', 'Matriculas\Eva
 
 Route::post('sga_observador_evaluacion_por_aspectos_almacenar_consolidado', 'Matriculas\EvaluacionPorAspectosController@almacenar_consolidado');
 
+Route::post('sga_observador_evaluacion_por_aspectos_reporte_consolidados', 'Matriculas\EvaluacionPorAspectosController@reporte_consolidados');
+
 Route::post('sga_observador_evaluacion_por_aspectos_congratulations', 'Matriculas\EvaluacionPorAspectosController@congratulations');
 
 Route::post('sga_observador_evaluacion_por_aspectos_estadisticas_por_curso', 'Matriculas\EvaluacionPorAspectosController@estadisticas_por_curso');
