@@ -366,6 +366,11 @@ class EvaluacionPorAspectosController extends Controller
                 $vec_estudiantes[$i]['valoraciones_aspectos_ids'] = $this->get_frecuencia( $valoraciones_aspectos_id, $i )->lbl_valoracion;
                 $i++;
             }
+            
+            if ( $cantidad_estudiantes <= 0 )
+            {
+                continue;
+            }
 
             $convenciones = ['','Alto','Medio','Bajo'];
             
