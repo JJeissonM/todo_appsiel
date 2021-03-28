@@ -14,7 +14,7 @@ class DocumentoSoporteAdquisiciones extends ComprasDocEncabezado
 {
     protected $table = 'compras_doc_encabezados';
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento compra', 'Proveedor', 'Factura', 'Detalle', 'Valor total', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento compra', 'Proveedor', 'Factura', 'Detalle', 'Valor total', 'Forma de pago', 'Estado'];
 
     public $urls_acciones = '{"create":"compras/create","show":"compras/id_fila","store":"compras"}';
 
@@ -34,7 +34,8 @@ class DocumentoSoporteAdquisiciones extends ComprasDocEncabezado
                                                 'compras_doc_encabezados.descripcion AS campo5',
                                                 'compras_doc_encabezados.valor_total AS campo6',
                                                 'compras_doc_encabezados.estado AS campo7',
-                                                'compras_doc_encabezados.id AS campo8'
+                                                'compras_doc_encabezados.forma_pago AS campo8',
+                                                'compras_doc_encabezados.id AS campo9'
                                             )
                                             ->orderBy('compras_doc_encabezados.created_at', 'DESC')
                                             ->get();
@@ -116,6 +117,7 @@ class DocumentoSoporteAdquisiciones extends ComprasDocEncabezado
                 DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," - ",compras_doc_encabezados.doc_proveedor_consecutivo) AS FACTURA'),
                 'compras_doc_encabezados.descripcion AS DETALLE',
                 'compras_doc_encabezados.valor_total AS VALOR_TOTAL',
+                'compras_doc_encabezados.forma_pago AS FORMA_PAGO',
                 'compras_doc_encabezados.estado AS ESTADO'
             )
             ->orWhere("compras_doc_encabezados.fecha", "LIKE", "%$search%")

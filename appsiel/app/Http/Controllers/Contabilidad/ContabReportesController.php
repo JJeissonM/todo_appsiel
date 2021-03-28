@@ -71,8 +71,9 @@ class ContabReportesController extends Controller
         $registros = ContabCuenta::where('core_empresa_id','=',Auth::user()->empresa_id)->orderBy('codigo')->get();
         $cuentas['todas'] = '';
 
-        foreach ($registros as $fila) {
-            $cuentas[$fila->id]=$fila->codigo." ".$fila->descripcion; 
+        foreach ($registros as $fila)
+        {
+            $cuentas[$fila->id] = $fila->codigo." ".$fila->descripcion; 
         }
 
         $registros_c = ContabCuenta::where('core_empresa_id','=',Auth::user()->empresa_id)->groupBy('contab_cuenta_grupo_id')->get();
@@ -116,11 +117,16 @@ class ContabReportesController extends Controller
 
         if ( $contab_cuenta_id == 'todas' ) {
             $cuentas_con_movimiento = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
-                                ->where('contab_movimientos.core_empresa_id','=',Auth::user()->empresa_id)
-                                ->select( 'contab_cuentas.id','contab_cuentas.codigo','contab_cuentas.descripcion' )
-                                ->groupBy('contab_movimientos.contab_cuenta_id')
-                                ->get()
-                                ->toArray();
+                                                ->where('contab_movimientos.core_empresa_id','=',Auth::user()->empresa_id)
+                                                ->select( 
+                                                            'contab_cuentas.id',
+                                                            'contab_cuentas.codigo',
+                                                            'contab_cuentas.descripcion'
+                                                        )
+                                                ->orderBy('contab_cuentas.contab_cuenta_clase_id')
+                                                ->groupBy('contab_movimientos.contab_cuenta_id')
+                                                ->get()
+                                                ->toArray();
 
             $vista = View::make( 'contabilidad.formatos.balance_comprobacion_1', compact('cuentas_con_movimiento','fecha_desde', 'fecha_hasta') )->render();
 

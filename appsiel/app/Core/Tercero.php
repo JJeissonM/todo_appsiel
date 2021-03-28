@@ -82,6 +82,11 @@ class Tercero extends Model
 
     public function representante_legal()
     {
+    	if ( !Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
+        {
+            return null;
+        }
+
         $representante_legal_actual = DB::table('core_tercero_tiene_representante_legal')->where('tercero_id', '=', $this->id)->get();
 
         if( empty( $representante_legal_actual ) )
@@ -231,6 +236,11 @@ class Tercero extends Model
 
     public function store_adicional($datos, $registro)
     {
+    	if ( !Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
+        {
+            return null;
+        }
+
         if( (int)$datos['representante_legal_id'] != 0 )
         {
             DB::table('core_tercero_tiene_representante_legal')->insert([
@@ -242,7 +252,11 @@ class Tercero extends Model
 
     public static function get_campos_adicionales_edit($lista_campos, $registro)
     {
-        //dd($lista_campos);
+    	if ( !Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
+        {
+            return $lista_campos;
+        }
+
         foreach ($lista_campos as $key => $campo)
         {
             if( $campo['name'] == 'representante_legal_id' )
@@ -260,6 +274,11 @@ class Tercero extends Model
 
     public function update_adicional($datos, $id)
     {
+    	if ( !Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
+        {
+            return null;
+        }
+
         $tercero = Tercero::find( $id );
 
         $representante_legal_actual = DB::table('core_tercero_tiene_representante_legal')->where('tercero_id', '=', $tercero->id)->get();
@@ -302,7 +321,11 @@ class Tercero extends Model
 
     public function show_adicional($lista_campos, $registro)
     {
-        //dd($lista_campos);
+    	if ( !Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
+        {
+            return $lista_campos;
+        }
+        
         foreach ($lista_campos as $key => $campo)
         {
             if( $campo['name'] == 'representante_legal_id' )

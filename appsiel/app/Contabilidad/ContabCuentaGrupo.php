@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use Auth;
+use Schema;
+
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 
 class ContabCuentaGrupo extends Model
 {
@@ -19,20 +23,77 @@ class ContabCuentaGrupo extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = ContabCuentaGrupo::leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuenta_grupos.contab_cuenta_clase_id')
-            ->where('contab_cuenta_grupos.core_empresa_id', Auth::user()->empresa_id)
-            ->select(
-                'contab_cuenta_clases.descripcion AS campo1',
-                'contab_cuenta_grupos.grupo_padre_id as campo2',
-                'contab_cuenta_grupos.descripcion AS campo3',
-                'contab_cuenta_grupos.id AS campo4'
-            )
-            ->orWhere("contab_cuenta_clases.descripcion", "LIKE", "%$search%")
-            ->orWhere("contab_cuenta_grupos.grupo_padre_id", "LIKE", "%$search%")
-            ->orWhere("contab_cuenta_grupos.descripcion", "LIKE", "%$search%")
-            ->orderBy('contab_cuenta_grupos.created_at', 'DESC')
-            ->paginate($nro_registros);
+                                    ->where('contab_cuenta_grupos.core_empresa_id', Auth::user()->empresa_id)
+                                    ->select(
+                                                'contab_cuenta_clases.descripcion AS campo1',
+                                                'contab_cuenta_grupos.grupo_padre_id as campo2',
+                                                'contab_cuenta_grupos.descripcion AS campo3',
+                                                'contab_cuenta_grupos.id AS campo4'
+                                            )
+                                    ->orderBy('contab_cuenta_grupos.created_at', 'DESC')
+                                    ->get();
 
-        return $registros;
+        //hacemos el filtro de $search si $search tiene contenido
+        $nuevaColeccion = [];
+        if (count($collection) > 0) {
+            if (strlen($search) > 0) {
+                $nuevaColeccion = $collection->filter(function ($c) use ($search) {
+                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                        return $c;
+                    }
+                });
+            } else {
+                $nuevaColeccion = $collection;
+            }
+        }
+
+        $request = request(); //obtenemos el Request para obtener la url y la query builder
+
+        if ( empty($nuevaColeccion) )
+        {
+            return $array = new LengthAwarePaginator([], 1, 1, 1, [
+                                                                    'path' => $request->url(),
+                                                                    'query' => $request->query(),
+                                                                ]);
+        }
+        
+        //obtenemos el numero de la página actual, por defecto 1
+        $page = 1;
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+        $total = count($nuevaColeccion); //Total para contar los registros mostrados
+        $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
+        $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
+        $array = new LengthAwarePaginator($array, $total, $nro_registros, $page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]); //finalmente se pagina y organiza la coleccion a devolver con todos los datos
+
+        return $array;
+    }
+
+    /**
+     * SQL Like operator in PHP.
+     * Returns TRUE if match else FALSE.
+     * @param array $valores_campos_seleccionados de campos donde se busca
+     * @param string $searchTerm termino de busqueda
+     * @return bool
+     */
+    public static function likePhp($valores_campos_seleccionados, $searchTerm)
+    {
+        $encontrado = false;
+        $searchTerm = str_slug($searchTerm); // Para eliminar acentos
+        foreach ($valores_campos_seleccionados as $valor_campo)
+        {
+            $str = str_slug($valor_campo);
+            $pos = strpos($str, $searchTerm);
+            if ($pos !== false)
+            {
+                $encontrado = true;
+            }
+        }
+        return $encontrado;
     }
 
     public static function sqlString($search)
