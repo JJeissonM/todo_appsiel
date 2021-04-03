@@ -60,10 +60,14 @@
         .abrir_modal{
           border: 1px solid #e6e6e6 ;
           box-shadow: 10px 10px 5px 0px #e6e6e6;
+          background-color: white;
+          padding: 5px;
+          b
         }
 
         .abrir_modal:hover{
           transform: rotate(4deg); /* Standard syntax */
+
         }
 
 
@@ -131,9 +135,9 @@
 
 
             @foreach ($galeria->albums()->orderBy('created_at','DESC')->get()->chunk(4) as $chunk)
-                <div class="row">
+                <div class="row justify-content-center">
                     @foreach ($chunk as $album)
-                        <div class="col-md-3 col-sm-4 col-12 un_album" style="text-align: center;">
+                        <div class="col-md-3 col-sm-4 col-12 un_album" style="text-align: center; ">
                             {!! $album->dibujar_individual() !!}
                         </div>
                     @endforeach

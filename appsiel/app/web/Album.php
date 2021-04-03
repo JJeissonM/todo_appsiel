@@ -29,8 +29,8 @@ class Album extends Model
             $url_primera_foto = $primera_foto->nombre;
         }
 
-        return '<div class="abrir_modal" data-elemento_id="' . $this->id . '" style="padding: 5px; font-size: 0.9em; color: black;" title="' . $this->titulo . ' text-align:center;">
-                    <img src="' . $url_primera_foto . '" style="border-radius: 5px; height: 300px; object-fit: contain; /*max-width: 210px;*/">
+        return '<div class="abrir_modal" data-elemento_id="' . $this->id . '" style="font-size: 0.9em; color: black;" title="' . $this->titulo . '">
+                    <img src="' . $url_primera_foto . '" style="border-radius: 5px; height: 240px; object-fit: cover; /*max-width: 210px;*/">
                     <div class="titulo" style="font-weight: bold;">' . $this->titulo . '</div>
                     <div class="subtitulo" style="margin-top: -10px;">' . count($this->fotos) . ' elementos</div>
                 </div>';
