@@ -155,7 +155,8 @@ class EncabezadoCalificacionController extends Controller
         switch ($request->id) {
             case '0':
                 // Crear
-                if (($sumaPesos + $request->peso) > 100) {
+                if (($sumaPesos + (int)$request->peso) > 100)
+                {
                     return "pesos";
                 }
                 EncabezadoCalificacion::create($request->all());
@@ -165,7 +166,7 @@ class EncabezadoCalificacionController extends Controller
             default:
                 // Actualizar
                 $registro = EncabezadoCalificacion::find($request->id);
-                if ((($sumaPesos - $registro->peso) + $request->peso) > 100) {
+                if ((($sumaPesos - $registro->peso) + (int)$request->peso) > 100) {
                     return "pesos";
                 }
                 $registro->fill($request->all());
