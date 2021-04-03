@@ -54,6 +54,8 @@ class PagoController extends TransaccionController
 
     protected $duplicado = false;
 
+    protected $doc_encabezado;
+
     /**
      * Display a listing of the resource.
      *
@@ -408,21 +410,9 @@ class PagoController extends TransaccionController
 
     public function imprimir($id)
     {
-        $modelo = Modelo::find(Input::get('id_modelo'));
-
-        $reg_anterior = TesoDocEncabezado::where('id', '<', $id)->where('core_empresa_id', Auth::user()->empresa_id)->max('id');
-        $reg_siguiente = TesoDocEncabezado::where('id', '>', $id)->where('core_empresa_id', Auth::user()->empresa_id)->min('id');
-
-        $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
-
-        $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
-
-        $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
-
-        $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
-
-        $documento_vista = View::make( 'tesoreria.pagos.documento_imprimir', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad' ) )->render();
        
+       $documento_vista = $this->generar_documento_vista( $id, 'tesoreria.formatos_impresion.pagos.'.Input::get('formato_impresion_id') );
+
         // Se prepara el PDF
         $orientacion='portrait';
         $tam_hoja='Letter';
@@ -431,7 +421,22 @@ class PagoController extends TransaccionController
         //$pdf->set_option('isRemoteEnabled', TRUE);
         $pdf->loadHTML( $documento_vista )->setPaper($tam_hoja,$orientacion);
 
-        return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
+        return $pdf->stream( $this->doc_encabezado->documento_transaccion_descripcion.' - '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
+    }
+
+
+    public function generar_documento_vista( $id, $ruta_vista )
+    {
+        $this->doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
+
+        $doc_registros = TesoDocRegistro::get_registros_impresion( $this->doc_encabezado->id );
+
+        $empresa = Empresa::find( $this->doc_encabezado->core_empresa_id );
+
+        $registros_contabilidad = TransaccionController::get_registros_contabilidad( $this->doc_encabezado );
+        $doc_encabezado = $this->doc_encabezado;
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad' ) )->render();
     }
 
 

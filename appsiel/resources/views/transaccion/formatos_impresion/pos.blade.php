@@ -25,6 +25,10 @@
             text-align: center;
             font-size: 2em;
         }
+
+        .row{
+            width: 100%;
+        }
     </style>
 </head>
 <body onload="window.print()">
@@ -75,12 +79,9 @@
     @endif
 
     <div style="border: solid 1px #ddd;">
-        <b>@yield('lbl_tercero')</b> {{ $doc_encabezado->tercero_nombre_completo }}
-        <br>
-        <b>NIT:</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
-        <br>
-        <b>Dirección:</b> {{ $doc_encabezado->direccion1 }}
-        <br>
+        <b>@yield('lbl_tercero')</b> {{ $doc_encabezado->tercero_nombre_completo }} &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;
+        <b>NIT:</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }} &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;
+        <b>Dirección:</b> {{ $doc_encabezado->direccion1 }} &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;
         <b>Teléfono:</b> {{ $doc_encabezado->telefono1 }}
 
         @yield('encabezado_datos_adicionales')
