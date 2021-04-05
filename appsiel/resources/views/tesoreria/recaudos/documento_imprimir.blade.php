@@ -2,53 +2,42 @@
 <html>
 <head>
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
+    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
     <style type="text/css">
-        body{
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 10px;
-        }
-
-        .page-break {
-            page-break-after: always;
-        }
-
-        table{
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table.table-bordered, .table-bordered>tbody>tr>td{
-            border: 1px solid #ddd;
-        }
+        
     </style>
 </head>
 <body>
 
-    <table class="table table-bordered">
+    <table class="table">
         <tr>
-            <td style="border: solid 1px #ddd; margin-top: -40px; width: 60%;">
+            <td style="width: 60%;">
+                <div class="headempresa">
                     @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir' ] )
+                </div>  
             </td>
-            <td style="border: solid 1px #ddd; padding-top: -20px;">
+            <td>
+                <div class="headdoc">
+                    <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado->documento_transaccion_descripcion }}</b>
 
-                <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado->documento_transaccion_descripcion }}</b>
-
-                <table>
-                    <tr>
-                        <td><b>Documento:</b></td> <td> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }} </td>
-                    </tr>
-                    <tr>
-                        <td><b>Fecha:</b></td> <td> {{ $doc_encabezado->fecha }} </td>
-                    </tr>
-                </table>
+                    <table>
+                        <tr>
+                            <td><b>Documento:</b></td> <td> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }} </td>
+                        </tr>
+                        <tr>
+                            <td><b>Fecha:</b></td> <td> {{ $doc_encabezado->fecha }} </td>
+                        </tr>
+                    </table>    
+                </div>
+                
                 
             </td>
         </tr>
     </table>
-
-    <table class="table table-bordered">
+<div class="subhead">
+    <table class="table">
         <tr>
-            <td style="border: solid 1px #ddd;">
+            <td>
                 <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
                 <br/>
                 <b>Documento ID: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
@@ -57,16 +46,18 @@
                 <br/>
                 <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
             </td>
-            <td style="border: solid 1px #ddd;">
+            <td>
                 &nbsp;
             </td>
         </tr>
         <tr>        
-            <td colspan="2" style="border: solid 1px #ddd;">
+            <td colspan="2">
                 <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
             </td>
         </tr>
     </table>
+</div>
+    
 
     <br>
 

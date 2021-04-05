@@ -2,34 +2,13 @@
 <html>
 <head>
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
+    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
     <style type="text/css">
-        body{
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 10px;
-        }
-
-
         @page {
           size: 3.15in 38.5in;
           margin: 15px;
         }
 
-        .page-break {
-            page-break-after: always;
-        }
-
-        table{
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table.table-bordered, .table-bordered>tbody>tr>td{
-            border: 1px solid #ddd;
-        }
-
-        table.table-bordered, .table-bordered>tfoot>tr>td{
-            border: 1px solid #ddd;
-        }
     </style>
 </head>
 <body>
@@ -38,7 +17,7 @@
 
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
     ?>
-
+<div class="headempresap">
     <table border="0" style="margin-top: 12px !important;" width="100%">
         <tr>
             <td width="15%">
@@ -57,8 +36,10 @@
             </td>
         </tr>
     </table>
-
-    <table border="0" style="margin-top: 12px !important;" width="100%">
+</div>
+    
+<div class="headdocp">
+    <table border="0" style="margin: 6px 0 !important;" width="100%">
         <tr>
             <td>
                 <b>{{ $doc_encabezado->documento_transaccion_descripcion }} No.</b> @yield('documento_transaccion_prefijo_consecutivo')               
@@ -69,8 +50,10 @@
         </tr>
 
     </table>
-
-    <div style="border: solid 1px #ddd;">
+</div>
+    
+<div class="subheadp">
+    <div >
         <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
         <br>
         <b>NIT:</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
@@ -81,9 +64,11 @@
         <br>
         <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
     </div>
+</div>
+    <br>
 
 
-    <table style="width: 100%;">
+    <table style="width: 100%;" class="table">
         {{ Form::bsTableHeader(['línea','Producto','Cantidad']) }}
         <tbody>
 

@@ -76,7 +76,6 @@
         .table {
             width: 100%;
             max-width: 100%;
-            margin-bottom: 20px;
         }
 
         table {
@@ -118,20 +117,24 @@
             font-size: 17.5px;
             border-left: 5px solid #eee;
         }
+        
     </style>
+    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
 </head>
 <body>
 <div class="col-md-12">
     <div class="container-fluid">
         <div class="marco_formulario">
             <div class="container">
-                <table class="table table-bordered" style="margin-top: 20px;">
+                <table>
                     <tr>
-                        <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
-                            @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
+                        <td width="50%" >
+                            <div class="headempresa">
+                                @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
+                            </div>                            
                         </td>
                         <td>
-                            <div>
+                            <div class="headdoc"> 
                                 <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado->documento_transaccion_descripcion }}</b>
                                 <br/>
                                 <b>Documento:</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
@@ -143,29 +146,34 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="border: solid 1px #ddd;">
-                            <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
-                            <br/>
-                            <b>Documento ID:
-                                &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
-                            <br/>
-                            <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
-                            <br/>
-                            <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
-                        </td>
-                        <td style="border: solid 1px #ddd;">
-                            @if($doc_encabezado->estado == 'Anulado')
-                                <b>Documento Anulado</b>
-                                @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="border: solid 1px #ddd;">
-                            <b>Detalles:&nbsp;&nbsp;</b>{{ $doc_encabezado->descripcion }}
-                        </td>
-                    </tr>
                 </table>
+                <div class="subhead">
+                    <table>
+                        <tr>
+                            <td>
+                                <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
+                                <br/>
+                                <b>Documento ID:
+                                    &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+                                <br/>
+                                <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
+                                <br/>
+                                <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
+                            </td>
+                            <td>
+                                @if($doc_encabezado->estado == 'Anulado')
+                                    <b>Documento Anulado</b>
+                                    @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <b>Detalles:&nbsp;&nbsp;</b>{{ $doc_encabezado->descripcion }}
+                            </td>
+                        </tr>
+                    </table>    
+                </div>
+                
                 <hr>
                 <?php
                 $total_recaudo = 0;
@@ -197,7 +205,7 @@
                                 <td> &nbsp; </td>
                                 <td> &nbsp; </td>
                                 <td>   </td>
-                                <td style="border-top: solid 1px black;">
+                                <td>
                                     ${{ number_format($total_recaudo, 0, ',', '.') }} ({{ NumerosEnLetras::convertir($total_recaudo,'pesos',false) }})
                                 </td>
                             </tr>

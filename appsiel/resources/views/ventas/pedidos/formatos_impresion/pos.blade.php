@@ -2,25 +2,19 @@
 <html>
 <head>
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
-
+    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
     <style type="text/css">
-        body{
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 10px;
-        }
+        
         @page {
           size: 3.15in 38.5in;
           margin: 15px;
         }
-
-        .page-break {
-            page-break-after: always;
-        }
-
         .lbl_doc_anulado{
+            position: absolute;
+
             background-color: rgba(253, 1, 1, 0.33);
             width: 100%;
-            top: 300px;
+            top: 100px;
             transform: rotate(-45deg);
             text-align: center;
             font-size: 2em;
@@ -33,10 +27,10 @@
 
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
     ?>
-    <table border="0" style="margin-top: 12px !important;" width="100%">
+    <table border="0" style="margin-top: 0px !important;" width="100%">
         <tr>
             <td>
-                <div style="text-align: center;">
+                <div class="headempresap" style="text-align: center;">
                     <br/>
                     <b>{{ $empresa->descripcion }}</b><br/>
                 </div>
@@ -44,7 +38,7 @@
         </tr>
         <tr>
             <td style="font-size: 15px;">
-                <div style="text-align: center;">
+                <div class="headdocp" style="text-align: center;">
                     <b>{{ $doc_encabezado->documento_transaccion_descripcion }} 
                     <br>
                     No.</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
@@ -55,27 +49,26 @@
         </tr>
     </table>
     
-    @if($doc_encabezado->estado == 'Anulado')
-        <div class="lbl_doc_anulado">
-            Documento Anulado
-        </div>
-    @endif
+    
 
-    <div style="border: solid 1px #ddd;">
-        <b>Cliente</b> {{ $doc_encabezado->tercero_nombre_completo }} 
-        &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;
-        <b>NIT:</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
-        &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;
-        <b>Dirección:</b> {{ $doc_encabezado->direccion1 }}
-        &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp;
+    <div class="subheadp" >
+        <b>Cliente</b> {{ $doc_encabezado->tercero_nombre_completo }} <br>
+        <b>NIT:</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }} <br>
+        <b>Dirección:</b> {{ $doc_encabezado->direccion1 }} <br>
         <b>Teléfono:</b> {{ $doc_encabezado->telefono1 }}
         <br>
         <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
         <br>
         <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
     </div>
+    @if($doc_encabezado->estado == 'Anulado')
+        <div class="lbl_doc_anulado">
+            Documento Anulado
+        </div>
+    @endif
+    <br>
 
-    <table style="width: 100%;">
+    <table style="width: 100%;" class="table-bordered">
         <thead>
             <tr>
                 <th width="100px">Item</th>

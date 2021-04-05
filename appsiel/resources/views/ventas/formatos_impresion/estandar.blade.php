@@ -1,45 +1,46 @@
 @extends('transaccion.formatos_impresion.estandar')
 
 @section('documento_datos_adicionales')
-    @if( $doc_encabezado->condicion_pago == 'credito' )
-        <br>
-        <b>Fecha vencimiento:</b> {{ $doc_encabezado->fecha_vencimiento }}
-    @endif
+@if( $doc_encabezado->condicion_pago == 'credito' )
+<td><b>Fecha vencimiento:</b></td>
+<td>{{ $doc_encabezado->fecha_vencimiento }}</td>
+@endif
 @endsection
 
 @section('documento_transaccion_prefijo_consecutivo')
-    @if( !is_null( $resolucion ) )
-        {{ $resolucion->prefijo }} {{ $doc_encabezado->documento_transaccion_consecutivo }}
-    @else
-        {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
-    @endif
+@if( !is_null( $resolucion ) )
+{{ $resolucion->prefijo }} {{ $doc_encabezado->documento_transaccion_consecutivo }}
+@else
+{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
+@endif
 @endsection
 
 @section('encabezado_2')
-    @if( $etiquetas['encabezado'] != '')
-        <table style="width: 100%;">
-            <tr>
-                <td style="border: solid 1px #ddd; text-align: center; font-family: Courier New; font-style: italic;">
-                    <b> {!! $etiquetas['encabezado'] !!} </b> 
-                </td>
-            </tr>
-        </table>
-    @endif
+@if( $etiquetas['encabezado'] != '')
+<table style="width: 100%;">
+    <tr>
+        <td style="border: solid 1px #ddd; text-align: center; font-family: Courier New; font-style: italic;">
+            <b> {!! $etiquetas['encabezado'] !!} </b>
+
+        </td>
+    </tr>
+</table>
+@endif
 @endsection
 
 @section('lbl_tercero')
-    Cliente:
+Cliente:
 @endsection
 
 @section('encabezado_datos_adicionales')
-    <br>
-    <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor_nombre_completo }}
-    <br/>
-    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+<br>
+<b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor_nombre_completo }}
+<br />
+<b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
 @endsection
 
 @section('tabla_registros_1')
-    <?php 
+<?php 
         $total_cantidad = 0;
         $subtotal = 0;
         $total_descuentos = 0;
@@ -92,15 +93,15 @@
             }
         }
     ?>
-    @include('ventas.incluir.lineas_registros_imprimir',compact('total_cantidad','total_factura'))
-    @include('ventas.incluir.factura_detalles_impuestos',compact('array_tasas'))
+@include('ventas.incluir.lineas_registros_imprimir',compact('total_cantidad','total_factura'))
+@include('ventas.incluir.factura_detalles_impuestos',compact('array_tasas'))
 @endsection
 
 @section('tabla_registros_2')
-    @include('ventas.incluir.factura_firma_totales')
+@include('ventas.incluir.factura_firma_totales')
 @endsection
 
 @section('tabla_registros_3')
-    @include('transaccion.registros_contables')
-    @include('transaccion.auditoria')
+@include('transaccion.registros_contables')
+@include('transaccion.auditoria')
 @endsection

@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Arqueo de Caja</title>
+    
     <style>
         .marco_formulario h4 {
             color: gray;
@@ -73,7 +74,6 @@
         .table {
             width: 100%;
             max-width: 100%;
-            margin-bottom: 20px;
         }
 
         table {
@@ -115,20 +115,23 @@
             border-left: 5px solid #eee;
         }
     </style>
+    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
 </head>
 <body>
 <div class="col-md-12">
     <div class="container-fluid">
         <div class="marco_formulario">
             <div class="container">
-                <table class="table table-bordered" style="margin-top: 20px;">
+                <table class="table">
                     <tr>
-                        <td width="50%" style="border: solid 1px #ddd; margin-top: -40px;">
-                            @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
+                        <td width="50%">
+                            <div class="headempresa">
+                                @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
+                            </div>                            
                         </td>
                         <td>
-                            <div>
-                                <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado['titulo'] }}</b>
+                            <div class="headdoc">
+                                <b style="font-size: 1.2em; text-align: center; display: block;">{{ $doc_encabezado['titulo'] }}</b>
                                 <br/>
                                 <b>Fecha:</b> {{ $doc_encabezado['fecha'] }}
 
@@ -137,24 +140,30 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td style="border: solid 1px #ddd;">
-                            <b>Responsable:</b> {{$user->name}}
-                            <br/>
-                            <b>Fecha y Hora de Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
-                            <br/>
-                        </td>
-                        <td style="border: solid 1px #ddd;">
-                            <b>Observaciones:</b> {{$registro->observaciones}}
-                            <br/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="border: solid 1px #ddd;">
-                            <b>Base: &nbsp;&nbsp;</b> ${{number_format($registro->base,'0',',','.')}}
-                        </td>
-                    </tr>
+                   
                 </table>
+                <div class="subhead">
+                    <table>
+                        <tr>
+                            <td>
+                                <b>Responsable:</b> {{$user->name}}
+                                <br/>
+                                <b>Fecha y Hora de Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
+                                <br/>
+                            </td>
+                            <td>
+                                <b>Observaciones:</b> {{$registro->observaciones}}
+                                <br/>
+                            </td>                                               
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <b>Base: &nbsp;&nbsp;</b> ${{number_format($registro->base,'0',',','.')}}
+                            </td>
+                        </tr>
+                    </table>    
+                </div>
+                
                 <hr>
                 <h1 class="card-inside-title">Datos de la fecha {{$registro->fecha}}</h1>
                 <div class="row clearfix">
