@@ -388,7 +388,6 @@ class Vacaciones implements Estrategia
         if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' )
         {
             $periodo_pagado_hasta = $documento_nomina->fecha;
-
         }else{
             // 15 días de vacaciones por cada 360 días del año
             // 24.35 días calendario por cada 1 día de vacaciones

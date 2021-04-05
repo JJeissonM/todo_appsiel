@@ -92,7 +92,7 @@ class TiempoLaborado implements Estrategia
 		// En el lapso del documento, pueden haber varios documentos con tiempos liquidados
 		$lapso = $documento_nomina->lapso();
 		$registros_documento = NomDocRegistro::whereBetween( 'nom_doc_registros.fecha', [$lapso->fecha_inicial,$lapso->fecha_final] )
-													->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
+													->where( 'nom_doc_registros.nom_contrato_id', $empleado->id )
 													->get();
 		$horas_liquidadas_empleado = 0; 
         
@@ -220,8 +220,7 @@ class TiempoLaborado implements Estrategia
 				if ( (int)$aux_fecha[2] == 29 ) // Año Bisiesto, solo falta un día para 30
 				{
 					$tiempo_a_descontar_2 += self::CANTIDAD_HORAS_DIA_LABORAL;
-				}
-				
+				}				
 			}
 		}
 		

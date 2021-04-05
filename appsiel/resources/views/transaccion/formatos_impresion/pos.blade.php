@@ -18,7 +18,10 @@
             text-align: center;
             font-size: 2em;
         }
-        
+
+        .row{
+            width: 100%;
+        }
     </style>
 </head>
 <body onload="window.print()">
