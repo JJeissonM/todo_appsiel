@@ -293,7 +293,7 @@ class NominaController extends TransaccionController
                                                                 ->where('nom_concepto_id',$un_concepto->nom_concepto_id)
                                                                 ->get(), $un_concepto );
                 
-                $tabla.='<td>'.$valor.'</td>';
+                $tabla.='<td title="'.$un_concepto->descripcion.'">'.$valor.'</td>';
                 $this->pos++;
             }
 
@@ -305,11 +305,11 @@ class NominaController extends TransaccionController
                                                         ->where( 'core_tercero_id', $empleado->core_tercero_id )
                                                         ->sum('valor_deduccion');
 
-            $tabla.='<td>'.Form::TextoMoneda( $total_devengos_empleado ).'</td>';
+            $tabla.='<td title="Total devengos">'.Form::TextoMoneda( $total_devengos_empleado ).'</td>';
 
-            $tabla.='<td>'.Form::TextoMoneda( $total_deducciones_empleado ).'</td>';
+            $tabla.='<td title="Total deducciones">'.Form::TextoMoneda( $total_deducciones_empleado ).'</td>';
 
-            $tabla.='<td>'.Form::TextoMoneda( $total_devengos_empleado - $total_deducciones_empleado ).'</td>';
+            $tabla.='<td title="Total a pagar">'.Form::TextoMoneda( $total_devengos_empleado - $total_deducciones_empleado ).'</td>';
 
             $tabla.='<td class="celda_firma"> &nbsp; </td>';
 

@@ -58,11 +58,15 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 	{{ csrf_field() }}
 	<input type="hidden" name="id" value="{{$doc_encabezado->id}}" />
 	<input type="hidden" name="lineas_registros" id="lineas_registros" />
-	<input type="hidden" name="url_id" value="{{Input::get('id')}}" />
 	<input type="hidden" name="cliente_id" value="{{$cliente->id}}" />
 	<input type="hidden" name="core_tercero_id" value="{{$cliente->core_tercero_id}}" />
 	<input type="hidden" name="inv_bodega_id" value="{{$cliente->inv_bodega_id}}" />
 	<input type="hidden" name="core_empresa_id" value="{{$doc_encabezado->core_empresa_id}}" />
+
+	{{ Form::hidden('app_id',Input::get('id')) }}
+	{{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
+	{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped">
 			{{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
@@ -152,6 +156,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 		</table>
 	</div>
 </form>
+
 @endsection
 @section('otros_scripts')
 <script type="text/javascript">

@@ -150,7 +150,6 @@ class NovedadTnl extends Model
 		return $vec;
 	}
 
-
 	public function validar_eliminacion($id)
 	{
 		if (NovedadTnl::find($id)->cantidad_dias_amortizados != 0) {

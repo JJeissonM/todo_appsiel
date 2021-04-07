@@ -4,6 +4,9 @@ namespace App\Ventas;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Schema;
+use DB;
+
 class ListaPrecioEncabezado extends Model
 {
 	protected $table = 'vtas_listas_precios_encabezados';
@@ -11,6 +14,8 @@ class ListaPrecioEncabezado extends Model
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Impuestos incluidos', 'Estado'];
 
 	public $vistas = '{"show":"ventas.lista_precios_show"}';
+
+	public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
 
 	public static function consultar_registros($nro_registros, $search)
 	{
@@ -63,4 +68,37 @@ class ListaPrecioEncabezado extends Model
 
 		return $vec;
 	}
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"vtas_listas_precios_detalles",
+                                    "llave_foranea":"lista_precios_id",
+                                    "mensaje":"Tiene prodcutos con precios asociados."
+                                },
+                            "1":{
+                                    "tabla":"vtas_clientes",
+                                    "llave_foranea":"lista_precios_id",
+                                    "mensaje":"Lista de precios está asignada a clientes."
+                                }
+                        }';
+        $tablas = json_decode($tablas_relacionadas);
+        foreach ($tablas as $una_tabla)
+        {
+            if ( !Schema::hasTable( $una_tabla->tabla ) )
+            {
+                continue;
+            }
+            
+            $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
+
+            if (!empty($registro))
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
+    }
 }

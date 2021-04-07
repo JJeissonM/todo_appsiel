@@ -68,20 +68,6 @@ class VistaController extends Controller
         foreach ($campos as $campo)
         {
 
-            /*
-
-                    echo '<div class="column">';
-                        if ( $modo == 'show')
-                        {
-                            echo '<div class="row" style="padding:5px;">'.VistaController::mostrar_campo( $campo['id'], $campo['value'], 'show' ).'</div>';
-                        }else{
-                            // Si el campo tiene el name core_campo_id-ID, se reemplaza por el ID del campo en la tabla sys_campos
-                            echo '<div class="row" style="padding:5px;">'.str_replace("core_campo_id-ID", 'core_campo_id-'.$campo['id'], VistaController::dibujar_campo($campo) ).'</div>';
-                        }
-                    echo '</div>';
-
-            */
-
             if( $i%2 == 0 ) // Si $i es par
             {
                 echo '<div class="row">';
@@ -716,6 +702,11 @@ class VistaController extends Controller
     public static function get_descripcion_value_campo_tipo_select( array $campo )
     {   
         $valor = 'Valor no encontrado.';
+
+        if( $campo['name'] == 'nom_contrato_id' )
+        {
+            return \App\Nomina\NomContrato::find( (int)$campo['value'] )->tercero->descripcion;
+        }
 
         $texto_opciones = $campo['opciones'];
         $vec['']='';

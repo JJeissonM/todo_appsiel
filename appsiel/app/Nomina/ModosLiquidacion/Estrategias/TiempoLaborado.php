@@ -68,7 +68,7 @@ class TiempoLaborado implements Estrategia
 		}
 
 		$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
-		
+
 		// Para que no se liquide el tiempo después de vacaciones, si estas termina dentro del mismo lapso del documento
 		$horas_liquidadas_empleado += $this->get_horas_descontar_por_vacaciones( $horas_liquidadas_empleado, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
 		
@@ -242,7 +242,7 @@ class TiempoLaborado implements Estrategia
 		$concepto_id = (int)config('nomina.concepto_a_pagar_pasante_sena');
 
 		$cant = NomDocRegistro::where( 'nom_doc_encabezado_id', $documento_nomina->id)
-                                        ->where('core_tercero_id', $empleado->core_tercero_id)
+                                        ->where('nom_contrato_id', $empleado->id)
                                         ->where('nom_concepto_id', $concepto_id)
                                         ->count();
         if ( $cant != 0 ) 
