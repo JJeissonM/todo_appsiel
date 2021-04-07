@@ -132,7 +132,7 @@ class VistaController extends Controller
     public static function dibujar_campo(array $campo){
         //print_r($campo);
         if ($campo['requerido']) {
-            $campo['descripcion'] = '*'.$campo['descripcion'];
+            $campo['descripcion'] = "<i class='fa fa-asterisk'></i>".$campo['descripcion'];
         }
         switch ($campo['tipo']) {
             case 'bsLabel':

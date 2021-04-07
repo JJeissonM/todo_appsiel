@@ -26,6 +26,7 @@
 		  	width: 100%;
 		}
 	</style>
+	<link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
 @endsection
 
 @section('content')

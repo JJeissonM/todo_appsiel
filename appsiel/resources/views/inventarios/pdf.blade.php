@@ -8,66 +8,35 @@
 	    <title>APPSIEL ..:: Sistemas para el crecimiento empresarial ::..</title>
 
 	    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-
+		<link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
 	    <style>
-
-	        table {
-			    width: 100%;
-			    color:black;
-			    font-family:arial;
-			    margin-top: 2em;
-			    border: 1px solid #ddd;
+			.headempresa{
+				height: 100px;	
+				font-size: 16px;
+				padding-top: 24px;			
 			}
-			    
-		   thead {
-		     background-color: #eeeeee;			     
-		   }
-		    
-		   tbody {
-		     background-color: #ffffff;     
-		   }
-		    
-		   th,td {
-		     padding: 3pt;
-		   } 
-
-		   table.tabla_pdf {
-		      border-collapse: collapse;
-		     border-top: 1px solid black;
-		     border-bottom: 1px solid black;
-		   }
-		   .celda_right{
-		    border-right: 1px solid black;
-		   }
-		   .celda_left{
-		    border-left: 1px solid black;
-		   }
-		   
-		   table.tabla_pdf th {
-		     border-top: 1px solid black;
-		    border-bottom: 1px solid black;
-		   }
-		   
-		   table.tabla_pdf td {
-		     border: 1px solid gray;
-		     
-		   }
-
-			.page-break {
-				page-break-after: always;
+			.tit{
+				text-align: center;
+			}
+			.headdoc{
+				height: 100px;
+				font-size: 12px;
+				padding-top: 24px;
 			}
 	    </style>
 
 	</head>
 	<body id="app-layout">
 
-		<table class="table table-bordered tabla_pdf">
+		<table class="table tabla_pdf">
 		    <tr>
 		        <td>
-		            <h2 align="center">{{ $descripcion_transaccion }}</h2>
+					<div class="headempresa">
+						<h2 class="tit">{{ $descripcion_transaccion }}</h2>				
+					</div>					
 		        </td>
 		        <td>
-		            <div style="vertical-align: center;">
+		            <div class="headdoc">
 		                <br/>
 		                <b>Documento:</b> {{ $datos_encabezado_doc['campo2'] }}
 		                <br/>
@@ -95,23 +64,30 @@
 		            </div>
 		        </td>
 		    </tr>
-		    <tr>
-		        <td>
-		            <b>Bodega:</b> {{ $datos_encabezado_doc['campo7'] }}
-		        </td>
-		        <td>
-		            <b>Tercero:</b> {{ $datos_encabezado_doc['campo3'] }}
-		        </td>
-		    </tr>
-		    <tr>
-		        <td>
-		            <b>Detalle:</b> {{ $datos_encabezado_doc['campo6'] }}
-		        </td>
-		        <td>
-		            <b>Doc. soporte:</b> {{ $datos_encabezado_doc['campo5'] }}
-		        </td>
-		    </tr>
+		   
 		</table>
+		<div class="subhead">
+			<table>
+				<tr>
+					<td>
+						<b>Bodega:</b> {{ $datos_encabezado_doc['campo7'] }}
+					</td>
+					<td>
+						<b>Tercero:</b> {{ $datos_encabezado_doc['campo3'] }}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<b>Detalle:</b> {{ $datos_encabezado_doc['campo6'] }}
+					</td>
+					<td>
+						<b>Doc. soporte:</b> {{ $datos_encabezado_doc['campo5'] }}
+					</td>
+				</tr>
+			</table>	
+		</div>
+		<br>
+		
 
 		<table class="table table-bordered tabla_pdf">
 		    <thead>
