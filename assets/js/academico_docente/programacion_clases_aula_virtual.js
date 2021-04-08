@@ -7,8 +7,8 @@ $(document).ready(function(){
 	$('#fecha').parent().prev('label').text('');
 
 	$('#descripcion').prop('required',false);
-	$('#descripcion').hide();
-	$('#descripcion').parent().prev('label').text('');
+	//$('#descripcion').hide();
+	//$('#descripcion').parent().prev('label').text('');
 
 	
 	$("#asignatura_id").change(function () {
@@ -133,15 +133,15 @@ $(document).ready(function(){
 	function habilitar_input_descripcion()
 	{
 		$('#descripcion').prop('required',true);
-		$('#descripcion').show();
+		//$('#descripcion').show();
 		$('#descripcion').parent().prev('label').text('*Descripción:');
 	}
 
 	function deshabilitar_input_descripcion()
 	{
 		$('#descripcion').prop('required',false);
-		$('#descripcion').hide();
-		$('#descripcion').parent().prev('label').text('');
+		//$('#descripcion').hide();
+		$('#descripcion').parent().prev('label').text('Descripción:');
 	}
 
 	/**/

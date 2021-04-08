@@ -708,6 +708,11 @@ class VistaController extends Controller
             return \App\Nomina\NomContrato::find( (int)$campo['value'] )->tercero->descripcion;
         }
 
+        if( $campo['name'] == 'asignatura_id' )
+        {
+            return \App\Calificaciones\Asignatura::find( (int)$campo['value'] )->descripcion;
+        }
+
         $texto_opciones = $campo['opciones'];
         $vec['']='';
         switch (substr($texto_opciones,0,strpos($texto_opciones, '_')))

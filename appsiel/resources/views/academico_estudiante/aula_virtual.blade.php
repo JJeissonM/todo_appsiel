@@ -153,7 +153,9 @@
 											</tbody>
 										</table>
 									</li>
+
 									<?php continue; ?>
+
 								@endif
 								
 								<li class="list-group-item">
@@ -163,7 +165,7 @@
 											<tr>
 												<td>
 													@if( $evento->enlace_reunion_virtual != '' )
-														<a style="cursor: pointer; font-size: 16px;" href="{{ $evento->enlace_reunion_virtual }}" target="_blank"> <i class="fa fa-link"></i>  Enlace meet </a>
+														<a style="cursor: pointer; font-size: 16px;" href="{{ $evento->enlace_reunion_virtual }}" target="_blank"> <i class="fa fa-link"></i>  Enlace reunión virtual </a>
 													@else
 														--
 													@endif
