@@ -4,10 +4,9 @@
 <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
 <link rel="stylesheet" href="{{asset('assets/css/toastr.min.css')}}">
 
+
 @include('web.tienda.header')
-
 @include( 'web.tienda.carousel' )
-
 @include('web.tienda.search')
 
 <main style="background: white;">
@@ -58,7 +57,7 @@
                                                             <div class="products clearfix">
                                                                 <a href="#"
                                                                    title="{{$item->descripcion}}" class="product-image">
-                                                                    <span class="product-image">
+                                                                    <div class="product-image"> 
                                                                         <?php 
                                                                             $url_imagen_producto = '#';
                                                                             if ( $item->imagen != '' )
@@ -67,8 +66,8 @@
                                                                             }
                                                                         ?>
                                                                         <img src="{{ $url_imagen_producto }}" loading="lazy"
-                                                                             width="300" height="350" alt="{{$item->descripcion}}">
-                                                                    </span>
+                                                                             width="350" height="300" alt="{{$item->descripcion}}" onerror="imgError(this)">
+                                                                        </div>
                                                                 </a>
                                                             </div>
                                                             <h2 class="product-name" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'">
@@ -111,6 +110,12 @@
 <script src="{{asset('js/carrito/app.js')}}"></script>
 
 <script type="text/javascript">
+
+        function imgError(image) {
+            image.onerror = "";
+            image.src = "{{asset('assets/img/noimage.jpg')}}";
+            return true;
+        }
 
         function filtrar_categoria( categoria_id, enlace )
         {   
