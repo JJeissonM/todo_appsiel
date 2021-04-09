@@ -612,7 +612,7 @@ class ModeloController extends Controller
         $lista_campos1 = $this->modelo->campos()->orderBy('orden')->get();
 
         $lista_campos = $this->asignar_valores_de_campo_al_registro($this->modelo, $registro, $lista_campos1->toArray());
-
+        //dd( $lista_campos );
 
         /*
             Tareas adicionales para mostrar el registro

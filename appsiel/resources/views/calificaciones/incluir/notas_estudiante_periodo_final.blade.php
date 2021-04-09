@@ -2,7 +2,7 @@
 <input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
 
 <h3> Calificaciones periodo final</h3>
-<p> Las notas son calculadas en base a la nota final de los periodos. </p>
+<p> Las notas son calculadas en base en la nota final de los periodos. </p>
 
 <br>
 
@@ -36,21 +36,25 @@
         <tbody>
             <?php
                 $j = 1;
+                $registro_nota_reprobar = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->first();
+
+                $nota_reprobar = 0;
+                if ( !is_null( $registro_nota_reprobar ) )
+                {
+                    $nota_reprobar = $registro_nota_reprobar->calificacion_maxima;
+                }
             ?>
-            @foreach( $registros as $fila ) 
-                <?php
-                    //dd( $fila->periodos );
-                    $nota_reprobar = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
-                ?>
+            @foreach( $registros as $fila )
                 <tr class="fila-{{$j}}" >
                     <td style="font-size: 16px;">{{ $fila->asignatura->descripcion }}</td>
                     @foreach( $fila->periodos as $un_periodo )
-                    <?php
-                        $style="color: #000000;";
-                        if($un_periodo->calificacion<=$nota_reprobar){
-                            $style="color: #f00;";
-                        }
-                    ?>
+                        <?php
+                            $style="color: #000000;";
+                            if( $un_periodo->calificacion <= $nota_reprobar )
+                            {
+                                $style="color: #f00;";
+                            }
+                        ?>
                         <td style="{{$style}}"> {{ number_format( $un_periodo->calificacion, 2, '.', ',') }} </td>
                     @endforeach                    
                     <td> {{ $fila->escala_valoracion_periodo_final }} </td>

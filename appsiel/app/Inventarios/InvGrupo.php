@@ -49,6 +49,7 @@ class InvGrupo extends Model
             ->leftJoin('contab_cuentas AS ctas_ingresos', 'ctas_ingresos.id', '=', 'inv_grupos.cta_ingresos_id')
             ->where('inv_grupos.core_empresa_id', Auth::user()->empresa_id)
             ->select(
+                'inv_grupos.id AS ID',
                 'inv_grupos.descripcion AS DESCRIPCIÓN',
                 'inv_grupos.nivel_padre AS NIVEL_PADRE',
                 'inv_grupos.tipo_nivel AS TIPO_NIVEL',

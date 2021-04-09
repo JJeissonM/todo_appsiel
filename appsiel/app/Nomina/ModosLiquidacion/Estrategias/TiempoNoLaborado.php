@@ -41,9 +41,7 @@ class TiempoNoLaborado implements Estrategia
 										] )
 								->get();
 
-		$valores_novedades = [];
-
-        
+		$valores_novedades = [];        
 
         foreach( $novedades as $novedad )
         {			
@@ -124,7 +122,7 @@ class TiempoNoLaborado implements Estrategia
 		// En el lapso del documento, pueden haber varios documentos con tiempos liquidados
 		$lapso = $documento_nomina->lapso();
 		$registros_documento = NomDocRegistro::whereBetween( 'nom_doc_registros.fecha', [$lapso->fecha_inicial,$lapso->fecha_final] )
-													->where( 'nom_doc_registros.core_tercero_id', $empleado->core_tercero_id )
+													->where( 'nom_doc_registros.nom_contrato_id', $empleado->id )
 													->get();
 
 		$horas_liquidadas_empleado = 0; 

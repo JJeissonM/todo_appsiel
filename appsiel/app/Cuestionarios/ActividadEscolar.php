@@ -30,10 +30,8 @@ class ActividadEscolar extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-        // Filtro año lectivo actual
-        $periodo_lectivo_actual = PeriodoLectivo::get_actual();
 
-        $periodos = Periodo::where('periodo_lectivo_id', $periodo_lectivo_actual->id)->select('id')->get()->pluck('id');
+        $periodos = Periodo::select('id')->get()->pluck('id');
 
         // Filtros por Perfil de usuario
         $user = Auth::user();
@@ -44,6 +42,11 @@ class ActividadEscolar extends Model
         if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
         {
             $array_wheres = array_merge($array_wheres, ['core_acl.user_id' => $user->id]);
+            
+            // Filtro año lectivo actual
+            $periodo_lectivo_actual = PeriodoLectivo::get_actual();
+
+            $periodos = Periodo::where('periodo_lectivo_id', $periodo_lectivo_actual->id)->select('id')->get()->pluck('id');
         }
 
         $collection = ActividadEscolar::leftJoin('core_acl', 'core_acl.recurso_id', '=', 'sga_actividades_escolares.id')

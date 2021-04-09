@@ -12,6 +12,9 @@ class NomCargo extends Model
     protected $fillable = ['descripcion', 'estado', 'cargo_padre_id', 'rango_salarial_id'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Estado'];
+
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
+
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = NomCargo::select(
