@@ -65,7 +65,7 @@ class SecuenciaCodigo extends Model
     public static function get_codigo($modulo, $otros_datos = null)
     {
         // Generar el código
-        $largo_consecutivo = 3;
+        $largo_consecutivo = (int)config('matriculas.largo_consecutivo_codigo_matricula');
         $secuencia = SecuenciaCodigo::where(['modulo' => $modulo, 'estado' => 'Activo'])->get()->first();
         $consecutivo = $secuencia->consecutivo + 1;
         $largo = strlen($consecutivo);

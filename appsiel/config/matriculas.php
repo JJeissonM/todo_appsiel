@@ -7,5 +7,6 @@
   'modelo_id_factura_estudiante' => '234',
   'cantidad_facturas_vencidas_permitidas' => '2',
   'mostrar_password_en_ficha_matricula' => '1',
+  'largo_consecutivo_codigo_matricula' => '3',
   'url_id_modelo' => '0',
 ) ;

@@ -139,7 +139,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$largo_consecutivo_codigo_matricula = 3;
+								if( isset($parametros['largo_consecutivo_codigo_matricula'] ) )
+								{
+									$largo_consecutivo_codigo_matricula = $parametros['largo_consecutivo_codigo_matricula'];
+								}
+							?>
+							{{ Form::bsText('largo_consecutivo_codigo_matricula', $largo_consecutivo_codigo_matricula, 'Longitud del consecutivo para códigos de mátriculas', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
