@@ -120,7 +120,7 @@ $(document).ready(function(){
 	{
 		$('#fecha').prop('required',true);
 		$('#fecha').show();
-		$('#fecha').parent().prev('label').text('*Fecha:');
+		$('#fecha').parent().prev('label').html('<i class="fa fa-asterisk"></i>Fecha:');
 	}
 
 	function deshabilitar_input_fecha()
@@ -133,8 +133,8 @@ $(document).ready(function(){
 	function habilitar_input_descripcion()
 	{
 		$('#descripcion').prop('required',true);
-		//$('#descripcion').show();
-		$('#descripcion').parent().prev('label').text('*Descripción:');
+		$('#descripcion').show();
+		$('#descripcion').parent().prev('label').html('<i class="fa fa-asterisk"></i>Descripción:');
 	}
 
 	function deshabilitar_input_descripcion()

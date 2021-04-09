@@ -52,7 +52,7 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="form-group">
-							<label class="control-label col-sm-3" for="descripcion">*Descripción:</label>
+							<label class="control-label col-sm-3" for="descripcion"><i class='fa fa-asterisk'></i>Descripción:</label>
 							<div class="col-sm-9">
 								{{ Form::text('descripcion',null, array_merge(['class' => 'form-control','id'=>'descripcion','placeholder'=>'*Descripción', 'required'=>"required"], [])) }}
 							</div>
@@ -62,7 +62,7 @@
 					<div class="col-md-6">
 
 						<div class="form-group" style="padding-left: 5px;">
-							<label class="control-label col-sm-2" for="detalle" style="padding-left: 5px;"> *Detalle: </label>
+							<label class="control-label col-sm-2" for="detalle" style="padding-left: 5px;"> <i class='fa fa-asterisk'></i>Detalle: </label>
 							<div class="col-sm-10">
 								{{ Form::textarea('detalle',null, array_merge(['class' => 'form-control', 'rows' => '2', 'required'=>"required"], [])) }}
 							</div>
@@ -76,7 +76,7 @@
 					<div class="col-md-6">
 
 						<div class="form-group">
-							<label class="control-label col-sm-3" for="mostrar_titulo">*Mostrar título:</label>
+							<label class="control-label col-sm-3" for="mostrar_titulo"><i class='fa fa-asterisk'></i>Mostrar título:</label>
 							<div class="col-sm-9">
 								{{ Form::select('mostrar_titulo',["0"=>"No","1"=>"Si"],null, array_merge( [ 'class'=>"form-control", 'id' => 'mostrar_titulo', 'required'=>"required" ], [] )) }}
 							</div>
