@@ -25,8 +25,11 @@
             border: 1px solid gray;
         }
 
-		img {
-			padding-left:30px;
+		.imagen {
+			  /**/display: block;
+			  margin-left: auto;
+			  margin-right: auto;
+			  width: 50%;
 		}
 
 		th {
@@ -48,7 +51,7 @@
 	        font-style: italic;
 	        font-size: 16px;
 	        border: 1px solid gray;
-	        padding-top: -30px;
+	        /*padding-top: -30px;*/
 	    }
 
 		table.encabezado{
