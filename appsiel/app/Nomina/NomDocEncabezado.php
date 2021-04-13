@@ -230,6 +230,7 @@ class NomDocEncabezado extends Model
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_doc_encabezados.consecutivo) AS documento_app'),
                 'nom_doc_encabezados.id',
                 'nom_doc_encabezados.core_empresa_id',
+                'nom_doc_encabezados.tiempo_a_liquidar',
                 'nom_doc_encabezados.fecha',
                 'nom_doc_encabezados.descripcion',
                 'nom_doc_encabezados.core_tipo_transaccion_id',

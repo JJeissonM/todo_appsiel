@@ -41,7 +41,7 @@ class ActividadEscolar extends Model
 
         if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
         {
-            $array_wheres = array_merge($array_wheres, ['core_acl.user_id' => $user->id]);
+            $array_wheres = array_merge($array_wheres, ['sga_actividades_escolares.created_by' => $user->id]);
             
             // Filtro año lectivo actual
             $periodo_lectivo_actual = PeriodoLectivo::get_actual();
@@ -49,8 +49,7 @@ class ActividadEscolar extends Model
             $periodos = Periodo::where('periodo_lectivo_id', $periodo_lectivo_actual->id)->select('id')->get()->pluck('id');
         }
 
-        $collection = ActividadEscolar::leftJoin('core_acl', 'core_acl.recurso_id', '=', 'sga_actividades_escolares.id')
-                            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_actividades_escolares.curso_id')
+        $collection = ActividadEscolar::leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_actividades_escolares.curso_id')
                             ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_actividades_escolares.asignatura_id')
                             ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_actividades_escolares.periodo_id')
                             ->where($array_wheres)
@@ -66,7 +65,7 @@ class ActividadEscolar extends Model
                                 'sga_actividades_escolares.estado AS campo8',
                                 'sga_actividades_escolares.id AS campo9'
                             )
-                            ->distinct('core_acl.user_id')
+                            //->distinct('core_acl.user_id')
                             ->orderBy('sga_actividades_escolares.created_at', 'DESC')
                             ->get();
 
@@ -146,14 +145,12 @@ class ActividadEscolar extends Model
             ['sga_actividades_escolares.id', '>', 0]
         ];
 
-        if ($user->hasRole('SuperAdmin') || $user->hasRole('Admin Colegio') || $user->hasRole('Colegio - Vicerrector') || $user->hasRole('Administrador')) {
-            //$array_wheres = array_merge($array_wheres, [['core_acl.user_id', '>', 0]]);          
-        } else {
-            $array_wheres = array_merge($array_wheres, ['core_acl.user_id' => $user->id]);
+        if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
+        {
+            $array_wheres = array_merge($array_wheres, ['sga_actividades_escolares.created_by' => $user->id]);
         }
 
-        $string = ActividadEscolar::leftJoin('core_acl', 'core_acl.recurso_id', '=', 'sga_actividades_escolares.id')
-            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_actividades_escolares.curso_id')
+        $string = ActividadEscolar::leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_actividades_escolares.curso_id')
             ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_actividades_escolares.asignatura_id')
             ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_actividades_escolares.periodo_id')
             ->where($array_wheres)
@@ -174,9 +171,6 @@ class ActividadEscolar extends Model
             ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_actividades_escolares.estado", "LIKE", "%$search%")
-            ->distinct('core_acl.user_id')
-            ->orderBy('sga_actividades_escolares.created_at', 'DESC')
-            ->distinct('core_acl.user_id')
             ->orderBy('sga_actividades_escolares.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);

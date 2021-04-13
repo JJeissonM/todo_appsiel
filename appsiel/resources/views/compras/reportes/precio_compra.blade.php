@@ -41,7 +41,7 @@
 ?>
 
 <div class="table-responsive">
-    <table id="myTable" class="table table-striped">
+    <table id="tbDatos" class="table table-striped">
         <thead>
             <tr>
                 <th> Producto </th>

@@ -65,6 +65,7 @@ class ActividadesEscolaresController extends ModeloController
         
         $registro = $this->crear_nuevo_registro( $request );
 
+        /*
         // Se agrega el permiso a la tabla ACL, la actividad solo estará visible para el usuario que la crea y para el superadministrador (ID = 1)
         $datos = [  
                     'modelo_recurso_id' => $request->url_id_modelo,
@@ -78,7 +79,8 @@ class ActividadesEscolaresController extends ModeloController
         // Se crean dos registros en la tabla ACL
         if ( Auth::user()->id !=1 ) {
             Acl::create( array_merge( $datos, ['user_id' => 1] ) );
-        }     
+        }
+        */   
 
         $this->almacenar_imagenes( $request, $this->modelo->ruta_storage_imagen, $registro );
 

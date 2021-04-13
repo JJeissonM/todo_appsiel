@@ -127,17 +127,17 @@ class ReportesController extends Controller
         
         $inv_producto_id = $request->inv_producto_id;
         $operador1 = '=';
-        //dd($inv_producto_id);
+
         $proveedor_id = $request->proveedor_id;
         $operador2 = '=';
 
+        $grupo_inventario_id = $request->grupo_inventario_id;
+        $operador3 = '=';
 
         $porcentaje_proyeccion_1 = (float)$request->porcentaje_proyeccion_1;
         $porcentaje_proyeccion_2 = (float)$request->porcentaje_proyeccion_2;
         $porcentaje_proyeccion_3 = (float)$request->porcentaje_proyeccion_3;
         $porcentaje_proyeccion_4 = (float)$request->porcentaje_proyeccion_4;
-
-
 
         if ( $inv_producto_id == '' )
         {
@@ -151,7 +151,13 @@ class ReportesController extends Controller
             $proveedor_id = '%'.$proveedor_id.'%';
         }
 
-        $movimiento = ComprasMovimiento::get_precios_compras( $fecha_desde, $fecha_hasta, $inv_producto_id, $operador1, $proveedor_id, $operador2 );
+        if ( $grupo_inventario_id == '' )
+        {
+            $operador3 = 'LIKE';
+            $grupo_inventario_id = '%'.$grupo_inventario_id.'%';
+        }
+
+        $movimiento = ComprasMovimiento::get_precios_compras( $fecha_desde, $fecha_hasta, $inv_producto_id, $operador1, $proveedor_id, $operador2, $grupo_inventario_id, $operador3 );
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio.';

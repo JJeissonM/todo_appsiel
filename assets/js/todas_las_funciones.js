@@ -211,8 +211,8 @@ $(document).ready(function () {
 		$tabla = document.querySelector("#tbDatos");
 		let tableExport = new TableExport($tabla, {
 			exportButtons: false, // No queremos botones
-			filename: nombre_listado, //Nombre del archivo de Excel
-			sheetname: nombre_listado, //Título de la hoja
+			filename: nombre_listado.substring(0,30), //Nombre del archivo de Excel
+			sheetname: nombre_listado.substring(0,30), //Título de la hoja
 		});
 		let datos = tableExport.getExportData();
 		let preferenciasDocumento = datos.tbDatos.xlsx;

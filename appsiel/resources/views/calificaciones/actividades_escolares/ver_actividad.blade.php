@@ -3,7 +3,10 @@
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
 	<div style="padding-left: 10px;">
-		{{ Form::formEliminar( '/actividades_escolares/eliminar_actividad', $actividad->id ) }}
+		<!-- { { Form::formEliminar( '/actividades_escolares/eliminar_actividad', $actividad->id ) }}
+		-->
+		<button class="btn-gmail" id="btn_anular" title="Eliminar"><i class="fa fa-btn fa-trash"></i></button>
+
 		<a href="{{ url('actividades_escolares/'.$actividad->id.'/edit?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion=0') }}" class="btn-gmail" title="Modificar"><i class="fa fa-btn fa-edit"></i></a>
 
 		@can('acdo_cambiar_estado_actividades_escolares')
@@ -11,6 +14,22 @@
 		@endcan
 
 	</div>
+
+
+	{{ Form::open([ 'url' => '/actividades_escolares/eliminar_actividad?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'), 'id'=>'form_anular']) }}
+		<div class="alert alert-warning" style="display: none;">
+			<a href="#" id="close" class="close">&times;</a>
+			<strong>Advertencia!</strong>
+			<br>
+			Al eliminar la actividad, se eliminan todas las respuestas ingresadas por los estudiantes.
+			<br>
+			Si realmente quiere eliminar la actividad, haga click en el siguiente enlace: <small> <button style="background: transparent; border: 0px;"> Anular </button> </small>
+		</div>
+
+		{{ Form::hidden( 'recurso_a_eliminar_id', $actividad->id ) }}
+
+	{{ Form::close() }}
+
 	<hr>
 
 	@include('layouts.mensajes')
@@ -270,6 +289,11 @@
 				$('#popup_alerta_success').show();
 				$('#popup_alerta_success').text( mensaje );
 			}
+
+			$('#btn_anular').on('click',function(e){
+				e.preventDefault();
+				$('.alert.alert-warning').show(1000);
+			});
 
 		});
 	</script>

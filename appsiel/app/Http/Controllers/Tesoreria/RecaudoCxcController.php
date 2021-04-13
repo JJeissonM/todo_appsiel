@@ -406,7 +406,7 @@ class RecaudoCxcController extends Controller
             return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Recaudo NO puede ser anulado. Está en documento cruce de cartera.');
         }
 
-        // Se reversan los abonos hecho por este documento de recaudo: aumenta el saldo_pendiente en el documento pendiente, si no existe el documento de cxc en documentos pendiente, se debe crear nuevamente su registro
+        // Se reversan los abonos hecho por este documento de recaudo: aumenta el saldo_pendiente en el documento pendiente
         $documentos_abonados = CxcAbono::get_documentos_abonados( $recaudo );
 
         foreach ( $documentos_abonados as $linea )

@@ -119,7 +119,7 @@ class ComprasMovimiento extends Model
             ->paginate($nro_registros);
     }
 
-    public static function get_precios_compras($fecha_desde, $fecha_hasta, $producto_id, $operador1, $proveedor_id, $operador2)
+    public static function get_precios_compras($fecha_desde, $fecha_hasta, $producto_id, $operador1, $proveedor_id, $operador2, $grupo_inventario_id, $operador3)
     {
 
         /**/
@@ -129,6 +129,7 @@ class ComprasMovimiento extends Model
             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
             ->where('compras_movimientos.inv_producto_id', $operador1, $producto_id)
             ->where('compras_movimientos.proveedor_id', $operador2, $proveedor_id)
+            ->where('inv_productos.inv_grupo_id', $operador3, $grupo_inventario_id)
             ->select(
                         'compras_movimientos.inv_producto_id',
                         DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'),
