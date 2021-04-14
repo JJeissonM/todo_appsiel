@@ -58,12 +58,12 @@
 							@foreach($cuentas['data'] as $c)
 							<tr>
 								<td>{{$c['cuenta']}}</td>
-								<td>$ {{number_format($c['saldo'])}}</td>
+								<td>$ {{number_format( $c['saldo'], 0, ',','.') }}</td>
 							</tr>
 							@endforeach
 							<tr>
 								<th>TOTAL</th>
-								<th>$ {{number_format($cuentas['total'])}}</th>
+								<th>$ {{number_format( $cuentas['total'], 0, ',','.') }}</th>
 							</tr>
 						</tbody>
 					</table>
@@ -83,12 +83,12 @@
 							@foreach($cajas['data'] as $ca)
 							<tr>
 								<td>{{$ca['caja']}}</td>
-								<td>$ {{number_format($ca['saldo'])}}</td>
+								<td>$ {{number_format( $ca['saldo'], 0, ',','.') }}</td>
 							</tr>
 							@endforeach
 							<tr>
 								<th>TOTAL</th>
-								<th>$ {{number_format($cajas['total'])}}</th>
+								<th>$ {{number_format( $cajas['total'], 0, ',','.' ) }}</th>
 							</tr>
 						</tbody>
 					</table>

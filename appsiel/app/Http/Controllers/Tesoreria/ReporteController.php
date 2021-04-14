@@ -895,15 +895,15 @@ class ReporteController extends TesoreriaController
             {
                 $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
                                     ->where('teso_cuentas_bancarias.id',$acl->recurso_id)
-                                    ->orderBy('contab_cuentas.codigo')
                                     ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
+                                    ->orderBy('contab_cuentas.tipo_cuenta')
                                     ->get();
             }
             
         }else{
             $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
-                                    ->orderBy('contab_cuentas.codigo')
                                     ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
+                                    ->orderBy('teso_cuentas_bancarias.tipo_cuenta')
                                     ->get();
         }
 

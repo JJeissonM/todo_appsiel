@@ -19,6 +19,8 @@ class OrdenDeTrabajo extends Model
 
     public $urls_acciones = '{"create":"web/create"}';
 
+    public $vistas = '{"create":"nomina.ordenes_de_trabajo.create"}';
+
     public function empresa()
     {
         return $this->belongsTo('App\Core\Empresa', 'core_empresa_id');

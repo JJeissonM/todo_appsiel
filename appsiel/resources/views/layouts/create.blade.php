@@ -20,6 +20,8 @@
 				<br/><br/>
 
 			@endif
+
+			@yield('seccion_adicional')
 		</div>
 	</div>
 	<br/><br/>
@@ -51,4 +53,6 @@
 	@if( isset($archivo_js) )
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif
+
+	@yield('script_adicional')
 @endsection

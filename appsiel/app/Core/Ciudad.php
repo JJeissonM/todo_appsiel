@@ -14,6 +14,11 @@ class Ciudad extends Model
 
     public $encabezado_tabla = ['Ciudad','Departamento/Estado','Pais','Acción'];
 
+    public function departamento()
+    {
+        return $this->belongsTo(Departamento::class,'core_departamento_id');
+    }
+
     public static function consultar_registros()
     {    	
     	return Ciudad::leftJoin('core_departamentos','core_departamentos.id','=','core_ciudades.core_departamento_id')
@@ -51,11 +56,6 @@ class Ciudad extends Model
         }
 
         return $vec;
-    }
-
-    public function departamento()
-    {
-        return $this->belongsTo(Departamento::class,'core_departamento_id');
     }
 
 }

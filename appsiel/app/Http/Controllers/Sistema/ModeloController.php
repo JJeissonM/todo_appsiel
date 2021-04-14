@@ -566,7 +566,8 @@ class ModeloController extends Controller
             }
         }
 
-        $registro->fill($request->all());
+        //dd( $request->all() );
+        $registro->fill( $request->all() );
         $registro->save();
 
         $this->almacenar_imagenes($request, $modelo->ruta_storage_imagen, $registro2, 'edit');

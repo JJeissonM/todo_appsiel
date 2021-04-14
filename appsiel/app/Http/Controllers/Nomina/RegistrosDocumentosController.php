@@ -78,15 +78,7 @@ class RegistrosDocumentosController extends TransaccionController
         Formulario para registrar los valores a liquidar del concepto y el documento seleccionado
     */
     public function crear_registros2(Request $request)
-    {
-
-        // Se obtienen las descripciones del concepto y documento de nómina
-        $concepto = NomConcepto::find($request->nom_concepto_id);
-        $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
-
-        // Se obtienen los Empleados del documento
-        $empleados = $documento->empleados;
-        
+    {        
         // Verificar si ya se han ingresado registro para ese concepto y documento
         $cant_registros = NomDocRegistro::where(['nom_doc_encabezado_id'=>$request->nom_doc_encabezado_id,
                 'nom_concepto_id'=>$request->nom_concepto_id])
@@ -104,6 +96,32 @@ class RegistrosDocumentosController extends TransaccionController
         // Si ya tienen al menos un empleado con concepto ingresado
         if( $cant_registros > 0 )
         {
+            return view( 'nomina.editar_registros1', array_merge( self::get_array_tabla_registros( $request->nom_concepto_id, $request->nom_doc_encabezado_id, $request->ruta), [ 'miga_pan' => $miga_pan ] ) );
+        }else{
+            // Si no tienen datos, se crean por primera vez
+            return view( 'nomina.create_registros2', array_merge( self::get_array_tabla_registros( $request->nom_concepto_id, $request->nom_doc_encabezado_id, $request->ruta ), [ 'miga_pan' => $miga_pan ] ) );
+        }
+    }
+
+    public static function get_array_tabla_registros( $nom_concepto_id, $nom_doc_encabezado_id, $ruta )
+    {
+        // Se obtienen las descripciones del concepto y documento de nómina
+        $concepto = NomConcepto::find( $nom_concepto_id );
+        $documento = NomDocEncabezado::find( $nom_doc_encabezado_id );
+
+        // Se obtienen los Empleados del documento
+        $empleados = $documento->empleados;
+        
+        // Verificar si ya se han ingresado registro para ese concepto y documento
+        $cant_registros = NomDocRegistro::where([
+                                                'nom_doc_encabezado_id'=>$nom_doc_encabezado_id,
+                                                'nom_concepto_id'=>$nom_concepto_id
+                                                ])
+                                            ->count();
+
+        // Si ya tienen al menos un empleado con concepto ingresado
+        if( $cant_registros > 0 )
+        {
             
             // Se crea un vector con los valores de los conceptos para modificarlas
             $vec_registros = array();
@@ -114,8 +132,8 @@ class RegistrosDocumentosController extends TransaccionController
                 $vec_empleados[$i]['nombre'] = $empleado->tercero->descripcion;
                 
                 // Se verifica si cada persona tiene valor ingresado
-                $datos = NomDocRegistro::where(['nom_doc_encabezado_id'=>$request->nom_doc_encabezado_id,
-                                                'nom_concepto_id'=>$request->nom_concepto_id,
+                $datos = NomDocRegistro::where(['nom_doc_encabezado_id'=>$nom_doc_encabezado_id,
+                                                'nom_concepto_id'=>$nom_concepto_id,
                                                 'core_tercero_id'=>$empleado->core_tercero_id])
                                         ->get()
                                         ->first();
@@ -152,22 +170,21 @@ class RegistrosDocumentosController extends TransaccionController
                 
                 $i++;
             } // Fin foreach (llenado de array con datos)
-            return view('nomina.editar_registros1',['vec_empleados'=>$vec_empleados,
+            return ['vec_empleados'=>$vec_empleados,
                 'cantidad_empleados'=>count($empleados),
                 'concepto'=>$concepto,
                 'documento'=>$documento,
-                'ruta'=>$request->ruta,
-                'miga_pan'=>$miga_pan]);
+                'ruta'=>$ruta];
         }else{
             // Si no tienen datos, se crean por primera vez
-            return view('nomina.create_registros2',['empleados'=>$empleados,
+            return ['empleados'=>$empleados,
                 'cantidad_empleados'=>count($empleados),
                 'concepto'=>$concepto,
                 'documento'=>$documento,
-                'ruta'=>$request->ruta,
-                'miga_pan'=>$miga_pan]);
+                'ruta'=>$ruta];
         }
     }
+
     /**
      * Para almacenar los registros de documentos
      *  Normalmente para conceptos tipo Manuales
@@ -241,14 +258,7 @@ class RegistrosDocumentosController extends TransaccionController
 
             $salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
 
-            if ( $concepto->porcentaje_sobre_basico < 1 )
-            {
-                // Fraccion del Salario
-                $valor_a_liquidar = ( $salario_x_hora * $concepto->porcentaje_sobre_basico ) * $cantidad_horas;
-            }else{
-                // Valor completo Salario + Adicional
-                $valor_a_liquidar = $salario_x_hora * ( 1 + $concepto->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
-            }            
+            $valor_a_liquidar = $concepto->get_valor_hora_porcentaje_sobre_basico($salario_x_hora, $cantidad_horas);           
 
             $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor_a_liquidar );
 
@@ -375,7 +385,7 @@ class RegistrosDocumentosController extends TransaccionController
 
             $salario_x_hora = $sueldo / config('nomina')['horas_laborales'];
 
-            $valor_a_liquidar = $salario_x_hora * ( 1 + $concepto->porcentaje_sobre_basico / 100 ) * $cantidad_horas;
+            $valor_a_liquidar = $concepto->get_valor_hora_porcentaje_sobre_basico($salario_x_hora, $cantidad_horas);
 
             $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor_a_liquidar );
 

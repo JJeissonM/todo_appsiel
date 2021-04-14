@@ -10,11 +10,7 @@ class Empresa extends Model
 {
     protected $table = 'core_empresas';
 
-    protected $fillable = [
-        'tipo', 'razon_social', 'nombre1', 'otros_nombres', 'apellido1', 'apellido2',
-        'descripcion', 'id_tipo_documento_id', 'numero_identificacion',
-        'digito_verificacion', 'ciudad_expedicion', 'direccion1', 'direccion2', 'barrio', 'codigo_ciudad', 'codigo_postal', 'telefono1', 'telefono2', 'email', 'pagina_web', 'estado'
-    ];
+    protected $fillable = [ 'tipo', 'razon_social', 'nombre1', 'otros_nombres', 'apellido1', 'apellido2', 'descripcion', 'id_tipo_documento_id', 'numero_identificacion', 'digito_verificacion', 'ciudad_expedicion', 'direccion1', 'direccion2', 'barrio', 'codigo_ciudad', 'codigo_postal', 'telefono1', 'telefono2', 'email', 'pagina_web', 'estado' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre/Razón Social', 'Establecimiento', 'Identificación', 'Dirección', 'Teléfono', 'Estado'];
 
