@@ -41,6 +41,8 @@ class OrdenDeTrabajoController extends TransaccionController
 {
     public function get_tabla_empleados_ingreso_registros()
     {
-        RegistrosDocumentosController::get_array_tabla_registros( (int)Input::get('nom_concepto_id'), (int)Input::get('nom_doc_encabezado_id'), '' );
+        $array = RegistrosDocumentosController::get_array_tabla_registros( (int)Input::get('nom_concepto_id'), (int)Input::get('nom_doc_encabezado_id'), '' );
+        //dd($array);
+        return View::make( 'nomina.create_registros2_tabla', $array )->render();
     }
 }

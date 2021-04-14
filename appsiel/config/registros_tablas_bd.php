@@ -22403,7 +22403,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2018-10-24 10:02:09',
-      'updated_at' => '2018-10-24 10:02:09',
+      'updated_at' => '2021-04-14 16:53:57',
     ),
     193 => 
     array (
@@ -39515,7 +39515,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     1257 => 
     array (
       'id' => 1263,
-      'descripcion' => 'Documento nómina',
+      'descripcion' => 'Proyecto',
       'tipo' => 'select',
       'name' => 'nom_doc_encabezado_id',
       'opciones' => 'model_App\\Nomina\\NomDocEncabezadoOt',
@@ -39526,7 +39526,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2021-04-12 21:29:35',
-      'updated_at' => '2021-04-12 21:30:13',
+      'updated_at' => '2021-04-13 19:12:53',
     ),
     1258 => 
     array (
@@ -39536,13 +39536,13 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'name' => 'nom_concepto_id',
       'opciones' => 'model_App\\Nomina\\ConceptoManual',
       'value' => 'null',
-      'atributos' => '{"class":"combobox"}',
+      'atributos' => '',
       'definicion' => '',
       'requerido' => 1,
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2021-04-12 21:35:58',
-      'updated_at' => '2021-04-12 21:36:11',
+      'updated_at' => '2021-04-14 15:11:13',
     ),
   ),
   'sys_modelos' => 
@@ -63144,59 +63144,59 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     2484 => 
     array (
-      'id' => 2831,
-      'orden' => 6,
-      'core_modelo_id' => 290,
-      'core_campo_id' => 522,
-    ),
-    2485 => 
-    array (
       'id' => 2832,
       'orden' => 16,
       'core_modelo_id' => 290,
       'core_campo_id' => 8,
     ),
-    2486 => 
+    2485 => 
     array (
       'id' => 2833,
       'orden' => 99,
       'core_modelo_id' => 290,
       'core_campo_id' => 100,
     ),
-    2487 => 
+    2486 => 
     array (
       'id' => 2834,
       'orden' => 99,
       'core_modelo_id' => 290,
       'core_campo_id' => 87,
     ),
-    2488 => 
+    2487 => 
     array (
       'id' => 2836,
       'orden' => 8,
       'core_modelo_id' => 290,
       'core_campo_id' => 1263,
     ),
-    2489 => 
+    2488 => 
     array (
       'id' => 2837,
       'orden' => 14,
       'core_modelo_id' => 290,
       'core_campo_id' => 1262,
     ),
-    2490 => 
+    2489 => 
     array (
       'id' => 2838,
       'orden' => 10,
       'core_modelo_id' => 290,
       'core_campo_id' => 1264,
     ),
-    2491 => 
+    2490 => 
     array (
       'id' => 2839,
       'orden' => 20,
       'core_modelo_id' => 290,
       'core_campo_id' => 584,
+    ),
+    2491 => 
+    array (
+      'id' => 2840,
+      'orden' => 6,
+      'core_modelo_id' => 290,
+      'core_campo_id' => 740,
     ),
   ),
   'sys_reportes' => 
@@ -65270,6 +65270,180 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'estado' => 'Activo',
       'created_at' => '2021-04-12 21:12:42',
       'updated_at' => '2021-04-12 21:14:21',
+    ),
+  ),
+  'nom_modos_liquidacion' => 
+  array (
+    0 => 
+    array (
+      'id' => 1,
+      'descripcion' => 'Tiempo Laborado',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2019-04-28 05:32:36',
+      'updated_at' => '2020-06-28 09:14:06',
+    ),
+    1 => 
+    array (
+      'id' => 2,
+      'descripcion' => 'Manual',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2019-04-28 05:32:36',
+      'updated_at' => '2019-04-28 05:32:36',
+    ),
+    2 => 
+    array (
+      'id' => 3,
+      'descripcion' => 'Cuota',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2019-04-28 05:32:36',
+      'updated_at' => '2019-04-28 05:32:36',
+    ),
+    3 => 
+    array (
+      'id' => 4,
+      'descripcion' => 'Préstamo',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2019-04-28 05:32:36',
+      'updated_at' => '2019-04-28 05:32:36',
+    ),
+    4 => 
+    array (
+      'id' => 5,
+      'descripcion' => 'Cruce de saldos de CxC',
+      'detalle' => 'Busca todos los saldos pendientes en CxC SOLO entre las fechas del documento de liquidación, los totaliza y los descuenta en el documento de liquidación de nómina.',
+      'estado' => 'Activo',
+      'created_at' => '2019-12-18 19:22:21',
+      'updated_at' => '2020-06-28 23:09:52',
+    ),
+    5 => 
+    array (
+      'id' => 6,
+      'descripcion' => 'Auxilio de transporte',
+      'detalle' => 'Solo se puede haber un conceto de este tipo. ',
+      'estado' => 'Activo',
+      'created_at' => '2020-06-24 01:34:55',
+      'updated_at' => '2020-06-24 01:51:16',
+    ),
+    6 => 
+    array (
+      'id' => 7,
+      'descripcion' => 'Tiempo NO Laborado',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-06-28 09:14:22',
+      'updated_at' => '2020-06-28 09:14:22',
+    ),
+    7 => 
+    array (
+      'id' => 8,
+      'descripcion' => 'Seguridad social',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-06-28 09:16:06',
+      'updated_at' => '2020-06-28 18:54:58',
+    ),
+    8 => 
+    array (
+      'id' => 9,
+      'descripcion' => 'Prestaciones sociales',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-06-28 18:55:10',
+      'updated_at' => '2020-06-28 18:55:10',
+    ),
+    9 => 
+    array (
+      'id' => 10,
+      'descripcion' => 'FondoSolidaridadPensional',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-16 23:53:09',
+      'updated_at' => '2020-12-20 16:13:22',
+    ),
+    10 => 
+    array (
+      'id' => 11,
+      'descripcion' => 'Retefuente',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-17 00:04:04',
+      'updated_at' => '2020-12-20 16:13:32',
+    ),
+    11 => 
+    array (
+      'id' => 12,
+      'descripcion' => 'Salud obligatoria',
+      'detalle' => 'Descuentos EPS. Entidades promotoras de Salud',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-20 16:16:33',
+      'updated_at' => '2020-12-20 16:16:33',
+    ),
+    12 => 
+    array (
+      'id' => 13,
+      'descripcion' => 'Pensión  obligatoria',
+      'detalle' => 'AFP. Administradoras Fondos de Pensión',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-20 16:17:02',
+      'updated_at' => '2020-12-20 16:17:02',
+    ),
+    13 => 
+    array (
+      'id' => 14,
+      'descripcion' => 'Prima Legal',
+      'detalle' => 'Pagada semestralmente',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-20 16:19:36',
+      'updated_at' => '2020-12-20 16:19:36',
+    ),
+    14 => 
+    array (
+      'id' => 15,
+      'descripcion' => 'Cesantías consignadas',
+      'detalle' => 'Cesantías que se consignan anualmente al fondo.',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-20 16:26:15',
+      'updated_at' => '2020-12-20 16:26:15',
+    ),
+    15 => 
+    array (
+      'id' => 16,
+      'descripcion' => 'Intereses de cesantías',
+      'detalle' => 'Los que se le pagan anualmente al empleado o al momento de liquidar su contrato.',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-20 16:26:46',
+      'updated_at' => '2020-12-20 16:26:46',
+    ),
+    16 => 
+    array (
+      'id' => 17,
+      'descripcion' => 'Cesantías pagadas',
+      'detalle' => 'Las que se pagan al empleado en la terminación de contrato.',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-20 16:28:47',
+      'updated_at' => '2020-12-20 16:28:47',
+    ),
+    17 => 
+    array (
+      'id' => 18,
+      'descripcion' => 'Parafiscales',
+      'detalle' => 'Provisiones hechas por la empresa: SENA, ICBF y Caja de compesanción.',
+      'estado' => 'Activo',
+      'created_at' => '2020-12-20 16:35:58',
+      'updated_at' => '2020-12-20 16:35:58',
+    ),
+    18 => 
+    array (
+      'id' => 19,
+      'descripcion' => 'Prima Antigüedad',
+      'detalle' => '',
+      'estado' => 'Activo',
+      'created_at' => '2021-02-15 00:59:50',
+      'updated_at' => '2021-02-15 00:59:50',
     ),
   ),
 ) ;
