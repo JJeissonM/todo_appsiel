@@ -4,12 +4,6 @@
     clear: both;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
-    order: 0;
-    vertical-align:middle;
-}
 
 .header {
     margin: 0 auto;
@@ -342,9 +336,9 @@ img {
         position: relative;
     }
     
-    li {
+    /*li {
         list-style: none;
-    }
+    }*/
     
     .mobilemenu li.active a, .mobilemenu a:hover {
         color: #e98388;

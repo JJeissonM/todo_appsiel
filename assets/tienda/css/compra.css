@@ -95,11 +95,11 @@ a:-webkit-any-link {
 
 #lista-productos tbody td {
     padding-right: 10px;
-    font-size: 12px;
+    /*font-size: 12px;*/
 }
 
 #lista-productos th {
-   font-size: 12px;
+   /*font-size: 12px;*/
 }
 
 .contenido {
