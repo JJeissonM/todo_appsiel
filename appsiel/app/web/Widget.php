@@ -133,4 +133,9 @@ class Widget extends Model
     {
         return $this->hasMany(Price::class);
     }
+
+    public function navegacion_tiendas()
+    {
+        return $this->hasMany(Tienda::class);
+    }
 }

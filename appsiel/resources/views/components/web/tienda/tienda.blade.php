@@ -5,8 +5,7 @@
 <link rel="stylesheet" href="{{asset('assets/css/toastr.min.css')}}">
 
 
-@include('web.tienda.header')
-@include( 'web.tienda.carousel' )
+<!--@ include('web.tienda.carousel')-->
 @include('web.tienda.search')
 
 <main style="background: white;">
