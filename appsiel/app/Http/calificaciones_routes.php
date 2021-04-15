@@ -39,6 +39,8 @@ Route::post('calificaciones/promedio_proyectado_asignaturas','Calificaciones\Rep
 Route::post('calificaciones/promedio_consolidado_asignaturas','Calificaciones\ReporteController@promedio_consolidado_asignaturas');
 Route::post('calificaciones_consulta_notas_auxiliares','Calificaciones\ReporteController@consulta_notas_auxiliares');
 
+Route::post('calificaciones_rendimiento_areas_asignaturas','Calificaciones\ReporteController@rendimiento_areas_asignaturas');
+
 Route::post('cali_repo_certificado_notas','Calificaciones\ReporteController@certificado_notas');
 
 //Boletines

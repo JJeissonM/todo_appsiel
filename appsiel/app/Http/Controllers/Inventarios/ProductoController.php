@@ -42,7 +42,7 @@ class ProductoController extends  Controller {
         }
 
         foreach ($ficha->attributesToArray() as $key => $value){
-            $ficha->$key = strtoupper($value);
+            $ficha->$key = $value;
         }
         $result = $ficha->save();
         if($result){

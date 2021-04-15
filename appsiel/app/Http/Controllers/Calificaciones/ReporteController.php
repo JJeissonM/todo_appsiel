@@ -10,6 +10,7 @@ use App\Http\Controllers\Core\ConfiguracionController;
 
 use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
+use App\Matriculas\Grado;
 use App\Matriculas\Curso;
 use App\Matriculas\Estudiante;
 
@@ -391,6 +392,45 @@ class ReporteController extends Controller
         $curso = Curso::find( $request->curso_id );
 
         $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
+
+        $periodo_id = $request->periodo_id;
+        $observacion_adicional = $request->observacion_adicional;
+        $tam_hoja = $request->tam_hoja;
+
+        $array_fecha = [ date('d'), ConfiguracionController::nombre_mes( date('m') ), date('Y') ];
+
+        if ( $request->fecha_expedicion != '' )
+        {
+            $fecha = explode('-', $request->fecha_expedicion );
+            $array_fecha = [ $fecha[2], ConfiguracionController::nombre_mes( $fecha[1] ), $fecha[0] ];            
+        }
+
+        $firma_autorizada_1 = FirmaAutorizada::find( $request->firma_autorizada_1 );
+        $firma_autorizada_2 = FirmaAutorizada::find( $request->firma_autorizada_2 );
+
+        $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja' )  )->render();
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        return $vista;
+    }
+
+
+    public function rendimiento_areas_asignaturas( Request $request )
+    {
+
+        $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
+        $periodo = Periodo::find( $request->periodo_id );
+        $grado = Grado::find( $request->sga_grado_id );
+
+        $array_cursos_id = Curso::where('sga_grado_id', $request->sga_grado_id)->get()->pluck('id')->toArray();
+
+        // Seleccionar asignaturas del grado
+        $asignaturas = CursoTieneAsignatura::asignaturas_del_grado( $array_cursos_id, $request->periodo_lectivo_id);
+
+        dd($asignaturas);
+
+        $curso = Curso::find( $request->curso_id );
 
         $periodo_id = $request->periodo_id;
         $observacion_adicional = $request->observacion_adicional;

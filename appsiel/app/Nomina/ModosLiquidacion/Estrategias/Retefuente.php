@@ -11,32 +11,52 @@ use App\Nomina\NomConcepto;
 class Retefuente implements Estrategia
 {
 	public $tabla_resumen = [
-									'salario_basico' => 0,
-									'otros_devengos' => 0,
-									'prestaciones_sociales' => 0,
-									'total_pagos' => 0,
-									'aportes_salud_obligatoria' => 0,
-									'aportes_pension_obligatoria' => 0,
-									'pagos_cesantias_e_intereses' => 0,
-									'total_ingresos_no_constitutivos_renta' => 0,
-									'aportes_pension_voluntaria' => 0,
-									'ahorros_cuentas_afc' => 0,
-									'rentas_trabajo_exentas' => 0,
-									'total_rentas_exentas' => 0,
-									'intereses_vivienda' => 0,
-									'salud_prepagada' => 0,
-									'deduccion_por_dependientes' => 0,
-									'total_deducciones_particulares' => 0,
-									'total_deducciones' => 0,
-									'subtotal' => 0,
-									'renta_trabajo_exenta' => 0,
-									'base_retencion' => 0,
-									'porcentaje_aplicado' => 0,
-									'valor_liquidacion' => 0,
-								];
+								'salario_basico' => 0,
+								'otros_devengos' => 0,
+								'prestaciones_sociales' => 0,
+								'total_pagos' => 0,
+								'aportes_salud_obligatoria' => 0,
+								'aportes_pension_obligatoria' => 0,
+								'pagos_cesantias_e_intereses' => 0,
+								'total_ingresos_no_constitutivos_renta' => 0,
+								'aportes_pension_voluntaria' => 0,
+								'ahorros_cuentas_afc' => 0,
+								'rentas_trabajo_exentas' => 0,
+								'total_rentas_exentas' => 0,
+								'intereses_vivienda' => 0,
+								'salud_prepagada' => 0,
+								'deduccion_por_dependientes' => 0,
+								'total_deducciones_particulares' => 0,
+								'total_deducciones' => 0,
+								'subtotal' => 0,
+								'renta_trabajo_exenta' => 0,
+								'base_retencion' => 0,
+								'porcentaje_aplicado' => 0,
+								'valor_liquidacion' => 0,
+							];
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
+		$lapso_documento = $liquidacion['documento_nomina']->lapso();
+
+		$es_primera_quincena = true;
+		if ( (int)explode("-", $lapso_documento->fecha_final)[2] >= 28 )
+		{
+			$es_primera_quincena = false;
+		}
+
+		if ( $es_primera_quincena )
+		{
+			return [
+						[
+		                    'cantidad_horas' => 0,
+		                    'valor_devengo' => 0,
+		                    'valor_deduccion' => 0,
+		                    'tabla_resumen' => $this->tabla_resumen 
+		                ]
+			        ];
+		}
+
 		$parametros_retefuente_empleado = ParametrosRetefuenteEmpleado::where('nom_contrato_id', $liquidacion['empleado']->id)->orderBy('fecha_final_promedios')->get()->last();
 
         if ( is_null( $parametros_retefuente_empleado ) )  // falta validar a qué empleados se aplicará

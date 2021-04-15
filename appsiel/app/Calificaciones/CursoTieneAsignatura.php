@@ -103,6 +103,57 @@ class CursoTieneAsignatura extends Model
                             ->get();
     }
 
+    public static function asignaturas_del_grado( $array_cursos_id, $periodo_lectivo_id )
+    {
+        $empresa_id = 1;
+        $user = Auth::user();
+        if ( !is_null($user) )
+        {
+            $empresa_id = Auth::user()->empresa_id;
+        }
+
+        $colegio = Colegio::where('empresa_id', $empresa_id)->get()->first();
+
+        $array_wheres = [
+                            'sga_asignaturas.id_colegio' => $colegio->id
+                        ];
+
+        if ( $periodo_lectivo_id == null)
+        {
+            $array_wheres = array_merge( $array_wheres, [ 'sga_curso_tiene_asignaturas.periodo_lectivo_id' => PeriodoLectivo::get_actual()->id ] );
+        }else{
+            // Si la variable $periodo_lectivo_id tiene el valor 'todos', no se filtar por periodo 
+            if ( $periodo_lectivo_id != 'todos' )
+            {
+                $array_wheres = array_merge( $array_wheres, [ 'sga_curso_tiene_asignaturas.periodo_lectivo_id' => $periodo_lectivo_id ] );
+            }            
+        }
+
+        return CursoTieneAsignatura::leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_curso_tiene_asignaturas.periodo_lectivo_id')
+                            ->leftJoin('sga_cursos','sga_cursos.id','=','sga_curso_tiene_asignaturas.curso_id')
+                            ->leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_curso_tiene_asignaturas.asignatura_id')
+                            ->leftJoin('sga_areas','sga_areas.id','=','sga_asignaturas.area_id')
+                            ->where($array_wheres)
+                            ->whereIn('sga_curso_tiene_asignaturas.curso_id', $array_cursos_id)
+                            ->select(
+                                        'sga_asignaturas.id',
+                                        'sga_asignaturas.id AS asignatura_id',
+                                        'sga_asignaturas.abreviatura',
+                                        'sga_asignaturas.descripcion',
+                                        'sga_curso_tiene_asignaturas.intensidad_horaria',
+                                        'sga_curso_tiene_asignaturas.orden_boletin',
+                                        'sga_curso_tiene_asignaturas.maneja_calificacion',
+                                        'sga_areas.id as area_id',
+                                        'sga_areas.descripcion as area',
+                                        'sga_areas.orden_listados as orden',
+                                        'sga_cursos.descripcion as curso_descripcion',
+                                        'sga_curso_tiene_asignaturas.curso_id',
+                                        'sga_periodos_lectivos.descripcion as periodo_lectivo_descripcion',
+                                        'sga_curso_tiene_asignaturas.periodo_lectivo_id')
+                            ->orderBy('sga_curso_tiene_asignaturas.orden_boletin','ASC')
+                            ->get();
+    }
+
     public static function cursos_asignaturas_del_periodo_lectivo( $periodo_lectivo_id )
     {
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();

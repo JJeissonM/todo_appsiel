@@ -710,7 +710,14 @@ class VistaController extends Controller
 
         if( $campo['name'] == 'asignatura_id' )
         {
-            return \App\Calificaciones\Asignatura::find( (int)$campo['value'] )->descripcion;
+            $asignatura = \App\Calificaciones\Asignatura::find( (int)$campo['value'] );
+            
+            if ( !is_null($asignatura) )
+            {
+                return $asignatura->descripcion;
+            }
+
+            return (int)$campo['value'];
         }
 
         $texto_opciones = $campo['opciones'];

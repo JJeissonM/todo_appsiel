@@ -73,7 +73,6 @@ class PedidoController extends TransaccionController
      */
     public function store(Request $request)
     {
-        
         if( isset( $request['pedido_web'] ) )
         {
             if(!Auth::check()){
@@ -94,7 +93,8 @@ class PedidoController extends TransaccionController
         // 2do. Crear documento de Ventas
         $ventas_doc_encabezado_id = PedidoController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
-        if(isset($request['pedido_web'])){
+        if( isset($request['pedido_web']) )
+        {
             self::enviar_pedidoweb_email($ventas_doc_encabezado_id);
             return  response()->json([
                   'status' => 'ok',
@@ -280,7 +280,7 @@ class PedidoController extends TransaccionController
     */
     public function enviar_por_email($id)
     {
-        $documento_vista = $this->generar_documento_vista($id, 'documento_imprimir');
+        $documento_vista = $this->generar_documento_vista($id, 'ventas.pedidos.formatos_impresion.estandar');
 
         $tercero = Tercero::find($this->doc_encabezado->core_tercero_id);
 
@@ -295,7 +295,7 @@ class PedidoController extends TransaccionController
 
     public function enviar_pedidoweb_email($id){
 
-        $documento_vista = $this->generar_documento_vista($id, 'documento_imprimir');
+        $documento_vista = $this->generar_documento_vista($id, 'ventas.pedidos.formatos_impresion.estandar');
 
         $tercero = Tercero::find($this->doc_encabezado->core_tercero_id);
 
@@ -308,12 +308,12 @@ class PedidoController extends TransaccionController
                           ."<strong style='color:red;'>NOTA:</strong>  para los productos pesados el precio puede variar, los detalles de está variación los podra revisar en la factura que le haremos llegar con los productos, Esta observación es valida para los productos que son sometidos a un proceso de medida , donde el proceso de medición no siempre es exacto. ";
 
         
-        $email_interno = 'info@'.substr( url('/'), 7);
+        $email_interno = 'info@appsiel.com.co';//.substr( url('/'), 7);
         $empresa = Empresa::find( Auth::user()->empresa_id );
 
         if ( !is_null( $empresa ) )
         {
-            $email_interno = $empresa->email;
+            //$email_interno = $empresa->email;
         }
 
         $vec = EmailController::enviar_por_email_documento($this->empresa->descripcion, $tercero->email . ',' . $email_interno, $asunto, $cuerpo_mensaje, $documento_vista);
