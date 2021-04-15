@@ -297,16 +297,17 @@
                                 <div class="col-md-12" style="padding: 15px;">
                                     <p style="color: #3d6983;">Para eliminar haga clic en el ícono <i class="fa fa-trash-o"></i></p>
                                     @if($archivo != null)
-                                    @if(count($items)>0)
+                                    @if(count($items)>0) 
                                     @foreach($items as $a)
                                     <div class="col-md-12 article-ls" style="line-height: 5px; margin-bottom: 20px;">
                                         <div class="media service-box" style="margin: 10px !important; font-size: 14px;">
-                                            {!! Form::open(['route'=>'archivos.delete','method'=>'POST','id'=>'form-archivo','class'=>'form-horizontal','files'=>'true'])!!}
+                                            {!! Form::open(['route'=>'archivos.delete','method'=>'POST','id'=>'form-archivo'.$a->id,'class'=>'form-horizontal','files'=>'true'])!!}
                                             <input type="hidden" name="widget_id" value="{{$widget}}">
                                             <input type="hidden" name="variables_url" value="{{$variables_url}}">
                                             <input type="hidden" name="id" value="{{$a->id}}">
+
                                             {!! Form::close() !!}
-                                            <div onclick="eliminar()" class="pull-left" data-toggle="tooltip" data-placement="top" title="Eliminar Archivo">
+                                            <div onclick="eliminar({{ $a->id }})" class="pull-left" data-toggle="tooltip" data-placement="top" title="Eliminar Archivo">
                                                 <i style="cursor: pointer;" class="fa fa-trash-o"></i>
                                             </div>
                                             <div class="media-body">
@@ -403,7 +404,7 @@
     }
 
     function eliminar(id) {
-        $("#form-archivo").submit();
+        $("#form-archivo"+id).submit();
     }
 
     function cambiar() {
