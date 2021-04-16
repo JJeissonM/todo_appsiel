@@ -5,7 +5,14 @@
 ?>
 
 @section('estilos_2')
+	<link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
 	<style>
+
+		body{
+			font-family: 'Gotham-Narrow-Medium';
+			font-size: 14px;
+			font-weight: normal;
+		}
 		.sidebar {
 		  /*
 		  top: 51px;
@@ -26,7 +33,7 @@
 		  	width: 100%;
 		}
 	</style>
-	<link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+	
 @endsection
 
 @section('content')

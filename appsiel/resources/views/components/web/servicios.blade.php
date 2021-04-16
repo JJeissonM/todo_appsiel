@@ -84,7 +84,7 @@ background: url('{{$servicios->fondo}}') {{$servicios->repetir}} center {{$servi
                 </div>
                 <div class="row">
                     @if(count($servicios->itemservicios) > 0)
-                    <div class="features d-flex justify-content-around flex-wrap">
+                    <div class="features d-flex justify-content-around flex-wrap" style="width: 100%">
                         @foreach($servicios->itemservicios as $item)
                         @if($servicios->disposicion=='ICONO')
                         <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
