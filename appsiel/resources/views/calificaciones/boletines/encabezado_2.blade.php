@@ -17,7 +17,7 @@
 			@endif
 
 		@else
-			<td colspan="3"><span class="etiqueta">Estudiante:</span> {{ $registro->estudiante->terecero->descripcion }}</td>
+			<td colspan="3"><span class="etiqueta">Estudiante:</span> {{ $registro->estudiante->tercero->descripcion }}</td>
 		@endif
 		
 	</tr>
