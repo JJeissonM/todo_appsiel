@@ -286,7 +286,7 @@ label > .label-body {
 
 
 /* Lists
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+–––––––––––––––––––––––––––––––––––––––––––––––––– 
 ul {
   list-style: circle inside; }
 ol {
@@ -301,7 +301,7 @@ ol ul {
   margin: 1.5rem 0 1.5rem 3rem;
   font-size: 90%; }
 li {
-  margin-bottom: 1rem; }
+  margin-bottom: 1rem; }*/
 
 
 /* Code
@@ -336,7 +336,7 @@ td:last-child {
 
 
 /* Spacing
-–––––––––––––––––––––––––––––––––––––––––––––––––– */
+–––––––––––––––––––––––––––––––––––––––––––––––––– 
 button,
 .button {
   margin-bottom: 1rem; }
@@ -355,7 +355,7 @@ ul,
 ol,
 form {
   margin-bottom: 2.5rem; }
-
+*/
 
 /* Utilities
 –––––––––––––––––––––––––––––––––––––––––––––––––– */

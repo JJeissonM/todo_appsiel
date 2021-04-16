@@ -51,6 +51,9 @@ class FactoryCompents
             case "Tienda Online":
                 $component = new TiendaComponent($this->widget);
                 break;
+            case "Navegacion Tienda Online":
+                $component = new NavegacionTiendaComponent($this->widget);
+                break;
             case "Testimoniales":
                 $component = new TestimonialesComponent($this->widget);
                 break;

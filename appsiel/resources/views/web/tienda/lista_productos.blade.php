@@ -7,7 +7,7 @@
 @else
     <ul class="products-grid row first odd">
         @foreach($items as $item)
-            <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
+            <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first" style="list-style: none;">
                 <div class="item-inner">
                     <div class="ma-box-content" data-id="{{$item->id}}">
                         <input id="tasa_impuesto" type="hidden" value="{{$item->tasa_impuesto}}">
@@ -15,7 +15,7 @@
                         <div class="products clearfix">
                             <a href="#"
                                title="{{$item->descripcion}}" class="product-image">
-                                                                    <span class="product-image">
+                                                                    <div class="product-image">
                                                                         <?php
                                                                         $url_imagen_producto = '#';
                                                                         if ( $item->imagen != '' )
@@ -24,13 +24,13 @@
                                                                         }
                                                                         ?>
                                                                         <img src="{{ $url_imagen_producto }}" loading="lazy"
-                                                                             width="300" height="350" alt="{{$item->descripcion}}">
-                                                                    </span>
+                                                                        width="350" height="150" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: cover">
+                                                                    </div>
                             </a>
                         </div>
-                        <h2 class="product-name"><a
-                                    href="#"
-                                    title="{{$item->descripcion}}">{{$item->descripcion}}</a></h2>
+                        <h2 class="product-name" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'">
+                            <a href="{{route('tienda.detalleproducto',$item->id)}}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
+                        </h2>
                         <div class="ratings">
                             <div class="rating-box">
                                 <div class="rating" style="width:67%"></div>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="actions agregar-carrito">
                             <button type="button" class="btn-cart">
-                                <i class="fa fa-shopping-cart"></i>
+                                <i class="fa fa-shopping-cart"></i> 
                                 Comprar
                             </button>
                         </div>

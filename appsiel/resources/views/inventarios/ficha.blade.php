@@ -63,7 +63,7 @@
 					</div>
 					<div class="form-group">
 						<label for="exampleInputEmail1">VALUE</label>
-						<textarea class="form-control" name="descripcion" placeholder="DETALLE" required id="" cols="30" rows="10"></textarea>
+						<textarea class="form-control" name="descripcion" placeholder="DETALLE" required id="detalle" cols="30" rows="10"></textarea>
 					</div>
 					<div class="form-group">
 						<button type="button" class="btn btn-default" data-dismiss="modal">CERRAR</button>
@@ -78,4 +78,9 @@
 @endsection
 
 @section('scripts')
+<script>
+	// Replace the <textarea id="editor1"> with a CKEditor 4
+	// instance, using default configuration.
+	CKEDITOR.replace( 'detalle' );
+</script>
 @endsection

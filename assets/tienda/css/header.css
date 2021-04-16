@@ -4,12 +4,6 @@
     clear: both;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
-    order: 0;
-    vertical-align:middle;
-}
 
 .header {
     margin: 0 auto;
@@ -267,7 +261,7 @@ img {
         margin-bottom: 0;
     }
     
-    .navbar {
+    /*.navbar {
         border-radius: 0;
         margin: 0;
         background-color: #e98388;
@@ -275,7 +269,7 @@ img {
         min-height: 50px;
         margin-bottom: 20px;
         border: 1px solid transparent
-    }
+    }*/
     
     .navbar-inner {
         border: 0 !important;
@@ -342,9 +336,9 @@ img {
         position: relative;
     }
     
-    li {
+    /*li {
         list-style: none;
-    }
+    }*/
     
     .mobilemenu li.active a, .mobilemenu a:hover {
         color: #e98388;

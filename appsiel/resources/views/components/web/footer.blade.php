@@ -80,7 +80,7 @@
         text-align: justify;
         @if( !is_null($footer ) )
             @if( !is_null($footer->configuracionfuente ) )
-                font-family: <?php echo $footer->configuracionfuente->fuente->font; ?> !important;
+                font-family: <?php echo $footer->configuracionfuente->fuente->font; ?>,"Raleway" !important;
             @endif
         @endif
         

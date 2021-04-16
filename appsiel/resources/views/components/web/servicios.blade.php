@@ -3,16 +3,7 @@
         position: relative;
         z-index: 80 !important;
 
-        <?php
-        if ($servicios != null) {
-            if ($servicios->tipo_fondo == 'COLOR') {
-                echo "background-color: " . $servicios->fondo . ";";
-            } else {
-        ?>background: url('{{$servicios->fondo}}') {{$servicios->repetir}} center {{$servicios->direccion}};
-        <?php
-            }
-        }
-        ?>
+        
     }
 
     .servicios-font {
@@ -61,13 +52,24 @@
 </style>
 @if($servicios!=null)
 @if($servicios->disposicion == 'DEFAULT')
-<section id="services" class="img">
+<section id="services" class="img" >
     @else
-    <section id="services" class="servicios-font">
+    <section  class="servicios-font" style="
+<?php
+if ($servicios != null) {
+    if ($servicios->tipo_fondo == 'COLOR') {
+        echo "background-color: " . $servicios->fondo . ";";
+    } else {
+?>
+background: url('{{$servicios->fondo}}') {{$servicios->repetir}} center {{$servicios->direccion}};
+<?php
+    }
+}
+?>">
         <!-- <img src="{ {asset('img/corazon/Diseño_Appsiel_3.jpg')}}" alt=""> -->
         @endif
         @else
-        <section id="services" class="img">
+        <section  class="img">
             @endif
 
             <div id="visor_contenido_servicios">

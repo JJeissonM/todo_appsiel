@@ -2,11 +2,12 @@
 
 @section('style')
 
-    <link rel="stylesheet" href="{{asset('assets/tienda/css/skeleton.css')}}">
-    <link rel="stylesheet" href="{{asset('assets/tienda/css/normalize.css')}}">
+    
+    <!--<link rel="stylesheet" href="{{asset('assets/tienda/css/normalize.css')}}">-->
     <link rel="stylesheet" href="{{asset('assets/tienda/css/custom.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/login.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/tienda/css/skeleton.css')}}">
     <link href="{{asset('assets/css/toastr.min.css')}}" rel="stylesheet">
     <style>
 
@@ -99,9 +100,9 @@
                                     <div style="width: 80%; display: flex; justify-content: space-between">
                                         @if($inv_producto->fichas->count() > 0)
                                             @foreach($inv_producto->fichas as $ficha)
-                                                <div class="caracteristica" style="width: 50%">
+                                                <div class="caracteristica" style="width: 50%;">
                                                     <p style="margin-bottom: 5px;"><strong>{{$ficha->key}}</strong></p>
-                                                    <span>{{$ficha->descripcion}}</span>
+                                                    <p><?php echo $ficha->descripcion; ?></p>
                                                 </div>
                                             @endforeach
                                         @else

@@ -148,5 +148,12 @@ return array(
             'preview' => 'assets/web/componentes/sticky.png',
             'tipo' => 'GENERICO'
         ],
+        '21' => [
+            'id' => 25,
+            'nombre' => 'Navegacion Tienda Online',
+            'descripcion' => 'Navegacion Tienda Online.',
+            'preview' => 'assets/web/componentes/sticky.png',
+            'tipo' => 'GENERICO'
+        ],
     )
 );

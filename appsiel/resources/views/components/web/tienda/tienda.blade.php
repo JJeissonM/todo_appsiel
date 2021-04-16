@@ -5,8 +5,7 @@
 <link rel="stylesheet" href="{{asset('assets/css/toastr.min.css')}}">
 
 
-@include('web.tienda.header')
-@include( 'web.tienda.carousel' )
+<!--@ include('web.tienda.carousel')-->
 @include('web.tienda.search')
 
 <main style="background: white;">
@@ -27,7 +26,7 @@
                                             <dt class="odd" style="margin:20px 0;">Categorias</dt>
                                             <div id="categoria_filtrada"></div>
                                             <dd class="odd">
-                                                <ol>
+                                                <ol style="list-style: none; padding-left: 0">
                                                     @foreach($grupos as $key => $value)
                                                         <li>
                                                             <a class="ajaxLayer"
@@ -49,7 +48,7 @@
                                     <div id="lista_productos">
                                         <ul class="products-grid row first odd">
                                             @foreach($items as $item)
-                                                <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
+                                                <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first" style="list-style: none;">
                                                     <div class="item-inner">
                                                         <div class="ma-box-content" data-id="{{$item->id}}">
                                                             <input id="tasa_impuesto" type="hidden" value="{{$item->tasa_impuesto}}">
@@ -66,7 +65,7 @@
                                                                             }
                                                                         ?>
                                                                         <img src="{{ $url_imagen_producto }}" loading="lazy"
-                                                                             width="350" height="300" alt="{{$item->descripcion}}" onerror="imgError(this)">
+                                                                             width="350" height="150" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: cover">
                                                                         </div>
                                                                 </a>
                                                             </div>

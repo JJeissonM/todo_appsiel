@@ -72,7 +72,7 @@ function leerLocalStorage() {
              <td width="150px"><center>${parseFloat(producto.precio-producto.precio_base).toFixed(2)}</center></td>       
              <td width="150px" class="total"><center>${producto.total}</center></td>         
              <td>
-                  <center><a style="color: red" href="#" onclick="eliminar(event,${producto.id})" class="borrar-curso" data-id="${producto.id}"><i class="fa fa-times-circle" aria-hidden="true"></i></a></center>
+                  <center><a style="color: red; font-size: 30px" href="#" onclick="eliminar(event,${producto.id})" class="borrar-curso" data-id="${producto.id}"><i class="fa fa-times-circle" aria-hidden="true"></i></a></center>
              </td>
         `;
         listaProductos.appendChild(row);
