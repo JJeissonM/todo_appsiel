@@ -65,7 +65,7 @@
                                                                             }
                                                                         ?>
                                                                         <img src="{{ $url_imagen_producto }}" loading="lazy"
-                                                                             width="350" height="150" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: cover">
+                                                                             width="350" height="150" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: contain">
                                                                         </div>
                                                                 </a>
                                                             </div>

@@ -8,11 +8,15 @@ $configuracion = App\web\Configuraciones::all()->first();
         <div class="header-inner">
             <div class="row">
                 <div class="header-content clearfix">
-                    <div class="top-logo col-xs-12 col-md-3 col-sm-12">
-                        <a href="{{url('/')}}" title="{{$empresa->descripcion}}"
-                           class="logo"><strong>{{$empresa->descripcion}}</strong><img
+                    <div class="top-logo col-xs-12 col-md-3 col-sm-12 d-flex justify-content-center" style="height: 80px;">
+                        <!--<a href="{{url('/')}}" title="{{$empresa->descripcion}}"
+                           class="logo"><strong>{{$empresa->descripcion}}</strong>
+                           <img
                                     src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}"
-                                    alt="Tienda Online {{$empresa->descripcion}}"></a>
+                                    alt="Tienda Online {{$empresa->descripcion}}"></a>-->
+                                    <a style="height: 50px" class="navbar-brand p-0 icono" href="{{url('/')}}" style="position: relative">
+                                        <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 80px; width: auto">
+                                    </a>
                     </div>
                     <form class="col-xs-12 col-md-6 col-sm-12 search" action="{{route('tienda.busqueda')}}" method="GET" onsubmit="buscar_descripcion(event)" id="form_consulta">
                         <div class="box-search-bar clearfix">
