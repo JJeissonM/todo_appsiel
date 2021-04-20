@@ -25,6 +25,8 @@ class ActividadEscolar extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Título', 'Temática', 'Fecha programada', 'Fecha de entrega', 'Periodo', 'Curso', 'Asignatura', 'Estado'];
 
+    public $urls_acciones = '{"cambiar_estado":"a_i/id_fila"}';
+
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/calificaciones/actividades_escolares/actividades.js';
 

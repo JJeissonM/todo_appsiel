@@ -222,6 +222,7 @@
 			$('#mensaje_guardando').show();
 
 			var linea = 1;
+			var hay_error = false;
 			$('#tabla_registros > tbody > tr').each(function(i, item) {
 				$('#codigo_matricula').val($(item).attr('data-codigo_matricula'));
 				$('#id_estudiante').val($(item).attr('data-id_estudiante'));
@@ -246,8 +247,17 @@
 					$(item).attr('data-id_calificacion', respuesta[0]);
 					$(item).attr('data-calificacion', respuesta[1]);
 					$(item).attr('data-id_calificacion_aux', respuesta[2]);
-				});
-
+				}).fail(function( respuesta_error ) {
+				    alert( "error" );
+				    console.log(respuesta_error.status);
+				    hay_error = true;
+				  });
+				
+				if (hay_error)
+				{
+				    return false;
+				}
+				
 				linea++;
 			});
 
