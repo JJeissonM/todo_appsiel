@@ -1,5 +1,6 @@
 @extends( 'calificaciones.boletines.formatos.layout' )
 
+<!-- MODERNO -->
 @section('contenido_formato')
 
 	@foreach($datos as $registro)
@@ -19,13 +20,13 @@
 			<tbody>
 				@foreach( $lineas_cuerpo_boletin as $linea )
 					<?php
-						$cant_columnas = 1;	
+						$cant_columnas = 2;	
 					?>
 
 					@include('calificaciones.boletines.fila_area')
 
-					<tr style="background-color: #E8E8E8;">
-						<td> 
+					<tr style="background-color: #E8E8E8;">						
+						<td colspan="{{$cant_columnas}}">
 							<table width="100%" style="border: 0px;">
 								<tr>
 									<td style="border: 0px;">
@@ -48,7 +49,7 @@
 					</tr>
 
 					<tr style="font-size: {{$tam_letra}}mm;">
-						<td>
+						<td colspan="{{$cant_columnas}}">
 
 							@include('calificaciones.boletines.proposito')
                             

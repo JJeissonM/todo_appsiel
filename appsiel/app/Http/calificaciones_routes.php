@@ -122,3 +122,7 @@ Route::get('get_select_escala_valoracion/{periodo_id}/{curso_id}/{asignatura_id}
 Route::get('form_generar_promedio_notas_periodo_final', 'Calificaciones\ProcesoController@form_generar_promedio_notas_periodo_final');
 Route::get('consultar_periodos_periodo_lectivo/{periodo_lectivo_id}', 'Calificaciones\ProcesoController@consultar_periodos_periodo_lectivo');
 Route::get('calcular_promedio_notas_periodo_final/{periodo_lectivo_id}', 'Calificaciones\ProcesoController@calcular_promedio_notas_periodo_final');
+
+
+Route::get('sga_consultar_areas_asignaturas_pesos/{periodo_lectivo_id}/{grado_id}', 'Calificaciones\ProcesoController@consultar_areas_asignaturas_pesos');
+Route::post('sga_almacenar_pesos_asignaturas_areas', 'Calificaciones\ProcesoController@almacenar_pesos_asignaturas_areas');

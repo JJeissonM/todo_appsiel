@@ -5,6 +5,10 @@
 		</div>
 
 		<div class="row" style="padding:5px;">
+			{{ Form::bsSelect('mostrar_calificacion_media_areas',0,'Mostrar calificación media del área',['No','Si'],[]) }}
+		</div>
+
+		<div class="row" style="padding:5px;">
 			{{ Form::bsSelect('mostrar_nombre_docentes',1,'Mostrar nombre de docentes',['No'=>'No','Si'=>'Si'],[]) }}
 		</div>
 
@@ -20,6 +24,10 @@
 	<div class="col-md-6">
 		<div class="row" style="padding:5px;">
 			{{ Form::bsSelect('mostrar_escala_valoracion',1,'Mostrar Escala de valoración',['No'=>'No','Si'=>'Si'],[]) }}
+		</div>
+
+		<div class="row" style="padding:5px;">
+			&nbsp;
 		</div>
 
 		<div class="row" style="padding:5px;">

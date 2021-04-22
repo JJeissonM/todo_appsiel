@@ -15,19 +15,19 @@
 	<div class="row">
 		<div class="col-md-8">
 
-			<div class="row" style="padding:5px;">					
+			<div class="row" style="padding:5px;">
 				<label class="control-label col-sm-4" > <b> Año Lectivo origen: </b> </label>
 
 				<div class="col-sm-8">
 					{{ Form::select('periodo_lectivo_id', $periodos_lectivos, null, ['id' => 'periodo_lectivo_id', 'class' => 'form-control' ] ) }}
-				</div>					 
+				</div>
 			</div>
 
 		</div>
 
 		<div class="col-md-4">
 			<button class="btn btn-success" id="btn_calcular" disabled="disabled"> <i class="fa fa-calculator"></i> Calcular y almacenar</button>
-		</div>    				
+		</div>
 	</div>
 @endsection
 

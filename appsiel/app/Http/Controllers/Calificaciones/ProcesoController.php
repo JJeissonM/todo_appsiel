@@ -192,4 +192,37 @@ class ProcesoController extends ModeloController
         return $cantidad_registros;
     }
 
+    public function consultar_areas_asignaturas_pesos( $periodo_lectivo_id, $grado_id )
+    {
+        $array_cursos_id = Curso::where('sga_grado_id',$grado_id)->get()->pluck('id')->toArray();
+
+        $asignaturas_del_periodo_lectivo = CursoTieneAsignatura::asignaturas_del_grado( $array_cursos_id, $periodo_lectivo_id );
+        //dd($asignaturas_del_periodo_lectivo);
+        $vista = View::make('calificaciones.procesos.formulario_asignaturas_por_area', [ 'asignaturas' => $asignaturas_del_periodo_lectivo, 'periodo_lectivo_id' => $periodo_lectivo_id, 'grado_id' => $grado_id ] )->render();
+        
+        return $vista;
+    }
+
+    public function almacenar_pesos_asignaturas_areas( Request $request )
+    {
+        $cursos = Curso::where('sga_grado_id', $request->grado_id)->get();
+        
+        foreach ($cursos as $curso)
+        {
+            $asignaturas = $request->asignatura_id;
+            $pesos = $request->peso;
+            foreach ($asignaturas as $key => $asignatura_id)
+            {
+                CursoTieneAsignatura::where([
+                                                ['periodo_lectivo_id', '=', $request->periodo_lectivo_id],
+                                                ['curso_id', '=', $curso->id],
+                                                ['asignatura_id', '=', (int)$asignatura_id] ]
+                                            )
+                                    ->update( ['peso' => $pesos[$key] ] );
+            }                
+        }        
+        
+        return redirect( 'index_procesos/calificaciones.procesos.asignar_pesos_asignaturas_por_area?id=2&id_modelo=0' )->with('flash_message','Pesos de asignaturas almacenados correctamente.'); 
+    }
+
 }

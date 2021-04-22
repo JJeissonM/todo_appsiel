@@ -4,6 +4,7 @@
 		*_nivelacion es la calificacion de la nivelacion (table sga_notas_nivelaciones)
 	*/
 	
+	$decimales = (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones');
 	$calificacion_nota_original = $linea->calificacion->calificacion;
 	$escala_valoracion_nota_original = $linea->escala_valoracion->nombre_escala;
 	
@@ -14,28 +15,35 @@
 	{
 		$calificacion_nivelacion = $linea->calificacion->nota_nivelacion()->calificacion;
 		$escala_valoracion_nivelacion = $linea->calificacion->nota_nivelacion()->escala_valoracion()->nombre_escala;
-	}		
+	}
+
+	$lbl_peso_asignatura = '';
+	if( config('calificaciones.mostrar_peso_asignaturas_boletines') == '1' && $mostrar_calificacion_media_areas )
+	{
+		$lbl_peso_asignatura = ' (' . $linea->peso_asignatura . '%)';
+	}
+
 
 	switch( config('calificaciones.etiqueta_calificacion_boletines') )
 	{
 	    case 'numero_y_letras':
-	        $lbl_nota_original = $calificacion_nota_original . ' (' . $escala_valoracion_nota_original . ')';
-	        $lbl_nivelacion = $calificacion_nivelacion . ' (' . $escala_valoracion_nivelacion . ')';
+	        $lbl_nota_original = number_format( (float)$calificacion_nota_original, $decimales, ',', '.' ) . ' (' . $escala_valoracion_nota_original . ')' . $lbl_peso_asignatura;
+	        $lbl_nivelacion = number_format( (float)$calificacion_nivelacion, $decimales, ',', '.' ) . ' (' . $escala_valoracion_nivelacion . ')';
 	        break;
 
 	    case 'solo_numeros':
-	        $lbl_nota_original = $calificacion_nota_original;
-	        $lbl_nivelacion = $calificacion_nivelacion;
+	        $lbl_nota_original = number_format( (float)$calificacion_nota_original, $decimales, ',', '.' ) . $lbl_peso_asignatura;
+	        $lbl_nivelacion = number_format( (float)$calificacion_nivelacion, $decimales, ',', '.' );
 	        break;
 
 	    case 'solo_letras':
-	        $lbl_nota_original = $escala_valoracion_nota_original;
+	        $lbl_nota_original = $escala_valoracion_nota_original . $lbl_peso_asignatura;
 	        $lbl_nivelacion = $escala_valoracion_nivelacion;
 	        break;
 
 	    default:
-	        $lbl_nota_original = $calificacion_nota_original . ' (' . $escala_valoracion_nota_original . ')';
-	        $lbl_nivelacion = $calificacion_nivelacion . ' (' . $escala_valoracion_nivelacion . ')';
+	        $lbl_nota_original = number_format( (float)$calificacion_nota_original, $decimales, ',', '.' ) . ' (' . $escala_valoracion_nota_original . ')' . $lbl_peso_asignatura;
+	        $lbl_nivelacion = number_format( (float)$calificacion_nivelacion, $decimales, ',', '.' ) . ' (' . $escala_valoracion_nivelacion . ')';
 	        break;
 	}
 

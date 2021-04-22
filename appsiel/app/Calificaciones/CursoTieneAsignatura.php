@@ -18,7 +18,8 @@ class CursoTieneAsignatura extends Model
 {
 	protected $table = 'sga_curso_tiene_asignaturas';
 
-    protected $fillable = ['periodo_lectivo_id','curso_id','asignatura_id','intensidad_horaria','orden_boletin','maneja_calificacion'];
+    // peso: para calcular media ponderada del area
+    protected $fillable = ['periodo_lectivo_id','curso_id','asignatura_id','intensidad_horaria','orden_boletin','maneja_calificacion','peso'];
 
     public function periodo_lectivo()
     {
@@ -143,6 +144,7 @@ class CursoTieneAsignatura extends Model
                                         'sga_curso_tiene_asignaturas.intensidad_horaria',
                                         'sga_curso_tiene_asignaturas.orden_boletin',
                                         'sga_curso_tiene_asignaturas.maneja_calificacion',
+                                        'sga_curso_tiene_asignaturas.peso',
                                         'sga_areas.id as area_id',
                                         'sga_areas.descripcion as area',
                                         'sga_areas.orden_listados as orden',
@@ -150,8 +152,9 @@ class CursoTieneAsignatura extends Model
                                         'sga_curso_tiene_asignaturas.curso_id',
                                         'sga_periodos_lectivos.descripcion as periodo_lectivo_descripcion',
                                         'sga_curso_tiene_asignaturas.periodo_lectivo_id')
-                            ->orderBy('sga_curso_tiene_asignaturas.orden_boletin','ASC')
-                            ->get();
+                            ->orderBy('sga_areas.orden_listados','ASC')
+                            ->get()
+                            ->unique('asignatura_id');
     }
 
     public static function cursos_asignaturas_del_periodo_lectivo( $periodo_lectivo_id )

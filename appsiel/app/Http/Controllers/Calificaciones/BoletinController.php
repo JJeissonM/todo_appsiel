@@ -101,7 +101,7 @@ class BoletinController extends Controller
     {        
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
 
-        $opciones1 = Curso::where('id_colegio','=',$colegio->id)->where('estado','=','Activo')->OrderBy('nivel_grado')->get();
+        $opciones1 = Curso::where('id_colegio','=',$colegio->id)->where('estado','=','Activo')->orderBy('descripcion')->get();
         $vec1['']='';
         foreach ($opciones1 as $opcion){
             $vec1[$opcion->id]=$opcion->descripcion;
@@ -155,6 +155,7 @@ class BoletinController extends Controller
         // Parametros enviados        
         $convetir_logros_mayusculas = $request->convetir_logros_mayusculas;
         $mostrar_areas = $request->mostrar_areas;
+        $mostrar_calificacion_media_areas = $request->mostrar_calificacion_media_areas;
         $mostrar_nombre_docentes = $request->mostrar_nombre_docentes;
         $mostrar_escala_valoracion = $request->mostrar_escala_valoracion;
         $mostrar_usuarios_estudiantes = $request->mostrar_usuarios_estudiantes;
@@ -173,7 +174,7 @@ class BoletinController extends Controller
 
         $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
 
-		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas','mostrar_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas') )->render();
+		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas') )->render();
         
         //echo $view;
         // Se prepara el PDF
@@ -208,6 +209,10 @@ class BoletinController extends Controller
 
                 $cuerpo_boletin->lineas[$a]->calificacion = $calificacion;
 
+                $cuerpo_boletin->lineas[$a]->area_id = $asignacion->asignatura->area_id;
+                $cuerpo_boletin->lineas[$a]->peso_asignatura = $asignacion->peso;
+                $cuerpo_boletin->lineas[$a]->valor_calificacion = 0;
+
                 $cuerpo_boletin->lineas[$a]->escala_valoracion = null;
                 $cuerpo_boletin->lineas[$a]->logros = null;
                 $cuerpo_boletin->lineas[$a]->logros_adicionales = null;
@@ -219,6 +224,8 @@ class BoletinController extends Controller
                     $cuerpo_boletin->lineas[$a]->logros = Logro::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id, $escala_valoracion->id );
 
                     $cuerpo_boletin->lineas[$a]->logros_adicionales = $this->get_logros_adicionales( $calificacion, $asignacion->asignatura_id );
+
+                    $cuerpo_boletin->lineas[$a]->valor_calificacion = $calificacion->calificacion;
                 }
 
                 $cuerpo_boletin->lineas[$a]->propositos = Meta::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id );
@@ -241,7 +248,7 @@ class BoletinController extends Controller
                 }
                 
                 $a++;
-            }
+            } // Fin - Por cada asignatura
 
             $datos->estudiantes[$l]->cuerpo_boletin = $cuerpo_boletin;
 
