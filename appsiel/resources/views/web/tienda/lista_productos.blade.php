@@ -7,7 +7,7 @@
 @else
     <ul class="products-grid row first odd">
         @foreach($items as $item)
-            <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first" style="list-style: none;">
+            <li class="col-sm-3 col-md-3 col-sms-12 col-smb-12 item first" style="list-style: none;padding: 0 0 0 0">
                 <div class="item-inner">
                     <div class="ma-box-content" data-id="{{$item->id}}">
                         <input id="tasa_impuesto" type="hidden" value="{{$item->tasa_impuesto}}">
@@ -24,25 +24,25 @@
                                                                         }
                                                                         ?>
                                                                         <img src="{{ $url_imagen_producto }}" loading="lazy"
-                                                                        width="350" height="150" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: cover">
+                                                                        width="350" height="150" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: contain">
                                                                     </div>
                             </a>
                         </div>
-                        <h2 class="product-name" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'">
+                        <h2 class="product-name text-center" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'" style="height: 38px">
                             <a href="{{route('tienda.detalleproducto',$item->id)}}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
                         </h2>
-                        <div class="ratings">
+                        <!--<div class="ratings">
                             <div class="rating-box">
                                 <div class="rating" style="width:67%"></div>
                             </div>
-                        </div>
-                        <div class="price-box">
+                        </div>-->
+                        <div class="price-box text-center">
                             <span class="regular-price" id="product-price-1">
                             <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
                         </div>
                         <div class="actions agregar-carrito">
-                            <button type="button" class="btn-cart">
-                                <i class="fa fa-shopping-cart"></i> 
+                            <button type="button" class="btn-cart form-control">
+                                <i class="fa fa-shopping-cart"></i>  
                                 Comprar
                             </button>
                         </div>

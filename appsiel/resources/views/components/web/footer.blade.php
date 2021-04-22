@@ -251,7 +251,7 @@
                 @endforeach
             </div>
             <div class="col-md-3 col-sm-12 d-flex justify-content-between flex-wrap">
-                <div class="contenido col-md-12 col-sm-12" style="margin:20px 0;">
+                <div class="contenido col-md-12 col-sm-12" style="margin:20px 0">
                     <h5 class="column-title footer-font" style="color: {{$footer->color}}; font-size: 20px; font-weight: bold;">
                         Encuentranos</h5>
                     <aside class="footer-font">
@@ -299,7 +299,7 @@
             @endif
             @endif
         </div>
-        <div class="row footer-font" style="background-color: {{$footer->background2}};">
+        <div class="row footer-font mt-5" style="background-color: {{$footer->background2}};">
             <div id="div1" class="col-md-12 col-sm-12 d-flex justify-content-between flex-wrap" style="margin-top: 20px; float: left;">
                 <p class="footer-font" style="font-size: 15px; color: {{$footer->color}}; width: 80%; padding-left: 20px;">
                     &copy; {{$footer->texto.' '.$footer->copyright}}

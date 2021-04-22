@@ -107,7 +107,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#741d51', end
     background-position: left center;
     padding-left: 60px;
     background-size: 30px;
-    margin-bottom: 40px;
     text-align: center;
 }
 @media (min-width: 750px) {
