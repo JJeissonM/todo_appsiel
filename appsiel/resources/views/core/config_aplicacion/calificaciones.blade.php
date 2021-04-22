@@ -100,6 +100,36 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$mostrar_peso_asignaturas_boletines = 0;
+								if( isset($parametros['mostrar_peso_asignaturas_boletines'] ) )
+								{
+									$mostrar_peso_asignaturas_boletines = $parametros['mostrar_peso_asignaturas_boletines'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_peso_asignaturas_boletines', $mostrar_peso_asignaturas_boletines, 'Mostrar peso de asignaturas en boletines', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cantidad_decimales_mostrar_calificaciones = 2;
+								if( isset($parametros['cantidad_decimales_mostrar_calificaciones'] ) )
+								{
+									$cantidad_decimales_mostrar_calificaciones = $parametros['cantidad_decimales_mostrar_calificaciones'];
+								}
+							?>
+							{{ Form::bsSelect('cantidad_decimales_mostrar_calificaciones', $cantidad_decimales_mostrar_calificaciones, 'Cantidad de decimales para mostrar calificaciones', [0,1,2,3], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$permitir_imprimir_boletin_a_estudiantes = 'Si';
 								if( isset($parametros['permitir_imprimir_boletin_a_estudiantes'] ) )
 								{

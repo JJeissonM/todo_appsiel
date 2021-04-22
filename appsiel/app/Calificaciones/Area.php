@@ -109,7 +109,7 @@ class Area extends Model
         $this->almacenar_registros_eav( $datos, $modelo_padre_id, $id );        
     }
 
-    // $datos = $request->all()
+    // Se crea un registro EAV para el campo "Mostrar etiqueta en boletines" ( ID = 947 )
     public function almacenar_registros_eav( $datos, $modelo_padre_id, $registro_modelo_padre_id )
     {
         // Se va a crear un registro por cada Atributo (campo) que tenga un Valor distinto a vacío 

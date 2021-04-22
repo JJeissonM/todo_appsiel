@@ -88,7 +88,6 @@
 
 			$lbl_asigatura = 'Asignaturas';
 		}
-		
 	?>
 
 	@yield('contenido_formato')

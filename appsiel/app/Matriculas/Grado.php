@@ -64,8 +64,8 @@ class Grado extends Model
         $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
 
         $opciones = Grado::where('id_colegio', $colegio->id)
-            ->where('estado', 'Activo')
-            ->get();
+                        ->where('estado', 'Activo')
+                        ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {

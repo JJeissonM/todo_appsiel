@@ -246,7 +246,20 @@
 					$(item).attr('data-id_calificacion', respuesta[0]);
 					$(item).attr('data-calificacion', respuesta[1]);
 					$(item).attr('data-id_calificacion_aux', respuesta[2]);
-				});
+
+			    	$('#popup_alerta_danger').hide();
+				}).fail(function( respuesta_error ) {
+				    
+			    	$('#popup_alerta_danger').show();
+					$('#popup_alerta_danger').css('background-color','red');
+					$('#popup_alerta_danger').text( 'Error. Algunos datos no se pudieron almacenar. Por favor actualice la información e intente nuevamente.' );
+
+				    if( respuesta_error.status == 401 )
+				    {
+						$('#popup_alerta_danger').text( 'Error. Su sesión ha terminado de manera inesperada. La información no se pudo almacenar.' );
+						document.location.href = "{{ url()->previous() }}";
+				    }
+				  });
 
 				linea++;
 			});
@@ -327,7 +340,7 @@
 
 			var valido = true;
 			if (obj.val() != '' && !$.isNumeric(obj.val())) {
-				alert("Debe ingresar solo números. Para decimales use punto (.). No la coma (,).");
+				alert("Debe ingresar solo números. Para decimales use punto ( . ). No la coma ( , ).");
 				obj.val('');
 				calcular_promedio(obj);
 				valido = false;
@@ -366,6 +379,16 @@
 				$("#contenido_modal").html(respuesta);
 			});
 
+		});
+
+		$(document).on('keyup','#peso', function() {
+
+			if ( !validar_input_numerico( $(this) ) )
+			{
+				$('.btn_save_modal').hide();
+			}else{
+				$('.btn_save_modal').show();
+			}
 		});
 
 		$(document).on('click', '.btn_save_modal', function(e) {

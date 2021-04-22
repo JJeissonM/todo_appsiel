@@ -149,6 +149,46 @@ class Asignatura extends Model
             ->get();
     }
 
+    public static function get_registros_del_periodo_lectivo( $periodo_lectivo_id )
+    {
+        return CursoTieneAsignatura::leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_curso_tiene_asignaturas.asignatura_id')
+                            ->leftJoin('sga_areas','sga_areas.id','=','sga_asignaturas.area_id')
+                            ->where( 'sga_curso_tiene_asignaturas.periodo_lectivo_id', $periodo_lectivo_id )
+                            ->select(
+                                        'sga_curso_tiene_asignaturas.asignatura_id',
+                                        'sga_asignaturas.descripcion AS asignatura_descripcion',
+                                        'sga_areas.id',
+                                        'sga_areas.descripcion',
+                                        'sga_areas.orden_listados',
+                                        'sga_curso_tiene_asignaturas.intensidad_horaria',
+                                        'sga_curso_tiene_asignaturas.orden_boletin',
+                                        'sga_curso_tiene_asignaturas.maneja_calificacion')
+                            ->orderBy('sga_areas.orden_listados','ASC')
+                            ->get()
+                            ->unique('asignatura_id');
+    }
+
+    public static function asignadas_al_grado( $periodo_lectivo_id, $grado_id )
+    {
+        return CursoTieneAsignatura::leftJoin('sga_asignaturas','sga_asignaturas.id','=','sga_curso_tiene_asignaturas.asignatura_id')
+                            ->leftJoin('sga_areas','sga_areas.id','=','sga_asignaturas.area_id')
+                            ->leftJoin('sga_cursos','sga_cursos.id','=','sga_curso_tiene_asignaturas.curso_id')
+                            ->where( 'sga_curso_tiene_asignaturas.periodo_lectivo_id', $periodo_lectivo_id )
+                            ->where( 'sga_cursos.sga_grado_id', $grado_id )
+                            ->select(
+                                        'sga_curso_tiene_asignaturas.asignatura_id',
+                                        'sga_asignaturas.descripcion AS asignatura_descripcion',
+                                        'sga_areas.id',
+                                        'sga_areas.descripcion',
+                                        'sga_areas.orden_listados',
+                                        'sga_curso_tiene_asignaturas.intensidad_horaria',
+                                        'sga_curso_tiene_asignaturas.orden_boletin',
+                                        'sga_curso_tiene_asignaturas.maneja_calificacion')
+                            ->orderBy('sga_areas.orden_listados','ASC')
+                            ->get()
+                            ->unique('asignatura_id');
+    }
+
     public function validar_eliminacion($id)
     {
         /*
