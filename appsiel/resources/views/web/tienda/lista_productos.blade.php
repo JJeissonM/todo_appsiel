@@ -28,7 +28,7 @@
                                                                     </div>
                             </a>
                         </div>
-                        <h2 class="product-name text-center" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'" style="height: 38px">
+                        <h2 class="product-name text-center" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'" style="height: 45px">
                             <a href="{{route('tienda.detalleproducto',$item->id)}}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
                         </h2>
                         <!--<div class="ratings">

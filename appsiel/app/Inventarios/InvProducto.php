@@ -182,7 +182,7 @@ class InvProducto extends Model
     }
 
 
-    public static function get_datos_pagina_web( $grupo_inventario_id, $estado, $count = 9, $busqueda=false)
+    public static function get_datos_pagina_web( $grupo_inventario_id, $estado, $count = 16, $busqueda=false)
     {
 
         if ( $grupo_inventario_id == '')

@@ -15,7 +15,6 @@
     }
 </style>
 
-
 <!--@ include('web.tienda.carousel')-->
 @include('web.tienda.search')
 
@@ -58,6 +57,7 @@
                                 <div class="category-products">
                                     <div id="lista_productos">
                                         <ul class="products-grid row first odd align-content-start">
+                                            
                                             @foreach($items as $item)
                                                 <li class="col-sm-3 col-md-3 col-6 col-sms-1 col-smb-1 item first" style="list-style: none; padding: 0 0 0 0">
                                                     <div class="item-inner">
@@ -80,7 +80,7 @@
                                                                         </div>
                                                                 </a>
                                                             </div>
-                                                            <h2 class="product-name text-center" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'" style="height: 38px">
+                                                            <h2 class="product-name text-center" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'" style="height: 45px">
                                                                 <a href="{{route('tienda.detalleproducto',$item->id)}}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
                                                             </h2>
                                                             <!--<div class="ratings">

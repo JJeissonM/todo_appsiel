@@ -119,7 +119,7 @@
         }
         
     </style>
-    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+    <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
 </head>
 <body>
 <div class="col-md-12">
@@ -168,7 +168,7 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <b>Detalles:&nbsp;&nbsp;</b>{{ $doc_encabezado->descripcion }}
+                                
                             </td>
                         </tr>
                     </table>    
@@ -218,5 +218,7 @@
         </div>
     </div>
 </div>
+<br>
+<b>Detalles:&nbsp;&nbsp;</b>{{ $doc_encabezado->descripcion }}
 </body>
 </html>

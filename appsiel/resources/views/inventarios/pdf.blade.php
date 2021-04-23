@@ -8,7 +8,7 @@
 	    <title>APPSIEL ..:: Sistemas para el crecimiento empresarial ::..</title>
 
 	    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
-		<link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+		<link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
 	    <style>
 			.headempresa{
 				height: 100px;	
@@ -78,7 +78,7 @@
 				</tr>
 				<tr>
 					<td>
-						<b>Detalle:</b> {{ $datos_encabezado_doc['campo6'] }}
+						
 					</td>
 					<td>
 						<b>Doc. soporte:</b> {{ $datos_encabezado_doc['campo5'] }}
@@ -144,7 +144,8 @@
 		        <td width="30%"> Recibió </td>
 		        <td width="15%"> </td>
 		    </tr>
+			
 		</table>
-
+		<b>Detalle:</b> {{ $datos_encabezado_doc['campo6'] }}
 	</body>
 </html>

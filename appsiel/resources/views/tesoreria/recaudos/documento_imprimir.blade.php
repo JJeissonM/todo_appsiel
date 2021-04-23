@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
-    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+    <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
     <style type="text/css">
         
     </style>
@@ -52,7 +52,7 @@
         </tr>
         <tr>        
             <td colspan="2">
-                <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+                
             </td>
         </tr>
     </table>
@@ -142,6 +142,7 @@
 
     <br><br>
     @include('tesoreria.incluir.firmas')
-
+        <br>
+        <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
 </body>
 </html>

@@ -29,7 +29,7 @@ class TiendaComponent implements IDrawComponent
         $widget = $this->widget;
         //dd($widget);
         $pedido = Pedidoweb::where('widget_id', $widget)->first();
-        
+        //dd($items);
         return Form::tienda($items,$grupos,$pedido);
     }
 

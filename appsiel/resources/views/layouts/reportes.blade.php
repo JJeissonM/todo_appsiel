@@ -5,7 +5,7 @@
 ?>
 
 @section('estilos_2')
-	<link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+	<link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
 	<style>
 
 		body{

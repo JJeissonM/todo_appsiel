@@ -115,7 +115,7 @@
             border-left: 5px solid #eee;
         }
     </style>
-    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+    <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
 </head>
 <body>
 <div class="col-md-12">
