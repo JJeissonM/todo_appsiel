@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
-    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+    <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
     <style type="text/css">
         
         @page {

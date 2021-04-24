@@ -55,7 +55,7 @@
         padding-left: 15px;
       }
     </style>
-
+ <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
 </head>
 
 <body>
@@ -116,7 +116,7 @@
                 </tr>
                 <tr>
                     <td colspan="5">
-                        <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+                        
                     </td>
                 </tr>
             </table>
@@ -179,7 +179,8 @@
             <td width="50px">&nbsp;</td>
         </tr>
     </table>
-
+<br>
+<b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
 </body>
 
 </html>

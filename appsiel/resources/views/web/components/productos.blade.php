@@ -164,6 +164,12 @@
                                                 <label>Descripción</label>
                                                 <input type="text" class="form-control" value="{{$pedido->descripcion}}"
                                                        name="descripcion">
+                                            </div> 
+                                            <div class="form-group">
+                                                <label for="">Fuente Para el Componente <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span></label>
+                                                @if($fonts!=null)
+                                                {!! Form::select('configuracionfuente_id',$fonts,$pedido->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                                                @endif
                                             </div>
                                             <div class="form-group">
                                                 {!! Form::submit('Guardar',['class'=>'btn btn-primary waves-effect btn-block btn-sm']) !!}
@@ -181,6 +187,12 @@
                                             <div class="form-group">
                                                 <label>Descripción</label>
                                                 <input type="text" class="form-control" name="descripcion">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="">Fuente Para el Componente <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span></label>                        
+                                                @if($fonts!=null)
+                                                {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
+                                                @endif
                                             </div>
                                             <div class="form-group">
                                                 {!! Form::submit('Guardar',['class'=>'btn btn-primary waves-effect btn-block btn-sm']) !!}

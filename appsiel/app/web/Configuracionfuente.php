@@ -104,4 +104,9 @@ class Configuracionfuente extends Model
     {
         return $this->hasMany(PqrForm::class);
     }
+
+    public function pedidosweb()
+    {
+        return $this->hasMany(Pedidosweb::class);
+    }
 }

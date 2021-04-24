@@ -3,7 +3,7 @@ $empresa = App\Core\Empresa::find(1);
 $configuracion = App\web\Configuraciones::all()->first();
 ?>
 
-<div class="header" style="border-bottom: 1px solid black;">
+<div class="header" style="border-bottom: 1px solid whitesmoke; background-color: white">
     <div class="container">
         <div class="header-inner">
             <div class="row">

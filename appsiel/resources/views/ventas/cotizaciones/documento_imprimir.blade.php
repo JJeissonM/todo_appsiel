@@ -3,7 +3,7 @@
 
 <head>
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
-    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+    <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
     <style type="text/css">
     
     </style>
@@ -64,10 +64,7 @@
                 <b>Teléfono:</b> {{ $doc_encabezado->tercero->telefono1 }}
                 <br>
 
-                @if( $doc_encabezado->descripcion != '' )
-                <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
-                <br>
-                @endif
+                
                 {{ $empresa->descripcion }}, empresa creada con el objetivo de prestar servicios de alta calidad a
                 nuestros clientes, presenta a ustedes la cotización de los siguientes artículos:
             </td>
@@ -169,7 +166,11 @@
     </table>
 
     @include('ventas.incluir.factura_firma_totales')
-
+<br>
+                @if( $doc_encabezado->descripcion != '' )
+                <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+                <br>
+                @endif
 </body>
 
 </html>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
-    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+    <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
     <style type="text/css">
         
         @page {
@@ -59,7 +59,7 @@
         <br>
         <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
         <br>
-        <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+        
     </div>
     @if($doc_encabezado->estado == 'Anulado')
         <div class="lbl_doc_anulado">
@@ -117,7 +117,7 @@
     </p>
     
     <br><br><br>
-
+    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
     <script type="text/javascript">
         window.onload = function() { window.print(); }
     </script>

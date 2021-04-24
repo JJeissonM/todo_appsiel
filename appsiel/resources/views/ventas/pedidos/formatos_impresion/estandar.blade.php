@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
-    <link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+    <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
     <style type="text/css">
         
     </style>
@@ -44,16 +44,7 @@
         </div>
         <br><br>
     @endif
-    <table>
-        <tr>
-            <td >
-                @if( $doc_encabezado->descripcion != '' )
-                    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
-                    <br>
-                @endif
-            </td>
-        </tr>
-    </table>
+    
 </div>
     
 
@@ -144,6 +135,15 @@
             <td style="text-align: right; font-weight: bold;"> $ {{ number_format($total_factura, 2, ',', '.') }} </td>
         </tr>
     </table>
-
+    <table>
+        <tr>
+            <td >
+                @if( $doc_encabezado->descripcion != '' )
+                    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+                    <br>
+                @endif
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

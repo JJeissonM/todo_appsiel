@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ url("css/stylepdf.css") }}">
+<link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
 <style type="text/css">
 
   
@@ -39,7 +39,7 @@
         <table>
             <tr>
                 <td>
-                    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+                    
                 </td>
                 <td>
                     <b>Hora inicio:</b> {{ $doc_encabezado->hora_incio }}
@@ -144,4 +144,6 @@
                 </td>
         </tr>
     </tfoot>
+
 </table>
+<b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}

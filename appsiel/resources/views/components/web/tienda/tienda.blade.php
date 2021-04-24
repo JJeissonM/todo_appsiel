@@ -4,6 +4,16 @@
 <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
 <link rel="stylesheet" href="{{asset('assets/css/toastr.min.css')}}">
 
+<style>
+    .font-tienda{
+        if($pedido != null){
+            font-family: {{ $pedido->configuracionfuente->fuente->font }};
+        }else{
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif
+        }
+        
+    }
+</style>
 
 <!--@ include('web.tienda.carousel')-->
 @include('web.tienda.search')
@@ -16,14 +26,14 @@
                     <div class="main-inner">
                         <div class="row">
                             <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <div class="block block-layered-nav">
+                                <div class="block block-layered-nav h-100">
                                     <div class="block-title">
-                                        <strong><span>Filtrar Por</span></strong>
+                                        <strong><span class="font-tienda">Filtrar Por</span></strong>
                                     </div>
                                     <div class="block-content">
                                         <p class="block-subtitle">Opciones de compra</p>
                                         <dl id="narrow-by-list">
-                                            <dt class="odd" style="margin:20px 0;">Categorias</dt>
+                                            <dt class="odd font-tienda" style="margin:20px 0;">Categorias</dt>
                                             <div id="categoria_filtrada"></div>
                                             <dd class="odd">
                                                 <ol style="list-style: none; padding-left: 0">
@@ -42,13 +52,14 @@
 
                             <div class="col-main col-lg-9 col-md-9 col-sm-12 col-xs-12">
                                 <div class="page-title category-title">
-                                    <h1>Nuestros Productos</h1>
+                                    <h1 class="font-tienda">Nuestros Productos</h1>
                                 </div>
                                 <div class="category-products">
                                     <div id="lista_productos">
-                                        <ul class="products-grid row first odd">
+                                        <ul class="products-grid row first odd align-content-start">
+                                            
                                             @foreach($items as $item)
-                                                <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first" style="list-style: none;">
+                                                <li class="col-sm-3 col-md-3 col-6 col-sms-1 col-smb-1 item first" style="list-style: none; padding: 0 0 0 0">
                                                     <div class="item-inner">
                                                         <div class="ma-box-content" data-id="{{$item->id}}">
                                                             <input id="tasa_impuesto" type="hidden" value="{{$item->tasa_impuesto}}">
@@ -69,20 +80,20 @@
                                                                         </div>
                                                                 </a>
                                                             </div>
-                                                            <h2 class="product-name" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'">
+                                                            <h2 class="product-name text-center" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'" style="height: 45px">
                                                                 <a href="{{route('tienda.detalleproducto',$item->id)}}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
                                                             </h2>
-                                                            <div class="ratings">
+                                                            <!--<div class="ratings">
                                                                 <div class="rating-box">
                                                                     <div class="rating" style="width:67%"></div>
                                                                 </div>
-                                                            </div>
-                                                            <div class="price-box">
+                                                            </div>-->
+                                                            <div class="price-box text-center">
                                                                 <span class="regular-price" id="product-price-1">
                                                                     <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
                                                             </div>
                                                             <div class="actions agregar-carrito">
-                                                                <button type="button" class="btn-cart">
+                                                                <button type="button" class="btn-cart form-control">
                                                                     <i class="fa fa-shopping-cart"></i>
                                                                     Comprar
                                                                 </button>
