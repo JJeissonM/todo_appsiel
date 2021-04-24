@@ -22,6 +22,7 @@ use App\Calificaciones\Calificacion;
 use App\Calificaciones\ObservacionesBoletin;
 use App\Calificaciones\ObservacionIngresada;
 use App\Calificaciones\PreinformeAcademico;
+use App\Calificaciones\AsistenciaClase;
 
 use App\AcademicoDocente\CursoTieneDirectorGrupo;
 use App\AcademicoDocente\AsignacionProfesor;
@@ -156,6 +157,7 @@ class BoletinController extends Controller
         $convetir_logros_mayusculas = $request->convetir_logros_mayusculas;
         $mostrar_areas = $request->mostrar_areas;
         $mostrar_calificacion_media_areas = $request->mostrar_calificacion_media_areas;
+        $mostrar_fallas = $request->mostrar_fallas;
         $mostrar_nombre_docentes = $request->mostrar_nombre_docentes;
         $mostrar_escala_valoracion = $request->mostrar_escala_valoracion;
         $mostrar_usuarios_estudiantes = $request->mostrar_usuarios_estudiantes;
@@ -174,7 +176,7 @@ class BoletinController extends Controller
 
         $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
 
-		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas') )->render();
+		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas') )->render();
         
         //echo $view;
         // Se prepara el PDF
@@ -246,6 +248,9 @@ class BoletinController extends Controller
                 }else{
                     $cuerpo_boletin->lineas[$a]->anotacion = '';
                 }
+
+                // Registro de inasistencias
+                $cuerpo_boletin->lineas[$a]->fallas = AsistenciaClase::get_inasistencias( $curso->id, $periodo->fecha_desde, $periodo->fecha_hasta, $matricula->estudiante->id, $asignacion->asignatura_id);
                 
                 $a++;
             } // Fin - Por cada asignatura

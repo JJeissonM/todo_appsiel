@@ -165,7 +165,7 @@ class AsistenciaClaseController extends Controller
     {
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
 
-        $registros = AsistenciaClase::get_inasistencias( $curso_id, $fecha_inicial, $fecha_final);
+        $registros = AsistenciaClase::get_inasistencias( $curso_id, $fecha_inicial, $fecha_final, null, null);
 
         $curso = Curso::find($curso_id);
 

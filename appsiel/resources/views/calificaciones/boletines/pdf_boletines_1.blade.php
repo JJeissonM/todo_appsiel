@@ -35,6 +35,10 @@
 						<th>Calificación</th>
 						<?php $cant_columnas++;  ?>
 					@endif
+					@if( $mostrar_fallas )
+						<th>Fallas</th>
+						<?php $cant_columnas++;  ?>
+					@endif
 					<th>Logros</th>
 				</tr>
 			</thead>
@@ -60,6 +64,12 @@
 										@include('calificaciones.boletines.lbl_descripcion_calificacion')
 									@endif
 								@endif
+							</td>
+						@endif
+
+						@if( $mostrar_fallas )
+							<td align="center">
+								@include('calificaciones.boletines.lbl_fallas')
 							</td>
 						@endif
 

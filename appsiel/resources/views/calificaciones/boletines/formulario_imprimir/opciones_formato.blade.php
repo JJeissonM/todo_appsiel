@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-md-6">
-		<div class="row" style="padding:5px;">
+		<div class="row campo" style="padding:5px;">
 			{{ Form::bsSelect('tam_hoja','','Tamaño hoja',['letter'=>'Carta','folio'=>'Oficio'],[]) }}
 		</div>
 
@@ -22,19 +22,19 @@
 						];
 		?>
 
-		<div class="row" style="padding:5px;">
+		<div class="row campo" style="padding:5px;">
 			{{ Form::bsSelect( 'tam_letra',  4, 'Tamaño Letra', $tam_letra, []) }}
 		</div>
 	</div>
 
 	<div class="col-md-6">
-		<div class="row" style="padding:5px;">
+		<div class="row campo" style="padding:5px;">
 			{{ Form::bsSelect('convetir_logros_mayusculas',1,'Convertir logros a mayúsculas',['No'=>'No','Si'=>'Si'],[]) }}
 		</div>
 
-		<div class="row" style="padding:5px;">
+		<div class="row campo" style="padding:5px;">
 			<p style="width: 100%; background: #ddd; text-align: center;"> <b>Márgenes (px)</b> </p>
-			<div class="row">
+			<div class="row campo">
 				<div class="col-md-3">
 					<p> <b>Izquierdo</b> </p>
 					<input type="number" min="5" max="300" value="5" class="slider" name="margen_izquierdo">

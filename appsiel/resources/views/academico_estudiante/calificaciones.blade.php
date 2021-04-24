@@ -57,6 +57,7 @@
 						<input type="hidden" name="mostrar_nombre_docentes" value="Si">
 						<input type="hidden" name="mostrar_etiqueta_final" value="No">
 						<input type="hidden" name="mostrar_escala_valoracion" value="Si">
+						<input type="hidden" name="mostrar_fallas" value="1">
 						<input type="hidden" name="tam_hoja" value="folio">
 						<input type="hidden" name="tam_letra" value="4">
 						<input type="hidden" name="convetir_logros_mayusculas" value="No">

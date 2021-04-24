@@ -11,7 +11,7 @@ class AsistenciaClase extends Model
 {
     protected $table = 'sga_asistencia_clases';
     
-    protected $fillable = ['id_estudiante','curso_id','asignatura_id','fecha','asistio','anotacion'];
+    protected $fillable = [ 'id_estudiante', 'curso_id', 'asignatura_id', 'fecha', 'asistio', 'anotacion' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Estudiante', 'Curso', 'Asignatura', 'Asistió?', 'Anotación'];
 
@@ -125,12 +125,30 @@ class AsistenciaClase extends Model
         return $registros;
     }
 
-    public static function get_inasistencias( $curso_id, $fecha_inicial, $fecha_final)
+    public static function get_inasistencias( $curso_id, $fecha_inicial, $fecha_final, $estudiante_id, $asignatura_id)
     {
+        $array_wheres = [ ['asistio', '=', 'No'] ];
+
+        if ($curso_id != null)
+        {
+            $array_wheres = array_merge($array_wheres, [ ['curso_id', '=', $curso_id] ] );
+        }
+
+        if ($estudiante_id != null)
+        {
+            $array_wheres = array_merge($array_wheres, [ ['id_estudiante', '=', $estudiante_id] ] );
+        }
+
+        if ($asignatura_id != null)
+        {
+            $array_wheres = array_merge($array_wheres, [ ['asignatura_id', '=', $asignatura_id] ] );
+        }
+
         return AsistenciaClase::whereBetween('fecha', [$fecha_inicial, $fecha_final])
-                            ->where('asistio','No')
-                            ->where('curso_id',$curso_id)
-                            ->select(DB::raw('count(*) as cantidad, id_estudiante'))
+                            ->where( $array_wheres )
+                            ->select(
+                                        DB::raw( 'count(*) as cantidad, id_estudiante, asignatura_id, curso_id')
+                                    )
                             ->groupBy('id_estudiante')
                             ->get();
     }

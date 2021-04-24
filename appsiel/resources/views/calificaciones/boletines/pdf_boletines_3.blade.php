@@ -32,7 +32,7 @@
 									<td style="border: 0px;">
 										{{ $linea->asignacion_asignatura->asignatura->descripcion }}
 									</td>
-									<td style="border: 0px;" width="35%">
+									<td style="border: 0px;" width="45%">
 										@if( $linea->asignacion_asignatura->intensidad_horaria != 0 )
 											<b>IH: </b>{{ $linea->asignacion_asignatura->intensidad_horaria }} &nbsp;
 										@endif
@@ -41,6 +41,10 @@
 											@if( $linea->calificacion->calificacion > 0)
 												<b>Cal: </b> @include('calificaciones.boletines.lbl_descripcion_calificacion')
 											@endif
+										@endif
+
+										@if( $mostrar_fallas )
+											<b>Fallas: </b> @include('calificaciones.boletines.lbl_fallas')
 										@endif
 									</td>
 								</tr>

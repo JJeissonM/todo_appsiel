@@ -42,6 +42,7 @@
 		  display: none;
 		  overflow: hidden;
 		}
+		.campo:hover { background-color: #9fda91; }
 	</style>
 @endsection
 
