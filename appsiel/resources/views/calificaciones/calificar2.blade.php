@@ -24,8 +24,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				<?php 
-
+				<?php
 					$linea=1;
 				?>
 

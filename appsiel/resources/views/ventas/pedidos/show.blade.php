@@ -30,12 +30,20 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @endsection
 
 @section('datos_adicionales_encabezado')
-<br />
-<b>Para:</b> {{ $doc_encabezado->tercero_nombre_completo }}
-<br />
-<b>NIT: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
-<br />
-<b>Entrega: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_entrega }}
+	<br />
+	<b>Para:</b> {{ $doc_encabezado->tercero_nombre_completo }}
+	<br />
+	<b>NIT: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+	<br />
+	<b>Entrega: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_entrega }}
+	@if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
+		<br>
+		<b>{{ $doc_encabezado->documento_ventas_padre()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_padre()->enlace_show_documento() !!}
+	@endif
+	@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
+		<br>
+		<b>{{ $doc_encabezado->documento_ventas_hijo()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_hijo()->enlace_show_documento() !!}
+	@endif
 @endsection
 
 @section('filas_adicionales_encabezado')

@@ -365,7 +365,7 @@ class InventarioController extends TransaccionController
         }
     }
 
-    public static function crear_encabezado_remision_ventas( $datos )
+    public static function crear_encabezado_remision_ventas( $datos, $estado = null )
     {
         // Llamar a los parámetros del archivo de configuración
         $parametros = config('ventas');
@@ -373,6 +373,10 @@ class InventarioController extends TransaccionController
         $datos['core_tipo_transaccion_id'] = $parametros['rm_tipo_transaccion_id'];
         $datos['core_tipo_doc_app_id'] = $parametros['rm_tipo_doc_app_id'];
         $datos['estado'] = 'Facturada';
+        if ( !is_null( $estado ) )
+        {
+            $datos['estado'] = $estado;
+        }
         $datos['creado_por'] = Auth::user()->email;
         $datos['consecutivo'] = TipoDocApp::get_consecutivo_actual( $datos['core_empresa_id'], $datos['core_tipo_doc_app_id'] ) + 1;
 
@@ -423,7 +427,6 @@ class InventarioController extends TransaccionController
             }  
         }
     }
-
 
 
     /**

@@ -233,7 +233,7 @@ class ProcesoController extends Controller
     //Conecta los procesos de cotizacion, pedidos, remisiones y facturas
     public function conexion_procesos(Request $request)
     {
-        // Desde cotizacion ==> 1: Pedido - 2: Pedido y Remisión
+        // Desde cotizacion ==> 1: Pedido - 2: Pedido y Remisión - 3: Solo Remisión
         $response = null;
         $encabezado = VtasDocEncabezado::find($request->modelo); //el documento desde donde se inicia el proceso
         $source = $request->source; //de donde viene la transaccion
@@ -244,6 +244,9 @@ class ProcesoController extends Controller
                 break;
             case '2':
                 $response = $response . $this->pedido_remision($encabezado, $request);
+                break;
+            case '3':
+                $response = $response . $this->solo_remision($encabezado, $request);
                 break;
         }
         return redirect($url)->with('flash_message', $response);
@@ -269,7 +272,8 @@ class ProcesoController extends Controller
     public function pedido_remision($cotizacion, $request)
     {
         $pedido_id = $this->pedidoStore($cotizacion, $request);
-        if ($pedido_id > 0) {
+        if ($pedido_id > 0) 
+        {
             $cotizacion->estado = 'Cumplido';
             $cotizacion->save();
             $pedido = VtasDocEncabezado::find($pedido_id);
@@ -277,7 +281,8 @@ class ProcesoController extends Controller
             $pedido->save();
             //remision
             $remision_id = $this->remisionStore($pedido, $request);
-            if ($remision_id > 0) {
+            if ($remision_id > 0)
+            {
                 $pedido->estado = 'Cumplido';
                 $pedido->save();
                 return "<br>[OK] Pedido y remisión almacenados con exito";
@@ -286,6 +291,30 @@ class ProcesoController extends Controller
             }
         } else {
             return "<br>[XX] El pedido no pudo ser almacenado, el proceso fue interrumpido";
+        }
+    }
+
+    // Solo remision
+    public function solo_remision( $encabezado_cotizacion )
+    {
+        $datos_remision = $encabezado_cotizacion->toArray();
+        $datos_remision['inv_bodega_id'] = $encabezado_cotizacion->cliente->inv_bodega_id;
+
+        $doc_remision = InventarioController::crear_encabezado_remision_ventas($datos_remision, 'Pendiente');
+
+        $lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_cotizacion->id )->get();
+        InventarioController::crear_registros_remision_ventas($doc_remision, $lineas_registros);
+
+        InventarioController::contabilizar_documento_inventario( $doc_remision->id, '' );
+
+        if ( $doc_remision->id > 0 )
+        {
+            $encabezado_cotizacion->estado = 'Remisionada';
+            //$encabezado_cotizacion->remision_doc_encabezado_id = $doc_remision->id;
+            $encabezado_cotizacion->save();
+            return "<br>[OK] Remisión almacenada con exito.";
+        } else {
+            return "<br>[XX] La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente";
         }
     }
 

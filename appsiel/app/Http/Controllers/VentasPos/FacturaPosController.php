@@ -673,14 +673,17 @@ class FacturaPosController extends TransaccionController
 
         $this->hacer_desarme_automatico($pdv_id, $encabezados_documentos->last()->fecha); // Con la fecha de la última factura
 
-        foreach ($encabezados_documentos as $factura) {
-            if ($factura->core_tercero_id == 0) {
+        foreach ($encabezados_documentos as $factura)
+        {
+            if ( $factura->core_tercero_id == 0 )
+            {
                 $factura->core_tercero_id = $pdv->cliente->tercero->id;
             }
 
             $lineas_registros = DocRegistro::where('vtas_pos_doc_encabezado_id', $factura->id)->get();
 
-            foreach ($lineas_registros as $linea) {
+            foreach ($lineas_registros as $linea)
+            {
                 $datos = $factura->toArray() + $linea->toArray();
 
                 // Movimiento de Ventas
@@ -694,9 +697,9 @@ class FacturaPosController extends TransaccionController
 
             // Actualiza Movimiento POS
             Movimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
-                ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
-                ->where('consecutivo', $factura->consecutivo)
-                ->update(['estado' => 'Acumulado']);
+                        ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
+                        ->where('consecutivo', $factura->consecutivo)
+                        ->update(['estado' => 'Acumulado']);
 
             // Crear Remisión y Mov. de inventarios
             $datos_remision = $factura->toArray();

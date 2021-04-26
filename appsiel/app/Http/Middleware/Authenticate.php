@@ -20,8 +20,10 @@ class Authenticate
     public function handle($request, Closure $next, $guard = null)
     {
 
-        if (Auth::guard($guard)->guest()) {
-            if ($request->ajax() || $request->wantsJson()) {
+        if ( Auth::guard($guard)->guest() )
+        {
+            if ( $request->ajax() || $request->wantsJson() )
+            {
                 return response('Unauthorized.', 401);
             } else {
                 return redirect()->guest('/login');
@@ -29,8 +31,9 @@ class Authenticate
         }
 
         $user = Auth::user();
-
-        if(isset($request->id) && isset($request->id_modelo)){
+        //dd( $request->all() );
+        if( isset( $request->id ) && isset( $request->id_modelo ) )
+        {
             $permisos = DB::table('users')
                 ->join('user_has_roles','users.id','=','user_has_roles.user_id')
                 ->join('roles','user_has_roles.role_id','=','roles.id')

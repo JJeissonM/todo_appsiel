@@ -44,6 +44,7 @@
 		</div>	
 
 	</div>
+	
 	<hr>
 	<div class="row">
 		@yield('cabecera')

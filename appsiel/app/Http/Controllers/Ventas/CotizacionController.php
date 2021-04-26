@@ -74,6 +74,7 @@ class CotizacionController extends TransaccionController
 
         $lineas_registros = json_decode($request->lineas_registros);
 
+        $request['estado'] = 'Pendiente';
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
         // 2do. Crear documento de Ventas
@@ -90,6 +91,8 @@ class CotizacionController extends TransaccionController
 
         $documento_vista = $this->generar_documento_vista( $id, 'documento_vista' );
 
+        $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $this->doc_encabezado );
+
         $id_transaccion = $this->transaccion->id;
         $doc_encabezado = $this->doc_encabezado;
 
@@ -99,7 +102,7 @@ class CotizacionController extends TransaccionController
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo );
         
-        return view( 'ventas.cotizaciones.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','registros_contabilidad','empresa') );
+        return view( 'ventas.cotizaciones.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado','registros_contabilidad','empresa', 'docs_relacionados') );
     }
 
 

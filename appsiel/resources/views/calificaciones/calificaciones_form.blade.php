@@ -47,51 +47,54 @@
 		{{ Form::hidden('id_estudiante',null,['id'=>'id_estudiante']) }}
 
 		{{ Form::hidden('id_calificacion_aux',null,['id'=>'id_calificacion_aux']) }}
-		@for ($c=1; $c < 16; $c++) {{ Form::hidden('C'.$c,null,['id'=>'C'.$c]) }} @endfor {{ Form::hidden('logros',null,['id'=>'logros']) }} {{ Form::hidden('calificacion',null,['id'=>'calificacion']) }} {{ Form::hidden('id_calificacion',null,['id'=>'id_calificacion']) }} {{ Form::hidden('id_app',Input::get('id')) }} {{ Form::hidden('return', $ruta ) }} {{Form::close()}} <div class="row">
+		@for ($c=1; $c < 16; $c++) {{ Form::hidden('C'.$c,null,['id'=>'C'.$c]) }} @endfor {{ Form::hidden('logros',null,['id'=>'logros']) }} {{ Form::hidden('calificacion',null,['id'=>'calificacion']) }} {{ Form::hidden('id_calificacion',null,['id'=>'id_calificacion']) }} {{ Form::hidden('id_app',Input::get('id')) }} {{ Form::hidden('return', $ruta ) }} 
+		{{Form::close()}} 
+
+		<div class="row">
 			<div class="col-sm-12">
 				<b>Año:</b><code>{{ $anio }}</code>
 				<b>Periodo:</b> <code>{{ $periodo->descripcion }}</code>
 				<b>Curso:</b><code>{{ $curso->descripcion }}</code>
 				<b>Asignatura:</b><code>{{ $datos_asignatura->descripcion }}</code>
 			</div>
-	</div>
-
-	<div class="row">
-		<div class="col-sm-12">
-			<h4><i class="fa fa-info-circle"> &nbsp; </i>Use las flechas de dirección y tabular para desplazarse: &nbsp;<i class="fa fa-arrow-down"></i>&nbsp;<i class="fa fa-arrow-up"></i>&nbsp;<b>TAB </b></h4>
 		</div>
-		</br></br>
-	</div>
 
-	<p style="color: gray; text-align: right;" id="mensaje_formulario">
-
-		<spam id="mensaje_inicial">
-			&nbsp;</spam>
-
-		<spam id="mensaje_sin_guardar" style="background-color:#eaabab; display: none;">
-			Sin guardar</spam>
-
-		<spam id="mensaje_guardando" style="background-color:#a3e7fe; display: none;">
-			Guardando...</spam>
-
-		<spam id="mensaje_guardadas" style="background-color: #b1e6b2;">
-			Calificaciones guardadas</spam>
-	</p>
-
-	<div class="row">
-		<div class="col-sm-12">
-
-			@yield('tabla')
-
+		<div class="row">
+			<div class="col-sm-12">
+				<h4><i class="fa fa-info-circle"> &nbsp; </i>Use las flechas de dirección y tabular para desplazarse: &nbsp;<i class="fa fa-arrow-down"></i>&nbsp;<i class="fa fa-arrow-up"></i>&nbsp;<b>TAB </b></h4>
+			</div>
+			</br></br>
 		</div>
-	</div>
 
-	<div style="text-align: center; width: 100%;">
-		<button class="btn btn-primary btn-xs" id="bs_boton_guardar" disabled="disabled">Guardar</button>
-		<a href="{{ url($ruta) }}" class="btn btn-danger btn-xs" id="bs_boton_volver"> Volver </a>
-	</div>
+		<p style="color: gray; text-align: right;" id="mensaje_formulario">
 
-</div>
+			<spam id="mensaje_inicial">
+				&nbsp;</spam>
+
+			<spam id="mensaje_sin_guardar" style="background-color:#eaabab; display: none;">
+				Sin guardar</spam>
+
+			<spam id="mensaje_guardando" style="background-color:#a3e7fe; display: none;">
+				Guardando...</spam>
+
+			<spam id="mensaje_guardadas" style="background-color: #b1e6b2;">
+				Calificaciones guardadas</spam>
+		</p>
+
+		<div class="row">
+			<div class="col-sm-12">
+
+				@yield('tabla')
+
+			</div>
+		</div>
+
+		<div style="text-align: center; width: 100%;">
+			<button class="btn btn-primary btn-xs" id="bs_boton_guardar" disabled="disabled">Guardar</button>
+			<a href="{{ url($ruta) }}" class="btn btn-danger btn-xs" id="bs_boton_volver"> Volver </a>
+		</div>
+
+	</div>
 </div>
 
 @include('components.design.ventana_modal', [ 'titulo' => 'Ingreso/Actualización encabezados de calificaciones', 'texto_mensaje' => 'Registro actualizado correctamente'])
@@ -399,6 +402,7 @@
 
 			$('#div_spin').fadeIn();
 
+			// Este formulario se genera al hacer click en el botón Cn (n=1,2,3,4,5,6,...,15) del encabezado
 			var url = $("#formulario_modal").attr('action');
 			var data = $("#formulario_modal").serialize();
 

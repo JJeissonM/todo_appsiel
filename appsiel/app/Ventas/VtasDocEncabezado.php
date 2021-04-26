@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use Auth;
+use Input;
 
 use App\Inventarios\InvDocEncabezado;
 
@@ -21,6 +22,11 @@ class VtasDocEncabezado extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'Forma de pago', 'Estado'];
 
     public $vistas = '{"index":"layouts.index3"}';
+
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
 
     public function tipo_documento_app()
     {
@@ -50,6 +56,60 @@ class VtasDocEncabezado extends Model
     public function movimientos()
     {
         return $this->hasMany(VtasMovimiento::class);
+    }
+
+    // Doc. desde el cual fue generado
+    public function documento_ventas_padre()
+    {
+        $doc_padre = VtasDocEncabezado::find( $this->ventas_doc_relacionado_id );
+        
+        if ( is_null( $doc_padre ) )
+        {
+            return null;
+        }
+
+        return $doc_padre;
+    }
+
+    // Doc. que se generó a partir de este
+    public function documento_ventas_hijo()
+    {
+        $doc_hijo = VtasDocEncabezado::where( 'ventas_doc_relacionado_id', $this->id )->get()->first();
+        
+        if ( is_null( $doc_hijo ) )
+        {
+            return null;
+        }
+
+        return $doc_hijo;
+    }
+
+    public function enlace_show_documento()
+    {
+        switch ( $this->core_tipo_transaccion_id )
+        {
+            case '23':
+                $url = 'ventas/';
+                break;
+            
+            
+            case '42':
+                $url = 'vtas_pedidos/';
+                break;
+            
+            
+            case '30':
+                $url = 'vtas_cotizacion/';
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        $enlace = '<a href="' . url( $url . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+
+        return $enlace;
     }
 
     public static function sqlString($search)

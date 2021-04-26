@@ -143,7 +143,7 @@ class EncabezadoCalificacionController extends Controller
     {
         $cerrar_modal = "true";
 
-        //valido la sumatoria de todos los pesos
+        // Se valida la sumatoria de todos los pesos
         $encabezados = EncabezadoCalificacion::where([['curso_id', $request->curso_id], ['asignatura_id', $request->asignatura_id], ['periodo_id', $request->periodo_id]])->get();
         $sumaPesos = 0;
         if (count($encabezados) > 0) {
@@ -159,19 +159,33 @@ class EncabezadoCalificacionController extends Controller
                 {
                     return "pesos";
                 }
-                EncabezadoCalificacion::create($request->all());
-                $cerrar_modal = "true";
+
+                if ( (int)$request->peso != 0 && $request->descripcion != '' )
+                {
+                    EncabezadoCalificacion::create($request->all());
+                    $cerrar_modal = "true";
+                }
+                    
                 break;
 
             default:
                 // Actualizar
                 $registro = EncabezadoCalificacion::find($request->id);
-                if ((($sumaPesos - $registro->peso) + (int)$request->peso) > 100) {
+                if ( ( ($sumaPesos - $registro->peso) + (int)$request->peso ) > 100 )
+                {
                     return "pesos";
                 }
-                $registro->fill($request->all());
-                $registro->save();
-                $cerrar_modal = "false";
+
+                if ( (int)$request->peso == 0 && $request->descripcion == '' )
+                {
+                    $registro->delete();
+                    $cerrar_modal = "true";
+                }else{
+                    $registro->fill($request->all());
+                    $registro->save();
+                    $cerrar_modal = "false";
+                }
+                    
                 break;
         }
 
