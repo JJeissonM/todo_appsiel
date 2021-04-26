@@ -77,7 +77,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped">
-			{{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total','']) }}
+			{{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
 			<tbody>
 				<?php
 				$i = 1;
@@ -91,18 +91,19 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 				<tr>
 					<td> {{ $i }} </td>
 					<td width="250px"> {{ $linea->producto_descripcion }} </td>
+					@if($doc_encabezado->estado=='Cumplido')
 					<td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
 					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
 					<td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
 					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
 					<td> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
-                    <td>
-                        @if( $doc_encabezado->estado = 'Pendiente' )
-                            <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
-
-                            @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
-                        @endif
-                    </td>
+					@else
+					<td> <input class="cant" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->cantidad}}" style="width: 100%" name="dcantidad_{{$linea->id}}" /> </td>
+					<td> <input class="preciou" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{round($linea->precio_unitario / (1+$linea->tasa_impuesto/100),2,PHP_ROUND_HALF_UP)}}" style="width: 100%" name="dpreciounitario_{{$linea->id}}" /> </td>
+					<td> <input readonly class="imp" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->tasa_impuesto}}" style="width: 100%" name="dimpuesto_{{$linea->id}}" /></td>
+					<td> <input readonly class="valor_bruto" type="text" id="{{$linea->id}}" value="{{round( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad,2,PHP_ROUND_HALF_UP) }}" style="width: 100%" name="dprecio_bruto_{{$linea->id}}"> </td>
+					<td> <input class="total" type="text" id="{{$linea->id}}" value="{{round( $linea->precio_total,2,PHP_ROUND_HALF_UP)}}" style="width: 100%" name="dpreciototal_{{$linea->id}}" readonly></td>
+					@endif
 				</tr>
 				<?php
 				$i++;
@@ -171,96 +172,6 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 	var cliente = <?php echo $cliente; ?>;
 
 	$(document).ready(function() {
-
-		$(".btn_editar_registro").click(function(event){
-            $('#contenido_modal').html('');
-            $("#myModal").modal({backdrop: "static"});
-            $("#div_spin").show();
-            $(".btn_edit_modal").hide();
-
-            var url = '../inv_get_formulario_edit_registro';
-
-            $.get( url, { linea_registro_id: $(this).attr('data-linea_registro_id'), id: getParameterByName('id'), id_modelo: getParameterByName('id_modelo'), id_transaccion: getParameterByName('id_transaccion') } )
-                .done(function( data ) {
-
-                    $('#saldo_original').val( $('#saldo_a_la_fecha').val() );
-                    $('#cantidad_original').val( $('#cantidad').val() );
-
-                    $('#contenido_modal').html(data);
-
-                    $("#div_spin").hide();
-
-                    $('#costo_unitario').select();
-
-                });             
-        });
-
-        // Al modificar el precio de compra
-        $(document).on('keyup','#costo_unitario',function(event){
-            
-            if( validar_input_numerico( $(this) ) )
-            {   
-
-                var x = event.which || event.keyCode;
-                if( x==13 )
-                {
-                    $('#cantidad').select();                
-                }
-
-                $('#costo_total').val( parseFloat( $('#costo_unitario').val() ) * parseFloat( $('#cantidad').val() ));
-
-            }else{
-                $(this).focus();
-                return false;
-            }
-
-        });
-
-        // Al modificar el precio de compra
-        $(document).on('keyup','#cantidad',function(event){
-            
-            if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
-            {
-                calcula_nuevo_saldo_a_la_fecha();
-
-                var x = event.which || event.keyCode;
-                if( x==13 )
-                {
-                    if ( !validar_existencia_actual() )
-                    {
-                        $('#costo_total').val('');
-                        return false;
-                    }
-                    $('.btn_save_modal').focus();               
-                }
-
-                $('#costo_total').val( parseFloat( $('#costo_unitario').val() ) * parseFloat( $('#cantidad').val() ));
-            }else{
-                $('#costo_total').val('');
-                $(this).focus();
-                return false;
-            }
-
-        });
-
-        $('.btn_save_modal').click(function(event){
-            if ( $.isNumeric( $('#costo_total').val() ) && $('#costo_total').val() > 0 )
-            {
-                if ( !validar_existencia_actual() )
-                {
-                    $('#costo_total').val('');
-                    return false;
-                }
-                validacion_saldo_movimientos_posteriores();
-            }else{
-                alert('El costo total es incorrecto. Verifique lo valores ingresados.');
-            }
-        });
-
-        $("#myModal").on('hide.bs.modal', function(){
-            $('#popup_alerta_danger').hide();
-        });
-            
 		array_registros = <?php echo json_encode($doc_registros); ?>;
 	});
 

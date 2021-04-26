@@ -1156,4 +1156,7 @@
 
 		});
 	</script>
+
+	<script src="{{ asset( 'assets/js/ventas/cotizaciones.js' ) }}"></script>
+
 @endsection

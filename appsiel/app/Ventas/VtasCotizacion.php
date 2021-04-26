@@ -18,6 +18,9 @@ class VtasCotizacion extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Detalle', 'Vlr. total', 'Estado'];
 
+    // El archivo js debe estar en la carpeta public
+    public $archivo_js = 'assets/js/ventas/cotizaciones.js';
+
     public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 30; // Cotización ventas

@@ -167,10 +167,12 @@
 
     @include('ventas.incluir.factura_firma_totales')
 <br>
-                @if( $doc_encabezado->descripcion != '' )
-                <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
-                <br>
-                @endif
+@if( $doc_encabezado->descripcion != '' )
+    <br>
+    <b>Detalle: &nbsp;&nbsp;</b> 
+    <br>
+    {!! $doc_encabezado->descripcion !!}
+@endif
 </body>
 
 </html>

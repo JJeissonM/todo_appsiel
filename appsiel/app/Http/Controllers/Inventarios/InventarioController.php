@@ -189,7 +189,7 @@ class InventarioController extends TransaccionController
         for ($i = 0; $i < $cantidad; $i++)
         {
 
-            $lineas_registros[$i]->inv_motivo_id = explode("-", $lineas_registros[$i]->motivo)[0];
+            $lineas_registros[$i]->inv_motivo_id = explode( "-", $lineas_registros[$i]->motivo )[0];
             $lineas_registros[$i]->costo_unitario = (float) substr($lineas_registros[$i]->costo_unitario, 1);
             $lineas_registros[$i]->cantidad = (float) substr($lineas_registros[$i]->cantidad, 0, strpos($lineas_registros[$i]->cantidad, " "));
             $lineas_registros[$i]->costo_total = (float) substr($lineas_registros[$i]->costo_total, 1);

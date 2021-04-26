@@ -8,7 +8,8 @@ use Spatie\Permission\Models\Permission;
 
 class Permiso extends Permission
 {
-    protected $fillable = ['core_app_id', 'modelo_id', 'name', 'descripcion', 'url', 'parent', 'orden', 'enabled', 'fa_icon'];
+    // Enabled = Mostrar en menú
+    protected $fillable = [ 'core_app_id', 'modelo_id', 'name', 'descripcion', 'url', 'parent', 'orden', 'enabled', 'fa_icon'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'ID', 'App', 'Modelo', 'Name', 'Descripción (Menú)', 'URL', 'Menú padre', 'Ordén', 'Mostrar en menú', 'Icono'];
 

@@ -18,12 +18,15 @@ Route::post('factura_remision_pendiente', 'Ventas\VentaController@factura_remisi
 Route::resource('ventas', 'Ventas\VentaController');
 Route::resource('factura_medica', 'Ventas\FacturaMedicaController');
 
+
 // PEDIDOS
 Route::get('vtas_pedidos_enviar_por_email/{id}', 'Ventas\PedidoController@enviar_por_email');
 Route::get('vtas_pedidos_imprimir/{id}', 'Ventas\PedidoController@imprimir');
 Route::resource('vtas_pedidos', 'Ventas\PedidoController');
 Route::post('vtas_pedidos_remision', 'Ventas\PedidoController@remision')->name('pedido.remision');
 Route::get('vtas_pedidos_anular/{id}', 'Ventas\PedidoController@anular_pedido');
+Route::get('vtas_pedidos_get_formulario_edit_registro','Ventas\PedidoController@get_formulario_edit_registro');
+Route::post('vtas_pedidos_doc_registro_guardar','Ventas\PedidoController@doc_registro_guardar');
 
 
 // NOTAS CREDITO

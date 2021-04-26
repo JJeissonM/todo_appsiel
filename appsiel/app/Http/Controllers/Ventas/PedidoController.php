@@ -441,6 +441,22 @@ class PedidoController extends TransaccionController
         return view('ventas.pedidos.edit', compact('form_create', 'id_transaccion', 'miga_pan', 'tabla', 'registro', 'registros'));
     }
 
+    // Petición AJAX. Parámetro enviados por GET
+    public function get_formulario_edit_registro()
+    {
+        $linea_registro = VtasDocRegistro::get_un_registro( Input::get('linea_registro_id') );
+        $doc_encabezado = VtasDocEncabezado::get_registro_impresion( $linea_registro->vtas_doc_encabezado_id );
+
+        $id = Input::get('id');
+        $id_modelo = Input::get('id_modelo');
+        $id_transaccion = Input::get('id_transaccion');
+
+        $formulario = View::make('ventas.pedidos.formulario_editar_registro', compact('linea_registro', 'id', 'id_modelo', 'id_transaccion', 'doc_encabezado'))->render();
+
+        return $formulario;
+    }
+
+
 
     /**
      * Update the specified resource in storage.
@@ -484,6 +500,7 @@ class PedidoController extends TransaccionController
     //Crea remision a partir del pedido
     public function remision(Request $request)
     {
+        dd('hi');
         // Llamar a los parámetros del archivo de configuración
         $parametros = config('ventas');
 
