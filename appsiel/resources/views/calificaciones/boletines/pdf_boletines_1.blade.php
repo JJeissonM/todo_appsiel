@@ -29,14 +29,14 @@
 		<table class="contenido table-bordered">
 			<thead>
 				<tr>
-					<th>{{ $lbl_asigatura }}</th>
+					<th style="width:150px;">{{ $lbl_asigatura }}</th>
 					<th>I.H.</th>
 					@if($curso->maneja_calificacion==1)
 						<th>Calificación</th>
 						<?php $cant_columnas++;  ?>
 					@endif
 					@if( $mostrar_fallas )
-						<th>Fallas</th>
+						<th style="width:50px;">Fallas</th>
 						<?php $cant_columnas++;  ?>
 					@endif
 					<th>Logros</th>
@@ -49,7 +49,7 @@
 
 					<tr>
 
-						<td> {{ $linea->asignacion_asignatura->asignatura->descripcion }} </td>
+						<td style="width:150px;"> {{ $linea->asignacion_asignatura->asignatura->descripcion }} </td>
 						
 						<td align="center">
 						    @if( $linea->asignacion_asignatura->intensidad_horaria != 0 )
@@ -68,7 +68,7 @@
 						@endif
 
 						@if( $mostrar_fallas )
-							<td align="center">
+							<td align="center" style="width:50px;">
 								@include('calificaciones.boletines.lbl_fallas')
 							</td>
 						@endif
