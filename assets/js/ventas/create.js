@@ -668,6 +668,7 @@ $(document).ready(function(){
 			}
 			
 			$('#popup_alerta').hide();
+			return true;
 		}else{
 			return true;
 		}		
