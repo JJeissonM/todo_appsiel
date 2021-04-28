@@ -63,7 +63,6 @@ class ReportesController extends Controller
                 $sum = $aux->sum();
                 foreach ($item as $value)
                 {
-                    dd( $value );
                     $collection[] = $value;
                 }
                 $obj = ["id" => 0,

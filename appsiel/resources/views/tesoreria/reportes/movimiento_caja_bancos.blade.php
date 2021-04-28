@@ -63,6 +63,13 @@
                     {
                         $cuenta_bancaria = 'Cuenta ' . $fila->cuenta_bancaria->tipo_cuenta . $fila->cuenta_bancaria->entidad_financiera->descripcion . 'No.' . $fila->cuenta_bancaria->descripcion;
                     }
+
+                    $detalle_operacion = '';
+                    $registro_linea = $fila->get_registro_linea_movimiento( $fila->teso_motivo_id, $fila->valor_movimiento );
+                    if ( !is_null($registro_linea) )
+                    {
+                        $detalle_operacion = $registro_linea->detalle_operacion;
+                    }
             ?>
                 <tr>
                     <td> {{ $fila->fecha }}</td>
@@ -78,7 +85,7 @@
                         @endif
                     </td>
                     <td> {{ $caja }} {{ $cuenta_bancaria }} </td>
-                    <td> {{ $fila->descripcion }} </td>
+                    <td> {{ $fila->descripcion }} {{ $detalle_operacion }} </td>
                     <td> {{ $fila->motivo_descripcion }} </td>
                     <td> {{ $entrada }} </td>
                     <td> {{ $salida}} </td>

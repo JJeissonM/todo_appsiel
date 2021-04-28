@@ -286,7 +286,7 @@
 			if (elementos.length == 1) {
 				//procesar uno
 				var curso_asignatura = elementos[0].split(';');
-				url = url + curso_asignatura[0] + "/id_asignatura/" + curso_asignatura[1] + "?id={{Input::get('id')}};";
+				url = url + curso_asignatura[0] + "/id_asignatura/" + curso_asignatura[1] + "?id={{Input::get('id')}}";
 				location.href = url;
 			} else {
 				mensaje('Alerta!', 'Solo puede procesar un curso a la vez', 'warning');

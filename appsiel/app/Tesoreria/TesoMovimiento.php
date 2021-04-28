@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Tesoreria\TesoDocEncabezado;
+use App\Tesoreria\TesoDocRegistro;
+
 class TesoMovimiento extends Model
 {
     //protected $table = 'teso_doc_registros_recaudos';
@@ -45,12 +48,37 @@ class TesoMovimiento extends Model
     // Para cualquier tipo de transacción
     public static function get_registros_un_documento( $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo )
     {
-        return TesoMovimiento::where( [ 
+        return TesoDocEncabezado::where( [ 
                                 'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
                                 'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
                                 'consecutivo' => $consecutivo
                             ] )
                         ->get();
+    }
+
+    // Para cualquier tipo de transacción
+    public function get_registro_linea_movimiento( $teso_motivo_id, $valor_movimiento )
+    {
+        $encabezado = TesoDocEncabezado::where( [ 
+                                            'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                            'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                            'consecutivo' => $this->consecutivo
+                                        ] )
+                                    ->get()->first();
+
+                                    //dd( $this->core_tipo_transaccion_id,$this->core_tipo_doc_app_id,$this->consecutivo, $teso_motivo_id, $valor_movimiento );
+
+        if ( is_null($encabezado) )
+        {
+            return null;
+        }
+        
+        return TesoDocRegistro::where( [
+                                        ['teso_encabezado_id', '=', $encabezado->id ],
+                                        ['teso_motivo_id', '=', $teso_motivo_id ],
+                                        ['valor', '=', abs($valor_movimiento) ]
+                                    ] )->get()->first();
+
     }
 
     public function get_registro_referencia_tercero()
@@ -289,6 +317,9 @@ class TesoMovimiento extends Model
                                         'teso_movimientos.teso_motivo_id',
                                         'teso_movimientos.descripcion',
                                         'teso_movimientos.codigo_referencia_tercero',
+                                        'teso_movimientos.core_tipo_transaccion_id',
+                                        'teso_movimientos.core_tipo_doc_app_id',
+                                        'teso_movimientos.consecutivo',
                                         'teso_movimientos.teso_caja_id',
                                         'teso_movimientos.teso_cuenta_bancaria_id',
                                         'core_terceros.descripcion as tercero_descripcion' )

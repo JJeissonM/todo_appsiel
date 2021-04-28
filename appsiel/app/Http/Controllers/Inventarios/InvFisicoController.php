@@ -284,7 +284,7 @@ class InvFisicoController extends TransaccionController
         foreach ($doc_registros as $fila)
         {
             $fila->cantidad_sistema = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha )->Cantidad;
-            $fila->costo_prom_sistema = InvCostoPromProducto::get_costo_promedio( $fila->inv_bodega_id, $fila->producto_id  );              
+            $fila->costo_prom_sistema = InvCostoPromProducto::get_costo_promedio( $fila->inv_bodega_id, $fila->producto_id  );
         }
 
         foreach ($lista_campos as $key => $value)
@@ -316,7 +316,7 @@ class InvFisicoController extends TransaccionController
                     ];
 
         $cantidad_filas = count( $doc_registros->toarray() );
-        $filas_tabla = View::make( 'inventarios.inventario_fisico.tabla_para_ajuste', compact( 'doc_registros' ) )->render();
+        $filas_tabla = View::make( 'inventarios.inventario_fisico.tabla_para_ajuste', compact( 'doc_registros', 'motivos' ) )->render();
 
         return view('inventarios.create', compact('form_create','id_transaccion','productos','servicios','motivos','miga_pan','tabla','filas_tabla','cantidad_filas'));
     }
