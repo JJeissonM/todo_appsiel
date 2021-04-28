@@ -15,10 +15,11 @@
 		?>
 		
 		@include('calificaciones.boletines.encabezado_2')
+
+		@foreach( $lineas_cuerpo_boletin as $linea )		
+		<table class=" table-bordered">
+			<tbody> 
 				
-		<table class="contenido table-bordered">
-			<tbody>
-				@foreach( $lineas_cuerpo_boletin as $linea )
 					<?php
 						$cant_columnas = 2;	
 					?>
@@ -26,9 +27,9 @@
 					@include('calificaciones.boletines.fila_area')
 
 					<tr style="background-color: #E8E8E8;">						
-						<td colspan="{{$cant_columnas}}">
+						<!--<td colspan="{{$cant_columnas}}">
 							<table width="100%" style="border: 0px;">
-								<tr>
+								<tr>-->
 									<td style="border: 0px;">
 										{{ $linea->asignacion_asignatura->asignatura->descripcion }}
 									</td>
@@ -47,9 +48,9 @@
 											<b>Fallas: </b> @include('calificaciones.boletines.lbl_fallas')
 										@endif
 									</td>
-								</tr>
+								<!--</tr>
 							</table>					
-						</td>
+						</td>-->
 					</tr>
 
 					<tr style="font-size: {{$tam_letra}}mm;">
@@ -68,15 +69,18 @@
 					<?php 
 						$area_anterior = $linea->asignacion_asignatura->asignatura->area->descripcion;
 					?>
-
+						</tbody>
+					</table>
 				@endforeach
-
-				@include('calificaciones.boletines.formatos.fila_observaciones')
-
-				@include('calificaciones.boletines.formatos.fila_etiqueta_final')
 				
-			</tbody>
-		</table>
+<table>
+	@include('calificaciones.boletines.formatos.fila_observaciones')
+
+	@include('calificaciones.boletines.formatos.fila_etiqueta_final')
+</table>
+				
+				
+			
 
 		@include('calificaciones.boletines.mostrar_usuarios_estudiantes')
 		
