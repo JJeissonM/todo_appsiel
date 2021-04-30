@@ -7,10 +7,10 @@
         body{
             font-family: Arial, Helvetica, sans-serif;
             font-size: {{$tam_letra}}mm;
-            margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo}}px;
+            /*margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo}}px;*/
         }
 
-        @page { margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo }}px; }
+        /*@ page { margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo}}px; }*/
         
         .page-break {
             page-break-after: always;
@@ -56,7 +56,7 @@
 
 		table.encabezado{
 			border: 1px solid gray;
-			padding-top: -30px;
+			padding-top: 0px;
 		}
 
 		table.encabezado>tr>td{
@@ -74,7 +74,7 @@
 			text-align:right;
 		}
 
-		html{margin: 60px 40px 40px }
+		html{margin: 60px 40px 20px 40px}
 
     </style>
 </head>
