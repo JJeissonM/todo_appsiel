@@ -129,23 +129,26 @@
 		    </tfoot>
 		</table>
 
-		<table>
-		    <tr>
-		        <td width="15%"> </td>
-		        <td width="30%"> _______________________ </td>
-		        <td width="10%"> </td>
-		        <td width="30%"> _______________________ </td>
-		        <td width="15%"> </td>
-		    </tr>
-		    <tr>
-		        <td width="15%"> </td>
-		        <td width="30%"> Elaboró: {{ explode("@",$elaboro)[0] }} </td>
-		        <td width="10%"> </td>
-		        <td width="30%"> Recibió </td>
-		        <td width="15%"> </td>
-		    </tr>
-			
-		</table>
-		<b>Detalle:</b> {{ $datos_encabezado_doc['campo6'] }}
+	    <br><br>
+
+	    <table border="0">
+	        <tr>
+	            <td width="50px"> &nbsp; </td>
+	            <td align="center" style="border-bottom: 1px solid;"> </td>
+	            <td align="center"> &nbsp; </td>
+	            <td align="center" style="border-bottom: 1px solid;"> </td>
+	            <td width="50px">&nbsp;</td>
+	        </tr>
+	        <tr>
+	            <td width="50px"> &nbsp; </td>
+	            <td align="center"> Elaboró: {{ explode('@',$datos_encabezado_doc['campo10'])[0] }} </td>
+	            <td align="center"> &nbsp; </td>
+	            <td align="center"> Recibe </td>
+	            <td width="50px">&nbsp;</td>
+	        </tr>
+	    </table>
+		<b>Detalle:</b>
+		<br>
+		{!! $datos_encabezado_doc['campo6'] !!}
 	</body>
 </html>

@@ -146,4 +146,6 @@
     </tfoot>
 
 </table>
-<b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+<b>Detalle: &nbsp;&nbsp;</b>
+<br>
+{{ $doc_encabezado->descripcion }}

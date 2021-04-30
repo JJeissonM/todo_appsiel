@@ -23,7 +23,7 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['1'=>'Movimiento','2'=>'Remisión (estándar)','3'=>'Remisión (POS)'], null, [ 'id' =>'formato_impresion_id' ] ) }}
+	Formato: {{ Form::select('formato_impresion_id',['1'=>'Estándar','2'=>'Estándar (Sin costo)','3'=>'POS (Sin costo)'], null, [ 'id' =>'formato_impresion_id' ] ) }}
 	{{ Form::bsBtnPrint( 'transaccion_print/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
 	{{ Form::bsBtnEmail( 'inventarios_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
 @endsection
@@ -50,9 +50,12 @@
             <b>NIT: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
         </td>
     </tr>
-    <tr>        
-        <td colspan="2" style="border: solid 1px #ddd;">
+    <tr>
+        <td style="border: solid 1px #ddd;">
             <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+        </td>
+        <td style="border: solid 1px #ddd; width: 20%;">
+            <b>Doc. Soporte: &nbsp;&nbsp;</b> {{ $doc_encabezado->documento_soporte }}
         </td>
     </tr>
 @endsection

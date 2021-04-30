@@ -226,7 +226,17 @@ class InvDocEncabezado extends Model
                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')
                     ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_doc_encabezados.inv_bodega_id')
-                    ->select('inv_doc_encabezados.fecha AS campo1',DB::raw($select_raw),DB::raw($select_raw2),'inv_doc_encabezados.descripcion AS campo4','inv_doc_encabezados.documento_soporte AS campo5','inv_doc_encabezados.descripcion AS campo6','inv_bodegas.descripcion AS campo7','inv_doc_encabezados.core_tipo_transaccion_id AS campo8','inv_doc_encabezados.id AS campo9')
+                    ->select(
+                                'inv_doc_encabezados.fecha AS campo1',
+                                DB::raw($select_raw),
+                                DB::raw($select_raw2),
+                                'inv_doc_encabezados.descripcion AS campo4',
+                                'inv_doc_encabezados.documento_soporte AS campo5',
+                                'inv_doc_encabezados.descripcion AS campo6',
+                                'inv_bodegas.descripcion AS campo7',
+                                'inv_doc_encabezados.core_tipo_transaccion_id AS campo8',
+                                'inv_doc_encabezados.id AS campo9',
+                                'inv_doc_encabezados.creado_por AS campo10')
                     ->get()
                     ->toArray();
 
@@ -252,6 +262,7 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.descripcion',
                                 'inv_doc_encabezados.hora_inicio',
                                 'inv_doc_encabezados.inv_bodega_id',
+                                'inv_doc_encabezados.documento_soporte',
                                 'inv_doc_encabezados.estado',
                                 'inv_doc_encabezados.creado_por',
                                 'inv_doc_encabezados.modificado_por',

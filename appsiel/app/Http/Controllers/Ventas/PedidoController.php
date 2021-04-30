@@ -500,7 +500,6 @@ class PedidoController extends TransaccionController
     //Crea remision a partir del pedido
     public function remision(Request $request)
     {
-        dd('hi');
         // Llamar a los parámetros del archivo de configuración
         $parametros = config('ventas');
 
