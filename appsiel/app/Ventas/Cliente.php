@@ -9,6 +9,7 @@ use App\Ventas\Vendedor;
 use App\Core\Tercero;
 
 use DB;
+use Schema;
 
 class Cliente extends Model
 {
@@ -185,6 +186,11 @@ class Cliente extends Model
         $tablas = json_decode( $tablas_relacionadas );
         foreach($tablas AS $una_tabla)
         { 
+            if ( !Schema::hasTable( $una_tabla->tabla ) )
+            {
+                continue;
+            }
+            
             $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
 
             if ( !empty($registro) )

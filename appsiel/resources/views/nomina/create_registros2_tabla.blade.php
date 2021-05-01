@@ -4,13 +4,14 @@
 	<table class="table table-responsive table-striped" id="myTable2">
 		<thead>
 			<tr>
+				<th>nom_contrato_id</th>
 				<th>Empleado</th>
 				@if ( (float)$concepto->porcentaje_sobre_basico != 0 )
-					<th> Cant. horas </th>
-					<th> Vlr. unitario </th>
-					<th> Vlr. total </th>
+					<th data-override="cantidad_horas"> Cant. horas </th>
+					<th data-override="valor_unitario"> Vlr. unitario </th>
+					<th data-override="valor_total"> Vlr. total </th>
 				@else
-					<th> Vlr. total </th>
+					<th data-override="valor_total"> Vlr. total </th>
 				@endif
 				
 			</tr>

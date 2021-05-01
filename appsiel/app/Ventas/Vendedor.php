@@ -5,6 +5,7 @@ namespace App\Ventas;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
+use Schema;
 
 use App\Core\Tercero;
 
@@ -18,6 +19,18 @@ class Vendedor extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tercero', 'Núm. identificación', 'Equipo de ventas', 'Clase de vendedor', 'Estado'];
 
     public $vistas = '{"create":"layouts.create"}';
+
+    public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
+
+    public function tercero()
+    {
+        return $this->belongsTo(Tercero::class, 'core_tercero_id');
+    }
+
+    public function equipo_ventas()
+    {
+        return $this->belongsTo(EquipoVentas::class, 'equipo_ventas_id');
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -86,8 +99,51 @@ class Vendedor extends Model
         return $vec;
     }
 
-    public function tercero()
+    public function validar_eliminacion($id)
     {
-        return $this->belongsTo(Tercero::class, 'core_tercero_id');
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"vtas_clientes",
+                                    "llave_foranea":"vendedor_id",
+                                    "mensaje":"Vendedor está asociado a un Cliente."
+                                },
+                            "1":{
+                                    "tabla":"vtas_doc_encabezados",
+                                    "llave_foranea":"vendedor_id",
+                                    "mensaje":"Vendedor está relacionado en documentos de ventas."
+                                },
+                            "2":{
+                                    "tabla":"vtas_movimientos",
+                                    "llave_foranea":"vendedor_id",
+                                    "mensaje":"Vendedor está relacionado en movimientos de ventas."
+                                },
+                            "3":{
+                                    "tabla":"vtas_pos_doc_encabezados",
+                                    "llave_foranea":"vendedor_id",
+                                    "mensaje":"Vendedor está relacionado en documentos de ventas POS."
+                                },
+                            "4":{
+                                    "tabla":"vtas_pos_movimientos",
+                                    "llave_foranea":"vendedor_id",
+                                    "mensaje":"Vendedor está relacionado en movimientos de ventas POS."
+                                }
+                        }';
+        $tablas = json_decode( $tablas_relacionadas );
+        foreach($tablas AS $una_tabla)
+        { 
+            if ( !Schema::hasTable( $una_tabla->tabla ) )
+            {
+                continue;
+            }
+            
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
     }
 }
