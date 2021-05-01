@@ -35,6 +35,14 @@
 @section('datos_adicionales_encabezado')
 	<br/>
 	<b>Remisión: </b> {!! $docs_relacionados[0] !!}
+	@if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
+		<br>
+		<b>{{ $doc_encabezado->documento_ventas_padre()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_padre()->enlace_show_documento() !!}
+	@endif
+	@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
+		<br>
+		<b>{{ $doc_encabezado->documento_ventas_hijo()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_hijo()->enlace_show_documento() !!}
+	@endif
 @endsection
 
 @section('filas_adicionales_encabezado')

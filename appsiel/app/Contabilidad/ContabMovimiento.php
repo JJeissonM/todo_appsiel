@@ -378,4 +378,16 @@ class ContabMovimiento extends Model
             ->orderBy('contab_impuestos.id')
             ->get();
     }
+
+    public function contabilizar_linea_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito )
+    {
+        ContabMovimiento::create( 
+                                    $datos + 
+                                    [ 'contab_cuenta_id' => $contab_cuenta_id ] +
+                                    [ 'detalle_operacion' => $detalle_operacion] + 
+                                    [ 'valor_debito' => $valor_debito] + 
+                                    [ 'valor_credito' => ($valor_credito * -1) ] + 
+                                    [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ]
+                                );
+    }
 }

@@ -12,10 +12,6 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
 		<!--{{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'vtas_pedidos/id_fila/edit'.$variables_url ),'Editar') }}-->
 		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
 	@endif
-	
-	@if($doc_encabezado->estado=='Pendiente')
-		<button onclick="enviar()" class="btn-gmail" id="btn_remision" title="Crear Remisión"><i class="fa fa-file-text"></i></button>
-	@endif
 
 @endsection
 
@@ -27,6 +23,42 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 
 @section('botones_anterior_siguiente')
 {!! $botones_anterior_siguiente->dibujar( 'vtas_pedidos/', $variables_url ) !!}
+@endsection
+
+@section('cabecera')
+	@if( is_null( $doc_encabezado->documento_ventas_hijo() ) && $doc_encabezado->estado == 'Pendiente' )
+		<div class="col-md-12">
+			<form class="form-control" method="post" action="{{route('ventas.conexion_procesos')}}">
+				<input type="hidden" name="url" value="vtas_cotizacion/{{$doc_encabezado->id.$variables_url}}" />
+				<input type="hidden" name="modelo" value="{{$doc_encabezado->id}}" />
+				<input type="hidden" name="source" value="PEDIDO" />
+				{{ csrf_field() }}
+				<label class="control-label">Genere desde aquí su remisión de forma automática o si prefiere genere la remisión y factura</label>
+				<div class="row">
+					<div class="col-md-3">
+						{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
+					</div>
+					<div class="col-md-9">
+						&nbsp;
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="col-md-10">
+						{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión', 'remision_y_factura_desde_pedido' => 'Remisión y Factura' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
+					</div>
+					<div class="col-md-2">
+						<label class="control-label"> </label>
+						<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
+					</div>
+				</div>
+					
+			</form>
+		</div>
+		<div id="div_advertencia_factura" style="display: none; color: red;" class="container-fluid">
+			Nota: La condición de pago (Crédito o Contado) de la factura será tomada de los datos del cliente.
+		</div>
+	@endif
 @endsection
 
 @section('datos_adicionales_encabezado')
@@ -239,6 +271,15 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
                 $('#costo_total').val('');
                 $(this).focus();
                 return false;
+            }
+
+        });$(document).on('change','#generar',function(event){
+            
+            if( $(this).val() == 'remision_y_factura_desde_pedido' )
+            {
+                $('#div_advertencia_factura').fadeIn(500);
+            }else{
+                $('#div_advertencia_factura').hide();
             }
 
         });

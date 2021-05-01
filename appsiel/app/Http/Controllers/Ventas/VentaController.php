@@ -1212,7 +1212,7 @@ class VentaController extends TransaccionController
                 // Nota: $un_registro contiene datos de inventarios 
                 $cantidad = $un_registro->cantidad * -1;
 
-                // Los precios se deben traer de la lista de precios del cliente
+                // Los PRECIOS se deben traer de la lista de precios del cliente 
                 $precio_unitario = ListaPrecioDetalle::get_precio_producto( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id );
 
                 $cliente = Cliente::where( 'core_tercero_id', $un_registro->core_tercero_id )->get()->first();

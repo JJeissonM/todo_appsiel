@@ -11,6 +11,8 @@ use App\Http\Controllers\Inventarios\ProcesoController as InvProcesoController;
 use App\Http\Controllers\Ventas\VentaController;
 use App\Http\Controllers\Ventas\NotaCreditoController;
 
+use Input;
+use Carbon\Carbon;
 
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
@@ -29,7 +31,7 @@ use App\Inventarios\RemisionVentas;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\RegistrosMediosPago;
 use App\Ventas\Cliente;
-use Input;
+
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 
 class ProcesoController extends Controller
@@ -76,7 +78,8 @@ class ProcesoController extends Controller
 
         $total_documento = 0;
         $n = 1;
-        foreach ($registros_documento as $linea) {
+        foreach ($registros_documento as $linea)
+        {
             $detalle_operacion = 'Recontabilizado. ' . $linea->descripcion;
             VentaController::contabilizar_movimiento_credito($documento->toArray() + $linea->toArray(), $detalle_operacion);
             $total_documento += $linea->precio_total;
@@ -87,10 +90,10 @@ class ProcesoController extends Controller
 
         $datos = $documento->toArray();
         $datos['registros_medio_pago'] = [];
-        if ($forma_pago == 'contado') {
+        if ($forma_pago == 'contado')
+        {
             $datos['registros_medio_pago'] = ProcesoController::get_lineas_medios_recaudos($documento);
         }
-
         VentaController::contabilizar_movimiento_debito($forma_pago, $datos, $total_documento, $detalle_operacion);/**/
     }
 
@@ -233,30 +236,45 @@ class ProcesoController extends Controller
     //Conecta los procesos de cotizacion, pedidos, remisiones y facturas
     public function conexion_procesos(Request $request)
     {
-        // Desde cotizacion ==> 1: Pedido - 2: Pedido y Remisión - 3: Solo Remisión
-        $response = null;
+        /*
+            Desde cotizacion 
+                1: Pedido
+                3: Solo Remisión
+
+            Desde Pedido
+                remision_desde_pedido
+                remision_y_factura_desde_pedido
+        */
+        $response = '';
         $encabezado = VtasDocEncabezado::find($request->modelo); //el documento desde donde se inicia el proceso
         $source = $request->source; //de donde viene la transaccion
         $url = $request->url; //URL origen de la transaccion
-        switch ($request->generar) {
+        switch ($request->generar)
+        {
             case '1':
-                $response = $response . $this->soloPedido($encabezado, $request);
-                break;
-            case '2':
-                $response = $response . $this->pedido_remision($encabezado, $request);
+                $response = $this->soloPedido($encabezado, $request);
                 break;
             case '3':
-                $response = $response . $this->solo_remision($encabezado, $request);
+                $response = $this->solo_remision($encabezado, $request);
+                break;
+            case 'remision_desde_pedido':
+                $response = $this->solo_remision($encabezado, $request);
+                break;
+            case 'remision_y_factura_desde_pedido':
+                $response = $this->remision_y_factura_desde_pedido($encabezado, $request);
                 break;
         }
+
         return redirect($url)->with('flash_message', $response);
+
     }
 
     //crea solo pedido
     public function soloPedido($cotizacion, $request)
     {
         $pedido_id = $this->pedidoStore($cotizacion, $request);
-        if ($pedido_id > 0) {
+        if ($pedido_id > 0)
+        {
             $cotizacion->estado = 'Cumplido';
             $cotizacion->save();
             $pedido = VtasDocEncabezado::find($pedido_id);
@@ -268,97 +286,71 @@ class ProcesoController extends Controller
         }
     }
 
-    //pedido y remision
-    public function pedido_remision($cotizacion, $request)
-    {
-        $pedido_id = $this->pedidoStore($cotizacion, $request);
-        if ($pedido_id > 0) 
-        {
-            $cotizacion->estado = 'Cumplido';
-            $cotizacion->save();
-            $pedido = VtasDocEncabezado::find($pedido_id);
-            $pedido->ventas_doc_relacionado_id = $cotizacion->id;
-            $pedido->save();
-            //remision
-            $remision_id = $this->remisionStore($pedido, $request);
-            if ($remision_id > 0)
-            {
-                $pedido->estado = 'Cumplido';
-                $pedido->save();
-                return "<br>[OK] Pedido y remisión almacenados con exito";
-            } else {
-                return "<br>[XX] El pedido fue creado con exito, sin embargo la remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente";
-            }
-        } else {
-            return "<br>[XX] El pedido no pudo ser almacenado, el proceso fue interrumpido";
-        }
-    }
 
     // Solo remision
-    public function solo_remision( $encabezado_cotizacion )
+    public function solo_remision( $encabezado_doc_venta, $request )
     {
-        $datos_remision = $encabezado_cotizacion->toArray();
-        $datos_remision['inv_bodega_id'] = $encabezado_cotizacion->cliente->inv_bodega_id;
-
-        $doc_remision = InventarioController::crear_encabezado_remision_ventas($datos_remision, 'Pendiente');
-
-        $lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_cotizacion->id )->get();
-        InventarioController::crear_registros_remision_ventas($doc_remision, $lineas_registros);
-
-        InventarioController::contabilizar_documento_inventario( $doc_remision->id, '' );
+        $doc_remision = $this->crear_remision_desde_doc_venta( $encabezado_doc_venta, $request->fecha );
 
         if ( $doc_remision->id > 0 )
         {
-            $encabezado_cotizacion->estado = 'Remisionada';
-            //$encabezado_cotizacion->remision_doc_encabezado_id = $doc_remision->id;
-            $encabezado_cotizacion->save();
+            $encabezado_doc_venta->estado = 'Remisionado';
+            $encabezado_doc_venta->save();
             return "<br>[OK] Remisión almacenada con exito.";
         } else {
             return "<br>[XX] La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente";
         }
     }
-
-    //crea remision
-    public function remisionStore($pedido, $request)
+    
+    public function remision_y_factura_desde_pedido( $pedido, $request )
     {
-        $registros = VtasDocRegistro::where('vtas_doc_encabezado_id', $pedido->id)->get();
-        $url_id = explode("=", explode("&", $request->url)[0])[1];
-        $cliente = Cliente::find($pedido->cliente_id);
-        $lineas = null;
-        foreach ($registros as $r) {
-            $prod = InvProducto::find($r->inv_producto_id);
-            $lineas[] = [
-                'inv_motivo_id' => 17,
-                'inv_producto_id' => $r->inv_producto_id,
-                'Producto' => $prod->id . " - " . $prod->descripcion . " (" . $prod->unidad_medida1 . ")",
-                'motivo' => '17-Remisión de ventas',
-                'cantidad' => $r->cantidad,
-                'costo_unitario' => $r->precio_unitario,
-                'costo_total' => $r->precio_total
-            ];
+        // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
+        $doc_remision = $this->crear_remision_desde_doc_venta( $pedido, $request->fecha );
+
+        if ( $doc_remision->id > 0 )
+        {
+            $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, $request->fecha );
+            $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
+            $nueva_factura->ventas_doc_relacionado_id = $pedido->id;
+            $nueva_factura->save();
+
+            $doc_remision->estado = 'Facturada';
+            $doc_remision->save();
+
+            $pedido->estado = 'Cumplido';
+            $pedido->save();
+
+            return "<br>[OK] Remisión Y Factura almacenadas con exito.";
+        } else {
+            return "<br>[XX] La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente";
         }
-        $data = [
-            'core_empresa_id' => $pedido->core_empresa_id,
-            'core_tipo_doc_app_id' => 7,
-            'fecha' => $pedido->fecha,
-            'core_tercero_id' => $pedido->core_tercero_id,
-            'descripcion' => $pedido->descripcion . " - (REMISIÓN GENERADA)",
-            'documento_soporte' => '',
-            'estado' => 'Pendiente',
-            'modificado_por' => '0',
-            'consecutivo' => '',
-            'hay_productos' => count($registros),
-            'core_tipo_transaccion_id' => 24,
-            'creado_por' => $pedido->creado_por,
-            'url_id' => $url_id,
-            'url_id_modelo' => 164,
-            'url_id_transaccion' => 24,
-            'inv_bodega_id' => $cliente->inv_bodega_id,
-            'movimiento' => json_encode($lineas)
-        ];
-        $request->request->add($data);
-        $lineas_registros = InventarioController::preparar_array_lineas_registros($request->movimiento, null);
-        return InventarioController::crear_documento($request, $lineas_registros, 164);
+    }
+
+    public function crear_factura_desde_doc_venta( $encabezado_doc_venta, $fecha )
+    {
+        $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
+
+        $nueva_factura = $encabezado_doc_venta->clonar_encabezado( $fecha, (int)config('ventas.factura_ventas_tipo_transaccion_id'), (int)config('ventas.factura_ventas_tipo_doc_app_id'), $descripcion );
+        
+        $nueva_factura->forma_pago = 'contado';
+        if ( (int)$nueva_factura->cliente->condicion_pago->dias_plazo != 0 )
+        {
+            $nueva_factura->forma_pago = 'credito';
+
+            $nueva_factura->fecha_vencimiento = $this->sumar_dias_calendario_a_fecha( $fecha, $nueva_factura->cliente->condicion_pago->dias_plazo );
+        }
+        
+        $encabezado_doc_venta->clonar_lineas_registros( $nueva_factura->id );
+
+        $nueva_factura->crear_movimiento_ventas();
+
+        // Contabilizar
+        $nueva_factura->contabilizar_movimiento_debito();
+        $nueva_factura->contabilizar_movimiento_credito();
+
+        $nueva_factura->crear_registro_pago();
+
+        return $nueva_factura;
     }
 
     //crea un pedido
@@ -387,13 +379,16 @@ class ProcesoController extends Controller
                 'valor_total_descuento' => $r->valor_total_descuento
             ];
         }
+
+        $descripcion = 'Generado desde ' . $cotizacion->tipo_transaccion->descripcion . ' ' . $cotizacion->tipo_documento_app->prefijo . ' ' . $cotizacion->consecutivo;
+
         $data = [
             'core_tipo_doc_app_id' => 41,
             'core_empresa_id' => $cotizacion->core_empresa_id,
-            'fecha' => $cotizacion->fecha,
+            'fecha' => $request->fecha,
             'fecha_entrega' => $cotizacion->fecha_entrega,
             'cliente_input' => '',
-            'descripcion' => $cotizacion->descripcion . " (PEDIDO GENERADO)",
+            'descripcion' => $descripcion,
             'core_tipo_transaccion_id' => 42,
             'consecutivo' => '',
             'url_id' => $url_id,
@@ -425,6 +420,29 @@ class ProcesoController extends Controller
         return $pc->crear_documento($request, $lineas_registros2, $url_id_modelo);
     }
 
+    /*
+        Este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
+        Ejemplo: $encabezado_doc_venta->crear_remision_desde_doc_venta()
+    */
+    public function crear_remision_desde_doc_venta( $encabezado_doc_venta, $fecha )
+    {
+        $datos_remision = $encabezado_doc_venta->toArray();
+        $datos_remision['fecha'] = $fecha;
+        $datos_remision['inv_bodega_id'] = $encabezado_doc_venta->cliente->inv_bodega_id;
+
+        $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
+        $datos_remision['descripcion'] = $descripcion;
+
+        $doc_remision = InventarioController::crear_encabezado_remision_ventas($datos_remision, 'Pendiente');
+
+        $lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_doc_venta->id )->get();
+        InventarioController::crear_registros_remision_ventas($doc_remision, $lineas_registros);
+
+        InventarioController::contabilizar_documento_inventario( $doc_remision->id, '' );
+
+        return $doc_remision;
+    }
+
     //valida si un valor se encuentra en el arreglo
     public function valueInArray($array, $value)
     {
@@ -435,5 +453,12 @@ class ProcesoController extends Controller
             }
         }
         return $esta;
+    }
+
+    public function sumar_dias_calendario_a_fecha( string $fecha, int $cantidad_dias )
+    {
+        $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
+
+        return $fecha_aux->addDays( $cantidad_dias )->format('Y-m-d');
     }
 }
