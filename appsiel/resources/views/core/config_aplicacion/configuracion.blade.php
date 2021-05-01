@@ -99,7 +99,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								if( isset($parametros['tipo_identificador'] ) )
+								{
+									$tipo_identificador = $parametros['tipo_identificador'];
+								}else{
+									$tipo_identificador = 0;
+								}
+							?>
+							{{ Form::bsSelect('tipo_identificador', $tipo_identificador, 'Tipo de identificador', ['NIT' => 'NIT','CUIT' => 'CUIT'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 
@@ -15,9 +16,8 @@
         <tr>
             <td style="/*border: solid 1px #574696;*/ border: none;" width="60%">
                 <div class="headempresa">
-                    @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir' ] )
-                </div>
-
+                    @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir' ] )                
+                </div>                
             </td>
             <td style="/*border: solid 1px #574696; */">
                 <div class="headdoc">
@@ -32,7 +32,7 @@
                             <td>{{ $doc_encabezado->tercero_nombre_completo }}</td>
                         </tr>
                         <tr>
-                            <td><b>NIT: &nbsp;&nbsp;</b></td>
+                            <td><b>{{ config("configuracion.tipo_identificador") }} : &nbsp;&nbsp;</b></td>
                             <td> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}</td>
                         </tr>
                         <tr>
@@ -83,7 +83,7 @@
     </table>
 
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
+        {{ Form::bsTableHeader(['Item','Producto','Cant.','Vr. unit.','IVA','T. Bruto','Total']) }}
         <tbody>
             <?php 
             $i = 1;
@@ -109,12 +109,12 @@
                     ?>
                 <td width="250px"> {{ $descripcion_item }} </td>
                 <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-                <td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }}
+                <td> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }}
                 </td>
                 <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                <td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }}
+                <td> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }}
                 </td>
-                <td> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
+                <td> {{ '$  '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
             </tr>
             <?php
                     $i++;

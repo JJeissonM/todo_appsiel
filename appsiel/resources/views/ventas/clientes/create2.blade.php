@@ -46,7 +46,7 @@
 
 					<div class="row" style="padding:5px;">
 						<div class="form-group">
-							<label class="control-label col-sm-3" for="numero_identificacion">*Cédula / NIT:</label>
+							<label class="control-label col-sm-3" for="numero_identificacion">*Cédula / {{ config("configuracion.tipo_identificador") }}:</label>
 							<div class="col-sm-9">
 								<input class="form-control" id="numero_identificacion" autocomplete="off" required="required" name="numero_identificacion" type="text" value="{{ random_int(100, 999999) }}">
 							</div>
