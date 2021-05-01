@@ -41,7 +41,7 @@ use App\Core\Tercero;
         margin: .5rem 0;
     }
     .encabezado {
-        background-color: #363756;        
+        background-color: #183a68;        
         color: white;
         margin-left: -40px;
         margin-right: -40px;
@@ -117,7 +117,7 @@ use App\Core\Tercero;
 </table>
 <div class="info">
 <p>{{ $empresa->descripcion }}</p>
-<p>{{ config("configuracion.tipo_identificador") }}. {{ number_format($empresa->numero_identificacion, 0, ',', '.') }} - {{ $empresa->digito_verificacion }}</p>
+<p>{{ config("configuracion.tipo_identificador") }}: {{ $empresa->numero_identificacion }} - {{ $empresa->digito_verificacion }}</p>
 </div>
 
 
@@ -136,7 +136,7 @@ use App\Core\Tercero;
     </tr>
     <tr>
         <td><b>{{ config("configuracion.tipo_identificador") }} :</b></td>
-        <td>{{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}</td>
+        <td>{{ $doc_encabezado->numero_identificacion - $empresa->digito_verificacion }}</td>
         <td colspan="2"></td>
     </tr>
     <tr>
@@ -290,8 +290,8 @@ use App\Core\Tercero;
     </tr>
 </table>
 <hr>
-<b>Condiciones Comerciales</b>
-<p class="text-indent">Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim esse recusandae, sint ipsam voluptatem eveniet libero et minus dolore maxime in molestias a quisquam reiciendis deserunt nihil? Quidem odit, optio tenetur reiciendis facere deleniti, quaerat magnam sunt atque quod dolore eveniet id dolorem! Quam tempora vero dignissimos veritatis. Enim quis, nobis possimus excepturi officiis ullam reiciendis esse labore repellendus unde quae, accusantium quos inventore ut modi corporis illo accusamus vel optio eius voluptas sed dicta sint ad.</p>
+<!--<b>Condiciones Comerciales</b>
+<p class="text-indent">Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim esse recusandae, sint ipsam voluptatem eveniet libero et minus dolore maxime in molestias a quisquam reiciendis deserunt nihil? Quidem odit, optio tenetur reiciendis facere deleniti, quaerat magnam sunt atque quod dolore eveniet id dolorem! Quam tempora vero dignissimos veritatis. Enim quis, nobis possimus excepturi officiis ullam reiciendis esse labore repellendus unde quae, accusantium quos inventore ut modi corporis illo accusamus vel optio eius voluptas sed dicta sint ad.</p>-->
 <br>
 <div class="encabezado">
     <p style="text-align: right; font-size: 18px; padding-right: 30px">{{ $empresa->descripcion }}</p>
