@@ -26,12 +26,21 @@
 	@if( is_null( $doc_encabezado->documento_ventas_hijo() ) && $doc_encabezado->estado == 'Pendiente' )
 		<div class="col-md-12">
 			<form class="form-control" method="post" action="{{route('ventas.conexion_procesos')}}">
-			<input type="hidden" name="url" value="vtas_cotizacion/{{$doc_encabezado->id.$variables_url}}" />
-			<input type="hidden" name="modelo" value="{{$doc_encabezado->id}}" />
-			<input type="hidden" name="source" value="COTIZACION" />
-			{{ csrf_field() }}
+				<input type="hidden" name="url" value="vtas_cotizacion/{{$doc_encabezado->id.$variables_url}}" />
+				<input type="hidden" name="modelo" value="{{$doc_encabezado->id}}" />
+				<input type="hidden" name="source" value="COTIZACION" />
+				{{ csrf_field() }}
+				<label class="control-label">Genere desde aquí su pedido de forma automática o si prefiere genere el pedido y la remisión</label>
+				<div class="row">
+					<div class="col-md-3">
+						{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
+					</div>
+					<div class="col-md-9">
+						&nbsp;
+					</div>
+
+				</div>
 				<div class="col-md-10">
-					<label class="control-label">Genere desde aquí su pedido de forma automática o si prefiere genere el pedido y la remisión</label>
 					{{ Form::select('generar',['1'=>'Pedido','3'=>'Remisión'],null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
 				</div>
 				<div class="col-md-2">

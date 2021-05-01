@@ -9,6 +9,15 @@ use Auth;
 use Input;
 
 use App\Inventarios\InvDocEncabezado;
+use App\Core\EncabezadoDocumentoTransaccion;
+
+use App\Contabilidad\ContabMovimiento;
+use App\CxC\CxcMovimiento;
+use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
+use App\Tesoreria\TesoMotivo;
+use App\Inventarios\InvProducto;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -110,6 +119,208 @@ class VtasDocEncabezado extends Model
         $enlace = '<a href="' . url( $url . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
 
         return $enlace;
+    }
+
+    public function clonar_encabezado( $fecha, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $descripcion )
+    {
+        $datos = $this->toArray();
+
+        if ( !is_null( $fecha ) )
+        {
+            $datos['fecha'] = $fecha;
+        }
+
+        if ( !is_null( $core_tipo_transaccion_id ) )
+        {
+            $datos['core_tipo_transaccion_id'] = $core_tipo_transaccion_id;
+        }
+
+        if ( !is_null( $core_tipo_doc_app_id ) )
+        {
+            $datos['core_tipo_doc_app_id'] = $core_tipo_doc_app_id;
+        }
+
+        if ( !is_null( $descripcion ) )
+        {
+            $datos['descripcion'] = $descripcion;
+        }
+
+        $datos['consecutivo'] = 0;
+        $datos['id'] = 0;
+        
+        $encabezado_transaccion = new EncabezadoDocumentoTransaccion( (int)config('ventas.factura_ventas_modelo_id') );
+
+        return $encabezado_transaccion->crear_nuevo( $datos );
+    }
+
+    public function clonar_lineas_registros( $vtas_doc_encabezado_id )
+    {
+        $lineas_registros = $this->lineas_registros;
+
+        foreach ($lineas_registros as $linea)
+        {
+            $datos = $linea->toArray();
+            $datos['vtas_doc_encabezado_id'] = $vtas_doc_encabezado_id;
+            $datos['creado_por'] = Auth::user()->email;
+            $datos['modificado_por'] = '';
+
+            VtasDocRegistro::create( $datos );
+        }
+    }
+
+    public function crear_movimiento_ventas()
+    {
+        $lineas_registros = $this->lineas_registros;
+        foreach ($lineas_registros as $linea)
+        {
+            $datos = $this->toArray() + $linea->toArray();
+
+            // Movimiento de Ventas
+            $datos['estado'] = 'Activo';
+
+            VtasMovimiento::create($datos);
+        }
+    }
+
+
+    public function contabilizar_movimiento_debito( $caja_banco_id = null )
+    {
+        $datos = $this->toArray();
+        $datos['registros_medio_pago'] = [];
+
+        $movimiento_contable = new ContabMovimiento();
+        $detalle_operacion = 'Contabilización ' . $this->tipo_transaccion->descripcion . ' ' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+
+        if ( $this->forma_pago == 'credito')
+        {
+            // La cuenta de CARTERA se toma de la clase del cliente
+            $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $this->cliente_id );
+            $datos['tipo_transaccion'] = 'cxc';
+            $movimiento_contable->contabilizar_linea_registro( $datos, $cta_x_cobrar_id, $detalle_operacion, $this->valor_total, 0);
+        }
+        
+        // Agregar el movimiento a tesorería
+        if ( $this->forma_pago == 'contado')
+        {
+            if( is_null( $caja_banco_id ) )
+            {
+                if ( empty( $datos['registros_medio_pago'] ) )
+                {   
+                    // Por defecto
+                    $caja = TesoCaja::get()->first();
+                    $teso_caja_id = $caja->id;
+                    $teso_cuenta_bancaria_id = 0;
+                    $contab_cuenta_id = $caja->contab_cuenta_id;
+                }else{
+
+                    // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
+                    $contab_cuenta_id = TesoCaja::find( 1 )->contab_cuenta_id;
+
+                    $teso_caja_id = $datos['registros_medio_pago']['teso_caja_id'];
+                    if ($teso_caja_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
+                    }
+
+                    $teso_cuenta_bancaria_id = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
+                    if ($teso_cuenta_bancaria_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
+                    }                    
+                }
+            }else{
+                // $caja_banco_id se manda desde Ventas POS
+                $caja = TesoCaja::find( $caja_banco_id );
+                $teso_caja_id = $caja->id;
+                $teso_cuenta_bancaria_id = 0;
+                $contab_cuenta_id = $caja->contab_cuenta_id;
+            }
+            
+            $datos['teso_caja_id'] = $teso_caja_id;
+            $datos['teso_cuenta_bancaria_id'] = $teso_cuenta_bancaria_id;
+            $datos['tipo_transaccion'] = 'recaudo';
+            $movimiento_contable->contabilizar_linea_registro( $datos, $contab_cuenta_id, $detalle_operacion, $this->valor_total, 0 );
+        }
+    }
+
+    // Contabilizar Ingresos de ventas e Impuestos
+    public function contabilizar_movimiento_credito()
+    {
+        $datos = $this->toArray();
+        $detalle_operacion = 'Contabilización ' . $this->tipo_transaccion->descripcion . ' ' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+
+        $lineas_registros = $this->lineas_registros;
+        foreach ($lineas_registros as $linea)
+        {
+            $una_linea_registro = $datos + $linea->toArray();
+            $una_linea_registro['creado_por'] = Auth::user()->email;
+            $una_linea_registro['modificado_por'] = '';
+            $una_linea_registro['estado'] = 'Activo';
+            $una_linea_registro['tipo_transaccion'] = 'facturacion_ventas';
+
+            $movimiento_contable = new ContabMovimiento();
+
+            // IVA generado (CR)
+            // Si se ha liquidado impuestos en la transacción
+            $valor_total_impuesto = 0;
+            if ( $una_linea_registro['tasa_impuesto'] > 0 )
+            {
+                $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_ventas( $una_linea_registro['inv_producto_id'] );
+                $valor_total_impuesto = abs( $una_linea_registro['valor_impuesto'] * $una_linea_registro['cantidad'] );
+
+                $movimiento_contable->contabilizar_linea_registro( $una_linea_registro, $cta_impuesto_ventas_id, $detalle_operacion, 0, abs($valor_total_impuesto) );
+            }
+
+            // Contabilizar Ingresos (CR)
+            // La cuenta de ingresos se toma del grupo de inventarios
+            $cta_ingresos_id = InvProducto::get_cuenta_ingresos( $una_linea_registro['inv_producto_id'] );
+            $movimiento_contable->contabilizar_linea_registro( $una_linea_registro, $cta_ingresos_id, $detalle_operacion, 0, $una_linea_registro['base_impuesto_total'] );
+        }                
+    }
+
+    /*
+        Movimiento de Tesoreria o Cartera de clientes (CxC)
+    */
+    public function crear_registro_pago()
+    {
+        $datos = $this->toArray();
+        $detalle_operacion = $this->tipo_transaccion->descripcion . ' ' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+        $datos['registros_medio_pago'] = [];
+        
+        // Cargar la cuenta por cobrar (CxC)
+        if ( $this->forma_pago == 'credito')
+        {
+            $datos['modelo_referencia_tercero_index'] = 'App\Ventas\Cliente';
+            $datos['referencia_tercero_id'] = $this->cliente_id;
+            $datos['valor_documento'] = $this->valor_total;
+            $datos['valor_pagado'] = 0;
+            $datos['saldo_pendiente'] = $this->valor_total;
+            $datos['estado'] = 'Pendiente';
+            CxcMovimiento::create( $datos );
+        }
+
+        if ( $this->forma_pago == 'contado')
+        {
+            if ( empty( $datos['registros_medio_pago'] ) )
+            {
+                // WARNING: La caja la debe tomar de la caja por defecto asociada al usuario,
+                // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
+                $caja = TesoCaja::get()->first();
+                // El motivo lo debe traer de unparámetro de la configuración
+                $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
+                $datos['teso_caja_id'] = $caja->id;
+                $datos['teso_cuenta_bancaria_id'] = 0;
+                $datos['valor_movimiento'] = $this->valor_total;
+                TesoMovimiento::create( $datos );
+            }else{
+                // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
+                $datos['teso_motivo_id'] = $datos['registros_medio_pago']['teso_motivo_id'];
+                $datos['teso_caja_id'] = $datos['registros_medio_pago']['teso_caja_id'];
+                $datos['teso_cuenta_bancaria_id'] = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
+                $datos['valor_movimiento'] = $datos['registros_medio_pago']['valor_recaudo'];
+                TesoMovimiento::create( $datos );
+            }
+        }
     }
 
     public static function sqlString($search)
