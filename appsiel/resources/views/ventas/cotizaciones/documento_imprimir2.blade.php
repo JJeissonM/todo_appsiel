@@ -41,7 +41,7 @@ use App\Core\Tercero;
         margin: .5rem 0;
     }
     .encabezado {
-        background-color: #183a68;        
+        background-color: #111e52;        
         color: white;
         margin-left: -40px;
         margin-right: -40px;
