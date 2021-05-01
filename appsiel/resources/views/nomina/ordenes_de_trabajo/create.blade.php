@@ -1,35 +1,99 @@
-@extends('layouts.create')
+@extends('layouts.principal')
 
-@section('seccion_adicional')
-	{{ Form::Spin(48) }}
-	<div class="container-fluid" id="div_tabla_empleados">
-		
-	</div>
+@section('content')
+	{{ Form::bsMigaPan($miga_pan) }}
+	<hr>
 
-	<br><br>
+	@include('layouts.mensajes')
 	
-	<div class="container-fluid" id="div_ingreso_productos">
+	<div class="container-fluid">
+		<div class="marco_formulario">
+		    <h4>Nuevo registro</h4>
+		    <hr>
 
-		<div class="container-fluid" style="border: 1px #ddd dashed; padding: 5px;">
-
-			<?php 
-				$id_transaccion = 1;
-				$motivos = \App\Inventarios\InvMotivo::get_motivos_transaccion($id_transaccion);
+		    <?php
+				use App\Http\Controllers\Sistema\VistaController;
 			?>
 
-			{{ Form::bsSelect('inv_bodega_id', null, 'Bodega', \App\Inventarios\InvBodega::opciones_campo_select(), ['class'=>'form-control']) }}
+			{{ Form::open(['url'=>$form_create['url'],'id'=>'form_create','files' => true]) }}
 
-			@include('inventarios.create_tabla_productos')
+				<?php
+					$botones = "El modelo no tiene campos asociados.";
+				  	if ( count($form_create['campos'])>0 ) {
+				  		$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
+				  		$botones = Form::bsButtonsForm($url);
+				  	}
+				?>
 
-			<!-- Modal -->
-			@include('inventarios.incluir.ingreso_productos_2')
+				<div class="row botones" style="margin: 5px;"> {{ $botones }} </div>
 
+				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
+
+				{{ Form::hidden('url_id',Input::get('id')) }}
+				{{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
+				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+
+				@yield('campos_adicionales')
+				
+			{{ Form::close() }}
+
+			{{ Form::Spin(48) }}
+			<div class="container-fluid" id="div_tabla_empleados">
+				
+			</div>
+
+			<br><br>
+			
+			<div class="container-fluid" id="div_ingreso_productos">
+
+				<div class="container-fluid" style="border: 1px #ddd dashed; padding: 5px;">
+
+					<?php 
+						$id_transaccion = 1;
+						$motivos = \App\Inventarios\InvMotivo::get_motivos_transaccion($id_transaccion);
+					?>
+
+					{{ Form::bsSelect('inv_bodega_id', null, 'Bodega', \App\Inventarios\InvBodega::opciones_campo_select(), ['class'=>'form-control']) }}
+
+					@include('inventarios.create_tabla_productos')
+
+					<!-- Modal -->
+					@include('inventarios.incluir.ingreso_productos_2')
+
+				</div>
+			</div>
 		</div>
 	</div>
+	<br/><br/>
 
 @endsection
 
-@section('script_adicional')
+@section('scripts')
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$('#fecha').val( get_fecha_hoy() );
+
+			$('#bs_boton_guardar').on('click',function(event){
+				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+
+				// Desactivar el click del botón
+				$( this ).off( event );
+
+				$('#form_create').submit();
+			});
+		});
+	</script>
+
+	@if( isset($archivo_js) )
+		<script src="{{ asset( $archivo_js ) }}"></script>
+	@endif
 
 	<script type="text/javascript">
 		$(document).ready(function(){
