@@ -1,4 +1,4 @@
-{{ Form::open(['url'=>'vtas_doc_registro_guardar?id='.$id.'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion,'id'=>'form_edit']) }}
+{{ Form::open(['url'=>'vtas_pedidos_doc_registro_guardar?id='.$id.'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion,'id'=>'form_edit']) }}
   <h4>{{ $linea_factura->producto_descripcion }}</h4>
   <hr>
 

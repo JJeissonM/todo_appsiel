@@ -94,18 +94,6 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @endsection
 
 @section('documento_vista')
-<form id="remision" action="{{route('pedido.remision')}}" method="post">
-	{{ csrf_field() }}
-	<input type="hidden" name="id" value="{{$doc_encabezado->id}}" />
-	<input type="hidden" name="lineas_registros" id="lineas_registros" />
-	<input type="hidden" name="cliente_id" value="{{$cliente->id}}" />
-	<input type="hidden" name="core_tercero_id" value="{{$cliente->core_tercero_id}}" />
-	<input type="hidden" name="inv_bodega_id" value="{{$cliente->inv_bodega_id}}" />
-	<input type="hidden" name="core_empresa_id" value="{{$doc_encabezado->core_empresa_id}}" />
-
-	{{ Form::hidden('url_id',Input::get('id')) }}
-	{{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
-	{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
 
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped">
@@ -181,11 +169,11 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 			</tr>
 
 			@foreach( $array_tasas as $key => $value )
-			<tr>
-				<td width="75%"> <b> &nbsp; </b> <br> </td>
-				<td style="text-align: right; font-weight: bold;"> {{ $value['tipo'] }} </td>
-				<td style="text-align: right; font-weight: bold;" id="tbimpuesto"> ${{ round($value['valor_impuesto'],2,PHP_ROUND_HALF_UP) }} </td>
-			</tr>
+				<tr>
+					<td width="75%"> <b> &nbsp; </b> <br> </td>
+					<td style="text-align: right; font-weight: bold;"> {{ $value['tipo'] }} </td>
+					<td style="text-align: right; font-weight: bold;" id="tbimpuesto"> ${{ round($value['valor_impuesto'],2,PHP_ROUND_HALF_UP) }} </td>
+				</tr>
 			@endforeach
 			<tr>
 				<td width="75%"> <b> &nbsp; </b> <br> </td>
@@ -194,238 +182,279 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 			</tr>
 		</table>
 	</div>
-</form>
-
 @endsection
+
 @section('otros_scripts')
-<script type="text/javascript">
-	var array_registros = [];
-	var cliente = <?php echo $cliente; ?>;
+	<script type="text/javascript">
+		var array_registros = [];
+		var cliente = <?php echo $cliente; ?>;
 
-	$(document).ready(function() {
+		$(document).ready(function() {
 
-		$(".btn_editar_registro").click(function(event){
-			
-	        $("#myModal").modal({backdrop: "static"});
-	        $("#div_spin").show();
-	        $(".btn_edit_modal").hide();
+			$(".btn_editar_registro").click(function(event){
 
-	        var url = '../vtas_pedidos_get_formulario_edit_registro';
+		        $("#myModal").modal({backdrop: "static"});
+		        $("#div_spin").show();
+		        $(".btn_edit_modal").hide();
 
-			$.get( url, { 
-							linea_registro_id: $(this).attr('data-linea_registro_id'), 
-							id: getParameterByName('id'), 
-							id_modelo: getParameterByName('id_modelo'), 
-							id_transaccion: getParameterByName('id_transaccion')
-						} )
-				.done(function( data ) {
+		        var url = '../vtas_pedidos_get_formulario_edit_registro';
 
-					$('#saldo_original').val( $('#saldo_a_la_fecha').val() );
-					$('#cantidad_original').val( $('#cantidad').val() );
+				$.get( url, { 
+								linea_registro_id: $(this).attr('data-linea_registro_id'), 
+								id: getParameterByName('id'), 
+								id_modelo: getParameterByName('id_modelo'), 
+								id_transaccion: getParameterByName('id_transaccion')
+							} )
+					.done(function( data ) {
 
-	                $('#contenido_modal').html(data);
+						$('#saldo_original').val( $('#saldo_a_la_fecha').val() );
+						$('#cantidad_original').val( $('#cantidad').val() );
 
-	                $("#div_spin").hide();
+		                $('#contenido_modal').html(data);
 
-	                $('#precio_unitario').select();
+		                $("#div_spin").hide();
 
-				});		        
-	    });
+		                $('#precio_unitario').select();
 
-	    // Al modificar el precio 
-        $(document).on('keyup','#precio_unitario',function(event){
-			
-			if( validar_input_numerico( $(this) ) )
-			{	
+					});		        
+		    });
 
-				var x = event.which || event.keyCode;
-				if( x==13 )
-				{
-					$('#cantidad').select();				
-				}
+		    // Al modificar el precio 
+	        $(document).on('keyup','#precio_unitario',function(event){
+				
+				if( validar_input_numerico( $(this) ) )
+				{	
 
-				calcular_valor_descuento();
+					var x = event.which || event.keyCode;
+					if( x==13 )
+					{
+						$('#cantidad').select();				
+					}
 
-				calcular_precio_total();
+					calcular_valor_descuento();
 
-			}else{
-				$(this).focus();
-				return false;
-			}
+					calcular_precio_total();
 
-		});
-
-	    // Al modificar la cantidad
-        $(document).on('keyup','#cantidad',function(event){
-			
-			if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
-			{	
-				calcula_nuevo_saldo_a_la_fecha();
-				if ( !validar_existencia_actual() )
-				{
-					$('#precio_total').val('');
+				}else{
+					$(this).focus();
 					return false;
 				}
 
-				var x = event.which || event.keyCode;
-				if( x==13 )
-				{
-					$('#tasa_descuento').select();
-				}
+			});
 
-				calcular_valor_descuento();
-
-				calcular_precio_total();
+		    // Al modificar la cantidad
+	        $(document).on('keyup','#cantidad',function(event){
 				
-			}else{
-				$(this).focus();
-				return false;
-			}
+				if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
+				{	
+					//calcula_nuevo_saldo_a_la_fecha();
+					if ( !validar_existencia_actual() )
+					{
+						$('#precio_total').val('');
+						return false;
+					}
 
-		});
+					var x = event.which || event.keyCode;
+					if( x==13 )
+					{
+						$('#tasa_descuento').select();
+					}
 
+					calcular_valor_descuento();
 
-        $(document).on('keyup','#tasa_descuento',function(event){
-        	if( validar_input_numerico( $(this) ) )
-			{	
-				// máximo valor de 100
-				if ( $(this).val() > 100 )
-				{ 
-					$(this).val(100);
-				}
-
-				var x = event.which || event.keyCode;
-				if( x == 13 )
-				{
-					$('.btn_save_modal').focus();
-					return true;
-				}
-				
-				calcular_valor_descuento();
-
-				calcular_precio_total();
-
-			}else{
-
-				$(this).focus();
-				return false;
-			}
-		});
-
-		function calcular_valor_descuento()
-		{
-			var valor_total_descuento = $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 * $('#cantidad').val();
-
-			$('#valor_total_descuento_no').val( valor_total_descuento );
-			$('#valor_total_descuento').val( valor_total_descuento );
-		}
-
-
-
-		function calcular_precio_total()
-		{
-			var valor_total_descuento = parseFloat( $('#valor_total_descuento').val() );
-
-			var precio_unitario = parseFloat( $('#precio_unitario').val() );
-
-			var cantidad = parseFloat( $('#cantidad').val() );
-			
-			var precio_total = precio_unitario * cantidad - valor_total_descuento;
-
-			$('#precio_total').val( precio_total );
-		}
-
-
-        $('.btn_save_modal').click(function(event){
-
-        	if ( $.isNumeric( $('#precio_total').val() ) && $('#precio_total').val() > 0 )
-        	{
-        		if ( !validar_existencia_actual() )
-				{
-					$('#precio_total').val('');
+					calcular_precio_total();
+					
+				}else{
+					$(this).focus();
 					return false;
 				}
-                validacion_saldo_movimientos_posteriores();
-        	}else{
-        		alert('El precio total es incorrecto. Verifique lo valores ingresados.');
-        	}
-        });
 
-        $("#myModal").on('hide.bs.modal', function(){
-            $('#popup_alerta_danger').hide();
-        });
+			});
+
+
+	        $(document).on('keyup','#tasa_descuento',function(event){
+	        	if( validar_input_numerico( $(this) ) )
+				{	
+					// máximo valor de 100
+					if ( $(this).val() > 100 )
+					{ 
+						$(this).val(100);
+					}
+
+					var x = event.which || event.keyCode;
+					if( x == 13 )
+					{
+						$('.btn_save_modal').focus();
+						return true;
+					}
+					
+					calcular_valor_descuento();
+
+					calcular_precio_total();
+
+				}else{
+
+					$(this).focus();
+					return false;
+				}
+			});
+
+			function calcular_valor_descuento()
+			{
+				var valor_total_descuento = $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 * $('#cantidad').val();
+
+				$('#valor_total_descuento_no').val( valor_total_descuento );
+				$('#valor_total_descuento').val( valor_total_descuento );
+			}
+
+
+
+			function calcular_precio_total()
+			{
+				var valor_total_descuento = parseFloat( $('#valor_total_descuento').val() );
+
+				var precio_unitario = parseFloat( $('#precio_unitario').val() );
+
+				var cantidad = parseFloat( $('#cantidad').val() );
+				
+				var precio_total = precio_unitario * cantidad - valor_total_descuento;
+
+				$('#precio_total').val( precio_total );
+			}
+
+
+	        $('.btn_save_modal').click(function(event){
+	        	alert('hi');
+	        	if ( $.isNumeric( $('#precio_total').val() ) && $('#precio_total').val() > 0 )
+	        	{
+	        		if ( !validar_existencia_actual() )
+					{
+						$('#precio_total').val('');
+						return false;
+					}
+	                validacion_saldo_movimientos_posteriores();
+	        	}else{
+	        		alert('El precio total es incorrecto. Verifique lo valores ingresados.');
+	        	}
+	        });
+
+	        $("#myModal").on('hide.bs.modal', function(){
+	            $('#popup_alerta_danger').hide();
+	        });
+
+			/*
+				validar_existencia_actual
+			*/
+			function validar_existencia_actual()
+			{
+				if ( $('#tipo').val() == 'servicio' ) { return true; }
+
+				if ( parseFloat( $('#saldo_a_la_fecha').val() ) < 0 ) 
+				{
+					alert('Nueva EXISTENCIA negativa.');
+					$('#cantidad').val('');
+					$('#cantidad').focus();
+					return false;
+				}
+				return true;
+			}
+
+
             
-		array_registros = <?php echo json_encode($doc_registros); ?>;
-	});
+            function validacion_saldo_movimientos_posteriores()
+            {
+            	$('.btn_save_modal').off( 'click' );
+                $('#form_edit').submit();
+                $('#popup_alerta_danger').hide();
+
+                /*var url = '../inv_validacion_saldo_movimientos_posteriores/' + $('#bodega_id').val() + '/' + $('#producto_id').val() + '/' + $('#fecha').val() + '/' + $('#cantidad').val() + '/' + $('#saldo_a_la_fecha2').val() + '/salida';
+
+                $.get( url )
+                    .done( function( data ) {
+                        if ( data != 0 )
+                        {
+                            $('#popup_alerta_danger').show();
+                            $('#popup_alerta_danger').text( data );
+                        }else{
+                            $('.btn_save_modal').off( 'click' );
+                            $('#form_edit').submit();
+                            $('#popup_alerta_danger').hide();
+                        }
+                    });
+                */
+            }
+	            
+			array_registros = <?php echo json_encode($doc_registros); ?>;
+		});
 
 
-	function calcular(id) {
-		var arraytotal = [];
-		var arrayimp = [];
-		var arrayc = [];
-		var arraytotalbruto = [];
-		var nuevoimp = 0;
-		var sbtotal = 0;
-		var totalc = 0;
-		var totalt = 0;
-		var vu = $("input:text[name=dpreciounitario_" + id + "]").val();
-		var cant = $("input:text[name=dcantidad_" + id + "]").val();
-		var bruto = Math.round(parseFloat(vu) * parseFloat(cant));
-		$("input:text[name=dprecio_bruto_" + id + "]").val(bruto);
-		var iva = $("input:text[name=dimpuesto_" + id + "]").val();
-		var total = Math.round(bruto + (bruto * (iva / 100)));
-		$("input:text[name=dpreciototal_" + id + "]").val(total);
-		$(".cant").each(function() {
-			arrayc.push($(this).val());
-			totalc = totalc + parseFloat($(this).val());
-		});
-		$(".total").each(function() {
-			arraytotal.push($(this).val());
-		});
-		$(".imp").each(function() {
-			arrayimp.push($(this).val());
-		});
-		$(".valor_bruto").each(function() {
-			arraytotalbruto.push($(this).val());
-		});
-		arraytotal.forEach(function(value, index) {
-			totalt = totalt + parseFloat(value);
-			sbtotal = sbtotal + parseFloat(arraytotalbruto[index]);
-			nuevoimp = nuevoimp + (arraytotalbruto[index] * (arrayimp[index] / 100));
-		});
-		$("#tbtotal").html("$ " + Math.round(totalt));
-		$("#tbcant").html(totalc);
-		$("#tbstotal").html("$ " + Math.round(sbtotal));
-		$("#tbimpuesto").html("$ " + Math.round(nuevoimp));
-	}
+		function calcular(id) {
+			var arraytotal = [];
+			var arrayimp = [];
+			var arrayc = [];
+			var arraytotalbruto = [];
+			var nuevoimp = 0;
+			var sbtotal = 0;
+			var totalc = 0;
+			var totalt = 0;
+			var vu = $("input:text[name=dpreciounitario_" + id + "]").val();
+			var cant = $("input:text[name=dcantidad_" + id + "]").val();
+			var bruto = Math.round(parseFloat(vu) * parseFloat(cant));
+			$("input:text[name=dprecio_bruto_" + id + "]").val(bruto);
+			var iva = $("input:text[name=dimpuesto_" + id + "]").val();
+			var total = Math.round(bruto + (bruto * (iva / 100)));
+			$("input:text[name=dpreciototal_" + id + "]").val(total);
+			$(".cant").each(function() {
+				arrayc.push($(this).val());
+				totalc = totalc + parseFloat($(this).val());
+			});
+			$(".total").each(function() {
+				arraytotal.push($(this).val());
+			});
+			$(".imp").each(function() {
+				arrayimp.push($(this).val());
+			});
+			$(".valor_bruto").each(function() {
+				arraytotalbruto.push($(this).val());
+			});
+			arraytotal.forEach(function(value, index) {
+				totalt = totalt + parseFloat(value);
+				sbtotal = sbtotal + parseFloat(arraytotalbruto[index]);
+				nuevoimp = nuevoimp + (arraytotalbruto[index] * (arrayimp[index] / 100));
+			});
+			$("#tbtotal").html("$ " + Math.round(totalt));
+			$("#tbcant").html(totalc);
+			$("#tbstotal").html("$ " + Math.round(sbtotal));
+			$("#tbimpuesto").html("$ " + Math.round(nuevoimp));
+		}
 
 
-	function enviar() {
-		var linea_reg = [];
-		$(".total").each(function() {
-			var prod = $(this).parent('td').prev().children('input').attr('id');
-			linea_reg.push(llenar_objeto(prod));
-		});
-		$('#lineas_registros').val(JSON.stringify(linea_reg));
-		$("#remision").submit();
-	}
+		function enviar() {
+			var linea_reg = [];
+			$(".total").each(function() {
+				var prod = $(this).parent('td').prev().children('input').attr('id');
+				linea_reg.push(llenar_objeto(prod));
+			});
+			$('#lineas_registros').val(JSON.stringify(linea_reg));
+			$("#remision").submit();
+		}
 
-	function llenar_objeto(id) {
-		var o = new Object();
-		array_registros.forEach(function(value, index) {
-			if (id == value.id) {
-				o['inv_motivo_id'] = value.vtas_motivo_id;
-				o['inv_bodega_id'] = cliente.inv_bodega_id;
-				o['inv_producto_id'] = value.producto_id;
-				var precio_unitario = $("input:text[name=dpreciounitario_" + id + "]").val();
-				var cantidad = $("input:text[name=dcantidad_" + id + "]").val();
-				var costo_unitario = parseFloat(precio_unitario) / (1 + (parseFloat(value.tasa_impuesto) / 100));
-				o['costo_unitario'] = costo_unitario;
-				o['cantidad'] = cantidad;
-				o['costo_total'] = Math.round($("input:text[name=dpreciototal_" + id + "]").val());
-			}
-		});
-		return o;
-	}
-</script>
+		function llenar_objeto(id) {
+			var o = new Object();
+			array_registros.forEach(function(value, index) {
+				if (id == value.id) {
+					o['inv_motivo_id'] = value.vtas_motivo_id;
+					o['inv_bodega_id'] = cliente.inv_bodega_id;
+					o['inv_producto_id'] = value.producto_id;
+					var precio_unitario = $("input:text[name=dpreciounitario_" + id + "]").val();
+					var cantidad = $("input:text[name=dcantidad_" + id + "]").val();
+					var costo_unitario = parseFloat(precio_unitario) / (1 + (parseFloat(value.tasa_impuesto) / 100));
+					o['costo_unitario'] = costo_unitario;
+					o['cantidad'] = cantidad;
+					o['costo_total'] = Math.round($("input:text[name=dpreciototal_" + id + "]").val());
+				}
+			});
+			return o;
+		}
+	</script>
 @endsection
