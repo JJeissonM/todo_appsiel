@@ -31,6 +31,7 @@ use App\Core\Empresa;
 use App\Sistema\TipoTransaccion;
 use App\Sistema\Modelo;
 use App\Core\Tercero;
+use App\Core\TransaccionOtrosCampos;
 
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
@@ -158,9 +159,9 @@ class CotizacionController extends TransaccionController
     {
         //dd($request->formato_impresion_id);
         if($request->formato_impresion_id == 1){
-            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir' );
+            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir');
         }else{
-            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir2' );
+            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir2');
         }
         
 
@@ -200,7 +201,7 @@ class CotizacionController extends TransaccionController
     /*
         Generar la vista para los métodos show(), imprimir() o enviar_por_email()
     */
-    public function generar_documento_vista( $id, $nombre_vista )
+    public function generar_documento_vista( $id, $nombre_vista)
     {
         $this->doc_encabezado = VtasDocEncabezado::get_registro_impresion( $id );
         
@@ -210,10 +211,14 @@ class CotizacionController extends TransaccionController
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$this->doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->first();
 
+        dd($this->doc_encabezado->contacto_cliente);
+
+        $otroscampos = TransaccionOtrosCampos::where('core_tipo_transaccion_id',$this->doc_encabezado->core_tipo_transaccion_id)->get()->first();
+
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 
-        return View::make( 'ventas.cotizaciones.'.$nombre_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion' ) )->render();
+        return View::make( 'ventas.cotizaciones.'.$nombre_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','otroscampos' ) )->render();
     }
 
 

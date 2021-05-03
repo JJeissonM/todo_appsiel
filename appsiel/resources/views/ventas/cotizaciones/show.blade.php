@@ -56,7 +56,9 @@
 	<br />
 	<b>Para:</b> {{ $doc_encabezado->tercero_nombre_completo }}
 	<br />
-	<b>NIT: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+	<b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
+	
+	@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif
 	@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
 		<br>
 		<b>{{ $doc_encabezado->documento_ventas_hijo()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_hijo()->enlace_show_documento() !!}
