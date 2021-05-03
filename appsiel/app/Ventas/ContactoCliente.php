@@ -23,8 +23,10 @@ class ContactoCliente extends Model
 	public static function consultar_registros($nro_registros, $search)
     {
         $array = ContactoCliente::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_contactos_clientes.core_tercero_id')
-						            ->select(
-						                'vtas_contactos_clientes.cliente_id AS campo1',
+                                    ->leftJoin('vtas_clientes', 'vtas_clientes.id', '=', 'vtas_contactos_clientes.cliente_id')
+                                    ->leftJoin('core_terceros as tercero_cliente', 'tercero_cliente.id', '=', 'vtas_clientes.core_tercero_id')
+                                    ->select(
+						                'tercero_cliente.descripcion AS campo1',
 						                'core_terceros.descripcion AS campo2',
 						                'core_terceros.email AS campo3',
 						                'core_terceros.telefono1 AS campo4',
