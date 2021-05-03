@@ -1003,7 +1003,7 @@ class InventarioController extends TransaccionController
     // Petición AJAX. Parámetro enviados por GET
     public function get_formulario_edit_registro()
     {
-        $linea_registro = InvDocRegistro::get_un_registro(Input::get('linea_registro_id'));
+        $linea_registro = InvDocRegistro::get_un_registro( Input::get('linea_registro_id') );
         $doc_encabezado = InvDocEncabezado::get_registro_impresion($linea_registro->inv_doc_encabezado_id);
 
         // Se debe recuperar el cantidad original del saldo a la fecha de la linea que se está editando

@@ -205,97 +205,150 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 	$(document).ready(function() {
 
 		$(".btn_editar_registro").click(function(event){
-            $('#contenido_modal').html('');
-            $("#myModal").modal({backdrop: "static"});
-            $("#div_spin").show();
-            $(".btn_edit_modal").hide();
+			
+	        $("#myModal").modal({backdrop: "static"});
+	        $("#div_spin").show();
+	        $(".btn_edit_modal").hide();
 
-            var url = '../inv_get_formulario_edit_registro';
+	        var url = '../vtas_pedidos_get_formulario_edit_registro';
 
-            $.get( url, { linea_registro_id: $(this).attr('data-linea_registro_id'), id: getParameterByName('id'), id_modelo: getParameterByName('id_modelo'), id_transaccion: getParameterByName('id_transaccion') } )
-                .done(function( data ) {
+			$.get( url, { 
+							linea_registro_id: $(this).attr('data-linea_registro_id'), 
+							id: getParameterByName('id'), 
+							id_modelo: getParameterByName('id_modelo'), 
+							id_transaccion: getParameterByName('id_transaccion')
+						} )
+				.done(function( data ) {
 
-                    $('#saldo_original').val( $('#saldo_a_la_fecha').val() );
-                    $('#cantidad_original').val( $('#cantidad').val() );
+					$('#saldo_original').val( $('#saldo_a_la_fecha').val() );
+					$('#cantidad_original').val( $('#cantidad').val() );
 
-                    $('#contenido_modal').html(data);
+	                $('#contenido_modal').html(data);
 
-                    $("#div_spin").hide();
+	                $("#div_spin").hide();
 
-                    $('#costo_unitario').select();
+	                $('#precio_unitario').select();
 
-                });             
-        });
+				});		        
+	    });
 
-        // Al modificar el precio de compra
-        $(document).on('keyup','#costo_unitario',function(event){
-            
-            if( validar_input_numerico( $(this) ) )
-            {   
+	    // Al modificar el precio 
+        $(document).on('keyup','#precio_unitario',function(event){
+			
+			if( validar_input_numerico( $(this) ) )
+			{	
 
-                var x = event.which || event.keyCode;
-                if( x==13 )
-                {
-                    $('#cantidad').select();                
-                }
+				var x = event.which || event.keyCode;
+				if( x==13 )
+				{
+					$('#cantidad').select();				
+				}
 
-                $('#costo_total').val( parseFloat( $('#costo_unitario').val() ) * parseFloat( $('#cantidad').val() ));
+				calcular_valor_descuento();
 
-            }else{
-                $(this).focus();
-                return false;
-            }
+				calcular_precio_total();
 
-        });
+			}else{
+				$(this).focus();
+				return false;
+			}
 
-        // Al modificar el precio de compra
+		});
+
+	    // Al modificar la cantidad
         $(document).on('keyup','#cantidad',function(event){
-            
-            if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
-            {
-                calcula_nuevo_saldo_a_la_fecha();
+			
+			if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
+			{	
+				calcula_nuevo_saldo_a_la_fecha();
+				if ( !validar_existencia_actual() )
+				{
+					$('#precio_total').val('');
+					return false;
+				}
 
-                var x = event.which || event.keyCode;
-                if( x==13 )
-                {
-                    if ( !validar_existencia_actual() )
-                    {
-                        $('#costo_total').val('');
-                        return false;
-                    }
-                    $('.btn_save_modal').focus();               
-                }
+				var x = event.which || event.keyCode;
+				if( x==13 )
+				{
+					$('#tasa_descuento').select();
+				}
 
-                $('#costo_total').val( parseFloat( $('#costo_unitario').val() ) * parseFloat( $('#cantidad').val() ));
-            }else{
-                $('#costo_total').val('');
-                $(this).focus();
-                return false;
-            }
+				calcular_valor_descuento();
 
-        });$(document).on('change','#generar',function(event){
-            
-            if( $(this).val() == 'remision_y_factura_desde_pedido' )
-            {
-                $('#div_advertencia_factura').fadeIn(500);
-            }else{
-                $('#div_advertencia_factura').hide();
-            }
+				calcular_precio_total();
+				
+			}else{
+				$(this).focus();
+				return false;
+			}
 
-        });
+		});
+
+
+        $(document).on('keyup','#tasa_descuento',function(event){
+        	if( validar_input_numerico( $(this) ) )
+			{	
+				// máximo valor de 100
+				if ( $(this).val() > 100 )
+				{ 
+					$(this).val(100);
+				}
+
+				var x = event.which || event.keyCode;
+				if( x == 13 )
+				{
+					$('.btn_save_modal').focus();
+					return true;
+				}
+				
+				calcular_valor_descuento();
+
+				calcular_precio_total();
+
+			}else{
+
+				$(this).focus();
+				return false;
+			}
+		});
+
+		function calcular_valor_descuento()
+		{
+			var valor_total_descuento = $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 * $('#cantidad').val();
+
+			$('#valor_total_descuento_no').val( valor_total_descuento );
+			$('#valor_total_descuento').val( valor_total_descuento );
+		}
+
+
+
+		function calcular_precio_total()
+		{
+			var valor_total_descuento = parseFloat( $('#valor_total_descuento').val() );
+
+			var precio_unitario = parseFloat( $('#precio_unitario').val() );
+
+			var cantidad = parseFloat( $('#cantidad').val() );
+			
+			var precio_total = precio_unitario * cantidad - valor_total_descuento;
+
+			$('#precio_total').val( precio_total );
+		}
+
 
         $('.btn_save_modal').click(function(event){
-            if ( $.isNumeric( $('#costo_total').val() ) && $('#costo_total').val() > 0 )
-            {
-                if ( !validar_existencia_actual() )
-                {
-                    $('#costo_total').val('');
-                    return false;
-                }
+
+        	if ( $.isNumeric( $('#precio_total').val() ) && $('#precio_total').val() > 0 )
+        	{
+        		if ( !validar_existencia_actual() )
+				{
+					$('#precio_total').val('');
+					return false;
+				}
                 validacion_saldo_movimientos_posteriores();
-            }else{
-                alert('El costo total es incorrecto. Verifique lo valores ingresados.');
-            }
+        	}else{
+        		alert('El precio total es incorrecto. Verifique lo valores ingresados.');
+        	}
         });
 
         $("#myModal").on('hide.bs.modal', function(){

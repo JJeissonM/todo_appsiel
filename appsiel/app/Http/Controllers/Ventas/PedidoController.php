@@ -12,8 +12,6 @@ use Lava;
 use Input;
 use Form;
 
-
-
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -444,14 +442,14 @@ class PedidoController extends TransaccionController
     // Petición AJAX. Parámetro enviados por GET
     public function get_formulario_edit_registro()
     {
-        $linea_registro = VtasDocRegistro::get_un_registro( Input::get('linea_registro_id') );
-        $doc_encabezado = VtasDocEncabezado::get_registro_impresion( $linea_registro->vtas_doc_encabezado_id );
+        $linea_factura = VtasDocRegistro::get_un_registro( Input::get('linea_registro_id') );
+        $doc_encabezado = VtasDocEncabezado::get_registro_impresion( $linea_factura->vtas_doc_encabezado_id );
 
         $id = Input::get('id');
         $id_modelo = Input::get('id_modelo');
         $id_transaccion = Input::get('id_transaccion');
 
-        $formulario = View::make('ventas.pedidos.formulario_editar_registro', compact('linea_registro', 'id', 'id_modelo', 'id_transaccion', 'doc_encabezado'))->render();
+        $formulario = View::make( 'ventas.pedidos.formulario_editar_registro', compact( 'linea_factura', 'id', 'id_modelo', 'id_transaccion', 'doc_encabezado'))->render();
 
         return $formulario;
     }
