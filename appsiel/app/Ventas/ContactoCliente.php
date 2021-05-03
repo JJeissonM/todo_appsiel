@@ -20,11 +20,18 @@ class ContactoCliente extends Model
 
     public $urls_acciones = '{ "create":"web/create", "edit":"web/id_fila/edit", "eliminar":"web_eliminar/id_fila"}';
 
+    public function tercero()
+    {
+        return $this->belongsTo( Tercero::class, 'core_tercero_id');
+    }
+
 	public static function consultar_registros($nro_registros, $search)
     {
         $array = ContactoCliente::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_contactos_clientes.core_tercero_id')
-						            ->select(
-						                'vtas_contactos_clientes.cliente_id AS campo1',
+                                    ->leftJoin('vtas_clientes', 'vtas_clientes.id', '=', 'vtas_contactos_clientes.cliente_id')
+                                    ->leftJoin('core_terceros as tercero_cliente', 'tercero_cliente.id', '=', 'vtas_clientes.core_tercero_id')
+                                    ->select(
+						                'tercero_cliente.descripcion AS campo1',
 						                'core_terceros.descripcion AS campo2',
 						                'core_terceros.email AS campo3',
 						                'core_terceros.telefono1 AS campo4',
@@ -67,6 +74,26 @@ class ContactoCliente extends Model
                     ->select('vtas_contactos_clientes.id','core_terceros.descripcion')
                     ->orderby('core_terceros.descripcion')
                     ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
+    public static function opciones_campo_select_cliente( $cliente_id )
+    {
+        $opciones = ContactoCliente::leftJoin('core_terceros','core_terceros.id','=','vtas_contactos_clientes.core_tercero_id')
+                                ->where([
+                                            ['vtas_contactos_clientes.estado','=','Activo'],
+                                            ['vtas_contactos_clientes.cliente_id','=', $cliente_id]
+                                        ])
+                                ->select('vtas_contactos_clientes.id','core_terceros.descripcion')
+                                ->orderby('core_terceros.descripcion')
+                                ->get();
 
         $vec['']='';
         foreach ($opciones as $opcion)
@@ -140,37 +167,12 @@ class ContactoCliente extends Model
     public function validar_eliminacion($id)
     {
         $tablas_relacionadas = '{
-                            "0":{
-                                    "tabla":"vtas_doc_encabezados",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente tiene documentos de ventas estándar."
-                                },
-                            "1":{
-                                    "tabla":"vtas_movimientos",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente tiene movimientos de ventas estándar."
-                                },
-                            "2":{
-                                    "tabla":"vtas_pos_doc_encabezados",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente tiene documentos de ventas POS."
-                                },
-                            "3":{
-                                    "tabla":"vtas_pos_movimientos",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente tiene movimientos de ventas POS."
-                                },
-                            "4":{
-                                    "tabla":"vtas_pos_puntos_de_ventas",
-                                    "llave_foranea":"cliente_default_id",
-                                    "mensaje":"Cliente está asociado a punto de ventas (POS)."
-                                },
-                            "5":{
-                                    "tabla":"vtas_vendedores",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente está asociado a un vendedor."
-                                }
-                        }';
+                                    "0":{
+                                            "tabla":"vtas_doc_encabezados",
+                                            "llave_foranea":"contacto_cliente_id",
+                                            "mensaje":"Contacto está asociado a documentos de ventas."
+                                        }
+                                }';
         $tablas = json_decode( $tablas_relacionadas );
         foreach($tablas AS $una_tabla)
         { 
