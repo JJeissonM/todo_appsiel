@@ -461,6 +461,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.core_empresa_id',
                 'vtas_doc_encabezados.core_tercero_id',
                 'vtas_doc_encabezados.cliente_id',
+                'vtas_doc_encabezados.contacto_cliente_id',
                 'vtas_doc_encabezados.remision_doc_encabezado_id',
                 'vtas_doc_encabezados.core_tipo_transaccion_id',
                 'vtas_doc_encabezados.core_tipo_doc_app_id',

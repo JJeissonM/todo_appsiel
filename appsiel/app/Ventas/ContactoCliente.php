@@ -147,37 +147,12 @@ class ContactoCliente extends Model
     public function validar_eliminacion($id)
     {
         $tablas_relacionadas = '{
-                            "0":{
-                                    "tabla":"vtas_doc_encabezados",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente tiene documentos de ventas estándar."
-                                },
-                            "1":{
-                                    "tabla":"vtas_movimientos",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente tiene movimientos de ventas estándar."
-                                },
-                            "2":{
-                                    "tabla":"vtas_pos_doc_encabezados",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente tiene documentos de ventas POS."
-                                },
-                            "3":{
-                                    "tabla":"vtas_pos_movimientos",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente tiene movimientos de ventas POS."
-                                },
-                            "4":{
-                                    "tabla":"vtas_pos_puntos_de_ventas",
-                                    "llave_foranea":"cliente_default_id",
-                                    "mensaje":"Cliente está asociado a punto de ventas (POS)."
-                                },
-                            "5":{
-                                    "tabla":"vtas_vendedores",
-                                    "llave_foranea":"cliente_id",
-                                    "mensaje":"Cliente está asociado a un vendedor."
-                                }
-                        }';
+                                    "0":{
+                                            "tabla":"vtas_doc_encabezados",
+                                            "llave_foranea":"contacto_cliente_id",
+                                            "mensaje":"Contacto está asociado a documentos de ventas."
+                                        }
+                                }';
         $tablas = json_decode( $tablas_relacionadas );
         foreach($tablas AS $una_tabla)
         { 

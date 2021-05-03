@@ -71,7 +71,6 @@ class CotizacionController extends TransaccionController
      */
     public function store(Request $request)
     {
-        dd($request->all());
         $lineas_registros = json_decode($request->lineas_registros);
 
         $request['estado'] = 'Pendiente';
@@ -157,7 +156,8 @@ class CotizacionController extends TransaccionController
     public function imprimir(Request $request, $id )
     {
         //dd($request->formato_impresion_id);
-        if($request->formato_impresion_id == 1){
+        if($request->formato_impresion_id == 1)
+        {
             $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir' );
         }else{
             $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir2' );
@@ -203,7 +203,7 @@ class CotizacionController extends TransaccionController
     public function generar_documento_vista( $id, $nombre_vista )
     {
         $this->doc_encabezado = VtasDocEncabezado::get_registro_impresion( $id );
-        
+
         $doc_registros = VtasDocRegistro::get_registros_impresion( $this->doc_encabezado->id );
 
         $this->empresa = Empresa::find( $this->doc_encabezado->core_empresa_id );
@@ -232,7 +232,7 @@ class CotizacionController extends TransaccionController
 
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
-        //dd( $doc_registros );
+
         $lineas_documento = View::make( 'ventas.cotizaciones.lineas_documento', compact('doc_registros') )->render();
 
         $linea_num = count( $doc_registros->toArray() );
