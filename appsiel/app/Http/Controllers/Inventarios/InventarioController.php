@@ -577,7 +577,7 @@ class InventarioController extends TransaccionController
 
         $empresa = Empresa::find($doc_encabezado->core_empresa_id);        
 
-        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa','otroscampos'))->render();
+        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa'))->render();
     }
 
 

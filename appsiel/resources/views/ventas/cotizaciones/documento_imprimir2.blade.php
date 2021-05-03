@@ -147,7 +147,7 @@ use App\Core\Tercero;
             <b>Contacto:</b>
         </td>
         <td>
-            {{ $doc_encabezado->tercero_nombre_completo }}
+            {{ $contacto->descripcion }}
         </td>
         <td>
             <b>Fecha:</b>
@@ -161,7 +161,7 @@ use App\Core\Tercero;
             <b>Telefono: </b>
         </td>
         <td colspan="3">
-            {{ $doc_encabezado->telefono1 }}
+            {{ $contacto->telefono1 }}
         </td>
     </tr>
     <tr>
@@ -169,7 +169,7 @@ use App\Core\Tercero;
             <b>Mail: </b>
         </td>
         <td>
-            <a href="mailto:{{ $tercero->email }}">{{ $tercero->email }}</a>
+            <a href="mailto:{{ $contacto->email }}">{{ $contacto->email }}</a>
         </td>
         <td>
             <b>Valido hasta:</b>
