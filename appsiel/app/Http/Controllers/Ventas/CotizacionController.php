@@ -71,6 +71,7 @@ class CotizacionController extends TransaccionController
      */
     public function store(Request $request)
     {
+        dd($request->all());
         $lineas_registros = json_decode($request->lineas_registros);
 
         $request['estado'] = 'Pendiente';
