@@ -36,7 +36,9 @@
     </div>
 
     <div style="position: absolute; left: 144mm; top: 78.5mm;">
+        @if ($doc_encabezado->contacto_cliente->tercero != null)
         {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}
+        @endif
     </div>
 
     <div style="position: absolute; left: 30mm; top: 89.5mm;">
