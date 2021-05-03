@@ -71,12 +71,12 @@ class CotizacionController extends TransaccionController
      */
     public function store(Request $request)
     {
+        dd($request->all());
         $lineas_registros = json_decode($request->lineas_registros);
 
         $request['estado'] = 'Pendiente';
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
-        // 2do. Crear documento de Ventas
         CotizacionController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
         return redirect('vtas_cotizacion/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );

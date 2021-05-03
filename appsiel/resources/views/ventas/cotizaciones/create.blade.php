@@ -222,7 +222,7 @@
 
 				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
 					.done(function( data ) {
-						// Se llena el DIV con las sugerencias que arooja la consulta
+						// Se llena el DIV con las sugerencias que arroja la consulta
 		                $('#clientes_suggestions').show().html(data);
 		                $('a.list-group-item.active').focus();
 					});
@@ -550,9 +550,26 @@
                 $('#clientes_suggestions').hide();
 
                 reset_tabla_ingreso();
-                
-				// Bajar el Scroll hasta el final de la página
-				$("html, body").animate( { scrollTop: $(document).height()+"px"} );
+
+                // Cargar contactos asociados al cliente
+				$('#contacto_cliente_id').html('<option value=""></option>');
+		    	$('#div_cargando').show();
+
+                var url = "{{ url('get_opciones_select_contactos') }}" + "/" + $('#cliente_id').val();
+
+				$.ajax({
+		        	url: url,
+		        	type: 'get',
+		        	success: function(datos){
+		        		$('#div_cargando').hide();	    				
+	    				$('#contacto_cliente_id').html( datos );
+						$('#contacto_cliente_id').focus();
+
+						// Bajar el Scroll hasta el final de la página
+						$("html, body").animate( { scrollTop: $(document).height()+"px"} );
+			        }
+			    });               
+					
             }
 
             

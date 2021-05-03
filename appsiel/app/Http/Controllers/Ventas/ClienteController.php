@@ -262,6 +262,22 @@ class ClienteController extends ModeloController
 
         return [ $precios, $descuentos ];
     }
+
+
+    public function get_opciones_select_contactos( $cliente_id )
+    {
+        $cliente = Cliente::find( $cliente_id );
+        $contactos = $cliente->contactos;
+
+        $opciones = '<option value="">Seleccionar...</option>';
+        foreach ($contactos as $contacto)
+        {
+            $opciones .= '<option value="' . $contacto->id . '">' . $contacto->tercero->descripcion . '</option>';
+        }
+
+        return $opciones;
+    }
+
 }
 
 // cardona cha

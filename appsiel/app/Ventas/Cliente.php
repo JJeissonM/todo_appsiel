@@ -61,8 +61,7 @@ class Cliente extends Model
 
     public function contactos()
     {
-        //ContactoCliente::where('')
-        return $this->belongsTo( Vendedor::class, 'vendedor_id');
+        return $this->hasMany(ContactoCliente::class, 'cliente_id');
     }
 
 	public static function consultar_registros($nro_registros, $search)

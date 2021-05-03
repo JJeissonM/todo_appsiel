@@ -20,6 +20,11 @@ class ContactoCliente extends Model
 
     public $urls_acciones = '{ "create":"web/create", "edit":"web/id_fila/edit", "eliminar":"web_eliminar/id_fila"}';
 
+    public function tercero()
+    {
+        return $this->belongsTo( Tercero::class, 'core_tercero_id');
+    }
+
 	public static function consultar_registros($nro_registros, $search)
     {
         $array = ContactoCliente::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_contactos_clientes.core_tercero_id')

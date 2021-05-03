@@ -642,6 +642,7 @@ class VentaController extends TransaccionController
                                 ->where('vtas_clientes.estado','Activo')
                                 ->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)
                                 ->select(
+                                            'vtas_clientes.id',
                                             'vtas_clientes.id AS cliente_id',
                                             'vtas_clientes.liquida_impuestos',
                                             'vtas_clientes.zona_id',
