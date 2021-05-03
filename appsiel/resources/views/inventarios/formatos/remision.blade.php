@@ -75,7 +75,7 @@
                     <table style="margin-top: 30px;">
                         <tr>
                             <td>
-                                <b>Documento:</b>
+                                <b>Documento1:</b>
                             </td>
                             <td>
                                 {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}

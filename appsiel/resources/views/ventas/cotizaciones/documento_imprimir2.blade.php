@@ -290,8 +290,8 @@ use App\Core\Tercero;
     </tr>
 </table>
 <hr>
-<!--<b>Condiciones Comerciales</b>
-<p class="text-indent">Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim esse recusandae, sint ipsam voluptatem eveniet libero et minus dolore maxime in molestias a quisquam reiciendis deserunt nihil? Quidem odit, optio tenetur reiciendis facere deleniti, quaerat magnam sunt atque quod dolore eveniet id dolorem! Quam tempora vero dignissimos veritatis. Enim quis, nobis possimus excepturi officiis ullam reiciendis esse labore repellendus unde quae, accusantium quos inventore ut modi corporis illo accusamus vel optio eius voluptas sed dicta sint ad.</p>-->
+<b>Condiciones Comerciales</b>
+<p class="text-indent">{{ $otroscampos->terminos_y_condiciones }}</p>
 <br>
 <div class="encabezado">
     <p style="text-align: right; font-size: 18px; padding-right: 30px">{{ $empresa->descripcion }}</p>
