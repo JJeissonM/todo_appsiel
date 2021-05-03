@@ -667,7 +667,7 @@ class VentaController extends TransaccionController
         $es_el_primero = true;
         $ultimo_item = 0;
         $num_item = 1;
-        $cantidad_datos = count( $clientes->toArray() ); // si datos es null?
+        $cantidad_datos = count( $clientes->toArray() );
         foreach ($clientes as $linea) 
         {
             $primer_item = 0;

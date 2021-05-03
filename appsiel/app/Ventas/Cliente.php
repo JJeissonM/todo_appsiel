@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Ventas\ClaseCliente;
 use App\Ventas\Vendedor;
+use App\Ventas\ContactoCliente;
 use App\Core\Tercero;
 
 use DB;
@@ -55,6 +56,12 @@ class Cliente extends Model
 
     public function vendedor()
     {
+        return $this->belongsTo( Vendedor::class, 'vendedor_id');
+    }
+
+    public function contactos()
+    {
+        //ContactoCliente::where('')
         return $this->belongsTo( Vendedor::class, 'vendedor_id');
     }
 
