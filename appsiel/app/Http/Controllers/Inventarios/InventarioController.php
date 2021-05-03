@@ -163,13 +163,13 @@ class InventarioController extends TransaccionController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store( Request $request )
     {        
         $lineas_registros = InventarioController::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
         
         $doc_encabezado_id = InventarioController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
-        return redirect('inventarios/' . $doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        return redirect( 'inventarios/' . $doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
     }
 
 
@@ -188,13 +188,13 @@ class InventarioController extends TransaccionController
         $cantidad = count($lineas_registros);
         for ($i = 0; $i < $cantidad; $i++)
         {
-
             $lineas_registros[$i]->inv_motivo_id = explode( "-", $lineas_registros[$i]->motivo )[0];
             $lineas_registros[$i]->costo_unitario = (float) substr($lineas_registros[$i]->costo_unitario, 1);
             $lineas_registros[$i]->cantidad = (float) substr($lineas_registros[$i]->cantidad, 0, strpos($lineas_registros[$i]->cantidad, " "));
             $lineas_registros[$i]->costo_total = (float) substr($lineas_registros[$i]->costo_total, 1);
 
-            if (!is_null($modo_ajuste)) {
+            if (!is_null($modo_ajuste))
+            {
                 if ($modo_ajuste == 'solo_cantidad')
                 {
                     $lineas_registros[$i]->costo_unitario = 0;
@@ -237,7 +237,8 @@ class InventarioController extends TransaccionController
         $datos = $request->all();
 
         $cantidad_registros = count($lineas_registros);
-        for ($i = 0; $i < $cantidad_registros; $i++) {
+        for ($i = 0; $i < $cantidad_registros; $i++)
+        {
             $costo_unitario = (float) $lineas_registros[$i]->costo_unitario;
             $cantidad = (float) $lineas_registros[$i]->cantidad;
             $costo_total = (float) $lineas_registros[$i]->costo_total;
@@ -269,10 +270,10 @@ class InventarioController extends TransaccionController
             {
                 $datos['consecutivo'] = $doc_encabezado->consecutivo;
                 InvMovimiento::create(
-                    $datos +
-                        ['inv_doc_encabezado_id' => $doc_encabezado->id] +
-                        $linea_datos
-                );
+                                        $datos +
+                                        ['inv_doc_encabezado_id' => $doc_encabezado->id] +
+                                        $linea_datos
+                                    );
             }else{
                 // Si no es un producto, saltar la contabilización de abajo.
                 continue;
@@ -664,7 +665,8 @@ class InventarioController extends TransaccionController
         
         // Linea crear nuevo registro
         $modelo_id = 22; // Items
-        $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
+        $href =  url( 'web/create?id=8&id_modelo=' . $modelo_id . '&id_transaccion' );
+        $html .= '<a href="'. $href . '" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
 
         $html .= '</div>';
 
@@ -739,7 +741,8 @@ class InventarioController extends TransaccionController
 
         // Linea crear nuevo registro
         $modelo_id = 22; // Items
-        $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
+        $href =  url( 'web/create?id=8&id_modelo=' . $modelo_id . '&id_transaccion' );
+        $html .= '<a href="'. $href . '" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
 
         $html .= '</div>';
 

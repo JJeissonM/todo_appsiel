@@ -11,7 +11,14 @@ class ItemOrdenDeTrabajo extends Model
 {
     protected $table = 'nom_items_ordenes_de_trabajo';
     protected $fillable = ['orden_trabajo_id', 'inv_producto_id', 'cantidad', 'costo_unitario', 'costo_total', 'estado', 'creado_por', 'modificado_por'];
+
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Orden de trabajo', 'Item', 'Cantidad', 'Costo unitario', 'Costo total', 'Estado'];
+
+    public function item()
+    {
+        return $this->belongsTo( 'App\Inventarios\InvProducto', 'inv_producto_id' );
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $collection = ItemOrdenDeTrabajo::select('nom_items_ordenes_de_trabajo.orden_trabajo_id AS campo1', 'nom_items_ordenes_de_trabajo.inv_producto_id AS campo2', 'nom_items_ordenes_de_trabajo.cantidad AS campo3', 'nom_items_ordenes_de_trabajo.costo_unitario AS campo4', 'nom_items_ordenes_de_trabajo.costo_total AS campo5', 'nom_items_ordenes_de_trabajo.estado AS campo6', 'nom_items_ordenes_de_trabajo.id AS campo7')

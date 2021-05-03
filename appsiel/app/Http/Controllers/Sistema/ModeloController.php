@@ -333,11 +333,13 @@ class ModeloController extends Controller
     public function store(Request $request)
     {
         $datos = $request->all(); // Datos originales
+
         // Se crea un nuevo registro para el ID del modelo enviado en el request 
         $registro = $this->crear_nuevo_registro($request);
 
         // Si se está almacenando una transacción que maneja consecutivo
-        if (isset($request->consecutivo) and isset($request->core_tipo_doc_app_id)) {
+        if (isset($request->consecutivo) and isset($request->core_tipo_doc_app_id))
+        {
             // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
             $consecutivo = TipoDocApp::get_consecutivo_actual($request->core_empresa_id, $request->core_tipo_doc_app_id) + 1;
 
@@ -358,12 +360,15 @@ class ModeloController extends Controller
         /*
             Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)
         */
-        if (method_exists(app($this->modelo->name_space), 'store_adicional')) {
+        if (method_exists(app($this->modelo->name_space), 'store_adicional'))
+        {
             // Aquí mismo se puede hacer el return
             $url_respuesta = app($this->modelo->name_space)->store_adicional($datos, $registro);
 
-            if (!is_null($url_respuesta)) {
-                if (gettype($url_respuesta) != "object") {
+            if ( !is_null($url_respuesta) )
+            {
+                if (gettype($url_respuesta) != "object")
+                {
                     return redirect($url_respuesta)->with('flash_message', 'Registro CREADO correctamente.');
                 }
             }
@@ -380,12 +385,14 @@ class ModeloController extends Controller
     public function crear_nuevo_registro($request)
     {
         $this->modelo = Modelo::find($request->url_id_modelo);
-
+        
         $this->validar_requeridos_y_unicos($request, $this->modelo);
 
         // Se verifican si vienen campos con valores tipo array. Normalmente para los campos tipo chexkbox.
-        foreach ($request->all() as $key => $value) {
-            if (is_array($value)) {
+        foreach ($request->all() as $key => $value)
+        {
+            if (is_array($value))
+            {
                 $request[$key] = implode(",", $value);
             }
         }
@@ -407,14 +414,18 @@ class ModeloController extends Controller
         $lista_campos = $registro_modelo_crud->campos->toArray();
 
         $cant = count($lista_campos);
-        for ($i = 0; $i < $cant; $i++) {
+        for ($i = 0; $i < $cant; $i++)
+        {
             // Se valida solo si el campo pertenece al Modelo directamente
-            if (in_array($lista_campos[$i]['name'], $registro->getFillable())) {
-                if ($lista_campos[$i]['requerido']) {
+            if (in_array($lista_campos[$i]['name'], $registro->getFillable()))
+            {
+                if ($lista_campos[$i]['requerido'])
+                {
                     $this->validate($request, [$lista_campos[$i]['name'] => 'required']);
                 }
 
-                if ($lista_campos[$i]['unico']) {
+                if ($lista_campos[$i]['unico'])
+                {
                     $this->validate($request, [$lista_campos[$i]['name'] => 'unique:' . $nombre_tabla]);
                 }
             }
@@ -566,7 +577,6 @@ class ModeloController extends Controller
             }
         }
 
-        //dd( $request->all() );
         $registro->fill( $request->all() );
         $registro->save();
 
@@ -613,8 +623,7 @@ class ModeloController extends Controller
         $lista_campos1 = $this->modelo->campos()->orderBy('orden')->get();
 
         $lista_campos = $this->asignar_valores_de_campo_al_registro($this->modelo, $registro, $lista_campos1->toArray());
-        //dd( $lista_campos );
-
+        
         /*
             Tareas adicionales para mostrar el registro
         */

@@ -48,6 +48,9 @@ Route::post('nom_calcular_porcentaje_fijo_retefuente', 'Nomina\RetefuenteControl
 
 //		ORDENES DE TRABAJO
 Route::get('nom_get_tabla_empleados_ingreso_registros', 'Nomina\OrdenDeTrabajoController@get_tabla_empleados_ingreso_registros');
+Route::get('nom_ordenes_trabajo_imprimir/{orden_trabajo_id}', 'Nomina\OrdenDeTrabajoController@imprimir');
+Route::post('nom_ordenes_trabajo_anular', 'Nomina\OrdenDeTrabajoController@anula');
+Route::resource('nom_ordenes_trabajo', 'Nomina\OrdenDeTrabajoController');
 
 
 

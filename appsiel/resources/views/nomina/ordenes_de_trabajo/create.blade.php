@@ -27,11 +27,19 @@
 
 				<div class="row botones" style="margin: 5px;"> {{ $botones }} </div>
 
-				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
+				{{ VistaController::campos_dos_colummnas( $form_create['campos'] ) }}
 
 				{{ Form::hidden('url_id',Input::get('id')) }}
 				{{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
 				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+
+				{{ Form::hidden('inv_bodega_id_aux2', 0, [ 'id' => 'inv_bodega_id_aux2' ]) }}
+
+				<!-- En este campo se guarda la tabla de empleados ingresados -->
+				{{ Form::hidden('tabla_empleados', 0, [ 'id' => 'tabla_empleados' ]) }}
+
+				<!-- En este campo se guarda la tabla de productos ingresados -->
+				{{ Form::hidden('movimiento', 0, [ 'id' => 'movimiento' ]) }}
 
 				@yield('campos_adicionales')
 				
@@ -83,20 +91,25 @@
 					return false;
 				}
 
+				// Se transfoma la tabla a formato JSON a través de un plugin JQuery
+				var tabla_empleados = $('#tabla_registros_empleados').tableToJSON();
+
+				var tabla_productos = $('#ingreso_productos').tableToJSON();
+
+				// Se asigna el objeto JSON a un campo oculto del formulario
+		 		$('#tabla_empleados').val( JSON.stringify(tabla_empleados) );
+		 		$('#movimiento').val( JSON.stringify(tabla_productos) );
+
+
+				$('#fecha').removeAttr('disabled');
+				$('#inv_bodega_id').removeAttr('disabled');
+				$('#inv_bodega_id_aux2').val( $('#inv_bodega_id').val() );
+
 				// Desactivar el click del botón
 				$( this ).off( event );
 
 				$('#form_create').submit();
 			});
-		});
-	</script>
-
-	@if( isset($archivo_js) )
-		<script src="{{ asset( $archivo_js ) }}"></script>
-	@endif
-
-	<script type="text/javascript">
-		$(document).ready(function(){
 
 			$("#nom_doc_encabezado_id").on('change',function(event){
 				if( $('#nom_doc_encabezado_id').val() == '' )
@@ -162,6 +175,8 @@
 		    		return false;
 		    	}
 
+		    	$(this).next('span').html( $(this).val() );
+		    	fila.find('.valor_total').next('span').html( $(this).val() * parseFloat( valor_unitario  ) );
 		    	fila.find('.valor_total').val( $(this).val() * parseFloat( valor_unitario  ) );
 
 			});
@@ -183,6 +198,9 @@
 		    		return false;
 		    	}
 
+
+		    	$(this).next('span').html( $(this).val() );
+		    	fila.find('.valor_total').next('span').html( $(this).val() * parseFloat( cantidad_horas  ) );
 		    	fila.find('.valor_total').val( $(this).val() * parseFloat( cantidad_horas  ) );
 
 			});
@@ -303,10 +321,6 @@
 				if(x==13){
 					$('#core_tercero_id').focus();				
 				}		
-			});
-
-			$('#core_tercero_id').change(function(){
-				$('#inv_bodega_id').focus();
 			});
 
 			// Al seleccionar una bodega, se muestra el ingreso de productos
@@ -584,7 +598,8 @@
 				hay_productos = parseFloat(hay_productos) - 1;
 				$('#hay_productos').val(hay_productos);
 
-				if (hay_productos==0) {
+				if (hay_productos==0)
+				{
 					// Se ACTIVA el select de la bodegas para que ya no se pueda cambiar, pues el motiviemto está amarrado a la bodega
 					// 1ro. Se pasa el valor del id del select bodega a un input hidden bodega
 					$('#inv_bodega_id_aux').val($('#inv_bodega_id').val());
@@ -594,7 +609,6 @@
 					// 3ro. Desabilito el select
 					$('#inv_bodega_id').removeAttr('disabled');
 					$('#inv_bodega_id').attr('style','background-color:white;');
-
 
 					$('#fecha').removeAttr('disabled');
 				}
@@ -622,77 +636,6 @@
 				calcular_totales();
 			});
 
-			$('#btn_guardar').click(function(event){
-				event.preventDefault();
-
-				var object = $('#ingreso_productos').val();
-				
-				if( typeof object == typeof undefined){
-					// Si no existe la tabla de ingreso_productos, se envía el formulario
-					// Esto es para los otros modelos que usan el ModeloController y que no
-					// son una transacción
-
-					// Desactivar el click del botón
-					$( this ).off( event );
-
-					$('#form_create').submit();
-				}else{
-					var hay_productos = $('#hay_productos').val();
-					if(hay_productos>0) {
-						var table = $('#ingreso_productos').tableToJSON();
-				 		$('#movimiento').val(JSON.stringify(table));
-				 		var count = Object.values($('#movimiento')).length;
-			  			var control = 1;
-						$( "*[required]" ).each(function() {
-							if ( $(this).val() == "" ) {
-							  $(this).focus();
-							  control = 0;
-							  alert( $(this).attr('name') + ': Este campo es requerido.');
-							  $(this).removeAttr('disabled');
-							  return false;
-							}else{
-							  control = 1;
-							}
-						});
-
-						if (control==1) {
-
-							// Si es un ENSAMBLE
-							if ($('#id_transaccion').val()==4) {
-								// se validan los costos finales
-								if (costos_finales_correctos) {
-
-
-									// Desactivar el click del botón
-									$( this ).off( event );
-
-									$('#fecha').removeAttr('disabled');
-									$('#form_create').submit();	
-								}else{
-									alert('NO se han calculado los costos finales.');
-								}
-							}else{
-
-								// Desactivar el click del botón
-								$( this ).off( event );
-								
-								$('#fecha').removeAttr('disabled');
-								$('#form_create').submit();	
-							}
-							
-						}else{
-							$(this).removeAttr('disabled');
-							alert('Faltan campos por llenar.');
-						}
-			  			
-					}else{
-						$(this).removeAttr('disabled');
-						alert('No ha ingresado productos.');
-						$('#inv_producto_id_aux').focus();
-					}
-				}
-					
-			});
 
 			$('#btn_calcular_costos_finales').click(function(event){
 				event.preventDefault();
