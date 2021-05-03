@@ -211,7 +211,7 @@ class CotizacionController extends TransaccionController
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$this->doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->first();
 
-        dd($this->doc_encabezado->contacto_cliente);
+        //dd($this->doc_encabezado->contacto_cliente);
 
         $otroscampos = TransaccionOtrosCampos::where('core_tipo_transaccion_id',$this->doc_encabezado->core_tipo_transaccion_id)->get()->first();
 
