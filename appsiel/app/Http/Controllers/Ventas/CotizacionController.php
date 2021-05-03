@@ -154,9 +154,15 @@ class CotizacionController extends TransaccionController
     /*
         Imprimir
     */
-    public function imprimir( $id )
+    public function imprimir(Request $request, $id )
     {
-        $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir' );
+        //dd($request->formato_impresion_id);
+        if($request->formato_impresion_id == 1){
+            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir' );
+        }else{
+            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir2' );
+        }
+        
 
         // Se prepara el PDF
         $orientacion='portrait';

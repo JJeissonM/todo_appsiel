@@ -26,14 +26,14 @@
                     <td> {{ $descripcion_item }} </td>
                     <td> {{ $linea->unidad_medida1 }} </td>
                     <td style="text-align: right;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
-                    <td style="text-align: right;"> ${{ number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
-                    <td style="text-align: right;"> ${{ number_format( $linea->cantidad * $linea->precio_unitario, 0, ',', '.') }} </td>
-                    <td style="text-align: right;"> ${{ number_format( $linea->cantidad * ($linea->precio_unitario - $linea->valor_impuesto), 0, ',', '.') }} </td>
+                    <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
+                    <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->cantidad * $linea->precio_unitario, 0, ',', '.') }} </td>
+                    <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->cantidad * ($linea->precio_unitario - $linea->valor_impuesto), 0, ',', '.') }} </td>
                     <td style="text-align: right;"> {{ number_format( $linea->tasa_descuento, 2, ',', '.') }}% </td>
-                    <td style="text-align: right;"> ${{ number_format( $linea->valor_total_descuento, 0, ',', '.') }} </td>
+                    <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->valor_total_descuento, 0, ',', '.') }} </td>
                     <td style="text-align: right;"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                    <td style="text-align: right;"> ${{ number_format( $linea->cantidad * $linea->valor_impuesto, 0, ',', '.') }} </td>
-                    <td style="text-align: right;"> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
+                    <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->cantidad * $linea->valor_impuesto, 0, ',', '.') }} </td>
+                    <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
                 </tr>
                 <?php
                     $total_cantidad += $linea->cantidad;
@@ -51,13 +51,13 @@
                 <td colspan="3"> Cantidad de items: {{ $cantidad_items }} </td>
                 <td style="text-align: right;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td >&nbsp;</td>
-                <td style="text-align: right;"> {{ number_format($total_bruto, 0, ',', '.') }} </td>
-                <td style="text-align: right;"> {{ number_format($subtotal, 0, ',', '.') }} </td>
+                <td style="text-align: right;"> $ &nbsp;{{ number_format($total_bruto, 0, ',', '.') }} </td>
+                <td style="text-align: right;"> $ &nbsp;{{ number_format($subtotal, 0, ',', '.') }} </td>
                 <td>&nbsp;</td>
-                <td style="text-align: right;"> ${{ number_format($total_descuentos, 0, ',', '.') }} </td>
+                <td style="text-align: right;"> $ &nbsp;{{ number_format($total_descuentos, 0, ',', '.') }} </td>
                 <td>&nbsp;</td>
-                <td style="text-align: right;"> ${{ number_format($total_impuestos, 0, ',', '.') }} </td>
-                <td style="text-align: right;"> ${{ number_format($total_factura, 0, ',', '.') }} </td>
+                <td style="text-align: right;"> $ &nbsp;{{ number_format($total_impuestos, 0, ',', '.') }} </td>
+                <td style="text-align: right;"> $ &nbsp;{{ number_format($total_factura, 0, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>
