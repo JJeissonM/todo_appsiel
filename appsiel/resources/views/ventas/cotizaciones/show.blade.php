@@ -70,7 +70,13 @@
 @section('filas_adicionales_encabezado')
 <tr>
 	<td colspan="2" style="border: solid 1px #ddd;">
-		{{ $empresa->descripcion }}, empresa creada con el objetivo de prestar servicios de alta calidad a nuestros clientes, presenta a ustedes la cotización de los siguientes artículos:
+		@if( !is_null($doc_encabezado->contacto_cliente) )
+			<b>Contacto: </b> {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}
+			<br>
+			<b>Tel: </b> {{ $doc_encabezado->contacto_cliente->tercero->telefono1 }}
+			<br>
+			<b>Email: </b> {{ $doc_encabezado->contacto_cliente->tercero->email }}
+		@endif
 	</td>
 </tr>
 @endsection

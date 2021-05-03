@@ -36,6 +36,7 @@ use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\ResolucionFacturacion;
+use App\Ventas\ContactoCliente;
 
 class CotizacionController extends TransaccionController
 {
@@ -232,6 +233,21 @@ class CotizacionController extends TransaccionController
 
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
+
+        $cantidad_campos = count($lista_campos);
+        for ($i = 0; $i <  $cantidad_campos; $i++)
+        {
+            switch ($lista_campos[$i]['name'])
+            {
+                case 'contacto_cliente_id':
+                    $lista_campos[$i]['opciones'] = ContactoCliente::opciones_campo_select_cliente( $doc_encabezado->cliente_id );
+                    $lista_campos[$i]['value'] = $doc_encabezado->contacto_cliente_id;
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
 
         $lineas_documento = View::make( 'ventas.cotizaciones.lineas_documento', compact('doc_registros') )->render();
 

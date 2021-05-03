@@ -84,6 +84,26 @@ class ContactoCliente extends Model
         return $vec;
     }
 
+    public static function opciones_campo_select_cliente( $cliente_id )
+    {
+        $opciones = ContactoCliente::leftJoin('core_terceros','core_terceros.id','=','vtas_contactos_clientes.core_tercero_id')
+                                ->where([
+                                            ['vtas_contactos_clientes.estado','=','Activo'],
+                                            ['vtas_contactos_clientes.cliente_id','=', $cliente_id]
+                                        ])
+                                ->select('vtas_contactos_clientes.id','core_terceros.descripcion')
+                                ->orderby('core_terceros.descripcion')
+                                ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
     public function store_adicional( $datos, $registro )
     {
     	$datos['tipo'] = 'Persona natural';
