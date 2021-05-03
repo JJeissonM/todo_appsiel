@@ -536,6 +536,14 @@ class InventarioController extends TransaccionController
 
             case '3':
                 $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_pos');
+                break;   
+
+            case '4':
+                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_ceof');
+                break;
+
+            case '5':
+                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_cem');
                 break;
             
             default:
@@ -567,9 +575,9 @@ class InventarioController extends TransaccionController
 
         $doc_registros = app($transaccion->modelo_registros_documentos)->get_registros_impresion($doc_encabezado->id);
 
-        $empresa = Empresa::find($doc_encabezado->core_empresa_id);
+        $empresa = Empresa::find($doc_encabezado->core_empresa_id);        
 
-        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa'))->render();
+        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa','otroscampos'))->render();
     }
 
 

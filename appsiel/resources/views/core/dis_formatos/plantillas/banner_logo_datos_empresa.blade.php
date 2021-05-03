@@ -42,7 +42,8 @@
 			<div style="font-size: 15px; text-align: center;">
 				<br/>
 				<b>{{ $empresa->descripcion }}</b><br/>
-				<b>{{ config("configuracion.tipo_identificador") }}. {{ number_format($empresa->numero_identificacion, 0, ',', '.') }} - {{ $empresa->digito_verificacion }}</b><br/>
+				<b>{{ config("configuracion.tipo_identificador") }}:
+					@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</b><br/>
 				{{ $empresa->direccion1 }}, {{ $ciudad->descripcion }} <br/>
 				Teléfono(s): {{ $empresa->telefono1 }}<br/>
 				<b style="color: blue; font-weight: bold;">{{ $empresa->pagina_web }}</b><br/>
