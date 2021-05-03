@@ -439,46 +439,6 @@ class PedidoController extends TransaccionController
         return view('ventas.pedidos.edit', compact('form_create', 'id_transaccion', 'miga_pan', 'tabla', 'registro', 'registros'));
     }
 
-    // Petición AJAX. Parámetro enviados por GET
-    public function get_formulario_edit_registro()
-    {
-        $linea_factura = VtasDocRegistro::get_un_registro( Input::get('linea_registro_id') );
-        $doc_encabezado = VtasDocEncabezado::get_registro_impresion( $linea_factura->vtas_doc_encabezado_id );
-
-        $id = Input::get('id');
-        $id_modelo = Input::get('id_modelo');
-        $id_transaccion = Input::get('id_transaccion');
-
-        $formulario = View::make( 'ventas.pedidos.formulario_editar_registro', compact( 'linea_factura', 'id', 'id_modelo', 'id_transaccion', 'doc_encabezado'))->render();
-
-        return $formulario;
-    }
-
-
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
-
     /*
         Proceso de eliminar PEDIDO
         Se eliminan los registros de:
@@ -526,5 +486,72 @@ class PedidoController extends TransaccionController
         $pedido->save();
         
         return redirect('inventarios/' . $remision_creada_id . '?id=' . $request->url_id . '&id_modelo=' . $rm_modelo_id . '&id_transaccion=' . $rm_tipo_transaccion_id);
+    }
+
+
+
+    // Petición AJAX. Parámetro enviados por GET
+    public function get_formulario_edit_registro()
+    {
+        $linea_factura = VtasDocRegistro::get_un_registro( Input::get('linea_registro_id') );
+        $doc_encabezado = VtasDocEncabezado::get_registro_impresion( $linea_factura->vtas_doc_encabezado_id );
+
+        $id = Input::get('id');
+        $id_modelo = Input::get('id_modelo');
+        $id_transaccion = Input::get('id_transaccion');
+
+        $formulario = View::make( 'ventas.pedidos.formulario_editar_registro', compact( 'linea_factura', 'id', 'id_modelo', 'id_transaccion', 'doc_encabezado'))->render();
+
+        return $formulario;
+    }
+
+
+    public function doc_registro_guardar( Request $request )
+    {
+        $linea_registro = VtasDocRegistro::find( $request->linea_factura_id );
+        $doc_encabezado = VtasDocEncabezado::find( $linea_registro->vtas_doc_encabezado_id );
+
+        $viejo_total_encabezado = $doc_encabezado->valor_total;
+
+        // Se pasaron las validaciones
+        $precio_unitario = $request->precio_unitario; // IVA incluido
+        $cantidad = $request->cantidad;
+        $valor_total_descuento = $request->valor_total_descuento;
+        $tasa_descuento = $request->tasa_descuento;
+
+        $precio_total = $precio_unitario * $cantidad - $valor_total_descuento;
+
+        $precio_venta_unitario = $precio_unitario - ( $valor_total_descuento / $cantidad );
+
+        // Valores unitarios
+        $base_impuesto = $precio_venta_unitario / ( 1 + $linea_registro->tasa_impuesto / 100);
+        $valor_impuesto = $precio_venta_unitario - $base_impuesto;
+
+        $base_impuesto_total = $base_impuesto * $cantidad;
+        $valor_impuesto_total = $valor_impuesto * $cantidad;
+
+        // 1. Actualizar total del encabezado de la factura
+        $nuevo_total_encabezado = $viejo_total_encabezado - $linea_registro->precio_total + $precio_total;
+
+        $doc_encabezado->update(
+                                    ['valor_total' => $nuevo_total_encabezado]
+                                );
+
+
+        // 5. Actualizar el registro del documento de factura
+        $cantidad = $request->cantidad; // Se vuelve a la cantidad positiva otra vez
+        $linea_registro->update( [
+                                    'precio_unitario' => $precio_unitario,
+                                    'cantidad' => $cantidad,
+                                    'precio_total' => $precio_total,
+                                    'base_impuesto' => $base_impuesto,
+                                    'valor_impuesto' => $valor_impuesto,
+                                    'base_impuesto_total' => $base_impuesto_total,
+                                    'tasa_descuento' => $tasa_descuento,
+                                    'valor_total_descuento' => $valor_total_descuento
+                                ] );
+
+
+        return redirect( 'vtas_pedidos/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','El registro del Pedido de ventas fue MODIFICADO correctamente.');
     }
 }
