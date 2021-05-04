@@ -225,7 +225,8 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 		        var url = '../vtas_pedidos_get_formulario_edit_registro';
 
 				$.get( url, { 
-								linea_registro_id: $(this).attr('data-linea_registro_id'), 
+								linea_registro_id: $(this).attr('data-linea_registro_id'),  
+								modelo_editar: $(this).attr('data-modelo_editar'),
 								id: getParameterByName('id'), 
 								id_modelo: getParameterByName('id_modelo'), 
 								id_transaccion: getParameterByName('id_transaccion')

@@ -35,6 +35,8 @@ use App\Nomina\NomPrestamo;
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\ProgramacionVacacion;
 use App\Nomina\OrdenDeTrabajo;
+use App\Nomina\EmpleadoOrdenDeTrabajo;
+use App\Nomina\ItemOrdenDeTrabajo;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
@@ -77,5 +79,83 @@ class OrdenDeTrabajoController extends TransaccionController
         $array = RegistrosDocumentosController::get_array_tabla_registros( (int)Input::get('nom_concepto_id'), (int)Input::get('nom_doc_encabezado_id'), '' );
         //dd($array);
         return View::make( 'nomina.create_registros2_tabla', $array )->render();
+    }
+
+
+    
+    public function cambiar_cantidad_horas_empleados( $orden_trabajo_id, $nom_concepto_id, $nom_contrato_id, $nueva_cantidad_horas )
+    {
+        $linea_empleado = EmpleadoOrdenDeTrabajo::where( [ 
+                                                            'orden_trabajo_id' => $orden_trabajo_id,
+                                                            'nom_concepto_id' => $nom_concepto_id,
+                                                            'nom_contrato_id' => $nom_contrato_id
+                                                        ])
+                                                ->get()
+                                                ->first();
+        if ( is_null($linea_empleado) )
+        {
+            return 'false';
+        }
+
+        $nuevo_valor_devengo = (float)$nueva_cantidad_horas * $linea_empleado->valor_por_hora;
+
+        $linea_empleado->cantidad_horas = (float)$nueva_cantidad_horas;
+        $linea_empleado->valor_devengo = $nuevo_valor_devengo;
+        $linea_empleado->modificado_por = Auth::user()->email;
+        $linea_empleado->save();
+
+        return 'true';        
+    }
+    
+    public function cambiar_valor_por_hora_empleados( $orden_trabajo_id, $nom_concepto_id, $nom_contrato_id, $nuevo_valor_por_hora )
+    {
+        $linea_empleado = EmpleadoOrdenDeTrabajo::where( [ 
+                                                            'orden_trabajo_id' => $orden_trabajo_id,
+                                                            'nom_concepto_id' => $nom_concepto_id,
+                                                            'nom_contrato_id' => $nom_contrato_id
+                                                        ])
+                                                ->get()
+                                                ->first();
+        if ( is_null($linea_empleado) )
+        {
+            return 'false';
+        }
+
+        $nuevo_valor_devengo = (float)$nuevo_valor_por_hora * $linea_empleado->cantidad_horas;
+
+        $linea_empleado->valor_por_hora = (float)$nuevo_valor_por_hora;
+        $linea_empleado->valor_devengo = $nuevo_valor_devengo;
+        $linea_empleado->modificado_por = Auth::user()->email;
+        $linea_empleado->save();
+
+        return 'true';        
+    }
+
+    public function modificar_line_registro_documento_nomina()
+    {
+
+    }
+    
+    public function cambiar_cantidad_items( $orden_trabajo_id, $inv_producto_id, $nueva_cantidad )
+    {
+        $linea_registro = ItemOrdenDeTrabajo::where( [ 
+                                                            'orden_trabajo_id' => $orden_trabajo_id,
+                                                            'inv_producto_id' => $inv_producto_id
+                                                        ])
+                                                ->get()
+                                                ->first();
+        if ( is_null($linea_registro) )
+        {
+            return 'false';
+        }
+
+        $nuevo_costo_total = (float)$nueva_cantidad * $linea_registro->costo_unitario;
+
+        $linea_registro->cantidad = (float)$nueva_cantidad;
+        $linea_registro->costo_total = $nuevo_costo_total;
+        $linea_registro->modificado_por = Auth::user()->email;
+        $linea_registro->save();
+
+        return 'true';        
     }
 }

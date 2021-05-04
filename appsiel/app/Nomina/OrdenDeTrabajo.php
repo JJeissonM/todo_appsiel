@@ -10,6 +10,8 @@ use Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
+use App\Nomina\NomDocRegistro;
+use App\Nomina\NomContrato;
 use App\Nomina\EmpleadoOrdenDeTrabajo;
 use App\Nomina\ItemOrdenDeTrabajo;
 
@@ -30,7 +32,7 @@ class OrdenDeTrabajo extends Model
         return $this->belongsTo('App\Core\Empresa', 'core_empresa_id');
     }
 
-    public function encabezado_documento()
+    public function documento_nomina()
     {
         return $this->belongsTo(NomDocEncabezado::class, 'nom_doc_encabezado_id');
     }
@@ -198,6 +200,24 @@ class OrdenDeTrabajo extends Model
                             ];
 
             EmpleadoOrdenDeTrabajo::create( $linea_empleado  );
+
+            // Crear registro en documento de nomina
+            $contrato = NomContrato::find( (int)$tabla_empleados[$i]->nom_contrato_id );
+            $datos = [
+                        'nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id,
+                        'nom_contrato_id' => (int)$tabla_empleados[$i]->nom_contrato_id,
+                        'core_tercero_id' => $contrato->core_tercero_id,
+                        'fecha' => $registro->documento_nomina->fecha,
+                        'core_empresa_id' => $registro->core_empresa_id,
+                        'detalle' => 'Orden de trabajo ' . $registro->tipo_documento_app->prefijo . ' ' . $registro->consecutivo,
+                        'nom_concepto_id' => $registro->nom_concepto_id,
+                        'cantidad_horas' => (float)$tabla_empleados[$i]->cantidad_horas,
+                        'valor_devengo' => (float)$tabla_empleados[$i]->valor_total,
+                        'valor_deduccion' => 0,
+                        'estado' => 'Activo',
+                        'creado_por' => Auth::user()->email
+                    ];
+            NomDocRegistro::create( $datos );
         }
 
         // PARA LOS ITEMS INGRESADOS

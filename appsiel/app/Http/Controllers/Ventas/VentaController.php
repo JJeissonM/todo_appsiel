@@ -406,7 +406,13 @@ class VentaController extends TransaccionController
 
         $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto;
 
-        $vec = EmailController::enviar_por_email_documento( $this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista );
+        $email_destino = $tercero->email;
+        if ( $this->doc_encabezado->contacto_cliente_id != 0 )
+        {
+            $email_destino = $this->doc_encabezado->contacto_cliente->tercero->email;
+        }
+
+        $vec = EmailController::enviar_por_email_documento( $this->empresa->descripcion, $email_destino, $asunto, $cuerpo_mensaje, $documento_vista );
 
         return redirect( 'ventas/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( $vec['tipo_mensaje'], $vec['texto_mensaje'] );
     }
