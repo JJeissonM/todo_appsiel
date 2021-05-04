@@ -329,6 +329,8 @@ class PedidoController extends TransaccionController
 
         $this->empresa = Empresa::find($this->doc_encabezado->core_empresa_id);
 
+        $contacto = $this->doc_encabezado->contacto_cliente->tercero;
+
         $resolucion = '';
 
         $doc_encabezado = $this->doc_encabezado;
@@ -336,7 +338,7 @@ class PedidoController extends TransaccionController
 
         $etiquetas = $this->get_etiquetas();
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','etiquetas'))->render();
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','etiquetas','contacto'))->render();
     }
 
 

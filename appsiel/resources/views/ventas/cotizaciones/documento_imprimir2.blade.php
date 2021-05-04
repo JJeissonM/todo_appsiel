@@ -291,11 +291,11 @@ use App\Core\Tercero;
         <td>{{ $doc_encabezado->vendedor_nombre_completo }}</td>
     </tr>
     <tr>
-        <td width="30%"><b>Condición de Venta</b></td>
-        <td style="text-transform: capitalize">{{ $doc_encabezado->condicion_pago }}</td>
+        <td width="30%"><b>Condición de Venta:</b></td>
+        <td style="text-transform: capitalize">@if($doc_encabezado->condicion_pago == "credito") Crédito @else {{ $doc_encabezado->condicion_pago }}@endif</td>
     </tr>
     <tr>
-        <td width="30%"><b>Plazo de entrega</b></td>
+        <td width="30%"><b>Plazo de entrega:</b></td>
         <td>A convenir</td>
     </tr>
 </table>
@@ -306,11 +306,10 @@ use App\Core\Tercero;
 <div class="encabezado">
     <p style="text-align: right; font-size: 18px; padding-right: 30px">{{ $empresa->descripcion }}</p>
 </div>
-<div class="page-break"></div>
 </body>
 </html>
 
-<p><strong><u>CONDICIONES COMERCIALES:</u></strong></p>
+<!--<p><strong><u>CONDICIONES COMERCIALES:</u></strong></p>
 <p>La aceptaci&oacute;n del presente presupuesto puede realizarse v&iacute;a email para coordinar los trabajos a ejecutar.</p>
 
 <p><strong><u>ALCANCE DE LA PROPUESTA:</u></strong></p>
@@ -327,4 +326,4 @@ use App\Core\Tercero;
     <li>Si por motivos de fuerza mayor (medidas de fuerza, problemas energ&eacute;ticos, causas naturales, etc.) no se pudieran iniciar o continuar los trabajos, esto ser&aacute; notificado al cliente y se acordar&aacute; con &eacute;l de igual forma que el punto anterior.</li>
     <li>El presente presupuesto contempla documentaci&oacute;n de ingreso est&aacute;ndar (ART, Seguro de Vida, EPP, estudios m&eacute;dicos anuales regulares).</li>
 </li>
-</ol>
+</ol>-->

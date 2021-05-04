@@ -26,7 +26,8 @@
                     <br/>
                     <b>Para:</b> {{ $doc_encabezado->tercero_nombre_completo }}
                     <br/>
-                    <b>NIT: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+                    <b>{{ config("configuracion.tipo_identificador") }}:</b>
+                        @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif
                     <br/>
                     <b>Fecha:</b> {{ $doc_encabezado->fecha }}
                 </div>          
@@ -57,7 +58,7 @@
     </table>
     
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
+        {{ Form::bsTableHeader(['Item','Producto','Cantidad']) }}
         <tbody>
             <?php 
             $i = 1;
@@ -72,10 +73,6 @@
                     <td> {{ $i }} </td>
                     <td width="250px"> {{ $linea->producto_descripcion }} </td>
                     <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-                    <td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
-                    <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                    <td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
-                    <td> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
                 </tr>
                 <?php
                     $i++;
