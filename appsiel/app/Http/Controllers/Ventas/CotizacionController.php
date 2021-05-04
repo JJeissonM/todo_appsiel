@@ -126,6 +126,7 @@ class CotizacionController extends TransaccionController
                             [ 'inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id ] +
                             [ 'precio_unitario' => (float)$lineas_registros[$i]->precio_unitario ] +
                             [ 'cantidad' => (float)$lineas_registros[$i]->cantidad ] +
+                            [ 'cantidad_pendiente' => (float)$lineas_registros[$i]->cantidad ] +
                             [ 'precio_total' => (float)$lineas_registros[$i]->precio_total ] +
                             [ 'base_impuesto' => (float)$lineas_registros[$i]->base_impuesto ] +
                             [ 'tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto ] +
@@ -135,7 +136,6 @@ class CotizacionController extends TransaccionController
                             [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
                             [ 'creado_por' => Auth::user()->email ] +
                             [ 'estado' => 'Activo' ];
-
 
             VtasDocRegistro::create( 
                                     $datos + 

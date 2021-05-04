@@ -222,7 +222,8 @@ class ProcesoController extends Controller
         $documentos = VtasDocEncabezado::all();
 
         $i = 1;
-        foreach ($documentos as $un_documento) {
+        foreach ($documentos as $un_documento)
+        {
             $valor_total = VtasDocRegistro::where('vtas_doc_encabezado_id', $un_documento->id)->sum('precio_total');
             $un_documento->valor_total = $valor_total;
             $un_documento->save();
@@ -265,7 +266,7 @@ class ProcesoController extends Controller
                 break;
         }
 
-        return redirect($url)->with('flash_message', $response);
+        return redirect( $url )->with('flash_message', $response);
 
     }
 
@@ -295,6 +296,10 @@ class ProcesoController extends Controller
         if ( $doc_remision->id > 0 )
         {
             $encabezado_doc_venta->estado = 'Remisionado';
+            if ( $encabezado_doc_venta->lineas_registros->sum('cantidad_pendiente') == 0 )
+            {
+                $encabezado_doc_venta->estado = 'Cumplido';
+            }
             $encabezado_doc_venta->save();
             return "<br>[OK] Remisión almacenada con exito.";
         } else {
@@ -433,14 +438,27 @@ class ProcesoController extends Controller
         $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
         $datos_remision['descripcion'] = $descripcion;
 
+        $datos_remision['vtas_doc_encabezado_origen_id'] = $encabezado_doc_venta->id;
+
         $doc_remision = InventarioController::crear_encabezado_remision_ventas($datos_remision, 'Pendiente');
 
         $lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_doc_venta->id )->get();
-        InventarioController::crear_registros_remision_ventas($doc_remision, $lineas_registros);
+        InventarioController::crear_registros_remision_ventas( $doc_remision, $lineas_registros);
 
         InventarioController::contabilizar_documento_inventario( $doc_remision->id, '' );
 
+        $this->actualizar_cantidades_pendientes( $lineas_registros );
+
         return $doc_remision;
+    }
+
+    public function actualizar_cantidades_pendientes( $lineas_registros )
+    {
+        foreach( $lineas_registros AS $linea )
+        {
+            $linea->cantidad_pendiente = $linea->cantidad_pendiente - $linea->cantidad;
+            $linea->save();
+        }
     }
 
     //valida si un valor se encuentra en el arreglo

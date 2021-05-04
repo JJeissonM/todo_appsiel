@@ -15,6 +15,10 @@
   </div>
 
   <div class="row" style="padding:5px;">
+    {{ Form::bsText('cantidad_pendiente_aux', $linea_factura->cantidad_pendiente, 'Cant. Pend.', ['id'=>'cantidad_pendiente_aux','disabled' => 'disabled', 'style' => 'background-color:#ddd' ]) }}
+  </div>
+
+  <div class="row" style="padding:5px;">
     {{ Form::bsText('tasa_descuento', $linea_factura->tasa_descuento, 'Tasa descuento', [ 'id'=>'tasa_descuento','width'=>'15px']) }}
   </div>
 
@@ -27,6 +31,7 @@
   </div>
   
   <input type="hidden" name="cantidad_original" id="cantidad_original" value="{{ $linea_factura->cantidad }}">
+  <input type="hidden" name="cantidad_pendiente" id="cantidad_pendiente" value="{{ $linea_factura->cantidad_pendiente }}">
 
   <input type="hidden" name="valor_total_descuento" id="valor_total_descuento" value="{{ $linea_factura->valor_total_descuento }}">
 

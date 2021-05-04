@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use Auth;
+use Input;
 
 use App\Core\EncabezadoDocumentoTransaccion;
 
@@ -24,9 +25,19 @@ class InvDocEncabezado extends Model
 {
     //protected $table = 'inv_doc_encabezados'; 
 
-    protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_tercero_id','inv_bodega_id','documento_soporte','descripcion','estado','creado_por','modificado_por','hora_inicio','hora_finalizacion'];
+    protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','core_tipo_doc_app_id', 'vtas_doc_encabezado_origen_id', 'consecutivo','fecha','core_tercero_id','inv_bodega_id','documento_soporte','descripcion','estado','creado_por','modificado_por','hora_inicio','hora_finalizacion'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Bodega', 'Tercero', 'Detalle', 'Estado'];
+
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+    }
 
     public function tercero()
     {
@@ -43,6 +54,25 @@ class InvDocEncabezado extends Model
         return $this->hasMany('App\Inventarios\InvMovimiento');
     }
 
+    // Doc. desde el cual fue generado
+    public function documento_ventas_padre()
+    {
+        $doc_padre = VtasDocEncabezado::find( $this->vtas_doc_encabezado_origen_id );
+        
+        if ( is_null( $doc_padre ) )
+        {
+            return null;
+        }
+
+        return $doc_padre;
+    }
+
+    public function enlace_show_documento()
+    {
+        $enlace = '<a href="' . url( 'inventarios/' . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+
+        return $enlace;
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {

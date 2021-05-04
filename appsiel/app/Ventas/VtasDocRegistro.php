@@ -8,14 +8,12 @@ use DB;
 
 class VtasDocRegistro extends Model
 {
-    //protected $table = 'vtas_doc_registros';
-
     
     // WARNING: se está usando inv_motivo_id para vtas_motivo_id
 
     // valor_impuesto es del precio_unitario
     // base_impuesto es del precio_unitario
-    protected $fillable = ['vtas_doc_encabezado_id','vtas_motivo_id','inv_producto_id','precio_unitario','cantidad','cantidad_devuelta','precio_total','base_impuesto','tasa_impuesto','valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'creado_por', 'modificado_por'];
+    protected $fillable = ['vtas_doc_encabezado_id','vtas_motivo_id','inv_producto_id','precio_unitario','cantidad', 'cantidad_pendiente', 'cantidad_devuelta','precio_total','base_impuesto','tasa_impuesto','valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'creado_por', 'modificado_por'];
 
     public $campos_invisibles_linea_registro = ['inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','base_impuesto_total','cantidad','costo_total','precio_total', 'tasa_descuento', 'valor_total_descuento']; // 13 campos
 
@@ -72,6 +70,7 @@ class VtasDocRegistro extends Model
                                 'inv_productos.referencia',
                                 'inv_productos.codigo_barras',
                                 'vtas_doc_registros.inv_producto_id',
+                                'vtas_doc_registros.cantidad_pendiente',
                                 'vtas_doc_registros.precio_unitario',
                                 'vtas_doc_registros.cantidad',
                                 'vtas_doc_registros.precio_total',
@@ -108,6 +107,7 @@ class VtasDocRegistro extends Model
                                 'vtas_doc_registros.inv_producto_id',
                                 'vtas_doc_registros.precio_unitario',
                                 'vtas_doc_registros.cantidad',
+                                'vtas_doc_registros.cantidad_pendiente',
                                 'vtas_doc_registros.precio_total',
                                 'vtas_doc_registros.base_impuesto',
                                 'vtas_doc_registros.tasa_impuesto',

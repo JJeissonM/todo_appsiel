@@ -98,6 +98,29 @@ class VtasDocEncabezado extends Model
         return $doc_hijo;
     }
 
+    public function enlaces_remisiones_hijas()
+    {
+        $remisiones = $this->remisiones_hijas();
+        $lista = '';
+        $es_el_primero = true;
+        foreach ($remisiones as $remision )
+        {
+            if ( $es_el_primero )
+            {
+                $lista = $remision->enlace_show_documento();
+                $es_el_primero = false;
+            }else{
+                $lista .= ', ' . $remision->enlace_show_documento();
+            }
+        }
+        return $lista;
+    }
+
+    public function remisiones_hijas()
+    {
+        return InvDocEncabezado::where( 'vtas_doc_encabezado_origen_id', $this->id )->get();
+    }
+
     public function enlace_show_documento()
     {
         switch ( $this->core_tipo_transaccion_id )

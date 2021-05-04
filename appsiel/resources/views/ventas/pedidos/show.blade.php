@@ -1,5 +1,7 @@
 <?php
-$variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
+	$variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
+
+	//dd( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') );
 ?>
 
 @extends('transaccion.show')
@@ -26,10 +28,10 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @endsection
 
 @section('cabecera')
-	@if( is_null( $doc_encabezado->documento_ventas_hijo() ) && $doc_encabezado->estado == 'Pendiente' )
+	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 )
 		<div class="col-md-12">
 			<form class="form-control" method="post" action="{{route('ventas.conexion_procesos')}}">
-				<input type="hidden" name="url" value="vtas_cotizacion/{{$doc_encabezado->id.$variables_url}}" />
+				<input type="hidden" name="url" value="vtas_pedidos/{{$doc_encabezado->id.$variables_url}}" />
 				<input type="hidden" name="modelo" value="{{$doc_encabezado->id}}" />
 				<input type="hidden" name="source" value="PEDIDO" />
 				{{ csrf_field() }}
@@ -76,6 +78,9 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 		<br>
 		<b>{{ $doc_encabezado->documento_ventas_hijo()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_hijo()->enlace_show_documento() !!}
 	@endif
+
+	<br>
+	<b>Remisiones: </b> {!! $doc_encabezado->enlaces_remisiones_hijas() !!}
 @endsection
 
 @section('filas_adicionales_encabezado')
@@ -94,10 +99,12 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @endsection
 
 @section('documento_vista')
-
+	<p style="color: red;">
+		Nota: Las cantidades pendientes se van actualizando a medida que se hagan la remisiones.
+	</p>
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped">
-			{{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total','']) }}
+			{{ Form::bsTableHeader(['Item','Producto','Cant.','Cant. Pend.','Vr. unitario','IVA','Total Bruto','Total','']) }}
 			<tbody>
 				<?php
 				$i = 1;
@@ -112,6 +119,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 					<td> {{ $i }} </td>
 					<td width="250px"> {{ $linea->producto_descripcion }} </td>
 					<td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+					<td> {{ number_format( $linea->cantidad_pendiente, 0, ',', '.') }} </td>
 					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
 					<td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
 					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
@@ -245,12 +253,10 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 		    // Al modificar la cantidad
 	        $(document).on('keyup','#cantidad',function(event){
 				
-				if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
-				{	
-					//calcula_nuevo_saldo_a_la_fecha();
-					if ( !validar_existencia_actual() )
+				if( validar_input_numerico( $(this) ) )
+				{
+					if ( !validar_cantidad_pendiente() )
 					{
-						$('#precio_total').val('');
 						return false;
 					}
 
@@ -307,8 +313,6 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 				$('#valor_total_descuento').val( valor_total_descuento );
 			}
 
-
-
 			function calcular_precio_total()
 			{
 				var valor_total_descuento = parseFloat( $('#valor_total_descuento').val() );
@@ -324,14 +328,14 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 
 
 	        $('.btn_save_modal').click(function(event){
-	        	alert('hi');
-	        	if ( $.isNumeric( $('#precio_total').val() ) && $('#precio_total').val() > 0 )
+
+	        	if ( !validar_cantidad_pendiente() )
+				{
+					return false;
+				}
+
+	        	if ( $.isNumeric( $('#precio_total').val() ) )
 	        	{
-	        		if ( !validar_existencia_actual() )
-					{
-						$('#precio_total').val('');
-						return false;
-					}
 	                validacion_saldo_movimientos_posteriores();
 	        	}else{
 	        		alert('El precio total es incorrecto. Verifique lo valores ingresados.');
@@ -359,13 +363,26 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 				return true;
 			}
 
+			function validar_cantidad_pendiente()
+			{
+				if ( parseFloat( $('#cantidad').val() ) > parseFloat( $('#cantidad_pendiente').val() ) ) 
+				{
+					alert('Cantidad no puede ser mayor a la cantidad pendiente.');
+					$('#cantidad').val('');
+					$('#cantidad').focus();
+					return false;
+				}
+
+				return true;
+			}
+
 
             
             function validacion_saldo_movimientos_posteriores()
             {
             	$('.btn_save_modal').off( 'click' );
-                $('#form_edit').submit();
                 $('#popup_alerta_danger').hide();
+                $('#form_edit').submit();
 
                 /*var url = '../inv_validacion_saldo_movimientos_posteriores/' + $('#bodega_id').val() + '/' + $('#producto_id').val() + '/' + $('#fecha').val() + '/' + $('#cantidad').val() + '/' + $('#saldo_a_la_fecha2').val() + '/salida';
 

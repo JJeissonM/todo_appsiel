@@ -397,6 +397,11 @@ class InventarioController extends TransaccionController
 
         foreach( $lineas_registros AS $linea )
         {
+            if ( $linea->cantidad == 0 )
+            {
+                continue;
+            }
+
             $item = InvProducto::find( $linea->inv_producto_id );
             
             if ( is_null($item) )
@@ -921,7 +926,8 @@ class InventarioController extends TransaccionController
 
         $documento = InvDocEncabezado::find($documento_id);
 
-        if ($documento->estado == 'Facturada') {
+        if ($documento->estado == 'Facturada')
+        {
             return redirect('inventarios/' . $documento_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', 'Registro NO puede ser modificado. El documento ya ha sido facturado.');
         }
 
@@ -929,7 +935,8 @@ class InventarioController extends TransaccionController
         // Validar saldos negativos en movimientos de inventarios LÍNEA X LÍNEA
         $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores_todas_lineas($documento, 'no_fecha', 'anular', 'segun_motivo');
 
-        if ($linea_saldo_negativo != '0') {
+        if ($linea_saldo_negativo != '0')
+        {
             return redirect('inventarios/' . $documento_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', $linea_saldo_negativo);
         }
 
@@ -981,13 +988,29 @@ class InventarioController extends TransaccionController
         // Para una remisión de ventas, se activa nuevamente el pedido de ventas, si se gene´ró con base en pedido
         if( $documento->core_tipo_transaccion_id == 24 ) 
         {
-            $pedido = VtasDocEncabezado::where( 'remision_doc_encabezado_id', $documento->id )->get()->first();
+            $pedido = VtasDocEncabezado::find( $documento->vtas_doc_encabezado_origen_id );
             if( !is_null($pedido) )
             {
-                $pedido->remision_doc_encabezado_id = 0;
+                $lineas_pedido = $pedido->lineas_registros;
+                $lineas_remision = $documento->lineas_registros;
+                foreach( $lineas_pedido AS $linea_pedido )
+                {
+                    foreach( $lineas_remision AS $linea_remision )
+                    {
+                        if ( $linea_pedido->inv_producto_id == $linea_remision->inv_producto_id )
+                        {
+                            $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad_pendiente + abs($linea_remision->cantidad);
+                            $linea_pedido->save();
+                        }
+                    }
+                }
+
                 $pedido->estado = "Pendiente";
                 $pedido->save();
-            }       
+
+                $documento->vtas_doc_encabezado_origen_id = 0;
+                $documento->save();
+            }      
         }
 
         // Para una entrada de almacén, se activa nuevamente la orden de compras, si se generó con base en OC

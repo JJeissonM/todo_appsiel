@@ -76,14 +76,12 @@ class PedidoController extends TransaccionController
             if(!Auth::check()){
                 return response()->json([
                     'status' => 'error',
-                    'mensaje' => 'Debe estar logeado para poder realizar el pedido.'
+                    'mensaje' => 'Debe estar logueado para poder realizar el pedido.'
                 ]);
             }
 
             $request = $this->completar_request( $request );
         }
-
-        //$request['fecha_entrega'] = $request['fecha_entrega'] . ' ' . $request['hora_entrega'] . ':00';
 
         $lineas_registros = json_decode($request->lineas_registros);
         $request['estado'] = "Pendiente";
@@ -197,18 +195,19 @@ class PedidoController extends TransaccionController
           $valor_impuesto = $precio_unitario - $base_impuesto;
 
           $linea_datos = ['vtas_motivo_id' =>$inv_motivo_id] +
-              ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
-              ['precio_unitario' => $precio_unitario] +
-              ['cantidad' => $lineas_registros[$i]->cantidad] +
-              ['precio_total' => $precio_unitario * $lineas_registros[$i]->cantidad] +
-              ['base_impuesto' => $base_impuesto] +
-              ['tasa_impuesto' => $tasa_impuesto] +
-              ['valor_impuesto' => $valor_impuesto] +
-              ['base_impuesto_total' => $base_impuesto * $lineas_registros[$i]->cantidad ] +
-              [ 'tasa_descuento' => $tasa_descuento ] +
-              [ 'valor_total_descuento' => ( $precio_unitario * $tasa_descuento / 100 ) * $lineas_registros[$i]->cantidad ] +
-              ['creado_por' => Auth::user()->email] +
-              ['estado' => 'Activo'];
+                          ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
+                          ['precio_unitario' => $precio_unitario] +
+                          ['cantidad' => $lineas_registros[$i]->cantidad] +
+                          ['cantidad_pendiente' => $lineas_registros[$i]->cantidad] +
+                          ['precio_total' => $precio_unitario * $lineas_registros[$i]->cantidad] +
+                          ['base_impuesto' => $base_impuesto] +
+                          ['tasa_impuesto' => $tasa_impuesto] +
+                          ['valor_impuesto' => $valor_impuesto] +
+                          ['base_impuesto_total' => $base_impuesto * $lineas_registros[$i]->cantidad ] +
+                          [ 'tasa_descuento' => $tasa_descuento ] +
+                          [ 'valor_total_descuento' => ( $precio_unitario * $tasa_descuento / 100 ) * $lineas_registros[$i]->cantidad ] +
+                          ['creado_por' => Auth::user()->email] +
+                          ['estado' => 'Activo'];
 
             VtasDocRegistro::create(
                                         ['vtas_doc_encabezado_id' => $doc_encabezado->id] +
@@ -514,14 +513,19 @@ class PedidoController extends TransaccionController
         $viejo_total_encabezado = $doc_encabezado->valor_total;
 
         // Se pasaron las validaciones
-        $precio_unitario = $request->precio_unitario; // IVA incluido
-        $cantidad = $request->cantidad;
-        $valor_total_descuento = $request->valor_total_descuento;
-        $tasa_descuento = $request->tasa_descuento;
+        $precio_unitario = (float)$request->precio_unitario; // IVA incluido
+        $cantidad = (float)$request->cantidad;
+        $valor_total_descuento = (float)$request->valor_total_descuento;
+        $tasa_descuento = (float)$request->tasa_descuento;
 
         $precio_total = $precio_unitario * $cantidad - $valor_total_descuento;
 
-        $precio_venta_unitario = $precio_unitario - ( $valor_total_descuento / $cantidad );
+        $precio_venta_unitario = 0;
+
+        if ( $cantidad != 0 )
+        {
+            $precio_venta_unitario = $precio_unitario - ( $valor_total_descuento / $cantidad );
+        }
 
         // Valores unitarios
         $base_impuesto = $precio_venta_unitario / ( 1 + $linea_registro->tasa_impuesto / 100);
