@@ -158,12 +158,12 @@ class CotizacionController extends TransaccionController
     public function imprimir(Request $request, $id )
     {
         //dd($request->formato_impresion_id);
-        if($request->formato_impresion_id == 1){
+        if($request->formato_impresion_id == 1)
+        {
             $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir');
         }else{
             $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir2');
         }
-        
 
         // Se prepara el PDF
         $orientacion='portrait';
@@ -184,15 +184,26 @@ class CotizacionController extends TransaccionController
     {
         $this->set_variables_globales();
         
-        $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir' );
+        if( Input::get('formato_impresion_id') == 1)
+        {
+            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir');
+        }else{
+            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir2');
+        }
 
         $tercero = Tercero::find( $this->doc_encabezado->core_tercero_id );
 
         $asunto = $this->doc_encabezado->documento_transaccion_descripcion.' No. '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo;
 
-        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto;
+        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto . ' <br><br> Por favor no responda este mesanje, pues fue generado automáticamente. <br><br>  Si tiene alguna duda o sugerencia escríbanos a <a href="mailto(' . $this->empresa->email . ')" > ' . $this->empresa->email . ' </a> o comuníquese al '  . $this->empresa->telefono1 . '.';
 
-        $vec = EmailController::enviar_por_email_documento( $this->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $documento_vista );
+        $email_destino = $tercero->email;
+        if ( $this->doc_encabezado->contacto_cliente_id != 0 )
+        {
+            $email_destino = $this->doc_encabezado->contacto_cliente->tercero->email;
+        }
+
+        $vec = EmailController::enviar_por_email_documento( $this->empresa->descripcion, $email_destino, $asunto, $cuerpo_mensaje, $documento_vista );
 
         return redirect( 'vtas_cotizacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( $vec['tipo_mensaje'], $vec['texto_mensaje'] );
     }
@@ -211,14 +222,18 @@ class CotizacionController extends TransaccionController
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$this->doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->first();
 
-        $contacto = $this->doc_encabezado->contacto_cliente->tercero;
+        $contacto = (object)['descripcion'=>'','telefono1'=>'','email'=>''];
+        if ( $this->doc_encabezado->contacto_cliente_id != 0 )
+        {
+            $contacto = $this->doc_encabezado->contacto_cliente->tercero;
+        }
         
         $otroscampos = TransaccionOtrosCampos::where('core_tipo_transaccion_id',$this->doc_encabezado->core_tipo_transaccion_id)->get()->first();
 
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 
-        return View::make( 'ventas.cotizaciones.'.$nombre_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','otroscampos','contacto' ) )->render();
+        return View::make( 'ventas.cotizaciones.'.$nombre_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','otroscampos', 'contacto' ) )->render();
     }
 
 

@@ -186,6 +186,155 @@
 				
 			});
 
+			$(".btn_editar_registro").click(function(event){
+
+		        $("#myModal").modal({backdrop: "static"});
+		        $("#div_spin").show();
+		        $(".btn_edit_modal").hide();
+
+		        var url = '../nom_ordenes_trabajo_get_formulario_edit_registro';
+
+				$.get( url, { 
+								linea_registro_id: $(this).attr('data-linea_registro_id'), 
+								id: getParameterByName('id'), 
+								id_modelo: getParameterByName('id_modelo'), 
+								id_transaccion: getParameterByName('id_transaccion')
+							} )
+					.done(function( data ) {
+
+						$('#saldo_original').val( $('#saldo_a_la_fecha').val() );
+						$('#cantidad_original').val( $('#cantidad').val() );
+
+		                $('#contenido_modal').html(data);
+
+		                $("#div_spin").hide();
+
+		                $('#precio_unitario').select();
+
+					});		        
+		    });
+
+		    // Al modificar el precio 
+	        $(document).on('keyup','#precio_unitario',function(event){
+				
+				if( validar_input_numerico( $(this) ) )
+				{	
+
+					var x = event.which || event.keyCode;
+					if( x==13 )
+					{
+						$('#cantidad').select();				
+					}
+
+					calcular_valor_descuento();
+
+					calcular_precio_total();
+
+				}else{
+					$(this).focus();
+					return false;
+				}
+
+			});
+
+		    // Al modificar la cantidad
+	        $(document).on('keyup','#cantidad',function(event){
+				
+				if( validar_input_numerico( $(this) ) )
+				{
+					if ( !validar_cantidad_pendiente() )
+					{
+						return false;
+					}
+
+					var x = event.which || event.keyCode;
+					if( x==13 )
+					{
+						$('#tasa_descuento').select();
+					}
+
+					calcular_valor_descuento();
+
+					calcular_precio_total();
+					
+				}else{
+					$(this).focus();
+					return false;
+				}
+
+			});
+
+
+	        $(document).on('keyup','#tasa_descuento',function(event){
+	        	if( validar_input_numerico( $(this) ) )
+				{	
+					// máximo valor de 100
+					if ( $(this).val() > 100 )
+					{ 
+						$(this).val(100);
+					}
+
+					var x = event.which || event.keyCode;
+					if( x == 13 )
+					{
+						$('.btn_save_modal').focus();
+						return true;
+					}
+					
+					calcular_valor_descuento();
+
+					calcular_precio_total();
+
+				}else{
+
+					$(this).focus();
+					return false;
+				}
+			});
+
+			function calcular_valor_descuento()
+			{
+				var valor_total_descuento = $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 * $('#cantidad').val();
+
+				$('#valor_total_descuento_no').val( valor_total_descuento );
+				$('#valor_total_descuento').val( valor_total_descuento );
+			}
+
+			function calcular_precio_total()
+			{
+				var valor_total_descuento = parseFloat( $('#valor_total_descuento').val() );
+
+				var precio_unitario = parseFloat( $('#precio_unitario').val() );
+
+				var cantidad = parseFloat( $('#cantidad').val() );
+				
+				var precio_total = precio_unitario * cantidad - valor_total_descuento;
+
+				$('#precio_total').val( precio_total );
+			}
+
+
+	        $('.btn_save_modal').click(function(event){
+
+	        	if ( !validar_cantidad_pendiente() )
+				{
+					return false;
+				}
+
+	        	if ( $.isNumeric( $('#precio_total').val() ) )
+	        	{
+	                validacion_saldo_movimientos_posteriores();
+	        	}else{
+	        		alert('El precio total es incorrecto. Verifique lo valores ingresados.');
+	        	}
+	        });
+
+	        $("#myModal").on('hide.bs.modal', function(){
+	            $('#popup_alerta_danger').hide();
+	        });
+
 		});
 	</script>
+
+	<script src="{{ asset( 'assets/js/modificar_con_doble_click.js' ) }}"></script>
 @endsection

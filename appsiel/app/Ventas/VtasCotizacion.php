@@ -21,6 +21,11 @@ class VtasCotizacion extends Model
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/ventas/cotizaciones.js';
 
+    public function contacto_cliente()
+    {
+        return $this->belongsTo(ContactoCliente::class, 'contacto_cliente_id');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 30; // Cotización ventas

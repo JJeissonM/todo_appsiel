@@ -10,7 +10,7 @@ use DB;
 class NomDocRegistro extends Model
 {
     //protected $table = 'nom_doc_registros';
-    protected $fillable = ['nom_doc_encabezado_id', 'core_tercero_id', 'nom_contrato_id', 'fecha', 'core_empresa_id', 'porcentaje', 'detalle', 'nom_concepto_id', 'nom_cuota_id', 'nom_prestamo_id', 'novedad_tnl_id', 'cantidad_horas', 'valor_devengo', 'valor_deduccion', 'estado', 'creado_por', 'modificado_por'];
+    protected $fillable = [ 'nom_doc_encabezado_id', 'core_tercero_id', 'nom_contrato_id', 'fecha', 'core_empresa_id', 'porcentaje', 'detalle', 'nom_concepto_id', 'nom_cuota_id', 'nom_prestamo_id', 'novedad_tnl_id', 'orden_trabajo_id', 'cantidad_horas', 'valor_devengo', 'valor_deduccion', 'estado', 'creado_por', 'modificado_por' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Empleado', 'Fecha', 'Detalle', 'Concepto', 'Horas', 'Devengo', 'Deducción', 'Estado', 'ID'];
 
@@ -152,6 +152,37 @@ class NomDocRegistro extends Model
         return NomDocRegistro::leftJoin('nom_agrupacion_tiene_conceptos', 'nom_agrupacion_tiene_conceptos.nom_concepto_id', '=', 'nom_doc_registros.nom_concepto_id')
                             ->where( $array_wheres )
                             ->whereBetween('nom_doc_registros.fecha', [ $fecha_desde, $fecha_hasta ] )
+                            ->select('nom_doc_registros.id', 'nom_doc_registros.nom_doc_encabezado_id', 'nom_doc_registros.core_tercero_id', 'nom_doc_registros.nom_contrato_id', 'nom_doc_registros.fecha', 'nom_doc_registros.core_empresa_id', 'nom_doc_registros.porcentaje', 'nom_doc_registros.detalle', 'nom_doc_registros.nom_concepto_id', 'nom_doc_registros.nom_cuota_id', 'nom_doc_registros.nom_prestamo_id', 'nom_doc_registros.novedad_tnl_id', 'nom_doc_registros.cantidad_horas', 'nom_doc_registros.valor_devengo', 'nom_doc_registros.valor_deduccion', 'nom_doc_registros.estado', 'nom_doc_registros.creado_por', 'nom_doc_registros.modificado_por')
+                            ->distinct('nom_doc_registros.id')
+                            ->get();
+    }
+
+
+    public static function listado_acumulados_documento( $nom_doc_encabezado_id, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id)
+    {
+        $array_wheres = [ [ 'nom_doc_registros.core_empresa_id', '=', Auth::user()->empresa_id ] ];
+
+        $array_wheres = array_merge( $array_wheres, [[ 'nom_doc_registros.nom_doc_encabezado_id', '=', $nom_doc_encabezado_id ]] );
+        
+        if ( $nom_agrupacion_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [[ 'nom_agrupacion_tiene_conceptos.nom_agrupacion_id', '=', $nom_agrupacion_id ]] );
+        }
+        
+        if ( $nom_contrato_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [[ 'nom_doc_registros.nom_contrato_id', '=', $nom_contrato_id ]] );
+        }
+        
+        if ( $nom_concepto_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [
+                                                            [ 'nom_doc_registros.nom_concepto_id', '=', $nom_concepto_id ]
+                                                        ] );
+        }
+        
+        return NomDocRegistro::leftJoin('nom_agrupacion_tiene_conceptos', 'nom_agrupacion_tiene_conceptos.nom_concepto_id', '=', 'nom_doc_registros.nom_concepto_id')
+                            ->where( $array_wheres )
                             ->select('nom_doc_registros.id', 'nom_doc_registros.nom_doc_encabezado_id', 'nom_doc_registros.core_tercero_id', 'nom_doc_registros.nom_contrato_id', 'nom_doc_registros.fecha', 'nom_doc_registros.core_empresa_id', 'nom_doc_registros.porcentaje', 'nom_doc_registros.detalle', 'nom_doc_registros.nom_concepto_id', 'nom_doc_registros.nom_cuota_id', 'nom_doc_registros.nom_prestamo_id', 'nom_doc_registros.novedad_tnl_id', 'nom_doc_registros.cantidad_horas', 'nom_doc_registros.valor_devengo', 'nom_doc_registros.valor_deduccion', 'nom_doc_registros.estado', 'nom_doc_registros.creado_por', 'nom_doc_registros.modificado_por')
                             ->distinct('nom_doc_registros.id')
                             ->get();

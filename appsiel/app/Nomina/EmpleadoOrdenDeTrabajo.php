@@ -12,7 +12,7 @@ class EmpleadoOrdenDeTrabajo extends Model
 
     public function orden_trabajo()
     {
-        return $this->belongsTo(NomOrdenTrabajo::class, 'orden_trabajo_id');
+        return $this->belongsTo(OrdenDeTrabajo::class, 'orden_trabajo_id');
     }
 
     public function contrato()

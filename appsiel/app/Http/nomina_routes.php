@@ -50,6 +50,13 @@ Route::post('nom_calcular_porcentaje_fijo_retefuente', 'Nomina\RetefuenteControl
 Route::get('nom_get_tabla_empleados_ingreso_registros', 'Nomina\OrdenDeTrabajoController@get_tabla_empleados_ingreso_registros');
 Route::get('nom_ordenes_trabajo_imprimir/{orden_trabajo_id}', 'Nomina\OrdenDeTrabajoController@imprimir');
 Route::post('nom_ordenes_trabajo_anular', 'Nomina\OrdenDeTrabajoController@anula');
+
+
+Route::get('nom_ordenes_trabajo_cambiar_cantidad_horas_empleados/{orden_trabajo_id}/{nom_concepto_id}/{nom_contrato_id}/{nueva_cantidad_horas}','Nomina\OrdenDeTrabajoController@cambiar_cantidad_horas_empleados');
+Route::get('nom_ordenes_trabajo_cambiar_valor_por_hora_empleados/{orden_trabajo_id}/{nom_concepto_id}/{nom_contrato_id}/{nuevo_valor_por_hora}','Nomina\OrdenDeTrabajoController@cambiar_valor_por_hora_empleados');
+
+Route::get('nom_ordenes_trabajo_cambiar_cantidad_items/{orden_trabajo_id}/{inv_producto_id}/{nueva_cantidad}','Nomina\OrdenDeTrabajoController@cambiar_cantidad_items');
+
 Route::resource('nom_ordenes_trabajo', 'Nomina\OrdenDeTrabajoController');
 
 

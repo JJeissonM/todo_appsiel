@@ -8,9 +8,8 @@ use App\Core\Tercero;
 
     $tercero = Tercero::find( $doc_encabezado->core_tercero_id );
 
-
-    
 ?>
+
 <!DOCTYPE html>
 <html>
 
