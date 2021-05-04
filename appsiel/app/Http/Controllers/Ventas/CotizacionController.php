@@ -211,14 +211,14 @@ class CotizacionController extends TransaccionController
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$this->doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->first();
 
-        //dd($this->doc_encabezado->contacto_cliente);
-
+        $contacto = $this->doc_encabezado->contacto_cliente->tercero;
+        
         $otroscampos = TransaccionOtrosCampos::where('core_tipo_transaccion_id',$this->doc_encabezado->core_tipo_transaccion_id)->get()->first();
 
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 
-        return View::make( 'ventas.cotizaciones.'.$nombre_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','otroscampos' ) )->render();
+        return View::make( 'ventas.cotizaciones.'.$nombre_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','otroscampos','contacto' ) )->render();
     }
 
 
