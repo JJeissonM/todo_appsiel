@@ -53,34 +53,44 @@
 @endsection
 
 @section('datos_adicionales_encabezado')
-	<br />
-	<b>Para:</b> {{ $doc_encabezado->tercero_nombre_completo }}
-	<br />
-	<b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
+	<br>
+	<b>Fecha vencimiento:</b> {{ $doc_encabezado->fecha_vencimiento }}
 	
-	@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif
 	@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
 		<br>
 		<b>{{ $doc_encabezado->documento_ventas_hijo()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_hijo()->enlace_show_documento() !!}
 	@endif
+
 	@if( $docs_relacionados[0] != '' )
 		<br/>
 		<b>Remisión: </b> {!! $docs_relacionados[0] !!}
 	@endif
+
 @endsection
 
 @section('filas_adicionales_encabezado')
-<tr>
-	<td colspan="2" style="border: solid 1px #ddd;">
-		@if( !is_null($doc_encabezado->contacto_cliente) )
-			<b>Contacto: </b> {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}
+	<tr>
+		<td style="border: solid 1px #ddd;">
+			<b>Cliente: </b> {{ $doc_encabezado->tercero_nombre_completo }}
 			<br>
-			<b>Tel: </b> {{ $doc_encabezado->contacto_cliente->tercero->telefono1 }}
-			<br>
-			<b>Email: </b> {{ $doc_encabezado->contacto_cliente->tercero->email }}
-		@endif
-	</td>
-</tr>
+			<b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
+			
+			@if( config("configuracion.tipo_identificador") == 'NIT') 
+				{{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	
+			@else 
+				{{ $doc_encabezado->numero_identificacion}} 
+			@endif
+		</td>
+		<td style="border: solid 1px #ddd;">
+			@if( !is_null($doc_encabezado->contacto_cliente) )
+				<b>Contacto: </b> {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}
+				<br>
+				<b>Tel: </b> {{ $doc_encabezado->contacto_cliente->tercero->telefono1 }}
+				<br>
+				<b>Email: </b> {{ $doc_encabezado->contacto_cliente->tercero->email }}
+			@endif
+		</td>
+	</tr>
 @endsection
 
 @section('div_advertencia_anulacion')
