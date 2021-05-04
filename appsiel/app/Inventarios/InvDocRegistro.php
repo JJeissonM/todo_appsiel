@@ -30,6 +30,11 @@ class InvDocRegistro extends Model
     {
         return $this->belongsTo( InvProducto::class, 'inv_producto_id' );
     }
+    
+    public function encabezado_documento()
+    {
+        return $this->belongsTo( InvDocEncabezado::class, 'inv_doc_encabezado_id');
+    }
 
     public function motivo()
     {

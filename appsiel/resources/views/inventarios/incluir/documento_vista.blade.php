@@ -13,7 +13,7 @@
             ?>
             @foreach($doc_registros as $linea )
                 <?php
-
+                
                     $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
 
                     if( $linea->item->unidad_medida2 != '' )
