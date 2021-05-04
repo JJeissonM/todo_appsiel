@@ -76,9 +76,13 @@ class OrdenDeTrabajoController extends TransaccionController
 
     public function get_tabla_empleados_ingreso_registros()
     {
-        $array = RegistrosDocumentosController::get_array_tabla_registros( (int)Input::get('nom_concepto_id'), (int)Input::get('nom_doc_encabezado_id'), '' );
-        //dd($array);
-        return View::make( 'nomina.create_registros2_tabla', $array )->render();
+        $concepto = NomConcepto::find( (int)Input::get('nom_concepto_id') );
+        $documento = NomDocEncabezado::find( (int)Input::get('nom_doc_encabezado_id') );
+
+        // Se obtienen los Empleados del documento
+        $empleados = $documento->empleados;
+
+        return View::make( 'nomina.create_registros2_tabla', [ 'empleados' => $empleados, 'concepto' => $concepto ] )->render();
     }
 
 
@@ -104,6 +108,8 @@ class OrdenDeTrabajoController extends TransaccionController
         $linea_empleado->modificado_por = Auth::user()->email;
         $linea_empleado->save();
 
+        $this->modificar_linea_registro_documento_nomina( $linea_empleado );
+
         return 'true';        
     }
     
@@ -128,6 +134,8 @@ class OrdenDeTrabajoController extends TransaccionController
         $linea_empleado->modificado_por = Auth::user()->email;
         $linea_empleado->save();
 
+        $this->modificar_linea_registro_documento_nomina( $linea_empleado );
+
         return 'true';        
     }
 
@@ -142,23 +150,13 @@ class OrdenDeTrabajoController extends TransaccionController
                                                         ->get()
                                                         ->first();
 
-        // Crear registro en documento de nomina
-            $contrato = NomContrato::find( (int)$tabla_empleados[$i]->nom_contrato_id );
-            $datos = [
-                        ,
-                        'nom_contrato_id' => (int)$tabla_empleados[$i]->nom_contrato_id,
-                        'core_tercero_id' => $contrato->core_tercero_id,
-                        'fecha' => $registro->documento_nomina->fecha,
-                        'core_empresa_id' => $registro->core_empresa_id,
-                        'detalle' => 'Orden de trabajo ' . $registro->tipo_documento_app->prefijo . ' ' . $registro->consecutivo,
-                        'nom_concepto_id' => $registro->nom_concepto_id,
-                        'cantidad_horas' => (float)$tabla_empleados[$i]->cantidad_horas,
-                        'valor_devengo' => (float)$tabla_empleados[$i]->valor_total,
-                        'valor_deduccion' => 0,
-                        'estado' => 'Activo',
-                        'creado_por' => Auth::user()->email
-                    ];
-            NomDocRegistro::create( $datos );
+        // Actualizar registro en documento de nomina
+        $linea_documento_nomina->cantidad_horas = $linea_empleado_orden_trabajo->cantidad_horas;
+        $linea_documento_nomina->valor_devengo = $linea_empleado_orden_trabajo->valor_devengo;
+        $linea_documento_nomina->modificado_por = Auth::user()->email;
+        $linea_documento_nomina->save();
+
+        $linea_documento_nomina->encabezado_documento->actualizar_totales();
     }
     
     public function cambiar_cantidad_items( $orden_trabajo_id, $inv_producto_id, $nueva_cantidad )

@@ -157,6 +157,37 @@ class NomDocRegistro extends Model
                             ->get();
     }
 
+
+    public static function listado_acumulados_documento( $nom_doc_encabezado_id, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id)
+    {
+        $array_wheres = [ [ 'nom_doc_registros.core_empresa_id', '=', Auth::user()->empresa_id ] ];
+
+        $array_wheres = array_merge( $array_wheres, [[ 'nom_doc_registros.nom_doc_encabezado_id', '=', $nom_doc_encabezado_id ]] );
+        
+        if ( $nom_agrupacion_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [[ 'nom_agrupacion_tiene_conceptos.nom_agrupacion_id', '=', $nom_agrupacion_id ]] );
+        }
+        
+        if ( $nom_contrato_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [[ 'nom_doc_registros.nom_contrato_id', '=', $nom_contrato_id ]] );
+        }
+        
+        if ( $nom_concepto_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [
+                                                            [ 'nom_doc_registros.nom_concepto_id', '=', $nom_concepto_id ]
+                                                        ] );
+        }
+        
+        return NomDocRegistro::leftJoin('nom_agrupacion_tiene_conceptos', 'nom_agrupacion_tiene_conceptos.nom_concepto_id', '=', 'nom_doc_registros.nom_concepto_id')
+                            ->where( $array_wheres )
+                            ->select('nom_doc_registros.id', 'nom_doc_registros.nom_doc_encabezado_id', 'nom_doc_registros.core_tercero_id', 'nom_doc_registros.nom_contrato_id', 'nom_doc_registros.fecha', 'nom_doc_registros.core_empresa_id', 'nom_doc_registros.porcentaje', 'nom_doc_registros.detalle', 'nom_doc_registros.nom_concepto_id', 'nom_doc_registros.nom_cuota_id', 'nom_doc_registros.nom_prestamo_id', 'nom_doc_registros.novedad_tnl_id', 'nom_doc_registros.cantidad_horas', 'nom_doc_registros.valor_devengo', 'nom_doc_registros.valor_deduccion', 'nom_doc_registros.estado', 'nom_doc_registros.creado_por', 'nom_doc_registros.modificado_por')
+                            ->distinct('nom_doc_registros.id')
+                            ->get();
+    }
+
     public static function movimientos_entidades_salud($fecha_desde, $fecha_hasta, array $entidades)
     {
         return NomDocRegistro::leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_doc_registros.nom_concepto_id')

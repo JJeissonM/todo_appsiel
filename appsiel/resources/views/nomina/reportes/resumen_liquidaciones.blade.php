@@ -48,10 +48,17 @@
 			<h3 style="width: 100%; text-align: center;">
 			    RESUMEN DE LIQUIDACIONES DE NÓMINA
 			</h3>
-			<p style="width: 100%; text-align: center;">
-			    Desde: {{ $fecha_desde }} | Hasta: {{ $fecha_hasta }}
-			</p>
-
+			@if( is_null($documento_nomina) )
+				<p style="width: 100%; text-align: center;">
+				    Desde: {{ $fecha_desde }} - Hasta: {{ $fecha_hasta }}
+				</p>
+			@else
+				<p style="width: 100%; text-align: center;">
+				    Documento de nómina: {{ $documento_nomina->descripcion }}
+				    <br>
+				    Fecha: {{ $documento_nomina->fecha }}
+				</p>
+			@endif
 
 			<table class="table table-bordered">
 				<tbody>

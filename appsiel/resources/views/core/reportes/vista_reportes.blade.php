@@ -251,6 +251,25 @@
 				
 			});
 
+			$('#nom_doc_encabezado_id').on('change',function()
+			{
+				
+				if ( $(this).val() == '')
+				{
+					$('#fecha_desde').removeAttr( 'disabled' );
+					$('#fecha_hasta').removeAttr( 'disabled' );
+					$('#fecha_desde').attr( 'required', 'required' );
+					$('#fecha_hasta').attr( 'required', 'required' );
+					return false;
+				}
+
+				$('#fecha_desde').removeAttr( 'required' );
+				$('#fecha_hasta').removeAttr( 'required' );
+				$('#fecha_desde').attr( 'disabled', 'disabled' );
+				$('#fecha_hasta').attr( 'disabled', 'disabled' );
+				
+			});
+
 		});
 
 		

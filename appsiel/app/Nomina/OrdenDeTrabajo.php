@@ -203,7 +203,7 @@ class OrdenDeTrabajo extends Model
 
             // Crear registro en documento de nomina
             $contrato = NomContrato::find( (int)$tabla_empleados[$i]->nom_contrato_id );
-            $datos = [
+            $datos_registro_doc_nomina = [
                         'nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id,
                         'orden_trabajo_id' => $registro->id,
                         'nom_contrato_id' => (int)$tabla_empleados[$i]->nom_contrato_id,
@@ -218,7 +218,9 @@ class OrdenDeTrabajo extends Model
                         'estado' => 'Activo',
                         'creado_por' => Auth::user()->email
                     ];
-            NomDocRegistro::create( $datos );
+            NomDocRegistro::create( $datos_registro_doc_nomina );
+
+            $registro->documento_nomina->actualizar_totales();
         }
 
         // PARA LOS ITEMS INGRESADOS

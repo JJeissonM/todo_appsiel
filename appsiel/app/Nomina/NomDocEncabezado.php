@@ -54,6 +54,13 @@ class NomDocEncabezado extends Model
         return $this->hasMany(NomDocRegistro::class, 'nom_doc_encabezado_id');
     }
 
+    public function actualizar_totales()
+    {
+        $this->total_devengos = NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_devengo');
+        $this->total_deducciones = NomDocRegistro::where('nom_doc_encabezado_id',$this->id)->sum('valor_deduccion');
+        $this->save();
+    }
+
     public function horas_liquidadas_empleado($core_tercero_id)
     {
         $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)->all();
@@ -212,7 +219,8 @@ class NomDocEncabezado extends Model
     public static function opciones_campo_select()
     {
         $opciones = NomDocEncabezado::where('estado', 'Activo')
-            ->get();
+                                    ->orderBy('descripcion')
+                                    ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {

@@ -222,7 +222,15 @@ class ReporteController extends Controller
         $detalla_empleados = $request->detalla_empleados;
         $operador2 = '=';
 
-        $movimientos = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
+        $nom_doc_encabezado_id  = (int)$request->nom_doc_encabezado_id;
+        if ( $nom_doc_encabezado_id == 0 )
+        {
+            $movimientos = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
+        }else{
+            $movimientos = NomDocRegistro::listado_acumulados_documento( $nom_doc_encabezado_id, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
+        }
+        
+        $documento_nomina = NomDocEncabezado::find( $nom_doc_encabezado_id );
 
         $agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id );
 
@@ -240,7 +248,7 @@ class ReporteController extends Controller
             $empleados =  NomContrato::where( 'id', $nom_contrato_id )->get();
         }
 
-        $vista = View::make('nomina.reportes.listado_acumulados2', compact('movimientos','conceptos','empleados','detalla_empleados','agrupacion','fecha_desde', 'fecha_hasta','valores_a_mostrar'))->render();
+        $vista = View::make('nomina.reportes.listado_acumulados2', compact('movimientos','conceptos','empleados','detalla_empleados','agrupacion','fecha_desde', 'fecha_hasta','valores_a_mostrar', 'documento_nomina' ))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
@@ -437,7 +445,15 @@ class ReporteController extends Controller
         $nom_concepto_id = (int)$request->nom_concepto_id;
         $nom_agrupacion_id = (int)$request->nom_agrupacion_id;
 
-        $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
+        $nom_doc_encabezado_id  = (int)$request->nom_doc_encabezado_id;
+        if ( $nom_doc_encabezado_id == 0 )
+        {
+            $movimiento = NomDocRegistro::listado_acumulados( $fecha_desde, $fecha_hasta, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
+        }else{
+            $movimiento = NomDocRegistro::listado_acumulados_documento( $nom_doc_encabezado_id, $nom_agrupacion_id, $nom_contrato_id, $nom_concepto_id);
+        }
+        
+        $documento_nomina = NomDocEncabezado::find( $nom_doc_encabezado_id );
 
         switch ($forma_visualizacion)
         {
@@ -455,7 +471,7 @@ class ReporteController extends Controller
                 break;
         }
 
-        $view = View::make('nomina.reportes.resumen_liquidaciones', compact( 'datos', 'fecha_desde', 'fecha_hasta', 'forma_visualizacion') )->render();
+        $view = View::make('nomina.reportes.resumen_liquidaciones', compact( 'datos', 'fecha_desde', 'fecha_hasta', 'forma_visualizacion', 'documento_nomina') )->render();
 
         $vista_pdf = View::make('layouts.pdf3', compact( 'view' ) )->render();
 
