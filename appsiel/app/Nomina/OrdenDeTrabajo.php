@@ -19,7 +19,7 @@ class OrdenDeTrabajo extends Model
     
     protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'nom_doc_encabezado_id', 'core_tercero_id', 'fecha', 'descripcion', 'nom_concepto_id', 'inv_bodega_id', 'ubicacion_desarrollo_actividad', 'estado', 'creado_por', 'modificado_por'];
     
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Fecha', 'Orden de trabajo', 'Doc. nómina', 'Tercero', 'Detalle', 'Concepto', 'Ubicación desarollo actividad', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Fecha', 'Orden de trabajo', 'Doc. nómina (Proyecto)', 'Tercero', 'Detalle', 'Concepto', 'Ubicación desarollo actividad', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","show":"nom_ordenes_trabajo/id_fila"}';
 
@@ -73,13 +73,16 @@ class OrdenDeTrabajo extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $collection = OrdenDeTrabajo::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_ordenes_de_trabajo.core_tipo_doc_app_id')
+                            ->leftJoin('nom_doc_encabezados', 'nom_doc_encabezados.id', '=', 'nom_ordenes_de_trabajo.nom_doc_encabezado_id')
+                            ->leftJoin('nom_conceptos', 'nom_conceptos.id', '=', 'nom_ordenes_de_trabajo.nom_concepto_id')
+                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_ordenes_de_trabajo.core_tercero_id')
                             ->select(
 	                            	'nom_ordenes_de_trabajo.fecha AS campo1',
                             		DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_ordenes_de_trabajo.consecutivo) AS campo2'),
-                            		'nom_ordenes_de_trabajo.nom_doc_encabezado_id AS campo3',
-	                            	'nom_ordenes_de_trabajo.core_tercero_id AS campo4',
+                            		'nom_doc_encabezados.descripcion AS campo3',
+	                            	'core_terceros.descripcion AS campo4',
 	                            	'nom_ordenes_de_trabajo.descripcion AS campo5',
-	                            	'nom_ordenes_de_trabajo.nom_concepto_id AS campo6',
+	                            	'nom_conceptos.descripcion AS campo6',
 	                            	'nom_ordenes_de_trabajo.ubicacion_desarrollo_actividad AS campo7',
 	                            	'nom_ordenes_de_trabajo.estado AS campo8',
 	                            	'nom_ordenes_de_trabajo.id AS campo9')

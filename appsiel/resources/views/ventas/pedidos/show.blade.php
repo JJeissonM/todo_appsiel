@@ -64,8 +64,8 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @endsection
 
 @section('datos_adicionales_encabezado')
-	<br />
-	<b>Entrega: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_entrega }}
+	<!-- <br />
+	<b>Entrega: &nbsp;&nbsp;</b> { { $doc_encabezado->fecha_entrega }} -->
 	@if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
 		<br>
 		<b>{{ $doc_encabezado->documento_ventas_padre()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_padre()->enlace_show_documento() !!}

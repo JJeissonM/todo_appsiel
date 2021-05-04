@@ -49,6 +49,7 @@ class OrdenDeTrabajoController extends TransaccionController
         $botones_anterior_siguiente = new BotonesAnteriorSiguiente($this->transaccion, $id);
 
         $orden_de_trabajo = OrdenDeTrabajo::find( $id );
+        $doc_encabezado = OrdenDeTrabajo::find( $id );
 
         $documento_vista = $this->vista_preliminar( $orden_de_trabajo, 'show' );
 
@@ -57,7 +58,7 @@ class OrdenDeTrabajoController extends TransaccionController
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $orden_de_trabajo->tipo_documento_app->prefijo . ' ' . $orden_de_trabajo->consecutivo );
 
-        return view( 'nomina.ordenes_de_trabajo.show', compact('id', 'botones_anterior_siguiente', 'orden_de_trabajo', 'documento_vista', 'id_transaccion', 'empresa', 'miga_pan') );
+        return view( 'nomina.ordenes_de_trabajo.show', compact('id', 'botones_anterior_siguiente', 'orden_de_trabajo', 'documento_vista', 'id_transaccion', 'empresa', 'miga_pan', 'doc_encabezado') );
     }
 
     public function vista_preliminar( $orden_de_trabajo )

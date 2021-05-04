@@ -1161,8 +1161,7 @@ class VentaController extends TransaccionController
             {
                 $cantidad = $un_registro->cantidad * -1; // se cambia signo de la cantidad
                 
-                // El precio se trae de la lista de precios del cliente
-                $precio_unitario = ListaPrecioDetalle::get_precio_producto( Input::get('lista_precios_id'), Input::get('fecha'), $un_registro->producto_id );
+                $precio_unitario = $this->get_precio_unitario_remision( Input::get('lista_precios_id'), Input::get('fecha'), $un_registro->producto_id, $remision );
 
                 $todos_los_productos[$i]['producto_descripcion'] = $un_registro->producto_id.' - '.$un_registro->producto_descripcion;
                 $todos_los_productos[$i]['costo_unitario'] = $un_registro->costo_unitario;
@@ -1177,6 +1176,62 @@ class VentaController extends TransaccionController
         if( empty( $remisiones->toArray() ) ){ return 'sin_registros'; }
 
         return View::make( 'ventas.incluir.remisiones_pendientes', compact('remisiones','todos_los_productos') )->render();
+    }
+
+    public function get_precio_unitario_remision( $lista_precios_id, $fecha, $inv_producto_id, $remision )
+    {
+        // El precio se trae de la lista de precios del cliente
+        $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $fecha, $inv_producto_id );
+
+        if ( $remision->vtas_doc_encabezado_origen_id != 0 )
+        {
+            if ( !is_null( $remision->documento_ventas_padre()) )
+            {
+                $lineas_pedido = $remision->documento_ventas_padre()->lineas_registros;
+                $lineas_remision = $remision->lineas_registros;
+                foreach( $lineas_pedido AS $linea_pedido )
+                {
+                    foreach( $lineas_remision AS $linea_remision )
+                    {
+                        if ( $linea_pedido->inv_producto_id == $linea_remision->inv_producto_id )
+                        {
+                            $precio_unitario = $linea_pedido->precio_unitario;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return $precio_unitario;
+    }
+
+    public static function get_precio_unitario_remision2( $lista_precios_id, $fecha, $inv_producto_id, $remision )
+    {
+        // El precio se trae de la lista de precios del cliente
+        $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $fecha, $inv_producto_id );
+
+        if ( $remision->vtas_doc_encabezado_origen_id != 0 )
+        {
+            if ( !is_null( $remision->documento_ventas_padre()) )
+            {
+                $lineas_pedido = $remision->documento_ventas_padre()->lineas_registros;
+                $lineas_remision = $remision->lineas_registros;
+                foreach( $lineas_pedido AS $linea_pedido )
+                {
+                    foreach( $lineas_remision AS $linea_remision )
+                    {
+                        if ( $linea_pedido->inv_producto_id == $linea_remision->inv_producto_id )
+                        {
+                            $precio_unitario = $linea_pedido->precio_unitario;
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return $precio_unitario;
     }
 
 
@@ -1214,7 +1269,9 @@ class VentaController extends TransaccionController
                 $cantidad = $un_registro->cantidad * -1;
 
                 // Los PRECIOS se deben traer de la lista de precios del cliente 
-                $precio_unitario = ListaPrecioDetalle::get_precio_producto( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id );
+                //$precio_unitario = ListaPrecioDetalle::get_precio_producto( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id );
+
+                $precio_unitario = self::get_precio_unitario_remision2( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id, InvDocEncabezado::find($doc_remision_id) );
 
                 $cliente = Cliente::where( 'core_tercero_id', $un_registro->core_tercero_id )->get()->first();
 

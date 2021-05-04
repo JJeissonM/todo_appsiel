@@ -18,6 +18,7 @@ use App\Inventarios\InvMotivo;
 use App\Contabilidad\Impuesto;
 use App\Contabilidad\ContabMovimiento;
 
+use App\Ventas\VtasDocEncabezado;
 use App\Ventas\Cliente;
 use App\Compras\Proveedor;
 
@@ -56,14 +57,7 @@ class InvDocEncabezado extends Model
 
     public function documento_ventas_padre()
     {
-        $doc_padre = VtasDocEncabezado::find( $this->vtas_doc_encabezado_origen_id );
-        
-        if ( is_null( $doc_padre ) )
-        {
-            return null;
-        }
-
-        return $doc_padre;
+        return VtasDocEncabezado::find( $this->vtas_doc_encabezado_origen_id );
     }
 
     public function enlace_show_documento()
@@ -326,6 +320,7 @@ class InvDocEncabezado extends Model
                                                 'inv_doc_encabezados.descripcion',
                                                 'inv_doc_encabezados.hora_inicio',
                                                 'inv_doc_encabezados.inv_bodega_id',
+                                                'inv_doc_encabezados.vtas_doc_encabezado_origen_id',
                                                 'inv_doc_encabezados.estado',
                                                 'inv_doc_encabezados.creado_por',
                                                 'inv_doc_encabezados.modificado_por',
