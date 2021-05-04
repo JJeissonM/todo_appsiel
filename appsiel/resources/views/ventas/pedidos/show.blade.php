@@ -65,10 +65,6 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 
 @section('datos_adicionales_encabezado')
 	<br />
-	<b>Para:</b> {{ $doc_encabezado->tercero_nombre_completo }}
-	<br />
-	<b>NIT: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
-	<br />
 	<b>Entrega: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_entrega }}
 	@if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
 		<br>
@@ -84,7 +80,28 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @endsection
 
 @section('filas_adicionales_encabezado')
-&nbsp;
+	<tr>
+		<td style="border: solid 1px #ddd;">
+			<b>Cliente: </b> {{ $doc_encabezado->tercero_nombre_completo }}
+			<br>
+			<b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
+			
+			@if( config("configuracion.tipo_identificador") == 'NIT') 
+				{{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	
+			@else 
+				{{ $doc_encabezado->numero_identificacion}} 
+			@endif
+		</td>
+		<td style="border: solid 1px #ddd;">
+			@if( !is_null($doc_encabezado->contacto_cliente) )
+				<b>Contacto: </b> {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}
+				<br>
+				<b>Tel: </b> {{ $doc_encabezado->contacto_cliente->tercero->telefono1 }}
+				<br>
+				<b>Email: </b> {{ $doc_encabezado->contacto_cliente->tercero->email }}
+			@endif
+		</td>
+	</tr>
 @endsection
 
 @section('div_advertencia_anulacion')

@@ -400,6 +400,7 @@ class ProcesoController extends Controller
             'url_id_modelo' => 175,
             'url_id_transaccion' => 42,
             'inv_bodega_id_aux' => '',
+            'contacto_cliente_id' => $cotizacion->contacto_cliente_id,
             'vendedor_id' => $cotizacion->vendedor_id,
             'forma_pago' => $cotizacion->forma_pago,
             'fecha_vencimiento' => $cotizacion->fecha_vencimiento,

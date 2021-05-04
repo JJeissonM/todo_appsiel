@@ -54,7 +54,6 @@ class InvDocEncabezado extends Model
         return $this->hasMany('App\Inventarios\InvMovimiento');
     }
 
-    // Doc. desde el cual fue generado
     public function documento_ventas_padre()
     {
         $doc_padre = VtasDocEncabezado::find( $this->vtas_doc_encabezado_origen_id );
