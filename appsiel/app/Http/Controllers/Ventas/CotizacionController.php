@@ -158,12 +158,12 @@ class CotizacionController extends TransaccionController
     public function imprimir(Request $request, $id )
     {
         //dd($request->formato_impresion_id);
-        if($request->formato_impresion_id == 1){
+        if($request->formato_impresion_id == 1)
+        {
             $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir');
         }else{
             $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir2');
         }
-        
 
         // Se prepara el PDF
         $orientacion='portrait';
@@ -184,13 +184,18 @@ class CotizacionController extends TransaccionController
     {
         $this->set_variables_globales();
         
-        $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir' );
+        if( Input::get('formato_impresion_id') == 1)
+        {
+            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir');
+        }else{
+            $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir2');
+        }
 
         $tercero = Tercero::find( $this->doc_encabezado->core_tercero_id );
 
         $asunto = $this->doc_encabezado->documento_transaccion_descripcion.' No. '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo;
 
-        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto;
+        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto . ' <br><br> Por favor no responda este mesanje, pues fue generado automáticamente. <br><br>  Si tiene alguna duda o sugerencia escríbanos a <a href="mailto(' . $this->empresa->email . ')" > ' . $this->empresa->email . ' </a> o comuníquese al '  . $this->empresa->telefono1 . '.';
 
         $email_destino = $tercero->email;
         if ( $this->doc_encabezado->contacto_cliente_id != 0 )

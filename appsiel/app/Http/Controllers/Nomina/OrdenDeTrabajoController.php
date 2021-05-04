@@ -131,9 +131,34 @@ class OrdenDeTrabajoController extends TransaccionController
         return 'true';        
     }
 
-    public function modificar_line_registro_documento_nomina()
+    public function modificar_linea_registro_documento_nomina( $linea_empleado_orden_trabajo )
     {
+        $linea_documento_nomina = NomDocRegistro::where( [ 
+                                                            'nom_doc_encabezado_id' => $linea_empleado_orden_trabajo->orden_trabajo->nom_doc_encabezado_id,
+                                                            'orden_trabajo_id' => $linea_empleado_orden_trabajo->orden_trabajo->id,
+                                                            'nom_concepto_id' => $linea_empleado_orden_trabajo->nom_concepto_id,
+                                                            'nom_contrato_id' => $linea_empleado_orden_trabajo->nom_contrato_id
+                                                                ])
+                                                        ->get()
+                                                        ->first();
 
+        // Crear registro en documento de nomina
+            $contrato = NomContrato::find( (int)$tabla_empleados[$i]->nom_contrato_id );
+            $datos = [
+                        ,
+                        'nom_contrato_id' => (int)$tabla_empleados[$i]->nom_contrato_id,
+                        'core_tercero_id' => $contrato->core_tercero_id,
+                        'fecha' => $registro->documento_nomina->fecha,
+                        'core_empresa_id' => $registro->core_empresa_id,
+                        'detalle' => 'Orden de trabajo ' . $registro->tipo_documento_app->prefijo . ' ' . $registro->consecutivo,
+                        'nom_concepto_id' => $registro->nom_concepto_id,
+                        'cantidad_horas' => (float)$tabla_empleados[$i]->cantidad_horas,
+                        'valor_devengo' => (float)$tabla_empleados[$i]->valor_total,
+                        'valor_deduccion' => 0,
+                        'estado' => 'Activo',
+                        'creado_por' => Auth::user()->email
+                    ];
+            NomDocRegistro::create( $datos );
     }
     
     public function cambiar_cantidad_items( $orden_trabajo_id, $inv_producto_id, $nueva_cantidad )

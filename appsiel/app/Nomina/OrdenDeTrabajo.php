@@ -205,6 +205,7 @@ class OrdenDeTrabajo extends Model
             $contrato = NomContrato::find( (int)$tabla_empleados[$i]->nom_contrato_id );
             $datos = [
                         'nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id,
+                        'orden_trabajo_id' => $registro->id,
                         'nom_contrato_id' => (int)$tabla_empleados[$i]->nom_contrato_id,
                         'core_tercero_id' => $contrato->core_tercero_id,
                         'fecha' => $registro->documento_nomina->fecha,
