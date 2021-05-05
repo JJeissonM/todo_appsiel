@@ -156,7 +156,7 @@ use App\Core\Tercero;
     </tr>
     <tr>
         <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
-        <td>{{ $doc_encabezado->numero_identificacion - $empresa->digito_verificacion }}</td>
+        <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</td>
         <td><b>Vendedor:</b></td>
         <td>{{ $doc_encabezado->vendedor_nombre_completo }}</td>
     </tr>
@@ -269,7 +269,7 @@ use App\Core\Tercero;
 </table>
 @include('ventas.incluir.factura_firma_totales')
 <hr>
-<h3>Observaciones</h3>
+<h3>Detalles</h3>
 <div class="info text-indent">
         <?php echo $doc_encabezado->descripcion ?>
 </div>
