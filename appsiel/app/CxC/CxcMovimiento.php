@@ -99,29 +99,27 @@ class CxcMovimiento extends Model
 
   public static function get_documentos_tercero($core_tercero_id, $fecha)
   {
-    $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_movimientos.consecutivo) AS documento';
-
     return CxcMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
-      ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
-      ->where('cxc_movimientos.core_empresa_id', Auth::user()->empresa_id)
-      ->where('cxc_movimientos.core_tercero_id', '=', $core_tercero_id)
-      ->where('cxc_movimientos.saldo_pendiente', '<>', 0)
-      ->where('cxc_movimientos.fecha', '<=', $fecha)
-      ->select(
-        'cxc_movimientos.id',
-        'cxc_movimientos.core_tipo_transaccion_id',
-        'cxc_movimientos.core_tipo_doc_app_id',
-        'cxc_movimientos.consecutivo',
-        'core_terceros.descripcion AS tercero',
-        DB::raw($select_raw),
-        'cxc_movimientos.fecha',
-        'cxc_movimientos.fecha_vencimiento',
-        'cxc_movimientos.valor_documento',
-        'cxc_movimientos.valor_pagado',
-        'cxc_movimientos.saldo_pendiente'
-      )
-      ->orderBy('cxc_movimientos.fecha')
-      ->get()->toArray();
+                            ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
+                            ->where('cxc_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->where('cxc_movimientos.core_tercero_id', '=', $core_tercero_id)
+                            ->where('cxc_movimientos.saldo_pendiente', '<>', 0)
+                            ->where('cxc_movimientos.fecha', '<=', $fecha)
+                            ->select(
+                              'cxc_movimientos.id',
+                              'cxc_movimientos.core_tipo_transaccion_id',
+                              'cxc_movimientos.core_tipo_doc_app_id',
+                              'cxc_movimientos.consecutivo',
+                              'core_terceros.descripcion AS tercero',
+                              DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_movimientos.consecutivo) AS documento' ),
+                              'cxc_movimientos.fecha',
+                              'cxc_movimientos.fecha_vencimiento',
+                              'cxc_movimientos.valor_documento',
+                              'cxc_movimientos.valor_pagado',
+                              'cxc_movimientos.saldo_pendiente'
+                            )
+                            ->orderBy('cxc_movimientos.fecha')
+                            ->get()->toArray();
   }
 
   public static function actualizar_valores_doc_cxc($doc_encabezado, $abono)

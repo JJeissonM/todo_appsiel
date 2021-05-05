@@ -21,7 +21,7 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 
-			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', [ 'estudiante' => $matricula_estudiante->estudiante ])
+			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', [ 'estudiante' => $matricula_estudiante->estudiante, 'matricula' => $matricula_estudiante ])
 
 			@include('tesoreria.libretas_pagos.tabla_resumen_libreta_pagos', [ 'libreta' => $libreta ])
 			
@@ -65,10 +65,6 @@
 								$cartera_id = $fila->id;
 
 								$vtas_doc_encabezado_id = 0;
-								if ( $fila->id == 2083)
-								{
-									//dd( $fila->teso_doc_encabezado() );
-								}
 							?>
 							<tr class="{{$clase_tr}}">
 								<td>{{ $fila->id }}</td>

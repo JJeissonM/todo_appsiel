@@ -1,4 +1,14 @@
 
+<?php
+	$cod_matricula = $estudiante->matricula_activa()->codigo;
+	$descripcion_curso = $estudiante->matricula_activa()->curso->descripcion;
+	if ( !isset($matricula) )
+	{
+		$cod_matricula = $matricula->codigo;
+		$descripcion_curso = $matricula->curso->descripcion;
+	}
+?>
+
 <table class="table table-bordered">
 	<thead>
 		<tr>
@@ -11,9 +21,9 @@
 			<td>
 				<b> Nombre: </b> {{ $estudiante->tercero->descripcion }}
 				<br>
-				<b> Cod. Matrícula: </b> {{ $estudiante->matricula_activa()->codigo }}
+				<b> Cod. Matrícula: </b> {{ $cod_matricula }}
 				<br>
-				<b> Curso: </b>{{ $estudiante->matricula_activa()->curso->descripcion }}
+				<b> Curso: </b>{{ $descripcion_curso }}
 			</td>
 			<td>
 				<b> Nombre: </b> {{ $estudiante->responsable_financiero()->tercero->descripcion }}
