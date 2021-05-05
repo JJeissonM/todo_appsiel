@@ -37,7 +37,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 				{{ csrf_field() }}
 				<label class="control-label">Genere de forma automática su remisión o remisión y factura <i class="fa fa-arrow-down" aria-hidden="true"></i></label>
 				<div class="row">
-					<div class="col-md-2">
+					<div class="col-md-3 col-lg-3 col-xl-2">
 						<div class="row">
 							{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
 						</div>							
@@ -45,7 +45,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 					<div class="col-md-2">
 						{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión', 'remision_y_factura_desde_pedido' => 'Remisión y Factura' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
 					</div>
-					<div class="col-md-1">
+					<div class="col-md-1 col-lg-2"><div class="col-md-1">
 						<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
 					</div>
 				</div>

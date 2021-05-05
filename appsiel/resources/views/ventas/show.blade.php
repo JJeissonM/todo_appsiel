@@ -50,7 +50,7 @@
         <td style="border: solid 1px #ddd;">
             <b>Cliente:</b> {{ $doc_encabezado->tercero_nombre_completo }}
             <br/>
-            <b>Documento ID: &nbsp;&nbsp;</b> {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}
+            <b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif
             <br/>
             <b>Dirección: &nbsp;&nbsp;</b> {{ $encabezado_documento->tercero->direccion1 }}, {{ $encabezado_documento->tercero->ciudad->descripcion }} - {{ $encabezado_documento->tercero->ciudad->departamento->descripcion }}
             <br/>
