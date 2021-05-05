@@ -45,7 +45,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 					<div class="col-md-2">
 						{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión', 'remision_y_factura_desde_pedido' => 'Remisión y Factura' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
 					</div>
-					<div class="col-md-1 col-lg-2"><div class="col-md-1">
+					<div class="col-md-1 col-lg-2">
 						<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
 					</div>
 				</div>
