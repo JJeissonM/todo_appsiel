@@ -291,7 +291,7 @@ use App\Core\Tercero;
     </tr>
     <tr>
         <td width="30%"><b>Condición de Venta:</b></td>
-        <td style="text-transform: capitalize">
+        <td>
             {{ $doc_encabezado->texto_condicion_venta() }}
         </td>
     </tr>

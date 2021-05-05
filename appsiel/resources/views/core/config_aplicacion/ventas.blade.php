@@ -142,6 +142,61 @@
 
 				</div>
 
+				<h4> Parámetros por defecto para las facturas  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$factura_ventas_modelo_id = 139;
+								if( isset($parametros['factura_ventas_modelo_id'] ) )
+								{
+									$factura_ventas_modelo_id = $parametros['factura_ventas_modelo_id'];
+								}
+							?>
+							{{ Form::bsSelect('factura_ventas_modelo_id', $factura_ventas_modelo_id, 'Modelo para facturas de ventas', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$factura_ventas_tipo_transaccion_id = 23;
+								if( isset($parametros['factura_ventas_tipo_transaccion_id'] ) )
+								{
+									$factura_ventas_tipo_transaccion_id = $parametros['factura_ventas_tipo_transaccion_id'];
+								}
+							?>
+							{{ Form::bsSelect('factura_ventas_tipo_transaccion_id', $factura_ventas_tipo_transaccion_id, 'Tipo de transacción para facturas', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$factura_ventas_tipo_doc_app_id = 18;
+								if( isset($parametros['factura_ventas_tipo_doc_app_id'] ) )
+								{
+									$factura_ventas_tipo_doc_app_id = $parametros['factura_ventas_tipo_doc_app_id'];
+								}
+							?>
+							{{ Form::bsSelect('factura_ventas_tipo_doc_app_id', $factura_ventas_tipo_doc_app_id, 'Documento para facturas', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros por defecto para las remisiones  </h4>
 				<hr>
 				<div class="row">

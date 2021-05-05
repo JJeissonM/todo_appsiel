@@ -8,6 +8,9 @@
   'inv_bodega_id' => '1',
   'zona_id' => '1',
   'condicion_pago_id' => '1',
+  'factura_ventas_modelo_id' => '139',
+  'factura_ventas_tipo_transaccion_id' => '23',
+  'factura_ventas_tipo_doc_app_id' => '18',
   'rm_modelo_id' => '164',
   'rm_tipo_transaccion_id' => '24',
   'rm_tipo_doc_app_id' => '7',
@@ -27,7 +30,4 @@
   'pie_pagina_linea_2' => '',
   'pie_pagina_linea_3' => '',
   'url_id_modelo' => '0',
-  'factura_ventas_modelo_id' => '139',
-  'factura_ventas_tipo_transaccion_id' => '23',
-  'factura_ventas_tipo_doc_app_id' => '18',
 ) ;

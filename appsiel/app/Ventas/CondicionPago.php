@@ -53,9 +53,10 @@ class CondicionPago extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = CondicionPago::where('vtas_condiciones_pago.estado', 'Activo')
-            ->select('vtas_condiciones_pago.id', 'vtas_condiciones_pago.descripcion')
-            ->get();
+        $opciones = CondicionPago::where( 'vtas_condiciones_pago.estado', 'Activo' )
+                                ->select( 'vtas_condiciones_pago.id', 'vtas_condiciones_pago.descripcion' )
+                                ->orderBy( 'vtas_condiciones_pago.dias_plazo' )
+                                ->get();
 
         //$vec['']='';
         $vec = [];
