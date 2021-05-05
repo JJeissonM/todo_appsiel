@@ -10,6 +10,9 @@ use Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
+use App\Core\ModeloEavValor;
+use App\Ventas\CondicionPago;
+
 class VtasCotizacion extends Model
 {
     protected $table = 'vtas_doc_encabezados';
@@ -24,6 +27,24 @@ class VtasCotizacion extends Model
     public function contacto_cliente()
     {
         return $this->belongsTo(ContactoCliente::class, 'contacto_cliente_id');
+    }
+
+    public function texto_condicion_venta()
+    {
+        $registro_eav = ModeloEavValor::where( [ 
+                                                "modelo_padre_id" => 155,
+                                                "registro_modelo_padre_id" => $this->id,
+                                                "modelo_entidad_id" => 0,
+                                                "core_campo_id" => 1266
+                                            ] )
+                                    ->get()
+                                    ->first();
+        if ( is_null($registro_eav) )
+        {
+            return '';
+        }
+
+        return CondicionPago::find( $registro_eav->valor )->descripcion;
     }
 
     public static function consultar_registros($nro_registros, $search)

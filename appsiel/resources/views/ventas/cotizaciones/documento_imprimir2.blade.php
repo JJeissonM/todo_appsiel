@@ -291,7 +291,9 @@ use App\Core\Tercero;
     </tr>
     <tr>
         <td width="30%"><b>Condición de Venta:</b></td>
-        <td style="text-transform: capitalize">@if($doc_encabezado->condicion_pago == "credito") Crédito @else {{ $doc_encabezado->condicion_pago }}@endif</td>
+        <td style="text-transform: capitalize">
+            {{ $doc_encabezado->texto_condicion_venta() }}
+        </td>
     </tr>
     <tr>
         <td width="30%"><b>Plazo de entrega:</b></td>

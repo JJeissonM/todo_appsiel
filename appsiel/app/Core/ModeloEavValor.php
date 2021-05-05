@@ -57,7 +57,6 @@ class ModeloEavValor extends Model
         // Se va a crear un registro por cada Atributo (campo) que tenga un Valor distinto a vacío 
         foreach ( $datos as $key => $value ) 
         {
-
             // Si el name del campo enviado tiene la palabra core_campo_id
             if ( strpos( $key, "core_campo_id") !== false ) 
             {
@@ -91,11 +90,8 @@ class ModeloEavValor extends Model
                                                     "core_campo_id" => $core_campo_id,
                                                     "valor" => $valor 
                                                 ] );
-                    }
-                        
-                }
-
-                    
+                    }                        
+                }                    
             }
         }
     }

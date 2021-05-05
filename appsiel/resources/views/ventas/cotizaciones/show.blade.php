@@ -55,6 +55,8 @@
 @section('datos_adicionales_encabezado')
 	<br>
 	<b>Fecha vencimiento:</b> {{ $doc_encabezado->fecha_vencimiento }}
+	<br>
+	<b>Condición de ventas:</b> {{ $doc_encabezado->texto_condicion_venta() }}
 	
 	@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
 		<br>

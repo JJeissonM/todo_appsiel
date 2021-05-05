@@ -32,6 +32,7 @@ use App\Sistema\TipoTransaccion;
 use App\Sistema\Modelo;
 use App\Core\Tercero;
 use App\Core\TransaccionOtrosCampos;
+use App\Core\ModeloEavValor;
 
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
@@ -77,6 +78,9 @@ class CotizacionController extends TransaccionController
 
         $request['estado'] = 'Pendiente';
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+
+        $campo_eav = new ModeloEavValor();
+        $campo_eav->almacenar_registros_eav( $request->all(), $request->url_id_modelo, $doc_encabezado->id );
 
         CotizacionController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
@@ -262,6 +266,14 @@ class CotizacionController extends TransaccionController
                     $lista_campos[$i]['opciones'] = ContactoCliente::opciones_campo_select_cliente( $doc_encabezado->cliente_id );
                     $lista_campos[$i]['value'] = $doc_encabezado->contacto_cliente_id;
                     break;
+                case 'core_campo_id-ID': // Condicion de ventas
+                    $lista_campos[$i]['value'] = ModeloEavValor::where( [ 
+                                                                            'modelo_padre_id' => $this->modelo->id,
+                                                                            'registro_modelo_padre_id' => $id,
+                                                                            'core_campo_id' => $lista_campos[$i]['id']
+                                                                        ] )
+                                                                ->value('valor');
+                    break;
                 default:
                     # code...
                     break;
@@ -344,6 +356,7 @@ class CotizacionController extends TransaccionController
     //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
     public function update(Request $request, $id)
     {
+        $datos = $request->all();
         $modelo = Modelo::find( $request->url_id_modelo );
 
         $registro_encabezado_doc = app( $modelo->name_space )->find($id);
@@ -357,8 +370,14 @@ class CotizacionController extends TransaccionController
         
         CotizacionController::crear_registros_documento( $request, $registro_encabezado_doc, json_decode($request->lineas_registros) );
 
-        $registro_encabezado_doc->fill( $request->all() );
+        $registro_encabezado_doc->fill( $datos );
         $registro_encabezado_doc->save();
+
+        $campo_eav = new ModeloEavValor();
+        $datos['modelo_padre_id'] = $request->url_id_modelo;
+        $datos['registro_modelo_padre_id'] = $id;
+        $datos['modelo_entidad_id'] = 0;
+        $campo_eav->update_adicional( $datos, $id );
 
         return redirect( 'vtas_cotizacion/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
