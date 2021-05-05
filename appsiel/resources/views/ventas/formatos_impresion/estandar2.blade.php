@@ -157,13 +157,16 @@ use App\Core\Tercero;
     <tr>
         <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
         <td>{{ $doc_encabezado->numero_identificacion - $empresa->digito_verificacion }}</td>
-        <td colspan="2"></td>
+        <td><b>Vendedor:</b></td>
+        <td>{{ $doc_encabezado->vendedor_nombre_completo }}</td>
     </tr>
     <tr>
         <td><b>Domicilio:</b> </td>
         <td>{{ $doc_encabezado->direccion1 }}</td>
-        <td><b>Vendedor:</b></td>
-        <td>{{ $doc_encabezado->vendedor_nombre_completo }}</td>
+        <td>
+            <b>Condicion de Venta:</b>
+        </td>
+        <td style="text-transform: capitalize">{{ $doc_encabezado->condicion_pago }}</td>
     </tr>
     <tr>
         <td>
@@ -172,14 +175,6 @@ use App\Core\Tercero;
         <td>
             {{ $tercero->ciudad->descripcion }}
         </td>
-        <td>
-            <b>Condicion de Venta:</b>
-        </td>
-        <td style="text-transform: capitalize">{{ $doc_encabezado->condicion_pago }}</td>
-    </tr>
-    <tr>
-        <td><!--<b>Contacto:--> </b></td>
-        <td></td>
         <td><b>Remito No.: </b></td>
         <td>{{ $doc_encabezado->documento_remision_prefijo_consecutivo }}</td>
     </tr>
