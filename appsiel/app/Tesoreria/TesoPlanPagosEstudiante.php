@@ -39,10 +39,6 @@ class TesoPlanPagosEstudiante extends Model
     public function teso_doc_encabezado()
     {
         $recaudo_libreta = TesoRecaudosLibreta::where( 'id_cartera', $this->id )->get()->first();
-        if ( $this->id == 2083)
-        {
-            //dd( $recaudo_libreta );
-        }
         
         return $recaudo_libreta->recaudo_tesoreria();
     }

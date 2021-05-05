@@ -36,12 +36,8 @@
     								<td> {{ number_format( $recaudo->valor_recaudo, 0, ',', '.') }} </td>
     								<td>
                                         
-                                        <a class="btn btn-info btn-xs btn-detail" href="{{ url( 'tesoreria_recaudos_cxc_imprimir/' . $recaudo_tesoreria->id . '?id=3&id_modelo=153&id_transaccion=32' ) }}" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir comprobante</a>
+                                        <a class="btn btn-info btn-xs btn-detail" href="{{ url( 'tesoreria/recaudos_cxc/' . $recaudo_tesoreria->id . '?id=3&id_modelo=153&id_transaccion=32' ) }}" target="_blank"><i class="fa fa-eye"></i>&nbsp;Consultar</a>
 
-    									@can('eliminar_recaudo_libreta')
-    										&nbsp;&nbsp;&nbsp;
-                                            <a class="btn btn-danger btn-xs btn-detail" href="{{ url( 'teso_anular_recaudo_cxc/' .  $recaudo_tesoreria->id . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion=32' ) }}" title="Eliminar" target="_blank"><i class="fa fa-btn fa-trash"></i>&nbsp;</a>
-    									@endcan
     								</td>
     								<td>{{$recaudo_tesoreria->creado_por}} : {{$recaudo_tesoreria->created_at}}</td>
     							</tr>

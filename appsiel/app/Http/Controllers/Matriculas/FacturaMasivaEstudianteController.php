@@ -56,7 +56,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
     {
         $this->set_variables_globales();
 
-        $tipo_transaccion = TipoTransaccion::where('core_modelo_id', Input::get('id_modelo') )->get()->first();
+        $tipo_transaccion = TipoTransaccion::where( 'core_modelo_id', Input::get('id_modelo') )->get()->first();
 
         $id_transaccion = $tipo_transaccion->id;
 
@@ -192,7 +192,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
-        
+        $lote = uniqid();
         $tbody = '';
         $precio_total = 0;
         $i = 0;
@@ -210,7 +210,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
             $registro_plan_pagos = TesoPlanPagosEstudiante::find( $linea->linea_plan_pago_id );
             
-            $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos );
+            $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote );
 
             $tbody .= '<tr>
                         <td>' . $registro_plan_pagos->estudiante->tercero->descripcion . '</td>
@@ -257,9 +257,9 @@ class FacturaMasivaEstudianteController extends TransaccionController
         dd( VtasDocEncabezado::find( 105 )->tipo_documento_app );
     }
 
-    public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos )
+    public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote )
     {
-        $request = $this->preparar_datos_factura_estudiante( $registro_plan_pagos );
+        $request = $this->preparar_datos_factura_estudiante( $registro_plan_pagos, $lote );
 
         $request['remision_doc_encabezado_id'] = 0;
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
@@ -279,7 +279,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
     }
 
 
-    public function preparar_datos_factura_estudiante( $registro_plan_pagos )
+    public function preparar_datos_factura_estudiante( $registro_plan_pagos, $lote )
     {
         $id_modelo = config('matriculas.modelo_id_factura_estudiante'); // Factura de Estudiantes
         $id_transaccion = config('matriculas.transaccion_id_factura_estudiante'); // Factura de Ventas
@@ -307,7 +307,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
         $datos["liquida_impuestos"] = $cliente->liquida_impuestos;
         
         $datos["orden_compras"] = "";
-        $datos["descripcion"] = "";
+        $datos["descripcion"] = "Generada masivamente. Lote: " . $lote ;
         $datos["consecutivo"] = "";
         $datos["core_tipo_transaccion_id"] = $id_transaccion;
         $datos["url_id"] = "3";

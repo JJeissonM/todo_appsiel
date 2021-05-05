@@ -9,6 +9,31 @@
 </head>
 <body>
 
+    <?php
+
+        $medio_recaudo = $doc_encabezado->medio_recaudo;
+        $caja = null;
+        $cuenta_bancaria = null;
+        if( !is_null($doc_encabezado->medio_recaudo) )
+        {
+            switch ( $medio_recaudo->comportamiento )
+            {
+                case 'Efectivo':
+                    $caja = $doc_encabezado->caja;
+                    $cuenta_bancaria = null;
+                    break;
+
+                case 'Tarjeta bancaria':
+                    $cuenta_bancaria = $doc_encabezado->cuenta_bancaria;
+                    $caja = null;
+                    break;
+                
+                default:
+                    break;
+            }
+        }
+    ?>
+
     <table>
         <tr>
             <td style="border: none" width="70%">
@@ -44,9 +69,17 @@
                 <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
                 <br/>
                 <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
+                @include('matriculas.facturas.datos_estudiante_recaudo')
             </td>
             <td>
-                &nbsp;
+                @if( !is_null( $caja ) )
+                    <b>Caja: &nbsp;&nbsp;</b> {{ $caja->descripcion }}
+                    <br>
+                @endif
+                @if( !is_null( $cuenta_bancaria ) )
+                    <b>Cuenta bancaria: &nbsp;&nbsp;</b> Cuenta {{ $cuenta_bancaria->tipo_cuenta }} {{ $cuenta_bancaria->entidad_financiera->descripcion }} No. {{ $cuenta_bancaria->descripcion }}
+                    <br>
+                @endif
             </td>
         </tr>
         <tr>        

@@ -55,6 +55,7 @@
             <b>Dirección: &nbsp;&nbsp;</b> {{ $encabezado_documento->tercero->direccion1 }}, {{ $encabezado_documento->tercero->ciudad->descripcion }} - {{ $encabezado_documento->tercero->ciudad->departamento->descripcion }}
             <br/>
             <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
+            @include('matriculas.facturas.datos_estudiante')
         </td>
         <td style="border: solid 1px #ddd;">
             <b>Vendedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor_nombre_completo }}

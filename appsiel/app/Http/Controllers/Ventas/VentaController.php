@@ -115,6 +115,7 @@ class VentaController extends TransaccionController
 
         // 2da. Crear documento de Ventas
         $request['remision_doc_encabezado_id'] = $documento_remision->id;
+        $request['estado'] = 'Activo';
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
         // 3ra. Crear Registro del documento de ventas
@@ -222,6 +223,11 @@ class VentaController extends TransaccionController
 
             // La cuenta de CARTERA se toma de la clase del cliente
             $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $datos['cliente_id'] );
+
+            if ( is_null($cta_x_cobrar_id) || $cta_x_cobrar_id == 0 )
+            {
+                $cta_x_cobrar_id = (int)config('configuracion.cta_cartera_default');
+            }
             ContabilidadController::contabilizar_registro2( $datos, $cta_x_cobrar_id, $detalle_operacion, $total_documento, 0);
         }
         
