@@ -1145,8 +1145,40 @@ $(document).ready(function(){
 		$('#alert_listado_remisiones_seleccionadas').show();
 		$(this).hide();
 		$('#tabla_registros_documento').find('tbody:last').append( $(this).closest("tr") );
+
+		calcular_totales_con_remisiones_seleccionadas();
+
 		hay_productos = 1;
 	});
+
+	function calcular_totales_con_remisiones_seleccionadas()
+	{
+		table = $('#tabla_registros_documento').tableToJSON();
+
+		// Se asigna el objeto JSON a un campo oculto del formulario
+ 		$('#lineas_registros_remisiones').val( JSON.stringify(table) );
+ 		$('#lista_precios_id2').val( $('#lista_precios_id').val() );
+ 		$('#fecha2').val( $('#fecha').val() );
+
+		// Preparar datos de los controles para enviar formulario
+		var form_remisiones_seleccionadas = $('#form_remisiones_seleccionadas');
+		var url = form_remisiones_seleccionadas.attr('action');
+		var datos = form_remisiones_seleccionadas.serialize();
+
+		// Enviar formulario de ingreso de productos vía POST
+		$.post(url,datos,function(respuesta){
+			
+			$('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( respuesta[0] )  );
+
+			$('#descuento').text( '$ ' + new Intl.NumberFormat("de-DE").format( 0 )  );
+
+			// Total impuestos (Sumatoria de valor_impuesto por cantidad)
+			$('#total_impuestos').text( '$ ' + new Intl.NumberFormat("de-DE").format( respuesta[1] ) );
+
+			// Total factura  (Sumatoria de precio_total)
+			$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( respuesta[2] ) );
+		});		
+	}
 	
 	function cambiar_action_form( nueva_accion )
 	{

@@ -14,6 +14,8 @@ Route::get('vtas_consultar_existencia_producto', 'Ventas\VentaController@consult
 
 Route::get('get_opciones_select_contactos/{cliente_id}', 'Ventas\ClienteController@get_opciones_select_contactos');
 
+Route::post('vtas_totales_remisiones_seleccionadas', 'Ventas\VentaController@totales_remisiones_seleccionadas');
+
 Route::post('factura_remision_pendiente', 'Ventas\VentaController@factura_remision_pendiente');
 
 // FACTURAS
