@@ -30,7 +30,7 @@
 				<input type="hidden" name="modelo" value="{{$doc_encabezado->id}}" />
 				<input type="hidden" name="source" value="COTIZACION" />
 				{{ csrf_field() }}
-				<label class="control-label">Genere desde aquí su pedido de forma automática o si prefiere genere el pedido y la remisión</label>
+				<label class="control-label">Genere desde aquí su pedido de forma automática</label>
 				<div class="row">
 					<div class="col-md-3">
 						{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
@@ -44,7 +44,6 @@
 					{{ Form::select('generar',['1'=>'Pedido'],null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
 				</div>
 				<div class="col-md-2">
-					<label class="control-label"> </label>
 					<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
 				</div>
 			</form>

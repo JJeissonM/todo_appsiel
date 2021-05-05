@@ -124,7 +124,7 @@ use App\Core\Tercero;
 <hr>
 <table class="info">
     <tr>
-        <td>
+        <td width="12%">
             <b>Solicitante:</b>
         </td>
         <td>
@@ -149,7 +149,7 @@ use App\Core\Tercero;
         <td>
             {{ $contacto->descripcion }}
         </td>
-        <td>
+        <td width="15%">
             <b>Fecha:</b>
         </td>
         <td>
