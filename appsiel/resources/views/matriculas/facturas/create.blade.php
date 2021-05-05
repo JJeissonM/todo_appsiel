@@ -69,7 +69,10 @@
 
 				<input type="hidden" name="estudiante_id" id="estudiante_id" value="{{ Input::get('estudiante_id') }}" required="required">
 
-				<input type="hidden" name="matricula_id" id="matricula_id" value="{{ $estudiante->matriculas->where('estado','Activo')->first()->id }}">
+				<?php 
+					$libreta_pago = App\Tesoreria\TesoLibretasPago::find( Input::get('libreta_id') );
+				?>
+				<input type="hidden" name="matricula_id" id="matricula_id" value="{{ $libreta_pago->matricula_id }}">
 				<input type="hidden" name="cartera_estudiante_id" id="cartera_estudiante_id" value="{{ Input::get('cartera_id') }}">
 				<input type="hidden" name="libreta_id" id="libreta_id" value="{{ Input::get('libreta_id') }}">
 

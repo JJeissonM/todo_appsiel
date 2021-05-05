@@ -473,7 +473,7 @@ class LibretaPagoController extends ModeloController
 
         $codigo_matricula = $matricula->codigo;
 
-        return view('tesoreria.ver_recaudos',compact('libreta','estudiante','recaudos','miga_pan','codigo_matricula','curso'));
+        return view('tesoreria.ver_recaudos',compact('libreta','estudiante','recaudos','miga_pan','codigo_matricula','curso','matricula'));
     }
 
     public function ver_plan_pagos($id_libreta)

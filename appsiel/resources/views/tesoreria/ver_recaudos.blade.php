@@ -8,7 +8,7 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 
-			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', ['estudiante' => $estudiante ])
+			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', ['estudiante' => $estudiante, 'matricula' => $matricula ])
 
 			@include('tesoreria.libretas_pagos.tabla_resumen_libreta_pagos', ['libreta' => $libreta ])
 			
