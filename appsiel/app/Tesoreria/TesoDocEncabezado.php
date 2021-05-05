@@ -51,10 +51,10 @@ class TesoDocEncabezado extends Model
     public function datos_auxiliares_estudiante()
     {
         $recaudo_libreta = TesoRecaudosLibreta::where('core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
-                                ->where('core_tipo_doc_app_id', $this->core_tipo_doc_app_id)
-                                ->where('consecutivo', $this->consecutivo)
-                                ->get()
-                                ->first();
+                                            ->where('core_tipo_doc_app_id', $this->core_tipo_doc_app_id)
+                                            ->where('consecutivo', $this->consecutivo)
+                                            ->get()
+                                            ->first();
         if ( is_null($recaudo_libreta) )
         {
             return null;
