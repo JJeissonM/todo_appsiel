@@ -190,6 +190,9 @@ use App\Core\Tercero;
         <td>{{ $doc_encabezado->documento_remision_prefijo_consecutivo }}</td>
     </tr>
 </table>
+
+@include('matriculas.facturas.datos_estudiante')
+
 <hr>
 <br>
 

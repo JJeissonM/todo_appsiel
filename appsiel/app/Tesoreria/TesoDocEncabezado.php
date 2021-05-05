@@ -10,6 +10,9 @@ use Auth;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMedioRecaudo;
+use App\Tesoreria\TesoRecaudosLibreta;
+
+use App\Matriculas\FacturaAuxEstudiante;
 
 class TesoDocEncabezado extends Model
 {
@@ -43,6 +46,21 @@ class TesoDocEncabezado extends Model
     public function medio_recaudo()
     {
         return $this->belongsTo(TesoMedioRecaudo::class, 'teso_medio_recaudo_id');
+    }
+
+    public function datos_auxiliares_estudiante()
+    {
+        $recaudo_libreta = TesoRecaudosLibreta::where('core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+                                ->where('core_tipo_doc_app_id', $this->core_tipo_doc_app_id)
+                                ->where('consecutivo', $this->consecutivo)
+                                ->get()
+                                ->first();
+        if ( is_null($recaudo_libreta) )
+        {
+            return null;
+        }
+
+        return $recaudo_libreta->registro_cartera_estudiante->facturas_estudiantes[0];
     }
 
     public static function consultar_registros($nro_registros, $search)

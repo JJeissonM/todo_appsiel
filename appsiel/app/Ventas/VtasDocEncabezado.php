@@ -25,6 +25,8 @@ use Illuminate\Pagination\Paginator;
 use App\Core\ModeloEavValor;
 use App\Ventas\CondicionPago;
 
+use App\Matriculas\FacturaAuxEstudiante;
+
 class VtasDocEncabezado extends Model
 {
     //protected $table = 'vtas_doc_encabezados'; 
@@ -231,6 +233,10 @@ class VtasDocEncabezado extends Model
         }
     }
 
+    public function datos_auxiliares_estudiante()
+    {
+        return $this->hasOne(FacturaAuxEstudiante::class, 'vtas_doc_encabezado_id');
+    }
 
     public function contabilizar_movimiento_debito( $caja_banco_id = null )
     {
@@ -425,6 +431,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.id AS campo8'
             )
             ->orderBy('vtas_doc_encabezados.fecha', 'DESC')
+            ->orderBy('vtas_doc_encabezados.created_at')
             ->get();
 
         //hacemos el filtro de $search si $search tiene contenido

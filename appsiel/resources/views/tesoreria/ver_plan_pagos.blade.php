@@ -91,10 +91,8 @@
 
 											$vtas_doc_encabezado_id = $factura->vtas_doc_encabezado_id;
 										?>
-
-										{{ 'Factura ' . $factura->encabezado_factura->tipo_documento_app->prefijo . ' ' . $factura->encabezado_factura->consecutivo }} <br>
 										
-										<a class="btn btn-success btn-xs btn-detail" href="{{ url( 'vtas_imprimir/' . $vtas_doc_encabezado_id . '?id=13&id_modelo=139&id_transaccion=' . $id_transaccion . '&formato_impresion_id=estandar' ) }}" title="Imprimir Factura" target="_blank"><i class="fa fa-btn fa-print"></i>&nbsp;Imprimir Factura</a>
+										<a class="btn btn-info btn-xs btn-detail" href="{{ url( 'ventas/' . $vtas_doc_encabezado_id . '?id=13&id_modelo=139&id_transaccion=' . $id_transaccion ) }}" title="Consultar Factura" target="_blank">{{ 'Factura ' . $factura->encabezado_factura->tipo_documento_app->prefijo . ' ' . $factura->encabezado_factura->consecutivo }} <i class="fa fa-eye"></i>  </a>
 
 										@if( $fila->estado != 'Pagada' )
 											<a class="btn btn-primary btn-xs btn-detail" href="{{ url('tesoreria/hacer_recaudo_cartera/'.$cartera_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&vtas_doc_encabezado_id=' . $vtas_doc_encabezado_id ) }}" title="Recaudar"><i class="fa fa-btn fa-money"></i>&nbsp;Recaudar</a>

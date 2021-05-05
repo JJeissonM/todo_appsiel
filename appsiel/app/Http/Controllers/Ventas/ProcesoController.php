@@ -337,13 +337,13 @@ class ProcesoController extends Controller
 
         $nueva_factura = $encabezado_doc_venta->clonar_encabezado( $fecha, (int)config('ventas.factura_ventas_tipo_transaccion_id'), (int)config('ventas.factura_ventas_tipo_doc_app_id'), $descripcion );
         
-        $nueva_factura->forma_pago = 'contado';
-        if ( (int)$nueva_factura->cliente->condicion_pago->dias_plazo != 0 )
+        if ( $nueva_factura->forma_pago == 'credito' )
         {
-            $nueva_factura->forma_pago = 'credito';
-
             $nueva_factura->fecha_vencimiento = $this->sumar_dias_calendario_a_fecha( $fecha, $nueva_factura->cliente->condicion_pago->dias_plazo );
         }
+
+        $nueva_factura->estado = 'Activo';
+        $nueva_factura->save();
         
         $encabezado_doc_venta->clonar_lineas_registros( $nueva_factura->id );
 

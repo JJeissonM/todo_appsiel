@@ -44,6 +44,7 @@
                 <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
                 <br/>
                 <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
+                @include('matriculas.facturas.datos_estudiante_recaudo')
             </td>
             <td>
                 &nbsp;
