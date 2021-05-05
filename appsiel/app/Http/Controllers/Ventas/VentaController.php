@@ -1255,6 +1255,44 @@ class VentaController extends TransaccionController
         return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
 
+    public function totales_remisiones_seleccionadas( Request $request )
+    {
+        $lineas_registros = json_decode( $request->lineas_registros_remisiones );
+
+        $base_impuesto_total = 0; //Subtotal
+        $total_impuesto = 0;
+        $descuento = 0;
+        $precio_total = 0;
+        $cantidad_registros = count( $lineas_registros );
+        for ($i=0; $i < $cantidad_registros ; $i++)
+        {
+            $doc_remision_id = (int)$lineas_registros[$i]->id_doc;
+
+            $registros_remisiones = InvDocRegistro::where( 'inv_doc_encabezado_id', $doc_remision_id )->get();
+            foreach ($registros_remisiones as $un_registro)
+            {
+                // Nota: $un_registro contiene datos de inventarios 
+                $cantidad = $un_registro->cantidad * -1;
+
+                $precio_unitario = $this->get_precio_unitario_remision( $request->lista_precios_id2, $request->fecha2, $un_registro->inv_producto_id, InvDocEncabezado::find($doc_remision_id) );
+
+                $cliente = Cliente::where( 'core_tercero_id', $un_registro->core_tercero_id )->get()->first();
+
+                $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, 0, $cliente->id );
+
+                $precio_total += $precio_unitario * $cantidad;
+
+                $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
+
+                $base_impuesto_total += $base_impuesto * $cantidad;
+
+                $total_impuesto += ( $precio_unitario - $base_impuesto ) * $cantidad;
+
+            } // Fin por cada registro de la remisión
+        }
+        return [$base_impuesto_total,$total_impuesto,$precio_total];
+    }
+
 
     // Se crean los registros con base en los registros de la remisión o remisiones
     public static function crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros )
