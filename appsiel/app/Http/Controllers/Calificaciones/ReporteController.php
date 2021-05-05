@@ -55,16 +55,13 @@ class ReporteController extends Controller
      */
     public function consolidado_periodo_por_curso(Request $request)
     {
-        
         $periodo = Periodo::find($request->periodo_id);
 
         $tope_escala_valoracion_minima = EscalaValoracion::where( 'periodo_lectivo_id', $periodo->periodo_lectivo_id )->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
 
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, $request->periodo_id );
 
-
-        $estado_matricula = null; // Todas las matriculas. ¿Está bien así?
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, $estado_matricula );
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo' );
 
         //dd($estudiantes);
         $curso = Curso::find($request->curso_id);
@@ -190,8 +187,7 @@ class ReporteController extends Controller
 
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
 
-        $estado_matricula = null; // Todas las matriculas. ¿Está bien así?
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, $estado_matricula );
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, 'Activo' );
 
         $periodos = Periodo::get_activos_periodo_lectivo( $request->periodo_lectivo_id );
         // Excluir el periodo final
@@ -227,10 +223,7 @@ class ReporteController extends Controller
 
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
 
-        //dd( $calificaciones->where('estudiante_id', 346)->where('asignatura_id', 30)->all() );
-
-        $estado_matricula = null; // No filtra por estado; es decir, todas las matriculas. ¿Está bien así?
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, $estado_matricula );
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, 'Activo' );
         
         $curso = Curso::find( $request->curso_id );     
 
@@ -247,7 +240,6 @@ class ReporteController extends Controller
                 unset( $periodos[$key] );
             }
         }
-        //dd( $periodos );
 
         $vista = View::make( 'calificaciones.incluir.promedio_proyectado_asignaturas', compact('estudiantes', 'calificaciones', 'asignaturas','curso','tope_escala_valoracion_minima','periodos','periodo_lectivo') )->render();        
 
@@ -268,8 +260,7 @@ class ReporteController extends Controller
 
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
 
-        $estado_matricula = null; // Todas las matriculas. ¿Está bien así?
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, $estado_matricula );
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, 'Activo' );
         
         $curso = Curso::find($request->curso_id);     
 
@@ -305,7 +296,7 @@ class ReporteController extends Controller
 
         $periodo_lectivo = PeriodoLectivo::find( $periodo->periodo_lectivo_id );
 
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, null );
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo' );
 
         // Warning!!! No usar funciones de Eloquent en el controller (acoplamiento al framework) 
         $curso = Curso::find($request->curso_id);
@@ -379,7 +370,7 @@ class ReporteController extends Controller
 
     public function certificado_notas( Request $request )
     {
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, null );
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, 'Activo' );
         
         if( $request->estudiante_id != '' )
         {

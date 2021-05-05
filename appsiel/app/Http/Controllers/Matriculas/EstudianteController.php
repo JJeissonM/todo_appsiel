@@ -385,7 +385,7 @@ class EstudianteController extends ModeloController
 
     public static function get_estudiantes_matriculados($periodo_lectivo_id, $curso_id)
     {
-        $registros = Matricula::estudiantes_matriculados($curso_id, $periodo_lectivo_id, null);
+        $registros = Matricula::estudiantes_matriculados($curso_id, $periodo_lectivo_id, 'Activo');
 
         $opciones = '<option value="">Seleccionar...</option>';
         foreach ($registros as $opcion) {

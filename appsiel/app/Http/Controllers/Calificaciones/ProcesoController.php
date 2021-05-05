@@ -155,7 +155,7 @@ class ProcesoController extends ModeloController
 
 
             // Listado de estudiantes con matriculas activas en el curso y año indicados
-            $estudiantes = Matricula::estudiantes_matriculados( $curso->id, $periodo_lectivo_id, null );
+            $estudiantes = Matricula::estudiantes_matriculados( $curso->id, $periodo_lectivo_id, 'Activo' );
             
             /*if ($curso->id == 24 )
             {
