@@ -77,7 +77,7 @@ class BoletinController extends Controller
         $anio = (int)explode("-",$periodo->fecha_desde)[0];
 
         // Listado de estudiantes con matriculas activas en el curso y año indicados
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, null  );
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo'  );
 			
 		// Seleccionar asignaturas del curso
 		$asignaturas = CursoTieneAsignatura::asignaturas_del_curso($request->curso_id, null, $periodo->periodo_lectivo_id );
@@ -377,7 +377,7 @@ class BoletinController extends Controller
 
 		$nom_curso = Curso::where('id','=',$request->curso_id)->value('descripcion');
 
-		$total_estudiantes = count( Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, null  ) );
+		$total_estudiantes = count( Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo'  ) );
 		
 		// Si hay calificaciones para los datos enviados
 		if( !empty($promedios) )
@@ -468,17 +468,8 @@ class BoletinController extends Controller
      *
      */
 	public function select_estudiantes($anio,$id_periodo,$curso_id)
-    {	
-		
-		// Listado de estudiantes con matriculas activas en el curso indicado
-		/*$estudiantes = DB::table('matriculas')
-			->join('sga_estudiantes', 'matriculas.id_estudiante', '=', 'sga_estudiantes.id')
-			->select('matriculas.codigo','matriculas.id_estudiante', 'sga_estudiantes.id', 'sga_estudiantes.nombres', 
-					'sga_estudiantes.apellido1', 'sga_estudiantes.apellido2')
-			->where([['matriculas.curso_id', $curso_id],['matriculas.estado','Activo']])
-			->get();*/
-
-        $estudiantes = Matricula::estudiantes_matriculados( $curso_id, null, null );
+    {
+        $estudiantes = Matricula::estudiantes_matriculados( $curso_id, null, 'Activo' );
 
 		// Los estudiantes que no tiene boletin para el curso, año y periodo dado
 		$i=0;$ind=0;

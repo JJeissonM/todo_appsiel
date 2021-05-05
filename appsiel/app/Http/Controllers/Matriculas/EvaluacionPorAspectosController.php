@@ -71,7 +71,7 @@ class EvaluacionPorAspectosController extends Controller
         $usuario = Auth::user();
         $periodo_lectivo = PeriodoLectivo::get_actual();
 
-        $estudiantes = Matricula::estudiantes_matriculados( $curso_id, $periodo_lectivo->id, null);
+        $estudiantes = Matricula::estudiantes_matriculados( $curso_id, $periodo_lectivo->id, 'Activo');
         $semana_calendario = SemanasCalendario::where([
                                                         ['fecha_inicio', '<=', $fecha_valoracion],
                                                         ['fecha_fin', '>=', $fecha_valoracion]
@@ -234,7 +234,7 @@ class EvaluacionPorAspectosController extends Controller
         $semana_calendario = SemanasCalendario::find( $request->semana_calendario_id );
         $periodo_lectivo = $semana_calendario->periodo_lectivo;
 
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo_lectivo->id, null);
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo_lectivo->id, 'Activo');
 
         $curso = Curso::find( $request->curso_id );
         $asignatura = Asignatura::find( $request->asignatura_id );
@@ -308,7 +308,7 @@ class EvaluacionPorAspectosController extends Controller
         $semana_calendario = SemanasCalendario::find( $request->semana_calendario_id );
         $periodo_lectivo = $semana_calendario->periodo_lectivo;
 
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo_lectivo->id, null);
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo_lectivo->id, 'Activo' );
 
         $curso = Curso::find( $request->curso_id );
 

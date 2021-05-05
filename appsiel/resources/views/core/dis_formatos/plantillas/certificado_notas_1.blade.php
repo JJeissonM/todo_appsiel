@@ -79,8 +79,8 @@
     $vec_estudiante = explode("-",$request->id_estudiante);
 
 	// Si no se escogió un estudiante en particular
-    if ( $vec_estudiante[0] == '') {
-
+    if ( $vec_estudiante[0] == '')
+    {
     	// Listado de estudiantes, Con matriculas activas e inactivas
 		$estudiantes = App\Matriculas\Matricula::estudiantes_matriculados( $request->curso_id, PeriodoLectivo::get_actual()->id, null );
     }else{
