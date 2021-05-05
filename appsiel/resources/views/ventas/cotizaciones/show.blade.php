@@ -30,22 +30,21 @@
 				<input type="hidden" name="modelo" value="{{$doc_encabezado->id}}" />
 				<input type="hidden" name="source" value="COTIZACION" />
 				{{ csrf_field() }}
-				<label class="control-label">Genere desde aquí su pedido de forma automática</label>
+				<label class="control-label">Genere de forma automática su pedido.<i class="fa fa-arrow-down" aria-hidden="true"></i></label>
 				<div class="row">
-					<div class="col-md-3">
-						{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
+					<div class="col-md-2">
+						<div class="row">
+							{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
+						</div>						
 					</div>
-					<div class="col-md-9">
-						&nbsp;
+					<div class="col-md-2">
+						{{ Form::select('generar',['1'=>'Pedido'],null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
 					</div>
-
+					<div class="col-md-1">
+						<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
+					</div>
 				</div>
-				<div class="col-md-10">
-					{{ Form::select('generar',['1'=>'Pedido'],null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
-				</div>
-				<div class="col-md-2">
-					<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
-				</div>
+				
 			</form>
 		</div>
 	@endif

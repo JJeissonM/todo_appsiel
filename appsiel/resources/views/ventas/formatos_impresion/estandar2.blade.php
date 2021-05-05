@@ -118,8 +118,8 @@ use App\Core\Tercero;
 
 <table class="info">
     <tr>
-        <td><b style="font-size: 16px">{{ $empresa->descripcion }}</b></td>
-        <td colspan="">
+        <td width="50%"><b style="font-size: 16px">{{ $empresa->descripcion }}</b></td>
+        <td width="50%" colspan="">
             <b style="font-size: 16px">Factura N. {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</b>
         </td>
     </tr>
@@ -142,16 +142,10 @@ use App\Core\Tercero;
 <hr>
 <table class="info">
     <tr>
-        <td>
-            <b>Cliente:</b>
-        </td>
-        <td>
-            {{ $doc_encabezado->tercero_nombre_completo }}
-        </td>
-        <td>
-            <b>Fecha:</b>
-        </td>
-        <td>
+        <td width="12%"><b>Cliente:</b></td>
+        <td width="38%">{{ $doc_encabezado->tercero_nombre_completo }}</td>
+        <td width="20%"><b>Fecha:</b></td>
+        <td width="30%">
             <?php
                 $fecha = date_create($doc_encabezado->fecha);
                 $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
@@ -161,15 +155,18 @@ use App\Core\Tercero;
         </td>
     </tr>
     <tr>
-        <td><b>{{ config("configuracion.tipo_identificador") }} :</b></td>
+        <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
         <td>{{ $doc_encabezado->numero_identificacion - $empresa->digito_verificacion }}</td>
-        <td colspan="2"></td>
+        <td><b>Vendedor:</b></td>
+        <td>{{ $doc_encabezado->vendedor_nombre_completo }}</td>
     </tr>
     <tr>
         <td><b>Domicilio:</b> </td>
         <td>{{ $doc_encabezado->direccion1 }}</td>
-        <td><b>Vendedor:</b></td>
-        <td>{{ $doc_encabezado->vendedor_nombre_completo }}</td>
+        <td>
+            <b>Condicion de Venta:</b>
+        </td>
+        <td style="text-transform: capitalize">{{ $doc_encabezado->condicion_pago }}</td>
     </tr>
     <tr>
         <td>
@@ -178,14 +175,6 @@ use App\Core\Tercero;
         <td>
             {{ $tercero->ciudad->descripcion }}
         </td>
-        <td>
-            <b>Condicion de Venta:</b>
-        </td>
-        <td style="text-transform: capitalize">{{ $doc_encabezado->condicion_pago }}</td>
-    </tr>
-    <tr>
-        <td><b>Contacto: </b></td>
-        <td></td>
         <td><b>Remito No.: </b></td>
         <td>{{ $doc_encabezado->documento_remision_prefijo_consecutivo }}</td>
     </tr>
