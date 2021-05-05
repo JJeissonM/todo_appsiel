@@ -135,7 +135,7 @@ use App\Core\Tercero;
         </td>
     </tr>
     <tr>
-        <td><b>{{ config("configuracion.tipo_identificador") }} :</b></td>
+        <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
         <td>{{ $doc_encabezado->numero_identificacion - $empresa->digito_verificacion }}</td>
         <td colspan="2"></td>
     </tr>

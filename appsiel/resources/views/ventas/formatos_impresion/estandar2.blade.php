@@ -144,8 +144,8 @@ use App\Core\Tercero;
     <tr>
         <td width="12%"><b>Cliente:</b></td>
         <td width="38%">{{ $doc_encabezado->tercero_nombre_completo }}</td>
-        <td width="15%"><b>Fecha:</b></td>
-        <td width="35%">
+        <td width="20%"><b>Fecha:</b></td>
+        <td width="30%">
             <?php
                 $fecha = date_create($doc_encabezado->fecha);
                 $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
@@ -155,7 +155,7 @@ use App\Core\Tercero;
         </td>
     </tr>
     <tr>
-        <td><b>{{ config("configuracion.tipo_identificador") }} :</b></td>
+        <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
         <td>{{ $doc_encabezado->numero_identificacion - $empresa->digito_verificacion }}</td>
         <td colspan="2"></td>
     </tr>
@@ -178,7 +178,7 @@ use App\Core\Tercero;
         <td style="text-transform: capitalize">{{ $doc_encabezado->condicion_pago }}</td>
     </tr>
     <tr>
-        <td><b>Contacto: </b></td>
+        <td><!--<b>Contacto:--> </b></td>
         <td></td>
         <td><b>Remito No.: </b></td>
         <td>{{ $doc_encabezado->documento_remision_prefijo_consecutivo }}</td>
