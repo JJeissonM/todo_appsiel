@@ -41,7 +41,7 @@
 
 				</div>
 				<div class="col-md-10">
-					{{ Form::select('generar',['1'=>'Pedido'],null, ['class'=>'select2','required'=>'required', 'id' =>'generar']) }}
+					{{ Form::select('generar',['1'=>'Pedido'],null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
 				</div>
 				<div class="col-md-2">
 					<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
