@@ -250,6 +250,7 @@ class Matricula extends Model
                 'sga_matriculas.codigo',
                 'sga_matriculas.id_estudiante',
                 'sga_matriculas.periodo_lectivo_id',
+                'sga_matriculas.curso_id',
                 'sga_periodos_lectivos.descripcion',
                 'sga_matriculas.fecha_matricula',
                 DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_estudiante'),

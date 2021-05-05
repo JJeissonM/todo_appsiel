@@ -2,7 +2,7 @@
 <?php
 	$cod_matricula = $estudiante->matricula_activa()->codigo;
 	$descripcion_curso = $estudiante->matricula_activa()->curso->descripcion;
-	if ( !isset($matricula) )
+	if ( isset($matricula) )
 	{
 		$cod_matricula = $matricula->codigo;
 		$descripcion_curso = $matricula->curso->descripcion;
