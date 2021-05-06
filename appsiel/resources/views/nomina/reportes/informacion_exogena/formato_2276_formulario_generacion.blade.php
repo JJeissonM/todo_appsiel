@@ -40,11 +40,11 @@
 	<div class="container-fluid">
 		<div class="marco_formulario">
 			
-			{{ Form::bsBtnExcel('certificado_ingresos_y_retenciones') }}
-			{{ Form::bsBtnPdf('certificado_ingresos_y_retenciones') }}
+			{{ Form::bsBtnExcel('formato_2276_ingresos_y_retenciones_laborales') }}
 
 			{{ Form::Spin(48) }}
 
+			<br><br>
 			<div id="resultado_consulta">
 
 			</div>	
@@ -73,7 +73,6 @@
 
 
 				$('#btn_excel').hide();
-				$('#btn_pdf').hide();
 
 				// Preparar datos de los controles para enviar formulario
 				var form_consulta = $('#form_consulta');
@@ -85,19 +84,6 @@
 					$('#div_spin').hide();
 					$('#resultado_consulta').html(respuesta);
 					$('#btn_excel').show(500);
-					$('#btn_pdf').show(500);
-
-					var url_pdf = $('#btn_pdf').attr('href');
-					var n = url_pdf.search('a3p0');
-					if ( n > 0) {
-						var new_url = url_pdf.replace('a3p0','nomina_pdf_certificado_ingresos_y_retenciones?'+datos);
-					}else{
-						n = url_pdf.search('nomina_pdf_certificado_ingresos_y_retenciones');
-						var url_aux = url_pdf.substr(0,n);
-						var new_url = url_aux + 'nomina_pdf_certificado_ingresos_y_retenciones?' + datos;
-					}
-					
-					$('#btn_pdf').attr('href', new_url);
 				});
 			});
 
