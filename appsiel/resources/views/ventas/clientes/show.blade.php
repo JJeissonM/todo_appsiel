@@ -21,7 +21,7 @@
 			</div>
 		</div>
 
-		<div class="col-md-4 text-center">
+		<!--<div class="col-md-4 text-center">
 			<a class="btn btn-primary btn-xs" href="{{url( 'vtas_cotizacion/create?id=13&id_modelo=155&id_transaccion=30' )}}">
 				<i class="fa fa-file"> </i>	Crear cotización
 			</a>
@@ -31,7 +31,7 @@
 			<a class="btn btn-primary btn-xs" href="{{url( 'ventas/create?id=13&id_modelo=139&id_transaccion=23' )}}">
 				<i class="fa fa-file"> </i>	Crear factura
 			</a>
-		</div>
+		</div>-->
 
 		<div class="col-md-4">
 			<div class="btn-group pull-right">

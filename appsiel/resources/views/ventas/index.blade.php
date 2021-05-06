@@ -31,13 +31,13 @@
 		  margin: 20px 20px;
 		}
 
-		a:hover {
+		/*a:hover {
 		  color: red;
 		}
 
 		a:link {
 		  color: white;
-		}
+		}*/
 	</style>
 @endsection
 
