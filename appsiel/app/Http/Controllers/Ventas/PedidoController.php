@@ -329,7 +329,11 @@ class PedidoController extends TransaccionController
 
         $this->empresa = Empresa::find($this->doc_encabezado->core_empresa_id);
 
-        $contacto = $this->doc_encabezado->contacto_cliente->tercero;
+        $contacto = (object)[ 'descripcion'=> $this->empresa->descripcion, 'telefono1' => $this->empresa->telefono1, 'email' => $this->empresa->email ];
+        if ( $this->doc_encabezado->contacto_cliente_id != 0 )
+        {
+            $contacto = $this->doc_encabezado->contacto_cliente->tercero;
+        }
 
         $resolucion = '';
 

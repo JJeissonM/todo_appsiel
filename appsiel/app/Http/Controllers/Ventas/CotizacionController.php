@@ -226,7 +226,7 @@ class CotizacionController extends TransaccionController
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$this->doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->first();
 
-        $contacto = (object)['descripcion'=>'','telefono1'=>'','email'=>''];
+        $contacto = (object)[ 'descripcion'=> $this->empresa->descripcion, 'telefono1' => $this->empresa->telefono1, 'email' => $this->empresa->email ];
         if ( $this->doc_encabezado->contacto_cliente_id != 0 )
         {
             $contacto = $this->doc_encabezado->contacto_cliente->tercero;
