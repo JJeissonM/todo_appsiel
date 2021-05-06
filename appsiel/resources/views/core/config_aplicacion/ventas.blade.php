@@ -191,7 +191,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$longitud_consecutivo_factura = 0;
+								if( isset($parametros['longitud_consecutivo_factura'] ) )
+								{
+									$longitud_consecutivo_factura = $parametros['longitud_consecutivo_factura'];
+								}
+							?>
+							{{ Form::bsText('longitud_consecutivo_factura', $longitud_consecutivo_factura, 'Longitud consecutivo factura (el consecutivo será completado con ceros a la izquierda)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -448,11 +455,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$encabezado_linea_1 = 'GRACIAS POR SU COMPRA.';
 								if( isset($parametros['encabezado_linea_1'] ) )
 								{
 									$encabezado_linea_1 = $parametros['encabezado_linea_1'];
-								}else{
-									$encabezado_linea_1 = 'GRACIAS POR SU COMPRA.';
 								}
 							?>
 							{{ Form::bsText('encabezado_linea_1', $encabezado_linea_1, 'Encabezado línea 1', ['class'=>'form-control']) }}

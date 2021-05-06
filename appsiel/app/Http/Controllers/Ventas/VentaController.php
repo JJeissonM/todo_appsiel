@@ -351,6 +351,8 @@ class VentaController extends TransaccionController
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
+        $doc_encabezado->documento_transaccion_prefijo_consecutivo = $this->get_documento_transaccion_prefijo_consecutivo( $doc_encabezado );
+
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
         $empresa = $this->empresa;
         $id_transaccion = $this->transaccion->id;
@@ -382,6 +384,22 @@ class VentaController extends TransaccionController
         return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'encabezado_documento', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito','medios_pago') );
     }
 
+    public function get_documento_transaccion_prefijo_consecutivo( $doc_encabezado )
+    {
+        if( (int)config('ventas.longitud_consecutivo_factura') == 0 )
+        {
+            return $doc_encabezado->documento_transaccion_prefijo_consecutivo;
+        }
+
+        $consecutivo = $doc_encabezado->consecutivo;
+        $largo = (int)config('ventas.longitud_consecutivo_factura') - strlen($doc_encabezado->consecutivo);
+        for ($i=0; $i < $largo; $i++)
+        { 
+            $consecutivo = '0' . $consecutivo;
+        }
+
+        return $doc_encabezado->tipo_documento_app->prefijo . ' ' . $consecutivo;
+    }
 
     /*
         Imprimir
@@ -435,6 +453,7 @@ class VentaController extends TransaccionController
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $this->doc_encabezado->id );
 
         $doc_encabezado = $this->doc_encabezado;
+        $doc_encabezado->documento_transaccion_prefijo_consecutivo = $this->get_documento_transaccion_prefijo_consecutivo( $doc_encabezado );
         $empresa = $this->empresa;
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->last();

@@ -11,6 +11,7 @@
   'factura_ventas_modelo_id' => '139',
   'factura_ventas_tipo_transaccion_id' => '23',
   'factura_ventas_tipo_doc_app_id' => '18',
+  'longitud_consecutivo_factura' => '8',
   'rm_modelo_id' => '164',
   'rm_tipo_transaccion_id' => '24',
   'rm_tipo_doc_app_id' => '7',
