@@ -313,10 +313,10 @@ class RecaudoCxcController extends Controller
         $id_transaccion = $doc_encabezado->core_tipo_transaccion_id;
 
         $miga_pan = [
-                ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],
-                ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $modelo->descripcion ],
-                ['url'=>'NO','etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
-            ];
+                        ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],
+                        ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=> $modelo->descripcion ],
+                        ['url'=>'NO','etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
+                    ];
         
         return view( 'tesoreria.recaudos_cxc.show', compact( 'id', 'reg_anterior', 'reg_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado') );
     }

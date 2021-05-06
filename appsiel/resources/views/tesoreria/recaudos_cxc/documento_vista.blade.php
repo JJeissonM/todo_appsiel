@@ -85,13 +85,13 @@
                 $total_pendiente = 0;
 
             ?>
-            @foreach($doc_pagados as $linea )
+            @foreach( $doc_pagados as $linea )
 
                 <?php 
                     
                     $modelo_transaccion = App\Sistema\TipoTransaccion::find( $linea->doc_cxc_transacc_id )->modelo_encabezados_documentos;
 
-                    $el_documento = app( $modelo_transaccion )->where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
+                    $documento_pagado = app( $modelo_transaccion )->where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
                                                         ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                                                         ->where('consecutivo',$linea->doc_cxc_consecutivo)
                                                         ->get()
@@ -101,20 +101,17 @@
                                                         ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                                                         ->where('consecutivo',$linea->doc_cxc_consecutivo)
                                                         ->value('saldo_pendiente');
-
-                    //$url = url( 'tesoreria/pagos/'.$el_documento->id.'?id='.Input::get('id').'&id_modelo=139&id_transaccion=23');
                 ?>
 
                 <tr>
                     <td> {{ $linea->tercero_nombre_completo }} </td>
-                    <td> 
-                        <!-- <a href="{ { $url }}" target="_blank"> { { $linea->documento_prefijo_consecutivo }}</a>  -->
+                    <td>
                         {{ $linea->documento_prefijo_consecutivo }}
                     </td>
-                    <td> {{ $el_documento->fecha }} </td>
-                    <td> {{ $el_documento->descripcion }} </td>
-                    <td> ${{ number_format( $linea->abono, 0, ',', '.') }} </td>
-                    <td> ${{ number_format( $saldo_pendiente, 0, ',', '.') }} </td>
+                    <td> {{ $documento_pagado->fecha }} </td>
+                    <td> {{ $documento_pagado->descripcion }} </td>
+                    <td> $ {{ number_format( $linea->abono, 0, ',', '.') }} </td>
+                    <td> $ {{ number_format( $saldo_pendiente, 0, ',', '.') }} </td>
                 </tr>
                 <?php 
                     $total_abono += $linea->abono;
@@ -125,8 +122,8 @@
         <tfoot>
             <tr style="font-weight: bold;">
                 <td colspan="4" style="text-align: right;"> Totales </td>
-                <td> ${{ number_format($total_abono, 0, ',', '.') }} </td>
-                <td> ${{ number_format($total_pendiente, 0, ',', '.') }} </td>
+                <td> $ {{ number_format($total_abono, 0, ',', '.') }} </td>
+                <td> $ {{ number_format($total_pendiente, 0, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>
