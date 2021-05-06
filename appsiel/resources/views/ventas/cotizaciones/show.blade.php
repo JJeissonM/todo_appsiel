@@ -33,7 +33,7 @@
 				<label class="control-label">Genere de forma automática su pedido <i class="fa fa-arrow-down" aria-hidden="true"></i></label>
 				<div class="row">
 					<div class="col-md-6 col-lg-6 col-xl-2">
-							{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha de Entrega', null,[]) }}
+							{{ Form::bsFecha('fecha_entrega',date('Y-m-d'),'Fecha de Entrega', null,[]) }}
 					</div>
 					<div class="col-md-2">
 						{{ Form::select('generar',['1'=>'Pedido'],null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}

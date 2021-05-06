@@ -88,12 +88,10 @@
 	@else
 		<div class="container-fluid">
 			<div class="marco_formulario">
-				<h3> Pedidos de ventas (pedidos pendientes, actuales, futuros y vencidos)</h3>
-				<hr>
 				<div class="row">
 					
 					<div class="col-md-12">
-						<h4 style="text-align: center; width: 100%; background-color: #faf4d4; color: #636363;">Pedidos ésta semana</h4>
+						<h4 style="text-align: center; width: 100%; background-color: #faf4d4; color: #636363;">Pedidos por Entregar</h4>
 						<div class="table-responsive">
 							@if($pedidos_de_la_semana!=null)
 							<table class="table table-striped table-bordered">
@@ -121,7 +119,7 @@
 												@foreach($s['data'] as $d)
 												<li>
 													<a style="color: #0b97c4;" target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$d['documento']}}</a>
-													/ {{ $d['fecha'] }} > <span title="{{ $d['cliente'] }}"> {{ substr( $d['cliente'], 0, 10) }}... </span>
+													<span title="{{ $d['cliente'] }}"> {{ substr( $d['cliente'], 0, 10) }}... </span>
 												</li>
 												@endforeach
 											</ol>
@@ -149,7 +147,7 @@
 								<tr>
 									<th>Pedido</th>
 									<th>Cliente</th>
-									<th>Venció</th>
+									<th>Fecha entrega</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -175,7 +173,7 @@
 								<tr>
 									<th>Pedido</th>
 									<th>Cliente</th>
-									<th>Vence</th>
+									<th>Fecha entrega</th>
 								</tr>
 							</thead>
 							<tbody>

@@ -362,7 +362,7 @@ class ProcesoController extends Controller
     public function pedidoStore($cotizacion, $request)
     {
         $url_id = explode("=", explode("&", $request->url)[0])[1];
-        $url_id_modelo = explode("=", explode("&", $request->url)[1])[1];
+        $url_id_modelo = 175;
         $cliente = Cliente::find($cotizacion->cliente_id);
         $registros = VtasDocRegistro::where('vtas_doc_encabezado_id', $cotizacion->id)->get();
         $lineas_registros = null;
@@ -390,8 +390,8 @@ class ProcesoController extends Controller
         $data = [
             'core_tipo_doc_app_id' => 41,
             'core_empresa_id' => $cotizacion->core_empresa_id,
-            'fecha' => $request->fecha,
-            'fecha_entrega' => $cotizacion->fecha_entrega,
+            'fecha' => date('Y-m-d'),
+            'fecha_entrega' => $request->fecha_entrega,
             'cliente_input' => '',
             'descripcion' => $descripcion,
             'core_tipo_transaccion_id' => 42,
@@ -403,7 +403,7 @@ class ProcesoController extends Controller
             'contacto_cliente_id' => $cotizacion->contacto_cliente_id,
             'vendedor_id' => $cotizacion->vendedor_id,
             'forma_pago' => $cotizacion->forma_pago,
-            'fecha_vencimiento' => $cotizacion->fecha_vencimiento,
+            'fecha_vencimiento' => $request->fecha_entrega,
             'inv_bodega_id' => $cliente->inv_bodega_id,
             'cliente_id' => $cotizacion->cliente_id,
             'zona_id' => $cliente->zona_id,
@@ -419,6 +419,7 @@ class ProcesoController extends Controller
             'rm_tipo_transaccion_id' => config('ventas.rm_tipo_transaccion_id'),
             'dvc_tipo_transaccion_id' => config('ventas.dvc_tipo_transaccion_id')
         ];
+        
         $request->request->add($data);
         $lineas_registros2 = json_decode($request->lineas_registros);
         // 2do. Crear documento de Ventas
