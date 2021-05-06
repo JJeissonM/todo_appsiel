@@ -126,7 +126,7 @@ use App\Core\Tercero;
         <td width="12%">
             <b>Solicitante:</b>
         </td>
-        <td width="38%">
+        <td width="58%">
             {{ $tercero->razon_social }}
         </td>
         <td colspan="2">
@@ -148,10 +148,10 @@ use App\Core\Tercero;
         <td>
             {{ $contacto->descripcion }}
         </td>
-        <td width="15%">
-            <b>Fecha:</b>
+        <td width="16%">
+            <b>Fecha de Entrega:</b>
         </td>
-        <td width="35%">
+        <td width="14%">
             <?php
                 $fecha = date_create($doc_encabezado->fecha);
                 $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       

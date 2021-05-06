@@ -118,8 +118,8 @@ use App\Core\Tercero;
 
 <table class="info">
     <tr>
-        <td width="50%"><b style="font-size: 16px">{{ $empresa->descripcion }}</b></td>
-        <td width="50%" colspan="">
+        <td width="55%"><b style="font-size: 16px">{{ $empresa->descripcion }}</b></td>
+        <td width="45%" colspan="">
             <b style="font-size: 16px">Factura N. {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</b>
         </td>
     </tr>
@@ -143,9 +143,9 @@ use App\Core\Tercero;
 <table class="info">
     <tr>
         <td width="12%"><b>Cliente:</b></td>
-        <td width="38%">{{ $doc_encabezado->tercero_nombre_completo }}</td>
+        <td width="43%">{{ $doc_encabezado->tercero_nombre_completo }}</td>
         <td width="20%"><b>Fecha:</b></td>
-        <td width="30%">
+        <td width="25%">
             <?php
                 $fecha = date_create($doc_encabezado->fecha);
                 $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
