@@ -71,7 +71,17 @@
 
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
 
+				<!-- Formulario control cheque -->
+	            <div class="row">
+	            	<div class="col-md-12">
+	            		<div class="container-fluid" id="div_control_cheques" style="display: none; border: 1px solid #ddd; border-radius: 4px; background-color: #e1faff;">
+	            			@include('tesoreria.control_cheques.form_create')
+			            </div>
+	            	</div>
+	            </div>
+
 			{{ Form::close() }}
+
 
 			<!-- Documentos pendientes de cartera -->
             <div class="row">
@@ -337,6 +347,13 @@
 				}else{
 					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 					mostrar_campo_formulario( $('#teso_caja_id'), '*Caja:', true );
+				}
+
+				if ( valor[1] == 'cheque_de_tercero' || valor[1] == 'cheque_propio' )
+				{
+					$('#div_control_cheques').fadeIn(500);
+				}else{
+					$('#div_control_cheques').hide();
 				}
 			});
 

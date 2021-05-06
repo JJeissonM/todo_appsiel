@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Sistema\VistaController;
+
+	//dd($registro);
 ?>
 
 <div class="container-fluid">
@@ -9,20 +11,19 @@ use App\Http\Controllers\Sistema\VistaController;
 		<hr>
 
 		@if( !isset($url_action) )
-		@php $url_action = 'web/'.$registro->id; @endphp
+			@php $url_action = 'web/'.$registro->id; @endphp
 		@endif
 
 		{{ Form::model($registro, ['url' => [$url_action], 'method' => 'PUT','files' => true]) }}
 
 
 		<?php
-		if (count($form_create['campos']) > 0) {
-			$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
-			echo '<div class="row" style="margin: 5px;">' . Form::bsButtonsForm($url) . '</div>';
-		} else {
-			echo "<p>El modelo no tiene campos asociados.</p>";
-		}
-
+			if (count($form_create['campos']) > 0) {
+				$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
+				echo '<div class="row" style="margin: 5px;">' . Form::bsButtonsForm($url) . '</div>';
+			} else {
+				echo "<p>El modelo no tiene campos asociados.</p>";
+			}
 		?>
 
 		{{ VistaController::campos_dos_colummnas($form_create['campos']) }}

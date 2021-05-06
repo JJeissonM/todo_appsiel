@@ -1712,6 +1712,12 @@
       'migration' => '2021_04_21_145117_addcolumntiendatable',
       'batch' => 96,
     ),
+    285 => 
+    array (
+      'id' => 0,
+      'migration' => '2021_05_05_175801_create_control_cheques_table',
+      'batch' => 97,
+    ),
   ),
   'permissions' => 
   array (
@@ -9409,6 +9415,21 @@
       'fa_icon' => 'users',
       'created_at' => '2021-05-03 11:38:38',
       'updated_at' => '2021-05-03 11:45:53',
+    ),
+    513 => 
+    array (
+      'id' => 539,
+      'core_app_id' => 3,
+      'modelo_id' => 294,
+      'name' => 'teso_control_cheques',
+      'descripcion' => 'Control de cheques',
+      'url' => 'web',
+      'parent' => 37,
+      'orden' => 5,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2021-05-05 19:38:36',
+      'updated_at' => '2021-05-05 19:39:01',
     ),
   ),
   'roles' => 
@@ -21055,6 +21076,24 @@
       'orden' => 0,
       'permission_id' => 538,
       'role_id' => 3,
+    ),
+    1912 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 539,
+      'role_id' => 1,
+    ),
+    1913 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 539,
+      'role_id' => 3,
+    ),
+    1914 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 539,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -41349,6 +41388,86 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-05-04 20:41:42',
       'updated_at' => '2021-05-04 20:44:50',
     ),
+    1261 => 
+    array (
+      'id' => 1267,
+      'descripcion' => 'Fuente',
+      'tipo' => 'select',
+      'name' => 'fuente',
+      'opciones' => '{"cheque_de_tercero":"Cheque de tercero","cheque_propio":"Cheque propio"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-05-05 09:46:22',
+      'updated_at' => '2021-05-05 09:46:22',
+    ),
+    1262 => 
+    array (
+      'id' => 1268,
+      'descripcion' => 'Fecha de cobro',
+      'tipo' => 'fecha',
+      'name' => 'fecha_cobro',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-05-05 09:46:22',
+      'updated_at' => '2021-05-05 19:43:00',
+    ),
+    1263 => 
+    array (
+      'id' => 1269,
+      'descripcion' => 'Número de cheque',
+      'tipo' => 'bsText',
+      'name' => 'numero_cheque',
+      'opciones' => 'model_App\\Inventarios\\Servicio',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-05-05 09:46:22',
+      'updated_at' => '2021-05-05 09:46:22',
+    ),
+    1264 => 
+    array (
+      'id' => 1270,
+      'descripcion' => 'Referencia',
+      'tipo' => 'bsText',
+      'name' => 'referencia_cheque',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-05-05 09:46:22',
+      'updated_at' => '2021-05-05 09:46:22',
+    ),
+    1265 => 
+    array (
+      'id' => 1271,
+      'descripcion' => 'Fecha emisión',
+      'tipo' => '',
+      'name' => 'fecha_emision',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-05-05 09:46:22',
+      'updated_at' => '2021-05-05 09:46:22',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -47577,6 +47696,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2021-05-03 11:36:33',
       'updated_at' => '2021-05-03 11:36:33',
+    ),
+    283 => 
+    array (
+      'id' => 294,
+      'descripcion' => 'Control de cheques',
+      'modelo' => 'ControlCheque',
+      'name_space' => 'App\\Tesoreria\\ControlCheque',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2021-05-05 09:13:22',
+      'updated_at' => '2021-05-05 09:13:22',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -65073,6 +65214,41 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 13,
       'core_modelo_id' => 155,
       'core_campo_id' => 1266,
+    ),
+    2499 => 
+    array (
+      'id' => 2849,
+      'orden' => 2,
+      'core_modelo_id' => 294,
+      'core_campo_id' => 1271,
+    ),
+    2500 => 
+    array (
+      'id' => 2850,
+      'orden' => 4,
+      'core_modelo_id' => 294,
+      'core_campo_id' => 512,
+    ),
+    2501 => 
+    array (
+      'id' => 2851,
+      'orden' => 6,
+      'core_modelo_id' => 294,
+      'core_campo_id' => 1269,
+    ),
+    2502 => 
+    array (
+      'id' => 2852,
+      'orden' => 0,
+      'core_modelo_id' => 294,
+      'core_campo_id' => 1270,
+    ),
+    2503 => 
+    array (
+      'id' => 2853,
+      'orden' => 8,
+      'core_modelo_id' => 294,
+      'core_campo_id' => 257,
     ),
   ),
   'sys_reportes' => 

@@ -38,7 +38,6 @@ use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\TesoPlanPagosEstudiante;
-use App\Tesoreria\ControlCheque;
 
 use App\Matriculas\FacturaAuxEstudiante;
 
@@ -49,36 +48,20 @@ use App\CxC\CxcAbono;
 
 use App\Ventas\VtasDocEncabezado;
 
-class RecaudoCxcController extends Controller
+class ControlChequeController extends Controller
 {
-    protected $datos = [];
 
     public function __construct()
     {
         $this->middleware('auth');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function get_formulario_control_cheques()
     {
         $id_transaccion = 32;// 32 = Recaudos de CxC
 
         // Se obtiene el modelo según la variable modelo_id  de la url
-        $modelo = Modelo::find(Input::get('id_modelo'));
+        $modelo = Modelo::find( Input::get('id_modelo') );
 
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
         $cantidad_campos = count($lista_campos);
@@ -121,36 +104,8 @@ class RecaudoCxcController extends Controller
     {
         $doc_encabezado = $this->almacenar( $request );
 
-        $this->almacenar_cheque( $request, $doc_encabezado );
-
         // se llama la vista de RecaudoCxcController@show
         return redirect( 'tesoreria/recaudos_cxc/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
-    }
-
-    public function almacenar_cheque( $request, $doc_encabezado )
-    {
-        $vec_3 = explode("-", $request->teso_medio_recaudo_id);
-        if ( $vec_3[1] == 'cheque_propio' || $vec_3[1] == 'cheque_de_tercero' )
-        {
-            $datos = [
-                        'fuente' => $vec_3[1],
-                        'tercero_id' => $doc_encabezado->core_tercero_id,
-                        'fecha_emision' => $doc_encabezado->fecha,
-                        'fecha_cobro' => $request->fecha_cobro,
-                        'numero_cheque' => $request->numero_cheque,
-                        'referencia_cheque' => $request->referencia_cheque,
-                        'entidad_financiera_id' => 0,
-                        'valor' => $doc_encabezado->valor_total,
-                        'detalle' => $request->detalle,
-                        'creado_por' => $doc_encabezado->creado_por,
-                        'core_tipo_transaccion_id_origen' => $doc_encabezado->core_tipo_transaccion_id,
-                        'core_tipo_doc_app_id_origen' => $doc_encabezado->core_tipo_doc_app_id,
-                        'consecutivo' => $doc_encabezado->consecutivo,
-                        'teso_caja_id' => $request->teso_caja_id,
-                        'estado' => 'Activo'
-                    ];
-            ControlCheque::create( $datos );
-        }
     }
 
     public function almacenar( Request $request )

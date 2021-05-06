@@ -21,7 +21,6 @@ class Cliente extends Model
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Clase de cliente', 'Lista de precios', 'Lista de descuentos', 'Zona'];
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
-    
 
     public static function get_cuenta_cartera( $cliente_id )
     {

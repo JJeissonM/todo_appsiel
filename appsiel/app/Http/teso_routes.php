@@ -71,6 +71,9 @@ Route::get('teso_anular_recaudo_cxc/{id}', 'Tesoreria\RecaudoCxcController@anula
 Route::get('tesoreria_recaudos_cxc_imprimir/{id}', 'Tesoreria\RecaudoCxcController@imprimir');
 Route::resource('tesoreria/recaudos_cxc', 'Tesoreria\RecaudoCxcController');
 
+// CONTROL DE CHEQUES
+Route::get('teso_get_formulario_control_cheques/{teso_medio_recaudo_id}', 'Tesoreria\ControlChequeController@get_formulario_control_cheques');
+
 
 // PAGOS DE CXP
 Route::get('tesoreria/get_documentos_pendientes_cxp', 'Tesoreria\PagoCxpController@get_documentos_pendientes_cxp');

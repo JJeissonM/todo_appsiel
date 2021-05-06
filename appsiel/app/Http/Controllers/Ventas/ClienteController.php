@@ -193,7 +193,6 @@ class ClienteController extends ModeloController
 
         $miga_pan = $this->get_miga_pan($modelo, $tercero->razon_social . ' ' . $tercero->descripcion." > Modificar");
 
-
         $archivo_js = app($modelo->name_space)->archivo_js;
 
         return view('layouts.edit',compact('form_create','miga_pan','registro','archivo_js','url_action')); 
