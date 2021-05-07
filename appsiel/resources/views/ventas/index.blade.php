@@ -32,6 +32,9 @@
 		  margin: 20px 20px;
 		}
 		
+		thead>tr>th{
+			text-align: center;
+		}
 
 		.card{
 			border-radius: 12px 12px 0 0;
@@ -103,19 +106,19 @@
 			<div class="marco_formulario">
 				<div class="row">					
 					<div class="col-md-12">						
-						<div class="card" style="border: 2px solid #ffc107">
-							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffc107; color: #636363;">Pedidos por Entregar</h4>
+						<div class="card" style="border: 2px solid #ffcd39">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">Pedidos por Entregar</h4>
 							@if($pedidos_de_la_semana!=null)
 							<table class="table table-bordered">
 								<thead>
 									<tr style="background-color: #eee">
-										<th style="text-align: center">LUNES</th>
-										<th style="text-align: center">MARTES</th>
-										<th style="text-align: center">MIERCOLES</th>
-										<th style="text-align: center">JUEVES</th>
-										<th style="text-align: center">VIERNES</th>
-										<th style="text-align: center">SABADO</th>
-										<th style="text-align: center">DOMINGO</th>
+										<th>LUNES</th>
+										<th>MARTES</th>
+										<th>MIERCOLES</th>
+										<th>JUEVES</th>
+										<th>VIERNES</th>
+										<th>SABADO</th>
+										<th>DOMINGO</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -134,7 +137,7 @@
 											@if($s['fecha'] != $ref)
 											<h5 style="text-align: center; width: 100%; background-color: #ddd; color: #636363;">{{$s['fecha']}}</h5>
 											@else
-											<h5 style="text-align: center; width: 100%; background-color: #ffc107; color: #636363;">{{$s['fecha']}}</h5>
+											<h5 style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">{{$s['fecha']}}</h5>
 											@endif
 											@if($s['data']!=null)
 											<ol>
@@ -162,22 +165,22 @@
 
 				<div class="row">
 					<div class="col-md-4">
-						<div class="card" style="border: 2px solid #e35d6a">
-							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #e35d6a; color: #636363;">Pedidos Vencidos</h4>
+						<div class="card" style="border: 2px solid #dc3545">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #dc3545; color: #636363;">Pedidos Vencidos</h4>
 							@if($vencidas!=null)
 							<table class="table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th>Pedido</th>
 										<th>Cliente</th>
-										<th>Fecha entrega</th>
+										<th>F. Entrega</th>
 									</tr>
 								</thead>
 								<tbody>
 									@foreach($vencidas as $v)
 									<tr>
 										<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-										<td>{{$v['cliente']}}</td>
+										<td>{{ substr( $d['cliente'], 0, 25) }}...</td>
 										<td>{{$v['fecha_entrega']}}</td>
 									</tr>
 									@endforeach
@@ -190,8 +193,8 @@
 						
 					</div>
 					<div class="col-md-4">
-						<div class="card" style="border: 2px solid #1f8354">
-							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #479f76; color: #636363;">Pedidos Futuros</h4>
+						<div class="card" style="border: 2px solid #20c997">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #20c997; color: #636363;">Pedidos Futuros</h4>
 							<div class="card-body">
 								@if($futuras!=null)
 								<table class="table table-striped table-bordered">
@@ -199,14 +202,14 @@
 										<tr>
 											<th>Pedido</th>
 											<th>Cliente</th>
-											<th>Fecha entrega</th>
+											<th>F. Entrega</th>
 										</tr>
 									</thead>
 									<tbody>
 										@foreach($futuras as $v)
 										<tr>
 											<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-											<td>{{$v['cliente']}}</td>
+											<td>{{ substr( $d['cliente'], 0, 25) }}...</td>
 											<td>{{$v['fecha_entrega']}}</td>
 										</tr>
 										@endforeach
@@ -228,14 +231,14 @@
 									<tr>
 										<th>Pedido</th>
 										<th>Cliente</th>
-										<th>Fecha entrega</th>
+										<th>F. Entrega</th>
 									</tr>
 								</thead>
 								<tbody>
 									@foreach($anulados as $a)
 									<tr>
 										<td><a target="_blank" href="{{url('vtas_pedidos/'.$a['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$a['documento']}}</a></td>
-										<td>{{$a['cliente']}}</td>
+										<td>{{ substr( $d['cliente'], 0, 25) }}...</td>
 										<td>{{$a['fecha_entrega']}}</td>
 									</tr>
 									@endforeach
@@ -267,20 +270,18 @@
 
 				<br><br>
 				<div class="row">
-					<div class="col-md-4 col-md-offset-4">
+					<div class="col-md-3 col-md-offset-4">
 						<table class="table table-striped table-bordered">
 							<thead>
 								<tr>
 									<th>Fecha</th>
 									<th>Total</th>
-									<th></th>
 								</tr>
 							</thead>
 							<tbody>
 								@for($i=0; $i < $cant; $i++) <tr>
 									<td> {{ $tabla[$i]['fecha'] }} </td>
 									<td style="text-align: right;"> ${{ number_format($tabla[$i]['valor'], 2, ',', '.') }} </td>
-									<td> </td>
 									</tr>
 									@php
 									$totales += $tabla[$i]['valor'];
@@ -291,7 +292,6 @@
 								<tr>
 									<td> </td>
 									<td style="text-align: right;"> <b> ${{ number_format($totales, 2, ',', '.') }} </b> </td>
-									<td> </td>
 								</tr>
 							</tfoot>
 						</table>

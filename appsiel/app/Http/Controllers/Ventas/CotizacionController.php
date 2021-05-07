@@ -199,7 +199,7 @@ class CotizacionController extends TransaccionController
 
         $asunto = $this->doc_encabezado->documento_transaccion_descripcion.' No. '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo;
 
-        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto . ' <br><br> Por favor no responda este mesanje, pues fue generado automáticamente. <br><br>  Si tiene alguna duda o sugerencia escríbanos a <a href="mailto(' . $this->empresa->email . ')" > ' . $this->empresa->email . ' </a> o comuníquese al '  . $this->empresa->telefono1 . '.';
+        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto . ' <br><br> Por favor no responda este mensaje, pues fue generado automáticamente. <br><br>  Si tiene alguna duda o sugerencia escríbanos a <a href="mailto(' . $this->empresa->email . ')" > ' . $this->empresa->email . '</a> o comuníquese al '  . $this->empresa->telefono1 . '.';
 
         $email_destino = $tercero->email;
         if ( $this->doc_encabezado->contacto_cliente_id != 0 )

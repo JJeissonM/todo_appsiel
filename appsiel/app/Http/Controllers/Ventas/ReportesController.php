@@ -73,7 +73,7 @@ class ReportesController extends Controller
         // Se almacena la gráfica en ventas_diarias, luego se llama en la vista [ como mágia :) ]
         Lava::BarChart('ventas_diarias', $stocksTable1, [
             'is3D' => True,
-            
+            'colors' => ['#574696'],
             'orientation' => 'horizontal',
             'vAxis'=> ['title'=>'Monto Total','format'=> '$ #,###.##'],
             'hAxis'=> ['title'=>'Fecha'],
