@@ -46,12 +46,10 @@ $semana = ReportesController::ordenes_semana();
 
 <div class="container-fluid">
 	<div class="marco_formulario">
-		<h3> Órdenes de compras (órdenes pendientes, actuales, futuras y vencidas)</h3>
-		<hr>
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card"  style="border: 2px solid #ffcd39">
-					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">Pendientes ésta semana</h4>
+					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">Órdenes de Compras ésta Semana</h4>
 				<div class="table-responsive">
 					@if($semana!=null)
 					<table class="table table-striped table-responsive">
@@ -110,8 +108,8 @@ $semana = ReportesController::ordenes_semana();
 
 		<div class="row">
 			<div class="col-md-6">
-				<div class="card"  style="border: 2px solid #e35d6a;">
-					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #e35d6a; color: #636363;">Órdenes vencidos</h4>
+				<div class="card"  style="border: 2px solid #dc3545;">
+					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #dc3545; color: #636363;">Órdenes de Compras Vencidas</h4>
 					@if($vencidas!=null)
 					<table class="table table-striped">
 						<thead>
@@ -139,7 +137,7 @@ $semana = ReportesController::ordenes_semana();
 			</div>
 			<div class="col-md-6">
 				<div class="card"  style="border: 2px solid #20c997">
-					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #20c997; color: #636363;">Órdenes Futuras</h4>
+					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #20c997; color: #636363;">Órdenes de Compras Futuras</h4>
 					@if($futuras!=null)
 					<table class="table table-striped">
 						<thead>
