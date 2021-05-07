@@ -49,4 +49,17 @@ class TesoEntidadFinanciera extends Model
     {
         return "LISTADO DE ENTIDADES FINANCIERAS";
     }
+
+    public static function opciones_campo_select()
+    {
+        $opciones = TesoEntidadFinanciera::where('estado','Activo')->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
 }

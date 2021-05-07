@@ -146,6 +146,10 @@
         </tfoot>
     </table>
 
+
+    @include('tesoreria.recaudos_cxc.cheques_relacionados')
+
+
     @if( !empty($registros_contabilidad) ) 
         <table class="table table-bordered">
             <tr>

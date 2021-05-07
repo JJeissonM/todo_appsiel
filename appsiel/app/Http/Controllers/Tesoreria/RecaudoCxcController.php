@@ -39,6 +39,7 @@ use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\ControlCheque;
+use App\Tesoreria\TesoEntidadFinanciera;
 
 use App\Matriculas\FacturaAuxEstudiante;
 
@@ -99,6 +100,7 @@ class RecaudoCxcController extends Controller
 
         $terceros = [''];
 
+        $entidades_financieras = TesoEntidadFinanciera::opciones_campo_select();
 
         $miga_pan = [
                 ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],
@@ -106,7 +108,7 @@ class RecaudoCxcController extends Controller
                 ['url'=>'NO','etiqueta' => 'Crear nuevo' ]
             ];
 
-        return view('tesoreria.recaudos_cxc.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros' ) );
+        return view('tesoreria.recaudos_cxc.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras' ) );
     }
 
     /**
@@ -135,11 +137,11 @@ class RecaudoCxcController extends Controller
             $datos = [
                         'fuente' => $vec_3[1],
                         'tercero_id' => $doc_encabezado->core_tercero_id,
-                        'fecha_emision' => $doc_encabezado->fecha,
+                        'fecha_emision' => $request->fecha_emision,
                         'fecha_cobro' => $request->fecha_cobro,
                         'numero_cheque' => $request->numero_cheque,
                         'referencia_cheque' => $request->referencia_cheque,
-                        'entidad_financiera_id' => 0,
+                        'entidad_financiera_id' => $request->entidad_financiera_id,
                         'valor' => $doc_encabezado->valor_total,
                         'detalle' => $request->detalle,
                         'creado_por' => $doc_encabezado->creado_por,
@@ -147,7 +149,7 @@ class RecaudoCxcController extends Controller
                         'core_tipo_doc_app_id_origen' => $doc_encabezado->core_tipo_doc_app_id,
                         'consecutivo' => $doc_encabezado->consecutivo,
                         'teso_caja_id' => $request->teso_caja_id,
-                        'estado' => 'Activo'
+                        'estado' => 'Recibido'
                     ];
             ControlCheque::create( $datos );
         }
@@ -495,8 +497,29 @@ class RecaudoCxcController extends Controller
         // Marcar como anulado el encabezado
         $recaudo->update(['estado'=>'Anulado']);
 
+        $this->restablecer_cheque( $recaudo );
+
         return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Recaudo de CxC ANULADO correctamente.');
         
+    }
+
+
+
+    public function restablecer_cheque( $recaudo )
+    {
+        $cheque_recibido = ControlCheque::where([
+                                                    'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
+                                                    'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
+                                                    'consecutivo' => $recaudo->consecutivo
+                                                ])
+                                        ->get()
+                                        ->first();
+
+        if ( !is_null($cheque_recibido) )
+        {
+            $cheque_recibido->estado = 'Anulado';
+            $cheque_recibido->save();
+        }
     }
 
     // Por cada linea del Recaudo de CxC

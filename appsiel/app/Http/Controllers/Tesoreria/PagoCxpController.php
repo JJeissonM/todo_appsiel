@@ -37,6 +37,8 @@ use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\ControlCheque;
+use App\Tesoreria\TesoEntidadFinanciera;
 
 use App\Contabilidad\ContabMovimiento;
 
@@ -90,6 +92,8 @@ class PagoCxpController extends TransaccionController
 
         $terceros = [''];
 
+        $cheques_activos = ControlCheque::opciones_campo_select();
+        $entidades_financieras = TesoEntidadFinanciera::opciones_campo_select();
 
         $miga_pan = [
                 ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],
@@ -97,7 +101,7 @@ class PagoCxpController extends TransaccionController
                 ['url'=>'NO','etiqueta' => 'Crear nuevo' ]
             ];
 
-        return view('tesoreria.pagos_cxp.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros' ) );
+        return view('tesoreria.pagos_cxp.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'cheques_activos', 'entidades_financieras' ) );
     }
 
     /**
@@ -230,8 +234,50 @@ class PagoCxpController extends TransaccionController
         // MOVIMIENTO CREDITO (CAJA/BANCO)
         ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, 0, $valor_total);
 
+        $this->almacenar_cheque( $request, $doc_encabezado );
+
         // se llama la vista de PagoCxpController@show
         return redirect( 'tesoreria/pagos_cxp/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+    }
+
+    public function almacenar_cheque( $request, $doc_encabezado )
+    {
+        $vec_3 = explode("-", $request->teso_medio_recaudo_id);
+        if ( $vec_3[1] == 'cheque_propio' || $vec_3[1] == 'cheque_de_tercero' )
+        {
+            $cheque_id = (int)explode('-', $request->cheque_id)[0];
+            if ( $cheque_id != 0 )
+            {
+                $cheque_activo = ControlCheque::find( $cheque_id );
+                $cheque_activo->core_tipo_transaccion_id_consumo = $doc_encabezado->core_tipo_transaccion_id;
+                $cheque_activo->core_tipo_doc_app_id_consumo = $doc_encabezado->core_tipo_doc_app_id;
+                $cheque_activo->consecutivo_doc_consumo = $doc_encabezado->consecutivo;
+                $cheque_activo->estado = 'Gastado';
+                $cheque_activo->save();
+            }
+            
+            if ( $cheque_id == 0 )
+            {
+                $datos = [
+                            'fuente' => $vec_3[1],
+                            'tercero_id' => $doc_encabezado->core_tercero_id,
+                            'fecha_emision' => $request->fecha_emision,
+                            'fecha_cobro' => $request->fecha_cobro,
+                            'numero_cheque' => $request->numero_cheque,
+                            'referencia_cheque' => $request->referencia_cheque,
+                            'entidad_financiera_id' => $request->entidad_financiera_id,
+                            'valor' => $doc_encabezado->valor_total,
+                            'detalle' => $request->detalle,
+                            'creado_por' => $doc_encabezado->creado_por,
+                            'core_tipo_transaccion_id_origen' => $doc_encabezado->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id_origen' => $doc_encabezado->core_tipo_doc_app_id,
+                            'consecutivo' => $doc_encabezado->consecutivo,
+                            'teso_caja_id' => $request->teso_caja_id,
+                            'estado' => 'Emitido'
+                        ];
+                ControlCheque::create( $datos );
+            }
+        }
     }
 
     /**
@@ -368,9 +414,9 @@ class PagoCxpController extends TransaccionController
         $pago = TesoDocEncabezado::find( $id );
 
         $array_wheres = ['core_empresa_id'=>$pago->core_empresa_id, 
-            'core_tipo_transaccion_id' => $pago->core_tipo_transaccion_id,
-            'core_tipo_doc_app_id' => $pago->core_tipo_doc_app_id,
-            'consecutivo' => $pago->consecutivo];
+                            'core_tipo_transaccion_id' => $pago->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id' => $pago->core_tipo_doc_app_id,
+                            'consecutivo' => $pago->consecutivo];
 
         // >>> Validaciones inciales
 
@@ -387,7 +433,6 @@ class PagoCxpController extends TransaccionController
 
         // Se reversan los pagos hecho por este documento: aumenta el saldo_pendiente en el documento de CxP
 
-        // ?????? si no existe el documento de cxp en documentos pendiente, se debe crear nuevamente su registro
         $documentos_abonados = CxpAbono::get_documentos_abonados( $pago );
 
         foreach ($documentos_abonados as $linea)
@@ -446,7 +491,42 @@ class PagoCxpController extends TransaccionController
         // Marcar como anulado el encabezado
         $pago->update( [ 'estado' => 'Anulado', 'modificado_por' => Auth::user()->email ] );
 
-        return redirect( 'tesoreria/pagos_cxp/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Pago de CxP ANULADO correctamente.');
-        
+        $this->restablecer_cheque( $pago );
+
+        return redirect( 'tesoreria/pagos_cxp/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Pago de CxP ANULADO correctamente.'); 
+    }
+
+    public function restablecer_cheque( $pago )
+    {
+        $cheque_gastado = ControlCheque::where([
+                                                    'core_tipo_transaccion_id_consumo' => $pago->core_tipo_transaccion_id,
+                                                    'core_tipo_doc_app_id_consumo' => $pago->core_tipo_doc_app_id,
+                                                    'consecutivo_doc_consumo' => $pago->consecutivo
+                                                ])
+                                        ->get()
+                                        ->first();
+
+        if ( !is_null($cheque_gastado) )
+        {
+            $cheque_gastado->core_tipo_transaccion_id_consumo = 0;
+            $cheque_gastado->core_tipo_doc_app_id_consumo = 0;
+            $cheque_gastado->consecutivo_doc_consumo = 0;
+            $cheque_gastado->estado = 'Recibido';
+            $cheque_gastado->save();
+        }
+
+        $cheque_emitido = ControlCheque::where([
+                                                    'core_tipo_transaccion_id' => $pago->core_tipo_transaccion_id,
+                                                    'core_tipo_doc_app_id' => $pago->core_tipo_doc_app_id,
+                                                    'consecutivo' => $pago->consecutivo
+                                                ])
+                                        ->get()
+                                        ->first();
+
+        if ( !is_null($cheque_emitido) )
+        {
+            $cheque_emitido->estado = 'Anulado';
+            $cheque_emitido->save();
+        }
     }
 }

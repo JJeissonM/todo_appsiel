@@ -129,6 +129,8 @@
     </table>
 </div>
 
+@include('tesoreria.recaudos_cxc.cheques_relacionados')
+
 <h4 style="text-align: center;">Registros contables</h4>
 <div class="table-responsive">
     <table class="table table-bordered table-striped">

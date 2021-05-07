@@ -10,9 +10,20 @@ class ControlCheque extends Model
 {
     protected $table = 'teso_control_cheques';
 
-    protected $fillable = ['fuente', 'tercero_id', 'fecha_emision', 'fecha_cobro', 'numero_cheque', 'referencia_cheque', 'entidad_financiera_id', 'valor', 'detalle', 'creado_por', 'modificado_por', 'core_tipo_transaccion_id_origen', 'core_tipo_doc_app_id_origen', 'consecutivo', 'teso_caja_id', 'tipo', 'estado'];		
+    protected $fillable = ['fuente', 'tercero_id', 'fecha_emision', 'fecha_cobro', 'numero_cheque', 'referencia_cheque', 'entidad_financiera_id', 'valor', 'detalle', 'creado_por', 'modificado_por', 'core_tipo_transaccion_id_origen', 'core_tipo_doc_app_id_origen', 'consecutivo', 'core_tipo_transaccion_id_consumo', 'core_tipo_doc_app_id_consumo', 'consecutivo_doc_consumo', 'teso_caja_id', 'tipo', 'estado'];
     
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Fecha emisión', 'Tercero', 'Fuente', 'Fecha cobro', 'Número cheque', 'Referencia', 'Valor', 'Caja', 'Doc. relacionado', 'Estado'];		
+
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero', 'tercero_id');
+    }
+
+    public function entidad_financiera()
+    {
+        return $this->belongsTo(TesoEntidadFinanciera::class, 'entidad_financiera_id');
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -49,14 +60,15 @@ class ControlCheque extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = ControlCheque::where('teso_control_cheques.estado','Activo')
-                    ->select('teso_control_cheques.id','teso_control_cheques.descripcion')
-                    ->get();
+        $opciones = ControlCheque::leftJoin('core_terceros','core_terceros.id','=','teso_control_cheques.tercero_id')
+                            ->where('teso_control_cheques.estado','Recibido')
+                            ->select('teso_control_cheques.id','teso_control_cheques.numero_cheque','teso_control_cheques.referencia_cheque','teso_control_cheques.valor','core_terceros.descripcion')
+                            ->get();
 
         $vec['']='';
         foreach ($opciones as $opcion)
         {
-            $vec[$opcion->id] = $opcion->descripcion;
+            $vec[$opcion->id.'-'.$opcion->valor] = '# ' . $opcion->numero_cheque . ' Ref. ' . $opcion->referencia_cheque . ' (' . $opcion->descripcion . ') > $' . number_format($opcion->valor,2,',','.');
         }
 
         return $vec;
