@@ -18,7 +18,8 @@
             <td style="border: solid 1px black;">
                 <b>Nombre Tercero:</b> {{ $encabezado_doc->tercero }}
                 <br/>
-                <b>Documento ID &nbsp;&nbsp;:</b> {{ $encabezado_doc->numero_identificacion }}
+                <b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
+			@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $encabezado_doc->numero_identificacion, 0, ',', '.') }}	@else {{ $encabezado_doc->numero_identificacion}} @endif
             </td>
             <td style="border: solid 1px black;">
                 <b>Doc. soporte:</b>  {{ $encabezado_doc->documento_soporte }}
