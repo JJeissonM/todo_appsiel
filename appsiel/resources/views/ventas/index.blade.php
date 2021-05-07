@@ -270,20 +270,18 @@
 
 				<br><br>
 				<div class="row">
-					<div class="col-md-4 col-md-offset-4">
+					<div class="col-md-3 col-md-offset-4">
 						<table class="table table-striped table-bordered">
 							<thead>
 								<tr>
 									<th>Fecha</th>
 									<th>Total</th>
-									<th></th>
 								</tr>
 							</thead>
 							<tbody>
 								@for($i=0; $i < $cant; $i++) <tr>
 									<td> {{ $tabla[$i]['fecha'] }} </td>
 									<td style="text-align: right;"> ${{ number_format($tabla[$i]['valor'], 2, ',', '.') }} </td>
-									<td> </td>
 									</tr>
 									@php
 									$totales += $tabla[$i]['valor'];
@@ -294,7 +292,6 @@
 								<tr>
 									<td> </td>
 									<td style="text-align: right;"> <b> ${{ number_format($totales, 2, ',', '.') }} </b> </td>
-									<td> </td>
 								</tr>
 							</tfoot>
 						</table>
