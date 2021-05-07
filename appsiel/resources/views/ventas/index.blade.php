@@ -109,7 +109,7 @@
 						<div class="card" style="border: 2px solid #ffcd39">
 							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">Pedidos por Entregar</h4>
 							@if($pedidos_de_la_semana!=null)
-							<table class="table table-bordered">
+							<table class="table table-bordered table-responsive">
 								<thead>
 									<tr style="background-color: #eee">
 										<th>LUNES</th>
