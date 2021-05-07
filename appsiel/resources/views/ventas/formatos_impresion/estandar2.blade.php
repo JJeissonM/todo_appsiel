@@ -130,12 +130,14 @@ use App\Core\Tercero;
         </td>
     </tr>
     <tr>
+        <!--pendiente-->
+        <!--Ingresos brutos y fehca inicio actividad modificables-->
         <td>Telefono: {{ $empresa->telefono1 }}</td>
-        <td>Ingresos Brutos:</td>
+        <td>Ingresos Brutos: 3071689028 - 3</td>
     </tr>
     <tr>
         <td>Mail: {{ $empresa->email }}</td>
-        <td>Fecha de Inicio de Actividad: </td>
+        <td>Fecha de Inicio de Actividad: 09 / 2020</td>
     </tr>
 </table>
 
