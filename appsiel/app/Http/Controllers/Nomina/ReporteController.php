@@ -42,6 +42,7 @@ use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
+use App\Nomina\ParametroInformacionExogena;
 use App\Nomina\ConsolidadoPrestacionesSociales;
 
 use App\Nomina\LibroVacacion;
@@ -943,6 +944,120 @@ class ReporteController extends Controller
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
 
         return $pdf->download('pdf_certificado_ingresos_y_retenciones.pdf');
+    }
+
+    public function formato_2276_informacion_exogena()
+    {
+        $app = Aplicacion::find( Input::get('id') );
+
+        $parametros = ParametroInformacionExogena::opciones_campo_select();
+
+        $miga_pan = [
+                ['url' => $app->app.'?id='.Input::get('id'),'etiqueta'=> $app->descripcion],
+                ['url'=>$app->app.'?id='.Input::get('id'),'etiqueta'=>'Informes y listados'],
+                ['url'=>'NO', 'etiqueta'=>'Certificado de Ingresos y Retenciones por Rentas de Trabajo']
+            ];
+
+        return view('nomina.reportes.informacion_exogena.formato_2276_formulario_generacion', compact('miga_pan','parametros') );
+    }
+
+    public function ajax_formato_2276_informacion_exogena(Request $request)
+    {
+        return $this->tabla_formato_2276_informacion_exogena($request->fecha_inicio_periodo, $request->fecha_fin_periodo, $request->parametros_seleccion_id );
+    }
+
+    public function tabla_formato_2276_informacion_exogena( $fecha_inicio_periodo, $fecha_fin_periodo, $parametros_seleccion_id )
+    {
+        $empleados = NomContrato::all();
+
+        $parametros = ParametroInformacionExogena::find( $parametros_seleccion_id );
+
+        $datos = array();
+        foreach ($empleados as $empleado)
+        {
+            $devengos_y_deducciones = NomDocRegistro::where( 'nom_contrato_id', $empleado->id )
+                                                ->whereBetween( 'fecha', [$fecha_inicio_periodo,$fecha_fin_periodo] )
+                                                ->get();
+            $linea_empleado = (object)[];
+            $linea_empleado->tipo_entidad_informanate = $parametros->tipo_informante;
+            
+            // Datos del benficiario
+            $linea_empleado->tipo_documento = $empleado->tercero->id_tipo_documento_id;
+            $linea_empleado->numero_identificacion = $empleado->tercero->numero_identificacion;
+            $linea_empleado->apellido1 = $empleado->tercero->apellido1;
+            $linea_empleado->apellido2 = $empleado->tercero->apellido2;
+            $linea_empleado->nombre1 = $empleado->tercero->nombre1;
+            $linea_empleado->otros_nombres = $empleado->tercero->otros_nombres;
+            $linea_empleado->direccion1 = $empleado->tercero->direccion1;
+            $linea_empleado->departamento = $empleado->tercero->departamento()->id;
+            $linea_empleado->municipio = substr( $empleado->tercero->ciudad->id, 5, 3 );
+            $linea_empleado->pais = substr( $empleado->tercero->ciudad->id, 0, 3 );
+
+            // Datos de pagos al beneficiario
+            $linea_empleado->pagos_salarios = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_salarios_id, 'valor_devengo' );
+            
+            $linea_empleado->pagos_emolumentos_eclesiasticos = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_emolumentos_eclesiasticos_id, 'valor_devengo' );
+            
+            $linea_empleado->pagos_honorarios = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_honorarios_id, 'valor_devengo' );
+            
+            $linea_empleado->pagos_servicios = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_servicios_id, 'valor_devengo' );
+            
+            $linea_empleado->pagos_comisiones = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_comisiones_id, 'valor_devengo' );
+            
+            $linea_empleado->pagos_prestaciones_sociales = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_prestaciones_sociales_id, 'valor_devengo' );
+            
+            $linea_empleado->pagos_viaticos = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_viaticos_id, 'valor_devengo' );
+            
+            $linea_empleado->pagos_gastos_representacion = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_gastos_representacion_id, 'valor_devengo' );
+            
+            $linea_empleado->pagos_trabajo_cooperativo = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_trabajo_cooperativo_id, 'valor_devengo' );
+            
+            $linea_empleado->pagos_otros_pagos = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_otros_pagos_id, 'valor_devengo' );
+
+            $linea_empleado->pagos_cesantias_e_intereses_pagadas = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_cesantias_e_intereses_pagadas_id, 'valor_devengo' );
+
+            $linea_empleado->pagos_pensiones_jubilacion = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_pensiones_jubilacion_id, 'valor_devengo' );
+
+            $linea_empleado->total_ingresos_brutos = $linea_empleado->pagos_salarios + $linea_empleado->pagos_emolumentos_eclesiasticos + $linea_empleado->pagos_honorarios + $linea_empleado->pagos_servicios + $linea_empleado->pagos_comisiones + $linea_empleado->pagos_prestaciones_sociales + $linea_empleado->pagos_viaticos + $linea_empleado->pagos_gastos_representacion + $linea_empleado->pagos_trabajo_cooperativo + $linea_empleado->pagos_otros_pagos + $linea_empleado->pagos_cesantias_e_intereses_pagadas + $linea_empleado->pagos_pensiones_jubilacion;
+
+            $linea_empleado->aportes_salud_obligatoria = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_aportes_salud_obligatoria_id, 'valor_deduccion' );
+            $linea_empleado->aportes_pension_obligatoria_y_fsp = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_aportes_pension_obligatoria_y_fsp_id, 'valor_deduccion' );
+            $linea_empleado->aportes_voluntarios_pension = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_aportes_voluntarios_pension_id, 'valor_deduccion' );
+            $linea_empleado->aportes_afc = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_aportes_afc_id, 'valor_deduccion' );
+            $linea_empleado->aportes_avc = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_aportes_avc_id, 'valor_deduccion' );
+            $linea_empleado->valores_retefuente = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_valores_retefuente_id, 'valor_deduccion' );
+
+            $linea_empleado->pagos_bonos = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_bonos_id, 'valor_devengo' );
+            $linea_empleado->pagos_desde_recursos_publicos_para_educacion = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_desde_recursos_publicos_para_educacion_id, 'valor_devengo' );
+            $linea_empleado->pagos_alimentacion_mayores_41uvt = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_alimentacion_mayores_41uvt_id, 'valor_devengo' );
+            $linea_empleado->pagos_alimentacion_hasta_41uvt = $this->get_valor_agrupacion( $devengos_y_deducciones, $parametros->agrupacion_alimentacion_hasta_41uvt_id, 'valor_devengo' );
+  
+            // Datos del participante en contratode colaboracion
+            $linea_empleado->identificacion_fideicomisio = '';
+            $linea_empleado->tipo_documento_contrato_colaboracion = '';
+            $linea_empleado->identificacion_contrato_colaboracion = '';
+            
+            $datos[] = $linea_empleado;
+        }
+
+        $vista = View::make( 'nomina.reportes.informacion_exogena.formato_2276_listado_generado', compact('datos','fecha_inicio_periodo','fecha_fin_periodo') )->render();
+                                                    
+        return $vista;
+    }
+
+    public function get_valor_agrupacion( $devengos_y_deducciones, $agrupacion_id, $campo_sumar )
+    {
+        if ( $agrupacion_id == 0 )
+        {
+            return 0;
+        }
+
+        $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $agrupacion_id )->conceptos->pluck('id')->toArray();
+        
+        $total_devengos = $devengos_y_deducciones->whereIn('nom_concepto_id', $conceptos_de_la_agrupacion )->sum( 'valor_devengo' );
+        $total_deducciones = $devengos_y_deducciones->whereIn('nom_concepto_id', $conceptos_de_la_agrupacion )->sum( 'valor_deduccion' );
+
+        return abs($total_devengos - $total_deducciones);
     }
 
 }

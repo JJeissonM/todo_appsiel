@@ -11,6 +11,7 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoRecaudosLibreta;
+use App\Tesoreria\ControlCheque;
 
 use App\Matriculas\FacturaAuxEstudiante;
 
@@ -61,6 +62,22 @@ class TesoDocEncabezado extends Model
         }
 
         return $recaudo_libreta->registro_cartera_estudiante->facturas_estudiantes[0];
+    }
+
+    public function cheques_relacionados_recaudos()
+    {
+        return ControlCheque::where('core_tipo_transaccion_id_origen', $this->core_tipo_transaccion_id)
+                                        ->where('core_tipo_doc_app_id_origen', $this->core_tipo_doc_app_id)
+                                        ->where('consecutivo', $this->consecutivo)
+                                        ->get();
+    }
+
+    public function cheques_relacionados_pagos()
+    {
+        return ControlCheque::where('core_tipo_transaccion_id_consumo', $this->core_tipo_transaccion_id)
+                                        ->where('core_tipo_doc_app_id_consumo', $this->core_tipo_doc_app_id)
+                                        ->where('consecutivo_doc_consumo', $this->consecutivo)
+                                        ->get();
     }
 
     public static function consultar_registros($nro_registros, $search)

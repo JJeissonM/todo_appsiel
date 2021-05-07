@@ -123,6 +123,8 @@
         </tfoot>
     </table>
 
+    @include('tesoreria.recaudos_cxc.cheques_relacionados_pagos')
+
     <table class="table table-bordered">
         <tr>
             <td style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> Registros contables </span> </td>

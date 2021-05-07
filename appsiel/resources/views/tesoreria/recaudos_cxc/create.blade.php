@@ -72,13 +72,7 @@
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
 
 				<!-- Formulario control cheque -->
-	            <div class="row">
-	            	<div class="col-md-12">
-	            		<div class="container-fluid" id="div_control_cheques" style="display: none; border: 1px solid #ddd; border-radius: 4px; background-color: #e1faff;">
-	            			@include('tesoreria.control_cheques.form_create')
-			            </div>
-	            	</div>
-	            </div>
+	            @include('tesoreria.control_cheques.form_create')
 
 			{{ Form::close() }}
 
@@ -230,7 +224,6 @@
 		    	return false;
 		    });
 
-
 		    function seleccionar_cliente(item_sugerencia)
 		    {
 				// Asignar descripción al TextInput
@@ -255,7 +248,6 @@
 		        return false;
 		    }
 
-
 		    function get_documentos_pendientes_cxc( core_tercero_id )
 		    {
 		    	var url = '../../tesoreria/get_documentos_pendientes_cxc';
@@ -269,7 +261,6 @@
 		                $('.btn_agregar_documento').show();
 					});
 		    }
-
 
 			$(document).on('click', '.btn_agregar_documento', function(event) 
 			{

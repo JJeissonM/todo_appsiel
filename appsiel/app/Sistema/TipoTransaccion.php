@@ -51,6 +51,7 @@ class TipoTransaccion extends Model
                 'sys_tipos_transacciones.id AS campo9'
             )
             ->where("sys_aplicaciones.descripcion", "LIKE", "%$search%")
+            ->orWhere("sys_tipos_transacciones.id", "LIKE", "%$search%")
             ->orWhere("sys_tipos_transacciones.descripcion", "LIKE", "%$search%")
             ->orWhere("sys_modelos.descripcion", "LIKE", "%$search%")
             ->orWhere("sys_tipos_transacciones.modelo_encabezados_documentos", "LIKE", "%$search%")

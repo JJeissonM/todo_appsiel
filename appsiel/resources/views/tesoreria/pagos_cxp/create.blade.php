@@ -33,15 +33,18 @@
 
 				{{ Form::hidden( 'tipo_recaudo_aux', '', [ 'id' => 'tipo_recaudo_aux' ] ) }}
 
-
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
+	        	
+	        	@include('tesoreria.control_cheques.form_create_pago')
 
 			{{ Form::close() }}
+	        
 
 			<!-- Documentos pendientes de cartera -->
             <div class="row">
             	<div class="col-md-12">
             		<div id="div_aplicacion_cartera" style="display: none;">
+            			<button class="btn btn-sm btn-info" id="btn_recargar" title="Volver a cargar documentos pendientes."><i class="fa fa-refresh"></i></button>
 		            	<div id="div_documentos_pendientes">
 
 		            	</div>
@@ -212,6 +215,15 @@
 		    }
 
 
+			$('#btn_recargar').click(function(event){
+				event.preventDefault();
+				$('#div_documentos_a_cancelar').hide();
+				$('#tabla_registros_documento').find('tbody').html('');
+				$("#div_documentos_pendientes input:text").first().select();
+				calcular_totales();
+				get_documentos_pendientes_cxp( $('#core_tercero_id').val() );
+			});
+
 		    function get_documentos_pendientes_cxp( core_tercero_id )
 		    {
 		    	var url = '../../tesoreria/get_documentos_pendientes_cxp';
@@ -312,6 +324,26 @@
 					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 					mostrar_campo_formulario( $('#teso_caja_id'), '*Caja:', true );
 				}
+
+				if ( valor[1] == 'cheque_de_tercero' || valor[1] == 'cheque_propio' )
+				{
+					$('#div_control_cheques').fadeIn(500);
+				}else{
+					$('#div_control_cheques').hide();
+				}
+			});
+
+			$('#cheque_id').change(function()
+			{
+				if ( $(this).val() == '' )
+				{
+					$('#div_ingreso_cheques').fadeIn(500);
+					$('#valor_cheque_seleccionado').html('');
+				}else{
+					$('#div_ingreso_cheques').fadeOut(500);
+					var valor_cheque = $('#cheque_id').val().split('-');
+					$('#valor_cheque_seleccionado').html(valor_cheque[1]);
+				}
 			});
 
 			/*
@@ -350,9 +382,19 @@
 
 				var total_valor = parseFloat( $('#total_valor').text().substring(1) );
 
-				if ( total_valor <= 0 ) {
+				if ( total_valor <= 0 )
+				{
 					alert('No ha seleccionado documentos a pagar.');
 					return false;
+				}
+
+				if ( $('cheque_id').val() != '' )
+				{
+					if ( parseFloat( $('#valor_cheque_seleccionado').text() ) < total_valor )
+					{
+						alert('El valor total de documentos a pagar es mayor al valor del cheque seleccionado.');
+						return false;
+					}						
 				}
 
 				// Se obtienen todos los datos del formulario y se envían

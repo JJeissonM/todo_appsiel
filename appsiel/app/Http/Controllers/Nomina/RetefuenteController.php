@@ -30,7 +30,6 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 use App\Nomina\NomCuota;
 use App\Nomina\NomPrestamo;
-use App\Nomina\AgrupacionConcepto;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade

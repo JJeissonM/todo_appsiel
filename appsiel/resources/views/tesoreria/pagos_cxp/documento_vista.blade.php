@@ -66,4 +66,6 @@
             </tr>
         </tfoot>
     </table>
-</div>
+</div
+
+@include('tesoreria.recaudos_cxc.cheques_relacionados_pagos')

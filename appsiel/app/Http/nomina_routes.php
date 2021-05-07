@@ -76,10 +76,12 @@ Route::post('nomina/ajax_reporte_desprendibles_de_pago','Nomina\ReporteControlle
 Route::get('nomina_pdf_reporte_desprendibles_de_pago','Nomina\ReporteController@nomina_pdf_reporte_desprendibles_de_pago');
 Route::post( 'nom_enviar_por_email_desprendibles_de_pago','Nomina\ReporteController@enviar_por_email_desprendibles_de_pago');
 
-
 Route::get('nom_certificado_ingresos_y_retenciones','Nomina\ReporteController@certificado_ingresos_y_retenciones');
 Route::post('nom_ajax_certificado_ingresos_y_retenciones','Nomina\ReporteController@ajax_certificado_ingresos_y_retenciones');
 Route::get('nomina_pdf_certificado_ingresos_y_retenciones','Nomina\ReporteController@pdf_certificado_ingresos_y_retenciones');
+
+Route::get('nom_formato_2276_informacion_exogena','Nomina\ReporteController@formato_2276_informacion_exogena');
+Route::post('nom_ajax_formato_2276_informacion_exogena','Nomina\ReporteController@ajax_formato_2276_informacion_exogena');
 
 // Listado de vacaciones pendientes
 Route::get('nom_listado_vacaciones_pendientes','Nomina\ReporteController@listado_vacaciones_pendientes');
@@ -102,7 +104,6 @@ Route::get('nom_pila_show/{planilla_generada_id}', 'Nomina\PlanillaIntegradaCont
 Route::get('nom_pila_catalogos/{permiso_padre_id}', 'Nomina\PlanillaIntegradaController@catalogos');
 Route::get('nom_pila_descargar_archivo_plano/{planilla_id}', 'Nomina\PlanillaIntegradaController@descargar_archivo_plano');
 Route::get('nom_pila_eliminar_planilla/{planilla_id}', 'Nomina\PlanillaIntegradaController@eliminar_planilla');
-
 
 
 Route::resource('nomina', 'Nomina\NominaController');

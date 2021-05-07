@@ -4,7 +4,6 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
-use App\Nomina\AgrupacionConcepto;
 use App\Nomina\ParametrosRetefuenteEmpleado;
 use App\Nomina\NomConcepto;
 

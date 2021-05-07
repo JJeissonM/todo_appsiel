@@ -80,6 +80,3 @@
 	<b>NOTA:</b> este certificado sustituye para todos los efectos legales la declaración de Renta y Complementario para el trabajador o pensionado que lo firme.
 Para aquellos trabajadores independientes contribuyentes del impuesto unificado deberán presentar la declaración anual consolidada del Régimen Simple de Tributación (SIMPLE).
 </p>
-<!-- 
-<iframe src="{ {asset('assets/nomina/anexo_certificado_ingresos_retencion_fmto_220_2020.pdf')}}" style="width: 100%;"></iframe>
--->
