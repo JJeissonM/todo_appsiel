@@ -60,7 +60,7 @@
 				<br>
 				Al anular el documento se eliminan los registros del movimiento contable. La anulación no se puede revertir.
 				<br>
-				Si realmente quiere anular el documento, haga click en el siguiente enlace: <small> <a href="{{ url( 'contab_anular_documento/'.$id.$variables_url ) }}"> Anular </a> </small>
+				Si realmente quiere anular el documento, haga click en el siguiente enlace: <span style="text-decoration-line: underline">  <a href="{{ url( 'contab_anular_documento/'.$id.$variables_url ) }}"> Anular </a> </span>
 			</div>
 
 			<br><br>

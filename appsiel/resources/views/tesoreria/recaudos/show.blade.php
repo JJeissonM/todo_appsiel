@@ -63,11 +63,11 @@
         Al anular el documento se eliminan los registros del movimiento contable relacionado. La anulación no se puede
         revertir.
         <br>
-        Si realmente quiere anular el documento, haga click en el siguiente enlace: <small>
-            @if(isset($nombre))
-                <a href="{{ url( 'tesoreria/traslado_efectivo/anular/'.$id.$variables_url ) }}"> Anular </a> </small>
+        Si realmente quiere anular el documento, haga click en el siguiente enlace: <span style="text-decoration-line: underline"> 
+        @if(isset($nombre))
+                <a href="{{ url( 'tesoreria/traslado_efectivo/anular/'.$id.$variables_url ) }}"> Anular </a> </span>
         @else
-            <a href="{{ url( 'tesoreria/recaudos_anular/'.$id.$variables_url ) }}"> Anular </a> </small>
+            <a href="{{ url( 'tesoreria/recaudos_anular/'.$id.$variables_url ) }}"> Anular </a> </span>
         @endif
     </div>
 @endsection

@@ -6,6 +6,7 @@
 	$tabla = ReportesController::grafica_ventas_diarias(date("Y-m-d", strtotime($fecha_hoy . "- 30 days")), $fecha_hoy);
 	$vencidas = ReportesController::pedidos_vencidos();
 	$futuras = ReportesController::pedidos_futuros();
+	$anulados = ReportesController::pedidos_anulados();
 	$pedidos_de_la_semana = ReportesController::pedidos_semana();
 
 	$vendedor = App\Ventas\Vendedor::where( 'user_id', Auth::user()->id )->get()->first();
@@ -30,15 +31,27 @@
 		  text-align: center;
 		  margin: 20px 20px;
 		}
+		
 
-		/*a:hover {
-		  color: red;
+		.card{
+			border-radius: 12px 12px 0 0;
+			border: 2px solid #ddd;
+			margin-bottom: 20px;
+			box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 		}
 
-		a:link {
-		  color: white;
-		}*/
+		.card-header{
+			text-align: center;
+			font-size: 24px;
+			padding-top: .8rem;
+			padding-bottom: .8rem;
+			color: #333 !important;
+			border-radius: 10px 10px 0 0;
+			margin-bottom: 0;
+			margin-top: 0;
+		}
 	</style>
+
 @endsection
 
 @section('content')
@@ -88,22 +101,21 @@
 	@else
 		<div class="container-fluid">
 			<div class="marco_formulario">
-				<div class="row">
-					
-					<div class="col-md-12">
-						<h4 style="text-align: center; width: 100%; background-color: #faf4d4; color: #636363;">Pedidos por Entregar</h4>
-						<div class="table-responsive">
+				<div class="row">					
+					<div class="col-md-12">						
+						<div class="card" style="border: 2px solid #ffc107">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffc107; color: #636363;">Pedidos por Entregar</h4>
 							@if($pedidos_de_la_semana!=null)
-							<table class="table table-striped table-bordered">
+							<table class="table table-bordered">
 								<thead>
-									<tr>
-										<th>LUNES</th>
-										<th>MARTES</th>
-										<th>MIERCOLES</th>
-										<th>JUEVES</th>
-										<th>VIERNES</th>
-										<th>SABADO</th>
-										<th>DOMINGO</th>
+									<tr style="background-color: #eee">
+										<th style="text-align: center">LUNES</th>
+										<th style="text-align: center">MARTES</th>
+										<th style="text-align: center">MIERCOLES</th>
+										<th style="text-align: center">JUEVES</th>
+										<th style="text-align: center">VIERNES</th>
+										<th style="text-align: center">SABADO</th>
+										<th style="text-align: center">DOMINGO</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -113,13 +125,23 @@
 											<!-- <div class="alert alert-success" style="padding: 5px" role="alert">
 												{ {$s['fecha']}}
 											</div> -->
+											<?php
+												$hoy = getdate();
+												$fechah = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
+												$date2 = strtotime($fechah);
+												$ref = date('d-m-Y', $date2);
+											?>
+											@if($s['fecha'] != $ref)
 											<h5 style="text-align: center; width: 100%; background-color: #ddd; color: #636363;">{{$s['fecha']}}</h5>
+											@else
+											<h5 style="text-align: center; width: 100%; background-color: #ffc107; color: #636363;">{{$s['fecha']}}</h5>
+											@endif
 											@if($s['data']!=null)
 											<ol>
 												@foreach($s['data'] as $d)
 												<li>
 													<a style="color: #0b97c4;" target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$d['documento']}}</a>
-													<span title="{{ $d['cliente'] }}"> {{ substr( $d['cliente'], 0, 10) }}... </span>
+													<span title="{{ $d['cliente'] }}"> {{ substr( $d['cliente'], 0, 10) }}. @if($d['estado'] == "Cumplido")<i class="fa fa-check"></i>@endif </span>
 												</li>
 												@endforeach
 											</ol>
@@ -139,56 +161,91 @@
 				</div>
 
 				<div class="row">
-					<div class="col-md-6">
-						<h4 style="text-align: center; width: 100%; background-color: #FFD3D3; color: #636363;">Pedidos vencidos</h4>
-						@if($vencidas!=null)
-						<table class="table table-striped table-bordered">
-							<thead>
-								<tr>
-									<th>Pedido</th>
-									<th>Cliente</th>
-									<th>Fecha entrega</th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach($vencidas as $v)
-								<tr>
-									<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-									<td>{{$v['cliente']}}</td>
-									<td>{{$v['fecha_entrega']}}</td>
-								</tr>
-								@endforeach
-							</tbody>
-						</table>
-						@else
-						<p>No hay pedidos pendientes vencidos</p>
-						@endif
+					<div class="col-md-4">
+						<div class="card" style="border: 2px solid #e35d6a">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #e35d6a; color: #636363;">Pedidos Vencidos</h4>
+							@if($vencidas!=null)
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>Pedido</th>
+										<th>Cliente</th>
+										<th>Fecha entrega</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach($vencidas as $v)
+									<tr>
+										<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
+										<td>{{$v['cliente']}}</td>
+										<td>{{$v['fecha_entrega']}}</td>
+									</tr>
+									@endforeach
+								</tbody>
+							</table>
+							@else
+							<p>No hay pedidos pendientes vencidos</p>
+							@endif	
+						</div>
+						
 					</div>
-					<div class="col-md-6">
-						<h4 style="text-align: center; width: 100%; background-color: #d3eac9; color: #636363;">Pedidos futuros</h4>
+					<div class="col-md-4">
+						<div class="card" style="border: 2px solid #1f8354">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #479f76; color: #636363;">Pedidos Futuros</h4>
+							<div class="card-body">
+								@if($futuras!=null)
+								<table class="table table-striped table-bordered">
+									<thead>
+										<tr>
+											<th>Pedido</th>
+											<th>Cliente</th>
+											<th>Fecha entrega</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach($futuras as $v)
+										<tr>
+											<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
+											<td>{{$v['cliente']}}</td>
+											<td>{{$v['fecha_entrega']}}</td>
+										</tr>
+										@endforeach
+									</tbody>
+								</table>
+								@else
+								<p>No hay pedidos pendientes futuros</p>
+								@endif	
+							</div>						
+						</div>						
+					</div>
+					<div class="col-md-4">
+						<div class="card" style="border: 2px solid #adb5bd">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #adb5bd; color: #636363;">Pedidos Anulados</h4>
 
-						@if($futuras!=null)
-						<table class="table table-striped table-bordered">
-							<thead>
-								<tr>
-									<th>Pedido</th>
-									<th>Cliente</th>
-									<th>Fecha entrega</th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach($futuras as $v)
-								<tr>
-									<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-									<td>{{$v['cliente']}}</td>
-									<td>{{$v['fecha_entrega']}}</td>
-								</tr>
-								@endforeach
-							</tbody>
-						</table>
-						@else
-						<p>No hay pedidos pendientes futuros</p>
-						@endif
+							@if($anulados!=null)
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>Pedido</th>
+										<th>Cliente</th>
+										<th>Fecha entrega</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach($anulados as $a)
+									<tr>
+										<td><a target="_blank" href="{{url('vtas_pedidos/'.$a['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$a['documento']}}</a></td>
+										<td>{{$a['cliente']}}</td>
+										<td>{{$a['fecha_entrega']}}</td>
+									</tr>
+									@endforeach
+								</tbody>
+							</table>
+							@else
+							<p>No hay pedidos pendientes futuros</p>
+							@endif	
+						</div>
+						
 					</div>
 				</div>
 
@@ -197,6 +254,7 @@
 
 		<div class="container-fluid">
 			<div class="marco_formulario">
+				
 
 				<?php
 				echo Lava::render('BarChart', 'ventas_diarias', 'grafica1');

@@ -101,18 +101,26 @@ class ReportesController extends Controller
         $tabla = [];
         foreach ($registros as $linea) 
         {
-            $stocksTable1->addRow( [ $linea->fecha, (float)$linea->total_compras ]);
+            $fecha  = date("d-m-Y", strtotime("$value->fecha"));
 
-            $tabla[$i]['fecha'] = $linea->fecha;
+            $stocksTable1->addRow( [ $fecha, (float)$linea->total_compras ]);
+
+            $tabla[$i]['fecha'] = $fecha;
             $tabla[$i]['valor'] = (float)$linea->total_compras;
             $i++;
         }
 
         // Se almacena la gráfica en compras_diarias, luego se llama en la vista [ como mágia :) ]
         Lava::BarChart('compras_diarias', $stocksTable1,[
-                                                          'is3D' => True,
-                                                          'orientation' => 'horizontal',
-                                                      ]);
+            'is3D' => True,
+            
+            'orientation' => 'horizontal',
+            'vAxis'=> ['title'=>'Monto Total','format'=> '$ #,###.##'],
+            'hAxis'=> ['title'=>'Fecha'],
+            'height'=> '400',
+            'legend'=> ['position'=>'none'],
+            'tooltip'=>null
+        ]);
 
         return $tabla;
     }

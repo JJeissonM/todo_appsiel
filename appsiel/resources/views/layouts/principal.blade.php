@@ -659,7 +659,9 @@
 	<script src="https://www.gstatic.com/charts/loader.js"></script>
 	<script>
 		window.google.charts.load('46', {
-			packages: ['corechart']
+			packages: ['corechart'],
+			language: 'es'
+			
 		});
 	</script>
 

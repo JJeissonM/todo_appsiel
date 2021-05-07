@@ -44,7 +44,7 @@ class ReportesController extends Controller
         $stocksTable1 = Lava::DataTable();
 
         $stocksTable1->addStringColumn('Ventas')
-            ->addNumberColumn('Fecha');
+            ->addNumberColumn('$');
 
         $i = 0;
         $tabla = [];
@@ -61,9 +61,11 @@ class ReportesController extends Controller
                 $total_ventas += (float) $linea->total_ventas / (1 + (float)$linea->tasa_impuesto / 100 );
             }
 
-            $stocksTable1->addRow([$value->fecha, $total_ventas]);
+            $fecha  = date("d-m-Y", strtotime("$value->fecha"));
 
-            $tabla[$i]['fecha'] = $value->fecha;
+            $stocksTable1->addRow([$fecha, $total_ventas]);
+
+            $tabla[$i]['fecha'] = $fecha;            
             $tabla[$i]['valor'] = $total_ventas;
             $i++;
         }
@@ -71,7 +73,13 @@ class ReportesController extends Controller
         // Se almacena la gráfica en ventas_diarias, luego se llama en la vista [ como mágia :) ]
         Lava::BarChart('ventas_diarias', $stocksTable1, [
             'is3D' => True,
+            
             'orientation' => 'horizontal',
+            'vAxis'=> ['title'=>'Monto Total','format'=> '$ #,###.##'],
+            'hAxis'=> ['title'=>'Fecha'],
+            'height'=> '400',
+            'legend'=> ['position'=>'none'],
+            'tooltip'=>null
         ]);
 
         return $tabla;
@@ -183,7 +191,27 @@ class ReportesController extends Controller
         $parametros = config('ventas');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $fecha], ['estado', 'Pendiente']])->get();
+        $inicio = date("Y-m-d",strtotime($fecha.'sunday this week'));
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $inicio], ['estado', 'Pendiente']])->get();
+        $pedidos = null;
+        if (count($pedidos_db) > 0) {
+            foreach ($pedidos_db as $o) {
+                $pedidos[] = ReportesController::prepara_datos($o);
+            }
+        }
+        return $pedidos;
+    }
+
+    /*
+    Reporte de pedidos de ventas futuros
+    */
+    public static function pedidos_anulados()
+    {
+        $parametros = config('ventas');
+        $hoy = getdate();
+        $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
+        $inicio = date("Y-m-d",strtotime($fecha."- 7 days")); 
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $inicio], ['estado', 'Anulado']])->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -212,21 +240,29 @@ class ReportesController extends Controller
         $parametros = config('ventas');
 
         foreach ($fechas as $f) {
-            $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'], ['estado', 'Pendiente']])->get();
-            $pedidos = null;
+
+            $diff_fecha = date_create($fecha) > date_create($f);
+            
+            if(!$diff_fecha){                
+                $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'],['estado', 'Pendiente']])->orWhere([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'],['estado', 'Cumplido']])->get();
+            }else{
+                $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'],['estado', 'Cumplido']])->get();
+            }
+            $pedidos = null;            
+
             if (count($pedidos_db) > 0) {
                 foreach ($pedidos_db as $o) {
-                    $pedidos[] = ReportesController::prepara_datos($o);
+                    $pedidos[] = ReportesController::prepara_datos($o); 
                 }
             }
             $data[] = [
-                'fecha' => $f,
+                'fecha' => date_format(date_create($f), 'd-m-Y'),
                 'data' => $pedidos
             ];
         }
         return $data;
     }
-
+    
     //Prepara los datos a mostrar del pedido de venta
     public static function prepara_datos($o)
     {
@@ -240,9 +276,38 @@ class ReportesController extends Controller
             'id' => $o->id,
             'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " " . $o->consecutivo,
             'cliente' => $cliente,
-            'fecha' => $o->fecha,
-            'fecha_entrega' => $o->fecha_entrega
+            'fecha' => date_format(date_create($o->fecha), 'd-m-Y'),
+            'fecha_entrega' => date_format(date_create($o->fecha_entrega), 'd-m-Y'),
+            'estado' => $o->estado
         ];
         return $orden;
     }
+
+    /*
+    Reporte de pendientes de la semana
+    */
+    public static function pedidos_hoy()
+    {
+        $hoy = getdate();
+        $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
+        $date2 = strtotime($fecha);
+        $inicio = date('Y-m-d', $date2);
+        $fechahoy  = date("Y-m-d", strtotime("$inicio"));
+
+        $data = null;
+        $parametros = config('ventas');
+
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$fechahoy.'%'], ['estado', 'Pendiente']])->get();
+        //dd($pedidos_db);
+        $pedidos = null;
+        if (count($pedidos_db) > 0) {
+            foreach ($pedidos_db as $o) {
+                $pedidos[] = ReportesController::prepara_datos($o);
+            }
+        }
+
+        return $pedidos;
+    }
+
+
 }

@@ -57,7 +57,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 	<br>
 	La anulación no se puede revertir.
 	<br>
-	Si realmente quiere anular el documento, haga click en el siguiente enlace: <small> <a href="{{ url( 'vtas_pedidos_anular/'.$id.$variables_url ) }}"> Anular </a> </small>
+	Si realmente quiere anular el documento, haga click en el siguiente enlace: <span style="text-decoration-line: underline"> <a href="{{ url( 'vtas_pedidos_anular/'.$id.$variables_url ) }}"> Anular </a> </span>
 </div>
 @endsection
 
