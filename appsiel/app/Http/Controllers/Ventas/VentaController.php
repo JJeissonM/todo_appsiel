@@ -693,7 +693,6 @@ class VentaController extends TransaccionController
                                         )
                                 ->get()
                                 ->take(7);
-                                //dd($clientes);
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
@@ -938,21 +937,24 @@ class VentaController extends TransaccionController
         $factura = VtasDocEncabezado::get_registro_impresion( $linea_factura->vtas_doc_encabezado_id );
 
         $remision = InvDocEncabezado::get_registro_impresion( $factura->remision_doc_encabezado_id );
-        $linea_remision = InvDocRegistro::where( 'inv_doc_encabezado_id', $factura->remision_doc_encabezado_id )
-                                    ->where( 'inv_producto_id', $linea_factura->producto_id )
-                                    ->where( 'cantidad', $linea_factura->cantidad * -1 )
-                                    ->get()
-                                    ->first();
         
-        $saldo_a_la_fecha = InvMovimiento::get_existencia_actual( $linea_remision->inv_producto_id, $linea_remision->inv_bodega_id, $remision->fecha );// - $linea_factura->cantidad;
+        if ( is_null($remision) )
+        {
+            $remision = (object)['fecha'=>'0000-00-00'];
+            $linea_remision = (object)['inv_bodega_id'=>0,'inv_motivo_id'=>0];
+            $saldo_a_la_fecha = 0;
+        }else{
+            $linea_remision = $remision->lineas_registros->where('inv_producto_id', $linea_factura->producto_id)
+                                                        ->where('cantidad', $linea_factura->cantidad * -1)
+                                                        ->first();
+            $saldo_a_la_fecha = InvMovimiento::get_existencia_actual( $linea_remision->inv_producto_id, $linea_remision->inv_bodega_id, $remision->fecha );
+        }
 
         $id = Input::get('id');
         $id_modelo = Input::get('id_modelo');
         $id_transaccion = Input::get('id_transaccion');
 
-        $producto = InvProducto::find( $linea_remision->inv_producto_id );
-
-        $formulario = View::make( 'ventas.incluir.formulario_editar_registro', compact('linea_factura','linea_remision','remision','id','id_modelo','id_transaccion','saldo_a_la_fecha','producto') )->render();
+        $formulario = View::make( 'ventas.incluir.formulario_editar_registro', compact('linea_factura','linea_remision','remision','id','id_modelo','id_transaccion','saldo_a_la_fecha') )->render();
 
         return $formulario;
     }
@@ -995,7 +997,7 @@ class VentaController extends TransaccionController
         $doc_encabezado->update(
                                     ['valor_total' => $nuevo_total_encabezado]
                                 );
-/* */
+
         // 2. Actualiza total de la cuenta por cobrar o Tesorería
         DocumentosPendientes::where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                     ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
@@ -1063,16 +1065,7 @@ class VentaController extends TransaccionController
                         'cantidad' => $cantidad,
                         'base_impuesto' => $base_impuesto_total,
                         'valor_impuesto' => $valor_impuesto_total
-                    ] );//->get();
-            //dd( $mov_contab );
-            /*$mov_contab->update( [ 
-                        'valor_credito' => ($valor_impuesto_total * -1),
-                        'valor_saldo' => ($valor_impuesto_total * -1),
-                        'cantidad' => $cantidad,
-                        'base_impuesto' => $base_impuesto_total,
-                        'valor_impuesto' => $valor_impuesto_total
                     ] );
-            */
         }
 
 
@@ -1096,65 +1089,67 @@ class VentaController extends TransaccionController
 
 
         // 5. Actualizar el registro del documento de inventario
-        $cantidad_actual = $linea_registro->cantidad * -1; // Para inventarios la cantidad es negativa por ser una salida (Remisión)
-        $cantidad = $request->cantidad * -1;
-        $inv_doc_registro =InvDocRegistro::where('inv_doc_encabezado_id', $doc_encabezado->remision_doc_encabezado_id)
-                    ->where('inv_producto_id',$linea_registro->inv_producto_id)
-                    ->where('cantidad', $cantidad_actual)
-                    ->get()
-                    ->first();
-
-        $costo_total_actual = $inv_doc_registro->costo_total;
-        $costo_unitario = $inv_doc_registro->costo_unitario;
-        $costo_total = $costo_unitario * $cantidad;
-        $inv_doc_registro->update( [
-                                'cantidad' => $cantidad,
-                                'costo_total' => $costo_total
-                            ] );
-
-        // 6. Actualiza movimiento de inventarios
         $inv_doc_encabezado = InvDocEncabezado::find( $doc_encabezado->remision_doc_encabezado_id );
-        InvMovimiento::where('core_tipo_transaccion_id',$inv_doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id',$inv_doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo',$inv_doc_encabezado->consecutivo)
-                    ->where('inv_producto_id',$linea_registro->inv_producto_id)
-                    ->where('cantidad',$cantidad_actual)
-                    ->update( [
-                                'cantidad' => $cantidad,
-                                'costo_total' => $costo_total
-                            ] );
+        if ( !is_null($inv_doc_encabezado) )
+        {
+            $cantidad_actual = $linea_registro->cantidad * -1; // Para inventarios la cantidad es negativa por ser una salida (Remisión)
+            $cantidad = $request->cantidad * -1;
+            $inv_doc_registro =InvDocRegistro::where('inv_doc_encabezado_id', $doc_encabezado->remision_doc_encabezado_id)
+                        ->where('inv_producto_id',$linea_registro->inv_producto_id)
+                        ->where('cantidad', $cantidad_actual)
+                        ->get()
+                        ->first();
 
-        // 7. Actualizar movimiento contable del registro del documento de inventario
-        // Inventarios (DB)
-        $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea_registro->inv_producto_id );
-        ContabMovimiento::where('core_tipo_transaccion_id',$inv_doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id',$inv_doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo',$inv_doc_encabezado->consecutivo)
-                    ->where('inv_producto_id',$linea_registro->inv_producto_id)
-                    ->where('cantidad',$cantidad_actual)
-                    ->where('contab_cuenta_id',$cta_inventarios_id)
-                    ->update( [ 
-                                'valor_debito' => $costo_total * -1,
-                                'valor_saldo' => $costo_total * -1,
-                                'cantidad' => $cantidad
-                            ] );
+            $costo_total_actual = $inv_doc_registro->costo_total;
+            $costo_unitario = $inv_doc_registro->costo_unitario;
+            $costo_total = $costo_unitario * $cantidad;
+            $inv_doc_registro->update( [
+                                    'cantidad' => $cantidad,
+                                    'costo_total' => $costo_total
+                                ] );
 
-        // Cta. Contrapartida (CR) Dada por el motivo de inventarios de la transaccion 
-        // Motivos de inventarios y ventas: Costo de ventas
-        // Motivos de compras: Cuentas por legalizar
-        $cta_contrapartida_id = InvMotivo::find( $inv_doc_registro->inv_motivo_id )->cta_contrapartida_id;
-        ContabMovimiento::where('core_tipo_transaccion_id',$inv_doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id',$inv_doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo',$inv_doc_encabezado->consecutivo)
-                    ->where('inv_producto_id',$linea_registro->inv_producto_id)
-                    ->where('cantidad',$cantidad_actual)
-                    ->where('contab_cuenta_id',$cta_contrapartida_id)
-                    ->update( [ 
-                                'valor_credito' => $costo_total,
-                                'valor_saldo' => $costo_total,
-                                'cantidad' => $cantidad
-                            ] );
+            // 6. Actualiza movimiento de inventarios
+            InvMovimiento::where('core_tipo_transaccion_id',$inv_doc_encabezado->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id',$inv_doc_encabezado->core_tipo_doc_app_id)
+                        ->where('consecutivo',$inv_doc_encabezado->consecutivo)
+                        ->where('inv_producto_id',$linea_registro->inv_producto_id)
+                        ->where('cantidad',$cantidad_actual)
+                        ->update( [
+                                    'cantidad' => $cantidad,
+                                    'costo_total' => $costo_total
+                                ] );
 
+            // 7. Actualizar movimiento contable del registro del documento de inventario
+            // Inventarios (DB)
+            $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea_registro->inv_producto_id );
+            ContabMovimiento::where('core_tipo_transaccion_id',$inv_doc_encabezado->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id',$inv_doc_encabezado->core_tipo_doc_app_id)
+                        ->where('consecutivo',$inv_doc_encabezado->consecutivo)
+                        ->where('inv_producto_id',$linea_registro->inv_producto_id)
+                        ->where('cantidad',$cantidad_actual)
+                        ->where('contab_cuenta_id',$cta_inventarios_id)
+                        ->update( [ 
+                                    'valor_debito' => $costo_total * -1,
+                                    'valor_saldo' => $costo_total * -1,
+                                    'cantidad' => $cantidad
+                                ] );
+
+            // Cta. Contrapartida (CR) Dada por el motivo de inventarios de la transaccion 
+            // Motivos de inventarios y ventas: Costo de ventas
+            // Motivos de compras: Cuentas por legalizar
+            $cta_contrapartida_id = InvMotivo::find( $inv_doc_registro->inv_motivo_id )->cta_contrapartida_id;
+            ContabMovimiento::where('core_tipo_transaccion_id',$inv_doc_encabezado->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id',$inv_doc_encabezado->core_tipo_doc_app_id)
+                        ->where('consecutivo',$inv_doc_encabezado->consecutivo)
+                        ->where('inv_producto_id',$linea_registro->inv_producto_id)
+                        ->where('cantidad',$cantidad_actual)
+                        ->where('contab_cuenta_id',$cta_contrapartida_id)
+                        ->update( [ 
+                                    'valor_credito' => $costo_total,
+                                    'valor_saldo' => $costo_total,
+                                    'cantidad' => $cantidad
+                                ] );
+        }
 
         // 5. Actualizar el registro del documento de factura
         $cantidad = $request->cantidad; // Se vuelve a la cantidad positiva otra vez
@@ -1169,6 +1164,15 @@ class VentaController extends TransaccionController
                                     'valor_total_descuento' => $valor_total_descuento
                                 ] );
 
+        // 6. Si es una factura de Estudiante
+        $factura_estudiante = FacturaAuxEstudiante::where('vtas_doc_encabezado_id',$doc_encabezado->id)->get()->first();
+        if (!is_null($factura_estudiante))
+        {
+            $registro_cartera = $factura_estudiante->cartera_estudiante;
+            $registro_cartera->valor_cartera = $nuevo_total_encabezado;
+            $registro_cartera->saldo_pendiente = $nuevo_total_encabezado;
+            $registro_cartera->save();
+        }
 
         return redirect( 'ventas/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','El registro de la Factura de ventas fue MODIFICADO correctamente.');
     }
