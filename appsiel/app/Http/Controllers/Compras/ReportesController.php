@@ -101,11 +101,11 @@ class ReportesController extends Controller
         $tabla = [];
         foreach ($registros as $linea) 
         {
-            $fecha  = date("d-m-Y", strtotime("$value->fecha"));
+            $fecha  = date("d-m-Y", strtotime("$linea->fecha"));
 
-            $stocksTable1->addRow( [ $fecha, (float)$linea->total_compras ]);
+            $stocksTable1->addRow( [ $linea->fecha, (float)$linea->total_compras ]);
 
-            $tabla[$i]['fecha'] = $fecha;
+            $tabla[$i]['fecha'] = $linea->fecha;
             $tabla[$i]['valor'] = (float)$linea->total_compras;
             $i++;
         }
