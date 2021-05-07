@@ -113,7 +113,7 @@ class ReportesController extends Controller
         // Se almacena la gráfica en compras_diarias, luego se llama en la vista [ como mágia :) ]
         Lava::BarChart('compras_diarias', $stocksTable1,[
             'is3D' => True,
-            
+            'colors' => ['#574696'],
             'orientation' => 'horizontal',
             'vAxis'=> ['title'=>'Monto Total','format'=> '$ #,###.##'],
             'hAxis'=> ['title'=>'Fecha'],
@@ -243,7 +243,7 @@ class ReportesController extends Controller
                 }
             }
             $data[] = [
-                'fecha' => $f,
+                'fecha' => date_format(date_create($f), 'd-m-Y'),
                 'data' => $ordenes
             ];
         }
@@ -263,8 +263,8 @@ class ReportesController extends Controller
             'id' => $o->id,
             'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " - " . $o->consecutivo,
             'proveedor' => $proveedor,
-            'fecha_recepcion' => $o->fecha_recepcion,
-            'fecha' => $o->fecha
+            'fecha_recepcion' => date_format(date_create($o->fecha_recepcion), 'd-m-Y'),
+            'fecha' => date_format(date_create($o->fecha), 'd-m-Y'),
         ];
         return $orden;
     }

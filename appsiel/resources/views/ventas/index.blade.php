@@ -106,8 +106,8 @@
 			<div class="marco_formulario">
 				<div class="row">					
 					<div class="col-md-12">						
-						<div class="card" style="border: 2px solid #ffc107">
-							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffc107; color: #636363;">Pedidos por Entregar</h4>
+						<div class="card" style="border: 2px solid #ffcd39">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">Pedidos por Entregar</h4>
 							@if($pedidos_de_la_semana!=null)
 							<table class="table table-bordered">
 								<thead>
@@ -137,7 +137,7 @@
 											@if($s['fecha'] != $ref)
 											<h5 style="text-align: center; width: 100%; background-color: #ddd; color: #636363;">{{$s['fecha']}}</h5>
 											@else
-											<h5 style="text-align: center; width: 100%; background-color: #ffc107; color: #636363;">{{$s['fecha']}}</h5>
+											<h5 style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">{{$s['fecha']}}</h5>
 											@endif
 											@if($s['data']!=null)
 											<ol>
@@ -165,8 +165,8 @@
 
 				<div class="row">
 					<div class="col-md-4">
-						<div class="card" style="border: 2px solid #e35d6a">
-							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #e35d6a; color: #636363;">Pedidos Vencidos</h4>
+						<div class="card" style="border: 2px solid #dc3545">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #dc3545; color: #636363;">Pedidos Vencidos</h4>
 							@if($vencidas!=null)
 							<table class="table table-striped table-bordered">
 								<thead>
@@ -193,8 +193,8 @@
 						
 					</div>
 					<div class="col-md-4">
-						<div class="card" style="border: 2px solid #1f8354">
-							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #479f76; color: #636363;">Pedidos Futuros</h4>
+						<div class="card" style="border: 2px solid #20c997">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #20c997; color: #636363;">Pedidos Futuros</h4>
 							<div class="card-body">
 								@if($futuras!=null)
 								<table class="table table-striped table-bordered">

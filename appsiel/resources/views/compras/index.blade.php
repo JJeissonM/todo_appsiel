@@ -50,8 +50,8 @@ $semana = ReportesController::ordenes_semana();
 		<hr>
 		<div class="row">
 			<div class="col-md-12">
-				<div class="card"  style="border: 2px solid #ffc107">
-					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffc107; color: #636363;">Pendientes ésta semana</h4>
+				<div class="card"  style="border: 2px solid #ffcd39">
+					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">Pendientes ésta semana</h4>
 				<div class="table-responsive">
 					@if($semana!=null)
 					<table class="table table-striped table-responsive">
@@ -69,10 +69,19 @@ $semana = ReportesController::ordenes_semana();
 						<tbody>
 							<tr>
 								@foreach($semana as $s)
-								<td>
-									<div class="alert alert-success" style="padding: 5px" role="alert">
-										{{$s['fecha']}}
-									</div>
+								
+								<td>									
+									<?php
+										$hoy = getdate();
+										$fechah = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
+										$date2 = strtotime($fechah);
+										$ref = date('d-m-Y', $date2);
+									?>
+									@if($s['fecha'] != $ref)
+									<h5 style="text-align: center; width: 100%; background-color: #ddd; color: #636363;">{{$s['fecha']}}</h5>
+									@else
+									<h5 style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">{{$s['fecha']}}</h5>
+									@endif
 									@if($s['data']!=null)
 									<ol>
 										@foreach($s['data'] as $d)
@@ -129,8 +138,8 @@ $semana = ReportesController::ordenes_semana();
 				
 			</div>
 			<div class="col-md-6">
-				<div class="card"  style="border: 2px solid #479f76">
-					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #479f76; color: #636363;">Órdenes Futuras</h4>
+				<div class="card"  style="border: 2px solid #20c997">
+					<h4 class="card-header" style="text-align: center; width: 100%; background-color: #20c997; color: #636363;">Órdenes Futuras</h4>
 					@if($futuras!=null)
 					<table class="table table-striped">
 						<thead>
