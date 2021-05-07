@@ -11,6 +11,10 @@ $semana = ReportesController::ordenes_semana();
 ?>
 @section('estilos_2')
 <style>
+		thead>tr>th{
+			text-align: center;
+		}
+
 	.card{
 		border-radius: 12px 12px 0 0;
 		border: 2px solid #ddd;

@@ -32,6 +32,9 @@
 		  margin: 20px 20px;
 		}
 		
+		thead>tr>th{
+			text-align: center;
+		}
 
 		.card{
 			border-radius: 12px 12px 0 0;
@@ -109,13 +112,13 @@
 							<table class="table table-bordered">
 								<thead>
 									<tr style="background-color: #eee">
-										<th style="text-align: center">LUNES</th>
-										<th style="text-align: center">MARTES</th>
-										<th style="text-align: center">MIERCOLES</th>
-										<th style="text-align: center">JUEVES</th>
-										<th style="text-align: center">VIERNES</th>
-										<th style="text-align: center">SABADO</th>
-										<th style="text-align: center">DOMINGO</th>
+										<th>LUNES</th>
+										<th>MARTES</th>
+										<th>MIERCOLES</th>
+										<th>JUEVES</th>
+										<th>VIERNES</th>
+										<th>SABADO</th>
+										<th>DOMINGO</th>
 									</tr>
 								</thead>
 								<tbody>
