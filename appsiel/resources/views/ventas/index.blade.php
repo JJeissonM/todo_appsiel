@@ -170,14 +170,14 @@
 									<tr>
 										<th>Pedido</th>
 										<th>Cliente</th>
-										<th>Fecha entrega</th>
+										<th>F. Entrega</th>
 									</tr>
 								</thead>
 								<tbody>
 									@foreach($vencidas as $v)
 									<tr>
 										<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-										<td>{{$v['cliente']}}</td>
+										<td>{{ substr( $d['cliente'], 0, 25) }}...</td>
 										<td>{{$v['fecha_entrega']}}</td>
 									</tr>
 									@endforeach
@@ -199,14 +199,14 @@
 										<tr>
 											<th>Pedido</th>
 											<th>Cliente</th>
-											<th>Fecha entrega</th>
+											<th>F. Entrega</th>
 										</tr>
 									</thead>
 									<tbody>
 										@foreach($futuras as $v)
 										<tr>
 											<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-											<td>{{$v['cliente']}}</td>
+											<td>{{ substr( $d['cliente'], 0, 25) }}...</td>
 											<td>{{$v['fecha_entrega']}}</td>
 										</tr>
 										@endforeach
@@ -228,14 +228,14 @@
 									<tr>
 										<th>Pedido</th>
 										<th>Cliente</th>
-										<th>Fecha entrega</th>
+										<th>F. Entrega</th>
 									</tr>
 								</thead>
 								<tbody>
 									@foreach($anulados as $a)
 									<tr>
 										<td><a target="_blank" href="{{url('vtas_pedidos/'.$a['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$a['documento']}}</a></td>
-										<td>{{$a['cliente']}}</td>
+										<td>{{ substr( $d['cliente'], 0, 25) }}...</td>
 										<td>{{$a['fecha_entrega']}}</td>
 									</tr>
 									@endforeach
