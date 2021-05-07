@@ -134,7 +134,7 @@ use App\Core\Tercero;
         </td>
     </tr>
     <tr>
-        <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
+        <td><b>{{ config("configuracion.tipo_identificador") }}: </b></td>
         <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</td>
         <td colspan="2"></td>
     </tr>

@@ -49,7 +49,8 @@
 		            <b>Paciente/Cliente:</b> {{ $documento->tercero->descripcion }}
 		        </td>
 		        <td style="border: solid 1px #ddd;">
-		            <b>C.C. o NIT: &nbsp;&nbsp;</b> {{ number_format( $documento->tercero->numero_identificacion, 0, ',', '.') }}
+		            <b>C.C. o {{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b> 
+					@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $documento->tercero->numero_identificacion, 0, ',', '.') }}	@else {{ $documento->tercero->numero_identificacion}} @endif
 		        </td>
 		    </tr>
 		    <tr>

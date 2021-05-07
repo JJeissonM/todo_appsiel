@@ -28,7 +28,8 @@
             <br/> Resolución {{ $colegio->resolucion }}
 
             @if( $config['banner_colegio_mostrar_nit'] )
-                <br>NIT: {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }} - {{ $empresa->digito_verificacion }}
+                <br>{{ config("configuracion.tipo_identificador") }}:
+                @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}
             @endif
 
             @if( $config['banner_colegio_mostrar_direccion'] )

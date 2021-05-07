@@ -98,7 +98,7 @@
 									$banner_colegio_mostrar_nit = 1;
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_nit', $banner_colegio_mostrar_nit, 'Mostrar NIT', ['1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('banner_colegio_mostrar_nit', $banner_colegio_mostrar_nit, 'Mostrar '.{{ config("configuracion.tipo_identificador") }} , ['1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

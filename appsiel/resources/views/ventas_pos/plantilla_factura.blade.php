@@ -43,7 +43,8 @@
                     <br/>
                     <b>{{ $empresa->descripcion }}</b><br/>
                     <b>{{ $empresa->nombre1 }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }}</b><br/>
-                    <b>NIT. {{ number_format($empresa->numero_identificacion, 0, ',', '.') }} - {{ $empresa->digito_verificacion }}</b><br/>
+                    <b>{{ config("configuracion.tipo_identificador") }}:
+                        @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</b><br/>
                     {{ $empresa->direccion1 }}, {{ $ciudad->descripcion }} <br/>
                     Teléfono(s): {{ $empresa->telefono1 }}<br/>
                     <b style="color: blue; font-weight: bold;">{{ $empresa->pagina_web }}</b><br/>
@@ -99,7 +100,10 @@
                     <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
                 </td>
                 <td>
-                    <b>NIT/CC:</b> <div class="lbl_cliente_nit" style="display: inline;"> {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}  </div> 
+                    <b>{{ config("configuracion.tipo_identificador") }}/CC:</b> <div class="lbl_cliente_nit" style="display: inline;">
+					@if( config("configuracion.tipo_identificador") == 'NIT') 
+                    {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}	
+                    @else {{ $pdv->cliente->tercero->numero_identificacion}} @endif </div> 
                 </td>
             </tr>
             <tr>

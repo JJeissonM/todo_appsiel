@@ -335,12 +335,16 @@ class ReporteController extends Controller
         foreach ($entidades_con_movimiento as $entidad_id => $registro)
         {
             $entidad = NomEntidad::find($entidad_id);
-            $movimientos[] = (object)[ 'entidad_id'=> $entidad_id, 'entidad'=> '<b>' . $entidad->descripcion . '</b> / NIT. ' . number_format($entidad->tercero->numero_identificacion,'0',',','.') . ')', 'movimiento'=>$registro ];
-        }
-
+            if( config("configuracion.tipo_identificador") == 'NIT'){
+                $movimientos[] = (object)[ 'entidad_id'=> $entidad_id, 'entidad'=> '<b>' . $entidad->descripcion . '</b> / '.config("configuracion.tipo_identificador").'. '. number_format($entidad->tercero->numero_identificacion,'0',',','.') . ')', 'movimiento'=>$registro ]; 
+            }else{
+                $movimientos[] = (object)[ 'entidad_id'=> $entidad_id, 'entidad'=> '<b>' . $entidad->descripcion . '</b> / '.config("configuracion.tipo_identificador").'. '. $entidad->tercero->numero_identificacion . ')', 'movimiento'=>$registro ];
+            }
+            
         $sorted = $movimientos->sortBy('entidad');
 
         return $sorted->values()->all();
+        }
     }
 
     public function crear_coleccion_movimientos_entidades_terceros( $entidades_con_movimiento )

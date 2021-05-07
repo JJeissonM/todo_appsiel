@@ -8,7 +8,8 @@
 		</td> 
 		<td align="center" style="font-size: 12px;">
 			{{ $empresa->descripcion }} <br/>
-			NIT: {{ number_format($empresa->numero_identificacion, 0, ',', '.') }} - {{ $empresa->digito_verificacion }}<br/>
+			{{ config("configuracion.tipo_identificador") }}: 
+			@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}<br/>
 			{{ $colegio->slogan }} <br/>
 			Resolución {{ $colegio->resolucion }} <br/>
 			{{ $colegio->direccion }} {{ $colegio->telefonos }} {{ $colegio->ciudad }}

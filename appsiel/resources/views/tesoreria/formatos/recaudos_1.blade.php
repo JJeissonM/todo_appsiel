@@ -46,7 +46,7 @@
                     <td>
                         {{ $colegio->descripcion }} <br/>
                         {{ $empresa->nombre1 }} {{ $empresa->otros_nombres }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }} <br/>
-                        NIT {{ $empresa->numero_identificacion }}<br/>
+                        {{ config("configuracion.tipo_identificador") }} @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif<br/>
                         {{ $colegio->direccion }} Tel. {{ $colegio->telefonos }} {{ $colegio->ciudad }}
                     </td>
                     <td>

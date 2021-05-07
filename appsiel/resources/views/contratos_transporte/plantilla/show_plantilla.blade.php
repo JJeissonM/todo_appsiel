@@ -56,7 +56,7 @@
 								<tr>
 									<td class="border" style="width: 20%; font-weight: bold;">RAZÓN SOCIAL</td>
 									<td class="border" style="width: 50%;">ASOCIACIÓN TRANSPORCOL</td>
-									<td class="border" style="width: 10%; font-weight: bold;">NIT</td>
+									<td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} </td>
 									<td class="border" style="width: 20%;">900.293.125-3</td>
 								</tr>
 							</tbody>
@@ -74,7 +74,7 @@
 								<tr>
 									<td class="border" style="width: 20%; font-weight: bold;">CONTRATANTE</td>
 									<td class="border" style="width: 50%; font-weight: bold;"></td>
-									<td class="border" style="width: 10%; font-weight: bold;">NIT/CC</td>
+									<td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} /CC</td>
 									<td class="border" style="width: 20%; font-weight: bold;"></td>
 								</tr>
 							</tbody>

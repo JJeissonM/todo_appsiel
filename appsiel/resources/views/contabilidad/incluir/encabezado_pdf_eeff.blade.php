@@ -14,7 +14,8 @@
 					{{ $empresa->descripcion }}
 				</div>
 				<div style="font-size: 13px; text-align: center; font-weight: bold;">
-					NIT: {{ number_format( $empresa->numero_identificacion , 0, ',', '.') }}- {{ $empresa->digito_verificacion }}
+					{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
+			@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}
 				</div>
 			</td>
 		</tr>

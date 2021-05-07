@@ -79,7 +79,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 										<tr>
 											<td class="border" style="width: 20%; font-weight: bold;">RAZÓN SOCIAL</td>
 											<td class="border" style="width: 50%;">{{$e->descripcion}}</td>
-											<td class="border" style="width: 10%; font-weight: bold;">NIT</td>
+											<td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} </td>
 											<td class="border" style="width: 20%;">{{$e->numero_identificacion."-".$e->digito_verificacion}}</td>
 										</tr>
 									</tbody>
@@ -97,7 +97,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 										<tr>
 											<td class="border" style="width: 20%; font-weight: bold;">CONTRATANTE</td>
 											<td class="border" style="width: 50%; font-weight: bold;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} @endif</td>
-											<td class="border" style="width: 10%; font-weight: bold;">NIT/CC</td>
+											<td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }}/CC</td>
 											<td class="border" style="width: 20%; font-weight: bold;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
 										</tr>
 									</tbody>

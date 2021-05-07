@@ -42,7 +42,7 @@
 												<div class="col-md-8" style="border-right: 1px solid; font-size: 24px; line-height: 0.9em;">
 													<p style="font-weight: bold; color: #000;">{{$e->descripcion}}</p>
 													<p style="font-weight: bold; color: #000;">{{$e->razon_social}}</p>
-													<p style="font-size: 20px; font-weight: bold; color: #000;">NIT: {{$e->numero_identificacion."-".$e->digito_verificacion}}</p>
+													<p style="font-size: 20px; font-weight: bold; color: #000;">{{ config("configuracion.tipo_identificador") }} : {{$e->numero_identificacion."-".$e->digito_verificacion}}</p>
 												</div>
 												<div class="col-md-4" style="text-align: left;">
 													Código: {{$c->codigo}}<br>
@@ -200,9 +200,9 @@
 											<td style="width: 40%; text-align: left; border-bottom: 1px solid;"></td>
 										</tr>
 										<tr>
-											<td style="width: 40%; text-align: left;">CC/NIT</td>
+											<td style="width: 40%; text-align: left;">CC/{{ config("configuracion.tipo_identificador") }} </td>
 											<td style="width: 20%; text-align: left;"></td>
-											<td style="width: 40%; text-align: left;">CC/NIT</td>
+											<td style="width: 40%; text-align: left;">CC/{{ config("configuracion.tipo_identificador") }} </td>
 										</tr>
 										<tr>
 											<td style="width: 40%; text-align: left;">Firma</td>
