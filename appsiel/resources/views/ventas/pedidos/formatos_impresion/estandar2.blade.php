@@ -134,7 +134,7 @@ use App\Core\Tercero;
         </td>
     </tr>
     <tr>
-        <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
+        <td><b>{{ config("configuracion.tipo_identificador") }}: </b></td>
         <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</td>
         <td colspan="2"></td>
     </tr>
@@ -153,8 +153,8 @@ use App\Core\Tercero;
         </td>
         <td width="14%">
             <?php
-                $fecha = date_create($doc_encabezado->fecha);
-                $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
+                $fecha = date_create($doc_encabezado->fecha_entrega);
+                $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                        
                 $fecha_final = date_format($fecha,"d")." ".$meses[date_format($fecha,"n")-1]." ".date_format($fecha,"Y");
             ?>
             {{ $fecha_final }}

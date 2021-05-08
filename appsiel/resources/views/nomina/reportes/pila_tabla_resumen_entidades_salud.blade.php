@@ -1,7 +1,7 @@
 <table class="table table-bordered table-striped">
 	<thead>
 		<tr>
-			<th> NIT </th>
+			<th> {{ config("configuracion.tipo_identificador") }} </th>
 			<th> Entidad </th>
 			<th> Cod. Nacional </th>
 			<th> Valor aportado </th>

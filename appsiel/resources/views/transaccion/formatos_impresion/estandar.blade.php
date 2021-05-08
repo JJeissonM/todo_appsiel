@@ -73,7 +73,10 @@
         <div>
             <b>@yield('lbl_tercero')</b> {{ $doc_encabezado->tercero->descripcion }}
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <b>NIT / CC:</b> {{ number_format( $doc_encabezado->tercero->numero_identificacion, 0, ',', '.') }}
+            <b>{{ config("configuracion.tipo_identificador") }} / CC:</b> {{ number_format( $doc_encabezado->tercero->numero_identificacion, 0, ',', '.') }}
+
+            @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->tercero->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->tercero->numero_identificacion}} @endif - {{ $doc_encabezado->tercero->digito_verificacion }}
+
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <b>Dirección:</b> {{ $doc_encabezado->tercero->direccion1 }},
             {{ $doc_encabezado->tercero->ciudad->descripcion }} -

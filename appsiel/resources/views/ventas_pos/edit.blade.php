@@ -112,7 +112,7 @@
 
 				<input type="hidden" name="cliente_descripcion" id="cliente_descripcion" value="{{$registro->cliente->tercero->descripcion}}" required="required">
 
-				{{ Form::bsText( 'numero_identificacion', $registro->cliente->tercero->numero_identificacion, 'NIT/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
+				{{ Form::bsText( 'numero_identificacion', $registro->cliente->tercero->numero_identificacion, {{ config("configuracion.tipo_identificador") }}.'/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
 				{{ Form::bsText( 'direccion1', $registro->cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
 				{{ Form::bsText( 'telefono1', $registro->cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
 

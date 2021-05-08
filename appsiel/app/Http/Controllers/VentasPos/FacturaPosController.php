@@ -400,6 +400,14 @@ class FacturaPosController extends TransaccionController
 
         $cantidad = count($lista_campos);
 
+        $eid = '';
+
+			if( config("configuracion.tipo_identificador") == 'NIT') { 
+                $eid = number_format( $doc_encabezado->numero_identificacion, 0, ',', '.');
+            }	else { 
+                $eid = $doc_encabezado->numero_identificacion;
+            }
+
         // Agregar al comienzo del documento
         array_unshift($lista_campos, [
             "id" => 201,
@@ -418,7 +426,7 @@ class FacturaPosController extends TransaccionController
                                                             <br/>
                                                             <b>Cliente:</b> ' . $doc_encabezado->tercero_nombre_completo . '
                                                             <br/>
-                                                            <b>NIT: &nbsp;&nbsp;</b> ' . number_format($doc_encabezado->numero_identificacion, 0, ',', '.') . '
+                                                            <b>'.config("configuracion.tipo_identificador").' &nbsp;&nbsp;</b> ' . $eid. '
                                                         </div>',
             "atributos" => [],
             "definicion" => "",

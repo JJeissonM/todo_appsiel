@@ -6,7 +6,9 @@
 			</div>
 		</td>
 		<td style="width: 230px;">
-			5. Número de Identificación Tributaria (NIT)
+			@if( config("configuracion.tipo_identificador") == 'NIT') 5. Número de Identificación Tributaria (NIT)
+			@else 5. Clave Única de Identificación Tributaria (CUIT)
+			@endif
 			<br>
 			{{ number_format( $empresa->numero_identificacion, 0, ',', '.' ) }}
 		</td>

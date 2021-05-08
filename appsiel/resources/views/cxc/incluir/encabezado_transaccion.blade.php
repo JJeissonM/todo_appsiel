@@ -19,7 +19,8 @@
             <b>Propietario: </b> {{ $encabezado_doc->descripcion }}
             <br/>
 
-            <b>CC / NIT: </b> {{ number_format($encabezado_doc->numero_identificacion, 0, ',', '.') }}
+            <b>CC / {{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
+			@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}
             <br/>
 
             <b>Dirección: </b> {{ $encabezado_doc->direccion }}

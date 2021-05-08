@@ -238,9 +238,9 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 						<td style="width: 40%; text-align: left; border-bottom: 1px solid;"></td>
 					</tr>
 					<tr>
-						<td style="width: 40%; text-align: left;">CC/NIT</td>
+						<td style="width: 40%; text-align: left;">CC/{{ config("configuracion.tipo_identificador") }} </td>
 						<td style="width: 20%; text-align: left;"></td>
-						<td style="width: 40%; text-align: left;">CC/NIT</td>
+						<td style="width: 40%; text-align: left;">CC/{{ config("configuracion.tipo_identificador") }} </td>
 					</tr>
 					<tr>
 						<td style="width: 40%; text-align: left;">Firma</td>
@@ -277,7 +277,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 					<tr>
 						<td class="border" style="width: 20%; font-weight: bold;">RAZÓN SOCIAL</td>
 						<td class="border" style="width: 50%;">{{$p->razon_social}}</td>
-						<td class="border" style="width: 10%; font-weight: bold;">NIT</td>
+						<td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} </td>
 						<td class="border" style="width: 20%;">{{$p->nit}}</td>
 					</tr>
 				</tbody>
@@ -295,7 +295,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 					<tr>
 						<td class="border" style="width: 20%; font-weight: bold;">CONTRATANTE</td>
 						<td class="border" style="width: 50%; font-weight: bold; font-size: 10px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} @endif</td>
-						<td class="border" style="width: 10%; font-weight: bold;">NIT/CC</td>
+						<td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} /CC</td>
 						<td class="border" style="width: 20%; font-weight: bold;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteIdentificacion}} @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
 					</tr>
 				</tbody>
