@@ -50,7 +50,7 @@
 
                 <tr>
                     <td> {{ $linea->tercero_nombre_completo }} </td>
-                    <td> {{ $linea->documento_prefijo_consecutivo }} </td>
+                    <td class="text-center"> {{ $linea->documento_prefijo_consecutivo }} </td>
                     <td> {{ $el_documento->fecha }} </td>
                     <td> {{ $el_documento->descripcion }} </td>
                     <td style="text-align: right;"> {{ '$ '.number_format( $linea->abono, 2, ',', '.') }} </td>

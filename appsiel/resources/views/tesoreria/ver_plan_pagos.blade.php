@@ -67,13 +67,13 @@
 								$vtas_doc_encabezado_id = 0;
 							?>
 							<tr class="{{$clase_tr}}">
-								<td>{{ $fila->id }}</td>
+								<td class="text-center">{{ $fila->id }}</td>
 								<td>{{ $fila->concepto->descripcion }}</td>
 								<td>{{$nombre_mes}}</td>
-								<td><?php echo number_format($fila->valor_cartera, 0, ',', '.')?></td>
-								<td><?php echo number_format($fila->valor_pagado, 0, ',', '.')?></td>
+								<td class="text-right"><?php echo number_format($fila->valor_cartera, 0, ',', '.')?></td>
+								<td class="text-right"><?php echo number_format($fila->valor_pagado, 0, ',', '.')?></td>
 								@php $pendiente = $fila->valor_cartera - $fila->valor_pagado @endphp
-								<td><?php echo number_format($pendiente, 0, ',', '.')?></td>
+								<td class="text-right"><?php echo number_format($pendiente, 0, ',', '.')?></td>
 								<td>{{$fila->fecha_vencimiento}}</td>
 								<td>{{$fila->estado}}</td>
 								<td>

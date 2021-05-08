@@ -24,7 +24,8 @@
             <td>
                 <b>Cliente:</b> {{ $cliente->tercero->descripcion }}
                 &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
-                <b>NIT / CC: &nbsp;&nbsp;</b> {{ number_format( $cliente->tercero->numero_identificacion, 0, ',', '.') }}
+                <b>{{ config("configuracion.tipo_identificador") }} / CC:</b> 
+                @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->tercero->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->tercero->numero_identificacion}} @endif - {{ $doc_encabezado->tercero->digito_verificacion }}
                 &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
                 <b>Dirección: &nbsp;&nbsp;</b> {{ $cliente->tercero->direccion1 }}, {{ $cliente->tercero->ciudad->descripcion }} - {{ $cliente->tercero->ciudad->departamento->descripcion }}
                 &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;

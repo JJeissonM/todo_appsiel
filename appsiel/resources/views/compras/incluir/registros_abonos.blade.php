@@ -26,12 +26,12 @@
 
                         ?>
 
-                        <td> 
+                        <td class="text-center"> 
                             <a href="{{ url( $url_ver.'?id='.$transaccion->core_app_id.'&id_modelo='.$modelo->id.'&id_transaccion='.$transaccion->id ) }}" target="_blank" title="{{ $transaccion->descripcion }}"> {{ $doc_encabezado->documento_prefijo_consecutivo }}</a>  
                         </td>
                         <td> {{ $el_documento->fecha }} </td>
                         <td> {{ $el_documento->descripcion }} </td>
-                        <td> ${{ number_format( $doc_encabezado->abono, 0, ',', '.') }} </td>
+                        <td class="text-right"> ${{ number_format( $doc_encabezado->abono, 0, ',', '.') }} </td>
                     </tr>
                     <?php 
                         $total_abono += $doc_encabezado->abono;
@@ -41,7 +41,7 @@
             <tfoot>
                 <tr>
                     <td colspan="3">&nbsp;</td>
-                    <td> ${{ number_format($total_abono, 0, ',', '.') }} </td>
+                    <td class="text-right"> ${{ number_format($total_abono, 0, ',', '.') }} </td>
                 </tr>
             </tfoot>
         </table>

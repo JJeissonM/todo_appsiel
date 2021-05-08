@@ -98,7 +98,7 @@
             ?>
             @foreach($doc_registros as $linea )
             <tr>
-                <td> {{ $i }} </td>
+                <td class="text-center"> {{ $i }} </td>
                 <?php 
                         $descripcion_item = $linea->producto_descripcion . ' (' . $linea->unidad_medida1 . ')';
 
@@ -108,13 +108,13 @@
                         }
                     ?>
                 <td width="250px"> {{ $descripcion_item }} </td>
-                <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-                <td> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }}
+                <td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+                <td class="text-right"> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }}
                 </td>
-                <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                <td> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }}
+                <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+                <td class="text-right"> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }}
                 </td>
-                <td> {{ '$  '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
+                <td class="text-right"> {{ '$  '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
             </tr>
             <?php
                     $i++;
@@ -159,7 +159,7 @@
         <tfoot>
             <tr style="font-weight: bold;">
                 <td colspan="2"> Cantidad de items: {{ $cantidad_items }} </td>
-                <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
+                <td class="text-center"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td colspan="4">&nbsp;</td>
             </tr>
         </tfoot>

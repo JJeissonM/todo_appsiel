@@ -4,11 +4,11 @@
 		{{ Form::bsTableHeader(['Vlr. matrícula','Fecha inicio','Vlr. pensión anual','Núm. periodos','Vlr. pensión mensual','Estado']) }}
 		<tbody>
 				<tr class="info">
-					<td><?php echo number_format($libreta->valor_matricula, 0, ',', '.')?></td>
+					<td class="text-right"><?php echo number_format($libreta->valor_matricula, 0, ',', '.')?></td>
 					<td>{{$libreta->fecha_inicio}}</td>
-					<td><?php echo number_format($libreta->valor_pension_anual, 0, ',', '.')?></td>
+					<td class="text-right"><?php echo number_format($libreta->valor_pension_anual, 0, ',', '.')?></td>
 					<td>{{$libreta->numero_periodos}}</td>
-					<td><?php echo number_format($libreta->valor_pension_mensual, 0, ',', '.')?></td>
+					<td class="text-right"><?php echo number_format($libreta->valor_pension_mensual, 0, ',', '.')?></td>
 					<td>{{$libreta->estado}}</td>
 				</tr>
 		</tbody>

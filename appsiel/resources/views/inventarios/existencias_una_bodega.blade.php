@@ -52,11 +52,11 @@
 				        		}
 				        	?>
 					            <tr>
-					                <td>{{ $productos[$i]['id'] }}</td>
+					                <td class="text-center">{{ $productos[$i]['id'] }}</td>
 					                <td>{{ $productos[$i]['descripcion'] }}</td>
-					                <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} {{ $unidad_medida }}</td>
-					                <td>{{ '$'.number_format($costo_unitario, 2, ',', '.') }}</td>
-					                <td>{{ '$'.number_format($productos[$i]['Costo'], 2, ',', '.') }}</td>
+					                <td class="text-center">{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} {{ $unidad_medida }}</td>
+					                <td class="text-right">{{ '$'.number_format($costo_unitario, 2, ',', '.') }}</td>
+					                <td class="text-right">{{ '$'.number_format($productos[$i]['Costo'], 2, ',', '.') }}</td>
 					            </tr>
 				        <?php 
 				            $total_cantidad+= $productos[$i]['Cantidad'];
@@ -66,9 +66,9 @@
 				    <tfoot>
 				        <tr>
 				            <td colspan="2">&nbsp;</td>
-				            <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
+				            <td class="text-center"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
 				            <td>&nbsp;</td>
-				            <td> {{ '$'.number_format($total_costo_total, 2, ',', '.') }} </td>
+				            <td class="text-right"> {{ '$'.number_format($total_costo_total, 2, ',', '.') }} </td>
 				        </tr>
 				    </tfoot>
 				</table>

@@ -10,7 +10,7 @@
             ?>
             @foreach( $items as $item_orden_trabajo )
                 <tr>
-                    <td> {{ $item_orden_trabajo->item->id }} </td>
+                    <td class="text-center"> {{ $item_orden_trabajo->item->id }} </td>
                     <td> {{ $item_orden_trabajo->item->descripcion }} ({{ $item_orden_trabajo->item->unidad_medida1 }}) </td>
                     <td align="center">
                         <div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('nom_ordenes_trabajo_cambiar_cantidad_items') . "/" . $orden_de_trabajo->id . "/" . $item_orden_trabajo->item->id }}"> {{ $item_orden_trabajo->cantidad }} 

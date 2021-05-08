@@ -15,7 +15,7 @@
                         <div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('nom_ordenes_trabajo_cambiar_cantidad_horas_empleados') . "/" . $orden_de_trabajo->id . "/" . $orden_de_trabajo->nom_concepto_id . "/" . $empelado_orden_trabajo->contrato->id }}"> {{ $empelado_orden_trabajo->cantidad_horas }} 
                         </div>
                     </td>
-                    <td align="right">
+                    <td class="text-right">
                         $ <div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('nom_ordenes_trabajo_cambiar_valor_por_hora_empleados') . "/" . $orden_de_trabajo->id . "/" . $orden_de_trabajo->nom_concepto_id . "/" . $empelado_orden_trabajo->contrato->id }}"> {{ $empelado_orden_trabajo->valor_por_hora }} 
                         </div>
                     </td>

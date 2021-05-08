@@ -98,13 +98,13 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 					?>
 					@foreach($doc_registros as $linea )
 					<tr>
-						<td> {{ $linea->producto_id }} </td>
+						<td class="text-center"> {{ $linea->producto_id }} </td>
 						<td> {{ $linea->producto_descripcion }} </td>
 						@if($doc_encabezado->estado=='Cumplida')
-						<td> $ {{$linea->precio_unitario}}</td>
-						<td> {{$linea->tasa_impuesto}} %</td>
-						<td> {{$linea->cantidad}}</td>
-						<td> $ {{$linea->precio_total}}</td>
+						<td class="text-right"> $ {{$linea->precio_unitario}}</td>
+						<td class="text-center"> {{$linea->tasa_impuesto}} %</td>
+						<td class="text-center"> {{$linea->cantidad}}</td>
+						<td class="text-right"> $ {{$linea->precio_total}}</td>
 						@else
 						<td> <input class="preciou" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->precio_unitario}}" style="width: 100%" name="dpreciounitario_{{$linea->id}}" /> </td>
 						<td> <input readonly class="imp" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->tasa_impuesto}}" style="width: 100%" name="dimpuesto_{{$linea->id}}" /> </td>
@@ -123,7 +123,7 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 				<tfoot>
 					<tr>
 						<td colspan="4">&nbsp;</td>
-						<td id="tbcant"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
+						<td class="text-center" id="tbcant"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
 						<td>&nbsp;</td>
 						<td>&nbsp;</td>
 					</tr>

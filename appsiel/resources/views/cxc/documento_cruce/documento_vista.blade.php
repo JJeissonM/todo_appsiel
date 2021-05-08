@@ -15,8 +15,8 @@
                  Documento: {{ $value['recaudo'][0] }} <br/>
                  Fecha: {{ $value['recaudo'][1] }} <br/>
                 </td>
-                <td>
-                 ${{ number_format($value['valor_pagado'], 0, ',', '.') }}
+                <td class="text-right">
+                 $ {{ number_format($value['valor_pagado'], 0, ',', '.') }}
                 </td>
             </tr>
             <?php 
@@ -27,7 +27,7 @@
     <tfoot>
         <tr>
             <td colspan="2">&nbsp;</td>
-            <td> ${{ number_format($total_valor, 0, ',', '.') }} </td>
+            <td class="text-right"> $ {{ number_format($total_valor, 0, ',', '.') }} </td>
         </tr>
     </tfoot>
 </table>

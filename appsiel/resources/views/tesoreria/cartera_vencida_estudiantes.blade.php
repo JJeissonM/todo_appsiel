@@ -49,7 +49,7 @@
 							            $url='tesoreria/imprimir_cartera/matricula/mes/'.$num_mes.'?curso_id='.Input::get('curso_id');
 							            echo "<tr>
 							            <td>".ConfiguracionController::nombre_mes($num_mes)."</td>
-							             <td>$".number_format($cartera_matriculas[$num_mes], 0, ',', '.')."</td>";
+							             <td class='text-right'>$".number_format($cartera_matriculas[$num_mes], 0, ',', '.')."</td>";
 							             if($cartera_matriculas[$num_mes]>0){
 							             	echo "<td><a class='btn btn-info btn-xs btn-detail' href='".url($url)."'><i class='fa fa-btn fa-print'></i>&nbsp;Imprimir cartera</a></td></tr>";
 							             }else{
@@ -87,7 +87,7 @@
 							            $url='tesoreria/imprimir_cartera/pension/mes/'.$num_mes.'?curso_id='.Input::get('curso_id');
 							            echo "<tr>
 							            <td>".ConfiguracionController::nombre_mes($num_mes)."</td>
-							             <td>$".number_format($cartera_pensiones[$num_mes], 0, ',', '.')."</td>";
+							             <td class='text-right'>$".number_format($cartera_pensiones[$num_mes], 0, ',', '.')."</td>";
 							             if($cartera_pensiones[$num_mes]>0){
 							             	echo "<td><a class='btn btn-info btn-xs btn-detail' href='".url($url)."'><i class='fa fa-btn fa-print'></i>&nbsp;Imprimir cartera</a></td></tr>";
 							             }else{

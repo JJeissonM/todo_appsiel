@@ -193,7 +193,7 @@
                                     <td> {{ $registro->medio_recaudo }} </td>
                                     <td> {{ $registro->motivo }} </td>
                                     <td> {{ $registro->caja }} {{ $registro->cuenta_bancaria }} </td>
-                                    <td> ${{ number_format($registro->valor, 0, ',', '.') }} </td>
+                                    <td class="text-right"> ${{ number_format($registro->valor, 0, ',', '.') }} </td>
                                 </tr>
                                 <?php
                                 $total_recaudo += $registro->valor;
@@ -205,7 +205,7 @@
                                 <td> &nbsp; </td>
                                 <td> &nbsp; </td>
                                 <td>   </td>
-                                <td>
+                                <td class="text-right">
                                     ${{ number_format($total_recaudo, 0, ',', '.') }} ({{ NumerosEnLetras::convertir($total_recaudo,'pesos',false) }})
                                 </td>
                             </tr>

@@ -29,15 +29,15 @@
                     ?>
                     <tr data-linea="{{$linea}}">
                         <td> {{ $linea->fecha }} </td>
-                        <td> {{ $linea->documento }} </td>
+                        <td class="text-center"> {{ $linea->documento }} </td>
                         <td> {{ $linea->detalle_operacion }} </td>
-                        <td> {{ $linea->codigo_cuenta }} </td>
+                        <td class="text-center"> {{ $linea->codigo_cuenta }} </td>
                         <td style="text-align: right;"> $ {{ number_format( $linea->valor_debito, 2, ',', '.') }} </td>
                         <td style="text-align: right;"> $ {{ number_format( $linea->valor_credito, 2, ',', '.') }} </td>
                         <td style="text-align: right;"> $ {{ number_format( $linea->valor_saldo, 2, ',', '.') }} </td>
                         <td> {{ $linea->core_tipo_transaccion_id }} </td>
                         <td> {{ $linea->core_tipo_doc_app_id }} </td>
-                        <td> {{ $linea->consecutivo }} </td>
+                        <td class="text-center"> {{ $linea->consecutivo }} </td>
                         <td> {{ $linea->core_tercero_id }} </td>
                         <td> 1 </td>
                         <td> {{ $motivo_id }} </td>

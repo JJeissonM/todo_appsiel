@@ -343,8 +343,14 @@ class RecaudoCxcController extends Controller
         $registros_contabilidad = [];//TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
         $elaboro = $doc_encabezado->creado_por;
-
-        $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+       
+        if( Input::get('formato_impresion_id') == 'estandar'){
+            $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        }
+        if( Input::get('formato_impresion_id') == 'estandar2'){
+            $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir2', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        }
+        
         
         // Se prepara el PDF
         $orientacion='portrait';

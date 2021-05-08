@@ -30,10 +30,10 @@
                             @if( !is_null($recaudo_tesoreria) )
     							<tr>
     								<td> {{ $recaudo_tesoreria->fecha }}</td>
-    								<td> {{ $recaudo_tesoreria->tipo_documento_app->prefijo }} {{ $recaudo_tesoreria->consecutivo }}</td>
+    								<td class="text-center"> {{ $recaudo_tesoreria->tipo_documento_app->prefijo }} {{ $recaudo_tesoreria->consecutivo }}</td>
     								<td> {{ $recaudo->elconcepto->descripcion }}</td>
     								<td> {{ $nombre_mes }}</td>
-    								<td> {{ number_format( $recaudo->valor_recaudo, 0, ',', '.') }} </td>
+    								<td class="text-right"> {{ number_format( $recaudo->valor_recaudo, 0, ',', '.') }} </td>
     								<td>
                                         
                                         <a class="btn btn-info btn-xs btn-detail" href="{{ url( 'tesoreria/recaudos_cxc/' . $recaudo_tesoreria->id . '?id=3&id_modelo=153&id_transaccion=32' ) }}" target="_blank"><i class="fa fa-eye"></i>&nbsp;Consultar</a>

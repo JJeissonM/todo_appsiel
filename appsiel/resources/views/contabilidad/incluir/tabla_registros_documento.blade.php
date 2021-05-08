@@ -12,8 +12,8 @@
             @foreach($doc_registros as $linea )
                 <tr>
                     <td> {{ $linea->tipo_transaccion_linea }} </td>
-                    <td> {{ $linea->cuenta }} </td>
-                    <td> {{ number_format( $linea->numero_identificacion, 0, ',', '.') }} / {{ $linea->tercero }} </td>
+                    <td class="text-center"> {{ $linea->cuenta }} </td>
+                    <td class="text-center"> {{ number_format( $linea->numero_identificacion, 0, ',', '.') }} / {{ $linea->tercero }} </td>
                     <td> {{ $linea->detalle_operacion }} </td>
                     <td style="text-align: right;"> $ {{ number_format( $linea->valor_debito, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> $ {{ number_format( $linea->valor_credito, 2, ',', '.') }} </td>

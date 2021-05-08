@@ -27,13 +27,13 @@
 
             ?>
             <tr id="{{ $documento_id }}">
-                <td> {{ $movimiento_cxc[$i]['codigo'] }} </td>
-                <td> {{ $movimiento_cxc[$i]['documento'] }} </td>
+                <td class="text-center"> {{ $movimiento_cxc[$i]['codigo'] }} </td>
+                <td class="text-center"> {{ $movimiento_cxc[$i]['documento'] }} </td>
                 <td> {{ $movimiento_cxc[$i]['fecha'] }} </td>
                 <td> {{ $movimiento_cxc[$i]['fecha_vencimiento'] }} </td>
                 <td> {{ $movimiento_cxc[$i]['detalle_operacion'] }} </td>
-                <td class="col_valor_cartera"> {{ number_format($movimiento_cxc[$i]['valor_cartera'], 0, ',', '.') }} </td>
-                <td class="col_saldo_pendiente" > {{ number_format($movimiento_cxc[$i]['saldo_pendiente'], 0, ',', '.') }} </td>
+                <td class="col_valor_cartera text-right"> {{ number_format($movimiento_cxc[$i]['valor_cartera'], 0, ',', '.') }} </td>
+                <td class="col_saldo_pendiente text-right" > {{ number_format($movimiento_cxc[$i]['saldo_pendiente'], 0, ',', '.') }} </td>
                 <td> 
                     <button class="btn btn-primary btn-xs btn_ver_documento"><i class="fa fa-eye"></i></button>
                 </td>

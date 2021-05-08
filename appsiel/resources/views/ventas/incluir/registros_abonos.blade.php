@@ -21,12 +21,12 @@
 
                         ?>
 
-                        <td> 
+                        <td class="text-center"> 
                             <a href="{{ url('tesoreria/recaudos_cxc/'.$el_documento->id.'?id=3&id_modelo=153&id_transaccion=32') }}" target="_blank"> {{ $linea->documento_prefijo_consecutivo }}</a>  
                         </td>
                         <td> {{ $el_documento->fecha }} </td>
                         <td> {{ $el_documento->descripcion }} </td>
-                        <td> ${{ number_format( $linea->abono, 0, ',', '.') }} </td>
+                        <td class="text-right"> ${{ number_format( $linea->abono, 0, ',', '.') }} </td>
                     </tr>
                     <?php 
                         $total_abono += $linea->abono;
@@ -36,7 +36,7 @@
             <tfoot>
                 <tr>
                     <td colspan="3">&nbsp;</td>
-                    <td> ${{ number_format($total_abono, 0, ',', '.') }} </td>
+                    <td class="text-right"> ${{ number_format($total_abono, 0, ',', '.') }} </td>
                 </tr>
             </tfoot>
         </table>

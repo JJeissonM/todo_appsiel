@@ -126,14 +126,14 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 				?>
 				@foreach($doc_registros as $linea )
 				<tr>
-					<td> {{ $i }} </td>
+					<td class="text-center"> {{ $i }} </td>
 					<td width="250px"> {{ $linea->producto_descripcion }} </td>
-					<td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-					<td> {{ number_format( $linea->cantidad_pendiente, 0, ',', '.') }} </td>
-					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
-					<td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
-					<td> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
+					<td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+					<td class="text-center"> {{ number_format( $linea->cantidad_pendiente, 0, ',', '.') }} </td>
+					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
+					<td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
+					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
                     <td>
                         @if( $doc_encabezado->estado = 'Pendiente' )
                             <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>

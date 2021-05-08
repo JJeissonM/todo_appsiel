@@ -13,7 +13,7 @@
                     <td> {{ $linea->motivo }} </td>
                     <td> {{ $linea->tercero }} </td>
                     <td> {{ $linea->detalle_operacion }} </td>
-                    <td> ${{ number_format( $linea->valor, 0, ',', '.') }} </td>
+                    <td class="text-right"> ${{ number_format( $linea->valor, 0, ',', '.') }} </td>
                 </tr>
                 <?php 
                     $total_abono += $linea->valor;
@@ -23,7 +23,7 @@
         <tfoot>
             <tr>
                 <td colspan="3">&nbsp;</td>
-                <td> ${{ number_format($total_abono, 0, ',', '.') }} </td>
+                <td class="text-right"> ${{ number_format($total_abono, 0, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>

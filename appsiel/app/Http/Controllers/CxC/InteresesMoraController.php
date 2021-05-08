@@ -303,10 +303,10 @@ use App\CxC\CxcEstadoCartera;
             $propiedad = Propiedad::find($fila->codigo_referencia_tercero);
 
             $respuesta.='<tr>
-                    <td>'.$propiedad->codigo.'</td>
+                    <td class="text-center">'.$propiedad->codigo.'</td>
                     <td>'.$tercero->descripcion.'</td>
                     <td> <a href="'.url('cxc/'.$registro_encabezado_doc->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo).'" target="_blank" title="Vista previa">'.$documento.'</a> </td>
-                    <td>'.number_format($fila->valor_interes, 0, ',', '.').'</td>
+                    <td class="text-center">'.number_format($fila->valor_interes, 0, ',', '.').'</td>
                 </tr>';
 
             $i++;

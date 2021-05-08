@@ -43,20 +43,20 @@
                                 }
                             ?>
                     <tr>
-                        <td> {{ $linea->producto_id }} </td>
+                        <td class="text-center"> {{ $linea->producto_id }} </td>
                         <td> {{ $descripcion_item }} </td>
 
                         <!-- Datos del conteo físico -->
-                        <td> {{ number_format( $linea->cantidad, 2, ',', '.') }}  </td>
-                        <td> ${{ number_format( $linea->costo_total, 0, ',', '.') }} </td>
+                        <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }}  </td>
+                        <td class="text-right"> ${{ number_format( $linea->costo_total, 0, ',', '.') }} </td>
 
                         <!-- Datos del sistema -->
-                        <td> {{ number_format( $linea->cantidad_sistema, 2, ',', '.') }} </td>
-                        <td> ${{ number_format( $linea->costo_total_sistema, 0, ',', '.') }} </td>
+                        <td class="text-center"> {{ number_format( $linea->cantidad_sistema, 2, ',', '.') }} </td>
+                        <td class="text-right"> ${{ number_format( $linea->costo_total_sistema, 0, ',', '.') }} </td>
 
                         <!-- Datos de la diferencia -->
-                        <td> {{ number_format( $diferencia, 2, ',', '.') }} </td>
-                        <td> ${{ number_format( $diferencia_costo, 0, ',', '.') }} </td>
+                        <td class="text-center"> {{ number_format( $diferencia, 2, ',', '.') }} </td>
+                        <td class="text-right"> ${{ number_format( $diferencia_costo, 0, ',', '.') }} </td>
 
                         <td> 
                             <?php
@@ -92,12 +92,12 @@
                             ?>
 
                     <td colspan="2">&nbsp;</td>
-                    <td> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
-                    <td> {{ '$ '.number_format($total_documento, 0, ',', '.') }} </td>
-                    <td> {{ number_format($total_cantidad_sistema, 0, ',', '.') }} </td>
-                    <td> {{ '$ '.number_format($total_documento_sistema, 0, ',', '.') }} </td>
-                    <td> {{ number_format($total_cantidad_dif, 0, ',', '.') }} </td>
-                    <td> {{ '$ '.number_format($total_documento_dif, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
+                    <td class="text-right"> {{ '$ '.number_format($total_documento, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad_sistema, 0, ',', '.') }} </td>
+                    <td class="text-right"> {{ '$ '.number_format($total_documento_sistema, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad_dif, 0, ',', '.') }} </td>
+                    <td class="text-right"> {{ '$ '.number_format($total_documento_dif, 0, ',', '.') }} </td>
                         <td> 
                             <?php
 

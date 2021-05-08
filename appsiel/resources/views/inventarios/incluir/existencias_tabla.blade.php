@@ -15,11 +15,11 @@
                 ?>
             	<!-- @ if($productos[$i]['Cantidad']!=0) -->
     	            <tr>
-    	                <td>{{ $productos[$i]['id'] }}</td>
+    	                <td class="text-center">{{ $productos[$i]['id'] }}</td>
     	                <td>{{ $productos[$i]['descripcion'] }}</td>
-    	                <td>{{ number_format($productos[$i]['Cantidad'], 0, ',', '.') }} {{ $productos[$i]['unidad_medida1'] }}</td>
-    	                <td>{{ '$'.number_format($productos[$i]['Costo']/$productos[$i]['Cantidad'], 0, ',', '.') }}</td>
-    	                <td>{{ '$'.number_format($productos[$i]['Costo'], 0, ',', '.') }}</td>
+    	                <td class="text-center">{{ number_format($productos[$i]['Cantidad'], 0, ',', '.') }} {{ $productos[$i]['unidad_medida1'] }}</td>
+    	                <td class="text-right">{{ '$'.number_format($productos[$i]['Costo']/$productos[$i]['Cantidad'], 0, ',', '.') }}</td>
+    	                <td class="text-right">{{ '$'.number_format($productos[$i]['Costo'], 0, ',', '.') }}</td>
     	            </tr>
                 <!-- @ endif -->
             <?php 
@@ -30,9 +30,9 @@
         <tfoot>
             <tr>
                 <td colspan="2">&nbsp;</td>
-                <td> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
+                <td class="text-center"> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
                 <td>&nbsp;</td>
-                <td> {{ '$'.number_format($total_costo_total, 0, ',', '.') }} </td>
+                <td class="text-right"> {{ '$'.number_format($total_costo_total, 0, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>

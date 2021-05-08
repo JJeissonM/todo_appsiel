@@ -53,7 +53,7 @@
         <tfoot>
         	<tr>
         		<td colspan="3"></td>
-            	<td> 
+            	<td class="text-center"> 
             		<div id="ih_total"> {{ $ih_total }} </div> 
             	</td>
             	<td colspan="2"> </td>

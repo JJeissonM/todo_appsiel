@@ -82,7 +82,7 @@
                 <tr>
                     <td style="text-align: center;"> {{ $numero }} </td>
                     <td> {{ $linea->producto_descripcion }} ({{ $linea->unidad_medida1 }}) </td>
-                    <td style="text-align: right;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
+                    <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
                 </tr>
                 <?php 
                     $total_cantidad += $linea->cantidad;
@@ -93,7 +93,7 @@
         <tfoot>
             <tr>
                 <td colspan="2">&nbsp;</td>
-                <td style="text-align: right;"> {{ number_format( abs($total_cantidad), 2, ',', '.') }} </td>
+                <td style="text-align: center;"> {{ number_format( abs($total_cantidad), 2, ',', '.') }} </td>
             </tr>
         </tfoot>            
     </table>

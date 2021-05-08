@@ -70,9 +70,9 @@
             ?>
             @foreach($doc_registros as $linea )
                 <tr>
-                    <td> {{ $i }} </td>
+                    <td class="text-center"> {{ $i }} </td>
                     <td width="250px"> {{ $linea->producto_descripcion }} </td>
-                    <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                 </tr>
                 <?php
                     $i++;

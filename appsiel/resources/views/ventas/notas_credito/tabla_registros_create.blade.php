@@ -15,12 +15,12 @@
                     $cantidad_real = $linea->cantidad - $linea->cantidad_devuelta;
                 ?>
                 <tr>
-                    <td> {{ $linea->producto_id }} </td>
+                    <td class="text-center"> {{ $linea->producto_id }} </td>
                     <td> {{ $linea->producto_descripcion }} </td>
-                    <td> {{ '$ '.number_format( $linea->precio_unitario, 2, ',', '.') }} </td>
-                    <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                    <td> {{ number_format( $cantidad_real, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
-                    <td> {{ '$ '.number_format( $linea->precio_unitario * $cantidad_real, 2, ',', '.') }} </td>
+                    <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario, 2, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+                    <td class="text-center"> {{ number_format( $cantidad_real, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
+                    <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario * $cantidad_real, 2, ',', '.') }} </td>
                     <td> {{ Form::select('motivos_ids[]',$motivos,null,['id'=>'inv_motivo_id']) }} </td>
                     <td> 
                         <input type="hidden" class="cantidad_linea" value="{{ $cantidad_real }}">
