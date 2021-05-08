@@ -374,7 +374,7 @@
 			var valor = obj.val();
 
 			if (valor != '') {
-				obj.attr('style', 'background-color:white;');
+				obj.attr('style', 'background-color:transparent;');
 				if (!$.isNumeric(valor)) {
 					obj.attr('style', 'background-color:#FF8C8C;'); // Color rojo
 					obj.focus();

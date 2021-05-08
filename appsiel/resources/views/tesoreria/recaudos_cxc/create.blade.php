@@ -70,12 +70,19 @@
 
 
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
+				<input type="hidden" name="lineas_registros_cheques" id="lineas_registros_cheques" value="">
 
-				<!-- Formulario control cheque -->
-	            @include('tesoreria.control_cheques.form_create')
 
 			{{ Form::close() }}
 
+			<!-- Formulario control cheque -->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="container-fluid" id="div_control_cheques" style="display: block; border: 1px solid #ddd; border-radius: 4px; background-color: #e1faff;">
+            				@include('tesoreria.control_cheques.form_create')
+			        </div>
+				</div>
+			</div>
 
 			<!-- Documentos pendientes de cartera -->
             <div class="row">
@@ -130,6 +137,7 @@
 @section('scripts')
 
 	<script type="text/javascript">
+			var hay_cheques = 0;
 		$(document).ready(function(){
 			
 			asignar_fecha_hoy();
@@ -384,9 +392,28 @@
 
 				var total_valor = parseFloat( $('#total_valor').text().substring(1) );
 
-				if ( total_valor <= 0 ) {
+				if ( total_valor <= 0 )
+				{
 					alert('No ha seleccionado documentos a pagar.');
 					return false;
+				}
+
+				var teso_medio_recaudo_id = $('#teso_medio_recaudo_id').val().split('-');
+				if ( teso_medio_recaudo_id[1] == 'cheque_propio' || teso_medio_recaudo_id[1] == 'cheque_de_tercero' )
+				{
+					if ( hay_cheques == 0 )
+					{
+						alert('Debe ingresar al menos un cheque para el medio de pago seleccionado.');
+						return false;
+					}
+
+					if ( parseFloat( $('#input_valor_total_cheques').val() ) != total_valor )
+					{
+						alert('El valor total de cheques ingresados debe ser igual al valor total de documentos a pagar.');
+						return false;
+					}
+
+					
 				}
 
 				// Se obtienen todos los datos del formulario y se envían
@@ -407,6 +434,10 @@
 				// Se asigna la tabla de ingreso de registros a un campo hidden
 				var lineas_registros = $('#tabla_registros_documento').tableToJSON();
 				$('#lineas_registros').val( JSON.stringify(lineas_registros) );
+
+				// Se asigna la tabla de ingreso de registros a un campo hidden
+				var lineas_registros_cheques = $('#tabla_registros_cheques').tableToJSON();
+				$('#lineas_registros_cheques').val( JSON.stringify(lineas_registros_cheques) );
 
 				// Enviar formulario
 				habilitar_campos_form_create();

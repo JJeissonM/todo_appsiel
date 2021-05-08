@@ -130,28 +130,35 @@ class RecaudoCxcController extends Controller
     }
 
     public function almacenar_cheque( $request, $doc_encabezado )
-    {
+    {        
         $vec_3 = explode("-", $request->teso_medio_recaudo_id);
         if ( $vec_3[1] == 'cheque_propio' || $vec_3[1] == 'cheque_de_tercero' )
         {
-            $datos = [
-                        'fuente' => $vec_3[1],
-                        'tercero_id' => $doc_encabezado->core_tercero_id,
-                        'fecha_emision' => $request->fecha_emision,
-                        'fecha_cobro' => $request->fecha_cobro,
-                        'numero_cheque' => $request->numero_cheque,
-                        'referencia_cheque' => $request->referencia_cheque,
-                        'entidad_financiera_id' => $request->entidad_financiera_id,
-                        'valor' => $doc_encabezado->valor_total,
-                        'detalle' => $request->detalle,
-                        'creado_por' => $doc_encabezado->creado_por,
-                        'core_tipo_transaccion_id_origen' => $doc_encabezado->core_tipo_transaccion_id,
-                        'core_tipo_doc_app_id_origen' => $doc_encabezado->core_tipo_doc_app_id,
-                        'consecutivo' => $doc_encabezado->consecutivo,
-                        'teso_caja_id' => $request->teso_caja_id,
-                        'estado' => 'Recibido'
-                    ];
-            ControlCheque::create( $datos );
+            $lineas_registros_cheques = json_decode($request->lineas_registros_cheques);
+
+            array_pop($lineas_registros_cheques); // Elimina ultimo elemento del array
+            
+            $cantidad = count($lineas_registros_cheques);
+            for ($i=0; $i < $cantidad; $i++) 
+            {
+                $datos = [
+                            'fuente' => $vec_3[1],
+                            'tercero_id' => $doc_encabezado->core_tercero_id,
+                            'fecha_emision' => $lineas_registros_cheques[$i]->fecha_emision,
+                            'fecha_cobro' => $lineas_registros_cheques[$i]->fecha_cobro,
+                            'numero_cheque' => $lineas_registros_cheques[$i]->numero_cheque,
+                            'referencia_cheque' => $lineas_registros_cheques[$i]->referencia_cheque,
+                            'entidad_financiera_id' => $lineas_registros_cheques[$i]->entidad_financiera_id,
+                            'valor' => (float)$lineas_registros_cheques[$i]->valor_cheque,
+                            'creado_por' => $doc_encabezado->creado_por,
+                            'core_tipo_transaccion_id_origen' => $doc_encabezado->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id_origen' => $doc_encabezado->core_tipo_doc_app_id,
+                            'consecutivo' => $doc_encabezado->consecutivo,
+                            'teso_caja_id' => $request->teso_caja_id,
+                            'estado' => 'Recibido'
+                        ];
+                ControlCheque::create( $datos );
+            }
         }
     }
 
