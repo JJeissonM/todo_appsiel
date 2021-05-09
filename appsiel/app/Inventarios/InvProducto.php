@@ -185,7 +185,6 @@ class InvProducto extends Model
 
     public static function get_datos_pagina_web( $grupo_inventario_id, $estado, $count = 16, $busqueda=false)
     {
-
         if ( $grupo_inventario_id == '')
         {
           $grupo_inventario_id = '%'.$grupo_inventario_id.'%';
@@ -229,9 +228,7 @@ class InvProducto extends Model
 
             $item->descuento = ListaDctoDetalle::get_descuento_producto( config('pagina_web.lista_descuentos_id'), date('Y-m-d'), $item->id );
         }
-
         return $productos;
-
     }
     
 

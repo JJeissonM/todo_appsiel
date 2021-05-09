@@ -75,60 +75,72 @@
 
 			{{ Form::close() }}
 
-			<!-- Formulario control cheque -->
-			<div class="row">
-				<div class="col-md-12">
-					<div class="container-fluid" id="div_control_cheques" style="display: block; border: 1px solid #ddd; border-radius: 4px; background-color: #e1faff;">
-            				@include('tesoreria.control_cheques.form_create')
-			        </div>
-				</div>
+			<div class="marco_formulario" style="min-height: 250px;">
+				<h5>Medios de pago</h5>
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#tab_mp_1"> Efectivo </a></li>
+					<li><a data-toggle="tab" href="#tab_mp_2"> Transferencia/Consignación </a></li>
+					<li><a data-toggle="tab" href="#tab_mp_3"> Tarj. Débito </a></li>
+					<li><a data-toggle="tab" href="#tab_mp_4"> Tarj. Crédito </a></li>
+					<li><a data-toggle="tab" href="#tab_mp_5"> Cheque </a></li>
+					<li><a data-toggle="tab" href="#tab_mp_6"> PSE </a></li>
+			    </ul>
+
+			    <div class="tab-content">
+			    	<div id="tab_mp_1" class="tab-pane fade in active">
+				        @include('tesoreria.medios_de_pago.seccion_efectivo')
+				    </div>
+				    <div id="tab_mp_2" class="tab-pane fade">
+				        @include('tesoreria.medios_de_pago.seccion_transferencia_consignacion')
+	            	</div>
+				    <div id="tab_mp_3" class="tab-pane fade">
+				        @include('tesoreria.medios_de_pago.seccion_tarjeta_debito')
+	            	</div>
+				    <div id="tab_mp_4" class="tab-pane fade">
+				        @include('tesoreria.medios_de_pago.seccion_tarjeta_credito')
+	            	</div>
+				    <div id="tab_mp_5" class="tab-pane fade">
+				        @include('tesoreria.medios_de_pago.seccion_cheque')
+	            	</div>
+				    <div id="tab_mp_6" class="tab-pane fade">
+				        @include('tesoreria.medios_de_pago.seccion_pse')
+	            	</div>
+			    </div>
 			</div>
 
-			<!-- Documentos pendientes de cartera -->
-            <div class="row">
-            	<div class="col-md-12">
-            		<div id="div_aplicacion_cartera" style="display: none;">
-		            	<div id="div_documentos_pendientes">
+			<div class="marco_formulario" style="min-height: 250px;">
+				<h5>Operaciones de recaudo</h5>
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-toggle="tab" href="#tab1"> Documentos pendientes </a></li>
+					<li><a data-toggle="tab" href="#tab2"> Anticipos </a></li>
+					<li><a data-toggle="tab" href="#tab3"> Retenciones </a></li>
+					<li><a data-toggle="tab" href="#tab4"> Otros Recaudos </a></li>
+					<li><a data-toggle="tab" href="#tab5"> Préstamos </a></li>
+					<li><a data-toggle="tab" href="#tab6"> Asientos contables </a></li>
+			    </ul>
 
-		            	</div>
-		            </div>
-            	</div>
-            </div>
+			    <div class="tab-content">
+			    	<div id="tab1" class="tab-pane fade in active">
+				        @include('tesoreria.recaudos_cxc.seccion_documentos_pendientes')
+				    </div>
+				    <div id="tab2" class="tab-pane fade">
+				        @include('tesoreria.recaudos_cxc.seccion_anticipos')
+	            	</div>
+				    <div id="tab3" class="tab-pane fade">
+				        @include('tesoreria.recaudos_cxc.seccion_retenciones')
+	            	</div>
+				    <div id="tab4" class="tab-pane fade">
+				        @include('tesoreria.recaudos_cxc.seccion_otros_recaudos')
+	            	</div>
+				    <div id="tab5" class="tab-pane fade">
+				        @include('tesoreria.recaudos_cxc.seccion_prestamos')
+	            	</div>
+				    <div id="tab6" class="tab-pane fade">
+				        @include('tesoreria.recaudos_cxc.seccion_asientos_contables')
+	            	</div>
+			    </div>
+			</div>
 
-			<!-- Documentos seleccionados -->
-            <div class="row">
-            	<div class="col-md-12">
-            		<div id="div_documentos_a_cancelar" style="display: none;">
-            			<h3 style="width: 100%; text-align: center;"> Documentos seleccionados </h3>
-						<hr>
-
-						<table class="table table-striped" id="tabla_registros_documento">
-						    <thead>
-						        <tr>
-						            <th style="display: none;" data-override="id_doc"> ID Doc. Pendiente </th>
-						            <th> Cliente </th>
-						            <th> Documento interno </th>
-						            <th> Fecha </th>
-						            <th> Fecha vencimiento </th>
-						            <th> Valor Documento </th>
-						            <th> Valor pagado </th>
-						            <th> Saldo pendiente </th>
-						            <th data-override="abono"> Abono </th>
-						        </tr>
-						    </thead>
-						    <tbody>
-						    </tbody>
-						    <tfoot>
-						        <tr>
-						            <td style="display: none;"> &nbsp; </td>
-						            <td colspan="7"> &nbsp; </td>
-						            <td> <div id="total_valor">$0</div> </td>
-						        </tr>						    	
-						    </tfoot>
-						</table>
-		            </div>
-            	</div>
-            </div>
 		</div>
 	</div>
 	<br/><br/>

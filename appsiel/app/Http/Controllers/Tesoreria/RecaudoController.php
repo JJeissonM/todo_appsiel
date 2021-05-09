@@ -220,7 +220,7 @@ class RecaudoController extends TransaccionController
         $doc_encabezado->valor_total = $total_recaudo;
         $doc_encabezado->save();
         
-        // Solo los anticipos se guardan en el movimiento de cartera (CxC)
+        // Solo los anticipos de clientes se guardan en el movimiento de cartera (CxC)
         if ( $request->teso_tipo_motivo == 'Anticipo' )
         {
             $this->datos['valor_documento'] = $total_recaudo * -1;
