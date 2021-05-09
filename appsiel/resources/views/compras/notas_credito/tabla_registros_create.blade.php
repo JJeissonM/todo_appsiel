@@ -14,12 +14,12 @@
 
                 ?>
                 <tr data-cantidad_original="{{$linea->cantidad}}" data-bodega_id="{{$linea_entrada_almacen->inv_bodega_id}}" data-producto_id="{{$linea_entrada_almacen->inv_producto_id}}" >
-                    <td> {{ $linea->producto_id }} </td>
+                    <td class="text-center"> {{ $linea->producto_id }} </td>
                     <td> {{ $linea->producto_descripcion }} </td>
-                    <td> {{ '$ '.number_format( $linea->precio_unitario, 2, ',', '.') }} </td>
-                    <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                    <td> {{ number_format( $cantidad_real, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
-                    <td> {{ '$ '.number_format( $linea->precio_unitario * $cantidad_real, 2, ',', '.') }} </td>
+                    <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario, 2, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+                    <td class="text-center"> {{ number_format( $cantidad_real, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
+                    <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario * $cantidad_real, 2, ',', '.') }} </td>
                     <td> {{ Form::select('motivos_ids[]',$motivos,null,['id'=>'inv_motivo_id']) }} </td>
                     <td> 
                         <input type="hidden" class="cantidad_anterior" value="{{ $linea->cantidad }}">

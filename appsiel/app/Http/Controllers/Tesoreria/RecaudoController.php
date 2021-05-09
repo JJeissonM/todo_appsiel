@@ -298,8 +298,14 @@ class RecaudoController extends TransaccionController
         $registros_contabilidad = [];//TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
         $elaboro = $doc_encabezado->creado_por;
-
-        $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        
+        if(Input::get('formato_impresion_id') == 'estandar'){
+            $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        }
+        if(Input::get('formato_impresion_id') == 'estandar2'){
+            $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir2', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        }
+        
        
         // Se prepara el PDF
         $orientacion='portrait';

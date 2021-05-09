@@ -18,7 +18,7 @@
                 <tr>
                     <td> {{ $registro->medio_recaudo }} </td>
                     <td> {{ $registro->caja }} {{ $registro->cuenta_bancaria }} </td>
-                    <td> ${{ number_format($registro->valor, 0, ',', '.') }} </td>
+                    <td class="text-right"> ${{ number_format($registro->valor, 0, ',', '.') }} </td>
                 </tr>
                 <?php
                     $total_recaudo += $registro->valor;
@@ -39,7 +39,7 @@
             <tr>
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
-                <td style="border-top: solid 1px black;">
+                <td style="border-top: solid 1px black;" class="text-right">
                    ${{ number_format($total_recaudo, 0, ',', '.') }} ({{ NumerosEnLetras::convertir($total_recaudo,'pesos',false) }})
                 </td>
             </tr>
@@ -58,7 +58,7 @@
             @foreach ( $vec_motivos as $registro )
                 <tr>
                     <td> {{ $registro['descripcion'] }} </td>
-                    <td> ${{ number_format( $registro['total_motivo'], 0, ',', '.') }} </td>
+                    <td class="text-right"> ${{ number_format( $registro['total_motivo'], 0, ',', '.') }} </td>
                 </tr>
                 <?php
                     $total_motivo += $registro['total_motivo'];               
@@ -68,7 +68,7 @@
         <tfoot>
             <tr>
                 <td> &nbsp; </td>
-                <td style="border-top: solid 1px black;">
+                <td style="border-top: solid 1px black;" class="text-right">
                    ${{ number_format($total_motivo, 0, ',', '.') }}
                 </td>
             </tr>

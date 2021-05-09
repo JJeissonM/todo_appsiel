@@ -29,9 +29,9 @@
             ?>
             @if( $movimiento_cxc[$i]['saldo_pendiente'] > 0)
                 <tr id="{{ $id }}" class="{{$class_advertencia}}">
-                    <td> {{ $movimiento_cxc[$i]['documento'] }} </td>
+                    <td class="text-center"> {{ $movimiento_cxc[$i]['documento'] }} </td>
                     <td> {{ $movimiento_cxc[$i]['fecha'] }} </td>
-                    <td class="col_saldo_pendiente" > {{ number_format($movimiento_cxc[$i]['saldo_pendiente'], 0, ',', '.') }} </td>
+                    <td class="col_saldo_pendiente text-right" > {{ number_format($movimiento_cxc[$i]['saldo_pendiente'], 0, ',', '.') }} </td>
                     <td> 
                         {{ Form::text('text_aplicar_'.$id, $movimiento_cxc[$i]['saldo_pendiente'], [ 'id' => 'text_aplicar_'.$id, 'class' => 'text_aplicar' ] ) }} 
                         <button class="btn btn-success btn-xs btn_agregar_documento_cartera" style="display: {{$ocultar}};" ><i class="fa fa-check"></i></button>

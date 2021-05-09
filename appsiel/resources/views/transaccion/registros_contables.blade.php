@@ -10,7 +10,7 @@
                 @endphp
                 @foreach( $registros_contabilidad as $fila )
                     <tr>
-                        <td> {{ $fila['cuenta_codigo'] }}</td>
+                        <td class="text-center"> {{ $fila['cuenta_codigo'] }}</td>
                         <td> {{ $fila['cuenta_descripcion'] }}</td>
                         <td style="text-align: right;"> {{ number_format(  $fila['valor_debito'], 2, ',', '.') }}</td>
                         <td style="text-align: right;"> {{ number_format(  $fila['valor_credito'] * -1, 2, ',', '.') }}</td>

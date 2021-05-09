@@ -16,10 +16,10 @@
                 <td align="center"> {{ $linea->producto_id }} </td>
                 <td> {{ $linea->producto_descripcion }} </td>
                 <td align="center"> {{ $unidad_medida }} </td>
-                <td style="text-align: right;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
+                <td style="text-align: center;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                 <td style="text-align: right;"> {{ '$ '.number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
-                <td style="text-align: right;"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                <td style="text-align: right;"> {{ number_format( $linea->tasa_descuento, 2, ',', '.').'%' }} </td>
+                <td style="text-align: center;"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+                <td style="text-align: center;"> {{ number_format( $linea->tasa_descuento, 2, ',', '.').'%' }} </td>
                 <td style="text-align: right;"> {{ '$ '.number_format( $linea->precio_total, 2, ',', '.') }} </td>
             </tr>
         @endforeach
@@ -27,7 +27,7 @@
     <tfoot>
         <tr>
             <td colspan="3">&nbsp;</td>
-            <td style="text-align: right;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
+            <td style="text-align: center;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
             <td colspan="3">&nbsp;</td>
             <td style="text-align: right;"> ${{ number_format($total_factura, 2, ',', '.') }} </td>
         </tr>

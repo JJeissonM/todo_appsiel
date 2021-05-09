@@ -22,16 +22,16 @@
             $id = $movimiento_cxc[$i]['id'];
             ?>
             <tr id="{{ $id }}">
-                <td> {{ $propiedad->codigo }}</td>
+                <td class="text-center"> {{ $propiedad->codigo }}</td>
                 <td> {{ $movimiento_cxc[$i]['tercero'] }} </td>
-                <td> {{ $movimiento_cxc[$i]['documento'] }} </td>
+                <td class="text-center"> {{ $movimiento_cxc[$i]['documento'] }} </td>
                 <td> {{ $movimiento_cxc[$i]['detalle_operacion'] }} </td>
                 <td> {{ $movimiento_cxc[$i]['fecha'] }} </td>
                 <td> {{ $movimiento_cxc[$i]['fecha_vencimiento'] }} </td>
                 <td> {{ $movimiento_cxc[$i]['estado'] }} </td>
-                <td class="col_valor_cartera"> {{ number_format($movimiento_cxc[$i]['valor_cartera'], 0, ',', '.') }} </td>
-                <td class="col_valor_pagado"> {{ number_format($movimiento_cxc[$i]['valor_pagado'], 0, ',', '.') }} </td>
-                <td class="col_saldo_pendiente" > {{ number_format($movimiento_cxc[$i]['saldo_pendiente'], 0, ',', '.') }} </td>
+                <td class="col_valor_cartera text-right"> {{ number_format($movimiento_cxc[$i]['valor_cartera'], 0, ',', '.') }} </td>
+                <td class="col_valor_pagado text-right"> {{ number_format($movimiento_cxc[$i]['valor_pagado'], 0, ',', '.') }} </td>
+                <td class="col_saldo_pendiente text-right" > {{ number_format($movimiento_cxc[$i]['saldo_pendiente'], 0, ',', '.') }} </td>
             </tr>
         <?php 
             $total_1+=$movimiento_cxc[$i]['valor_cartera'];
@@ -47,9 +47,9 @@
             <td>  </td>
             <td>  </td>
             <td>  </td>
-            <td> {{ number_format($total_1, 0, ',', '.') }} </td>
-            <td> {{ number_format($total_2, 0, ',', '.') }} </td>
-            <td> {{ number_format($total_3, 0, ',', '.') }} </td>
+            <td class="text-right"> {{ number_format($total_1, 0, ',', '.') }} </td>
+            <td class="text-right"> {{ number_format($total_2, 0, ',', '.') }} </td>
+            <td class="text-right"> {{ number_format($total_3, 0, ',', '.') }} </td>
         </tr>
     </tbody>
 </table>

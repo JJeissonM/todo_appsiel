@@ -25,7 +25,7 @@
                             }
                         ?>
                         <tr class="{{$clase}}">
-                            <td class="table-text"><div>{{ $registro->codigo }}</div></td>
+                            <td class="table-text text-center"><div>{{ $registro->codigo }}</div></td>
                             <td class="table-text"><div>{{ $registro->descripcion }}</div></td>
                             <td class="table-text"><div>{{ $registro->estudiante->tercero->descripcion }}</div></td>
                             <td class="table-text"><div>{{ $registro->nombre_curso }}</div></td>

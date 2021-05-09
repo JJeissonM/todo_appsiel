@@ -231,7 +231,7 @@ use App\Core\Tercero;
             </td>
             <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
             <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->valor_total_descuento, 2, ',', '.') }} </td>
-            <td> {{ '$  '.number_format( $linea->precio_total, 2, ',', '.') }} </td>
+            <td class="text-right"> {{ '$  '.number_format( $linea->precio_total, 2, ',', '.') }} </td>
         </tr>
         <?php
                 $i++;

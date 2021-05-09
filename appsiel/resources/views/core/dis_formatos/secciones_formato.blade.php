@@ -65,7 +65,7 @@
 												$seccion = App\DifoSeccion::find($fila->id_seccion);
 											?> 
 											<tr>
-												<td>{{$fila->orden}}</td>
+												<td class="text-center">{{$fila->orden}}</td>
 												<td>{{$seccion->descripcion}}</td>
 												<td>{{$seccion->presentacion}}</td>
 												<td>{{$seccion->contenido}}</td>

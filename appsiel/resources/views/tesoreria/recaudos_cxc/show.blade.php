@@ -19,8 +19,9 @@
 		</div>
 
 		<div class="col-md-4 text-center">
-			<div class="btn-group">
-				{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url ) }}
+			<div class="btn-group">			
+				{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
+				{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar2') }}
 				{{ Form::bsBtnEmail( 'tesoreria_recaudos_cxc_enviar_por_email/'.$id.$variables_url ) }}  
 			</div>			
 		</div>

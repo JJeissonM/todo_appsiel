@@ -44,13 +44,13 @@
                 <tr>
                     <td> {{ $cartera->nombre_completo }} ({{ $cartera->codigo_matricula }}) </td>
                     <td> {{ $cartera->nom_curso }} </td>
-                    <td align="center">
+                    <td class="text-right">
                         {{ '$'.number_format($cartera->valor_cartera, 0, ',', '.') }}
                     </td>
-                    <td align="center">
+                    <td class="text-right">
                         {{ '$'.number_format($cartera->valor_pagado, 0, ',', '.') }}
                     </td>
-                    <td align="center">
+                    <td class="text-right">
                         <?php
                             $pendiente = $cartera->valor_cartera - $cartera->valor_pagado;
                         ?>
@@ -68,13 +68,13 @@
             <tr>
                 <td>&nbsp;</td>
                 <td align="right"> <b>TOTALES</b></td>
-                <td align="center"> 
+                <td class="text-right"> 
                     {{'$'.number_format($total_pagar, 0, ',', '.')}}
                 </td>
-                <td align="center"> 
+                <td class="text-right"> 
                     {{'$'.number_format($total_pagado, 0, ',', '.')}}
                 </td>
-                <td align="center"> 
+                <td class="text-right"> 
                     {{'$'.number_format($total_pendiente, 0, ',', '.')}}
                 </td>
             </tr>

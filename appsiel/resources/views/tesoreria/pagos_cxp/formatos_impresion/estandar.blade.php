@@ -36,10 +36,10 @@
 
                 <tr>
                     <td> {{ $linea->tercero_nombre_completo }} </td>
-                    <td> {{ $linea->documento_prefijo_consecutivo }} </td>
+                    <td class="text-center"> {{ $linea->documento_prefijo_consecutivo }} </td>
                     <td> {{ $el_documento->fecha }} </td>
                     <td> {{ $el_documento->descripcion }} </td>
-                    <td> {{ '$ '.number_format( $linea->abono, 0, ',', '.') }} </td>
+                    <td class="text-right"> {{ '$ '.number_format( $linea->abono, 0, ',', '.') }} </td>
                 </tr>
                 <?php 
                     $total_abono += $linea->abono;
@@ -49,7 +49,7 @@
         <tfoot>
             <tr>
                 <td colspan="4">&nbsp;</td>
-                <td> {{ number_format($total_abono, 0, ',', '.') }} </td>
+                <td class="text-right"> {{ number_format($total_abono, 0, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>

@@ -28,13 +28,13 @@
 					$total_ganancias_peridas += $mov_cuenta->valor_saldo;
 				?>
 				<tr>
-					<td> {{ $mov_cuenta->cuenta->codigo }} {{ $mov_cuenta->cuenta->descripcion }} </td>
-					<td> {{ number_format( $saldo, 0, ',', '.') }} </td>
+					<td class="text-center"> {{ $mov_cuenta->cuenta->codigo }} {{ $mov_cuenta->cuenta->descripcion }} </td>
+					<td class="text-right"> {{ number_format( $saldo, 0, ',', '.') }} </td>
 					<td> {{ $lbl_mov_cta_resultado }} </td>
 				</tr>
 				<tr>
-					<td> {{ $cuenta_ganancias_perdidas_ejercicio->codigo }} {{ $cuenta_ganancias_perdidas_ejercicio->descripcion }} </td>
-					<td> {{ number_format( $saldo, 0, ',', '.') }} </td>
+					<td class="text-center"> {{ $cuenta_ganancias_perdidas_ejercicio->codigo }} {{ $cuenta_ganancias_perdidas_ejercicio->descripcion }} </td>
+					<td class="text-right"> {{ number_format( $saldo, 0, ',', '.') }} </td>
 					<td> {{ $lbl_mov_cta_cierre }} </td>
 				</tr>
 			@endforeach

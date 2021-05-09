@@ -22,12 +22,12 @@
                     }
                 ?>
                 <tr>
-                    <td> {{ $linea->producto_id }} </td>
+                    <td class="text-center"> {{ $linea->producto_id }} </td>
                     <td> {{ $descripcion_item }} </td>
                     <td> {{ $linea->bodega_descripcion }} </td>
                     <td> {{ $linea->inv_motivo_id }} -  {{ $linea->motivo_descripcion }} </td>
                     <td style="text-align: right;"> $ {{ number_format( $linea->costo_unitario, 2, ',', '.') }} </td>
-                    <td> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
+                    <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
                     <td style="text-align: right;"> $ {{ number_format( $linea->costo_total, 2, ',', '.') }} </td>
                     <td>
                         @if( !in_array( $doc_encabezado->estado, ['Anulado', 'Facturada'] ) )
@@ -46,7 +46,7 @@
         <tfoot>
             <tr>
                 <td colspan="5">&nbsp;</td>
-                <td style="text-align: right;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
+                <td style="text-align: center;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td style="text-align: right;"> $ {{ number_format($total_factura, 2, ',', '.') }} </td>
                 <td>&nbsp;</td>
             </tr>

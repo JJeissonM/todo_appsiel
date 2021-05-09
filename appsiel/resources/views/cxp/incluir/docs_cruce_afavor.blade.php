@@ -29,9 +29,9 @@
         ?>
         @if( $movimiento[$i]['saldo_pendiente'] < 0)
             <tr id="{{ $id }}" class="{{$class_advertencia}}">
-                <td> {{ $movimiento[$i]['documento'] }} </td>
+                <td class="text-center"> {{ $movimiento[$i]['documento'] }} </td>
                 <td> {{ $movimiento[$i]['fecha'] }} </td>
-                <td class="col_saldo_pendiente" >
+                <td class="col_saldo_pendiente text-right" >
                     <?php
                         $saldo_pendiente = $movimiento[$i]['saldo_pendiente'] * -1;
                     ?> 

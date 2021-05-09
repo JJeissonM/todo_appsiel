@@ -90,14 +90,14 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 				?>
 				@foreach($doc_registros as $linea )
 				<tr>
-					<td> {{ $i }} </td>
+					<td class="text-center"> {{ $i }} </td>
 					<td width="250px"> {{ $linea->producto_descripcion }} </td>
 					@if($doc_encabezado->estado=='Cumplido')
-					<td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
-					<td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-					<td> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
-					<td> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
+					<td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+					<td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
+					<td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+					<td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
+					<td class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
 					@else
 					<td> <input class="cant" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->cantidad}}" style="width: 100%" name="dcantidad_{{$linea->id}}" /> </td>
 					<td> <input class="preciou" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{round($linea->precio_unitario / (1+$linea->tasa_impuesto/100),2,PHP_ROUND_HALF_UP)}}" style="width: 100%" name="dpreciounitario_{{$linea->id}}" /> </td>

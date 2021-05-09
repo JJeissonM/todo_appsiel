@@ -15,12 +15,12 @@
                     <td> {{ $fila->transaccion_descripcion }} </td>
                     <td> {{ $fila->impuesto_descripcion }} </td>
                     <td> {{ $fila->impuesto_tasa }} </td>
-                    <td> {{ $fila->cuenta_codigo }} </td>
+                    <td class="text-center"> {{ $fila->cuenta_codigo }} </td>
                     <td> {{ $fila->cuenta_descripcion }} </td>
                     <td> {{ $fila->producto_descripcion }} ({{ $fila->producto_unidad_medida }}) </td>
                     <td> {{ $fila->movimiento_tasa }} </td>
-                    <td> {{ number_format( $fila->valor_debito, 0, ',', '.') }} </td>
-                    <td> {{ number_format( $fila->valor_credito, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $fila->valor_debito, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $fila->valor_credito, 0, ',', '.') }} </td>
                 </tr>
                 <?php
                     $j++;
@@ -37,10 +37,10 @@
                 <td colspan="7">
                    &nbsp;
                 </td>
-                <td>
+                <td class="text-center">
                    {{ number_format($total_debitos, 0, ',', '.')}}
                 </td>
-                <td>
+                <td class="text-center">
                    {{ number_format($total_creditos, 0, ',', '.')}}
                 </td>
             </tr>

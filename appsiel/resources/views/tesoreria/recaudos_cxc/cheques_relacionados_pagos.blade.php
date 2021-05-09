@@ -30,7 +30,7 @@
                     <td> {{ $cheque->referencia_cheque }} </td>
                     <td> {{ $descripcion_banco }} </td>
                     <td> {{ $cheque->tercero->descripcion }} </td>
-                    <td> $ {{ number_format( $cheque->valor, 0, ',', '.') }} </td>
+                    <td class="text-right"> $ {{ number_format( $cheque->valor, 0, ',', '.') }} </td>
                 </tr>
                 <?php 
                     $total_cheques += $cheque->valor;
@@ -40,7 +40,7 @@
         <tfoot>
             <tr style="font-weight: bold;">
                 <td colspan="5" style="text-align: right;"> Totales </td>
-                <td> $ {{ number_format($total_cheques, 0, ',', '.') }} </td>
+                <td class="text-right"> $ {{ number_format($total_cheques, 0, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>

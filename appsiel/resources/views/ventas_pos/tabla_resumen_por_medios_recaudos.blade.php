@@ -50,7 +50,7 @@
         <tfoot>
             <tr>
                 <td colspan="5"> Total Venta </td>
-                <td> ${{ number_format( $total_ventas, 0, ',','.') }} </td>
+                <td class="text-right"> ${{ number_format( $total_ventas, 0, ',','.') }} </td>
                 <td colspan="3"> </td>
             </tr>
         </tfoot>

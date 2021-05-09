@@ -4,80 +4,86 @@
 <hr>
 
 <div class="row">
-	<div class="col-md-6" style="border-radius: 4px; border: solid 1px #848484; margin: 5px;">
-		<h6>Formulario</h6>
-		<hr>
-		<div class="row">
-			<div class="col-md-6">
-				<div class="row" style="padding:5px;">
-					{{ Form::bsFecha( 'fecha_emision', date('Y-m-d'), 'Fecha emisión', [], []) }}
+	<div class="col-md-6" >
+		<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
+			<h6>Formulario</h6>
+			<hr>
+			<div class="row">				
+				<div class="col-md-6">
+					<div class="row" style="padding:5px;">
+						{{ Form::bsFecha( 'fecha_emision', date('Y-m-d'), 'Fecha emisión', [], []) }}
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="row" style="padding:5px;">
+						{{ Form::bsFecha( 'fecha_cobro', date('Y-m-d'), 'Fecha cobro', [], []) }}
+					</div>
 				</div>
 			</div>
-			<div class="col-md-6">
-				<div class="row" style="padding:5px;">
-					{{ Form::bsFecha( 'fecha_cobro', date('Y-m-d'), 'Fecha cobro', [], []) }}
+			<div class="row">
+				<div class="col-md-6">
+					<div class="row" style="padding:5px;">
+						{{ Form::bsText( 'numero_cheque', null, 'Número de cheque', []) }}
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="row" style="padding:5px;">
+						{{ Form::bsText( 'referencia_cheque', null, 'Referencia	', []) }}
+					</div>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="row" style="padding:5px;">
+						{{ Form::bsSelect('entidad_financiera_id', null, 'Entidad financiera', $entidades_financieras, []) }}
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="row" style="padding:5px;">
+						{{ Form::bsText( 'valor_cheque', null, 'Valor', []) }}
+					</div>
+				</div>
+			</div>
+			<p style="text-align: center;">
+				<button class="btn btn-primary" id="btn_agregar_cheque"> Agregar </button>
+			</p>
 		</div>
-		<div class="row">
-			<div class="col-md-6">
-				<div class="row" style="padding:5px;">
-					{{ Form::bsText( 'numero_cheque', null, 'Número de cheque', []) }}
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="row" style="padding:5px;">
-					{{ Form::bsText( 'referencia_cheque', null, 'Referencia	', []) }}
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-6">
-				<div class="row" style="padding:5px;">
-					{{ Form::bsSelect('entidad_financiera_id', null, 'Entidad financiera', $entidades_financieras, []) }}
-				</div>
-			</div>
-			<div class="col-md-6">
-				<div class="row" style="padding:5px;">
-					{{ Form::bsText( 'valor_cheque', null, 'Valor', []) }}
-				</div>
-			</div>
-		</div>
-		<p style="text-align: center;">
-			<button class="btn btn-primary" id="btn_agregar_cheque"> Agregar </button>
-		</p>
+		
 	</div>
-	<div class="col-md-6" style="border-radius: 4px; border: solid 1px #848484; margin: 5px;">
-		<div class="row">
-			<div class="col-md-12">
-				<h6>Cheques ingresados</h6>
-				<hr>
-				<table class="table table-striped table-bordered" id="tabla_registros_cheques">
-					<thead>
-						<tr>
-							<th style="display: none;">entidad_financiera_id</th>
-							<th style="display: none;">valor_cheque</th>
-							<th data-override="fecha_emision">F. Emisión</th>
-							<th data-override="fecha_cobro">F. cobro</th>
-							<th data-override="numero_cheque">Núm.</th>
-							<th data-override="referencia_cheque">Ref.</th>
-							<th>Banco</th>
-							<th>Valor</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>				
-					</tbody>
-					<tfoot>
-						<tr>
-							<td colspan="5">&nbsp;</td>
-							<td id="valor_total_cheques" align="right">$ 0</td>
-							<td><input type="hidden" name="input_valor_total_cheques" id="input_valor_total_cheques" value="0"></td>
-						</tr>
-					</tfoot>
-				</table>
-			</div>
+	<div class="col-md-6">
+		<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
+			<div class="row">
+				<div class="col-md-12">
+					<h6>Cheques ingresados</h6>
+					<hr>
+					<table class="table table-striped table-bordered" id="tabla_registros_cheques">
+						<thead>
+							<tr>
+								<th style="display: none;">entidad_financiera_id</th>
+								<th style="display: none;">valor_cheque</th>
+								<th data-override="fecha_emision">F. Emisión</th>
+								<th data-override="fecha_cobro">F. cobro</th>
+								<th data-override="numero_cheque">Núm.</th>
+								<th data-override="referencia_cheque">Ref.</th>
+								<th>Banco</th>
+								<th>Valor</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>				
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan="5">&nbsp;</td>
+								<td id="valor_total_cheques" align="right">$ 0</td>
+								<td><input type="hidden" name="input_valor_total_cheques" id="input_valor_total_cheques" value="0"></td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
 		</div>
+		</div>
+		
 	</div>
 </div>
 

@@ -44,18 +44,18 @@
                 ?>
 
                 <tr>
-                    <td> {{ $linea->producto_id }} </td>
+                    <td class="text-center"> {{ $linea->producto_id }} </td>
                     <td> {{ $linea->producto_descripcion }} </td>
-                    <td> ${{ number_format( $precio_original, 0, ',', '.') }} </td>
-                    <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                    <td> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
-                    <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
+                    <td class="text-right"> ${{ number_format( $precio_original, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+                    <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
+                    <td class="text-right"> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
                 </tr>
 
                 @if( $linea->valor_total_descuento != 0 )
                     <tr>
                         <td colspan="4" style="text-align: right;">(Dcto. línea</td>
-                        <td colspan="2"> -${{ number_format( $linea->valor_total_descuento, 0, ',', '.') }}) </td>
+                        <td class="text-right" colspan="2"> -${{ number_format( $linea->valor_total_descuento, 0, ',', '.') }}) </td>
                     </tr>                    
                 @endif
                 <?php 

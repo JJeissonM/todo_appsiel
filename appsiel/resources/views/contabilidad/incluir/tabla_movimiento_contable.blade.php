@@ -29,13 +29,13 @@
                 ?>
                 <tr>
                     <td> {{ $linea->fecha }}</td>
-                    <td> {{ $linea->cuenta->codigo }} {{ $linea->cuenta->descripcion }}</td>
-                    <td> {{ $tercero_numero_identificacion }} {{ $tercero_descripcion }}</td>
+                    <td class="text-center"> {{ $linea->cuenta->codigo }} {{ $linea->cuenta->descripcion }}</td>
+                    <td class="text-center"> {{ $tercero_numero_identificacion }} {{ $tercero_descripcion }}</td>
                     <td> {{ $linea->tipo_documento_app->prefijo }} {{ $linea->consecutivo }}</td>
                     <td> {{ $linea->detalle_operacion }}</td>
-                    <td> {{ number_format( $linea->valor_debito , 0, ',', '.') }} </td>
-                    <td> {{ number_format( $linea->valor_credito , 0, ',', '.') }} </td>
-                    <td> {{ number_format( $saldo , 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $linea->valor_debito , 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $linea->valor_credito , 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $saldo , 0, ',', '.') }} </td>
                 </tr>
 
                     <?php 
@@ -48,9 +48,9 @@
         <tfoot>
             <tr>
                 <td colspan="5"> &nbsp; </td>
-                <td> {{ number_format($total_debito, 0, ',', '.') }} </td>
-                <td> {{ number_format($total_credito, 0, ',', '.') }} </td>
-                <td> {{ number_format($saldo, 0, ',', '.') }} </td>
+                <td class="text-center"> {{ number_format($total_debito, 0, ',', '.') }} </td>
+                <td class="text-center"> {{ number_format($total_credito, 0, ',', '.') }} </td>
+                <td class="text-center"> {{ number_format($saldo, 0, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>

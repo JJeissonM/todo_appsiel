@@ -37,12 +37,12 @@
 
                 @if( $mostrar_item )
                     <tr>
-                        <td>{{ $item->id }}</td>
+                        <td class="text-center">{{ $item->id }}</td>
                         <td>{{ $item->descripcion }} ({{ $item->unidad_medida1 }})</td>
-                        <td>{{ number_format($saldo_ini, 2, ',', '.') }} </td>
-                        <td>{{ number_format( $entradas, 2, ',', '.') }}</td>
-                        <td>{{ number_format( $salidas, 2, ',', '.') }}</td>
-                        <td>{{ number_format( $saldo_fin, 2, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format($saldo_ini, 2, ',', '.') }} </td>
+                        <td class="text-right">{{ number_format( $entradas, 2, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format( $salidas, 2, ',', '.') }}</td>
+                        <td class="text-right">{{ number_format( $saldo_fin, 2, ',', '.') }}</td>
                     </tr>
                 @endif
             @endforeach

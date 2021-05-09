@@ -106,10 +106,10 @@
 
                 <tr>
                     <td> {{ $linea->tercero_nombre_completo }} </td>
-                    <td> {{ $linea->documento_prefijo_consecutivo }} </td>
+                    <td class="text-center"> {{ $linea->documento_prefijo_consecutivo }} </td>
                     <td> {{ $el_documento->fecha }} </td>
                     <td> {{ $el_documento->descripcion }} </td>
-                    <td> {{ '$ '.number_format( $linea->abono, 0, ',', '.') }} </td>
+                    <td class="text-right"> {{ '$ '.number_format( $linea->abono, 0, ',', '.') }} </td>
                 </tr>
                 <?php 
                     $total_abono += $linea->abono;
@@ -119,7 +119,7 @@
         <tfoot>
             <tr>
                 <td colspan="4">&nbsp;</td>
-                <td> {{ number_format($total_abono, 0, ',', '.') }} </td>
+                <td class="text-right"> {{ number_format($total_abono, 0, ',', '.') }} </td>
             </tr>
         </tfoot>
     </table>
@@ -148,10 +148,10 @@
             @endphp
             @foreach( $registros_contabilidad as $fila )
                 <tr>
-                    <td> {{ $fila['cuenta_codigo'] }}</td>
+                    <td class="text-center"> {{ $fila['cuenta_codigo'] }}</td>
                     <td> {{ $fila['cuenta_descripcion'] }}</td>
-                    <td> {{ number_format(  $fila['valor_debito'], 0, ',', '.') }}</td>
-                    <td> {{ number_format(  $fila['valor_credito'] * -1, 0, ',', '.') }}</td>
+                    <td class="text-right"> {{ number_format(  $fila['valor_debito'], 0, ',', '.') }}</td>
+                    <td class="text-right"> {{ number_format(  $fila['valor_credito'] * -1, 0, ',', '.') }}</td>
                 </tr>
                 @php
                     $total_valor_debito += $fila['valor_debito'];
@@ -162,8 +162,8 @@
         <tfoot>            
                 <tr>
                     <td colspan="2"> &nbsp; </td>
-                    <td> {{ number_format( $total_valor_debito, 0, ',', '.') }}</td>
-                    <td> {{ number_format( $total_valor_credito, 0, ',', '.') }}</td>
+                    <td class="text-right"> {{ number_format( $total_valor_debito, 0, ',', '.') }}</td>
+                    <td class="text-right"> {{ number_format( $total_valor_credito, 0, ',', '.') }}</td>
                 </tr>
         </tfoot>
     </table>

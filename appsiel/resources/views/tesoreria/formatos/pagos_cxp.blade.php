@@ -101,12 +101,12 @@
                 ?>
                 @foreach($doc_registros as $linea )
                     <tr>
-                        <td> {{ $linea->producto_id }} </td>
+                        <td class="text-center"> {{ $linea->producto_id }} </td>
                         <td> {{ $linea->producto_descripcion }} </td>
-                        <td> {{ '$ '.number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
-                        <td> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                        <td> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
-                        <td> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
+                        <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
+                        <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+                        <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
+                        <td class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
                     </tr>
                     <?php 
                         $total_cantidad += $linea->cantidad;
@@ -119,7 +119,7 @@
             <tfoot>
                 <tr>
                     <td colspan="4">&nbsp;</td>
-                    <td> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
                     <td>&nbsp;</td>
                 </tr>
             </tfoot>
@@ -129,9 +129,9 @@
     <div class="table-responsive">
         <table class="table table-bordered">
             <tr>
-                <td> <span style="text-align: right; font-weight: bold;"> Subtotal: </span> $ {{ number_format($subtotal, 0, ',', '.') }}</td>
-                <td> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> $ {{ number_format($total_impuestos, 0, ',', '.') }}</td>
-                <td> <span style="text-align: right; font-weight: bold;"> Total factura: </span> $ {{ number_format($total_factura, 0, ',', '.') }}</td>
+                <td class="text-right"> <span style="font-weight: bold;"> Subtotal: </span> $ {{ number_format($subtotal, 0, ',', '.') }}</td>
+                <td class="text-right"> <span style="font-weight: bold;"> Impuestos: </span> $ {{ number_format($total_impuestos, 0, ',', '.') }}</td>
+                <td class="text-right"> <span style="font-weight: bold;"> Total factura: </span> $ {{ number_format($total_factura, 0, ',', '.') }}</td>
             </tr>
         </table>
     </div>
@@ -161,10 +161,10 @@
                 @endphp
                 @foreach( $registros_contabilidad as $fila )
                     <tr>
-                        <td> {{ $fila['cuenta_codigo'] }}</td>
+                        <td class="text-center"> {{ $fila['cuenta_codigo'] }}</td>
                         <td> {{ $fila['cuenta_descripcion'] }}</td>
-                        <td> {{ number_format(  $fila['valor_debito'], 0, ',', '.') }}</td>
-                        <td> {{ number_format(  $fila['valor_credito'] * -1, 0, ',', '.') }}</td>
+                        <td class="text-right"> {{ number_format(  $fila['valor_debito'], 0, ',', '.') }}</td>
+                        <td class="text-right"> {{ number_format(  $fila['valor_credito'] * -1, 0, ',', '.') }}</td>
                     </tr>
                     @php
                         $total_valor_debito += $fila['valor_debito'];
@@ -175,8 +175,8 @@
             <tfoot>            
                     <tr>
                         <td colspan="2"> &nbsp; </td>
-                        <td> {{ number_format( $total_valor_debito, 0, ',', '.') }}</td>
-                        <td> {{ number_format( $total_valor_credito, 0, ',', '.') }}</td>
+                        <td class="text-right"> {{ number_format( $total_valor_debito, 0, ',', '.') }}</td>
+                        <td class="text-right"> {{ number_format( $total_valor_credito, 0, ',', '.') }}</td>
                     </tr>
             </tfoot>
         </table>

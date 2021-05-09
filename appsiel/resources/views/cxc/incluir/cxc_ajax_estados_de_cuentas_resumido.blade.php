@@ -20,9 +20,9 @@
 
             ?>
             <tr>
-                <td> {{ $propiedad->codigo }}</td>
+                <td class="text-center"> {{ $propiedad->codigo }}</td>
                 <td> {{ $movimiento_cxc[$i]['tercero'] }} </td>
-                <td class="col_saldo_pendiente" > {{ number_format($movimiento_cxc[$i]['saldo_pendiente'], 0, ',', '.') }} </td>
+                <td class="col_saldo_pendiente text-right" > {{ number_format($movimiento_cxc[$i]['saldo_pendiente'], 0, ',', '.') }} </td>
             </tr>
         <?php 
             $total_3+=$movimiento_cxc[$i]['saldo_pendiente'];
@@ -31,7 +31,7 @@
         <tr>
             <td>  </td>
             <td>  </td>
-            <td> {{ number_format($total_3, 0, ',', '.') }} </td>
+            <td class="text-right"> {{ number_format($total_3, 0, ',', '.') }} </td>
         </tr>
     </tbody>
 </table>

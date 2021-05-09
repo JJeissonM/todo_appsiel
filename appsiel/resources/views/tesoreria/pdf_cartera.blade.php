@@ -59,15 +59,15 @@
             ?>
             @foreach($carteras as $cartera)
                 <tr>
-                    <td> {{ $cartera->doc_identidad }} </td>
+                    <td class="text-center"> {{ $cartera->doc_identidad }} </td>
                     <td> {{ $cartera->nombre_completo }} </td>
-                    <td align="center">
+                    <td class="text-right">
                         {{ '$'.number_format($cartera->valor_cartera, 0, ',', '.') }}
                     </td>
-                    <td align="center">
+                    <td class="text-right">
                         {{ '$'.number_format($cartera->valor_pagado, 0, ',', '.') }}
                     </td>
-                    <td align="center">
+                    <td class="text-right">
                         <?php
                             $pendiente = $cartera->valor_cartera - $cartera->valor_pagado;
                         ?>
@@ -85,10 +85,10 @@
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
                 <td align="right"> <b>TOTALES</b></td>
-                <td align="center"> 
+                <td class="text-right"> 
                     {{'$'.number_format($total_pagado, 0, ',', '.')}}
                 </td>
-                <td align="center"> 
+                <td class="text-right"> 
                     {{'$'.number_format($total_pendiente, 0, ',', '.')}}
                 </td>
             </tr>

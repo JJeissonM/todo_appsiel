@@ -15,7 +15,7 @@
                                 $nom_curso2 = DB::table('sga_cursos')->where('id', '=', $registro->curso_id)->value('descripcion');
                             ?>
 						<tr>
-							<td class="table-text"><div>{{ $registro->codigo }}</div></td>
+							<td class="table-text text-center"><div>{{ $registro->codigo }}</div></td>
 							<td class="table-text"><div>{{ $registro->anio }}</div></td>
 							<td class="table-text"><div>{{ $nom_curso2 }}</div></td>
 							<td class="table-text"><div>{{ $registro->acudiente }}</div></td>

@@ -80,7 +80,7 @@
 
 							            $url='cxc/imprimir_cartera_una_edad/'.((int)$lbl[0]-1).'/'.$lbl[2].'/'.$empresa_id;
 							            echo "<tr>
-							            <td>".$cartera_edades[$i]['lbl']."</td>
+							            <td class='text-center'>".$cartera_edades[$i]['lbl']."</td>
 							             <td>$".number_format($cartera_edades[$i]['saldo_pendiente'], 0, ',', '.')."</td>";
 							             	echo "<td><a class='btn btn-info btn-xs btn-detail' href='".url($url)."'><i class='fa fa-btn fa-print'></i>&nbsp;Imprimir cartera</a></td></tr>";
 							            $total_cartera+=$cartera_edades[$i]['saldo_pendiente'];
@@ -88,7 +88,7 @@
 							        ?>
 							        <tr>
 							        	<td><b>Total cartera</b></td>
-							        	<td>${{ number_format($total_cartera, 0, ',', '.') }}</td>
+							        	<td class="text-right">${{ number_format($total_cartera, 0, ',', '.') }}</td>
 							        	<td></td>
 							        </tr>								
 							</tbody>
