@@ -500,8 +500,6 @@
 				});
 			});
 
-
-
 			$(function() {
 				$.widget("custom.combobox", {
 					_create: function() {
@@ -655,6 +653,12 @@
 	@yield('scripts')
 	@yield('scripts2')
 	@yield('scripts3')
+	@yield('scripts4')
+	@yield('scripts5')
+	@yield('scripts6')
+	@yield('scripts7')
+	@yield('scripts8')
+	@yield('scripts9')
 
 	<script src="https://www.gstatic.com/charts/loader.js"></script>
 	<script>

@@ -44,6 +44,8 @@ use App\Tesoreria\TesoEntidadFinanciera;
 use App\Matriculas\FacturaAuxEstudiante;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Contabilidad\Retencion;
+use App\Contabilidad\RegistroRetencion;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
@@ -94,9 +96,10 @@ class RecaudoCxcController extends Controller
                     ];
 
         $motivos = [''];//RecaudoCxcController::get_motivos($id_transaccion);
-        $medios_recaudo = RecaudoCxcController::get_medios_recaudo();
-        $cajas = RecaudoCxcController::get_cajas();
-        $cuentas_bancarias = RecaudoCxcController::get_cuentas_bancarias();
+        $medios_recaudo = TesoMedioRecaudo::opciones_campo_select();
+        $cajas = TesoCaja::opciones_campo_select();
+        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
+        $retenciones = Retencion::opciones_campo_select();
 
         $terceros = [''];
 
@@ -108,7 +111,7 @@ class RecaudoCxcController extends Controller
                 ['url'=>'NO','etiqueta' => 'Crear nuevo' ]
             ];
 
-        return view('tesoreria.recaudos_cxc.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras' ) );
+        return view('tesoreria.recaudos_cxc.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras', 'retenciones' ) );
     }
 
     /**
@@ -124,6 +127,7 @@ class RecaudoCxcController extends Controller
         $doc_encabezado = $this->almacenar( $request );
 
         $this->almacenar_cheque( $request, $doc_encabezado );
+        $this->almacenar_retenciones( $request, $doc_encabezado );
 
         // se llama la vista de RecaudoCxcController@show
         return redirect( 'tesoreria/recaudos_cxc/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
@@ -158,6 +162,39 @@ class RecaudoCxcController extends Controller
                             'estado' => 'Recibido'
                         ];
                 ControlCheque::create( $datos );
+            }
+        }
+    }
+
+    public function almacenar_retenciones( $request, $doc_encabezado )
+    {        
+        $vec_3 = explode("-", $request->teso_medio_recaudo_id);
+        if ( $vec_3[1] == 'cheque_propio' || $vec_3[1] == 'cheque_de_tercero' )
+        {
+            $lineas_registros_cheques = json_decode($request->lineas_registros_cheques);
+
+            array_pop($lineas_registros_cheques); // Elimina ultimo elemento del array
+            
+            $cantidad = count($lineas_registros_cheques);
+            for ($i=0; $i < $cantidad; $i++) 
+            {
+                $datos = [
+                            'fuente' => $vec_3[1],
+                            'tercero_id' => $doc_encabezado->core_tercero_id,
+                            'fecha_emision' => $lineas_registros_cheques[$i]->fecha_emision,
+                            'fecha_cobro' => $lineas_registros_cheques[$i]->fecha_cobro,
+                            'numero_cheque' => $lineas_registros_cheques[$i]->numero_cheque,
+                            'referencia_cheque' => $lineas_registros_cheques[$i]->referencia_cheque,
+                            'entidad_financiera_id' => $lineas_registros_cheques[$i]->entidad_financiera_id,
+                            'valor' => (float)$lineas_registros_cheques[$i]->valor_cheque,
+                            'creado_por' => $doc_encabezado->creado_por,
+                            'core_tipo_transaccion_id_origen' => $doc_encabezado->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id_origen' => $doc_encabezado->core_tipo_doc_app_id,
+                            'consecutivo' => $doc_encabezado->consecutivo,
+                            'teso_caja_id' => $request->teso_caja_id,
+                            'estado' => 'Recibido'
+                        ];
+                RegistroRetencion::create( $datos );
             }
         }
     }
@@ -376,38 +413,8 @@ class RecaudoCxcController extends Controller
     }
 
 
-    public function get_medios_recaudo(){
-        $registros = TesoMedioRecaudo::all();  
-        $vec_m['']=''; 
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id.'-'.$fila->comportamiento]=$fila->descripcion; 
-        }
-        
-        return $vec_m;
-    }
-
-    public function get_cajas(){
-        $registros = TesoCaja::where('core_empresa_id',Auth::user()->empresa_id)->get();       
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id]=$fila->descripcion; 
-        }
-        
-        return $vec_m;
-    }
-
-    public function get_cuentas_bancarias(){
-        $registros = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
-                    ->where('core_empresa_id',Auth::user()->empresa_id)
-                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion AS cta_bancaria','teso_entidades_financieras.descripcion AS entidad_financiera')
-                    ->get();        
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id] = $fila->entidad_financiera.': '.$fila->cta_bancaria; 
-        }
-        
-        return $vec_m;
-    }
-
-    public function ajax_get_terceros($tercero_id){
+    public function ajax_get_terceros($tercero_id)
+    {
         $registros = Tercero::where('estado','Activo')
                             ->get();
             $opciones='<option value=""></option>';                
