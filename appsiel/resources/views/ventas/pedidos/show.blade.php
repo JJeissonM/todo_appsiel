@@ -100,11 +100,8 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @section('div_advertencia_anulacion')
 <div class="alert alert-warning" style="display: none;">
 	<a href="#" id="close" class="close">&times;</a>
-	<strong>Advertencia!</strong>
-	<br>
-	La anulación no se puede revertire.
-	<br>
-	Si realmente quiere anular el documento, haga click en el siguiente enlace: <span style="text-decoration-line: underline"> <a href="{{ url( 'vtas_pedidos_anular/'.$id.$variables_url ) }}"> Anular </a> </span>
+	<strong>¡ADVERTENCIA!</strong>
+	La anulación no puede revertirse. Si quieres confirmar, hacer click en: <a class="btn btn-danger btn-sm" href="{{ url( 'vtas_pedidos_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
 </div>
 @endsection
 

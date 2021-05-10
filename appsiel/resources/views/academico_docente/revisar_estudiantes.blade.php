@@ -43,7 +43,7 @@
 							?>
 							<tr>
 								<td width="300px"> {{ $estudiante->nombre_completo }} </td>
-								<td>{{ $estudiante->tipo_y_numero_documento_identidad }}</td>
+								<td class="text-center">{{ $estudiante->tipo_y_numero_documento_identidad }}</td>
 								<td>{{ $estudiante->genero }}</td>
 								<td>{{ $estudiante->fecha_nacimiento }} <br/> ({{ $edad }}) </td>
 								<td>{{ $estudiante->direccion1 }}</td>

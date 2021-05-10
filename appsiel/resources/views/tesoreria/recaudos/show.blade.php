@@ -59,16 +59,13 @@
 @section('div_advertencia_anulacion')
     <div class="alert alert-warning" style="display: none;">
         <a href="#" id="close" class="close">&times;</a>
-        <strong>Advertencia!</strong>
+        <strong>¡ADVERTENCIA!</strong>
         <br>
-        Al anular el documento se eliminan los registros del movimiento contable relacionado. La anulación no se puede
-        revertir.
-        <br>
-        Si realmente quiere anular el documento, haga click en el siguiente enlace: <span style="text-decoration-line: underline"> 
+        Al anular el documento se eliminan los registros del movimiento contable relacionado. La anulación no puede revertirse. Si quieres confirmar, hacer click en: 
         @if(isset($nombre))
-                <a href="{{ url( 'tesoreria/traslado_efectivo/anular/'.$id.$variables_url ) }}"> Anular </a> </span>
+                <a class="btn btn-danger btn-sm" href="{{ url( 'tesoreria/traslado_efectivo/anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
         @else
-            <a href="{{ url( 'tesoreria/recaudos_anular/'.$id.$variables_url ) }}"> Anular </a> </span>
+            <a class="btn btn-danger btn-sm" href="{{ url( 'tesoreria/recaudos_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
         @endif
     </div>
 @endsection
