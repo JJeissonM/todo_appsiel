@@ -215,7 +215,7 @@
 				
 					var medio_recaudo = $( "#teso_medio_recaudo_id" ).val().split('-');
 					var texto_medio_recaudo = [ medio_recaudo[0], $( "#teso_medio_recaudo_id option:selected" ).text() ];
-					console.log(medio_recaudo);
+					
 					if ( medio_recaudo[1] == 'Tarjeta bancaria')
 					{
 						var texto_caja = [0,''];

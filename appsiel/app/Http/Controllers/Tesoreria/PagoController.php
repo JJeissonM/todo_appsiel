@@ -465,37 +465,6 @@ class PagoController extends TransaccionController
         return $tr;
     }
 
-    public function get_medios_recaudo(){
-        $registros = TesoMedioRecaudo::all();  
-        $vec_m['']=''; 
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id.'-'.$fila->comportamiento]=$fila->descripcion; 
-        }
-        
-        return $vec_m;
-    }
-
-    public function get_cajas(){
-        $registros = TesoCaja::where('core_empresa_id',Auth::user()->empresa_id)->get();       
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id]=$fila->descripcion; 
-        }
-        
-        return $vec_m;
-    }
-
-    public function get_cuentas_bancarias(){
-        $registros = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
-                    ->where('core_empresa_id',Auth::user()->empresa_id)
-                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion AS cta_bancaria','teso_entidades_financieras.descripcion AS entidad_financiera')
-                    ->get();        
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id] = $fila->entidad_financiera.': '.$fila->cta_bancaria; 
-        }
-        
-        return $vec_m;
-    }
-
     public function ajax_get_terceros($tercero_id){
         $registros = Tercero::where('estado','Activo')
                             ->get();

@@ -1,4 +1,4 @@
-{{ Form::label($name, $lbl, ['class' => 'col-md-3']) }}
+{{ Form::label($name, $lbl . ':', ['class' => 'col-md-3']) }}
 <?php
 	$lista_valores = explode(",",$value);
 	//dd($opciones);

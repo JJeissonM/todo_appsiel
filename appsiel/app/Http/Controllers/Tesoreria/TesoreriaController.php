@@ -201,17 +201,6 @@ class TesoreriaController extends TransaccionController
     }
 
 
-
-    //   GET CAJAS
-    public function get_cajas($empresa_id){
-        $registros = TesoCaja::where('core_empresa_id',$empresa_id)->get();        
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id]=$fila->descripcion; 
-        } 
-        return $vec_m;
-    }
-
-
     //   GET CAJAS
     public function get_cajas_to_select( )
     {
@@ -227,7 +216,6 @@ class TesoreriaController extends TransaccionController
     }
 
 
-    //   GET CAJAS
     public function get_ctas_bancarias_to_select( )
     {
         $registros = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
@@ -247,16 +235,6 @@ class TesoreriaController extends TransaccionController
         return $opciones;
     }
 
-
-
-    //   GET CUENTAS BANCARIAS
-    public function get_cuentas_bancarias($empresa_id){
-        $registros = TesoCuentaBancaria::where('core_empresa_id',$empresa_id)->get();
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id]=$fila->descripcion; 
-        } 
-        return $vec_m;
-    }
 
     //   GET MOTIVOS DE TESORERIA
     public function ajax_get_motivos($tipo_motivo){
