@@ -241,8 +241,10 @@ class NubeController extends Controller
     //Borra directorio
     function rmDir_rf($carpeta)
     {
-        foreach (glob($carpeta . "/*") as $archivos_carpeta) {
-            if (is_dir($archivos_carpeta)) {
+        foreach (glob($carpeta . "/*") as $archivos_carpeta)
+        {
+            if (is_dir($archivos_carpeta))
+            {
                 $this->rmDir_rf($archivos_carpeta);
             } else {
                 if ( file_exists( $archivos_carpeta ) )

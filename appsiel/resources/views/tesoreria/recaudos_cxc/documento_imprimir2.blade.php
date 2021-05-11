@@ -184,8 +184,6 @@ use App\Core\Tercero;
     </tr>
 </table>
 
-    
-
     <br>
 
     <table class="table table-bordered contenido">
@@ -241,8 +239,11 @@ use App\Core\Tercero;
         </tfoot>
     </table>
 
+    @include('tesoreria.medios_de_pago.tabla_show_detalles')
 
     @include('tesoreria.recaudos_cxc.cheques_relacionados')
+
+    @include('tesoreria.recaudos_cxc.retenciones_relacionadas')
 
 
     @if( !empty($registros_contabilidad) ) 

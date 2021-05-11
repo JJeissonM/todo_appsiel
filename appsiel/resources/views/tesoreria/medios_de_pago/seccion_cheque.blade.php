@@ -32,6 +32,18 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
+									{{ Form::bsSelect('caja_id_cheque', null, 'Caja', $cajas, []) }}
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="row" style="padding:5px;">
+									{{ Form::bsText( 'detalle_cheque', null, 'Detalle', []) }}
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="row" style="padding:5px;">
 									{{ Form::bsFecha( 'fecha_emision', date('Y-m-d'), 'Fecha emisión', [], []) }}
 								</div>
 							</div>
@@ -82,6 +94,8 @@
 										<tr>
 											<th style="display: none;">tipo_operacion_id_cheque</th>
 											<th style="display: none;">teso_motivo_id_cheque</th>
+											<th style="display: none;">detalle_cheque</th>
+											<th style="display: none;">caja_id_cheque</th>
 											<th style="display: none;">entidad_financiera_id</th>
 											<th style="display: none;">valor_cheque</th>
 											<th data-override="fecha_emision">F. Emisión</th>
@@ -227,6 +241,7 @@
 
 			function resetear_campos_cheque()
 			{
+				$('#detalle_cheque').val('');
 				$('#valor_cheque').val('');
 				$('#numero_cheque').val('');
 				$('#referencia_cheque').val('');
@@ -235,16 +250,23 @@
 
 			function validar_requeridos()
 			{
+				if( $('#caja_id_cheque').val() == '' )
+				{
+					alert('Debe seleccionar una Caja.')
+					$('#caja_id_cheque').focus();
+					return false;
+				}
+
 				if( $('#numero_cheque').val() == '' )
 				{
-					alert('Faltan datos por llenar del cheque.')
+					alert('El número del cheque es obligatorio.')
 					$('#numero_cheque').focus();
 					return false;
 				}
 
 				if( $('#valor_cheque').val() == '' || $('#valor_cheque').val() == '0' )
 				{
-					alert('Faltan datos por llenar del cheque.')
+					alert('Debe ingresar un valor válido para el cheque.')
 					$('#valor_cheque').focus();
 					return false;
 				}
@@ -267,6 +289,14 @@
 				num_celda++;
 
 				celdas[ num_celda ] = '<td style="display: none;">'+ $('#teso_motivo_id_cheque').val() +'</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;">'+ $('#caja_id_cheque').val() +'</td>';
+				
+				num_celda++;
+
+				celdas[ num_celda ] = '<td style="display: none;">'+ $('#detalle_cheque').val() +'</td>';
 				
 				num_celda++;
 

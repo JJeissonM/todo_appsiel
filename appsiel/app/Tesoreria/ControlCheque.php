@@ -10,6 +10,7 @@ class ControlCheque extends Model
 {
     protected $table = 'teso_control_cheques';
 
+    // fuente = { propio | de_tercero }
     protected $fillable = ['fuente', 'tercero_id', 'fecha_emision', 'fecha_cobro', 'numero_cheque', 'referencia_cheque', 'entidad_financiera_id', 'valor', 'detalle', 'creado_por', 'modificado_por', 'core_tipo_transaccion_id_origen', 'core_tipo_doc_app_id_origen', 'consecutivo', 'core_tipo_transaccion_id_consumo', 'core_tipo_doc_app_id_consumo', 'consecutivo_doc_consumo', 'teso_caja_id', 'tipo', 'estado'];
     
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Fecha emisión', 'Tercero', 'Fuente', 'Fecha cobro', 'Número cheque', 'Referencia', 'Valor', 'Caja', 'Doc. relacionado', 'Estado'];		

@@ -130,7 +130,11 @@
     </table>
 </div>
 
+@include('tesoreria.medios_de_pago.tabla_show_detalles')
+
 @include('tesoreria.recaudos_cxc.cheques_relacionados')
+
+@include('tesoreria.recaudos_cxc.retenciones_relacionadas')
 
 <h4 style="text-align: center;">Registros contables</h4>
 <div class="table-responsive">

@@ -12,6 +12,9 @@ use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\ControlCheque;
+use App\Tesoreria\TesoMovimiento;
+
+use App\Contabilidad\RegistroRetencion;
 
 use App\Matriculas\FacturaAuxEstudiante;
 
@@ -49,6 +52,21 @@ class TesoDocEncabezado extends Model
         return $this->belongsTo(TesoMedioRecaudo::class, 'teso_medio_recaudo_id');
     }
 
+    public function lineas_registros()
+    {
+        return $this->hasMany( TesoDocRegistro::class, 'teso_encabezado_id');
+    }
+
+    public function lineas_movimientos()
+    {
+        return TesoMovimiento::where( [ 
+                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                        'consecutivo' => $this->consecutivo
+                                    ] )
+                                ->get();
+    }
+
     public function datos_auxiliares_estudiante()
     {
         $recaudo_libreta = TesoRecaudosLibreta::where('core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
@@ -77,6 +95,14 @@ class TesoDocEncabezado extends Model
         return ControlCheque::where('core_tipo_transaccion_id_consumo', $this->core_tipo_transaccion_id)
                                         ->where('core_tipo_doc_app_id_consumo', $this->core_tipo_doc_app_id)
                                         ->where('consecutivo_doc_consumo', $this->consecutivo)
+                                        ->get();
+    }
+
+    public function retenciones_relacionadas()
+    {
+        return RegistroRetencion::where('core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+                                        ->where('core_tipo_doc_app_id', $this->core_tipo_doc_app_id)
+                                        ->where('consecutivo', $this->consecutivo)
                                         ->get();
     }
 
