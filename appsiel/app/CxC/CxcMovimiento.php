@@ -17,6 +17,26 @@ class CxcMovimiento extends Model
 
   public $urls_acciones = '{"show":"no"}';
 
+
+
+  public function actualizar_saldos($abono)
+  {
+    $nuevo_saldo = $this->saldo_pendiente - $abono;
+
+    $nuevo_valor_pagado = $this->valor_pagado + $abono;
+
+    $this->valor_pagado = $nuevo_valor_pagado;
+    $this->saldo_pendiente = $nuevo_saldo;
+
+    if ($nuevo_saldo == 0)
+    {
+      $this->estado = 'Pagado';
+      $this->modificado_por = Auth::user()->email;
+    }
+
+    $this->save();
+  }
+
   // Se consultan los documentos para la empresa que tiene asignada el usuario
   public static function consultar_registros($nro_registros)
   {
@@ -143,4 +163,5 @@ class CxcMovimiento extends Model
       );
     }
   }
+
 }

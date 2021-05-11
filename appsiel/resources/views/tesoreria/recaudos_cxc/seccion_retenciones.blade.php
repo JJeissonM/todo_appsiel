@@ -153,6 +153,8 @@
 
 				$.fn.actualizar_total_resumen_medios_pagos( valor_linea );
 
+				var lineas_registros_retenciones = $('#tabla_registros_retenciones').tableToJSON();
+				$('#lineas_registros_retenciones').val( JSON.stringify(lineas_registros_retenciones) );
 			}
 
 			function resetear_campos_retencion()

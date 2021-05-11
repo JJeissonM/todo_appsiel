@@ -651,6 +651,7 @@
 	<script src="{{ asset('assets/js/input_lista_sugerencias.js') }}"></script> <!-- -->
 
 	@yield('scripts')
+	@yield('scripts1')
 	@yield('scripts2')
 	@yield('scripts3')
 	@yield('scripts4')

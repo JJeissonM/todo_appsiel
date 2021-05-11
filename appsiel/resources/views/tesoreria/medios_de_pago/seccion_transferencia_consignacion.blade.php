@@ -183,6 +183,9 @@
 			    }
 
 			    $.fn.actualizar_total_resumen_medios_pagos( valor_linea );
+
+			    var lineas_registros_transferencia_consignacion = $('#tabla_registros_transferencia_consignacion').tableToJSON();
+				$('#lineas_registros_transferencia_consignacion').val( JSON.stringify(lineas_registros_transferencia_consignacion) );
 			}
 
 			function resetear_campos_transferencia_consignacion()
