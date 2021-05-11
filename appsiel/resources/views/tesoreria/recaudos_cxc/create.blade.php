@@ -84,167 +84,23 @@
 
 			{{ Form::close() }}
 
-
 			<div class="marco_formulario">
-				<h5>
-					Resumen de operaciones 
-					<small>
-						<button style="border: 0; background: transparent; display: none;" title="Mostrar" id="btn_mostrar_resumen_operaciones">
-							<i class="fa fa-eye"></i>
-						</button>
-						<button style="border: 0; background: transparent;" title="Ocultar" id="btn_ocultar_resumen_operaciones">
-							<i class="fa fa-eye-slash"></i>
-						</button>
-					</small>
-				</h5>
-				<div id="div_resumen_operaciones">
-					<hr>
-					<table class="table table-bordered">
-						<tbody>
-							<tr>
-								<td><b>Efectivo:</b></td>
-								<td id="valor_total_efectivo2" align="right" width="200px;">$ 0</td>
-								<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
-								<td><b>Documentos de CxC:</b></td>
-								<td id="total_valor_documentos_cxc" align="right" width="200px;">$ 0</td>
-							</tr>
-							<tr>
-								<td><b>Ctas. Bancarias:</b></td>
-								<td id="valor_total_cuentas_bancarias" align="right">
-									$ 0
-								</td>
-									<input type="hidden" name="input_valor_total_cuentas_bancarias" id="input_valor_total_cuentas_bancarias" value="0">
-								<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
-								<td><b>Acreditaciones:</b></td>
-								<td id="valor_total_acreditaciones" align="right">$ 0</td>
-							</tr>
-							<tr>
-								<td><b>Cheques:</b></td>
-								<td id="valor_total_cheques2" align="right">$ 0</td>
-								<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
-								<td><b>Otras operaciones:</b></td>
-								<td id="valor_total_otras_operaciones" align="right">
-									$ 0
-								</td>
-									<input type="hidden" name="input_valor_total_otras_operaciones" id="input_valor_total_otras_operaciones" value="0">
-							</tr>
-							<tr>
-								<td><b>Retenciones:</b></td>
-								<td id="valor_total_retencion2" align="right">$ 0</td>
-								<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
-								<td colspan="2" style="background-color: #ddd;"> &nbsp; </td>
-							</tr>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td>&nbsp;</td>
-								<td id="valor_total_resumen_medios_pagos" align="right">$ 0</td>
-								<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
-								<td>&nbsp;</td>
-								<td id="valor_total_resumen_operaciones" align="right">
-									$ 0
-								</td>
-									<input type="hidden" name="input_valor_total_resumen_medios_pagos" id="input_valor_total_resumen_medios_pagos" value="0">
-									<input type="hidden" name="input_valor_total_resumen_operaciones" id="input_valor_total_resumen_operaciones" value="0">
-							</tr>
-						</tfoot>
-					</table>
-
-					<table class="table table-bordered">
-						<tr>
-							<td align="right" colspan=""><b>Diferencia:</b></td>
-							<td id="valor_diferencia" align="right" width="200px;">$ 0</td>
-							<input type="hidden" name="input_valor_diferencia" id="input_valor_diferencia" value="0">
-						</tr>
-					</table>
-					<div></div>
-
-				</div>
+				@include('tesoreria.recaudos_cxc.create_tabla_resumen_operaciones')
 			</div>
 
 			<div class="marco_formulario">
-				<h5>
-					Operaciones de recaudo 
-					<small>
-						<button style="border: 0; background: transparent;" title="Mostrar" id="btn_mostrar_operaciones">
-							<i class="fa fa-eye"></i>
-						</button>
-						<button style="border: 0; background: transparent; display: none;" title="Ocultar" id="btn_ocultar_operaciones">
-							<i class="fa fa-eye-slash"></i>
-						</button>
-					</small>
-				</h5>
-				<div id="div_operaciones" style="display: none;">
-					<hr>
-					<ul class="nav nav-tabs">
-						<li class="active"><a data-toggle="tab" href="#tab1"> Recaudo cartera (CxC) </a></li>
-						<li><a data-toggle="tab" href="#tab2"> Retenciones </a></li>
-						<li><a data-toggle="tab" href="#tab3"> Asientos contables </a></li>
-				    </ul>
-
-				    <div class="tab-content">
-				    	<div id="tab1" class="tab-pane fade in active">
-					        @include('tesoreria.recaudos_cxc.seccion_documentos_pendientes')
-					    </div>
-					    <div id="tab2" class="tab-pane fade">
-					        @include('tesoreria.recaudos_cxc.seccion_retenciones')
-		            	</div>
-					    <div id="tab3" class="tab-pane fade">
-					        @include('tesoreria.recaudos_cxc.seccion_asientos_contables')
-		            	</div>
-				    </div>
-				</div>
+				@include('tesoreria.recaudos_cxc.tabs_operaciones_recaudo')
 			</div>
 
 			<div class="marco_formulario">
-				<h5>
-					Medios de pago
-					<small>
-						<button style="border: 0; background: transparent;" title="Mostrar" id="btn_mostrar_medios_pago">
-							<i class="fa fa-eye"></i>
-						</button>
-						<button style="border: 0; background: transparent; display: none;" title="Ocultar" id="btn_ocultar_medios_pago">
-							<i class="fa fa-eye-slash"></i>
-						</button>
-					</small>
-				</h5>
-				<div id="div_medios_pago" style="display: none;">
-					<hr>
-					<ul class="nav nav-tabs">
-						<li class="active"><a data-toggle="tab" href="#tab_mp_1"> Efectivo </a></li>
-						<li><a data-toggle="tab" href="#tab_mp_2"> Transferencia/Consignación </a></li>
-						<li><a data-toggle="tab" href="#tab_mp_3"> Tarj. Débito </a></li>
-						<li><a data-toggle="tab" href="#tab_mp_4"> Tarj. Crédito </a></li>
-						<li><a data-toggle="tab" href="#tab_mp_5"> Cheque </a></li>
-						<!-- <li><a data-toggle="tab" href="#tab_mp_6"> PSE </a></li> -->
-				    </ul>
-
-				    <div class="tab-content">
-				    	<div id="tab_mp_1" class="tab-pane fade in active">
-					        @include('tesoreria.medios_de_pago.seccion_efectivo')
-					    </div>
-					    <div id="tab_mp_2" class="tab-pane fade">
-					        @include('tesoreria.medios_de_pago.seccion_transferencia_consignacion')
-		            	</div>
-					    <div id="tab_mp_3" class="tab-pane fade">
-					        @include('tesoreria.medios_de_pago.seccion_tarjeta_debito')
-		            	</div>
-					    <div id="tab_mp_4" class="tab-pane fade">
-					        @include('tesoreria.medios_de_pago.seccion_tarjeta_credito')
-		            	</div>
-					    <div id="tab_mp_5" class="tab-pane fade">
-					        @include('tesoreria.medios_de_pago.seccion_cheque')
-		            	</div>
-					    <!-- <div id="tab_mp_6" class="tab-pane fade">
-					        @ include('tesoreria.medios_de_pago.seccion_pse')
-		            	</div> -->
-				    </div>
-				</div>
+				@include('tesoreria.incluir.tabs_medios_de_pago')
 			</div>
 
 		</div>
 	</div>
+
 	<br/><br/>
+
 @endsection
 
 @section('scripts')
@@ -262,11 +118,6 @@
 		$(document).ready(function(){
 			
 			asignar_fecha_hoy();
-
-			var LineaNum = 0;
-
-			ocultar_campo_formulario( $('#teso_caja_id'), false );
-			ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 
 			$('#cliente_input').focus();
 
@@ -334,12 +185,11 @@
 		    	// Si la longitud es menor a dos, todavía no busca
 			    if ( $(this).val().length < 2 ) { return false; }
 
-		    	//var url = '../../vtas_consultar_clientes';
 		    	var url = "{{ url('core_consultar_terceros') }}";
 
 				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
 					.done(function( data ) {
-						// Se llena el DIV con las sugerencias que arooja la consulta
+						// Se llena el DIV con las sugerencias que arroja la consulta
 		                $('#clientes_suggestions').show().html(data);
 		                $('a.list-group-item.active').focus();
 					});
@@ -387,28 +237,32 @@
 		    	$('#div_medios_pago').fadeOut(500);
 		    });
 
-		    $(document).on('click','#btn_cargar_documentos_pendientes', function(){
-		    	if ($('#core_tercero_id').val() == 0 )
-		    	{
-		    		alert('Debe ingresar un Tercero.');
-		    		$('#cliente_input').focus();
-		    		return false;
-		    	}
+			// GUARDAR 
+			$('#btn_guardar').click(function(event){
+				event.preventDefault();
 
-		    	$('#div_cargando').show();
-		    	$('#div_spin').show();
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}		
 
-		        $('#tabla_registros_documento').find('tbody').html( '' );
-		        $('#total_valor').text( "$0" );
-                $('#div_aplicacion_cartera').hide();
-                $('#div_documentos_pendientes').html('');
-		    	
-		    	get_documentos_pendientes_cxc( $('#core_tercero_id').val() );
+				var total_valor = parseFloat( $('#total_valor').text().substring(1) );
 
-		    	$('#total_valor_documentos_cxc').text('$ 0');
+				if ( total_valor <= 0 )
+				{
+					alert('No ha seleccionado documentos a pagar.');
+					return false;
+				}
+  
+				// Se obtienen todos los datos del formulario y se envían
+				// Desactivar el click del botón
+				$( this ).off( event );
 
-		    	$.fn.actualizar_total_resumen_operaciones( parseFloat( $('#input_total_valor_documentos_cxc').val() * -1 ) );
-		    });
+				// Enviar formulario
+				habilitar_campos_form_create();
+				$('#form_create').submit();
+					
+			});
 
 		    function seleccionar_cliente(item_sugerencia)
 		    {
@@ -428,289 +282,6 @@
 
 		        return false;
 		    }
-
-		    function get_documentos_pendientes_cxc( core_tercero_id )
-		    {
-		    	var url = '../../tesoreria/get_documentos_pendientes_cxc';
-
-				$.get( url, { core_tercero_id: core_tercero_id } )
-					.done(function( data ) {
-						// Se llena el DIV con las sugerencias que arroja la consulta
-		                $('#div_aplicacion_cartera').show();
-		                $('#div_documentos_pendientes').html(data);
-		                $('.td_boton').show();
-		                $('.btn_agregar_documento').show();
-		                $('#div_cargando').hide();
-		                $('#div_spin').hide();
-					});
-		    }
-
-			$(document).on('click', '.btn_agregar_documento', function(event) 
-			{
-				event.preventDefault();
-				var fila = $(this).closest("tr");
-
-				var input_valor_agregar = fila.find("input:text");
-
-				if( validar_valor_aplicar( input_valor_agregar ) )
-				{
-					// Se reemplaza al input caja de texto por el valor ingresado en ella misma 
-					var valor = input_valor_agregar.val();
-					fila.find("td:last").text( valor );
-					fila.find("td:last").attr('class', 'valor_total' );
-					
-					// Se agrega la final al final de la tabla de documentos seleccionados
-					$('#div_documentos_a_cancelar').show();
-					$('#tabla_registros_documento').find('tbody:last').append( fila );
-
-					$("#div_documentos_pendientes input:text").first().select();
-
-					$.fn.actualizar_total_resumen_operaciones( parseFloat(valor) );
-
-					calcular_totales();
-				}		
-			});
-
-			function validar_valor_aplicar(input_valor_agregar){
-				var fila = input_valor_agregar.closest("tr");
-				var respuesta;
-
-				var valor = input_valor_agregar.val();
-
-				if( !validar_input_numerico( input_valor_agregar ) )
-				{
-					return false;
-				}
-				
-				valor = parseFloat( valor );
-
-				var saldo_pendiente = fila.find('td.col_saldo_pendiente').attr('data-saldo_pendiente');
-
-				saldo_pendiente = parseFloat( saldo_pendiente );
-
-				if( valor > 0  && valor <= saldo_pendiente) {
-					input_valor_agregar.attr('style','background-color:white;');
-					respuesta = true;
-				}else{
-					input_valor_agregar.attr('style','background-color:#FF8C8C;');
-					input_valor_agregar.focus();
-					respuesta = false;
-				}
-
-				return respuesta;
-			}
-
-		    
-			$('#core_tipo_doc_app_id').change(function(){
-				$('#fecha').focus();
-			});
-
-			$('#teso_medio_recaudo_id').change(function()
-			{
-				if ( $(this).val() == '' )
-				{
-					ocultar_campo_formulario( $('#teso_caja_id'), false );
-					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
-					$(this).focus();
-					return false;
-				}
-
-				var valor = $(this).val().split('-');
-
-				if (valor[1]=='Tarjeta bancaria')
-				{
-					ocultar_campo_formulario( $('#teso_caja_id'), false );
-					mostrar_campo_formulario( $('#teso_cuenta_bancaria_id'), '*Cuenta bancaria:', true );
-				}else{
-					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
-					mostrar_campo_formulario( $('#teso_caja_id'), '*Caja:', true );
-				}
-
-			});
-
-			/*
-			** Al eliminar una fila
-			*/
-			// Se utiliza otra forma con $(document) porque el $('#btn_eliminar') no funciona pues
-			// es un elemento agregadi despues de que se cargó la página
-			$(document).on('click', '.btn_eliminar', function(event) {
-				event.preventDefault();
-				var fila = $(this).closest("tr");
-				fila.remove();
-				$('#btn_nuevo').show();
-				calcular_totales();
-			});
-
-			// Al introducir valor en la caja de texto
-			$(document).on('keyup', '.col_valor', function() {
-				var celda = $(this);
-				//console.log( celda );
-				validar_valor( celda );
-
-				var x = event.which || event.keyCode;
-				if( x === 13 ){
-					celda.next('input:button').focus();
-				}
-			});
-
-			// GUARDAR 
-			$('#btn_guardar').click(function(event){
-				event.preventDefault();
-
-				if ( !validar_requeridos() )
-				{
-					return false;
-				}		
-
-				var total_valor = parseFloat( $('#total_valor').text().substring(1) );
-
-				if ( total_valor <= 0 )
-				{
-					alert('No ha seleccionado documentos a pagar.');
-					return false;
-				}
-
-				var teso_medio_recaudo_id = $('#teso_medio_recaudo_id').val().split('-');
-				if ( teso_medio_recaudo_id[1] == 'cheque_propio' || teso_medio_recaudo_id[1] == 'cheque_de_tercero' )
-				{
-					if ( hay_cheques == 0 )
-					{
-						alert('Debe ingresar al menos un cheque para el medio de pago seleccionado.');
-						return false;
-					}
-
-					if ( parseFloat( $('#input_valor_total_cheques').val() ) != total_valor )
-					{
-						alert('El valor total de cheques ingresados debe ser igual al valor total de documentos a pagar.');
-						return false;
-					}
-
-					
-				}
-
-				// Se obtienen todos los datos del formulario y se envían
-				// Desactivar el click del botón
-				$( this ).off( event );
-
-				// Eliminar fila de ingreso de registro vacia
-				var object = $('#combobox_motivos').val();	
-				if( typeof object == typeof undefined){
-					// Si no hay linea de ingreso de registros
-					// Todo bien
-					//alert('Todo bien.');
-				}else{
-					var fila = $('#combobox_motivos').closest("tr");
-					fila.remove();
-				}
-
-				// Se asigna la tabla de ingreso de registros a un campo hidden
-				var lineas_registros = $('#tabla_registros_documento').tableToJSON();
-				$('#lineas_registros').val( JSON.stringify(lineas_registros) );
-
-				// RETENCIONES
-				var lineas_registros_retenciones = $('#tabla_registros_retenciones').tableToJSON();
-				$('#lineas_registros_retenciones').val( JSON.stringify(lineas_registros_retenciones) );
-
-				// ASIENTOS CONTABLES
-				var lineas_registros_asientos_contables = $('#tabla_registros_asientos_contables').tableToJSON();
-				$('#lineas_registros_asientos_contables').val( JSON.stringify(lineas_registros_asientos_contables) );
-
-				// EFECTIVO
-				var lineas_registros_efectivo = $('#tabla_registros_efectivo').tableToJSON();
-				$('#lineas_registros_efectivo').val( JSON.stringify(lineas_registros_efectivo) );
-
-				// TRANSFERENCIAS O CONSIGNACIONES
-				var lineas_registros_transferencia_consignacion = $('#tabla_registros_transferencia_consignacion').tableToJSON();
-				$('#lineas_registros_transferencia_consignacion').val( JSON.stringify(lineas_registros_transferencia_consignacion) );
-
-				// TARJETA DÉBITO
-				var lineas_registros_tarjeta_debito = $('#tabla_registros_tarjeta_debito').tableToJSON();
-				$('#lineas_registros_tarjeta_debito').val( JSON.stringify(lineas_registros_tarjeta_debito) );
-
-				// TARJETA CRÉDITO
-				var lineas_registros_tarjeta_credito = $('#tabla_registros_tarjeta_credito').tableToJSON();
-				$('#lineas_registros_tarjeta_credito').val( JSON.stringify(lineas_registros_tarjeta_credito) );
-
-				// CHEQUES
-				var lineas_registros_cheques = $('#tabla_registros_cheques').tableToJSON();
-				$('#lineas_registros_cheques').val( JSON.stringify(lineas_registros_cheques) );
-
-				// Enviar formulario
-				habilitar_campos_form_create();
-				$('#form_create').submit();
-					
-			});
-
-
-			function calcular_totales(){
-				var sum = 0.0;
-				sum = 0.0;
-				$('.valor_total').each(function()
-				{
-				    var cadena = $(this).text();
-				    sum += parseFloat(cadena);
-				});
-
-				$('#total_valor').text("$"+sum.toFixed(2));
-				$('#total_valor_documentos_cxc').text("$"+sum.toFixed(2));
-				$('#input_total_valor_documentos_cxc').val( sum );
-			}
-
-
-			function validar_linea(){
-				var ok;
-
-				if ( $('#combobox_motivos').val() != '' ) {
-					var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#combobox_terceros option:selected" ).text();
-
-					var detalle = $('#col_detalle').val();
-
-					var valor = $('#col_valor').val();
-					
-					if ( valor != '' ) {
-						if ( $.isNumeric(valor)  && valor > 0 ) {
-							ok = true;
-						}else{
-							$('#col_valor').attr('style','background-color:#FF8C8C;');
-							$('#col_valor').focus();
-							ok = false;
-						}
-					}else{
-						$('#col_valor').attr('style','background-color:#FF8C8C;');
-						$('#col_valor').focus();
-						ok = false;
-					}
-				}else{
-					alert('Debe seleccionar una concepto.');
-					$('#combobox_motivos').focus();
-					ok = false;
-				}
-				return ok;
-			}
-
-			function validar_valor(celda){
-				var fila = celda.closest("tr");
-				//console.log(fila);
-
-				var ok;
-
-				var valor = celda.val();
-
-				if( $.isNumeric( valor ) ){
-					valor = parseFloat( valor );
-				}		
-
-				if( $.isNumeric( valor ) && valor > 0 ) {
-					celda.attr('style','background-color:white;');
-					ok = true;
-				}else{
-					celda.attr('style','background-color:#FF8C8C;');
-					celda.focus();
-					ok = false;
-				}
-
-				return ok;
-			}
 
 			function habilitar_text($control){
 				$control.removeAttr('disabled');

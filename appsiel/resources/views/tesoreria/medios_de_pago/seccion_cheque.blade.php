@@ -221,6 +221,8 @@
 
 			    $.fn.actualizar_total_resumen_medios_pagos( valor_linea );
 
+			    var lineas_registros_cheques = $('#tabla_registros_cheques').tableToJSON();
+				$('#lineas_registros_cheques').val( JSON.stringify(lineas_registros_cheques) );
 			}
 
 			function resetear_campos_cheque()

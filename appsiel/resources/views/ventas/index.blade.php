@@ -180,7 +180,7 @@
 									@foreach($vencidas as $v)
 									<tr>
 										<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-										<td>{{ substr( $d['cliente'], 0, 25) }}...</td>
+										<td>{{ substr( $v['cliente'], 0, 25) }}...</td>
 										<td>{{$v['fecha_entrega']}}</td>
 									</tr>
 									@endforeach
@@ -209,7 +209,7 @@
 										@foreach($futuras as $v)
 										<tr>
 											<td><a target="_blank" href="{{url('vtas_pedidos/'.$v['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$v['documento']}}</a></td>
-											<td>{{ substr( $d['cliente'], 0, 25) }}...</td>
+											<td>{{ substr( $v['cliente'], 0, 25) }}...</td>
 											<td>{{$v['fecha_entrega']}}</td>
 										</tr>
 										@endforeach
@@ -238,7 +238,7 @@
 									@foreach($anulados as $a)
 									<tr>
 										<td><a target="_blank" href="{{url('vtas_pedidos/'.$a['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$a['documento']}}</a></td>
-										<td>{{ substr( $d['cliente'], 0, 25) }}...</td>
+										<td>{{ substr( $a['cliente'], 0, 25) }}...</td>
 										<td>{{$a['fecha_entrega']}}</td>
 									</tr>
 									@endforeach

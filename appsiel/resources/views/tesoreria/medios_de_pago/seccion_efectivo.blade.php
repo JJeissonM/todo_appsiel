@@ -173,6 +173,9 @@
 			    }
 
 			    $.fn.actualizar_total_resumen_medios_pagos( valor_linea );
+
+			    var lineas_registros_efectivo = $('#tabla_registros_efectivo').tableToJSON();
+				$('#lineas_registros_efectivo').val( JSON.stringify(lineas_registros_efectivo) );
 			}
 
 			function resetear_campos_efectivo()

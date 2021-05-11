@@ -184,6 +184,8 @@
 
 			    $.fn.actualizar_total_resumen_medios_pagos( valor_linea );
 
+			    var lineas_registros_tarjeta_credito = $('#tabla_registros_tarjeta_credito').tableToJSON();
+				$('#lineas_registros_tarjeta_credito').val( JSON.stringify(lineas_registros_tarjeta_credito) );
 			}
 
 			function resetear_campos_tarjeta_credito()
